@@ -20,7 +20,7 @@ const TS64 Lerp( const TS64 v1, const TS64 v2, const TF32 t )
   return (TS64)( ( v2 - v1 )*t + v1 );
 }
 
-const TF64 Lerp( const TF64 v1, const TF64 v2, const TF32 t )
+const double Lerp( const double v1, const double v2, const TF32 t )
 {
   return ( v2 - v1 )*t + v1;
 }

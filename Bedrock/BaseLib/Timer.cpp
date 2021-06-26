@@ -20,7 +20,7 @@ CTimer::~CTimer()
 void CTimer::Update()
 {
   TS32 CurrentTime = timeGetTime();
-  TF64 ElapsedTime = CurrentTime - LastUpdateTime;
+  double ElapsedTime = CurrentTime - LastUpdateTime;
 
   if ( !Paused )
     TimeExtension += ElapsedTime*( 1 - SpeedModifier );

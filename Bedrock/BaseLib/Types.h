@@ -11,5 +11,5 @@ typedef short				TS16;
 typedef int					TS32;
 typedef __int64				TS64;
 typedef float				TF32;
-typedef double				TF64;
+// typedef double				double;
 typedef unsigned char		TBOOL;

@@ -177,7 +177,7 @@ const TS32 Lerp( const TS32 v1, const TS32 v2, const TF32 t );
 const TF32 Lerp( const TF32 v1, const TF32 v2, const TF32 t );
 const TU32 Lerp( const TU32 v1, const TU32 v2, const TF32 t );
 const TS64 Lerp( const TS64 v1, const TS64 v2, const TF32 t );
-const TF64 Lerp( const TF64 v1, const TF64 v2, const TF32 t );
+const double Lerp( const double v1, const double v2, const TF32 t );
 const TU64 Lerp( const TU64 v1, const TU64 v2, const TF32 t );
 const CVector2 Lerp( const CVector2 &v1, const CVector2 &v2, const TF32 t );
 const CVector2I Lerp( const CVector2I &v1, const CVector2I &v2, const TF32 t );

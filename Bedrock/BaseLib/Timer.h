@@ -5,7 +5,7 @@ class CTimer
   TS32 LastUpdateTime;
   TS32 StartTime;
   TF32 SpeedModifier;
-  TF64 TimeExtension;
+  double TimeExtension;
   TBOOL Paused;
 
   unsigned long Time;
