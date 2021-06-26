@@ -1,26 +1,26 @@
 #include "BaseLib.h"
 
-CQuaternion Lerp( const CQuaternion &v1, const CQuaternion &v2, const TF32 t )
+CQuaternion Lerp( const CQuaternion &v1, const CQuaternion &v2, const float t )
 {
   return ( ( v2 - v1 )*t + v1 ).Normalized();
 }
 
-CQuaternion Slerp( const CQuaternion &v1, const CQuaternion &v2, const TF32 t )
+CQuaternion Slerp( const CQuaternion &v1, const CQuaternion &v2, const float t )
 {
-  TF32 multiplier = 1;
-  TF32 dot = CQuaternion::Dot( v1, v2 );
+  float multiplier = 1;
+  float dot = CQuaternion::Dot( v1, v2 );
 
   if ( dot < 0 ) //v1->v2 angle>90 degrees, invert one to reduce spin
     multiplier = -1;
 
-  TF32 angle = acosf( dot*multiplier );
+  float angle = acosf( dot*multiplier );
   return ( v1*sinf( angle*( 1 - t ) ) + v2*multiplier*sinf( angle*t ) ) / sinf( angle );
 }
 
-CQuaternion SlerpFast( const CQuaternion &v1, const CQuaternion &v2, const TF32 t )
+CQuaternion SlerpFast( const CQuaternion &v1, const CQuaternion &v2, const float t )
 {
-  TF32 multiplier = 1;
-  TF32 dot = CQuaternion::Dot( v1, v2 );
+  float multiplier = 1;
+  float dot = CQuaternion::Dot( v1, v2 );
 
   if ( dot < 0 ) //v1->v2 angle>90 degrees, invert one to reduce spin
     multiplier = -1;
@@ -28,7 +28,7 @@ CQuaternion SlerpFast( const CQuaternion &v1, const CQuaternion &v2, const TF32 
   return Lerp( v1, v2*multiplier, t );
 }
 
-CQuaternion Squad( const CQuaternion &q1, const CQuaternion &S1, const CQuaternion &S2, const CQuaternion &q2, const TF32 t )
+CQuaternion Squad( const CQuaternion &q1, const CQuaternion &S1, const CQuaternion &S2, const CQuaternion &q2, const float t )
 {
   CQuaternion c = Slerp( q1, q2, t );
   CQuaternion d = Slerp( S1, S2, t );
@@ -51,18 +51,18 @@ void SquadSetup( CQuaternion &OutA, CQuaternion &OutB, CQuaternion &OutC, const 
   OutB = SquadC2Point( Q1, OutC, q3 );
 }
 
-TF32 CQuaternion::Dot( const CQuaternion &v1, const CQuaternion &v2 )
+float CQuaternion::Dot( const CQuaternion &v1, const CQuaternion &v2 )
 {
   return v1.s*v2.s + v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
 CQuaternion CQuaternion::Exp() const
 {
-  TF32 vlen = sqrtf( x*x + y*y + z*z );
+  float vlen = sqrtf( x*x + y*y + z*z );
 
   if ( vlen > 0 )
   {
-    TF32 t = sinf( vlen ) / vlen;
+    float t = sinf( vlen ) / vlen;
     return CQuaternion( x*t, y*t, z*t, cosf( vlen ) );
   }
   else
@@ -71,12 +71,12 @@ CQuaternion CQuaternion::Exp() const
 
 CQuaternion CQuaternion::Log() const
 {
-  TF32 angle = acosf( s );
-  TF32 sina = sinf( angle );
+  float angle = acosf( s );
+  float sina = sinf( angle );
 
   if ( sina > 0 )
   {
-    TF32 t = angle / sina;
+    float t = angle / sina;
     return CQuaternion( x*t, y*t, z*t, 0 );
   }
   else
@@ -110,12 +110,12 @@ CQuaternion CQuaternion::Normalized() const
   return *this*InvSqrt( LengthSquared() );
 }
 
-TF32 CQuaternion::LengthSquared() const
+float CQuaternion::LengthSquared() const
 {
   return x*x + y*y + z*z + s*s;
 }
 
-TF32 CQuaternion::Length() const
+float CQuaternion::Length() const
 {
   return sqrtf( LengthSquared() );
 }
@@ -125,7 +125,7 @@ CQuaternion::CQuaternion( const CVector3 &v ) //from euler angles
   FromEuler( v.x, v.y, v.z );
 }
 
-CQuaternion::CQuaternion( const TF32 _x, const TF32 _y, const TF32 _z ) //from euler angles
+CQuaternion::CQuaternion( const float _x, const float _y, const float _z ) //from euler angles
 {
   FromEuler( _x, _y, _z );
 }
@@ -138,7 +138,7 @@ CQuaternion::CQuaternion( const CQuaternion &v )
   s = v.s;
 }
 
-CQuaternion::CQuaternion( const TF32* v )
+CQuaternion::CQuaternion( const float* v )
 {
   x = v[ 0 ];
   y = v[ 1 ];
@@ -146,7 +146,7 @@ CQuaternion::CQuaternion( const TF32* v )
   s = v[ 3 ];
 }
 
-CQuaternion::CQuaternion( const TF32 _s, const CVector3 &v )
+CQuaternion::CQuaternion( const float _s, const CVector3 &v )
 {
   x = v.x;
   y = v.y;
@@ -154,7 +154,7 @@ CQuaternion::CQuaternion( const TF32 _s, const CVector3 &v )
   s = _s;
 }
 
-CQuaternion::CQuaternion( const TF32 _x, const TF32 _y, const TF32 _z, const TF32 _s )
+CQuaternion::CQuaternion( const float _x, const float _y, const float _z, const float _s )
 {
   x = _x;
   y = _y;
@@ -169,10 +169,10 @@ CQuaternion::CQuaternion()
 
 void CQuaternion::FromRotationMatrix( const CMatrix4x4 &m )
 {
-  TF32 diag = m( 0, 0 ) + m( 1, 1 ) + m( 2, 2 ) + 1.0f;
+  float diag = m( 0, 0 ) + m( 1, 1 ) + m( 2, 2 ) + 1.0f;
   if ( diag > 1.0f )
   {
-    TF32 sqd = sqrtf( diag );
+    float sqd = sqrtf( diag );
     x = ( m( 1, 2 ) - m( 2, 1 ) ) / ( 2.0f*sqd );
     y = ( m( 2, 0 ) - m( 0, 2 ) ) / ( 2.0f*sqd );
     z = ( m( 0, 1 ) - m( 1, 0 ) ) / ( 2.0f*sqd );
@@ -181,7 +181,7 @@ void CQuaternion::FromRotationMatrix( const CMatrix4x4 &m )
   }
 
   int32_t maxdiagidx = 0;
-  TF32 maxdiag = m( 0, 0 );
+  float maxdiag = m( 0, 0 );
   for ( int32_t i = 1; i < 3; i++ )
   {
     if ( m( i, i ) > maxdiag )
@@ -191,7 +191,7 @@ void CQuaternion::FromRotationMatrix( const CMatrix4x4 &m )
     }
   }
 
-  TF32 S;
+  float S;
 
   switch ( maxdiagidx )
   {
@@ -221,37 +221,37 @@ void CQuaternion::FromRotationMatrix( const CMatrix4x4 &m )
   }
 }
 
-void CQuaternion::ToAxisAngle( CVector3 &Axis, TF32 &Angle ) const
+void CQuaternion::ToAxisAngle( CVector3 &Axis, float &Angle ) const
 {
   Angle = acosf( s ) / 2.0f;
   Axis = CVector3( x, y, z ) / sinf( Angle*2.0f );
 }
 
-CQuaternion CQuaternion::FromAxisAngle( const CVector3 &Axis, const TF32 Angle )
+CQuaternion CQuaternion::FromAxisAngle( const CVector3 &Axis, const float Angle )
 {
   return CQuaternion( cosf( Angle / 2.0f ), Axis*sinf( Angle / 2.0f ) );
 }
 
 CVector3 CQuaternion::ToEuler() const
 {
-  const TF32 sqx = x*x;
-  const TF32 sqy = y*y;
-  const TF32 sqz = z*z;
+  const float sqx = x*x;
+  const float sqy = y*y;
+  const float sqz = z*z;
 
   return CVector3( atan2f( 2.0f*( z*y + x*s ), 1 - 2 * ( sqx + sqy ) ),
                    asinf( -2.0f*( x*z - y*s ) ),
                    atan2f( 2.0f*( x*y + z*s ), 1 - 2 * ( sqy + sqz ) ) );
 }
 
-void CQuaternion::FromEuler( const TF32 _x, const TF32 _y, const TF32 _z )
+void CQuaternion::FromEuler( const float _x, const float _y, const float _z )
 {
-  const TF32 cos_z = cosf( 0.5f*_z );
-  const TF32 cos_y = cosf( 0.5f*_y );
-  const TF32 cos_x = cosf( 0.5f*_x );
+  const float cos_z = cosf( 0.5f*_z );
+  const float cos_y = cosf( 0.5f*_y );
+  const float cos_x = cosf( 0.5f*_x );
 
-  const TF32 sin_z = sinf( 0.5f*_z );
-  const TF32 sin_y = sinf( 0.5f*_y );
-  const TF32 sin_x = sinf( 0.5f*_x );
+  const float sin_z = sinf( 0.5f*_z );
+  const float sin_y = sinf( 0.5f*_y );
+  const float sin_x = sinf( 0.5f*_x );
 
   s = cos_z*cos_y*cos_x + sin_z*sin_y*sin_x;
   x = cos_z*cos_y*sin_x - sin_z*sin_y*cos_x;
@@ -259,24 +259,24 @@ void CQuaternion::FromEuler( const TF32 _x, const TF32 _y, const TF32 _z )
   z = sin_z*cos_y*cos_x - cos_z*sin_y*sin_x;
 }
 
-TF32 const CQuaternion::operator[]( int32_t idx ) const
+float const CQuaternion::operator[]( int32_t idx ) const
 {
-  return ( ( const TF32* )this )[ idx ];
+  return ( ( const float* )this )[ idx ];
 }
 
-TF32 &CQuaternion::operator[]( int32_t idx )
+float &CQuaternion::operator[]( int32_t idx )
 {
-  return ( ( TF32* )this )[ idx ];
+  return ( ( float* )this )[ idx ];
 }
 
-CQuaternion::operator TF32* ( )
+CQuaternion::operator float* ( )
 {
-  return (TF32*)&x;
+  return (float*)&x;
 }
 
-CQuaternion::operator const TF32* ( ) const
+CQuaternion::operator const float* ( ) const
 {
-  return (const TF32*)&x;
+  return (const float*)&x;
 }
 
 CQuaternion &CQuaternion::operator= ( const CQuaternion &q )
@@ -311,7 +311,7 @@ const CQuaternion &CQuaternion::operator*= ( const CQuaternion &v )
   return *this = *this*v;
 }
 
-CQuaternion &CQuaternion::operator*= ( const TF32 f )
+CQuaternion &CQuaternion::operator*= ( const float f )
 {
   x *= f;
   y *= f;
@@ -320,9 +320,9 @@ CQuaternion &CQuaternion::operator*= ( const TF32 f )
   return *this;
 }
 
-CQuaternion &CQuaternion::operator/= ( const TF32 f )
+CQuaternion &CQuaternion::operator/= ( const float f )
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   x *= fi;
   y *= fi;
   z *= fi;
@@ -350,14 +350,14 @@ CQuaternion CQuaternion::operator- ( const CQuaternion &v ) const
   return CQuaternion( x - v.x, y - v.y, z - v.z, s - v.s );
 }
 
-CQuaternion CQuaternion::operator* ( const TF32 f ) const
+CQuaternion CQuaternion::operator* ( const float f ) const
 {
   return CQuaternion( x*f, y*f, z*f, s*f );
 }
 
-CQuaternion CQuaternion::operator/ ( const TF32 f ) const
+CQuaternion CQuaternion::operator/ ( const float f ) const
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   return CQuaternion( x*fi, y*fi, z*fi, s*fi );
 }
 

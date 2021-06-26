@@ -777,10 +777,10 @@ void CWBItem::SetPosition( const CRect &Pos )
 
 void CWBItem::SetClientPadding( int32_t left, int32_t top, int32_t right, int32_t bottom )
 {
-  if ( left != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_LEFT, 0, (TF32)left );
-  if ( right != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_RIGHT, 0, (TF32)right );
-  if ( top != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_TOP, 0, (TF32)top );
-  if ( bottom != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_BOTTOM, 0, (TF32)bottom );
+  if ( left != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_LEFT, 0, (float)left );
+  if ( right != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_RIGHT, 0, (float)right );
+  if ( top != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_TOP, 0, (float)top );
+  if ( bottom != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_BOTTOM, 0, (float)bottom );
 
   CalculateClientPosition();
 }
@@ -943,9 +943,9 @@ void CWBItem::ScrollbardisplayHelperFunct( CWBScrollbarParams &s, int32_t &a1, i
   int32_t mi = s.MinScroll;
   int32_t ma = s.MaxScroll;
 
-  TF32 scrollsize = (TF32)( ma - mi );
-  TF32 rs = max( 0.0f, min( 1.0f, s.ViewSize / scrollsize ) );
-  TF32 rp = max( 0.0f, min( 1.0f, ( s.ScrollPos - mi ) / ( scrollsize - s.ViewSize ) ) );
+  float scrollsize = (float)( ma - mi );
+  float rs = max( 0.0f, min( 1.0f, s.ViewSize / scrollsize ) );
+  float rp = max( 0.0f, min( 1.0f, ( s.ScrollPos - mi ) / ( scrollsize - s.ViewSize ) ) );
 
   thumbsize = (int32_t)max( Scrollbar_ThumbMinimalSize, rs*( a2 - a1 ) );
   thumbpos = (int32_t)( ( a2 - thumbsize - a1 )*rp ) + a1;
@@ -961,9 +961,9 @@ int32_t CWBItem::CalculateScrollbarMovement( CWBScrollbarParams &s, int32_t scro
 
   int32_t mi = s.MinScroll;
   int32_t ma = s.MaxScroll;
-  TF32 scrollsize = (TF32)( ma - mi );
+  float scrollsize = (float)( ma - mi );
 
-  TF32 sp = max( 0.0f, min( 1.0f, ( s.DragStartPosition - mi ) / ( scrollsize - s.ViewSize ) ) );
+  float sp = max( 0.0f, min( 1.0f, ( s.DragStartPosition - mi ) / ( scrollsize - s.ViewSize ) ) );
   int32_t thumbposstart = (int32_t)( ( a2 - thumbsize - a1 )*sp );
 
   int32_t thumbposdelta = max( 0, min( a2 - thumbsize - a1, thumbposstart + delta ) );
@@ -1696,7 +1696,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
   if ( prop == _T( "opacity" ) )
   {
-    TF32 dw = 0;
+    float dw = 0;
     value.Scan( _T( "%f" ), &dw );
 
     int32_t o = (int32_t)max( 0, min( 255, dw * 255 ) );
@@ -1988,8 +1988,8 @@ void CWBItem::PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Typ
   TBOOL px = value.Find( _T( "px" ) ) >= 0;
   TBOOL pc = value.Find( _T( "%" ) ) >= 0;
 
-  TF32 pxv = 0;
-  TF32 pcv = 0;
+  float pxv = 0;
+  float pcv = 0;
 
   if ( !pc && !px )
   {
@@ -2196,7 +2196,7 @@ TBOOL CWBItem::ParseRGBA( CString description, CColor &output )
 
   if ( result < 3 )	return false;
 
-  TF32 a = 1;
+  float a = 1;
 
   if ( Params.NumItems() == 4 )
     if ( Params[ 3 ].Scan( _T( "%f" ), &a ) != 1 ) return false;
@@ -2326,14 +2326,14 @@ TBOOL CWBItem::ScrollbarsEnabled()
   return HScrollbar.Enabled || VScrollbar.Enabled;
 }
 
-void CWBItem::SetTreeOpacityMultiplier( TF32 OpacityMul )
+void CWBItem::SetTreeOpacityMultiplier( float OpacityMul )
 {
   OpacityMultiplier = OpacityMul;
   for ( int32_t x = 0; x < Children.NumItems(); x++ )
     Children[ x ]->SetTreeOpacityMultiplier( OpacityMul );
 }
 
-TF32 CWBItem::GetTreeOpacityMultiplier()
+float CWBItem::GetTreeOpacityMultiplier()
 {
   return OpacityMultiplier;
 }

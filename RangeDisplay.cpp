@@ -16,7 +16,7 @@ void GW2RangeDisplay::DrawRangeCircle( CWBDrawAPI *API, float range, float alpha
   CMatrix4x4 cam;
   cam.SetLookAtLH( mumbleLink.camPosition, mumbleLink.camPosition + mumbleLink.camDir, CVector3( 0, 1, 0 ) );
   CMatrix4x4 persp;
-  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (TF32)drawrect.Height(), 0.01f, 1000.0f );
+  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (float)drawrect.Height(), 0.01f, 1000.0f );
 
   int32_t resolution = 60;
 
@@ -50,8 +50,8 @@ void GW2RangeDisplay::DrawRangeCircle( CWBDrawAPI *API, float range, float alpha
   {
     float a1 = 1.0f;
     float a2 = 1.0f;
-    float f1 = x / (TF32)resolution*PI * 2;
-    float f2 = ( x + 1 ) / (TF32)resolution*PI * 2;
+    float f1 = x / (float)resolution*PI * 2;
+    float f2 = ( x + 1 ) / (float)resolution*PI * 2;
     CVector4 p1 = CVector4( rworld*sinf( f1 ), 0, rworld*cosf( f1 ), 0.0f );
     CVector4 p2 = CVector4( rworld*sinf( f2 ), 0, rworld*cosf( f2 ), 0.0f );
 

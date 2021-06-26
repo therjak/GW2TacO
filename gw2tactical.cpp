@@ -61,7 +61,7 @@ void FindClosestRouteMarkers( TBOOL force )
     if ( Routes[ x ].MapID == mumbleLink.mapID && Routes[ x ].hasResetPos && ( Routes[ x ].resetPos - mumbleLink.charPosition ).Length() < Routes[ x ].resetRad )
       Routes[ x ].activeItem = 0;
 
-    TF32 closestdist = 1000000000;
+    float closestdist = 1000000000;
     int32_t closest = -1;
 
     for ( int32_t y = 0; y < Routes[ x ].route.NumItems(); y++ )
@@ -73,7 +73,7 @@ void FindClosestRouteMarkers( TBOOL force )
         if ( !p.mapID == mumbleLink.mapID )
           continue;
 
-        TF32 dist = ( p.position - mumbleLink.charPosition ).Length();
+        float dist = ( p.position - mumbleLink.charPosition ).Length();
         if ( dist < closestdist )
         {
           closestdist = dist;
@@ -288,10 +288,10 @@ void SetRotate( CMatrix4x4 &m, float x, float y, float z, float phi )
   m.Rotation( CQuaternion::FromAxisAngle( CVector3( x, y, z ), phi ) );
 }
 
-CVector3 GW2TacticalDisplay::ProjectTacticalPos( CVector3 pos, TF32 fov, TF32 asp )
+CVector3 GW2TacticalDisplay::ProjectTacticalPos( CVector3 pos, float fov, float asp )
 {
   CVector3 p = pos;
-  TF32 length = p.Length();
+  float length = p.Length();
 
   float yfov = fov / 2.0f;
 
@@ -479,7 +479,7 @@ void GW2TacticalDisplay::InsertPOI( POI& poi )
 
   if ( poi.typeData.fadeFar >= 0 && poi.typeData.fadeNear >= 0 )
   {
-    TF32 dist = WorldToGameCoords( poi.cameraSpacePosition.Length() );
+    float dist = WorldToGameCoords( poi.cameraSpacePosition.Length() );
     if ( dist > poi.typeData.fadeFar )
       return;
   }
@@ -520,7 +520,7 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
         return;
     }
 
-    TF32 dist = (poi.position - mumbleLink.charPosition).Length();
+    float dist = (poi.position - mumbleLink.charPosition).Length();
 
     if (dist <= poi.typeData.infoRange)
     {
@@ -580,8 +580,8 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
   }
 
   WBATLASHANDLE icon = poi.icon;
-  TF32 size = poi.typeData.size;
-  TF32 Alpha = poi.typeData.alpha;
+  float size = poi.typeData.size;
+  float Alpha = poi.typeData.alpha;
 
   auto camspace = poi.cameraSpacePosition;
   auto screenpos = camspace;
@@ -603,10 +603,10 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
 
   if ( !TacticalIconsOnEdge && camspace.z <= 0 ) return;
 
-  TF32 dist = WorldToGameCoords( camspace.Length() );
+  float dist = WorldToGameCoords( camspace.Length() );
   if ( poi.typeData.fadeNear >= 0 && poi.typeData.fadeFar >= 0 )
   {
-    TF32 fadeAlpha = 1;
+    float fadeAlpha = 1;
 
     if ( dist > poi.typeData.fadeFar )
       return;
@@ -750,7 +750,7 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
 
     if ( Alpha*alphaMultiplier > 0 )
     {
-      TF32 charDist = WorldToGameCoords( ( poi.position - mumbleLink.charPosition ).Length() );
+      float charDist = WorldToGameCoords( ( poi.position - mumbleLink.charPosition ).Length() );
 
       CString txt;
       
@@ -772,7 +772,7 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
   }
 }
 
-TF32 uiScale = 1.0f;
+float uiScale = 1.0f;
 
 void GW2TacticalDisplay::DrawPOIMinimap( CWBDrawAPI *API, const CRect& miniRect, CVector2& pos, const tm& ptm, const time_t& currtime, POI& poi, float alpha, float zoomLevel )
 {
@@ -796,7 +796,7 @@ void GW2TacticalDisplay::DrawPOIMinimap( CWBDrawAPI *API, const CRect& miniRect,
     //LOG_DBG( "[GW2TacO] Icon is %s", GetStringFromMap( poi.iconFile ).GetPointer() );
   }
 
-  TF32 poiSize = TF32( poi.typeData.miniMapSize );
+  float poiSize = float( poi.typeData.miniMapSize );
   if ( poi.typeData.bits.scaleWithZoom )
     poiSize /= zoomLevel;
   poiSize *= uiScale;
@@ -902,9 +902,9 @@ void GW2TacticalDisplay::OnDraw( CWBDrawAPI *API )
   drawrect = GetClientRect();
 
   cam.SetLookAtLH( mumbleLink.camPosition, mumbleLink.camPosition + mumbleLink.camDir, CVector3( 0, 1, 0 ) );
-  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (TF32)drawrect.Height(), 0.01f, 1000.0f );
+  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (float)drawrect.Height(), 0.01f, 1000.0f );
 
-  asp = drawrect.Width() / (TF32)drawrect.Height();
+  asp = drawrect.Width() / (float)drawrect.Height();
 
   for ( int x = 0; x < POIs.NumItems(); x++ )
   {

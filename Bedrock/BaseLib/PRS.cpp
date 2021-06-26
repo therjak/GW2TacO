@@ -75,7 +75,7 @@ CPRS CPRS::operator- ( const CPRS &v ) const
 }
 
 
-CPRS Lerp( const CPRS &v1, const CPRS &v2, TF32 t )
+CPRS Lerp( const CPRS &v1, const CPRS &v2, float t )
 {
   return CPRS( Lerp( v1.Scale, v2.Scale, t ),
                Lerp( v1.Rotation, v2.Rotation, t ),

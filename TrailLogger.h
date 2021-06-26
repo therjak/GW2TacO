@@ -54,7 +54,7 @@ public:
 
 class GW2TrailDisplay : public CWBItem
 {
-  TF32 asp;
+  float asp;
   CMatrix4x4 cam;
   CMatrix4x4 persp;
   CRect drawrect;

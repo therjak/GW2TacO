@@ -11,8 +11,8 @@
 
 #include "DX9Device.h"
 typedef CCoreDX9Device CCore;
-//#define UVTRANSLATION(uv,res) ((uv+0.5f)/(TF32)(res))
-//#define SCREENSPACETRANSLATION(a,b,c,d) CVector2((TF32)(a),(TF32)(b))
+//#define UVTRANSLATION(uv,res) ((uv+0.5f)/(float)(res))
+//#define SCREENSPACETRANSLATION(a,b,c,d) CVector2((float)(a),(float)(b))
 
 #endif
 
@@ -20,14 +20,14 @@ typedef CCoreDX9Device CCore;
 
 #include "DX11Device.h"
 typedef CCoreDX11Device CCore;
-//#define UVTRANSLATION(uv,res) ((uv+0.5f)/(TF32)(res))
-//#define SCREENSPACETRANSLATION(a,b,c,d) CVector4((a+0.5f)/(TF32)(c)*2.0f-1,(-b-0.5f)/(TF32)(d)*2.0f+1,0,1.0f)
-//#define SCREENSPACETRANSLATION(a,b,c,d) CVector2((a)/(TF32)(c)*2.0f-1,(-b)/(TF32)(d)*2.0f+1)
-//#define SCREENSPACETRANSLATION(a,b,c,d) CVector2((TF32)(a),(TF32)(b))
+//#define UVTRANSLATION(uv,res) ((uv+0.5f)/(float)(res))
+//#define SCREENSPACETRANSLATION(a,b,c,d) CVector4((a+0.5f)/(float)(c)*2.0f-1,(-b-0.5f)/(float)(d)*2.0f+1,0,1.0f)
+//#define SCREENSPACETRANSLATION(a,b,c,d) CVector2((a)/(float)(c)*2.0f-1,(-b)/(float)(d)*2.0f+1)
+//#define SCREENSPACETRANSLATION(a,b,c,d) CVector2((float)(a),(float)(b))
 
 #endif
 
-#define UVTRANSLATION(uv,res) ((uv+UVOffset)/(TF32)(res))
+#define UVTRANSLATION(uv,res) ((uv+UVOffset)/(float)(res))
 
 
 #include "Resource.h"

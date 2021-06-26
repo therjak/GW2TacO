@@ -237,13 +237,13 @@ void CCoreRasterizerState::SetDepthClipEnable(TBOOL e)
 	DepthClipEnable = e;
 }
 
-void CCoreRasterizerState::SetSlopeScaledDepthBias(TF32 e)
+void CCoreRasterizerState::SetSlopeScaledDepthBias(float e)
 {
 	if (SlopeScaledDepthBias != e) Dirty = true;
 	SlopeScaledDepthBias = e;
 }
 
-void CCoreRasterizerState::SetDepthBiasClamp(TF32 e)
+void CCoreRasterizerState::SetDepthBiasClamp(float e)
 {
 	if (DepthBiasClamp != e) Dirty = true;
 	DepthBiasClamp = e;
@@ -326,7 +326,7 @@ CCoreSamplerState::~CCoreSamplerState()
 
 }
 
-void CCoreSamplerState::SetBorderColor(TF32 r, TF32 g, TF32 b, TF32 a)
+void CCoreSamplerState::SetBorderColor(float r, float g, float b, float a)
 {
 	if (BorderColor[0] != r || BorderColor[1] != g || BorderColor[2] != b || BorderColor[3] != a) Dirty = true;
 	BorderColor[0] = r;
@@ -335,12 +335,12 @@ void CCoreSamplerState::SetBorderColor(TF32 r, TF32 g, TF32 b, TF32 a)
 	BorderColor[3] = a;
 }
 
-void CCoreSamplerState::SetMaxLOD(TF32 e)
+void CCoreSamplerState::SetMaxLOD(float e)
 {
 	if (MaxLOD != e) Dirty = true; MaxLOD = e;
 }
 
-void CCoreSamplerState::SetMinLOD(TF32 e)
+void CCoreSamplerState::SetMinLOD(float e)
 {
 	if (MinLOD != e) Dirty = true;
 	MinLOD = e;
@@ -358,7 +358,7 @@ void CCoreSamplerState::SetMaxAnisotropy(int32_t e)
 	MaxAnisotropy = e;
 }
 
-void CCoreSamplerState::SetMipLODBias(TF32 e)
+void CCoreSamplerState::SetMipLODBias(float e)
 {
 	if (MipLODBias != e) Dirty = true;
 	MipLODBias = e;

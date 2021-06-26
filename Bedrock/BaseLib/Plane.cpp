@@ -3,19 +3,19 @@
 
 CVector3 CPlane::Intersect( const CLine &l ) const
 {
-  TF32 u = ( Normal*l.Point + D ) / ( Normal*l.Direction );
+  float u = ( Normal*l.Point + D ) / ( Normal*l.Direction );
   return l.GetPoint( u );
 }
 
 int32_t CPlane::Side( const CVector3 &v ) const
 {
-  TF32 f = Distance( v );
+  float f = Distance( v );
   if ( f > 0 ) return 1;
   if ( f < 0 ) return -1;
   return 0;
 }
 
-TF32 CPlane::Distance( const CVector3 &v ) const
+float CPlane::Distance( const CVector3 &v ) const
 {
   return Normal*v + D; //optimized for a normalized plane
 }
@@ -53,7 +53,7 @@ CPlane::CPlane()
 
 void CPlane::Normalize()
 {
-  TF32 l = Normal.Length();
+  float l = Normal.Length();
   Normal /= l;
   D /= l;
 }

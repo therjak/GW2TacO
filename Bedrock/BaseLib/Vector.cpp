@@ -1,56 +1,56 @@
 #include "BaseLib.h"
 
-const int32_t Lerp( const int32_t v1, const int32_t v2, const TF32 t )
+const int32_t Lerp( const int32_t v1, const int32_t v2, const float t )
 {
   return (int32_t)( ( v2 - v1 )*t + v1 );
 }
 
-const TF32 Lerp( const TF32 v1, const TF32 v2, const TF32 t )
+const float Lerp( const float v1, const float v2, const float t )
 {
   return ( v2 - v1 )*t + v1;
 }
 
-const uint32_t Lerp( const uint32_t v1, const uint32_t v2, const TF32 t )
+const uint32_t Lerp( const uint32_t v1, const uint32_t v2, const float t )
 {
   return (uint32_t)( ( v2 - v1 )*t + v1 );
 }
 
-const int64_t Lerp( const int64_t v1, const int64_t v2, const TF32 t )
+const int64_t Lerp( const int64_t v1, const int64_t v2, const float t )
 {
   return (int64_t)( ( v2 - v1 )*t + v1 );
 }
 
-const double Lerp( const double v1, const double v2, const TF32 t )
+const double Lerp( const double v1, const double v2, const float t )
 {
   return ( v2 - v1 )*t + v1;
 }
 
-const uint64_t Lerp( const uint64_t v1, const uint64_t v2, const TF32 t )
+const uint64_t Lerp( const uint64_t v1, const uint64_t v2, const float t )
 {
   return (uint64_t)( ( v2 - v1 )*t + v1 );
 }
 
-const CVector2 Lerp( const CVector2 &v1, const CVector2 &v2, const TF32 t )
+const CVector2 Lerp( const CVector2 &v1, const CVector2 &v2, const float t )
 {
   return ( v2 - v1 )*t + v1;
 }
 
-const CVector2I Lerp( const CVector2I &v1, const CVector2I &v2, const TF32 t )
+const CVector2I Lerp( const CVector2I &v1, const CVector2I &v2, const float t )
 {
   return ( v2 - v1 )*t + v1;
 }
 
-const CVector3 Lerp( const CVector3 &v1, const CVector3 &v2, const TF32 t )
+const CVector3 Lerp( const CVector3 &v1, const CVector3 &v2, const float t )
 {
   return ( v2 - v1 )*t + v1;
 }
 
-const CVector4 Lerp( const CVector4 &v1, const CVector4 &v2, const TF32 t )
+const CVector4 Lerp( const CVector4 &v1, const CVector4 &v2, const float t )
 {
   return ( v2 - v1 )*t + v1;
 }
 
-TF32 mod( TF32 v, TF32 m )
+float mod( float v, float m )
 {
   return m * (int32_t)floor( v / m );
 }
@@ -60,14 +60,14 @@ int32_t Mod( int32_t a, int32_t b )
   return ( ( a%b ) + b ) % b;
 }
 
-TF32 Mod( TF32 a, TF32 b )
+float Mod( float a, float b )
 {
   return fmodf( ( ( fmodf( a, b ) ) + b ), b );
 }
 
-TF32 Mod( TF32 a, int32_t b )
+float Mod( float a, int32_t b )
 {
-  return fmodf( ( ( fmodf( a, (TF32)b ) ) + b ), (TF32)b );
+  return fmodf( ( ( fmodf( a, (float)b ) ) + b ), (float)b );
 }
 
 CVector3 CVector3::operator*( const CQuaternion &q ) const
@@ -119,7 +119,7 @@ CVector4 CVector4::Cross( const CVector4 &v1, const CVector4 &v2, const CVector4
     -( v1.x*( v2.y*v3.z - v3.y*v2.z ) - v1.y*( v2.x*v3.z - v3.x*v2.z ) + v1.z*( v2.x*v3.y - v3.x*v2.y ) ) );
 }
 
-TF32 CVector4::Dot( const CVector4 &v1, const CVector4 &v2 )
+float CVector4::Dot( const CVector4 &v1, const CVector4 &v2 )
 {
   return v1*v2;
 }
@@ -144,12 +144,12 @@ CVector4 CVector4::Normalized() const
   return *this*InvSqrt( LengthSquared() );
 }
 
-TF32 CVector4::LengthSquared() const
+float CVector4::LengthSquared() const
 {
   return x*x + y*y + z*z + w*w;
 }
 
-TF32 CVector4::Length() const
+float CVector4::Length() const
 {
   return sqrtf( LengthSquared() );
 }
@@ -162,7 +162,7 @@ CVector4::CVector4( const CVector4 &v )
   w = v.w;
 }
 
-CVector4::CVector4( const TF32* v )
+CVector4::CVector4( const float* v )
 {
   x = v[ 0 ];
   y = v[ 1 ];
@@ -170,7 +170,7 @@ CVector4::CVector4( const TF32* v )
   w = v[ 3 ];
 }
 
-CVector4::CVector4( const TF32 _x, const TF32 _y, const TF32 _z, const TF32 _w )
+CVector4::CVector4( const float _x, const float _y, const float _z, const float _w )
 {
   x = _x;
   y = _y;
@@ -198,7 +198,7 @@ CVector3 CVector3::Cross( const CVector3 &v1, const CVector3 &v2 )
   return v1%v2;
 }
 
-TF32 CVector3::Dot( const CVector3 &v1, const CVector3 &v2 )
+float CVector3::Dot( const CVector3 &v1, const CVector3 &v2 )
 {
   return v1*v2;
 }
@@ -213,12 +213,12 @@ CVector3 CVector3::Normalized() const
   return *this*InvSqrt( LengthSquared() );
 }
 
-TF32 CVector3::LengthSquared() const
+float CVector3::LengthSquared() const
 {
   return x*x + y*y + z*z;
 }
 
-TF32 CVector3::Length() const
+float CVector3::Length() const
 {
   return sqrtf( LengthSquared() );
 }
@@ -230,14 +230,14 @@ CVector3::CVector3( const CVector3 &v )
   z = v.z;
 }
 
-CVector3::CVector3( const TF32* v )
+CVector3::CVector3( const float* v )
 {
   x = v[ 0 ];
   y = v[ 1 ];
   z = v[ 2 ];
 }
 
-CVector3::CVector3( const TF32 _x, const TF32 _y, const TF32 _z )
+CVector3::CVector3( const float _x, const float _y, const float _z )
 {
   x = _x;
   y = _y;
@@ -250,7 +250,7 @@ CVector3::CVector3()
 }
 
 
-TF32 CVector2::Dot( const CVector2 &v1, const CVector2 &v2 )
+float CVector2::Dot( const CVector2 &v1, const CVector2 &v2 )
 {
   return v1*v2;
 }
@@ -265,12 +265,12 @@ CVector2 CVector2::Normalized() const
   return *this*InvSqrt( LengthSquared() );
 }
 
-TF32 CVector2::LengthSquared() const
+float CVector2::LengthSquared() const
 {
   return x*x + y*y;
 }
 
-TF32 CVector2::Length() const
+float CVector2::Length() const
 {
   return sqrtf( LengthSquared() );
 }
@@ -281,13 +281,13 @@ CVector2::CVector2( const CVector2 &v )
   y = v.y;
 }
 
-CVector2::CVector2( const TF32* v )
+CVector2::CVector2( const float* v )
 {
   x = v[ 0 ];
   y = v[ 1 ];
 }
 
-CVector2::CVector2( const TF32 _x, const TF32 _y )
+CVector2::CVector2( const float _x, const float _y )
 {
   x = _x;
   y = _y;
@@ -298,24 +298,24 @@ CVector2::CVector2()
 
 }
 
-TF32 const CVector2::operator[]( int32_t idx ) const
+float const CVector2::operator[]( int32_t idx ) const
 {
-  return ( ( const TF32* )this )[ idx ];
+  return ( ( const float* )this )[ idx ];
 }
 
-TF32 &CVector2::operator[]( int32_t idx )
+float &CVector2::operator[]( int32_t idx )
 {
-  return ( ( TF32* )this )[ idx ];
+  return ( ( float* )this )[ idx ];
 }
 
-CVector2::operator TF32* ( )
+CVector2::operator float* ( )
 {
-  return (TF32*)&x;
+  return (float*)&x;
 }
 
-CVector2::operator const TF32* ( ) const
+CVector2::operator const float* ( ) const
 {
-  return (const TF32*)&x;
+  return (const float*)&x;
 }
 
 CVector2 &CVector2::operator+= ( const CVector2 &v )
@@ -332,23 +332,23 @@ CVector2 &CVector2::operator-= ( const CVector2 &v )
   return *this;
 }
 
-CVector2 &CVector2::operator*= ( const TF32 f )
+CVector2 &CVector2::operator*= ( const float f )
 {
   x *= f;
   y *= f;
   return *this;
 }
 
-CVector2 CVector2::Rotated( const CVector2 &center, TF32 rotation )
+CVector2 CVector2::Rotated( const CVector2 &center, float rotation )
 {
   CVector2 n = ( *this ) - center;
   return CVector2( n.x*cosf( rotation ) - n.y*sinf( rotation ),
                    n.y*cosf( rotation ) + n.x*sinf( rotation ) ) + center;
 }
 
-CVector2 &CVector2::operator/= ( const TF32 f )
+CVector2 &CVector2::operator/= ( const float f )
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   x *= fi;
   y *= fi;
   return *this;
@@ -374,14 +374,14 @@ CVector2 CVector2::operator- ( const CVector2 &v ) const
   return CVector2( x - v.x, y - v.y );
 }
 
-CVector2 CVector2::operator* ( const TF32 f ) const
+CVector2 CVector2::operator* ( const float f ) const
 {
   return CVector2( x*f, y*f );
 }
 
-CVector2 CVector2::operator/ ( const TF32 f ) const
+CVector2 CVector2::operator/ ( const float f ) const
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   return CVector2( x*fi, y*fi );
 }
 
@@ -395,7 +395,7 @@ TBOOL CVector2::operator!= ( const CVector2 &v ) const
   return x != v.x || y != v.y;
 }
 
-TF32 CVector2::operator* ( const CVector2 &v ) const //dot product
+float CVector2::operator* ( const CVector2 &v ) const //dot product
 {
   return x*v.x + y*v.y;
 }
@@ -415,12 +415,12 @@ CVector2I CVector2I::Normalized() const
   return *this*InvSqrt( LengthSquared() );
 }
 
-TF32 CVector2I::LengthSquared() const
+float CVector2I::LengthSquared() const
 {
-  return (TF32)( x*x + y*y );
+  return (float)( x*x + y*y );
 }
 
-TF32 CVector2I::Length() const
+float CVector2I::Length() const
 {
   return sqrtf( LengthSquared() );
 }
@@ -482,16 +482,16 @@ CVector2I &CVector2I::operator-= ( const CVector2I &v )
   return *this;
 }
 
-CVector2I &CVector2I::operator*= ( const TF32 f )
+CVector2I &CVector2I::operator*= ( const float f )
 {
   x = (int32_t)( x*f );
   y = (int32_t)( y*f );
   return *this;
 }
 
-CVector2I &CVector2I::operator/= ( const TF32 f )
+CVector2I &CVector2I::operator/= ( const float f )
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   x = (int32_t)( x*fi );
   y = (int32_t)( y*fi );
   return *this;
@@ -524,14 +524,14 @@ CVector2I CVector2I::operator- ( const CVector2I &v ) const
   return CVector2I( x - v.x, y - v.y );
 }
 
-CVector2I CVector2I::operator* ( const TF32 f ) const
+CVector2I CVector2I::operator* ( const float f ) const
 {
   return CVector2I( (int32_t)( x*f ), (int32_t)( y*f ) );
 }
 
-CVector2I CVector2I::operator/ ( const TF32 f ) const
+CVector2I CVector2I::operator/ ( const float f ) const
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   return CVector2I( (int32_t)( x*fi ), (int32_t)( y*fi ) );
 }
 
@@ -555,24 +555,24 @@ int32_t CVector2I::operator* ( const CVector2I &v ) const //dot product
   return x*v.x + y*v.y;
 }
 
-TF32 const CVector3::operator[]( int32_t idx ) const
+float const CVector3::operator[]( int32_t idx ) const
 {
-  return ( ( const TF32* )this )[ idx ];
+  return ( ( const float* )this )[ idx ];
 }
 
-TF32 &CVector3::operator[]( int32_t idx )
+float &CVector3::operator[]( int32_t idx )
 {
-  return ( ( TF32* )this )[ idx ];
+  return ( ( float* )this )[ idx ];
 }
 
-CVector3::operator TF32* ( )
+CVector3::operator float* ( )
 {
-  return (TF32*)&x;
+  return (float*)&x;
 }
 
-CVector3::operator const TF32* ( ) const
+CVector3::operator const float* ( ) const
 {
-  return (const TF32*)&x;
+  return (const float*)&x;
 }
 
 CVector3 &CVector3::operator+= ( const CVector3 &v )
@@ -591,7 +591,7 @@ CVector3 &CVector3::operator-= ( const CVector3 &v )
   return *this;
 }
 
-CVector3 &CVector3::operator*= ( const TF32 f )
+CVector3 &CVector3::operator*= ( const float f )
 {
   x *= f;
   y *= f;
@@ -599,9 +599,9 @@ CVector3 &CVector3::operator*= ( const TF32 f )
   return *this;
 }
 
-CVector3 &CVector3::operator/= ( const TF32 f )
+CVector3 &CVector3::operator/= ( const float f )
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   x *= fi;
   y *= fi;
   z *= fi;
@@ -628,14 +628,14 @@ CVector3 CVector3::operator- ( const CVector3 &v ) const
   return CVector3( x - v.x, y - v.y, z - v.z );
 }
 
-CVector3 CVector3::operator* ( const TF32 f ) const
+CVector3 CVector3::operator* ( const float f ) const
 {
   return CVector3( x*f, y*f, z*f );
 }
 
-CVector3 CVector3::operator/ ( const TF32 f ) const
+CVector3 CVector3::operator/ ( const float f ) const
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   return CVector3( x*fi, y*fi, z*fi );
 }
 
@@ -649,7 +649,7 @@ TBOOL CVector3::operator!= ( const CVector3 &v ) const
   return x != v.x || y != v.y || z != v.z;
 }
 
-TF32 CVector3::operator* ( const CVector3 &v ) const //dot product
+float CVector3::operator* ( const CVector3 &v ) const //dot product
 {
   return x*v.x + y*v.y + z*v.z;
 }
@@ -659,24 +659,24 @@ CVector3 CVector3::operator% ( const CVector3 &v ) const //cross product
   return CVector3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
 }
 
-TF32 const CVector4::operator[]( int32_t idx ) const
+float const CVector4::operator[]( int32_t idx ) const
 {
-  return ( ( const TF32* )this )[ idx ];
+  return ( ( const float* )this )[ idx ];
 }
 
-TF32 &CVector4::operator[]( int32_t idx )
+float &CVector4::operator[]( int32_t idx )
 {
-  return ( ( TF32* )this )[ idx ];
+  return ( ( float* )this )[ idx ];
 }
 
-CVector4::operator TF32* ( )
+CVector4::operator float* ( )
 {
-  return (TF32*)&x;
+  return (float*)&x;
 }
 
-CVector4::operator const TF32* ( ) const
+CVector4::operator const float* ( ) const
 {
-  return (const TF32*)&x;
+  return (const float*)&x;
 }
 
 CVector4::operator CVector3 ()
@@ -707,7 +707,7 @@ CVector4 &CVector4::operator-= ( const CVector4 &v )
   return *this;
 }
 
-CVector4 &CVector4::operator*= ( const TF32 f )
+CVector4 &CVector4::operator*= ( const float f )
 {
   x *= f;
   y *= f;
@@ -716,9 +716,9 @@ CVector4 &CVector4::operator*= ( const TF32 f )
   return *this;
 }
 
-CVector4 &CVector4::operator/= ( const TF32 f )
+CVector4 &CVector4::operator/= ( const float f )
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   x *= fi;
   y *= fi;
   z *= fi;
@@ -746,14 +746,14 @@ CVector4 CVector4::operator- ( const CVector4 &v ) const
   return CVector4( x - v.x, y - v.y, z - v.z, w - v.w );
 }
 
-CVector4 CVector4::operator* ( const TF32 f ) const
+CVector4 CVector4::operator* ( const float f ) const
 {
   return CVector4( x*f, y*f, z*f, w*f );
 }
 
-CVector4 CVector4::operator/ ( const TF32 f ) const
+CVector4 CVector4::operator/ ( const float f ) const
 {
-  TF32 fi = 1 / f;
+  float fi = 1 / f;
   return CVector4( x*fi, y*fi, z*fi, w*fi );
 }
 
@@ -767,7 +767,7 @@ TBOOL CVector4::operator!= ( const CVector4 &v ) const
   return x != v.x || y != v.y || z != v.z || w != v.w;
 }
 
-TF32 CVector4::operator* ( const CVector4 &v ) const //dot product
+float CVector4::operator* ( const CVector4 &v ) const //dot product
 {
   return x*v.x + y*v.y + z*v.z + w*v.w;
 }

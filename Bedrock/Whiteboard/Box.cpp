@@ -148,7 +148,7 @@ void CWBBox::RearrangeHorizontal()
 {
   CRect ClientRect = GetClientRect();
   int32_t pos = 0;
-  TF32 Excess = 0;
+  float Excess = 0;
 
   int32_t NumDynamicChildren = 0;
   int32_t NonDynamicWidth = 0;
@@ -166,7 +166,7 @@ void CWBBox::RearrangeHorizontal()
 
   int32_t width = ( NumChildren() - 1 )*Spacing;
   int32_t DynamicWidth = GetClientRect().Width() - NonDynamicWidth - width;
-  TF32 itemsizes = DynamicWidth / (TF32)NumDynamicChildren;
+  float itemsizes = DynamicWidth / (float)NumDynamicChildren;
 
   for ( uint32_t x = 0; x < NumChildren(); x++ ) width += GetChild( x )->GetPosition().Width();
 
@@ -231,7 +231,7 @@ void CWBBox::RearrangeVertical()
 {
   CRect ClientRect = GetClientRect();
   int32_t pos = 0;
-  TF32 Excess = 0;
+  float Excess = 0;
 
   int32_t NumDynamicChildren = 0;
   int32_t NonDynamicHeight = 0;
@@ -249,7 +249,7 @@ void CWBBox::RearrangeVertical()
 
   int32_t height = ( NumChildren() - 1 )*Spacing;
   int32_t DynamicHeight = GetClientRect().Height() - NonDynamicHeight - height;
-  TF32 itemsizes = DynamicHeight / (TF32)NumDynamicChildren;
+  float itemsizes = DynamicHeight / (float)NumDynamicChildren;
 
   for ( uint32_t x = 0; x < NumChildren(); x++ ) height += GetChild( x )->GetPosition().Height();
 

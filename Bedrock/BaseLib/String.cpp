@@ -342,19 +342,19 @@ const CString operator+( const unsigned long v, const CString &str )
   return CString::Format( DEFAULTINTFORMAT, v ) + str;
 }
 
-//TF32
-CString CString::operator+( const TF32 v ) const
+//float
+CString CString::operator+( const float v ) const
 {
   return ( *this ) + CString::Format( DEFAULTFLOATFORMAT, v );
 }
 
-CString &CString::operator+=( const TF32 v )
+CString &CString::operator+=( const float v )
 {
   Append( CString::Format( DEFAULTFLOATFORMAT, v ) );
   return *this;
 }
 
-const CString operator+( const TF32 v, const CString &str )
+const CString operator+( const float v, const CString &str )
 {
   return CString::Format( DEFAULTFLOATFORMAT, v ) + str;
 }
@@ -1192,9 +1192,9 @@ int32_t CString::Strncmp( const TCHAR *str, const TCHAR *str2, const int32_t len
   return _tcsncmp( str, str2, len );
 }
 
-TF32 CString::Atof( const TCHAR *str )
+float CString::Atof( const TCHAR *str )
 {
-  return (TF32)_tstof( str );
+  return (float)_tstof( str );
 }
 
 int32_t CString::Atoi( const TCHAR *str )

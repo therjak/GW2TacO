@@ -23,4 +23,4 @@ public:
   CVector3 Apply( const CVector3 &v ) const;
 };
 
-CPRS Lerp( const CPRS &v1, const CPRS &v2, TF32 t );
+CPRS Lerp( const CPRS &v1, const CPRS &v2, float t );

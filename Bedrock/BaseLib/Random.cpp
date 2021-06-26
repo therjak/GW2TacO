@@ -1,15 +1,15 @@
 #include "BaseLib.h"
 
 
-TF32 CRandom::frand( TF32 min, TF32 max )
+float CRandom::frand( float min, float max )
 {
   return ( max - min )*frand() + min;
 }
 
-TF32 CRandom::frand()
+float CRandom::frand()
 {
   int32_t r = rand();
-  return r / (TF32)RAND_MAX;
+  return r / (float)RAND_MAX;
 }
 
 uint32_t CRandom::rand()

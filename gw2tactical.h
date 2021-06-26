@@ -62,17 +62,17 @@ struct MarkerTypeData
 
   MarkerTypeData();
 
-  TF32 size = 1.0;
-  TF32 alpha = 1.0f;
-  TF32 fadeNear = -1;
-  TF32 fadeFar = -1;
-  TF32 height = 1.5f;
-  TF32 triggerRange = 2.0f;
-  TF32 animSpeed = 1;
-  TF32 trailScale = 1;
+  float size = 1.0;
+  float alpha = 1.0f;
+  float fadeNear = -1;
+  float fadeFar = -1;
+  float height = 1.5f;
+  float triggerRange = 2.0f;
+  float animSpeed = 1;
+  float trailScale = 1;
   int32_t miniMapSize = 20;
-  TF32 miniMapFadeOutLevel = 100.0f;
-  TF32 infoRange = 2.0f;
+  float miniMapFadeOutLevel = 100.0f;
+  float infoRange = 2.0f;
 
   POIBehavior behavior = POIBehavior::AlwaysVisible;
   CColor color = CColor( 0xffffffff );
@@ -188,7 +188,7 @@ extern CDictionaryEnumerable<CString, POI> wvwPOIs;
 class GW2TacticalDisplay : public CWBItem
 {
   TBOOL TacticalIconsOnEdge;
-  TF32 asp;
+  float asp;
   CMatrix4x4 cam;
   CMatrix4x4 persp;
   CRect drawrect;
@@ -198,7 +198,7 @@ class GW2TacticalDisplay : public CWBItem
   void DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& currtime, POI& poi, bool drawDistance, CString& infoText );
   void DrawPOIMinimap( CWBDrawAPI *API, const CRect& miniRect, CVector2& pos, const tm& ptm, const time_t& currtime, POI& poi, float alpha, float zoomLevel );
   virtual void OnDraw( CWBDrawAPI *API );
-  CVector3 ProjectTacticalPos( CVector3 pos, TF32 fov, TF32 asp );
+  CVector3 ProjectTacticalPos( CVector3 pos, float fov, float asp );
   CArray<POI*> mapPOIs;
   CArray<POI*> minimapPOIs;
   bool drawWvWNames;

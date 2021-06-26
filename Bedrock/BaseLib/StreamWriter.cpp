@@ -43,7 +43,7 @@ TBOOL CStreamWriter::WriteQWord( uint64_t data )
   return Write( &data, 8 );
 }
 
-TBOOL CStreamWriter::WriteTF32( TF32 data )
+TBOOL CStreamWriter::WriteTF32( float data )
 {
   return Write( &data, 4 );
 }

@@ -20,7 +20,7 @@ public:
   uint8_t ReadByte();
   uint32_t ReadBits( uint32_t BitCount );
   TBOOL ReadBit();
-  TF32 ReadTF32();
+  float ReadTF32();
   void ReadRemainingBits();
 
   CString ReadASCIIZ();

@@ -15,7 +15,7 @@ public:
   TBOOL WriteDWord( uint32_t data );
   TBOOL WriteWord( uint16_t data );
   TBOOL WriteByte( uint8_t data );
-  TBOOL WriteTF32( TF32 data );
+  TBOOL WriteTF32( float data );
   TBOOL WriteBits( uint32_t data, uint32_t bitcount );
   TBOOL WriteBool( TBOOL data );
   TBOOL WriteRemainingBits();

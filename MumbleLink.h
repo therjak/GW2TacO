@@ -81,7 +81,7 @@ public:
   CVector3 camPosition;
   CVector3 camDir;
   CVector3 camUp;
-  TF32 fov;
+  float fov;
   int32_t mapID = 0;
   int32_t worldID = 0;
   int32_t mapType = 0;
@@ -110,7 +110,7 @@ public:
   TBOOL IsValid();
 
   CRingBuffer<int32_t> *FrameTimes;
-  TF32 GetFrameRate();
+  float GetFrameRate();
 
   int32_t LastFrameTime = 0;
   CMumbleLink();

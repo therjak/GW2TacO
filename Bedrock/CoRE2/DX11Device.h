@@ -109,7 +109,7 @@ public:
 
 	virtual TBOOL BeginScene();
 	virtual TBOOL EndScene();
-	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const TF32 Depth = 1, const int32_t Stencil = 0);
+	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const float Depth = 1, const int32_t Stencil = 0);
 	virtual TBOOL Flip(TBOOL Vsync = true);
 	virtual TBOOL DrawIndexedTriangles(int32_t Count, int32_t NumVertices);
 	virtual TBOOL DrawTriangles(int32_t Count);

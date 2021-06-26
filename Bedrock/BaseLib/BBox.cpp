@@ -77,7 +77,7 @@ CBBox &CBBox::operator+=( const CBBox &v )
   return *this;
 }
 
-TBOOL CBBox::Intersect( const CLine &ln, TF32 &tmin, TF32 &tmax )
+TBOOL CBBox::Intersect( const CLine &ln, float &tmin, float &tmax )
 {
   CVector3 invdir = CVector3( 1 / ln.Direction.x, 1 / ln.Direction.y, 1 / ln.Direction.z );
   TBOOL sign[ 3 ];
@@ -89,7 +89,7 @@ TBOOL CBBox::Intersect( const CLine &ln, TF32 &tmin, TF32 &tmax )
   bounds[ 0 ] = lo;
   bounds[ 1 ] = hi;
 
-  TF32 tymin, tymax, tzmin, tzmax;
+  float tymin, tymax, tzmin, tzmax;
 
   tmin = ( bounds[ sign[ 0 ] ].x - ln.Point.x ) * invdir.x;
   tmax = ( bounds[ 1 - sign[ 0 ] ].x - ln.Point.x ) * invdir.x;

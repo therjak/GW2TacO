@@ -12,10 +12,10 @@ public:
 
   void CreateFromPoints( const CVector2 &p1, const CVector2 &p2 );
   void Normalize();
-  CVector2 GetPoint( TF32 t ) const;
-  virtual TF32 Distance( const CVector2 &v ) const;
+  CVector2 GetPoint( float t ) const;
+  virtual float Distance( const CVector2 &v ) const;
   CVector2 Project( const CVector2 &v ) const;
-  TF32 GetProjectionT( const CVector2 &v ) const;
+  float GetProjectionT( const CVector2 &v ) const;
 };
 
 
@@ -31,10 +31,10 @@ public:
 
   void CreateFromPoints( const CVector3 &p1, const CVector3 &p2 );
   void Normalize();
-  CVector3 GetPoint( TF32 t ) const;
-  virtual TF32 Distance( const CVector3 &v ) const;
+  CVector3 GetPoint( float t ) const;
+  virtual float Distance( const CVector3 &v ) const;
   CVector3 Project( const CVector3 &v ) const;
-  TF32 GetProjectionT( const CVector3 &v ) const;
+  float GetProjectionT( const CVector3 &v ) const;
 };
 
 class linesegment : public CLine
@@ -42,5 +42,5 @@ class linesegment : public CLine
 public:
 
   linesegment( const CVector3 &p1, const CVector3 &p2 );
-  virtual TF32 Distance( const CVector3 &v ) const;
+  virtual float Distance( const CVector3 &v ) const;
 };

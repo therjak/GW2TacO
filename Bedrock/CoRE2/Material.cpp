@@ -324,13 +324,13 @@ void CCoreMaterialTechnique::GatherData(COREBUFFERSCOPE Target, CCoreConstantBuf
 				if (i->GetScope() == CORE_MATERIAL_EXTERNAL)
 				{
 					//special case
-					TF32 value = 0;
+					float value = 0;
 					if (Group)
 					{
 						if (!Group->GetData(i->GetName(), value))
 							LOG_WARN("[core] Object Group material parameter %s not set, defaulting to 0", i->GetName().GetPointer());
 					}
-					Buffer->AddData(&value, sizeof(TF32));
+					Buffer->AddData(&value, sizeof(float));
 				}
 				break;
 		}

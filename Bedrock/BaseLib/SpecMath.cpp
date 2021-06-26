@@ -1,24 +1,24 @@
 #include "BaseLib.h"
 
 #ifdef FAST_INVSQRT
-TF32 InvSqrt( TF32 x )
+float InvSqrt( float x )
 {
-  TF32 xhalf = 0.5f*x;
+  float xhalf = 0.5f*x;
   int32_t i = *(int32_t*)&x; // get bits for TF32ing value
   i = 0x5f3759df - ( i >> 1 ); // gives initial guess y0
-  x = *(TF32*)&i; // convert bits back to TF32
+  x = *(float*)&i; // convert bits back to float
   x = x*( 1.5f - xhalf*x*x ); // Newton step, repeating increases accuracy
   return x;
 }
 #else
-TF32 InvSqrt( TF32 x )
+float InvSqrt( float x )
 {
   return 1 / sqrtf( x );
 }
 
-TF32 DeGamma( TF32 c )
+float DeGamma( float c )
 {
-  TF32 cs;
+  float cs;
   if ( c < 0.04045f ) cs = c / 12.92f;
   else cs = powf( ( c + 0.055f ) / 1.055f, 2.4f );
   return cs;

@@ -4,7 +4,7 @@ class CTimer
 {
   int32_t LastUpdateTime;
   int32_t StartTime;
-  TF32 SpeedModifier;
+  float SpeedModifier;
   double TimeExtension;
   TBOOL Paused;
 
@@ -15,7 +15,7 @@ public:
   virtual ~CTimer();
 
   void Update();
-  void SetSpeed( TF32 Speed );
+  void SetSpeed( float Speed );
   void Pause( TBOOL Pause );
   unsigned long GetTime();
 
@@ -24,4 +24,4 @@ public:
 };
 
 extern CTimer globalTimer;
-//TF32 GetAccurateTime();
+//float GetAccurateTime();

@@ -14,7 +14,7 @@ COREVERTEXATTRIBUTE WBGuiVertexFormat[] =
   COREVXATTR_STOP,
 };
 
-void CWBDrawAPI::AddDisplayRect( const CRect &Rect, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v2, const CColor color/*, const CColor c2, const CColor c3, const CColor c4*/ )
+void CWBDrawAPI::AddDisplayRect( const CRect &Rect, const float u1, const float v1, const float u2, const float v2, const CColor color/*, const CColor c2, const CColor c3, const CColor c4*/ )
 {
   if ( !Opacity ) return;
 
@@ -25,25 +25,25 @@ void CWBDrawAPI::AddDisplayRect( const CRect &Rect, const TF32 u1, const TF32 v1
   if ( DrawMode != WBD_RECTANGLES ) RenderDisplayList();
   DrawMode = WBD_RECTANGLES;
 
-  TF32 u1f = u1;
-  TF32 v1f = v1;
-  TF32 u2f = u2;
-  TF32 v2f = v2;
+  float u1f = u1;
+  float v1f = v1;
+  float u2f = u2;
+  float v2f = v2;
 
   CRect Pos = CropRect.GetIntersection( rect );
   //LOG(LOG_INFO,_T("%d %d %d %d"),r.Pos.x1,r.Pos.y1,r.Pos.x2,r.Pos.y2);
 
   if ( Pos != rect ) //need to cull UV
   {
-    TF32 xs = (TF32)rect.Width();
-    TF32 ys = (TF32)rect.Height();
-    TF32 us = u2 - u1;
-    TF32 vs = v2 - v1;
+    float xs = (float)rect.Width();
+    float ys = (float)rect.Height();
+    float us = u2 - u1;
+    float vs = v2 - v1;
 
-    TF32 x1f = ( Pos.x1 - rect.x1 ) / xs;
-    TF32 y1f = ( Pos.y1 - rect.y1 ) / ys;
-    TF32 x2f = ( Pos.x2 - rect.x1 ) / xs;
-    TF32 y2f = ( Pos.y2 - rect.y1 ) / ys;
+    float x1f = ( Pos.x1 - rect.x1 ) / xs;
+    float y1f = ( Pos.y1 - rect.y1 ) / ys;
+    float x2f = ( Pos.x2 - rect.x1 ) / xs;
+    float y2f = ( Pos.y2 - rect.y1 ) / ys;
 
     u1f = us*x1f + u1;
     v1f = vs*y1f + v1;
@@ -55,10 +55,10 @@ void CWBDrawAPI::AddDisplayRect( const CRect &Rect, const TF32 u1, const TF32 v1
   Color.A() = ( Color.A()*Opacity ) / 255;
 
   CVector2 TL, BR;
-  TL.x = (TF32)Pos.x1;
-  TL.y = (TF32)Pos.y1;
-  BR.x = (TF32)Pos.x2;
-  BR.y = (TF32)Pos.y2;
+  TL.x = (float)Pos.x1;
+  TL.y = (float)Pos.y1;
+  BR.x = (float)Pos.x2;
+  BR.y = (float)Pos.y2;
 
   DisplayList.AllocateNewUninitialized( 4 );
   int32_t idx = DisplayList.NumItems() - 4;
@@ -69,7 +69,7 @@ void CWBDrawAPI::AddDisplayRect( const CRect &Rect, const TF32 u1, const TF32 v1
   DisplayList[ idx + 3 ].Initialize( TL.x, BR.y, u1f, v2f, Color );
 }
 
-void CWBDrawAPI::AddDisplayLine( const CPoint &_p1, const CPoint &_p2, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v2, const CColor a, const CColor b )
+void CWBDrawAPI::AddDisplayLine( const CPoint &_p1, const CPoint &_p2, const float u1, const float v1, const float u2, const float v2, const CColor a, const CColor b )
 {
   WBDISPLAYLINE r;
 
@@ -121,7 +121,7 @@ void CWBDrawAPI::AddDisplayLine( const CPoint &_p1, const CPoint &_p2, const TF3
   DisplayList += WBGUIVERTEX( CVector2( r.p2.x + 0.5f, r.p2.y - 0.5f ), CVector2( r.u2, r.v2 ), r.c2 );
 }
 
-void CWBDrawAPI::AddDisplayRectRotated( const CRect &Rect, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v2, const CColor color, TF32 rotation )
+void CWBDrawAPI::AddDisplayRectRotated( const CRect &Rect, const float u1, const float v1, const float u2, const float v2, const CColor color, float rotation )
 {
   if ( !Opacity ) return;
 
@@ -132,25 +132,25 @@ void CWBDrawAPI::AddDisplayRectRotated( const CRect &Rect, const TF32 u1, const 
   if ( DrawMode != WBD_RECTANGLES ) RenderDisplayList();
   DrawMode = WBD_RECTANGLES;
 
-  TF32 u1f = u1;
-  TF32 v1f = v1;
-  TF32 u2f = u2;
-  TF32 v2f = v2;
+  float u1f = u1;
+  float v1f = v1;
+  float u2f = u2;
+  float v2f = v2;
 
   CRect Pos = CropRect.GetIntersection( rect );
   //LOG(LOG_INFO,_T("%d %d %d %d"),r.Pos.x1,r.Pos.y1,r.Pos.x2,r.Pos.y2);
 
   if ( Pos != rect ) //need to cull UV
   {
-    TF32 xs = (TF32)rect.Width();
-    TF32 ys = (TF32)rect.Height();
-    TF32 us = u2 - u1;
-    TF32 vs = v2 - v1;
+    float xs = (float)rect.Width();
+    float ys = (float)rect.Height();
+    float us = u2 - u1;
+    float vs = v2 - v1;
 
-    TF32 x1f = ( Pos.x1 - rect.x1 ) / xs;
-    TF32 y1f = ( Pos.y1 - rect.y1 ) / ys;
-    TF32 x2f = ( Pos.x2 - rect.x1 ) / xs;
-    TF32 y2f = ( Pos.y2 - rect.y1 ) / ys;
+    float x1f = ( Pos.x1 - rect.x1 ) / xs;
+    float y1f = ( Pos.y1 - rect.y1 ) / ys;
+    float x2f = ( Pos.x2 - rect.x1 ) / xs;
+    float y2f = ( Pos.y2 - rect.y1 ) / ys;
 
     u1f = us*x1f + u1;
     v1f = vs*y1f + v1;
@@ -162,10 +162,10 @@ void CWBDrawAPI::AddDisplayRectRotated( const CRect &Rect, const TF32 u1, const 
   Color.A() = ( Color.A()*Opacity ) / 255;
 
   CVector2 TL, BR;
-  TL.x = (TF32)Pos.x1;
-  TL.y = (TF32)Pos.y1;
-  BR.x = (TF32)Pos.x2;
-  BR.y = (TF32)Pos.y2;
+  TL.x = (float)Pos.x1;
+  TL.y = (float)Pos.y1;
+  BR.x = (float)Pos.x2;
+  BR.y = (float)Pos.y2;
 
   CVector2 center = ( TL + BR ) / 2.0f;
   CVector2 a, b, c, d;
@@ -257,7 +257,7 @@ void CWBDrawAPI::ClipTriY( int32_t y, TBOOL KeepBottom, WBGUIVERTEX Vertices[ 6 
   VertexCount = NewVertexCount;
 }
 
-void CWBDrawAPI::AddDisplayTri( const CPoint &_p1, const CPoint &_p2, const CPoint &_p3, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v2, const TF32 u3, const TF32 v3, const CColor a, const CColor b, const CColor c )
+void CWBDrawAPI::AddDisplayTri( const CPoint &_p1, const CPoint &_p2, const CPoint &_p3, const float u1, const float v1, const float u2, const float v2, const float u3, const float v3, const CColor a, const CColor b, const CColor c )
 {
   CPoint p1 = _p1 + Offset;
   CPoint p2 = _p2 + Offset;
@@ -277,13 +277,13 @@ void CWBDrawAPI::AddDisplayTri( const CPoint &_p1, const CPoint &_p2, const CPoi
 
   WBGUIVERTEX Vertices[ 6 ]; //max vertex count is 6, when all triangle edges are cut
   int32_t VertexCount = 3;
-  Vertices[ 0 ].Pos = CVector4( (TF32)p1.x, (TF32)p1.y, 0, 1 );
+  Vertices[ 0 ].Pos = CVector4( (float)p1.x, (float)p1.y, 0, 1 );
   Vertices[ 0 ].UV = CVector2( u1, v1 );
   Vertices[ 0 ].Color = a;
-  Vertices[ 1 ].Pos = CVector4( (TF32)p2.x, (TF32)p2.y, 0, 1 );
+  Vertices[ 1 ].Pos = CVector4( (float)p2.x, (float)p2.y, 0, 1 );
   Vertices[ 1 ].UV = CVector2( u2, v2 );
   Vertices[ 1 ].Color = b;
-  Vertices[ 2 ].Pos = CVector4( (TF32)p3.x, (TF32)p3.y, 0, 1 );
+  Vertices[ 2 ].Pos = CVector4( (float)p3.x, (float)p3.y, 0, 1 );
   Vertices[ 2 ].UV = CVector2( u3, v3 );
   Vertices[ 2 ].Color = c;
 
@@ -539,7 +539,7 @@ TBOOL CWBDrawAPI::Initialize( CWBApplication *Application, CCoreDevice *Dev, CAt
 
   int raw_ui_pxshader_size = 672;
 
-  //(a)/(TF32)(c)*2.0f-1,(-b)/(TF32)(d)*2.0f+1
+  //(a)/(float)(c)*2.0f-1,(-b)/(float)(d)*2.0f+1
 
   VxShader = Device->CreateVertexShaderFromBlob( raw_ui_vxshader, raw_ui_vxshader_size );// ( shader, (int32_t)strlen( shader ), "vsmain", "vs_4_0" );
   if ( !VxShader )
@@ -625,7 +625,7 @@ void CWBDrawAPI::SetCropRect( CRect &r )
 void CWBDrawAPI::DrawRect( CRect &r, CColor Color )
 {
   CPoint white = Atlas->GetWhitePixelUV();
-  TF32 u, v;
+  float u, v;
   u = UVTRANSLATION( white.x, Atlas->GetXRes() );
   v = UVTRANSLATION( white.y, Atlas->GetYRes() );
   AddDisplayRect( r, u, v, u, v, Color );
@@ -639,17 +639,17 @@ void CWBDrawAPI::DrawRectBorder( CRect &r, CColor Color )
   DrawRect( CRect( r.BottomLeft() - CPoint( 0, 1 ), r.BottomRight() ), Color );
 }
 
-void CWBDrawAPI::DrawRectRotated( CRect &r, TF32 u1, TF32 v1, TF32 u2, TF32 v2, CColor Color, TF32 rotation )
+void CWBDrawAPI::DrawRectRotated( CRect &r, float u1, float v1, float u2, float v2, CColor Color, float rotation )
 {
   AddDisplayRectRotated( r, u1, v1, u2, v2, Color, rotation );
 }
 
-void CWBDrawAPI::DrawRect( CRect &r, TF32 u1, TF32 v1, TF32 u2, TF32 v2 )
+void CWBDrawAPI::DrawRect( CRect &r, float u1, float v1, float u2, float v2 )
 {
   AddDisplayRect( r, u1, v1, u2, v2, 0xffffffff );
 }
 
-void CWBDrawAPI::DrawRect( CRect &r, TF32 u1, TF32 v1, TF32 u2, TF32 v2, CColor Color )
+void CWBDrawAPI::DrawRect( CRect &r, float u1, float v1, float u2, float v2, CColor Color )
 {
   AddDisplayRect( r, u1, v1, u2, v2, Color );
 }
@@ -686,12 +686,12 @@ void CWBDrawAPI::DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, CColor a, CCo
                  a, b, c );
 }
 
-void CWBDrawAPI::DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, TF32 u1, TF32 v1, TF32 u2, TF32 v2, TF32 u3, TF32 v3, CColor a, CColor b, CColor c )
+void CWBDrawAPI::DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, float u1, float v1, float u2, float v2, float u3, float v3, CColor a, CColor b, CColor c )
 {
   AddDisplayTri( p1, p2, p3, u1, v1, u2, v2, u3, v3, a, b, c );
 }
 
-void CWBDrawAPI::DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, TF32 u1, TF32 v1, TF32 u2, TF32 v2, TF32 u3, TF32 v3 )
+void CWBDrawAPI::DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, float u1, float v1, float u2, float v2, float u3, float v3 )
 {
   AddDisplayTri( p1, p2, p3, u1, v1, u2, v2, u3, v3, 0xffffffff, 0xffffffff, 0xffffffff );
 }
@@ -720,7 +720,7 @@ void CWBDrawAPI::SetUIRenderState()
 
   ResolutionData->Reset();
 
-  CVector4 Resolution = CVector4( (TF32)App->GetXRes(), (TF32)App->GetYRes(), 0, 1 );
+  CVector4 Resolution = CVector4( (float)App->GetXRes(), (float)App->GetYRes(), 0, 1 );
   ResolutionData->AddData( &Resolution, sizeof( CVector4 ) );
   ResolutionData->Upload();
   Device->SetShaderConstants( 0, 1, &ResolutionData );
@@ -873,7 +873,7 @@ void CWBDrawAPI::DrawAtlasElement( WBATLASHANDLE h, CRect &Position, TBOOL TileX
 
 }
 
-void CWBDrawAPI::DrawAtlasElementRotated( WBATLASHANDLE h, CRect& position, CColor Color, TF32 rotation )
+void CWBDrawAPI::DrawAtlasElementRotated( WBATLASHANDLE h, CRect& position, CColor Color, float rotation )
 {
   if ( !Atlas ) return;
 
@@ -929,17 +929,17 @@ void ZoomToMouseCenter( CPoint &Offset, int32_t &Zoom, int32_t NewZoom, CPoint Z
   //xoff'=xpos+xoff-xpos*dz
   float dz = NewZoom / (float)Zoom;
 
-  CVector2 v = CVector2( (TF32)ZoomCenter.x, (TF32)ZoomCenter.y )*( 1 - dz );
+  CVector2 v = CVector2( (float)ZoomCenter.x, (float)ZoomCenter.y )*( 1 - dz );
   Offset += CPoint( (int32_t)v.x, (int32_t)v.y );
 
   Zoom = NewZoom;
 }
 
-void ZoomToMouseCenter( CPoint &Offset, TF32 &Zoom, TF32 NewZoom, CPoint Pos )
+void ZoomToMouseCenter( CPoint &Offset, float &Zoom, float NewZoom, CPoint Pos )
 {
   //dz=zoom'/zoom
   //xoff'=xpos+xoff-xpos*dz
-  TF32 dz = NewZoom / (TF32)Zoom;
+  float dz = NewZoom / (float)Zoom;
 
   Offset.x = (int32_t)( Pos.x + Offset.x - Pos.x*dz );
   Offset.y = (int32_t)( Pos.y + Offset.y - Pos.y*dz );

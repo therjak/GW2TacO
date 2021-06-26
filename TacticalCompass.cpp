@@ -12,7 +12,7 @@ void GW2TacticalCompass::DrawTacticalCompass( CWBDrawAPI *API )
   CMatrix4x4 cam;
   cam.SetLookAtLH( mumbleLink.camPosition, mumbleLink.camPosition + mumbleLink.camDir, CVector3( 0, 1, 0 ) );
   CMatrix4x4 persp;
-  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (TF32)drawrect.Height(), 0.01f, 1000.0f );
+  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (float)drawrect.Height(), 0.01f, 1000.0f );
 
   int32_t resolution = 60;
 
@@ -49,7 +49,7 @@ void GW2TacticalCompass::DrawTacticalCompass( CWBDrawAPI *API )
   for ( int x = 0; x < 4; x++ )
   {
     float a1 = 1.0f;
-    float f1 = x / (TF32)4 * PI * 2;
+    float f1 = x / (float)4 * PI * 2;
     CVector4 p1 = CVector4( rworld*sinf( f1 ), 1.0f, rworld*cosf( f1 ), 0.0f );
 
     CVector3 toPoint = CVector3( p1 - campos );

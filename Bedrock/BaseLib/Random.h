@@ -12,6 +12,6 @@ public:
   CRandom( uint32_t seed );
   void srand( uint32_t seed );
   uint32_t rand();
-  TF32 frand();
-  TF32 frand( TF32 min, TF32 max );
+  float frand();
+  float frand( float min, float max );
 };

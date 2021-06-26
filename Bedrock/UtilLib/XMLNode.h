@@ -39,12 +39,12 @@ public:
   CString GetText();
   TBOOL GetValue( int32_t &Int );
   TBOOL GetValue( TBOOL &Int );
-  TBOOL GetValue( TF32 &Float );
+  TBOOL GetValue( float &Float );
 
   TBOOL GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize );
   CString GetAttribute( TCHAR * szAttribute );
   void GetAttributeAsInteger( TCHAR * szAttribute, int32_t * nValue );
-  void GetAttributeAsFloat( TCHAR * szAttribute, TF32 * fValue );
+  void GetAttributeAsFloat( TCHAR * szAttribute, float * fValue );
   CString GetAttributeAsString( TCHAR * szAttribute );
   TBOOL HasAttribute( TCHAR * szAttribute );
 
@@ -53,10 +53,10 @@ public:
   void SetText( const TCHAR* );
   void SetText( CString &s );
   void SetInt( int32_t Int );
-  void SetFloat( TF32 Float );
+  void SetFloat( float Float );
   void SetAttribute( TCHAR * szAttributeName, const TCHAR * szValue );
   void SetAttributeFromInteger( TCHAR * szAttributeName, int32_t nValue );
-  void SetAttributeFromFloat( TCHAR * szAttributeName, TF32 nValue );
+  void SetAttributeFromFloat( TCHAR * szAttributeName, float nValue );
 
   //MSXML2::IXMLDOMNode * GetNode() { return pNode; }
 

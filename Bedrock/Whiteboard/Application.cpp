@@ -1070,7 +1070,7 @@ void CWBApplication::TakeScreenshot()
   delete b;
 }
 
-TF32 CWBApplication::GetFrameRate()
+float CWBApplication::GetFrameRate()
 {
   int32_t FrameTimeAcc = 0;
   int32_t FrameCount = 0;
@@ -1083,6 +1083,6 @@ TF32 CWBApplication::GetFrameRate()
 
   if ( !FrameCount ) return 0;
   if ( !FrameTimeAcc ) return 9999;
-  return 1000.0f / ( FrameTimeAcc / (TF32)FrameCount );
+  return 1000.0f / ( FrameTimeAcc / (float)FrameCount );
 }
 

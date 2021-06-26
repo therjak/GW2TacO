@@ -1470,7 +1470,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
 #define speed 500.0f
 
       int32_t currTime = GetTime();
-      TF32 delta = max( 0, min( 1, ( currTime - lastMenuHoverTransitionTime ) / speed ) );
+      float delta = max( 0, min( 1, ( currTime - lastMenuHoverTransitionTime ) / speed ) );
 
       TBOOL hover = ClientToScreen( it->GetClientRect() ).Contains( App->GetMousePos() );
 
@@ -1488,7 +1488,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
         delta = 1 - delta;
       }
 
-      TF32 col = 1 - delta*0.5f;
+      float col = 1 - delta*0.5f;
       if ( hover )
         col = 0.5f + delta*0.5f;
 

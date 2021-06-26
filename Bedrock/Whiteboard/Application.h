@@ -169,7 +169,7 @@ public:
   void SetVSync( TBOOL vs ) { Vsync = vs; }
   void SetClearColor( CColor color ) { ClearColor = color; }
 
-  TF32 GetFrameRate();
+  float GetFrameRate();
   int32_t GetInitialKeyboardDelay();
   int32_t GetKeyboardRepeatTime();
 

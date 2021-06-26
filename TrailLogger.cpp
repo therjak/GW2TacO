@@ -34,8 +34,8 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
   drawrect = GetClientRect();
 
   cam.SetLookAtLH( mumbleLink.camPosition, mumbleLink.camPosition + mumbleLink.camDir, CVector3( 0, 1, 0 ) );
-  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (TF32)drawrect.Height(), 0.01f, 150.0f );
-  asp = drawrect.Width() / (TF32)drawrect.Height();
+  persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (float)drawrect.Height(), 0.01f, 150.0f );
+  asp = drawrect.Width() / (float)drawrect.Height();
 
   //CMatrix4x4 m = cam*persp;
 
@@ -278,7 +278,7 @@ void GW2TrailDisplay::DoTrailLogging( int32_t mapID, CVector3 charPos )
     editedTrail->Reset( mapID );
   }
 
-  TF32 dist = WorldToGameCoords( ( lastPos - charPos ).Length() );
+  float dist = WorldToGameCoords( ( lastPos - charPos ).Length() );
   if ( dist < 30 )
     return;
 
@@ -470,7 +470,7 @@ GW2TrailDisplay::GW2TrailDisplay( CWBItem *Parent, CRect Position ) : CWBItem( P
 
 
   //GW2Trail* trail = new GW2Trail();
-  //trail->Build( App->GetDevice(), *(int32_t*)f.GetData(), (TF32*)( f.GetData() + 4 ), ( f.GetLength() - 4 ) / 12 );
+  //trail->Build( App->GetDevice(), *(int32_t*)f.GetData(), (float*)( f.GetData() + 4 ), ( f.GetLength() - 4 ) / 12 );
 
   //trails += trail;
 }
@@ -711,12 +711,12 @@ void GW2Trail::Build( CCoreDevice* d, int32_t mapID, float* points, int pointCou
   int vertexCount = 0;
   int32_t* indices = new int32_t[ ( pointCount - 1 ) * 6 ];
 
-  TF32 width = GameToWorldCoords( 20 );
+  float width = GameToWorldCoords( 20 );
 
   CVector3 lastPos = CVector3( points );
   CVector3 lastOrt = CVector3( 0, 0, 0 );
 
-  TF32 uvStretch = 0;
+  float uvStretch = 0;
 
   int cnt = 0;
   int icnt = 0;
@@ -907,10 +907,10 @@ TBOOL GW2Trail::Import( CStreamReaderMemory& f, TBOOL keepPoints )
   {
     positions.FlushFast();
     for ( int32_t x = 0; x < ( f.GetLength() - 8 ) / 12; x++ )
-      positions.Add( CVector3( &( (TF32*)( f.GetData() + 8 ) )[ x * 3 ] ) );
+      positions.Add( CVector3( &( (float*)( f.GetData() + 8 ) )[ x * 3 ] ) );
   }
 
-  Build( App->GetDevice(), *(int32_t*)( f.GetData() + 4 ), (TF32*)( f.GetData() + 8 ), int32_t( ( f.GetLength() - 8 ) / 12 ) );
+  Build( App->GetDevice(), *(int32_t*)( f.GetData() + 4 ), (float*)( f.GetData() + 8 ), int32_t( ( f.GetLength() - 8 ) / 12 ) );
   return true;
 }
 

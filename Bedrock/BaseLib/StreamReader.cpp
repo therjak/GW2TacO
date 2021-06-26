@@ -47,10 +47,10 @@ uint8_t CStreamReader::ReadByte()
   return i;
 }
 
-TF32 CStreamReader::ReadTF32()
+float CStreamReader::ReadTF32()
 {
-  TF32 i = 0;
-  BASEASSERT( Read( &i, sizeof( TF32 ) ) == sizeof( TF32 ) );
+  float i = 0;
+  BASEASSERT( Read( &i, sizeof( float ) ) == sizeof( float ) );
   return i;
 }
 

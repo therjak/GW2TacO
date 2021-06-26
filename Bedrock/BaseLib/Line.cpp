@@ -1,7 +1,7 @@
 #include "BaseLib.h"
 
 
-TF32 CLine2D::GetProjectionT( const CVector2 &v ) const
+float CLine2D::GetProjectionT( const CVector2 &v ) const
 {
   return Direction*( v - Point ) / ( Direction*Direction );
 }
@@ -11,12 +11,12 @@ CVector2 CLine2D::Project( const CVector2 &v ) const
   return GetPoint( GetProjectionT( v ) );
 }
 
-TF32 CLine2D::Distance( const CVector2 &v ) const
+float CLine2D::Distance( const CVector2 &v ) const
 {
   return ( Project( v ) - v ).Length();
 }
 
-CVector2 CLine2D::GetPoint( TF32 t ) const
+CVector2 CLine2D::GetPoint( float t ) const
 {
   return Point + Direction*t;
 }
@@ -43,7 +43,7 @@ CLine2D::CLine2D()
 
 }
 
-TF32 CLine::GetProjectionT( const CVector3 &v ) const
+float CLine::GetProjectionT( const CVector3 &v ) const
 {
   return ( Direction*( v - Point ) ) / Direction.Length();
 }
@@ -53,12 +53,12 @@ CVector3 CLine::Project( const CVector3 &v ) const
   return GetPoint( GetProjectionT( v ) );
 }
 
-TF32 CLine::Distance( const CVector3 &v ) const
+float CLine::Distance( const CVector3 &v ) const
 {
   return ( Project( v ) - v ).Length();
 }
 
-CVector3 CLine::GetPoint( TF32 t ) const
+CVector3 CLine::GetPoint( float t ) const
 {
   return Point + Direction*t;
 }
@@ -85,9 +85,9 @@ CLine::CLine()
 
 }
 
-TF32 linesegment::Distance( const CVector3 &v ) const
+float linesegment::Distance( const CVector3 &v ) const
 {
-  TF32 t = GetProjectionT( v );
+  float t = GetProjectionT( v );
   t = t < 0 ? 0 : t;
   t = t > 1 ? 1 : t;
   return ( ( Point + Direction*t ) - v ).Length();

@@ -132,8 +132,8 @@ protected:
 	CORECULLMODE CullMode;
 	TBOOL FrontCounterClockwise;
 	int32_t DepthBias;
-	TF32 DepthBiasClamp;
-	TF32 SlopeScaledDepthBias;
+	float DepthBiasClamp;
+	float SlopeScaledDepthBias;
 	TBOOL DepthClipEnable;
 	TBOOL ScissorEnable;
 	TBOOL MultisampleEnable;
@@ -151,8 +151,8 @@ public:
 	void SetCullMode(CORECULLMODE e);
 	void SetFrontCounterClockwise(TBOOL e);
 	void SetDepthBias(int32_t e);
-	void SetDepthBiasClamp(TF32 e);
-	void SetSlopeScaledDepthBias(TF32 e);
+	void SetDepthBiasClamp(float e);
+	void SetSlopeScaledDepthBias(float e);
 	void SetDepthClipEnable(TBOOL e);
 	void SetScissorEnable(TBOOL e);
 	void SetMultisampleEnable(TBOOL e);
@@ -171,12 +171,12 @@ protected:
 	CORETEXTUREADDRESSMODE AddressU;
 	CORETEXTUREADDRESSMODE AddressV;
 	CORETEXTUREADDRESSMODE AddressW;
-	TF32 MipLODBias;
+	float MipLODBias;
 	int32_t MaxAnisotropy;
 	CORECOMPARISONFUNCTION ComparisonFunc;
-	TF32 BorderColor[4];
-	TF32 MinLOD;
-	TF32 MaxLOD;
+	float BorderColor[4];
+	float MinLOD;
+	float MaxLOD;
 
 public:
 
@@ -192,13 +192,13 @@ public:
 	void SetAddressV(CORETEXTUREADDRESSMODE e);
 	void SetAddressW(CORETEXTUREADDRESSMODE e);
 
-	void SetMipLODBias(TF32 e);
+	void SetMipLODBias(float e);
 	void SetMaxAnisotropy(int32_t e);
 	void SetComparisonFunc(CORECOMPARISONFUNCTION e);
-	void SetMinLOD(TF32 e);
-	void SetMaxLOD(TF32 e);
+	void SetMinLOD(float e);
+	void SetMaxLOD(float e);
 
-	void SetBorderColor(TF32 r, TF32 g, TF32 b, TF32 a);
+	void SetBorderColor(float r, float g, float b, float a);
 
 	virtual TBOOL Import(CXMLNode *n);
 	virtual void Export(CXMLNode *n);

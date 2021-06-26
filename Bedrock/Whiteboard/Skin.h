@@ -12,16 +12,16 @@ enum WBMETRICTYPE
 
 class CWBMetricValue
 {
-  TF32 Metrics[ WB_METRIC_COUNT ];
+  float Metrics[ WB_METRIC_COUNT ];
   TBOOL MetricsUsed[ WB_METRIC_COUNT ];
   TBOOL AutoSize;
 
 public:
 
   CWBMetricValue();
-  void SetMetric( WBMETRICTYPE w, TF32 Value );
-  void SetValue( TF32 Relative, TF32 Pixels );
-  TF32 GetValue( TF32 ParentSize, int32_t ContentSize );
+  void SetMetric( WBMETRICTYPE w, float Value );
+  void SetValue( float Relative, float Pixels );
+  float GetValue( float ParentSize, int32_t ContentSize );
   void SetAutoSize( TBOOL Auto );
   TBOOL IsAutoResizer();
 };
@@ -46,8 +46,8 @@ class CWBPositionDescriptor
 
 public:
 
-  void SetValue( WBPOSITIONTYPE p, TF32 Relative, TF32 Pixels );
-  void SetMetric( WBPOSITIONTYPE p, WBMETRICTYPE m, TF32 Value );
+  void SetValue( WBPOSITIONTYPE p, float Relative, float Pixels );
+  void SetMetric( WBPOSITIONTYPE p, WBMETRICTYPE m, float Value );
   void SetAutoSize( WBPOSITIONTYPE p );
   void ClearMetrics( WBPOSITIONTYPE p );
   CRect GetPosition( CSize ParentSize, CSize ContentSize, CRect &Original );

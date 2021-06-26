@@ -8,40 +8,40 @@ class CMatrix2x2
   {
     struct
     {
-      TF32 _11, _12;
-      TF32 _21, _22;
+      float _11, _12;
+      float _21, _22;
     };
-    TF32 m[ 2 ][ 2 ];
+    float m[ 2 ][ 2 ];
   };
 
 public:
 
   CMatrix2x2();
-  CMatrix2x2( const TF32 *f );
+  CMatrix2x2( const float *f );
   CMatrix2x2( const CMatrix2x2 &mx );
-  CMatrix2x2( TF32 f11, TF32 f12,
-              TF32 f21, TF32 f22 );
+  CMatrix2x2( float f11, float f12,
+              float f21, float f22 );
 
   CMatrix2x2( const CQuaternion &q );
 
-  TF32 &operator() ( uint32_t Row, uint32_t Col );
-  TF32 operator() ( uint32_t Row, uint32_t Col ) const;
-  operator TF32*( );
-  operator const TF32*( ) const;
+  float &operator() ( uint32_t Row, uint32_t Col );
+  float operator() ( uint32_t Row, uint32_t Col ) const;
+  operator float*( );
+  operator const float*( ) const;
 
   CMatrix2x2 &operator*= ( const CMatrix2x2 &mat );
   CMatrix2x2 &operator+= ( const CMatrix2x2 &mat );
   CMatrix2x2 &operator-= ( const CMatrix2x2 &mat );
-  CMatrix2x2 &operator*= ( const TF32 f );
-  CMatrix2x2 &operator/= ( const TF32 f );
+  CMatrix2x2 &operator*= ( const float f );
+  CMatrix2x2 &operator/= ( const float f );
   CMatrix2x2 operator+ () const;
   CMatrix2x2 operator- () const;
   CMatrix2x2 operator *( const CMatrix2x2& mat ) const;
   CMatrix2x2 operator +( const CMatrix2x2& mat ) const;
   CMatrix2x2 operator -( const CMatrix2x2& mat ) const;
-  CMatrix2x2 operator *( const TF32 f ) const;
-  CMatrix2x2 operator /( const TF32 f ) const;
-  friend CMatrix2x2 operator *( const TF32 f, const CMatrix2x2& mat );
+  CMatrix2x2 operator *( const float f ) const;
+  CMatrix2x2 operator /( const float f ) const;
+  friend CMatrix2x2 operator *( const float f, const CMatrix2x2& mat );
   TBOOL operator ==( const CMatrix2x2& mat ) const;
   TBOOL operator !=( const CMatrix2x2& mat ) const;
 
@@ -60,40 +60,40 @@ class CMatrix3x3
   {
     struct
     {
-      TF32 _11, _12, _13;
-      TF32 _21, _22, _23;
-      TF32 _31, _32, _33;
+      float _11, _12, _13;
+      float _21, _22, _23;
+      float _31, _32, _33;
     };
-    TF32 m[ 3 ][ 3 ];
+    float m[ 3 ][ 3 ];
   };
 
 public:
 
   CMatrix3x3();;
-  CMatrix3x3( const TF32 *f );
+  CMatrix3x3( const float *f );
   CMatrix3x3( const CMatrix3x3 &mx );
-  CMatrix3x3( TF32 f11, TF32 f12, TF32 f13,
-              TF32 f21, TF32 f22, TF32 f23,
-              TF32 f31, TF32 f32, TF32 f33 );
+  CMatrix3x3( float f11, float f12, float f13,
+              float f21, float f22, float f23,
+              float f31, float f32, float f33 );
   CMatrix3x3( const CQuaternion &q );
 
-  TF32 &operator() ( uint32_t Row, uint32_t Col );
-  TF32 operator() ( uint32_t Row, uint32_t Col ) const;
-  operator TF32*( );
-  operator const TF32*( ) const;
+  float &operator() ( uint32_t Row, uint32_t Col );
+  float operator() ( uint32_t Row, uint32_t Col ) const;
+  operator float*( );
+  operator const float*( ) const;
   CMatrix3x3 &operator*= ( const CMatrix3x3 &mat );
   CMatrix3x3 &operator+= ( const CMatrix3x3 &mat );
   CMatrix3x3 &operator-= ( const CMatrix3x3 &mat );
-  CMatrix3x3 &operator*= ( const TF32 f );
-  CMatrix3x3 &operator/= ( const TF32 f );
+  CMatrix3x3 &operator*= ( const float f );
+  CMatrix3x3 &operator/= ( const float f );
   CMatrix3x3 operator+ () const;
   CMatrix3x3 operator- () const;
   CMatrix3x3 operator *( const CMatrix3x3& mat ) const;
   CMatrix3x3 operator +( const CMatrix3x3& mat ) const;
   CMatrix3x3 operator -( const CMatrix3x3& mat ) const;
-  CMatrix3x3 operator *( const TF32 f ) const;
-  CMatrix3x3 operator /( const TF32 f ) const;
-  friend CMatrix3x3 operator *( const TF32 f, const CMatrix3x3& mat );
+  CMatrix3x3 operator *( const float f ) const;
+  CMatrix3x3 operator /( const float f ) const;
+  friend CMatrix3x3 operator *( const float f, const CMatrix3x3& mat );
   TBOOL operator ==( const CMatrix3x3& mat ) const;
   TBOOL operator !=( const CMatrix3x3& mat ) const;
   void Transpose();
@@ -108,44 +108,44 @@ class CMatrix4x4
   {
     struct
     {
-      TF32 _11, _12, _13, _14;
-      TF32 _21, _22, _23, _24;
-      TF32 _31, _32, _33, _34;
-      TF32 _41, _42, _43, _44;
+      float _11, _12, _13, _14;
+      float _21, _22, _23, _24;
+      float _31, _32, _33, _34;
+      float _41, _42, _43, _44;
     };
-    TF32 m[ 4 ][ 4 ];
+    float m[ 4 ][ 4 ];
   };
 
 public:
 
   CMatrix4x4();;
-  CMatrix4x4( const TF32 *f );
+  CMatrix4x4( const float *f );
   CMatrix4x4( const CMatrix4x4 &mx );
-  CMatrix4x4( TF32 f11, TF32 f12, TF32 f13, TF32 f14,
-              TF32 f21, TF32 f22, TF32 f23, TF32 f24,
-              TF32 f31, TF32 f32, TF32 f33, TF32 f34,
-              TF32 f41, TF32 f42, TF32 f43, TF32 f44 );
+  CMatrix4x4( float f11, float f12, float f13, float f14,
+              float f21, float f22, float f23, float f24,
+              float f31, float f32, float f33, float f34,
+              float f41, float f42, float f43, float f44 );
   CMatrix4x4( const CQuaternion &q );
 
-  TF32 &operator() ( uint32_t Row, uint32_t Col );
-  TF32 operator() ( uint32_t Row, uint32_t Col ) const;
-  operator TF32*( );
-  operator const TF32*( ) const;
+  float &operator() ( uint32_t Row, uint32_t Col );
+  float operator() ( uint32_t Row, uint32_t Col ) const;
+  operator float*( );
+  operator const float*( ) const;
   CVector4 Row( int32_t x ) const;
   CVector4 Col( int32_t x ) const;
   CMatrix4x4 &operator*= ( const CMatrix4x4 &mat );
   CMatrix4x4 &operator+= ( const CMatrix4x4 &mat );
   CMatrix4x4 &operator-= ( const CMatrix4x4 &mat );
-  CMatrix4x4 &operator*= ( const TF32 f );
-  CMatrix4x4 &operator/= ( const TF32 f );
+  CMatrix4x4 &operator*= ( const float f );
+  CMatrix4x4 &operator/= ( const float f );
   CMatrix4x4 operator+ () const;
   CMatrix4x4 operator- () const;
   CMatrix4x4 operator *( const CMatrix4x4& mat ) const;
   CMatrix4x4 operator +( const CMatrix4x4& mat ) const;
   CMatrix4x4 operator -( const CMatrix4x4& mat ) const;
-  CMatrix4x4 operator *( const TF32 f ) const;
-  CMatrix4x4 operator /( const TF32 f ) const;
-  friend CMatrix4x4 operator *( const TF32 f, const CMatrix4x4& mat );
+  CMatrix4x4 operator *( const float f ) const;
+  CMatrix4x4 operator /( const float f ) const;
+  friend CMatrix4x4 operator *( const float f, const CMatrix4x4& mat );
   TBOOL operator ==( const CMatrix4x4& mat ) const;
   TBOOL operator !=( const CMatrix4x4& mat ) const;
   void Transpose();
@@ -154,15 +154,15 @@ public:
   CVector4 Apply( const CVector3 &v ) const;
   CVector4 Apply( const CVector4 &v ) const;
   void Decompose( CVector3 &Scale, CQuaternion &Rotation, CVector3 &Translation ) const;
-  TF32 Determinant() const;
+  float Determinant() const;
   void Invert();
   CMatrix4x4 Inverted() const;
   void SetLookAtLH( const CVector3 &Eye, const CVector3 &Target, const CVector3 &Up );
   void SetLookAtRH( const CVector3 &Eye, const CVector3 &Target, const CVector3 &Up );
-  void SetOrthoLH( const TF32 w, const TF32 h, const TF32 zn, const TF32 zf );
-  void SetOrthoRH( const TF32 w, const TF32 h, const TF32 zn, const TF32 zf );
-  void SetPerspectiveFovLH( const TF32 fovy, const TF32 aspect, const TF32 zn, const TF32 zf );
-  void SetPerspectiveFovRH( const TF32 fovy, const TF32 aspect, const TF32 zn, const TF32 zf );
+  void SetOrthoLH( const float w, const float h, const float zn, const float zf );
+  void SetOrthoRH( const float w, const float h, const float zn, const float zf );
+  void SetPerspectiveFovLH( const float fovy, const float aspect, const float zn, const float zf );
+  void SetPerspectiveFovRH( const float fovy, const float aspect, const float zn, const float zf );
   static CMatrix4x4 CMatrix4x4::Translation( const CVector3 &v );
   static CMatrix4x4 CMatrix4x4::Scaling( const CVector3 &v );
   static CMatrix4x4 CMatrix4x4::Rotation( const CQuaternion &q );

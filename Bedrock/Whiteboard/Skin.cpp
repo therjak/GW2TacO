@@ -11,13 +11,13 @@ CWBMetricValue::CWBMetricValue()
   memset( MetricsUsed, 0, sizeof( MetricsUsed ) );
 }
 
-void CWBMetricValue::SetMetric( WBMETRICTYPE w, TF32 Value )
+void CWBMetricValue::SetMetric( WBMETRICTYPE w, float Value )
 {
   Metrics[ w ] = Value;
   MetricsUsed[ w ] = true;
 }
 
-void CWBMetricValue::SetValue( TF32 Relative, TF32 Pixels )
+void CWBMetricValue::SetValue( float Relative, float Pixels )
 {
   Metrics[ WB_RELATIVE ] = Relative;
   Metrics[ WB_PIXELS ] = Pixels;
@@ -25,10 +25,10 @@ void CWBMetricValue::SetValue( TF32 Relative, TF32 Pixels )
   MetricsUsed[ WB_PIXELS ] = true;
 }
 
-TF32 CWBMetricValue::GetValue( TF32 ParentSize, int32_t ContentSize )
+float CWBMetricValue::GetValue( float ParentSize, int32_t ContentSize )
 {
   if ( AutoSize ) return ContentSize + 0.5f;
-  TF32 v = 0;
+  float v = 0;
   if ( MetricsUsed[ WB_PIXELS ] )		v += Metrics[ WB_PIXELS ];
   if ( MetricsUsed[ WB_RELATIVE ] )	v += Metrics[ WB_RELATIVE ] * ParentSize;
   return v;
@@ -65,12 +65,12 @@ CRect CWBPositionDescriptor::GetPosition( CSize ParentSize, CSize ContentSize, C
   TBOOL RightSet = Positions.HasKey( WB_MARGIN_RIGHT );
   TBOOL BottomSet = Positions.HasKey( WB_MARGIN_BOTTOM );
 
-  if ( WidthSet )	Width = (int32_t)Positions[ WB_WIDTH ].GetValue( (TF32)ParentSize.x, ContentSize.x );
-  if ( HeightSet )	Height = (int32_t)Positions[ WB_HEIGHT ].GetValue( (TF32)ParentSize.y, ContentSize.y );
-  if ( TopSet )		Top = (int32_t)Positions[ WB_MARGIN_TOP ].GetValue( (TF32)ParentSize.y, 0 );
-  if ( LeftSet )	Left = (int32_t)Positions[ WB_MARGIN_LEFT ].GetValue( (TF32)ParentSize.x, 0 );
-  if ( RightSet )	Right = (int32_t)Positions[ WB_MARGIN_RIGHT ].GetValue( (TF32)ParentSize.x, 0 );
-  if ( BottomSet )	Bottom = (int32_t)Positions[ WB_MARGIN_BOTTOM ].GetValue( (TF32)ParentSize.y, 0 );
+  if ( WidthSet )	Width = (int32_t)Positions[ WB_WIDTH ].GetValue( (float)ParentSize.x, ContentSize.x );
+  if ( HeightSet )	Height = (int32_t)Positions[ WB_HEIGHT ].GetValue( (float)ParentSize.y, ContentSize.y );
+  if ( TopSet )		Top = (int32_t)Positions[ WB_MARGIN_TOP ].GetValue( (float)ParentSize.y, 0 );
+  if ( LeftSet )	Left = (int32_t)Positions[ WB_MARGIN_LEFT ].GetValue( (float)ParentSize.x, 0 );
+  if ( RightSet )	Right = (int32_t)Positions[ WB_MARGIN_RIGHT ].GetValue( (float)ParentSize.x, 0 );
+  if ( BottomSet )	Bottom = (int32_t)Positions[ WB_MARGIN_BOTTOM ].GetValue( (float)ParentSize.y, 0 );
 
   r.x1 = LeftSet ? Left : ( ParentSize.x - ( Right + Width ) );
   r.y1 = TopSet ? Top : ( ParentSize.y - ( Bottom + Height ) );
@@ -108,20 +108,20 @@ CRect CWBPositionDescriptor::GetPadding( CSize ParentSize, CRect &BorderSizes )
 {
   CRect r( 0, 0, 0, 0 );
 
-  r.x1 = (int32_t)Positions[ WB_PADDING_LEFT ].GetValue( (TF32)ParentSize.x, 0 ) + BorderSizes.x1;
-  r.y1 = (int32_t)Positions[ WB_PADDING_TOP ].GetValue( (TF32)ParentSize.y, 0 ) + BorderSizes.y1;
-  r.x2 = ParentSize.x - (int32_t)Positions[ WB_PADDING_RIGHT ].GetValue( (TF32)ParentSize.x, 0 ) - BorderSizes.x2;
-  r.y2 = ParentSize.y - (int32_t)Positions[ WB_PADDING_BOTTOM ].GetValue( (TF32)ParentSize.y, 0 ) - BorderSizes.y2;
+  r.x1 = (int32_t)Positions[ WB_PADDING_LEFT ].GetValue( (float)ParentSize.x, 0 ) + BorderSizes.x1;
+  r.y1 = (int32_t)Positions[ WB_PADDING_TOP ].GetValue( (float)ParentSize.y, 0 ) + BorderSizes.y1;
+  r.x2 = ParentSize.x - (int32_t)Positions[ WB_PADDING_RIGHT ].GetValue( (float)ParentSize.x, 0 ) - BorderSizes.x2;
+  r.y2 = ParentSize.y - (int32_t)Positions[ WB_PADDING_BOTTOM ].GetValue( (float)ParentSize.y, 0 ) - BorderSizes.y2;
 
   return r;
 }
 
-void CWBPositionDescriptor::SetMetric( WBPOSITIONTYPE p, WBMETRICTYPE m, TF32 Value )
+void CWBPositionDescriptor::SetMetric( WBPOSITIONTYPE p, WBMETRICTYPE m, float Value )
 {
   Positions[ p ].SetMetric( m, Value );
 }
 
-void CWBPositionDescriptor::SetValue( WBPOSITIONTYPE p, TF32 Relative, TF32 Pixels )
+void CWBPositionDescriptor::SetValue( WBPOSITIONTYPE p, float Relative, float Pixels )
 {
   Positions[ p ].SetValue( Relative, Pixels );
 }
@@ -144,14 +144,14 @@ TBOOL CWBPositionDescriptor::IsHeightSet()
 int32_t CWBPositionDescriptor::GetWidth( CSize ParentSize, CSize ContentSize )
 {
   TBOOL WidthSet = Positions.HasKey( WB_WIDTH );
-  if ( WidthSet )	return (int32_t)Positions[ WB_WIDTH ].GetValue( (TF32)ParentSize.x, ContentSize.x );
+  if ( WidthSet )	return (int32_t)Positions[ WB_WIDTH ].GetValue( (float)ParentSize.x, ContentSize.x );
   return 0;
 }
 
 int32_t CWBPositionDescriptor::GetHeight( CSize ParentSize, CSize ContentSize )
 {
   TBOOL HeightSet = Positions.HasKey( WB_HEIGHT );
-  if ( HeightSet )	return (int32_t)Positions[ WB_HEIGHT ].GetValue( (TF32)ParentSize.y, ContentSize.y );
+  if ( HeightSet )	return (int32_t)Positions[ WB_HEIGHT ].GetValue( (float)ParentSize.y, ContentSize.y );
   return 0;
 }
 

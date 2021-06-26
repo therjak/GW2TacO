@@ -1,4 +1,4 @@
 #pragma once
 
-TF32 InvSqrt( TF32 x );
-TF32 DeGamma( TF32 c );
+float InvSqrt( float x );
+float DeGamma( float c );

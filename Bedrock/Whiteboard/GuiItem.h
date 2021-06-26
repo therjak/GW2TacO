@@ -168,7 +168,7 @@ class CWBItem : public IWBCSS
 
   int32_t SortLayer;
   int32_t ZIndex;
-  TF32 OpacityMultiplier = 1;
+  float OpacityMultiplier = 1;
 
   TBOOL Hidden;
   TBOOL Disabled;
@@ -431,8 +431,8 @@ public:
   virtual TBOOL InterpretDisplayString( CWBCSSPropertyBatch &desc, CString & prop, CString & value, CStringArray &pseudo );
   virtual TBOOL InterpretFontString( CWBCSSPropertyBatch &desc, CString & prop, CString & value, CStringArray &pseudo );
 
-  virtual void SetTreeOpacityMultiplier( TF32 OpacityMul ); //for fading out whole subtrees
-  virtual TF32 GetTreeOpacityMultiplier();
+  virtual void SetTreeOpacityMultiplier( float OpacityMul ); //for fading out whole subtrees
+  virtual float GetTreeOpacityMultiplier();
 
   virtual void ReapplyStyles();
   virtual void SetForcedMouseTransparency( TBOOL transparent );

@@ -282,7 +282,7 @@ void CXMLNode::GetAttributeAsInteger(TCHAR * szAttribute, int32_t * pnValue)
 	_stscanf_s(s, _T("%d"), pnValue);
 }
 
-void CXMLNode::GetAttributeAsFloat(TCHAR * szAttribute, TF32 * pfValue)
+void CXMLNode::GetAttributeAsFloat(TCHAR * szAttribute, float * pfValue)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);
@@ -369,7 +369,7 @@ void CXMLNode::SetAttributeFromInteger(TCHAR * szAttributeName, int32_t nValue)
 	SetAttribute(szAttributeName, s);
 }
 
-void CXMLNode::SetAttributeFromFloat(TCHAR * szAttributeName, TF32 fValue)
+void CXMLNode::SetAttributeFromFloat(TCHAR * szAttributeName, float fValue)
 {
 	TCHAR s[64];
 	_sntprintf_s(s, 64, _T("%g"), fValue);
@@ -405,7 +405,7 @@ void CXMLNode::SetInt(int32_t Int)
 	SetText(s);
 }
 
-void CXMLNode::SetFloat(TF32 Float)
+void CXMLNode::SetFloat(float Float)
 {
 	TCHAR s[64];
 	_sntprintf_s(s, 64, _T("%g"), Float);
@@ -432,7 +432,7 @@ TBOOL CXMLNode::GetValue(TBOOL &Int)
 	return r == 1;
 }
 
-TBOOL CXMLNode::GetValue(TF32 &Float)
+TBOOL CXMLNode::GetValue(float &Float)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);

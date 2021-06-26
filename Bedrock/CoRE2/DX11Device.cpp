@@ -934,7 +934,7 @@ TBOOL CCoreDX11Device::EndScene()
   return true;
 }
 
-TBOOL CCoreDX11Device::Clear( const TBOOL clearPixels, const TBOOL clearDepth, const CColor& Color, const TF32 Depth, const int32_t Stencil )
+TBOOL CCoreDX11Device::Clear( const TBOOL clearPixels, const TBOOL clearDepth, const CColor& Color, const float Depth, const int32_t Stencil )
 {
   int32_t Flags = 0;
 
@@ -1018,10 +1018,10 @@ TBOOL CCoreDX11Device::SetViewport( CRect Viewport )
   D3D11_VIEWPORT viewport;
   memset( &viewport, 0, sizeof( D3D11_VIEWPORT ) );
 
-  viewport.TopLeftX = (TF32)Viewport.x1;
-  viewport.TopLeftY = (TF32)Viewport.y1;
-  viewport.Width = max( 0, (TF32)Viewport.Width() );
-  viewport.Height = max( 0, (TF32)Viewport.Height() );
+  viewport.TopLeftX = (float)Viewport.x1;
+  viewport.TopLeftY = (float)Viewport.y1;
+  viewport.Width = max( 0, (float)Viewport.Width() );
+  viewport.Height = max( 0, (float)Viewport.Height() );
   viewport.MinDepth = 0;
   viewport.MaxDepth = 1;
   DeviceContext->RSSetViewports( 1, &viewport );

@@ -8,7 +8,7 @@
 class CCoreObjectGroup
 {
 	TBOOL DataChanged;
-	CDictionary<CString, TF32> Data;
+	CDictionary<CString, float> Data;
 
 public:
 
@@ -16,8 +16,8 @@ public:
 	virtual ~CCoreObjectGroup();
 
 	void Reset();
-	void AddData(CString &Name, TF32 Value);
-	TBOOL GetData(CString &Name, TF32 &Value);
+	void AddData(CString &Name, float Value);
+	TBOOL GetData(CString &Name, float &Value);
 	TBOOL HasDataChanged();
 	void ClearDirtyFlag();
 

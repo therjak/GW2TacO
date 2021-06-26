@@ -110,7 +110,7 @@ void TimerDisplay::OnDraw( CWBDrawAPI *API )
     if ( !t.IsRunning )
       continue;
 
-    TF32 timepos = ( tme - LocationalTimers[ x ].StartTime ) / 1000.0f - t.StartDelay;
+    float timepos = ( tme - LocationalTimers[ x ].StartTime ) / 1000.0f - t.StartDelay;
 
     for ( int32_t y = 0; y < t.Events.NumItems(); y++ )
     {

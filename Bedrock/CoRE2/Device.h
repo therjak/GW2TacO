@@ -168,7 +168,7 @@ public:
 
 	virtual TBOOL BeginScene() = 0;
 	virtual TBOOL EndScene() = 0;
-	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const TF32 Depth = 1, const int32_t Stencil = 0) = 0;
+	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const float Depth = 1, const int32_t Stencil = 0) = 0;
 	virtual TBOOL Flip(TBOOL Vsync = true) = 0;
 	virtual TBOOL DrawIndexedTriangles(int32_t Count, int32_t NumVertices) = 0;
 	virtual TBOOL DrawIndexedLines(int32_t Count, int32_t NumVertices) = 0;
@@ -188,7 +188,7 @@ public:
 	virtual void CaptureCurrentFrame() = 0;
 
 
-	virtual TF32 GetUVOffset() { return 0; }
+	virtual float GetUVOffset() { return 0; }
 
   //////////////////////////////////////////////////////////////////////////
   // queries

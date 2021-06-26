@@ -94,9 +94,9 @@ public:
   CString &operator+=( const unsigned long v );
   const friend CString operator+( const unsigned long v, const CString &str );
 
-  CString operator+( const TF32 v ) const;
-  CString &operator+=( const TF32 v );
-  const friend CString operator+( const TF32 v, const CString &str );
+  CString operator+( const float v ) const;
+  CString &operator+=( const float v );
+  const friend CString operator+( const float v, const CString &str );
 
   //////////////////////////////////////////////////////////////////////////
   //comparison functions
@@ -158,7 +158,7 @@ public:
 
   static int32_t Strcmp( const TCHAR *str, const TCHAR *str2 );
   static int32_t Strncmp( const TCHAR *str, const TCHAR *str2, const int32_t len );
-  static TF32 Atof( const TCHAR *str );
+  static float Atof( const TCHAR *str );
   static int32_t Atoi( const TCHAR *str );
 
   typedef std::function<TBOOL( uint32_t )> UTF8CHARCALLBACK;

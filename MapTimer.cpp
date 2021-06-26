@@ -152,8 +152,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
     while ( currtime < 72 * 60 )
     {
-      int32_t p1 = (int32_t)( cl.Width() * currtime / (TF32)timeWindow );
-      int32_t p2 = (int32_t)( cl.Width() * ( currtime + maps[ x ].events[ currevent ].length ) / (TF32)timeWindow ) + 1;
+      int32_t p1 = (int32_t)( cl.Width() * currtime / (float)timeWindow );
+      int32_t p2 = (int32_t)( cl.Width() * ( currtime + maps[ x ].events[ currevent ].length ) / (float)timeWindow ) + 1;
 
       if ( p2 >= 0 && p1 <= cl.Width() )
       {

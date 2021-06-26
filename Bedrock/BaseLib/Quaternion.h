@@ -4,43 +4,43 @@ class CQuaternion
 {
 public:
 
-  TF32 x, y, z, s;
+  float x, y, z, s;
 
   CQuaternion();
-  CQuaternion( const TF32 _x, const TF32 _y, const TF32 _z, const TF32 _s );
-  CQuaternion( const TF32 _s, const CVector3 &v );
-  CQuaternion( const TF32* v );
+  CQuaternion( const float _x, const float _y, const float _z, const float _s );
+  CQuaternion( const float _s, const CVector3 &v );
+  CQuaternion( const float* v );
   CQuaternion( const CQuaternion &v );
-  CQuaternion( const TF32 _x, const TF32 _y, const TF32 _z ); //from euler angles
+  CQuaternion( const float _x, const float _y, const float _z ); //from euler angles
   CQuaternion( const CVector3 &v ); //from euler angles
 
-  void FromEuler( const TF32 _x, const TF32 _y, const TF32 _z );
+  void FromEuler( const float _x, const float _y, const float _z );
   CVector3 ToEuler() const;
-  static CQuaternion FromAxisAngle( const CVector3 &Axis, const TF32 Angle );
-  void ToAxisAngle( CVector3 &Axis, TF32 &Angle ) const;
+  static CQuaternion FromAxisAngle( const CVector3 &Axis, const float Angle );
+  void ToAxisAngle( CVector3 &Axis, float &Angle ) const;
   void FromRotationMatrix( const CMatrix4x4 &m );
 
-  TF32 const operator[]( int32_t idx ) const;
-  TF32 &operator[]( int32_t idx );
-  operator TF32* ( );
-  operator const TF32* ( ) const;
+  float const operator[]( int32_t idx ) const;
+  float &operator[]( int32_t idx );
+  operator float* ( );
+  operator const float* ( ) const;
   CQuaternion &operator= ( const CQuaternion &q );
   CQuaternion &operator+= ( const CQuaternion &v );
   CQuaternion &operator-= ( const CQuaternion &v );
   const CQuaternion &operator*= ( const CQuaternion &v );
-  CQuaternion &operator*= ( const TF32 f );
-  CQuaternion &operator/= ( const TF32 f );
+  CQuaternion &operator*= ( const float f );
+  CQuaternion &operator/= ( const float f );
   CQuaternion operator+ () const;
   CQuaternion operator- () const;
   CQuaternion operator+ ( const CQuaternion &v ) const;
   CQuaternion operator- ( const CQuaternion &v ) const;
-  CQuaternion operator* ( const TF32 f ) const;
-  CQuaternion operator/ ( const TF32 f ) const;
+  CQuaternion operator* ( const float f ) const;
+  CQuaternion operator/ ( const float f ) const;
   TBOOL operator== ( const CQuaternion &v ) const;
   TBOOL operator!= ( const CQuaternion &v ) const;
   CQuaternion operator* ( const CQuaternion &q ) const;
-  TF32 Length() const;
-  TF32 LengthSquared() const;
+  float Length() const;
+  float LengthSquared() const;
   CQuaternion Normalized() const;
   void Conjugate();
   void Invert();
@@ -48,11 +48,11 @@ public:
   void Normalize();
   CQuaternion Log() const;
   CQuaternion Exp() const;
-  static TF32 Dot( const CQuaternion &v1, const CQuaternion &v2 );
+  static float Dot( const CQuaternion &v1, const CQuaternion &v2 );
 };
 
-CQuaternion Lerp( const CQuaternion &v1, const CQuaternion &v2, const TF32 t );
-CQuaternion Slerp( const CQuaternion &v1, const CQuaternion &v2, const TF32 t );
-CQuaternion SlerpFast( const CQuaternion &v1, const CQuaternion &v2, const TF32 t );
-CQuaternion Squad( const CQuaternion &q1, const CQuaternion &S1, const CQuaternion &S2, const CQuaternion &q2, const TF32 t );
+CQuaternion Lerp( const CQuaternion &v1, const CQuaternion &v2, const float t );
+CQuaternion Slerp( const CQuaternion &v1, const CQuaternion &v2, const float t );
+CQuaternion SlerpFast( const CQuaternion &v1, const CQuaternion &v2, const float t );
+CQuaternion Squad( const CQuaternion &q1, const CQuaternion &S1, const CQuaternion &S2, const CQuaternion &q2, const float t );
 void SquadSetup( CQuaternion &OutA, CQuaternion &OutB, CQuaternion &OutC, const CQuaternion &Q0, const CQuaternion &Q1, const CQuaternion &Q2, const CQuaternion &Q3 );

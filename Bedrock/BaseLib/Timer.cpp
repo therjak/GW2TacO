@@ -31,7 +31,7 @@ void CTimer::Update()
   LastUpdateTime = CurrentTime;
 }
 
-void CTimer::SetSpeed( TF32 Speed )
+void CTimer::SetSpeed( float Speed )
 {
   SpeedModifier = max( 0, Speed );
 }
@@ -56,7 +56,7 @@ void CTimer::SkipTime( unsigned long Time )
   StartTime -= Time;
 }
 
-//TF32 GetAccurateTime() 
+//float GetAccurateTime() 
 //{
 //
 //	LARGE_INTEGER count, freq;
@@ -72,5 +72,5 @@ void CTimer::SkipTime( unsigned long Time )
 //
 //	GeCCo_LastPCV=count;
 //
-//	return (TF32)(GeCCo_CurrentTime * 1000.0f);
+//	return (float)(GeCCo_CurrentTime * 1000.0f);
 //}

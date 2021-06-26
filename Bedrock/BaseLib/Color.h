@@ -11,7 +11,7 @@ public:
   CColor( const uint8_t* c );
   CColor( const uint32_t argb );
 
-  static CColor FromFloat( const TF32 _r, const TF32 _g, const TF32 _b, const TF32 _a );
+  static CColor FromFloat( const float _r, const float _g, const float _b, const float _a );
   static CColor FromARGB( const uint32_t v );
   static CColor FromABGR( const uint32_t v );
 
@@ -30,4 +30,4 @@ public:
   uint8_t &A();
 };
 
-const CColor Lerp( const CColor a, const CColor b, const TF32 t );
+const CColor Lerp( const CColor a, const CColor b, const float t );

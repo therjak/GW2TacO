@@ -3,7 +3,7 @@
 
 CMatrix2x2 CMatrix2x2::Inverted() const
 {
-  TF32 det = ( _11*_22 ) - ( _12*_21 );
+  float det = ( _11*_22 ) - ( _12*_21 );
   return CMatrix2x2( _22, -_12, -_21, _11 ) / det;
 }
 
@@ -38,29 +38,29 @@ void CMatrix2x2::Transpose()
   *this = Transposed();
 }
 
-CMatrix2x2::operator const TF32*( ) const
+CMatrix2x2::operator const float*( ) const
 {
-  return (const TF32*)&_11;
+  return (const float*)&_11;
 }
 
-CMatrix2x2::operator TF32*( )
+CMatrix2x2::operator float*( )
 {
   return &_11;
 }
 
-TF32 CMatrix2x2::operator()( uint32_t Row, uint32_t Col ) const
+float CMatrix2x2::operator()( uint32_t Row, uint32_t Col ) const
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 2 && Col < 2, m[ 0 ][ 0 ] );
   return m[ Row & 1 ][ Col & 1 ];
 }
 
-TF32 & CMatrix2x2::operator()( uint32_t Row, uint32_t Col )
+float & CMatrix2x2::operator()( uint32_t Row, uint32_t Col )
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 2 && Col < 2, m[ 0 ][ 0 ] );
   return m[ Row & 1 ][ Col & 1 ];
 }
 
-CMatrix2x2::CMatrix2x2( TF32 f11, TF32 f12, TF32 f21, TF32 f22 )
+CMatrix2x2::CMatrix2x2( float f11, float f12, float f21, float f22 )
 {
   _11 = f11; _12 = f12;
   _21 = f21; _22 = f22;
@@ -68,14 +68,14 @@ CMatrix2x2::CMatrix2x2( TF32 f11, TF32 f12, TF32 f21, TF32 f22 )
 
 CMatrix2x2::CMatrix2x2( const CMatrix2x2 &mx )
 {
-  memcpy( &_11, &mx._11, 16 * sizeof( TF32 ) );
+  memcpy( &_11, &mx._11, 16 * sizeof( float ) );
 }
 
-CMatrix2x2::CMatrix2x2( const TF32 *f )
+CMatrix2x2::CMatrix2x2( const float *f )
 {
   BASEASSERT( f );
   if ( !f ) return;
-  memcpy( &_11, f, 16 * sizeof( TF32 ) );
+  memcpy( &_11, f, 16 * sizeof( float ) );
 }
 
 CMatrix2x2::CMatrix2x2()
@@ -102,16 +102,16 @@ CMatrix2x2 &CMatrix2x2::operator-= ( const CMatrix2x2 &mat )
   return *this;
 }
 
-CMatrix2x2 &CMatrix2x2::operator*= ( const TF32 f )
+CMatrix2x2 &CMatrix2x2::operator*= ( const float f )
 {
   _11 *= f; _12 *= f;
   _21 *= f; _22 *= f;
   return *this;
 }
 
-CMatrix2x2 &CMatrix2x2::operator/= ( const TF32 f )
+CMatrix2x2 &CMatrix2x2::operator/= ( const float f )
 {
-  TF32 fInv = 1.0f / f;
+  float fInv = 1.0f / f;
   _11 *= fInv; _12 *= fInv;
   _21 *= fInv; _22 *= fInv;
   return *this;
@@ -149,27 +149,27 @@ CMatrix2x2 CMatrix2x2::operator -( const CMatrix2x2& mat ) const
                      _21 - mat._21, _22 - mat._22 );
 }
 
-CMatrix2x2 CMatrix2x2::operator *( const TF32 f ) const
+CMatrix2x2 CMatrix2x2::operator *( const float f ) const
 {
   return CMatrix2x2( _11 * f, _12 * f,
                      _21 * f, _22 * f );
 }
 
-CMatrix2x2 CMatrix2x2::operator /( const TF32 f ) const
+CMatrix2x2 CMatrix2x2::operator /( const float f ) const
 {
-  TF32 fInv = 1.0f / f;
+  float fInv = 1.0f / f;
   return CMatrix2x2( _11 * fInv, _12 * fInv,
                      _21 * fInv, _22 * fInv );
 }
 
 TBOOL CMatrix2x2::operator ==( const CMatrix2x2& mat ) const
 {
-  return 0 == memcmp( &_11, &mat._11, 9 * sizeof( TF32 ) );
+  return 0 == memcmp( &_11, &mat._11, 9 * sizeof( float ) );
 }
 
 TBOOL CMatrix2x2::operator !=( const CMatrix2x2& mat ) const
 {
-  return 0 != memcmp( &_11, &mat._11, 9 * sizeof( TF32 ) );
+  return 0 != memcmp( &_11, &mat._11, 9 * sizeof( float ) );
 }
 
 CVector3 CMatrix3x3::Apply( const CVector3 &v ) const
@@ -200,7 +200,7 @@ void CMatrix3x3::Transpose()
   *this = Transposed();
 }
 
-CMatrix3x3::CMatrix3x3( TF32 f11, TF32 f12, TF32 f13, TF32 f21, TF32 f22, TF32 f23, TF32 f31, TF32 f32, TF32 f33 )
+CMatrix3x3::CMatrix3x3( float f11, float f12, float f13, float f21, float f22, float f23, float f31, float f32, float f33 )
 {
   _11 = f11; _12 = f12; _13 = f13;
   _21 = f21; _22 = f22; _23 = f23;
@@ -209,14 +209,14 @@ CMatrix3x3::CMatrix3x3( TF32 f11, TF32 f12, TF32 f13, TF32 f21, TF32 f22, TF32 f
 
 CMatrix3x3::CMatrix3x3( const CMatrix3x3 &mx )
 {
-  memcpy( &_11, &mx._11, 16 * sizeof( TF32 ) );
+  memcpy( &_11, &mx._11, 16 * sizeof( float ) );
 }
 
-CMatrix3x3::CMatrix3x3( const TF32 *f )
+CMatrix3x3::CMatrix3x3( const float *f )
 {
   BASEASSERT( f );
   if ( !f ) return;
-  memcpy( &_11, f, 16 * sizeof( TF32 ) );
+  memcpy( &_11, f, 16 * sizeof( float ) );
 }
 
 CMatrix3x3::CMatrix3x3()
@@ -224,26 +224,26 @@ CMatrix3x3::CMatrix3x3()
 
 }
 
-TF32 &CMatrix3x3::operator() ( uint32_t Row, uint32_t Col )
+float &CMatrix3x3::operator() ( uint32_t Row, uint32_t Col )
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 3 && Col < 3, m[ 0 ][ 0 ] );
   return m[ Row % 3 ][ Col % 3 ];
 }
 
-TF32 CMatrix3x3::operator() ( uint32_t Row, uint32_t Col ) const
+float CMatrix3x3::operator() ( uint32_t Row, uint32_t Col ) const
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 3 && Col < 3, m[ 0 ][ 0 ] );
   return m[ Row % 3 ][ Col % 3 ];
 }
 
-CMatrix3x3::operator TF32*( )
+CMatrix3x3::operator float*( )
 {
   return &_11;
 }
 
-CMatrix3x3::operator const TF32*( ) const
+CMatrix3x3::operator const float*( ) const
 {
-  return (const TF32*)&_11;
+  return (const float*)&_11;
 }
 
 
@@ -268,7 +268,7 @@ CMatrix3x3 &CMatrix3x3::operator-= ( const CMatrix3x3 &mat )
   return *this;
 }
 
-CMatrix3x3 &CMatrix3x3::operator*= ( const TF32 f )
+CMatrix3x3 &CMatrix3x3::operator*= ( const float f )
 {
   _11 *= f; _12 *= f; _13 *= f;
   _21 *= f; _22 *= f; _23 *= f;
@@ -276,9 +276,9 @@ CMatrix3x3 &CMatrix3x3::operator*= ( const TF32 f )
   return *this;
 }
 
-CMatrix3x3 &CMatrix3x3::operator/= ( const TF32 f )
+CMatrix3x3 &CMatrix3x3::operator/= ( const float f )
 {
-  TF32 fInv = 1.0f / f;
+  float fInv = 1.0f / f;
   _11 *= fInv; _12 *= fInv; _13 *= fInv;
   _21 *= fInv; _22 *= fInv; _23 *= fInv;
   _31 *= fInv; _32 *= fInv; _33 *= fInv;
@@ -320,22 +320,22 @@ CMatrix3x3 CMatrix3x3::operator -( const CMatrix3x3& mat ) const
                      _31 - mat._31, _32 - mat._32, _33 - mat._33 );
 }
 
-CMatrix3x3 CMatrix3x3::operator *( const TF32 f ) const
+CMatrix3x3 CMatrix3x3::operator *( const float f ) const
 {
   return CMatrix3x3( _11 * f, _12 * f, _13 * f,
                      _21 * f, _22 * f, _23 * f,
                      _31 * f, _32 * f, _33 * f );
 }
 
-CMatrix3x3 CMatrix3x3::operator /( const TF32 f ) const
+CMatrix3x3 CMatrix3x3::operator /( const float f ) const
 {
-  TF32 fInv = 1.0f / f;
+  float fInv = 1.0f / f;
   return CMatrix3x3( _11 * fInv, _12 * fInv, _13 * fInv,
                      _21 * fInv, _22 * fInv, _23 * fInv,
                      _31 * fInv, _32 * fInv, _33 * fInv );
 }
 
-CMatrix3x3 operator *( const TF32 f, const CMatrix3x3& mat )
+CMatrix3x3 operator *( const float f, const CMatrix3x3& mat )
 {
   return CMatrix3x3( f * mat._11, f * mat._12, f * mat._13,
                      f * mat._21, f * mat._22, f * mat._23,
@@ -344,12 +344,12 @@ CMatrix3x3 operator *( const TF32 f, const CMatrix3x3& mat )
 
 TBOOL CMatrix3x3::operator ==( const CMatrix3x3& mat ) const
 {
-  return 0 == memcmp( &_11, &mat._11, 9 * sizeof( TF32 ) );
+  return 0 == memcmp( &_11, &mat._11, 9 * sizeof( float ) );
 }
 
 TBOOL CMatrix3x3::operator !=( const CMatrix3x3& mat ) const
 {
-  return 0 != memcmp( &_11, &mat._11, 9 * sizeof( TF32 ) );
+  return 0 != memcmp( &_11, &mat._11, 9 * sizeof( float ) );
 }
 
 void CMatrix4x4::SetTransformation( const CVector3 &scaling, const CQuaternion &rotation, const CVector3 &translation )
@@ -394,7 +394,7 @@ CMatrix4x4 CMatrix4x4::Translation( const CVector3 &v )
   return mx;
 }
 
-void CMatrix4x4::SetPerspectiveFovRH( const TF32 fovy, const TF32 aspect, const TF32 zn, const TF32 zf )
+void CMatrix4x4::SetPerspectiveFovRH( const float fovy, const float aspect, const float zn, const float zf )
 {
   SetIdentity();
   _11 = 1.0f / ( aspect*tanf( fovy / 2.0f ) );
@@ -405,7 +405,7 @@ void CMatrix4x4::SetPerspectiveFovRH( const TF32 fovy, const TF32 aspect, const 
   _44 = 0.0f;
 }
 
-void CMatrix4x4::SetPerspectiveFovLH( const TF32 fovy, const TF32 aspect, const TF32 zn, const TF32 zf )
+void CMatrix4x4::SetPerspectiveFovLH( const float fovy, const float aspect, const float zn, const float zf )
 {
   SetIdentity();
   _11 = 1.0f / ( aspect*tanf( fovy / 2.0f ) );
@@ -416,7 +416,7 @@ void CMatrix4x4::SetPerspectiveFovLH( const TF32 fovy, const TF32 aspect, const 
   _44 = 0.0f;
 }
 
-void CMatrix4x4::SetOrthoRH( const TF32 w, const TF32 h, const TF32 zn, const TF32 zf )
+void CMatrix4x4::SetOrthoRH( const float w, const float h, const float zn, const float zf )
 {
   SetIdentity();
   _11 = 2.0f / w;
@@ -425,7 +425,7 @@ void CMatrix4x4::SetOrthoRH( const TF32 w, const TF32 h, const TF32 zn, const TF
   _43 = zn / ( zn - zf );
 }
 
-void CMatrix4x4::SetOrthoLH( const TF32 w, const TF32 h, const TF32 zn, const TF32 zf )
+void CMatrix4x4::SetOrthoLH( const float w, const float h, const float zn, const float zf )
 {
   SetIdentity();
   _11 = 2.0f / w;
@@ -493,7 +493,7 @@ CMatrix4x4 CMatrix4x4::Inverted() const
   CMatrix4x4 out;
   CVector4 vec[ 3 ];
 
-  TF32 det = Determinant();
+  float det = Determinant();
 
   BASEASSERT( det != 0 );
 
@@ -519,7 +519,7 @@ void CMatrix4x4::Invert()
   *this = Inverted();
 }
 
-TF32 CMatrix4x4::Determinant() const
+float CMatrix4x4::Determinant() const
 {
   return -Col( 3 )*CVector4::Cross( Col( 0 ), Col( 1 ), Col( 2 ) );
 }
@@ -564,7 +564,7 @@ void CMatrix4x4::Transpose()
   *this = Transposed();
 }
 
-CMatrix4x4::CMatrix4x4( TF32 f11, TF32 f12, TF32 f13, TF32 f14, TF32 f21, TF32 f22, TF32 f23, TF32 f24, TF32 f31, TF32 f32, TF32 f33, TF32 f34, TF32 f41, TF32 f42, TF32 f43, TF32 f44 )
+CMatrix4x4::CMatrix4x4( float f11, float f12, float f13, float f14, float f21, float f22, float f23, float f24, float f31, float f32, float f33, float f34, float f41, float f42, float f43, float f44 )
 {
   _11 = f11; _12 = f12; _13 = f13; _14 = f14;
   _21 = f21; _22 = f22; _23 = f23; _24 = f24;
@@ -574,14 +574,14 @@ CMatrix4x4::CMatrix4x4( TF32 f11, TF32 f12, TF32 f13, TF32 f14, TF32 f21, TF32 f
 
 CMatrix4x4::CMatrix4x4( const CMatrix4x4 &mx )
 {
-  memcpy( &_11, &mx._11, 16 * sizeof( TF32 ) );
+  memcpy( &_11, &mx._11, 16 * sizeof( float ) );
 }
 
-CMatrix4x4::CMatrix4x4( const TF32 *f )
+CMatrix4x4::CMatrix4x4( const float *f )
 {
   BASEASSERT( f );
   if ( !f ) return;
-  memcpy( &_11, f, 16 * sizeof( TF32 ) );
+  memcpy( &_11, f, 16 * sizeof( float ) );
 }
 
 CMatrix4x4::CMatrix4x4()
@@ -589,26 +589,26 @@ CMatrix4x4::CMatrix4x4()
 
 }
 
-TF32 &CMatrix4x4::operator() ( uint32_t Row, uint32_t Col )
+float &CMatrix4x4::operator() ( uint32_t Row, uint32_t Col )
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[ 0 ][ 0 ] );
   return m[ Row & 3 ][ Col & 3 ];
 }
 
-TF32 CMatrix4x4::operator() ( uint32_t Row, uint32_t Col ) const
+float CMatrix4x4::operator() ( uint32_t Row, uint32_t Col ) const
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[ 0 ][ 0 ] );
   return m[ Row & 3 ][ Col & 3 ];
 }
 
-CMatrix4x4::operator TF32*( )
+CMatrix4x4::operator float*( )
 {
   return &_11;
 }
 
-CMatrix4x4::operator const TF32*( ) const
+CMatrix4x4::operator const float*( ) const
 {
-  return (const TF32*)&_11;
+  return (const float*)&_11;
 }
 
 CVector4 CMatrix4x4::Row( int32_t x ) const
@@ -646,7 +646,7 @@ CMatrix4x4 &CMatrix4x4::operator-= ( const CMatrix4x4 &mat )
   return *this;
 }
 
-CMatrix4x4 &CMatrix4x4::operator*= ( const TF32 f )
+CMatrix4x4 &CMatrix4x4::operator*= ( const float f )
 {
   _11 *= f; _12 *= f; _13 *= f; _14 *= f;
   _21 *= f; _22 *= f; _23 *= f; _24 *= f;
@@ -655,9 +655,9 @@ CMatrix4x4 &CMatrix4x4::operator*= ( const TF32 f )
   return *this;
 }
 
-CMatrix4x4 &CMatrix4x4::operator/= ( const TF32 f )
+CMatrix4x4 &CMatrix4x4::operator/= ( const float f )
 {
-  TF32 fInv = 1.0f / f;
+  float fInv = 1.0f / f;
   _11 *= fInv; _12 *= fInv; _13 *= fInv; _14 *= fInv;
   _21 *= fInv; _22 *= fInv; _23 *= fInv; _24 *= fInv;
   _31 *= fInv; _32 *= fInv; _33 *= fInv; _34 *= fInv;
@@ -703,7 +703,7 @@ CMatrix4x4 CMatrix4x4::operator -( const CMatrix4x4& mat ) const
                      _41 - mat._41, _42 - mat._42, _43 - mat._43, _44 - mat._44 );
 }
 
-CMatrix4x4 CMatrix4x4::operator *( const TF32 f ) const
+CMatrix4x4 CMatrix4x4::operator *( const float f ) const
 {
   return CMatrix4x4( _11 * f, _12 * f, _13 * f, _14 * f,
                      _21 * f, _22 * f, _23 * f, _24 * f,
@@ -711,16 +711,16 @@ CMatrix4x4 CMatrix4x4::operator *( const TF32 f ) const
                      _41 * f, _42 * f, _43 * f, _44 * f );
 }
 
-CMatrix4x4 CMatrix4x4::operator /( const TF32 f ) const
+CMatrix4x4 CMatrix4x4::operator /( const float f ) const
 {
-  TF32 fInv = 1.0f / f;
+  float fInv = 1.0f / f;
   return CMatrix4x4( _11 * fInv, _12 * fInv, _13 * fInv, _14 * fInv,
                      _21 * fInv, _22 * fInv, _23 * fInv, _24 * fInv,
                      _31 * fInv, _32 * fInv, _33 * fInv, _34 * fInv,
                      _41 * fInv, _42 * fInv, _43 * fInv, _44 * fInv );
 }
 
-CMatrix4x4 operator *( const TF32 f, const CMatrix4x4& mat )
+CMatrix4x4 operator *( const float f, const CMatrix4x4& mat )
 {
   return CMatrix4x4( f * mat._11, f * mat._12, f * mat._13, f * mat._14,
                      f * mat._21, f * mat._22, f * mat._23, f * mat._24,
@@ -730,12 +730,12 @@ CMatrix4x4 operator *( const TF32 f, const CMatrix4x4& mat )
 
 TBOOL CMatrix4x4::operator ==( const CMatrix4x4& mat ) const
 {
-  return 0 == memcmp( &_11, &mat._11, 16 * sizeof( TF32 ) );
+  return 0 == memcmp( &_11, &mat._11, 16 * sizeof( float ) );
 }
 
 TBOOL CMatrix4x4::operator !=( const CMatrix4x4& mat ) const
 {
-  return 0 != memcmp( &_11, &mat._11, 16 * sizeof( TF32 ) );
+  return 0 != memcmp( &_11, &mat._11, 16 * sizeof( float ) );
 }
 
 CMatrix3x3::CMatrix3x3( const CQuaternion &q )

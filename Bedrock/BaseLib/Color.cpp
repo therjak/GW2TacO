@@ -1,7 +1,7 @@
 #include "BaseLib.h"
 
 
-const CColor Lerp( const CColor a, const CColor b, const TF32 t )
+const CColor Lerp( const CColor a, const CColor b, const float t )
 {
   CColor c;
   for ( int32_t x = 0; x < 4; x++ )
@@ -59,11 +59,11 @@ CColor CColor::FromARGB( const uint32_t v )
   return res;
 }
 
-CColor CColor::FromFloat( const TF32 _r, const TF32 _g, const TF32 _b, const TF32 _a )
+CColor CColor::FromFloat( const float _r, const float _g, const float _b, const float _a )
 {
   CColor res;
 
-  TF32 c[ 4 ];
+  float c[ 4 ];
   c[ 0 ] = _r;
   c[ 1 ] = _g;
   c[ 2 ] = _b;

@@ -80,7 +80,7 @@ protected:
 
   virtual KDPair *AddNew( const KeyType &Key )
   {
-    TF32 Fill = ItemCount / (TF32)TableSize;
+    float Fill = ItemCount / (float)TableSize;
     if ( Fill >= HASHEXPANSIONTHRESHOLD )
       ResizeTable( TableSize * 2 );
 
@@ -196,7 +196,7 @@ public:
     // crashes. Moving it to after the delete occurred fixed the issue but
     // further investigation might be required.
 
-    TF32 Fill = ItemCount / (TF32)TableSize;
+    float Fill = ItemCount / (float)TableSize;
     if ( Fill < HASHCOLLAPSETHRESHOLD )
       ResizeTable( TableSize / 2 );
   }
