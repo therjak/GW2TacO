@@ -54,7 +54,7 @@ class CWBApplication : public CCoreWindowHandlerWin
   virtual TS32 GetKeyboardState();
 
   WBMOUSECLICKREPEATMODE ClickRepeaterMode;
-  TS64 NextRepeatedClickTime;
+  int64_t NextRepeatedClickTime;
 
   //////////////////////////////////////////////////////////////////////////
   // gui layout and style

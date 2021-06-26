@@ -26,12 +26,12 @@ public:
   CString ReadASCIIZ();
   virtual CString ReadLine();
 
-  virtual TS64 GetLength() const = NULL;
-  virtual TS64 GetOffset() const = NULL;
+  virtual int64_t GetLength() const = NULL;
+  virtual int64_t GetOffset() const = NULL;
   virtual TBOOL eof();
 
   virtual void SeekFromStart( TU64 lOff ) = NULL;
-  virtual void SeekRelative( TS64 lOff ) = NULL;
+  virtual void SeekRelative( int64_t lOff ) = NULL;
 };
 
 class CStreamReaderMemory : public CStreamReader
@@ -51,11 +51,11 @@ public:
   virtual TS32 Open( TCHAR *filename );
 
   virtual TU8 *GetData() const;
-  virtual TS64 GetLength() const;
-  virtual TS64 GetOffset() const;
+  virtual int64_t GetLength() const;
+  virtual int64_t GetOffset() const;
 
   virtual void SeekFromStart( TU64 lOff );
-  virtual void SeekRelative( TS64 lOff );
+  virtual void SeekRelative( int64_t lOff );
 };
 
 class CStreamReaderFile : public CStreamReader
@@ -71,9 +71,9 @@ public:
 
   TS32 Open( TCHAR *filename );
 
-  virtual TS64 GetLength() const;
-  virtual TS64 GetOffset() const;
+  virtual int64_t GetLength() const;
+  virtual int64_t GetOffset() const;
 
   virtual void SeekFromStart( TU64 lOff );
-  virtual void SeekRelative( TS64 lOff );
+  virtual void SeekRelative( int64_t lOff );
 };

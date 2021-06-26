@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 //basic type definitions
 
 typedef unsigned char		TU8;
@@ -9,7 +11,7 @@ typedef unsigned __int64	TU64;
 typedef char				TS8;
 typedef short				TS16;
 typedef int					TS32;
-typedef __int64				TS64;
+// typedef __int64				int64_t;
 typedef float				TF32;
 // typedef double				double;
 typedef unsigned char		TBOOL;

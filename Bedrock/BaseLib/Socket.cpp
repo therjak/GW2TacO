@@ -145,7 +145,7 @@ TU32 CSocket::Resolve( const TS8 *Address )
 //////////////////////////////////////////////////////////////////////////
 //streamreader functions
 
-TS64 CSocket::GetLength() const
+int64_t CSocket::GetLength() const
 {
   if ( Socket == INVALID_SOCKET )
     return 0;
@@ -154,7 +154,7 @@ TS64 CSocket::GetLength() const
   return count;
 }
 
-TS64 CSocket::GetOffset() const
+int64_t CSocket::GetOffset() const
 {
   return 0;
 }
@@ -163,7 +163,7 @@ void CSocket::SeekFromStart( TU64 lOff )
 {
 }
 
-void CSocket::SeekRelative( TS64 lOff )
+void CSocket::SeekRelative( int64_t lOff )
 {
 }
 
@@ -299,7 +299,7 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
     CString datastr = _T( "GET " ) + path + _T( " HTTP/1.1\r\nHost: " ) + host + _T( "\r\nConnection: close\r\n\r\n" );
     sock.Write( datastr.GetPointer(), datastr.Length() );
 
-    TS64 time = globalTimer.GetTime();
+    int64_t time = globalTimer.GetTime();
 
     while ( !sock.GetLength() )
       if ( globalTimer.GetTime() - time > 1000 ) break;

@@ -7,7 +7,7 @@ TU32 DictionaryHash( const TS32 &i )
 
 TU32 DictionaryHash( const void *i ) //hash for a pointer
 {
-  TS64 v = (TS64)i;
+  int64_t v = (int64_t)i;
 
   TS32 c;
 

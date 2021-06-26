@@ -158,7 +158,7 @@ CStreamReaderMemory::~CStreamReaderMemory()
 
 TS32 CStreamReaderMemory::ReadStream( void *lpBuf, TU32 nCount )
 {
-  TS64 bytestoread = max( 0, min( nCount, DataSize - Offset ) );
+  int64_t bytestoread = max( 0, min( nCount, DataSize - Offset ) );
   memcpy( lpBuf, Data + Offset, (size_t)bytestoread );
   Offset += bytestoread;
   return (TS32)bytestoread;
@@ -210,12 +210,12 @@ TU8 *CStreamReaderMemory::GetData() const
   return Data;
 }
 
-TS64 CStreamReaderMemory::GetLength() const
+int64_t CStreamReaderMemory::GetLength() const
 {
   return DataSize;
 }
 
-TS64 CStreamReaderMemory::GetOffset() const
+int64_t CStreamReaderMemory::GetOffset() const
 {
   return Offset;
 }
@@ -225,7 +225,7 @@ void CStreamReaderMemory::SeekFromStart( TU64 lOff )
   Offset = lOff;
 }
 
-void CStreamReaderMemory::SeekRelative( TS64 lOff )
+void CStreamReaderMemory::SeekRelative( int64_t lOff )
 {
   Offset = max( 0, min( DataSize, Offset + lOff ) );
 }
@@ -261,12 +261,12 @@ TS32 CStreamReaderFile::Open( TCHAR *Filename )
   return 1;
 }
 
-TS64 CStreamReaderFile::GetLength() const
+int64_t CStreamReaderFile::GetLength() const
 {
   return GetFileSize( File, NULL );
 }
 
-TS64 CStreamReaderFile::GetOffset() const
+int64_t CStreamReaderFile::GetOffset() const
 {
   return SetFilePointer( File, NULL, NULL, FILE_CURRENT );
 }
@@ -278,7 +278,7 @@ void CStreamReaderFile::SeekFromStart( TU64 lOff )
   DWORD res = SetFilePointer( File, li.LowPart, &li.HighPart, FILE_BEGIN );
 }
 
-void CStreamReaderFile::SeekRelative( TS64 lOff )
+void CStreamReaderFile::SeekRelative( int64_t lOff )
 {
   LARGE_INTEGER li;
   li.QuadPart = lOff;

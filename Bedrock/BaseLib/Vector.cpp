@@ -15,9 +15,9 @@ const TU32 Lerp( const TU32 v1, const TU32 v2, const TF32 t )
   return (TU32)( ( v2 - v1 )*t + v1 );
 }
 
-const TS64 Lerp( const TS64 v1, const TS64 v2, const TF32 t )
+const int64_t Lerp( const int64_t v1, const int64_t v2, const TF32 t )
 {
-  return (TS64)( ( v2 - v1 )*t + v1 );
+  return (int64_t)( ( v2 - v1 )*t + v1 );
 }
 
 const double Lerp( const double v1, const double v2, const TF32 t )

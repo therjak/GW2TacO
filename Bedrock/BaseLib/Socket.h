@@ -3,7 +3,7 @@
 class CSocket : public CStreamReader, public CStreamWriter
 {
 protected:
-  TS64 LastActivity;
+  int64_t LastActivity;
   SOCKET Socket;
 
   virtual TS32 ReadStream( void *lpBuf, TU32 nCount );
@@ -29,11 +29,11 @@ public:
   //////////////////////////////////////////////////////////////////////////
   //streamreader functions
 
-  virtual TS64 GetLength() const; //returns the currently available bytes in the socket
-  virtual TS64 GetOffset() const; //is always 0
+  virtual int64_t GetLength() const; //returns the currently available bytes in the socket
+  virtual int64_t GetOffset() const; //is always 0
 
   virtual void SeekFromStart( TU64 lOff ); //these do nothing
-  virtual void SeekRelative( TS64 lOff ); //these do nothing
+  virtual void SeekRelative( int64_t lOff ); //these do nothing
 
   TS32 ReadFull( void *lpBuf, TU32 nCount );
   virtual CString ReadLine() override;
