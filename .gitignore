@@ -49,3 +49,7 @@ out/UI.wbs
 out/UI.xml
 out/gw2Taco_internal.zip
 out/maptimer.xml
+/Bedrock/BaseLib/Debug_MultiByte
+/Bedrock/CoRE2/Debug_MultiByte
+/Bedrock/UtilLib/Debug_MultiByte
+/Bedrock/Whiteboard/Debug_MultiByte
