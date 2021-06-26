@@ -18,9 +18,9 @@ void __cdecl operator delete[]( void* pointer, const TS8* file, int32_t line );
 class CAllocationInfo
 {
 public:
-  TS8 *File;
-  int32_t Line;
-  int32_t Size;
+  TS8 *File = 0;
+  int32_t Line = 0;
+  int32_t Size = 0;
 
 #ifdef ENABLE_MALLOC_STACK_TRACE
   CStackTracker Stack;
