@@ -275,12 +275,12 @@ void CStreamReaderFile::SeekFromStart( uint64_t lOff )
 {
   LARGE_INTEGER li;
   li.QuadPart = lOff;
-  DWORD res = SetFilePointer( File, li.LowPart, &li.HighPart, FILE_BEGIN );
+  SetFilePointer( File, li.LowPart, &li.HighPart, FILE_BEGIN );
 }
 
 void CStreamReaderFile::SeekRelative( int64_t lOff )
 {
   LARGE_INTEGER li;
   li.QuadPart = lOff;
-  DWORD res = SetFilePointer( File, li.LowPart, &li.HighPart, FILE_CURRENT );
+  SetFilePointer( File, li.LowPart, &li.HighPart, FILE_CURRENT );
 }

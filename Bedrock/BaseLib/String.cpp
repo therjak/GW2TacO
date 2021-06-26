@@ -823,7 +823,6 @@ CStringArray CString::ExplodeByWhiteSpace() const
 {
   CStringArray aOut;
   int nPrevious = 0;
-  int nNext = 0;
 
   unsigned int x = 0;
 
@@ -865,7 +864,6 @@ CStringArrayMarkers CString::GetExplodeMarkersByWhiteSpace() const
 {
   CStringArrayMarkers aOut;
   int nPrevious = 0;
-  int nNext = 0;
 
   unsigned int x = 0;
 
@@ -1309,11 +1307,9 @@ void CString::URLEncode()
   if ( !String || !Length() ) return;
 
   int nLen = Length();
-  int nELen = 0;
 
   const TCHAR hex[] = _T( "0123456789abcdef" );
 
-  TCHAR escchars[] = GECCO_ESCAPECHARS;
   TCHAR * escapestring = new TCHAR[ nLen * 3 + 1 ];
   ZeroMemory( escapestring, nLen * 3 + 1 );
 
