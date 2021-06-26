@@ -65,9 +65,9 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8
     TU16 y;
     TU16 width;
     TU16 height;
-    TS16 xoffset;
-    TS16 yoffset;
-    TS16 xadvance;
+    int16_t xoffset;
+    int16_t yoffset;
+    int16_t xadvance;
     TU8 page;
     TU8 chnl;
   };
@@ -76,7 +76,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8
   {
     TU32 first;
     TU32 second;
-    TS16 amount;
+    int16_t amount;
   };
 
 #pragma pack(pop)
@@ -572,7 +572,7 @@ int32_t CWBFont::GetWidth( CString &String, TBOOL AdvanceLastChar, WBTEXTTRANSFO
   return GetWidth( String.GetPointer(), AdvanceLastChar, Transform, DoKerning, firstCharHack );
 }
 
-void CWBFont::AddKerningPair( TU16 First, TU16 Second, TS16 Amount )
+void CWBFont::AddKerningPair( TU16 First, TU16 Second, int16_t Amount )
 {
   Kerning[ CWBKerningPair( First, Second ) ] = Amount;
 }
@@ -591,7 +591,7 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
   Alphabet = new WBSYMBOL[ AlphabetSize ];
   memset( Alphabet, 0, AlphabetSize * sizeof( WBSYMBOL ) );
   for ( int32_t x = 0; x < AlphabetSize; x++ )
-    Alphabet[ x ].Char = (TS16)( x - 1 );
+    Alphabet[ x ].Char = (int16_t)( x - 1 );
 
   for ( int32_t x = 0; x < Description->Alphabet.NumItems(); x++ )
     if ( Description->Alphabet[ x ].UV.Area() > 0 )

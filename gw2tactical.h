@@ -77,17 +77,17 @@ struct MarkerTypeData
   POIBehavior behavior = POIBehavior::AlwaysVisible;
   CColor color = CColor( 0xffffffff );
 
-  TS16 resetLength = 0;
-  TS16 minSize = 5;
-  TS16 maxSize = 2048;
+  int16_t resetLength = 0;
+  int16_t minSize = 5;
+  int16_t maxSize = 2048;
 
-  TS16 iconFile = -1;
-  TS16 trailData = -1;
-  TS16 texture = -1;
-  TS16 toggleCategory = -1;
-  TS16 achievementId = -1;
-  TS16 achievementBit = -1;
-  TS16 info = -1;
+  int16_t iconFile = -1;
+  int16_t trailData = -1;
+  int16_t texture = -1;
+  int16_t toggleCategory = -1;
+  int16_t achievementId = -1;
+  int16_t achievementBit = -1;
+  int16_t info = -1;
 
   void Read( CXMLNode &n, TBOOL StoreSaveState );
   void Write( CXMLNode *n );
@@ -117,8 +117,8 @@ struct POI
   TBOOL External = false;
   TBOOL routeMember = false;
 
-  TS16 zipFile;
-  TS16 iconFile;
+  int16_t zipFile;
+  int16_t iconFile;
 
   GUID guid;
 
@@ -232,7 +232,7 @@ public:
   CString name;
   CString displayName;
 
-  TS16 zipFile;
+  int16_t zipFile;
 
   MarkerTypeData data;
   TBOOL KeepSaveState = false;

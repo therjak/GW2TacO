@@ -34,9 +34,9 @@ struct WBSYMBOLINPUT
 struct WBSYMBOL
 {
   WBATLASHANDLE Handle;
-  TS16 OffsetX, OffsetY;
+  int16_t OffsetX, OffsetY;
   TU16 SizeX, SizeY;
-  TS16 Advance;
+  int16_t Advance;
   TU16 Char;
 
   CRect calculatedContentRect;
@@ -45,7 +45,7 @@ struct WBSYMBOL
 struct WBKERNINGDATA
 {
   TU16 First, Second;
-  TS16 Amount;
+  int16_t Amount;
 };
 
 class CWBKerningPair
@@ -91,7 +91,7 @@ class CWBFont
   //CDictionary<TU16,WBSYMBOL> Alphabet;
   int32_t AlphabetSize = 0;
   WBSYMBOL *Alphabet;
-  CDictionary<CWBKerningPair, TS16> Kerning;
+  CDictionary<CWBKerningPair, int16_t> Kerning;
 
   int32_t LineHeight;
   int32_t Base;
@@ -102,7 +102,7 @@ class CWBFont
   TCHAR MissingChar;
 
   void AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect );
-  void AddKerningPair( TU16 First, TU16 Second, TS16 Amount );
+  void AddKerningPair( TU16 First, TU16 Second, int16_t Amount );
 
 public:
 
