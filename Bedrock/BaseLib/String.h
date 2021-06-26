@@ -133,8 +133,8 @@ public:
   CString Trimmed() const;
 
   static int32_t CompareNoCase( const CString &a, const CString &b );
-  static CString EncodeToBase64( TU8 *Data, int32_t Length );
-  void DecodeBase64( TU8 *&Data, int32_t &Length );
+  static CString EncodeToBase64( uint8_t *Data, int32_t Length );
+  void DecodeBase64( uint8_t *&Data, int32_t &Length );
 
   //////////////////////////////////////////////////////////////////////////
   // misc

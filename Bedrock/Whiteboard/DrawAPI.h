@@ -62,7 +62,7 @@ class CWBDrawAPI
   CPoint Offset; //screen space top left corner of the client rect for the currently drawn item
   CRect CropRect; //screen space window rect for the currently drawn item
   WBDRAWMODE DrawMode;
-  TU8 Opacity;
+  uint8_t Opacity;
   CWBApplication *App;
 
   CArray<WBGUIVERTEX> DisplayList;
@@ -139,7 +139,7 @@ public:
   CCoreDevice *GetDevice();
   CCoreConstantBuffer *GetResolutionData();
 
-  void SetOpacity( TU8 o );
+  void SetOpacity( uint8_t o );
   void SetRenderView( CRect r );
 
   void SetPixelShader( CCorePixelShader *shader );

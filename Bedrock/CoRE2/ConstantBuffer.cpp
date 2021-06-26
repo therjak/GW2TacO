@@ -23,8 +23,8 @@ void CCoreConstantBuffer::AddData(void *DataIn, int32_t Length)
 {
 	if (DataLength + Length > BufferLength)
 	{
-		TU8 *OldData = Data;
-		Data = new TU8[DataLength + Length];
+		uint8_t *OldData = Data;
+		Data = new uint8_t[DataLength + Length];
 
 		if (OldData)
 			memcpy(Data, OldData, DataLength);

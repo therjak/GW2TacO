@@ -436,7 +436,7 @@ TBOOL CWBDrawAPI::Initialize( CWBApplication *Application, CCoreDevice *Dev, CAt
     return false;
   }
 
-  TU16 *Locked = NULL;
+  uint16_t *Locked = NULL;
 
   if ( rectIndexBuffer->Lock( (void**)&Locked ) )
   {
@@ -918,7 +918,7 @@ void CWBDrawAPI::SetPixelShader( CCorePixelShader *shader )
   PxShader = shader;
 }
 
-void CWBDrawAPI::SetOpacity( TU8 o )
+void CWBDrawAPI::SetOpacity( uint8_t o )
 {
   Opacity = o;
 }

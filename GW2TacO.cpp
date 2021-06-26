@@ -1099,7 +1099,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         "Lmh1JmxjPVVTJml0ZW1fbmFtZT1HVzIrVGFjTytEZXZlbG9wbWVudCtTdXBwb3J0Jm5vX25vdGU9MCZjbj0mY3VycmVuY3lf"
         "Y29kZT1VU0QmYm49UFAtRG9uYXRpb25zQkY6YnRuX2RvbmF0ZUNDX0xHLmdpZjpOb25Ib3N0ZWQ=");
 
-      TU8* data = nullptr;
+      uint8_t* data = nullptr;
       int32_t dataLength = 0;
 
       string.DecodeBase64(data, dataLength);
@@ -1628,7 +1628,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     font->Write( API, infoline, startpos, 0xffffffff, WBTT_UPPERCASE, true );
     ypos += font->GetLineHeight();
 
-    TU8 *data2 = nullptr;
+    uint8_t *data2 = nullptr;
     int32_t size = 0;
     buildText2.DecodeBase64( data2, size );
     CString build( (TS8*)data2, size );

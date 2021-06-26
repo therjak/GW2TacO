@@ -3,7 +3,7 @@
 
 #define HIMETRIC_INCH	2540
 
-TU8 *DecompressImage( const TU8 *ImageData, int32_t ImageDataSize, int32_t &XSize, int32_t &YSize )
+uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32_t &XSize, int32_t &YSize )
 {
   if ( !ImageData || !ImageDataSize ) return 0;
 
@@ -73,7 +73,7 @@ TU8 *DecompressImage( const TU8 *ImageData, int32_t ImageDataSize, int32_t &XSiz
   XSize = MulDiv( hmWidth, GetDeviceCaps( mdc, LOGPIXELSX ), HIMETRIC_INCH );
   YSize = MulDiv( hmHeight, GetDeviceCaps( mdc, LOGPIXELSY ), HIMETRIC_INCH );
 
-  TU8 *Image = new TU8[ XSize*YSize * 4 ];
+  uint8_t *Image = new uint8_t[ XSize*YSize * 4 ];
   memset( Image, 0, XSize*YSize * 4 );
 
   HBITMAP bm = CreateCompatibleBitmap( hdc, XSize, YSize );

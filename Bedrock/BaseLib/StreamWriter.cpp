@@ -18,17 +18,17 @@ TBOOL CStreamWriter::Write( void* lpBuf, uint32_t nCount )
 
   //bitstream mode
   for ( uint32_t x = 0; x < nCount; x++ )
-    BASEASSERT( WriteBits( ( (TU8 *)lpBuf )[ x ], 8 ) == 1 );
+    BASEASSERT( WriteBits( ( (uint8_t *)lpBuf )[ x ], 8 ) == 1 );
 
   return true;
 }
 
-TBOOL CStreamWriter::WriteByte( TU8 data )
+TBOOL CStreamWriter::WriteByte( uint8_t data )
 {
   return Write( &data, 1 );
 }
 
-TBOOL CStreamWriter::WriteWord( TU16 data )
+TBOOL CStreamWriter::WriteWord( uint16_t data )
 {
   return Write( &data, 2 );
 }
@@ -57,7 +57,7 @@ TBOOL CStreamWriter::WriteBits( uint32_t data, uint32_t BitCount )
     uint32_t count = min( 8 - writerBitOffset, BitCount );
     uint32_t mask = ( 1 << count ) - 1;
 
-    writerCurrentChar = (TU8)( ( writerCurrentChar & ( ~( mask << writerBitOffset ) ) ) | ( ( ( data >> ( BitCount - count ) ) & mask ) << writerBitOffset ) );
+    writerCurrentChar = (uint8_t)( ( writerCurrentChar & ( ~( mask << writerBitOffset ) ) ) | ( ( ( data >> ( BitCount - count ) ) & mask ) << writerBitOffset ) );
 
     BitCount -= count;
     writerBitOffset += count;
@@ -161,7 +161,7 @@ TBOOL CStreamWriter::WriteASCIIZ( CString &s )
 
 CStreamWriterMemory::CStreamWriterMemory() : CStreamWriter()
 {
-  Data = new TU8[ 1024 ];
+  Data = new uint8_t[ 1024 ];
   BufferSize = 1024;
   DataLength = 0;
 }
@@ -177,8 +177,8 @@ int32_t CStreamWriterMemory::WriteStream( void* lpBuf, uint32_t nCount )
   if ( DataLength + nCount > BufferSize )
   {
     BufferSize = (uint32_t)( ( BufferSize + nCount )*1.2f );
-    TU8 *temp = Data;
-    Data = new TU8[ BufferSize ];
+    uint8_t *temp = Data;
+    Data = new uint8_t[ BufferSize ];
     memcpy( Data, temp, DataLength );
     SAFEDELETEA( temp );
   }
@@ -189,7 +189,7 @@ int32_t CStreamWriterMemory::WriteStream( void* lpBuf, uint32_t nCount )
   return nCount;
 }
 
-TU8 *CStreamWriterMemory::GetData()
+uint8_t *CStreamWriterMemory::GetData()
 {
   return Data;
 }
@@ -205,7 +205,7 @@ void CStreamWriterMemory::Flush()
   BufferSize = 0;
   DataLength = 0;
 
-  Data = new TU8[ 1024 ];
+  Data = new uint8_t[ 1024 ];
   BufferSize = 1024;
   DataLength = 0;
 }

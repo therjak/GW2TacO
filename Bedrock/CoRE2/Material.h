@@ -24,14 +24,14 @@ class CCoreMaterialParameter
 	COREMATERIALPARAMETERSCOPE Scope;
 	COREMATERIALPARAMETERTYPE Type;
 	int32_t ValueSize;
-	TU8 *Value;
+	uint8_t *Value;
 
 public:
 
 	CCoreMaterialParameter();
 	virtual ~CCoreMaterialParameter();
 	INLINE COREMATERIALPARAMETERSCOPE &GetScope();
-	INLINE TU8 *&GetData();
+	INLINE uint8_t *&GetData();
 	INLINE int32_t &GetDataSize();
 	INLINE CString &GetName();
 	void SetName(CString &s);

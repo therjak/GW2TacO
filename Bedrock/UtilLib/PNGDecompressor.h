@@ -1,10 +1,10 @@
 #pragma once
 #include "../BaseLib/BaseLib.h"
 
-TBOOL DecompressPNG( const TU8 *IData, int32_t IDataSize, TU8 *&Image, int32_t &XRes, int32_t &YRes );
-void ARGBtoABGR( TU8 *Image, int32_t XRes, int32_t YRes );
-void ClearZeroAlpha( TU8 *Image, int32_t XRes, int32_t YRes );
+TBOOL DecompressPNG( const uint8_t *IData, int32_t IDataSize, uint8_t *&Image, int32_t &XRes, int32_t &YRes );
+void ARGBtoABGR( uint8_t *Image, int32_t XRes, int32_t YRes );
+void ClearZeroAlpha( uint8_t *Image, int32_t XRes, int32_t YRes );
 
-TBOOL ExportPNG( TU8 *IData, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile );
-TBOOL ExportTga( TU8 *IData, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile );
-TBOOL ExportBmp( TU8 *Image, int32_t XRes, int32_t YRes, CString OutFile );
+TBOOL ExportPNG( uint8_t *IData, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile );
+TBOOL ExportTga( uint8_t *IData, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile );
+TBOOL ExportBmp( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile );

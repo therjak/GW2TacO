@@ -21,7 +21,7 @@ int32_t CStreamReader::Read( void *lpBuf, uint32_t nCount )
 
   //bitstream mode
   for ( uint32_t x = 0; x < nCount; x++ )
-    ( (TU8*)lpBuf )[ x ] = ReadBits( 8 );
+    ( (uint8_t*)lpBuf )[ x ] = ReadBits( 8 );
 
   return nCount;
 }
@@ -33,17 +33,17 @@ uint32_t CStreamReader::ReadDWord()
   return i;
 }
 
-TU16 CStreamReader::ReadWord()
+uint16_t CStreamReader::ReadWord()
 {
-  TU16 i = 0;
-  BASEASSERT( Read( &i, sizeof( TU16 ) ) == sizeof( TU16 ) );
+  uint16_t i = 0;
+  BASEASSERT( Read( &i, sizeof( uint16_t ) ) == sizeof( uint16_t ) );
   return i;
 }
 
-TU8 CStreamReader::ReadByte()
+uint8_t CStreamReader::ReadByte()
 {
-  TU8 i = 0;
-  BASEASSERT( Read( &i, sizeof( TU8 ) ) == sizeof( TU8 ) );
+  uint8_t i = 0;
+  BASEASSERT( Read( &i, sizeof( uint8_t ) ) == sizeof( uint8_t ) );
   return i;
 }
 
@@ -76,7 +76,7 @@ uint32_t CStreamReader::ReadBits( uint32_t BitCount )
     uint32_t count = min( 8 - readerBitOffset, BitCount );
     uint32_t mask = ( 1 << count ) - 1;
 
-    TU8 bits = readerLastChar >> readerBitOffset;
+    uint8_t bits = readerLastChar >> readerBitOffset;
     result |= ( bits&mask ) << ( BitCount - count );
     BitCount -= count;
 
@@ -164,7 +164,7 @@ int32_t CStreamReaderMemory::ReadStream( void *lpBuf, uint32_t nCount )
   return (int32_t)bytestoread;
 }
 
-int32_t CStreamReaderMemory::Open( TU8 *data, uint32_t size )
+int32_t CStreamReaderMemory::Open( uint8_t *data, uint32_t size )
 {
   if ( !data || !size ) return 0;
 
@@ -172,7 +172,7 @@ int32_t CStreamReaderMemory::Open( TU8 *data, uint32_t size )
   DataSize = size;
   Offset = 0;
 
-  Data = new TU8[ size ];
+  Data = new uint8_t[ size ];
   memcpy( Data, data, size );
 
   return 1;
@@ -185,7 +185,7 @@ int32_t CStreamReaderMemory::Open( TCHAR *Filename )
 
   int32_t tDataSize = GetFileSize( hFile, NULL );
 
-  TU8 *tData = new TU8[ tDataSize ];
+  uint8_t *tData = new uint8_t[ tDataSize ];
   DWORD nRead = 0;
   BOOL b = ReadFile( hFile, tData, tDataSize, &nRead, NULL );
 
@@ -205,7 +205,7 @@ int32_t CStreamReaderMemory::Open( TCHAR *Filename )
   return nRead == tDataSize;
 }
 
-TU8 *CStreamReaderMemory::GetData() const
+uint8_t *CStreamReaderMemory::GetData() const
 {
   return Data;
 }

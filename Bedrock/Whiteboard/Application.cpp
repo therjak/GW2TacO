@@ -793,11 +793,11 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
     CXMLNode n = r.GetChild( _T( "image" ), x );
     CString img = n.GetAttributeAsString( _T( "image" ) );
 
-    TU8 *Data = NULL;
+    uint8_t *Data = NULL;
     int32_t Size = 0;
     img.DecodeBase64( Data, Size );
 
-    TU8 *Image;
+    uint8_t *Image;
     int32_t XRes, YRes;
     if ( DecompressPNG( Data, Size, Image, XRes, YRes ) )
     {
@@ -850,15 +850,15 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
     CString img = n.GetAttributeAsString( _T( "image" ) );
     CString bin = n.GetAttributeAsString( _T( "binary" ) );
 
-    TU8 *Dataimg = NULL;
-    TU8 *Databin = NULL;
+    uint8_t *Dataimg = NULL;
+    uint8_t *Databin = NULL;
     int32_t Sizeimg = 0;
     int32_t Sizebin = 0;
     img.DecodeBase64( Dataimg, Sizeimg );
     bin.DecodeBase64( Databin, Sizebin );
 
     int32_t XRes, YRes;
-    TU8 *Image;
+    uint8_t *Image;
     if ( DecompressPNG( Dataimg, Sizeimg, Image, XRes, YRes ) )
     {
       ARGBtoABGR( Image, XRes, YRes );

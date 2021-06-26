@@ -36,13 +36,13 @@ public:
 
   INLINE CCoreTexture2D( CCoreDevice *Device ) : CCoreTexture( Device ) { XRes = YRes = 0; Format = COREFMT_UNKNOWN; }
 
-  virtual TBOOL Create( const int32_t XRes, const int32_t YRes, const TU8 *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false ) = 0;
-  virtual TBOOL Create( const TU8 *Data, int32_t const Size ) = 0;
+  virtual TBOOL Create( const int32_t XRes, const int32_t YRes, const uint8_t *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false ) = 0;
+  virtual TBOOL Create( const uint8_t *Data, int32_t const Size ) = 0;
   virtual TBOOL CreateDepthBuffer( const int32_t XRes, const int32_t YRes, const int32_t MSCount ) = 0;
   virtual TBOOL Lock( void **Result, int32_t &pitch ) = 0;
   virtual TBOOL UnLock() = 0;
 
-  virtual TBOOL Update( const TU8 *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel = 4 ) = 0;
+  virtual TBOOL Update( const uint8_t *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel = 4 ) = 0;
 
   virtual int32_t GetXRes() { return XRes; }
   virtual int32_t GetYRes() { return YRes; }

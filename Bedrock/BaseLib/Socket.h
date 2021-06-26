@@ -54,4 +54,4 @@ public:
 int32_t InitWinsock();
 void DeinitWinsock();
 
-TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize );
+uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize );

@@ -21,9 +21,9 @@ public:
 	CCoreDX11VertexBuffer(CCoreDX11Device *Device);
 	virtual ~CCoreDX11VertexBuffer();
 
-	virtual TBOOL Create(const TU8 *Data, const uint32_t Size);
+	virtual TBOOL Create(const uint8_t *Data, const uint32_t Size);
 	virtual TBOOL CreateDynamic(const uint32_t Size);
-	virtual TBOOL Update(const int32_t Offset, const TU8 *Data, const uint32_t Size);
+	virtual TBOOL Update(const int32_t Offset, const uint8_t *Data, const uint32_t Size);
 	virtual TBOOL Lock(void **Result);
 	virtual TBOOL Lock(void **Result, const uint32_t Offset, const int32_t size, const int32_t Flags = 0);
 	virtual TBOOL UnLock();

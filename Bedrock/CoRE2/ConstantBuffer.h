@@ -18,7 +18,7 @@ class CCoreConstantBuffer : public CCoreResource
 
 protected:
 
-	TU8 *Data;
+	uint8_t *Data;
 	int32_t BufferLength;
 	int32_t DataLength;
 

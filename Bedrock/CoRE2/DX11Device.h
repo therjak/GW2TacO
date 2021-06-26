@@ -57,14 +57,14 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// texture functions
 
-	virtual CCoreTexture2D *CreateTexture2D(const int32_t XRes, const int32_t YRes, const TU8 *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
-	virtual CCoreTexture2D *CreateTexture2D(const TU8 *Data, const int32_t Size);
+	virtual CCoreTexture2D *CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
+	virtual CCoreTexture2D *CreateTexture2D(const uint8_t *Data, const int32_t Size);
 	virtual CCoreTexture2D *CopyTexture(CCoreTexture2D *Texture);
 
 	//////////////////////////////////////////////////////////////////////////
 	// vertexbuffer functions
 
-	virtual CCoreVertexBuffer *CreateVertexBuffer(const TU8 *Data, const int32_t Size);
+	virtual CCoreVertexBuffer *CreateVertexBuffer(const uint8_t *Data, const int32_t Size);
 	virtual CCoreVertexBuffer *CreateVertexBufferDynamic(const int32_t Size);
 
 	//////////////////////////////////////////////////////////////////////////
@@ -82,8 +82,8 @@ public:
 
 	virtual CCoreVertexShader *CreateVertexShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
 	virtual CCorePixelShader *CreatePixelShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
-  virtual CCoreVertexShader *CreateVertexShaderFromBlob( TU8 *Code, int32_t CodeSize );
-  virtual CCorePixelShader *CreatePixelShaderFromBlob( TU8 *Code, int32_t CodeSize );
+  virtual CCoreVertexShader *CreateVertexShaderFromBlob( uint8_t *Code, int32_t CodeSize );
+  virtual CCorePixelShader *CreatePixelShaderFromBlob( uint8_t *Code, int32_t CodeSize );
   virtual CCoreGeometryShader *CreateGeometryShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL );
 	virtual CCoreDomainShader *CreateDomainShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
 	virtual CCoreHullShader *CreateHullShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);

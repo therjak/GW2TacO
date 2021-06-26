@@ -45,7 +45,7 @@ TBOOL CCoreDX11Texture2D::SetToSampler( const CORESAMPLER smp )
   return true;
 }
 
-TBOOL CCoreDX11Texture2D::Create( const int32_t xres, const int32_t yres, const TU8 *Data, const TS8 BytesPerPixel, const COREFORMAT format, const TBOOL rendertarget )
+TBOOL CCoreDX11Texture2D::Create( const int32_t xres, const int32_t yres, const uint8_t *Data, const TS8 BytesPerPixel, const COREFORMAT format, const TBOOL rendertarget )
 {
   if ( xres <= 0 || yres <= 0 || format == COREFMT_UNKNOWN ) return false;
   Release();
@@ -108,7 +108,7 @@ TBOOL CCoreDX11Texture2D::Create( const int32_t xres, const int32_t yres, const 
   return true;
 }
 
-TBOOL CCoreDX11Texture2D::Create( const TU8 *Data, const int32_t Size )
+TBOOL CCoreDX11Texture2D::Create( const uint8_t *Data, const int32_t Size )
 {
   TBOOL ViewCreated = false;
 
@@ -127,7 +127,7 @@ TBOOL CCoreDX11Texture2D::Create( const TU8 *Data, const int32_t Size )
 #else
 
   int32_t xr, yr;
-  TU8 *Img = DecompressImage( Data, Size, xr, yr );
+  uint8_t *Img = DecompressImage( Data, Size, xr, yr );
 
   if ( !Img )
   {
@@ -213,7 +213,7 @@ void CCoreDX11Texture2D::OnDeviceReset()
     BASEASSERT( Create( XRes, YRes, NULL, 4, Format, RenderTarget ) );
 }
 
-TBOOL CCoreDX11Texture2D::Update( const TU8 *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel )
+TBOOL CCoreDX11Texture2D::Update( const uint8_t *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel )
 {
   if ( !TextureHandle ) return false;
   if ( !View ) return false;
@@ -299,11 +299,11 @@ float degammafloat( float f )
   return 1.055f*powf( f, 1 / 2.4f ) - 0.055f;
 }
 
-TU16 degammaint16( TU16 f )
+uint16_t degammaint16( uint16_t f )
 {
   float tf = f / 65535.0f;
 
-  return (TU16)( degammafloat( tf ) * 65535 );
+  return (uint16_t)( degammafloat( tf ) * 65535 );
 }
 
 void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma )
@@ -359,12 +359,12 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
     UINT                     miscFlags2;
   };
 
-  TU8 *Data = (TU8*)Writer.GetData();
+  uint8_t *Data = (uint8_t*)Writer.GetData();
   DDSHEAD head;
   memcpy( &head, Data, sizeof( DDSHEAD ) );
   Data += head.dwSize + 4;
 
-  TU8 *image = new TU8[ head.dwWidth*head.dwHeight * 4 ];
+  uint8_t *image = new uint8_t[ head.dwWidth*head.dwHeight * 4 ];
 
   switch ( head.dwFourCC )
   {
@@ -394,7 +394,7 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
     break;
   case 36:
   {
-    TU16 *inimg = (TU16*)Data;
+    uint16_t *inimg = (uint16_t*)Data;
     for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
       image[ x ] = ( !degamma ? inimg[ x ] : degammaint16( inimg[ x ] ) ) / 256;
   }
@@ -408,17 +408,17 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
     if ( !degamma )
     {
       for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
-        image[ x ] = (TU8)max( 0, min( 255, img2[ x ] * 255 ) );
+        image[ x ] = (uint8_t)max( 0, min( 255, img2[ x ] * 255 ) );
     }
     else
     {
       for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; )
       {
         for ( int y = 0; y < 3; y++, x++ )
-          image[ x ] = (TU8)max( 0, min( 255, degammafloat( img2[ x ] ) * 255 ) );
+          image[ x ] = (uint8_t)max( 0, min( 255, degammafloat( img2[ x ] ) * 255 ) );
 
         x++;
-        image[ x ] = (TU8)max( 0, min( 255, img2[ x ] * 255 ) );
+        image[ x ] = (uint8_t)max( 0, min( 255, img2[ x ] * 255 ) );
       }
     }
 
@@ -1043,7 +1043,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
 #define DDS_PAL8        0x00000020  // DDPF_PALETTEINDEXED8
 
 #ifndef MAKEFOURCC
-#define MAKEFOURCC(ch0, ch1, ch2, ch3) ((uint32_t)(TU8)(ch0) | ((uint32_t)(TU8)(ch1) << 8) | ((uint32_t)(TU8)(ch2) << 16) | ((uint32_t)(TU8)(ch3) << 24 ))
+#define MAKEFOURCC(ch0, ch1, ch2, ch3) ((uint32_t)(uint8_t)(ch0) | ((uint32_t)(uint8_t)(ch1) << 8) | ((uint32_t)(uint8_t)(ch2) << 16) | ((uint32_t)(uint8_t)(ch3) << 24 ))
 #endif // !MAKEFOURCC
 
 #define DDS_HEADER_FLAGS_TEXTURE        0x00001007  // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT 
@@ -1177,7 +1177,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
 
   // Setup header
   const size_t MAX_HEADER_SIZE = sizeof( uint32_t ) + sizeof( DDS_HEADER ) + sizeof( DDS_HEADER_DXT10 );
-  TU8 fileHeader[ MAX_HEADER_SIZE ];
+  uint8_t fileHeader[ MAX_HEADER_SIZE ];
 
   *( (uint32_t*)( &fileHeader[ 0 ] ) ) = DDS_MAGIC;
 
@@ -1240,7 +1240,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
     memcpy_s( &header->ddspf, sizeof( header->ddspf ), &DDSPF_DX10, sizeof( DDS_PIXELFORMAT ) );
 
     headerSize += sizeof( DDS_HEADER_DXT10 );
-    extHeader = (DDS_HEADER_DXT10*)( (TU8*)( &fileHeader[ 0 ] ) + sizeof( uint32_t ) + sizeof( DDS_HEADER ) );
+    extHeader = (DDS_HEADER_DXT10*)( (uint8_t*)( &fileHeader[ 0 ] ) + sizeof( uint32_t ) + sizeof( DDS_HEADER ) );
     memset( extHeader, 0, sizeof( DDS_HEADER_DXT10 ) );
     extHeader->dxgiFormat = desc.Format;
     extHeader->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
@@ -1263,7 +1263,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   }
 
   // Setup pixels
-  TU8 *pixels = new TU8[ slicePitch ];// (new (std::nothrow) TU8[slicePitch]);
+  uint8_t *pixels = new uint8_t[ slicePitch ];// (new (std::nothrow) uint8_t[slicePitch]);
   if ( !pixels )
   {
     SAFEDELETEA( pixels );
@@ -1280,7 +1280,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
     return hr;
   }
 
-  auto sptr = (TU8*)( mapped.pData );
+  auto sptr = (uint8_t*)( mapped.pData );
   if ( !sptr )
   {
     pContext->Unmap( pStaging, 0 );
@@ -1289,7 +1289,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
     return E_POINTER;
   }
 
-  TU8* dptr = pixels;
+  uint8_t* dptr = pixels;
 
   size_t msize = min( rowPitch, mapped.RowPitch );
   for ( size_t h = 0; h < rowCount; ++h )

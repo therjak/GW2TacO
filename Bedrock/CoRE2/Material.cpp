@@ -42,7 +42,7 @@ void CCoreMaterialParameter::SetData(int32_t Size, void *Data)
 	SAFEDELETE(Value);
 	ValueSize = Size;
 	if (!Size) Value = NULL;
-	Value = new TU8[Size];
+	Value = new uint8_t[Size];
 	memcpy(Value, Data, Size);
 }
 
@@ -71,7 +71,7 @@ INLINE int32_t & CCoreMaterialParameter::GetDataSize()
 	return ValueSize;
 }
 
-INLINE TU8 *& CCoreMaterialParameter::GetData()
+INLINE uint8_t *& CCoreMaterialParameter::GetData()
 {
 	return Value;
 }

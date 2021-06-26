@@ -333,7 +333,7 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture( const CString& fname, const CString
           mz_zip_archive_file_stat stat;
           if (mz_zip_reader_file_stat(zip, idx, &stat) && stat.m_uncomp_size > 0)
           {
-            TU8* data = new TU8[(int32_t)stat.m_uncomp_size];
+            uint8_t* data = new uint8_t[(int32_t)stat.m_uncomp_size];
 
             if (mz_zip_reader_extract_to_mem(zip, idx, data, (int32_t)stat.m_uncomp_size, 0))
             {
@@ -798,7 +798,7 @@ void GW2Trail::Build( CCoreDevice* d, int32_t mapID, float* points, int pointCou
     vertexCount += 2;
   }
 
-  trailMesh = dev->CreateVertexBuffer( (TU8*)vertices, vertexCount * sizeof( GW2TrailVertex ) );
+  trailMesh = dev->CreateVertexBuffer( (uint8_t*)vertices, vertexCount * sizeof( GW2TrailVertex ) );
   length = pointCount * 2;
   idxBuf = dev->CreateIndexBuffer( ( pointCount - 1 ) * 6, 4 );
 
@@ -928,7 +928,7 @@ TBOOL GW2Trail::Import( CString& fileName, const CString& zipFile, TBOOL keepPoi
         mz_zip_archive_file_stat stat;
         if ( mz_zip_reader_file_stat( zip, idx, &stat ) && stat.m_uncomp_size > 0 )
         {
-          TU8* data = new TU8[ (int32_t)stat.m_uncomp_size ];
+          uint8_t* data = new uint8_t[ (int32_t)stat.m_uncomp_size ];
 
           if ( mz_zip_reader_extract_to_mem( zip, idx, data, (int32_t)stat.m_uncomp_size, 0 ) )
           {

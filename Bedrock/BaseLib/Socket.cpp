@@ -286,11 +286,11 @@ void DeinitWinsock()
 //////////////////////////////////////////////////////////////////////////
 // helper functions
 
-TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize )
+uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 {
   CSocket sock;
 
-  TU8 *result = NULL;
+  uint8_t *result = NULL;
   ContentSize = 0;
 
   if ( sock.Connect( host, 80 ) )
@@ -308,7 +308,7 @@ TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 
     if ( len )
     {
-      TU8 *headerdata = new TU8[ len + 1 ];
+      uint8_t *headerdata = new uint8_t[ len + 1 ];
       memset( headerdata, 0, len + 1 );
       sock.ReadFull( headerdata, len );
 
@@ -349,7 +349,7 @@ TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 
       if ( currentdatasize > 0 )
       {
-        result = new TU8[ currentdatasize ];
+        result = new uint8_t[ currentdatasize ];
         memcpy( result, headerdata + contentstart, currentdatasize );
       }
 
@@ -358,7 +358,7 @@ TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize )
         int32_t dlen = (int32_t)sock.GetLength();
         if ( dlen )
         {
-          TU8 *newdata = new TU8[ currentdatasize + dlen ];
+          uint8_t *newdata = new uint8_t[ currentdatasize + dlen ];
           if ( result )
             memcpy( newdata, result, currentdatasize );
           int32_t numread = sock.ReadFull( newdata + currentdatasize, dlen );

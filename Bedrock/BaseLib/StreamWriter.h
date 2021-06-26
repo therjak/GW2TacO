@@ -3,7 +3,7 @@
 class CStreamWriter
 {
   uint32_t writerBitOffset;
-  TU8 writerCurrentChar;
+  uint8_t writerCurrentChar;
   virtual int32_t WriteStream( void* lpBuf, uint32_t nCount ) = 0;
 
 public:
@@ -13,8 +13,8 @@ public:
   TBOOL Write( void* lpBuf, uint32_t nCount );
   TBOOL WriteQWord( uint64_t data );
   TBOOL WriteDWord( uint32_t data );
-  TBOOL WriteWord( TU16 data );
-  TBOOL WriteByte( TU8 data );
+  TBOOL WriteWord( uint16_t data );
+  TBOOL WriteByte( uint8_t data );
   TBOOL WriteTF32( TF32 data );
   TBOOL WriteBits( uint32_t data, uint32_t bitcount );
   TBOOL WriteBool( TBOOL data );
@@ -29,7 +29,7 @@ public:
 
 class CStreamWriterMemory : public CStreamWriter
 {
-  TU8 *Data;
+  uint8_t *Data;
   uint32_t BufferSize;
   uint32_t DataLength;
 
@@ -39,7 +39,7 @@ public:
   CStreamWriterMemory();
   virtual ~CStreamWriterMemory();
 
-  TU8 *GetData();
+  uint8_t *GetData();
   uint32_t GetLength();
 
   void Flush();

@@ -650,7 +650,7 @@ void FetchMarkerPackOnline( CString& ourl )
   LOG_NFO( "[GW2TacO] Trying to fetch marker pack %s", ourl.Substring( pos ).GetPointer() );
 
   CString url = ourl.Substring( pos + 21 );
-  TU8* urlPtr = new TU8[ url.Length() + 1 ];
+  uint8_t* urlPtr = new uint8_t[ url.Length() + 1 ];
   memset( urlPtr, 0, url.Length() + 1 );
   memcpy( urlPtr, url.GetPointer(), url.Length() );
 

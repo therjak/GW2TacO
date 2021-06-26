@@ -172,11 +172,11 @@ WBATLASHANDLE GetMapIcon( CWBApplication *App, CString &filename, const CString 
           mz_zip_archive_file_stat stat;
           if (mz_zip_reader_file_stat(zip, idx, &stat) && stat.m_uncomp_size > 0)
           {
-            TU8* data = new TU8[(int32_t)stat.m_uncomp_size];
+            uint8_t* data = new uint8_t[(int32_t)stat.m_uncomp_size];
 
             if (mz_zip_reader_extract_to_mem(zip, idx, data, (int32_t)stat.m_uncomp_size, 0))
             {
-              TU8* imageData = nullptr;
+              uint8_t* imageData = nullptr;
               int32_t xres, yres;
               if (DecompressPNG(data, (int32_t)stat.m_uncomp_size, imageData, xres, yres))
               {
@@ -215,7 +215,7 @@ WBATLASHANDLE GetMapIcon( CWBApplication *App, CString &filename, const CString 
     return DefaultIconHandle;
   }
 
-  TU8 *imageData = nullptr;
+  uint8_t *imageData = nullptr;
   int32_t xres, yres;
   if (!DecompressPNG(f.GetData(), (int32_t)f.GetLength(), imageData, xres, yres))
   {
@@ -240,7 +240,7 @@ CArray<POIRoute> Routes;
 
 uint32_t DictionaryHash( const GUID &i )
 {
-  TU8 *dta = (TU8*)( &i );
+  uint8_t *dta = (uint8_t*)( &i );
   uint32_t Hash = 5381;
   for ( int x = 0; x < sizeof( GUID ); x++ )
     Hash = ( ( Hash << 5 ) + Hash ) + dta[ x ]; // hash * 33 + c
@@ -249,7 +249,7 @@ uint32_t DictionaryHash( const GUID &i )
 
 uint32_t DictionaryHash( const POIActivationDataKey &i )
 {
-  TU8 *dta = (TU8*)( &i );
+  uint8_t *dta = (uint8_t*)( &i );
   uint32_t Hash = 5381;
   for ( int x = 0; x < sizeof( POIActivationDataKey ); x++ )
     Hash = ( ( Hash << 5 ) + Hash ) + dta[ x ]; // hash * 33 + c
@@ -664,9 +664,9 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
   {
     CColor col = poi.typeData.color;
     if ( icon != DefaultIconHandle )
-      col.A() = TU8( col.A() * Alpha * alphaMultiplier * mapFade * globalOpacity );
+      col.A() = uint8_t( col.A() * Alpha * alphaMultiplier * mapFade * globalOpacity );
     else
-      col.A() = TU8( col.A() * mapFade * globalOpacity);
+      col.A() = uint8_t( col.A() * mapFade * globalOpacity);
     API->DrawAtlasElement( icon, rect, false, false, true, true, col );
   }
 
@@ -684,8 +684,8 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
       p = f->GetTextPosition( wvwObjectiveName.GetPointer(), rect, WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE, false ) - CPoint( 0, f->GetLineHeight() );
       for ( int32_t x = 0; x < 3; x++ )
         for ( int32_t y = 0; y < 3; y++ )
-          f->Write( API, wvwObjectiveName, p + CPoint( x - 1, y - 1 ), CColor( 0, 0, 0, TU8( 255 * alphaMultiplier * globalOpacity * mapFade / 2.0f ) ), WBTT_UPPERCASE, false );
-      f->Write( API, wvwObjectiveName, p, CColor( 255, 255, 0, TU8( 255 * alphaMultiplier * mapFade * globalOpacity) ), WBTT_UPPERCASE, false );
+          f->Write( API, wvwObjectiveName, p + CPoint( x - 1, y - 1 ), CColor( 0, 0, 0, uint8_t( 255 * alphaMultiplier * globalOpacity * mapFade / 2.0f ) ), WBTT_UPPERCASE, false );
+      f->Write( API, wvwObjectiveName, p, CColor( 255, 255, 0, uint8_t( 255 * alphaMultiplier * mapFade * globalOpacity) ), WBTT_UPPERCASE, false );
     }
   }
 
@@ -722,23 +722,23 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
       {
         CColor col = 0xffffffff;
         if ( icon != DefaultIconHandle )
-          col.A() = TU8( col.A() * Alpha * alphaMultiplier * mapFade * globalOpacity);
+          col.A() = uint8_t( col.A() * Alpha * alphaMultiplier * mapFade * globalOpacity);
         else
-          col.A() = TU8( col.A() * mapFade * globalOpacity);
+          col.A() = uint8_t( col.A() * mapFade * globalOpacity);
         API->DrawAtlasElement( forbiddenIconHandle, rect, false, false, true, true, col );
       }
 
       p = f->GetTextPosition( txt.GetPointer(), rect, WBTA_CENTERX, WBTA_BOTTOM, WBTT_NONE, false ) + CPoint( 0, f->GetLineHeight() + offset );
       for ( int32_t x = 0; x < 3; x++ )
         for ( int32_t y = 0; y < 3; y++ )
-          f->Write( API, txt, p + CPoint( x - 1, y - 1 ), CColor( 0, 0, 0, TU8( 255 * alphaMultiplier * globalOpacity * mapFade / 2.0f ) ), WBTT_NONE, false );
-      f->Write( API, txt, p, CColor( 255, 255, 0, TU8( 255 * alphaMultiplier * mapFade * globalOpacity) ), WBTT_NONE, false );
+          f->Write( API, txt, p + CPoint( x - 1, y - 1 ), CColor( 0, 0, 0, uint8_t( 255 * alphaMultiplier * globalOpacity * mapFade / 2.0f ) ), WBTT_NONE, false );
+      f->Write( API, txt, p, CColor( 255, 255, 0, uint8_t( 255 * alphaMultiplier * mapFade * globalOpacity) ), WBTT_NONE, false );
     }
     else
     {
       p = f->GetTextPosition( txt.GetPointer(), rect, WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, false );
       p.y += offset;
-      f->Write( API, txt, p, CColor( 255, 255, 0, TU8( 255 * mapFade * globalOpacity ) ), WBTT_NONE, false );
+      f->Write( API, txt, p, CColor( 255, 255, 0, uint8_t( 255 * mapFade * globalOpacity ) ), WBTT_NONE, false );
     }
   }
 
@@ -766,8 +766,8 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
 
       for ( int32_t x = 0; x < 3; x++ )
         for ( int32_t y = 0; y < 3; y++ )
-          f->Write( API, txt, p + CPoint( x - 1, y - 1 ), CColor( 0, 0, 0, TU8( 255 * Alpha * alphaMultiplier * globalOpacity * mapFade / 2.0f ) ), WBTT_NONE, false );
-      f->Write( API, txt, p, CColor( 255, 255, 255, TU8( 255 * Alpha * alphaMultiplier * mapFade * globalOpacity) ), WBTT_NONE, false );
+          f->Write( API, txt, p + CPoint( x - 1, y - 1 ), CColor( 0, 0, 0, uint8_t( 255 * Alpha * alphaMultiplier * globalOpacity * mapFade / 2.0f ) ), WBTT_NONE, false );
+      f->Write( API, txt, p, CColor( 255, 255, 255, uint8_t( 255 * Alpha * alphaMultiplier * mapFade * globalOpacity) ), WBTT_NONE, false );
     }
   }
 }
@@ -813,7 +813,7 @@ void GW2TacticalDisplay::DrawPOIMinimap( CWBDrawAPI *API, const CRect& miniRect,
   float mapFade = GetMapFade();
 
   CColor col = poi.typeData.color;
-  col.A() = TU8(col.A() * alpha * mapFade * minimapOpacity);
+  col.A() = uint8_t(col.A() * alpha * mapFade * minimapOpacity);
 
 
   API->DrawAtlasElement( poi.icon, displayRect, false, false, true, true, col );
@@ -1077,7 +1077,7 @@ void ExportPOI( CXMLNode *n, POI &p )
   //  t->SetAttribute( "text", p.Name.GetPointer() );
   if ( p.Type.Length() )
     t->SetAttribute( "type", p.Type.GetPointer() );
-  t->SetAttribute( "GUID", CString::EncodeToBase64( ( TU8* )&( p.guid ), sizeof( GUID ) ).GetPointer() );
+  t->SetAttribute( "GUID", CString::EncodeToBase64( ( uint8_t* )&( p.guid ), sizeof( GUID ) ).GetPointer() );
   p.typeData.Write( t );
 }
 
@@ -1086,7 +1086,7 @@ void ExportTrail( CXMLNode *n, GW2Trail& p )
   CXMLNode* t = &n->AddChild( _T( "Trail" ) );
   if ( p.Type.Length() )
     t->SetAttribute( "type", p.Type.GetPointer() );
-  t->SetAttribute( "GUID", CString::EncodeToBase64( ( TU8* )&( p.guid ), sizeof( GUID ) ).GetPointer() );
+  t->SetAttribute( "GUID", CString::EncodeToBase64( ( uint8_t* )&( p.guid ), sizeof( GUID ) ).GetPointer() );
   p.typeData.Write( t );
 }
 
@@ -1138,7 +1138,7 @@ GUID LoadGUID( CXMLNode &n )
 {
   CString guidb64 = n.GetAttributeAsString( _T( "GUID" ) );
 
-  TU8 *Data = NULL;
+  uint8_t *Data = NULL;
   int32_t Size = 0;
   guidb64.DecodeBase64( Data, Size );
 
@@ -1407,7 +1407,7 @@ void ImportMarkerPack( CWBApplication* App, const CString& zipFile )
     if ( fileName.Find( ".xml" ) != fileName.Length() - 4 )
       continue;
 
-    TU8* data = new TU8[ (int32_t)stat.m_uncomp_size ];
+    uint8_t* data = new uint8_t[ (int32_t)stat.m_uncomp_size ];
 
     if ( !mz_zip_reader_extract_to_mem( zip, x, data, (int32_t)stat.m_uncomp_size, 0 ) )
     {
@@ -1523,7 +1523,7 @@ void ExportPOIActivationData()
     t->SetAttributeFromInteger( "lut2", ( (int32_t*)&dat.lastUpdateTime )[ 1 ] );
     if ( dat.uniqueData )
       t->SetAttributeFromInteger( "instance", dat.uniqueData );
-    t->SetAttribute( "GUID", CString::EncodeToBase64( ( TU8* )&( dat.poiguid ), sizeof( GUID ) ).GetPointer() );
+    t->SetAttribute( "GUID", CString::EncodeToBase64( ( uint8_t* )&( dat.poiguid ), sizeof( GUID ) ).GetPointer() );
   }
 
   d.SaveToFile( "activationdata.xml" );

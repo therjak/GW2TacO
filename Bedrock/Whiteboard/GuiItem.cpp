@@ -2147,7 +2147,7 @@ CWBFont *CWBItem::GetFont( WBITEMSTATE State )
 void CWBItem::ApplyOpacity( CWBDrawAPI *API )
 {
   CColor o = CSSProperties.DisplayDescriptor.GetColor( GetState(), WB_ITEM_OPACITY );
-  API->SetOpacity( (TU8)( o.A()*OpacityMultiplier ) );
+  API->SetOpacity( (uint8_t)( o.A()*OpacityMultiplier ) );
 }
 
 CWBPositionDescriptor & CWBItem::GetPositionDescriptor()

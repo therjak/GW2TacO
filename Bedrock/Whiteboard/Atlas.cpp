@@ -69,7 +69,7 @@ CAtlasImage::CAtlasImage()
   Required = false;
 }
 
-CAtlasImage::CAtlasImage( TU8 *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source )
+CAtlasImage::CAtlasImage( uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source )
 {
   Image = NULL;
   XRes = Source.Width();
@@ -79,10 +79,10 @@ CAtlasImage::CAtlasImage( TU8 *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CR
 
   if ( Source.Area() > 0 )
   {
-    Image = new TU8[ XRes*YRes * 4 ];
+    Image = new uint8_t[ XRes*YRes * 4 ];
     memset( Image, 0, XRes*YRes * 4 );
 
-    TU8 *i = Image;
+    uint8_t *i = Image;
 
     for ( int32_t y = 0; y < YRes; y++ )
     {
@@ -121,7 +121,7 @@ WBATLASHANDLE CAtlasImage::GetHandle()
   return Handle;
 }
 
-TU8 *CAtlasImage::GetImage()
+uint8_t *CAtlasImage::GetImage()
 {
   return Image;
 }
@@ -151,7 +151,7 @@ CAtlas::CAtlas( int32_t XSize, int32_t YSize )
   FlushCache();
   XRes = XSize;
   YRes = YSize;
-  Image = new TU8[ XRes*YRes * 4 ];
+  Image = new uint8_t[ XRes*YRes * 4 ];
   memset( Image, 0, XRes*YRes * 4 );
   Root = new CAtlasNode();
   Root->Area = CRect( 0, 0, XRes, YRes );
@@ -164,7 +164,7 @@ CAtlas::CAtlas( int32_t XSize, int32_t YSize )
 
   {
     CLightweightCriticalSection cs( &critsec );
-    CAtlasImage *img = new CAtlasImage( (TU8*)&White, 2, 2, CRect( 0, 0, 2, 2 ) );
+    CAtlasImage *img = new CAtlasImage( (uint8_t*)&White, 2, 2, CRect( 0, 0, 2, 2 ) );
     WhitePixel = ImageStorage[ img->GetHandle() ] = img;
   }
 
@@ -201,8 +201,8 @@ TBOOL CAtlas::PackImage( CAtlasImage *img )
     return 0;
   }
 
-  TU8 *target = Image + ( n->Area.x1 + n->Area.y1*XRes ) * 4;
-  TU8 *source = img->GetImage();
+  uint8_t *target = Image + ( n->Area.x1 + n->Area.y1*XRes ) * 4;
+  uint8_t *source = img->GetImage();
 
   for ( int32_t y = 0; y < s.y; y++ )
   {
@@ -229,7 +229,7 @@ TBOOL CAtlas::InitializeTexture( CCoreDevice *Device )
   return ( Atlas = Device->CreateTexture2D( XRes, YRes, Image ) ) != NULL;
 }
 
-WBATLASHANDLE CAtlas::AddImage( TU8 *i, int32_t xs, int32_t ys, CRect &a )
+WBATLASHANDLE CAtlas::AddImage( uint8_t *i, int32_t xs, int32_t ys, CRect &a )
 {
   if ( a.Width() == 0 || a.Height() == 0 ) return 0;
 
@@ -462,7 +462,7 @@ TBOOL CAtlas::Resize( CCoreDevice *Device, int32_t XSize, int32_t YSize )
   XRes = XSize;
   YRes = YSize;
 
-  Image = new TU8[ XRes*YRes * 4 ];
+  Image = new uint8_t[ XRes*YRes * 4 ];
   memset( Image, 0, XRes*YRes * 4 );
 
   Root = new CAtlasNode();

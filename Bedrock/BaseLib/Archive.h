@@ -7,7 +7,7 @@ class CArchive;
 struct ARCHIVEHEADER
 {
   TS8 Signature[ 8 ];
-  TU16 ChunkSize;
+  uint16_t ChunkSize;
   int32_t EmptyChunk;
   int32_t FileIndexChunk;
   int32_t FileIndexSize;
@@ -49,20 +49,20 @@ class CArchive
 
   TBOOL ReadOnly;
 
-  TU8 *TempChunk;
+  uint8_t *TempChunk;
   FILE *Handle;
 
   uint64_t FileSize;
   //uint64_t CurrentPos;
 
-  TU16 ChunkSize;
+  uint16_t ChunkSize;
   int32_t EmptySequenceStartChunk;
   int32_t FileIndexChunk;
   int32_t FileIndexSize;
 
   CArray<CArchiveEntry> FileIndices;
 
-  int32_t ReadChunk( int32_t ChunkID, TU8 *Data, int32_t BufferSize, int32_t &NextChunk );
+  int32_t ReadChunk( int32_t ChunkID, uint8_t *Data, int32_t BufferSize, int32_t &NextChunk );
   TBOOL ReadIndex( CStreamReaderArchive *idx );
 
   TBOOL SeekToChunk( int32_t Chunk );
@@ -70,8 +70,8 @@ class CArchive
   TBOOL UpdateHeader();
   TBOOL UpdateIndex( TBOOL IncludeFilenames = true );
   TBOOL ClearChunkSequence( int32_t StartChunk );
-  TBOOL WriteFile( TU8 *Data, int32_t Size, int32_t &startchunk );
-  TBOOL WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize );
+  TBOOL WriteFile( uint8_t *Data, int32_t Size, int32_t &startchunk );
+  TBOOL WriteChunk( int32_t &Chunk, uint8_t *&Data, int32_t &DataSize );
 
   uint64_t CalculateHash( const CString &Filename );
 
@@ -81,9 +81,9 @@ public:
   virtual ~CArchive();
 
   TBOOL Open( const CString &FileName, TBOOL ReadOnly = true );
-  TBOOL Create( const CString &FileName, TU16 ChunkSize = 1024 );
+  TBOOL Create( const CString &FileName, uint16_t ChunkSize = 1024 );
 
   TBOOL OpenFile( const CString &FileName, CStreamReaderArchive *&Reader );
-  TBOOL AddFile( TU8 *Data, int32_t Size, const CString &FileName );
+  TBOOL AddFile( uint8_t *Data, int32_t Size, const CString &FileName );
 
 };

@@ -939,18 +939,18 @@ TS8 find_base64( TCHAR t )
   return -1;
 }
 
-CString CString::EncodeToBase64( TU8 *Data, int32_t Length )
+CString CString::EncodeToBase64( uint8_t *Data, int32_t Length )
 {
   int32_t i = 0;
   int32_t j = 0;
-  TU8 char_array_3[ 3 ];
-  TU8 char_array_4[ 4 ];
+  uint8_t char_array_3[ 3 ];
+  uint8_t char_array_4[ 4 ];
 
   TCHAR * szret = new TCHAR[ Length * 5 ];
   memset( szret, 0, Length * 5 * sizeof( TCHAR ) );
   TCHAR * p = szret;
 
-  TU8 * szText = (TU8 *)Data;
+  uint8_t * szText = (uint8_t *)Data;
   int32_t nLength = Length;
   while ( nLength-- ) {
     char_array_3[ i++ ] = *( szText++ );
@@ -991,7 +991,7 @@ CString CString::EncodeToBase64( TU8 *Data, int32_t Length )
 
   //#ifdef _DEBUG
   //
-  //	TU8 *Data2 = NULL;
+  //	uint8_t *Data2 = NULL;
   //	int32_t Length2 = 0;
   //	ret.DecodeBase64(Data2, Length2);
   //	if (Length2 == Length)
@@ -1012,7 +1012,7 @@ CString CString::EncodeToBase64( TU8 *Data, int32_t Length )
   return ret;
 }
 
-void CString::DecodeBase64( TU8 *&Data, int32_t &outsize )
+void CString::DecodeBase64( uint8_t *&Data, int32_t &outsize )
 {
   int in_len = Length();
   int i = 0;
@@ -1023,7 +1023,7 @@ void CString::DecodeBase64( TU8 *&Data, int32_t &outsize )
 
   while ( in_len-- && ( String[ in_ ] != _T( '=' ) ) && is_base64( String[ in_ ] ) )
   {
-    char_array_4[ i++ ] = (TU8)String[ in_ ]; in_++;
+    char_array_4[ i++ ] = (uint8_t)String[ in_ ]; in_++;
     if ( i == 4 )
     {
       for ( i = 0; i < 4; i++ )
@@ -1060,7 +1060,7 @@ void CString::DecodeBase64( TU8 *&Data, int32_t &outsize )
 
   if ( ret.GetLength() )
   {
-    Data = new TU8[ ret.GetLength() ];
+    Data = new uint8_t[ ret.GetLength() ];
     memcpy( Data, ret.GetData(), ret.GetLength() );
     outsize = ret.GetLength();
   }

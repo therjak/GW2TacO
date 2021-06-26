@@ -110,7 +110,7 @@ struct POI
 
   CVector3 position;
   int32_t mapID;
-  TU8 wvwObjectiveID;
+  uint8_t wvwObjectiveID;
   CString Type;
 
   time_t lastUpdateTime = 0;

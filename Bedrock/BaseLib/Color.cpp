@@ -5,26 +5,26 @@ const CColor Lerp( const CColor a, const CColor b, const TF32 t )
 {
   CColor c;
   for ( int32_t x = 0; x < 4; x++ )
-    c[ x ] = (TU8)( ( b[ x ] - a[ x ] )*t + a[ x ] );
+    c[ x ] = (uint8_t)( ( b[ x ] - a[ x ] )*t + a[ x ] );
   return c;
 }
 
-TU8 & CColor::A()
+uint8_t & CColor::A()
 {
   return a;
 }
 
-TU8 & CColor::B()
+uint8_t & CColor::B()
 {
   return b;
 }
 
-TU8 & CColor::G()
+uint8_t & CColor::G()
 {
   return g;
 }
 
-TU8 & CColor::R()
+uint8_t & CColor::R()
 {
   return r;
 }
@@ -42,20 +42,20 @@ uint32_t CColor::argb() const
 CColor CColor::FromABGR( const uint32_t v )
 {
   CColor res;
-  res.a = (TU8)( v >> 24 );
-  res.b = (TU8)( v >> 16 );
-  res.g = (TU8)( v >> 8 );
-  res.r = (TU8)( v >> 0 );
+  res.a = (uint8_t)( v >> 24 );
+  res.b = (uint8_t)( v >> 16 );
+  res.g = (uint8_t)( v >> 8 );
+  res.r = (uint8_t)( v >> 0 );
   return res;
 }
 
 CColor CColor::FromARGB( const uint32_t v )
 {
   CColor res;
-  res.a = (TU8)( v >> 24 );
-  res.r = (TU8)( v >> 16 );
-  res.g = (TU8)( v >> 8 );
-  res.b = (TU8)( v >> 0 );
+  res.a = (uint8_t)( v >> 24 );
+  res.r = (uint8_t)( v >> 16 );
+  res.g = (uint8_t)( v >> 8 );
+  res.b = (uint8_t)( v >> 0 );
   return res;
 }
 
@@ -72,20 +72,20 @@ CColor CColor::FromFloat( const TF32 _r, const TF32 _g, const TF32 _b, const TF3
   {
     if ( c[ x ] < 0 ) c[ x ] = 0;
     if ( c[ x ] > 1 ) c[ x ] = 1;
-    res[ x ] = (TU8)( c[ x ] * 255 );
+    res[ x ] = (uint8_t)( c[ x ] * 255 );
   }
   return res;
 }
 
 CColor::CColor( const uint32_t argb )
 {
-  r = (TU8)( argb >> 16 );
-  g = (TU8)( argb >> 8 );
-  b = (TU8)( argb >> 0 );
-  a = (TU8)( argb >> 24 );
+  r = (uint8_t)( argb >> 16 );
+  g = (uint8_t)( argb >> 8 );
+  b = (uint8_t)( argb >> 0 );
+  a = (uint8_t)( argb >> 24 );
 }
 
-CColor::CColor( const TU8* c )
+CColor::CColor( const uint8_t* c )
 {
   r = c[ 0 ];
   g = c[ 1 ];
@@ -93,7 +93,7 @@ CColor::CColor( const TU8* c )
   a = c[ 3 ];
 }
 
-CColor::CColor( const TU8 _r, const TU8 _g, const TU8 _b, const TU8 _a )
+CColor::CColor( const uint8_t _r, const uint8_t _g, const uint8_t _b, const uint8_t _a )
 {
   r = _r;
   g = _g;
@@ -106,24 +106,24 @@ CColor::CColor()
 
 }
 
-TU8 const CColor::operator[]( int32_t idx ) const
+uint8_t const CColor::operator[]( int32_t idx ) const
 {
-  return ( ( const TU8* )this )[ idx ]; // nem fog ez kesobb fajni?!
+  return ( ( const uint8_t* )this )[ idx ]; // nem fog ez kesobb fajni?!
 }
 
-TU8 &CColor::operator[]( int32_t idx )
+uint8_t &CColor::operator[]( int32_t idx )
 {
-  return ( ( TU8* )this )[ idx ];
+  return ( ( uint8_t* )this )[ idx ];
 }
 
-CColor::operator TU8* ( )
+CColor::operator uint8_t* ( )
 {
-  return ( TU8* )this;
+  return ( uint8_t* )this;
 }
 
-CColor::operator const TU8* ( ) const
+CColor::operator const uint8_t* ( ) const
 {
-  return ( const TU8* )this;
+  return ( const uint8_t* )this;
 }
 
 TBOOL CColor::operator== ( const CColor &c ) const

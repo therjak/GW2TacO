@@ -43,7 +43,7 @@ struct COREBLENDDESCRIPTOR
 	COREBLENDFACTOR SrcBlendAlpha;
 	COREBLENDFACTOR DestBlendAlpha;
 	COREBLENDOP BlendOpAlpha;
-	TU8 RenderTargetWriteMask;
+	uint8_t RenderTargetWriteMask;
 };
 
 class CCoreRenderStateBatch : public CCoreResource
@@ -85,7 +85,7 @@ public:
 	void SetSrcBlendAlpha(int32_t rt, COREBLENDFACTOR e);
 	void SetDestBlendAlpha(int32_t rt, COREBLENDFACTOR e);
 	void SetBlendOpAlpha(int32_t rt, COREBLENDOP e);
-	void SetRenderTargetWriteMask(int32_t rt, TU8 e);
+	void SetRenderTargetWriteMask(int32_t rt, uint8_t e);
 
 	virtual TBOOL Import(CXMLNode *n);
 	virtual void Export(CXMLNode *n);
@@ -102,8 +102,8 @@ protected:
 
 	//stencil not supported in first implementation
 	//TBOOL StencilEnable;
-	//TU8 StencilReadMask;
-	//TU8 StencilWriteMask;
+	//uint8_t StencilReadMask;
+	//uint8_t StencilWriteMask;
 	//D3D11_DEPTH_STENCILOP_DESC FrontFace;
 	//D3D11_DEPTH_STENCILOP_DESC BackFace;
 

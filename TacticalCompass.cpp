@@ -79,7 +79,7 @@ void GW2TacticalCompass::DrawTacticalCompass( CWBDrawAPI *API )
 
     CRect cent = CRect( pa, pa );
     CPoint p = f->GetCenter( txt[ x ], cent );
-    f->Write( API, txt[ x ], p, CColor( 228, 210, 157, (TU8)( a1 * GetMapFade() ) ) );
+    f->Write( API, txt[ x ], p, CColor( 228, 210, 157, (uint8_t)( a1 * GetMapFade() ) ) );
   }
 }
 

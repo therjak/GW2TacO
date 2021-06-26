@@ -899,13 +899,13 @@ unsigned char raw_uni_png[] =
 
 int raw_uni_png_size = 2711;
 
-TBOOL LoadBMFontBinaryMonochrome( CWBFontDescription *fd, TU8 *Binary, int32_t BinarySize, TU8 *image, int32_t ImageSize )
+TBOOL LoadBMFontBinaryMonochrome( CWBFontDescription *fd, uint8_t *Binary, int32_t BinarySize, uint8_t *image, int32_t ImageSize )
 {
   if ( !Binary || !BinarySize || !image || !ImageSize ) return false;
 
   int32_t xr, yr;
 
-  TU8 *img = DecompressImage( image, ImageSize, xr, yr );
+  uint8_t *img = DecompressImage( image, ImageSize, xr, yr );
   if ( !img )
   {
     LOG( LOG_ERROR, _T( "[gui] Error loading font data: font img could not be loaded" ) );

@@ -25,7 +25,7 @@ enum WBTEXTTRANSFORM
 
 struct WBSYMBOLINPUT
 {
-  TU16 Char;
+  uint16_t Char;
   CRect UV;
   CPoint Offset;
   int32_t Advance;
@@ -35,16 +35,16 @@ struct WBSYMBOL
 {
   WBATLASHANDLE Handle;
   int16_t OffsetX, OffsetY;
-  TU16 SizeX, SizeY;
+  uint16_t SizeX, SizeY;
   int16_t Advance;
-  TU16 Char;
+  uint16_t Char;
 
   CRect calculatedContentRect;
 };
 
 struct WBKERNINGDATA
 {
-  TU16 First, Second;
+  uint16_t First, Second;
   int16_t Amount;
 };
 
@@ -56,7 +56,7 @@ public:
 
   INLINE TBOOL operator==( const CWBKerningPair &k );
   CWBKerningPair();
-  CWBKerningPair( TU16 a, TU16 b );
+  CWBKerningPair( uint16_t a, uint16_t b );
 };
 
 INLINE uint32_t DictionaryHash( const CWBKerningPair &i );
@@ -67,7 +67,7 @@ class CWBFontDescription
 {
   friend class CWBFont;
 
-  TU8 *Image;
+  uint8_t *Image;
   int32_t XRes, YRes;
 
   CArray<WBSYMBOLINPUT> Alphabet;
@@ -81,14 +81,14 @@ public:
   CWBFontDescription();
   ~CWBFontDescription();
 
-  TBOOL LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8 *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
-  TBOOL LoadBMFontText( TU8 *Binary, int32_t BinarySize, TU8 *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
+  TBOOL LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize, uint8_t *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
+  TBOOL LoadBMFontText( uint8_t *Binary, int32_t BinarySize, uint8_t *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
 };
 
 class CWBFont
 {
   CAtlas *Atlas;
-  //CDictionary<TU16,WBSYMBOL> Alphabet;
+  //CDictionary<uint16_t,WBSYMBOL> Alphabet;
   int32_t AlphabetSize = 0;
   WBSYMBOL *Alphabet;
   CDictionary<CWBKerningPair, int16_t> Kerning;
@@ -101,8 +101,8 @@ class CWBFont
 
   TCHAR MissingChar;
 
-  void AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect );
-  void AddKerningPair( TU16 First, TU16 Second, int16_t Amount );
+  void AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect );
+  void AddKerningPair( uint16_t First, uint16_t Second, int16_t Amount );
 
 public:
 
@@ -127,18 +127,18 @@ public:
 	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color = 0xffffffff);
   int32_t Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
   int32_t Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  int32_t GetWidth( TU16 Char, TBOOL Advance = true ); //if Advance is set to false this returns the width of the image in pixels
+  int32_t GetWidth( uint16_t Char, TBOOL Advance = true ); //if Advance is set to false this returns the width of the image in pixels
   int32_t GetWidth( TCHAR *String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
   int32_t GetWidth( CString &String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
 
-  int32_t GetHeight( TU16 Char );
+  int32_t GetHeight( uint16_t Char );
   int32_t GetHeight( TCHAR* String );
   int32_t GetHeight( CString& String );
 
   CPoint GetTextPosition( CString &String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform, TBOOL DoKerning = true );
   CPoint GetTextPosition( TCHAR *String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform, TBOOL DoKerning = true );
 
-  INLINE TU16 ApplyTextTransformUtf8( _TUCHAR *Text, _TUCHAR *&CurrPos, WBTEXTTRANSFORM Transform );
+  INLINE uint16_t ApplyTextTransformUtf8( _TUCHAR *Text, _TUCHAR *&CurrPos, WBTEXTTRANSFORM Transform );
   INLINE _TUCHAR ApplyTextTransform( _TUCHAR *Text, _TUCHAR *CurrPos, WBTEXTTRANSFORM Transform );
 
   void ConvertToUppercase();

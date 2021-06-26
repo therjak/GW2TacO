@@ -538,7 +538,7 @@ TBOOL CCoreDX11Device::DeviceOk()
 //////////////////////////////////////////////////////////////////////////
 // texture functions
 
-CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int32_t YRes, const TU8* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
+CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int32_t YRes, const uint8_t* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
 {
   CCoreTexture2D* Result = new CCoreDX11Texture2D( this );
   if ( !Result->Create( XRes, YRes, Data, BytesPerPixel, Format, RenderTarget ) )
@@ -546,7 +546,7 @@ CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int3
   return Result;
 }
 
-CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TU8* Data, const int32_t Size )
+CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const uint8_t* Data, const int32_t Size )
 {
   CCoreTexture2D* Result = new CCoreDX11Texture2D( this );
   if ( !Result->Create( Data, Size ) )
@@ -557,7 +557,7 @@ CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TU8* Data, const int32_t
 //////////////////////////////////////////////////////////////////////////
 // vertexbuffer functions
 
-CCoreVertexBuffer* CCoreDX11Device::CreateVertexBuffer( const TU8* Data, const int32_t Size )
+CCoreVertexBuffer* CCoreDX11Device::CreateVertexBuffer( const uint8_t* Data, const int32_t Size )
 {
   CCoreDX11VertexBuffer* Result = new CCoreDX11VertexBuffer( this );
   if ( !Result->Create( Data, Size ) )
@@ -637,7 +637,7 @@ CCorePixelShader* CCoreDX11Device::CreatePixelShader( LPCSTR Code, int32_t CodeS
   return s;
 }
 
-CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( TU8* Code, int32_t CodeSize )
+CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( uint8_t* Code, int32_t CodeSize )
 {
   CCoreDX11VertexShader* s = new CCoreDX11VertexShader( this );
   if ( !s->CreateFromBlob( Code, CodeSize ) )
@@ -649,7 +649,7 @@ CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( TU8* Code, int32
   return s;
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShaderFromBlob( TU8* Code, int32_t CodeSize )
+CCorePixelShader* CCoreDX11Device::CreatePixelShaderFromBlob( uint8_t* Code, int32_t CodeSize )
 {
   CCoreDX11PixelShader* s = new CCoreDX11PixelShader( this );
   if ( !s->CreateFromBlob( Code, CodeSize ) )

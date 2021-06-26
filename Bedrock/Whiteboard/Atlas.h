@@ -27,7 +27,7 @@ public:
 
 class CAtlasImage //stores image data not currently in the atlas
 {
-  TU8 *Image;
+  uint8_t *Image;
   int32_t XRes, YRes;
   WBATLASHANDLE Handle;
 
@@ -36,11 +36,11 @@ class CAtlasImage //stores image data not currently in the atlas
 public:
 
   CAtlasImage();
-  CAtlasImage( TU8 *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source );
+  CAtlasImage( uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source );
   virtual ~CAtlasImage();
 
   WBATLASHANDLE GetHandle();
-  TU8 *GetImage();
+  uint8_t *GetImage();
   CSize GetSize() const;
   void TagRequired();
   void ClearRequired();
@@ -57,7 +57,7 @@ class CAtlas
 {
   friend class CWBDrawAPI;
   int32_t XRes, YRes;
-  TU8 *Image;
+  uint8_t *Image;
   CCoreTexture2D *Atlas;
 
   TBOOL TextureUpdateNeeded;
@@ -88,7 +88,7 @@ public:
   TBOOL UpdateTexture();
   CCoreTexture2D *GetTexture();
 
-  WBATLASHANDLE AddImage( TU8 *Image, int32_t XRes, int32_t YRes, CRect &SourceArea );
+  WBATLASHANDLE AddImage( uint8_t *Image, int32_t XRes, int32_t YRes, CRect &SourceArea );
   void DeleteImage( WBATLASHANDLE h ); //doesn't immediately remove image from atlas
 
   TBOOL Optimize( TBOOL DebugMode = false );

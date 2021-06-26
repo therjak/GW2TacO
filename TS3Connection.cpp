@@ -635,7 +635,7 @@ TBOOL TS3Connection::IsConnected()
 //	if (!dataLength)
 //		return "";
 //
-//	TU8 *data = new TU8[dataLength];
+//	uint8_t *data = new uint8_t[dataLength];
 //	if (connection.Read(data, dataLength) != dataLength)
 //	{
 //		SAFEDELETE(data);

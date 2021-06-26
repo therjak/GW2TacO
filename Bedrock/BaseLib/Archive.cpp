@@ -46,7 +46,7 @@ int32_t CStreamReaderArchive::Open( CArchive *BF, int32_t StartChunk, int32_t Fi
 {
   if ( !BF || !FileSize || !StartChunk ) return 0;
 
-  TU8 *FileData = new TU8[ FileSize ];
+  uint8_t *FileData = new uint8_t[ FileSize ];
 
   int32_t pos = 0;
   int32_t remaining = FileSize;
@@ -101,7 +101,7 @@ TBOOL CArchive::SeekToChunk( int32_t Chunk )
   return fseek( Handle, Chunk*ChunkSize, SEEK_SET ) == 0;
 }
 
-int32_t CArchive::ReadChunk( int32_t ChunkID, TU8 *Data, int32_t BufferSize, int32_t &NextChunk )
+int32_t CArchive::ReadChunk( int32_t ChunkID, uint8_t *Data, int32_t BufferSize, int32_t &NextChunk )
 {
   NextChunk = 0;
 
@@ -112,7 +112,7 @@ int32_t CArchive::ReadChunk( int32_t ChunkID, TU8 *Data, int32_t BufferSize, int
     return 0;
 
   NextChunk = ( (int32_t*)TempChunk )[ 0 ];
-  TU16 DataSize = ( (TU16*)TempChunk )[ 2 ];
+  uint16_t DataSize = ( (uint16_t*)TempChunk )[ 2 ];
   if ( DataSize > BufferSize )
   {
     DataSize = BufferSize;
@@ -186,7 +186,7 @@ TBOOL CArchive::Open( const CString &FileName, TBOOL ro )
     return false;
   }
 
-  TempChunk = new TU8[ ChunkSize ];
+  TempChunk = new uint8_t[ ChunkSize ];
   for ( int32_t x = 0; x < ChunkSize; x++ )
     TempChunk[ x ] = ARCHIVE_FILLER[ x % ( sizeof( ARCHIVE_FILLER ) - 1 ) ];
 
@@ -213,7 +213,7 @@ TBOOL CArchive::Open( const CString &FileName, TBOOL ro )
   return true;
 }
 
-TBOOL CArchive::Create( const CString &FileName, TU16 chunksize )
+TBOOL CArchive::Create( const CString &FileName, uint16_t chunksize )
 {
   ReadOnly = false;
   if ( chunksize < sizeof( ARCHIVEHEADER ) ) return false;
@@ -235,7 +235,7 @@ TBOOL CArchive::Create( const CString &FileName, TU16 chunksize )
     return false;
   }
 
-  TempChunk = new TU8[ ChunkSize ];
+  TempChunk = new uint8_t[ ChunkSize ];
   for ( int32_t x = 0; x < ChunkSize; x++ )
     TempChunk[ x ] = ARCHIVE_FILLER[ x % ( sizeof( ARCHIVE_FILLER ) - 1 ) ];
 
@@ -346,7 +346,7 @@ TBOOL CArchive::ClearChunkSequence( int32_t StartChunk )
   return UpdateHeader();
 }
 
-TBOOL CArchive::AddFile( TU8 *Data, int32_t Size, const CString &FileName )
+TBOOL CArchive::AddFile( uint8_t *Data, int32_t Size, const CString &FileName )
 {
   if ( ReadOnly || !Handle ) return false;
 
@@ -366,7 +366,7 @@ TBOOL CArchive::AddFile( TU8 *Data, int32_t Size, const CString &FileName )
   return UpdateIndex();
 }
 
-TBOOL CArchive::WriteFile( TU8 *Data, int32_t Size, int32_t &startchunk )
+TBOOL CArchive::WriteFile( uint8_t *Data, int32_t Size, int32_t &startchunk )
 {
   if ( !Handle || ReadOnly ) return false;
 
@@ -393,7 +393,7 @@ TBOOL CArchive::WriteFile( TU8 *Data, int32_t Size, int32_t &startchunk )
   return true;
 }
 
-TBOOL CArchive::WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize )
+TBOOL CArchive::WriteChunk( int32_t &Chunk, uint8_t *&Data, int32_t &DataSize )
 {
   if ( !Handle || ReadOnly ) return false;
 
@@ -432,7 +432,7 @@ TBOOL CArchive::WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize )
 
   fseek( Handle, 0, SEEK_CUR ); //switch to writing mode
 
-  TU16 ds = min( DataSize, ChunkSize - 6 );
+  uint16_t ds = min( DataSize, ChunkSize - 6 );
   if ( fwrite( &ds, 2, 1, Handle ) != 1 ) return false; //write current chunk data content size
   if ( fwrite( Data, ds, 1, Handle ) != 1 ) return false; //write data
 

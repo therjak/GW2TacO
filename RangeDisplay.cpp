@@ -98,7 +98,7 @@ void GW2RangeDisplay::DrawRangeCircle( CWBDrawAPI *API, float range, float alpha
     a1 = max( 0, min( 1, a1 ) )*alpha * 255;
     a2 = max( 0, min( 1, a2 ) )*alpha * 255;
 
-    API->DrawLine( pa, pb, CColor( 228, 210, 157, (TU8)a1 ), CColor( 228, 210, 157, (TU8)a2 ) );
+    API->DrawLine( pa, pb, CColor( 228, 210, 157, (uint8_t)a1 ), CColor( 228, 210, 157, (uint8_t)a2 ) );
   }
 
 }

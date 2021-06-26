@@ -35,7 +35,7 @@ CCoreBlendState::~CCoreBlendState()
 
 }
 
-void CCoreBlendState::SetRenderTargetWriteMask(int32_t rt, TU8 e)
+void CCoreBlendState::SetRenderTargetWriteMask(int32_t rt, uint8_t e)
 {
 	if (RenderTargetBlendStates[rt].RenderTargetWriteMask != e) Dirty = true;
 	RenderTargetBlendStates[rt].RenderTargetWriteMask = e;

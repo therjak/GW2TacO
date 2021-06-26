@@ -28,7 +28,7 @@ protected:
 
 	INLINE void FetchBinary(void *binary, int32_t length)
 	{
-		Binary = new TU8[length];
+		Binary = new uint8_t[length];
 		memcpy(Binary, binary, length);
 		BinaryLength = length;
 	}

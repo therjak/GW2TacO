@@ -188,9 +188,9 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
                 CString png = FetchHTTPS( L"render.guildwars2.com", wpath );
                 
-                TU8 *imageData = nullptr;
+                uint8_t *imageData = nullptr;
                 int32_t xres, yres;
-                if ( DecompressPNG( (TU8*)png.GetPointer(), png.Length(), imageData, xres, yres ) )
+                if ( DecompressPNG( (uint8_t*)png.GetPointer(), png.Length(), imageData, xres, yres ) )
                 {
                   ARGBtoABGR( imageData, xres, yres );
                   CRect area = CRect( 0, 0, xres, yres );
