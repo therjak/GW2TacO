@@ -63,7 +63,7 @@ TBOOL CWBBox::MessageProc( CWBMessage &Message )
 
       CRect BRect = CRect( 0, 0, 0, 0 );
 
-      for ( TU32 x = 0; x < NumChildren(); x++ )
+      for ( uint32_t x = 0; x < NumChildren(); x++ )
         if ( !GetChild( x )->IsHidden() )
           BRect = BRect & GetChild( x )->GetPosition();
 
@@ -154,7 +154,7 @@ void CWBBox::RearrangeHorizontal()
   int32_t NonDynamicWidth = 0;
   int32_t LastDynamic = 0;
 
-  for ( TU32 x = 0; x < NumChildren(); x++ )
+  for ( uint32_t x = 0; x < NumChildren(); x++ )
   {
     if ( !GetChild( x )->IsWidthSet() )
     {
@@ -168,14 +168,14 @@ void CWBBox::RearrangeHorizontal()
   int32_t DynamicWidth = GetClientRect().Width() - NonDynamicWidth - width;
   TF32 itemsizes = DynamicWidth / (TF32)NumDynamicChildren;
 
-  for ( TU32 x = 0; x < NumChildren(); x++ ) width += GetChild( x )->GetPosition().Width();
+  for ( uint32_t x = 0; x < NumChildren(); x++ ) width += GetChild( x )->GetPosition().Width();
 
   if ( AlignmentX == WB_ALIGN_RIGHT )
     pos = GetClientRect().Width() - width;
   if ( AlignmentX == WB_ALIGN_CENTER )
     pos = ( GetClientRect().Width() - width ) / 2;
 
-  for ( TU32 x = 0; x < NumChildren(); x++ )
+  for ( uint32_t x = 0; x < NumChildren(); x++ )
   {
     CRect ChildPosition = GetChild( x )->GetPosition();
 
@@ -237,7 +237,7 @@ void CWBBox::RearrangeVertical()
   int32_t NonDynamicHeight = 0;
   int32_t LastDynamic = 0;
 
-  for ( TU32 x = 0; x < NumChildren(); x++ )
+  for ( uint32_t x = 0; x < NumChildren(); x++ )
   {
     if ( !GetChild( x )->IsHeightSet() )
     {
@@ -251,14 +251,14 @@ void CWBBox::RearrangeVertical()
   int32_t DynamicHeight = GetClientRect().Height() - NonDynamicHeight - height;
   TF32 itemsizes = DynamicHeight / (TF32)NumDynamicChildren;
 
-  for ( TU32 x = 0; x < NumChildren(); x++ ) height += GetChild( x )->GetPosition().Height();
+  for ( uint32_t x = 0; x < NumChildren(); x++ ) height += GetChild( x )->GetPosition().Height();
 
   if ( AlignmentY == WB_ALIGN_BOTTOM )
     pos = GetClientRect().Height() - height;
   if ( AlignmentY == WB_ALIGN_CENTER )
     pos = ( GetClientRect().Height() - height ) / 2;
 
-  for ( TU32 x = 0; x < NumChildren(); x++ )
+  for ( uint32_t x = 0; x < NumChildren(); x++ )
   {
     CRect ChildPosition = GetChild( x )->GetPosition();
 
@@ -367,7 +367,7 @@ TBOOL CWBBox::ApplyStyle( CString & prop, CString & value, CStringArray & pseudo
 
   if ( prop == _T( "child-spacing" ) )
   {
-    TU32 dw = 0;
+    uint32_t dw = 0;
     value.Scan( _T( "%d" ), &dw );
     SetSpacing( dw );
     return true;
@@ -457,7 +457,7 @@ void CWBBox::UpdateScrollbarData()
 
   CRect BRect = CRect( 0, 0, 0, 0 );
 
-  for ( TU32 x = 0; x < NumChildren(); x++ )
+  for ( uint32_t x = 0; x < NumChildren(); x++ )
     if ( !GetChild( x )->IsHidden() )
       BRect = BRect & GetChild( x )->GetPosition();
 

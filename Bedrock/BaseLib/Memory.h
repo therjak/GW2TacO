@@ -64,8 +64,8 @@ public:
 };
 
 extern CMemTracker memTracker;
-extern TU32 TotalAllocCount;
-extern TU32 CurrentAllocCount;
+extern uint32_t TotalAllocCount;
+extern uint32_t CurrentAllocCount;
 
 #endif
 

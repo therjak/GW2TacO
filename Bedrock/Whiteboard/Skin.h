@@ -151,7 +151,7 @@ public:
   void SetOverShoot( WBRECTSIDE side, int32_t val );
 };
 
-typedef TU32 WBSKINELEMENTID;
+typedef uint32_t WBSKINELEMENTID;
 
 class CWBSkin
 {

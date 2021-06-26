@@ -18,7 +18,7 @@ class CString
 {
   friend CString;
   TCHAR *String = nullptr;
-  TU32 LengthCached = 0;
+  uint32_t LengthCached = 0;
 
   void Initialize();
   void StringChanged();
@@ -32,17 +32,17 @@ public:
   CString( const wchar_t *str );
   CString( const TS8 *str );
 
-  CString( const CString &str, const TU32 len );
-  CString( const TS8 *str, const TU32 len );
-  CString( const wchar_t *str, const TU32 len );
+  CString( const CString &str, const uint32_t len );
+  CString( const TS8 *str, const uint32_t len );
+  CString( const wchar_t *str, const uint32_t len );
 
   TCHAR *GetPointer() const
   {
     return String;
   }
 
-  void WriteAsMultiByte( TS8 *Copy, TU32 Size ) const;
-  void WriteAsWideChar( wchar_t *Copy, TU32 Size ) const;
+  void WriteAsMultiByte( TS8 *Copy, uint32_t Size ) const;
+  void WriteAsWideChar( wchar_t *Copy, uint32_t Size ) const;
 
   //////////////////////////////////////////////////////////////////////////
   //string functions
@@ -55,9 +55,9 @@ public:
   const CString &Append( const TS8 *str );
   const CString &Append( const wchar_t *str );
 
-  const CString &Append( const CString &str, const TU32 len );
-  const CString &Append( const TS8 *str, const TU32 len );
-  const CString &Append( const wchar_t *str, const TU32 len );
+  const CString &Append( const CString &str, const uint32_t len );
+  const CString &Append( const TS8 *str, const uint32_t len );
+  const CString &Append( const wchar_t *str, const uint32_t len );
 
   //////////////////////////////////////////////////////////////////////////
   //char functions
@@ -86,9 +86,9 @@ public:
   CString &operator+=( const long v );
   const friend CString operator+( const long v, const CString &str );
 
-  CString operator+( const TU32 v ) const;
-  CString &operator+=( const TU32 v );
-  const friend CString operator+( const TU32 v, const CString &str );
+  CString operator+( const uint32_t v ) const;
+  CString &operator+=( const uint32_t v );
+  const friend CString operator+( const uint32_t v, const CString &str );
 
   CString operator+( const unsigned long v ) const;
   CString &operator+=( const unsigned long v );
@@ -119,13 +119,13 @@ public:
 
   TCHAR &operator[]( const int32_t idx ) const;
 
-  int32_t Find( const CString &v, TU32 nStart = 0 ) const;
-  int32_t Find( const TS8 *v, TU32 nStart = 0 ) const;
-  int32_t Find( const wchar_t *v, TU32 nStart = 0 ) const;
+  int32_t Find( const CString &v, uint32_t nStart = 0 ) const;
+  int32_t Find( const TS8 *v, uint32_t nStart = 0 ) const;
+  int32_t Find( const wchar_t *v, uint32_t nStart = 0 ) const;
 
-  TU32 GetSubstringCount( CString &v ) const;
-  TU32 GetSubstringCount( const TS8 *v ) const;
-  TU32 GetSubstringCount( const wchar_t *v ) const;
+  uint32_t GetSubstringCount( CString &v ) const;
+  uint32_t GetSubstringCount( const TS8 *v ) const;
+  uint32_t GetSubstringCount( const wchar_t *v ) const;
 
   CString Substring( int32_t nStart ) const;
   CString Substring( int32_t nStart, int32_t nLength ) const;
@@ -139,7 +139,7 @@ public:
   //////////////////////////////////////////////////////////////////////////
   // misc
 
-  TU32 Length() const;
+  uint32_t Length() const;
   //static CString Format(const wchar_t *format, ...);
   static CString Format( const TCHAR *format, ... );
   //static void FormatVA(const wchar_t *format, va_list list, CString &Result);
@@ -161,7 +161,7 @@ public:
   static TF32 Atof( const TCHAR *str );
   static int32_t Atoi( const TCHAR *str );
 
-  typedef std::function<TBOOL( TU32 )> UTF8CHARCALLBACK;
+  typedef std::function<TBOOL( uint32_t )> UTF8CHARCALLBACK;
 
   void DecodeUtf8( UTF8CHARCALLBACK callback );
   static void DecodeUtf8( const TCHAR* Input, UTF8CHARCALLBACK callback );
@@ -184,11 +184,11 @@ public:
   //////////////////////////////////////////////////////////////////////////
   //hashing
 
-  TU32 GetHash() const;
+  uint32_t GetHash() const;
 
 private:
-  TU32 Hash;
-  TU32 LowercaseHash;
+  uint32_t Hash;
+  uint32_t LowercaseHash;
   void CalculateHash();
 #endif
 };
@@ -214,6 +214,6 @@ public:
   CString Implode( TCHAR *sDelimiter );
 };
 
-TU32 DictionaryHash( const CString &i );
+uint32_t DictionaryHash( const CString &i );
 int32_t EstimateStringFormatLength( const wchar_t *szFormat, va_list vlArgList );
 int32_t EstimateStringFormatLength( const TS8 *szFormat, va_list vlArgList );

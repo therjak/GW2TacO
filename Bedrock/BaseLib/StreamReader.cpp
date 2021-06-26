@@ -14,22 +14,22 @@ CStreamReader::~CStreamReader()
 
 }
 
-int32_t CStreamReader::Read( void *lpBuf, TU32 nCount )
+int32_t CStreamReader::Read( void *lpBuf, uint32_t nCount )
 {
   if ( readerBitOffset == 0 ) //non bitstream mode
     return ReadStream( lpBuf, nCount );
 
   //bitstream mode
-  for ( TU32 x = 0; x < nCount; x++ )
+  for ( uint32_t x = 0; x < nCount; x++ )
     ( (TU8*)lpBuf )[ x ] = ReadBits( 8 );
 
   return nCount;
 }
 
-TU32 CStreamReader::ReadDWord()
+uint32_t CStreamReader::ReadDWord()
 {
-  TU32 i = 0;
-  BASEASSERT( Read( &i, sizeof( TU32 ) ) == sizeof( TU32 ) );
+  uint32_t i = 0;
+  BASEASSERT( Read( &i, sizeof( uint32_t ) ) == sizeof( uint32_t ) );
   return i;
 }
 
@@ -54,18 +54,18 @@ TF32 CStreamReader::ReadTF32()
   return i;
 }
 
-TU64 CStreamReader::ReadQWord()
+uint64_t CStreamReader::ReadQWord()
 {
-  TU64 i = 0;
-  BASEASSERT( Read( &i, sizeof( TU64 ) ) == sizeof( TU64 ) );
+  uint64_t i = 0;
+  BASEASSERT( Read( &i, sizeof( uint64_t ) ) == sizeof( uint64_t ) );
   return i;
 }
 
-TU32 CStreamReader::ReadBits( TU32 BitCount )
+uint32_t CStreamReader::ReadBits( uint32_t BitCount )
 {
   BASEASSERT( BitCount <= 64 );
 
-  TU32 result = 0;
+  uint32_t result = 0;
 
   while ( BitCount > 0 )
   {
@@ -73,8 +73,8 @@ TU32 CStreamReader::ReadBits( TU32 BitCount )
     if ( readerBitOffset == 0 )
       BASEASSERT( ReadStream( &readerLastChar, 1 ) == 1 );
 
-    TU32 count = min( 8 - readerBitOffset, BitCount );
-    TU32 mask = ( 1 << count ) - 1;
+    uint32_t count = min( 8 - readerBitOffset, BitCount );
+    uint32_t mask = ( 1 << count ) - 1;
 
     TU8 bits = readerLastChar >> readerBitOffset;
     result |= ( bits&mask ) << ( BitCount - count );
@@ -156,7 +156,7 @@ CStreamReaderMemory::~CStreamReaderMemory()
   SAFEDELETEA( Data );
 }
 
-int32_t CStreamReaderMemory::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CStreamReaderMemory::ReadStream( void *lpBuf, uint32_t nCount )
 {
   int64_t bytestoread = max( 0, min( nCount, DataSize - Offset ) );
   memcpy( lpBuf, Data + Offset, (size_t)bytestoread );
@@ -164,7 +164,7 @@ int32_t CStreamReaderMemory::ReadStream( void *lpBuf, TU32 nCount )
   return (int32_t)bytestoread;
 }
 
-int32_t CStreamReaderMemory::Open( TU8 *data, TU32 size )
+int32_t CStreamReaderMemory::Open( TU8 *data, uint32_t size )
 {
   if ( !data || !size ) return 0;
 
@@ -220,7 +220,7 @@ int64_t CStreamReaderMemory::GetOffset() const
   return Offset;
 }
 
-void CStreamReaderMemory::SeekFromStart( TU64 lOff )
+void CStreamReaderMemory::SeekFromStart( uint64_t lOff )
 {
   Offset = lOff;
 }
@@ -243,7 +243,7 @@ CStreamReaderFile::~CStreamReaderFile()
   CloseHandle( File );
 }
 
-int32_t CStreamReaderFile::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CStreamReaderFile::ReadStream( void *lpBuf, uint32_t nCount )
 {
   DWORD nRead = 0;
   BOOL b = ReadFile( File, lpBuf, nCount, &nRead, NULL );
@@ -271,7 +271,7 @@ int64_t CStreamReaderFile::GetOffset() const
   return SetFilePointer( File, NULL, NULL, FILE_CURRENT );
 }
 
-void CStreamReaderFile::SeekFromStart( TU64 lOff )
+void CStreamReaderFile::SeekFromStart( uint64_t lOff )
 {
   LARGE_INTEGER li;
   li.QuadPart = lOff;

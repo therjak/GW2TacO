@@ -24,8 +24,8 @@ public:
 
   CMatrix2x2( const CQuaternion &q );
 
-  TF32 &operator() ( TU32 Row, TU32 Col );
-  TF32 operator() ( TU32 Row, TU32 Col ) const;
+  TF32 &operator() ( uint32_t Row, uint32_t Col );
+  TF32 operator() ( uint32_t Row, uint32_t Col ) const;
   operator TF32*( );
   operator const TF32*( ) const;
 
@@ -77,8 +77,8 @@ public:
               TF32 f31, TF32 f32, TF32 f33 );
   CMatrix3x3( const CQuaternion &q );
 
-  TF32 &operator() ( TU32 Row, TU32 Col );
-  TF32 operator() ( TU32 Row, TU32 Col ) const;
+  TF32 &operator() ( uint32_t Row, uint32_t Col );
+  TF32 operator() ( uint32_t Row, uint32_t Col ) const;
   operator TF32*( );
   operator const TF32*( ) const;
   CMatrix3x3 &operator*= ( const CMatrix3x3 &mat );
@@ -127,8 +127,8 @@ public:
               TF32 f41, TF32 f42, TF32 f43, TF32 f44 );
   CMatrix4x4( const CQuaternion &q );
 
-  TF32 &operator() ( TU32 Row, TU32 Col );
-  TF32 operator() ( TU32 Row, TU32 Col ) const;
+  TF32 &operator() ( uint32_t Row, uint32_t Col );
+  TF32 operator() ( uint32_t Row, uint32_t Col ) const;
   operator TF32*( );
   operator const TF32*( ) const;
   CVector4 Row( int32_t x ) const;

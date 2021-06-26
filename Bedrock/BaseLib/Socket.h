@@ -6,8 +6,8 @@ protected:
   int64_t LastActivity;
   SOCKET Socket;
 
-  virtual int32_t ReadStream( void *lpBuf, TU32 nCount );
-  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
+  virtual int32_t ReadStream( void *lpBuf, uint32_t nCount );
+  virtual int32_t WriteStream( void* lpBuf, uint32_t nCount );
 
 public:
 
@@ -18,13 +18,13 @@ public:
   //////////////////////////////////////////////////////////////////////////
   //socket functions
 
-  virtual int32_t Connect( const CString &Server, const TU32 Port );
-  virtual int32_t Listen( const TU32 Port, const TBOOL ReuseAddress = false );
+  virtual int32_t Connect( const CString &Server, const uint32_t Port );
+  virtual int32_t Listen( const uint32_t Port, const TBOOL ReuseAddress = false );
 
   virtual int32_t Close();
   virtual int32_t AcceptConnection( CSocket &Socket );
 
-  static TU32 Resolve( const TS8 *Address );
+  static uint32_t Resolve( const TS8 *Address );
 
   //////////////////////////////////////////////////////////////////////////
   //streamreader functions
@@ -32,13 +32,13 @@ public:
   virtual int64_t GetLength() const; //returns the currently available bytes in the socket
   virtual int64_t GetOffset() const; //is always 0
 
-  virtual void SeekFromStart( TU64 lOff ); //these do nothing
+  virtual void SeekFromStart( uint64_t lOff ); //these do nothing
   virtual void SeekRelative( int64_t lOff ); //these do nothing
 
-  int32_t ReadFull( void *lpBuf, TU32 nCount );
+  int32_t ReadFull( void *lpBuf, uint32_t nCount );
   virtual CString ReadLine() override;
 
-  TBOOL Peek( void *lpBuf, TU32 nCount );
+  TBOOL Peek( void *lpBuf, uint32_t nCount );
 
   TBOOL IsConnected();
 

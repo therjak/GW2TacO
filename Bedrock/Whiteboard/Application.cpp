@@ -976,7 +976,7 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, C
     }
     else
     {
-      TU32 x = 0, y = 0;
+      uint32_t x = 0, y = 0;
       node.GetAttribute( _T( "pos" ) ).Scan( _T( "%d,%d" ), &x, &y );
       Pos.MoveTo( x, y );
     }
@@ -985,7 +985,7 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, C
 
   if ( node.HasAttribute( _T( "size" ) ) )
   {
-    TU32 x = 0, y = 0;
+    uint32_t x = 0, y = 0;
     node.GetAttribute( _T( "size" ) ).Scan( _T( "%d,%d" ), &x, &y );
     Pos.SetSize( x, y );
     NewItem->SetPosition( Pos );

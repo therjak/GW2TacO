@@ -116,8 +116,8 @@ public:
   CMumbleLink();
   virtual ~CMumbleLink();
 
-  TU64 lastTickTime = 0;
-  TU64 lastTickLength = 0;
+  uint64_t lastTickTime = 0;
+  uint64_t lastTickLength = 0;
 
   TBOOL charPosChanged = false;
   TBOOL charEyeChanged = false;
@@ -126,7 +126,7 @@ public:
   TBOOL camUpChanged = false;
 
   CString mumblePath = L"MumbleLink";
-  TU32 pID;
+  uint32_t pID;
 };
 
 extern CMumbleLink mumbleLink;

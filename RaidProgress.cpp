@@ -8,7 +8,7 @@ using namespace jsonxx;
 
 void BeautifyString( CString& str )
 {
-  for ( TU32 x = 0; x < str.Length(); x++ )
+  for ( uint32_t x = 0; x < str.Length(); x++ )
   {
     if ( str[ x ] == '_' )
       str[ x ] = ' ';
@@ -83,7 +83,7 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
             }
 
             r.configName = CString( "showraid_" ) + r.name;
-            for ( TU32 y = 0; y < r.configName.Length(); y++ )
+            for ( uint32_t y = 0; y < r.configName.Length(); y++ )
               if ( !isalnum( r.configName[ y ] ) )
                 r.configName[ y ] = '_';
               else

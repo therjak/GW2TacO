@@ -1,7 +1,7 @@
 #include "BasePCH.h"
 #include "Window.h"
 
-TU32 CWBWindow::GetBorderSelectionArea( CPoint &mousepos )
+uint32_t CWBWindow::GetBorderSelectionArea( CPoint &mousepos )
 {
   if ( App->GetMouseItem() != this ) return 0;
 
@@ -9,7 +9,7 @@ TU32 CWBWindow::GetBorderSelectionArea( CPoint &mousepos )
 
   if ( ( r + CRect( -BorderWidth, -BorderWidth, -BorderWidth, -BorderWidth ) ).Contains( mousepos ) ) return 0;
 
-  TU32 result = 0;
+  uint32_t result = 0;
 
   if ( r.x1 + CornerSelectionSize > mousepos.x ) result |= WB_DRAGMODE_LEFT;
   if ( r.x2 - CornerSelectionSize < mousepos.x ) result |= WB_DRAGMODE_RIGHT;
@@ -126,7 +126,7 @@ CWBWindow::CWBWindow() : CWBItem()
 
 }
 
-CWBWindow::CWBWindow( CWBItem *Parent, const CRect &Pos, const TCHAR *txt, TU32 style ) : CWBItem()
+CWBWindow::CWBWindow( CWBItem *Parent, const CRect &Pos, const TCHAR *txt, uint32_t style ) : CWBItem()
 {
   Initialize( Parent, Pos, txt, style );
 }
@@ -136,7 +136,7 @@ CWBWindow::~CWBWindow()
 
 }
 
-TBOOL CWBWindow::Initialize( CWBItem *Parent, const CRect &Position, const TCHAR *txt, TU32 style )
+TBOOL CWBWindow::Initialize( CWBItem *Parent, const CRect &Position, const TCHAR *txt, uint32_t style )
 {
   WindowTitle = txt;
 
@@ -257,7 +257,7 @@ TBOOL CWBWindow::MessageProc( CWBMessage &Message )
   return CWBItem::MessageProc( Message );
 }
 
-TU32 CWBWindow::GetDragMode()
+uint32_t CWBWindow::GetDragMode()
 {
   return DragMode;
 }

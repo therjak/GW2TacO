@@ -6,8 +6,8 @@
 
 typedef unsigned char		TU8;
 typedef unsigned short		TU16;
-typedef unsigned int		TU32;
-typedef unsigned __int64	TU64;
+// typedef unsigned int		uint32_t;
+// typedef unsigned __int64	uint64_t;
 typedef char				TS8;
 // typedef short				int16_t;
 // typedef int					int32_t;

@@ -52,14 +52,14 @@ class CWBKerningPair
 {
 public:
 
-  TU32 First, Second;
+  uint32_t First, Second;
 
   INLINE TBOOL operator==( const CWBKerningPair &k );
   CWBKerningPair();
   CWBKerningPair( TU16 a, TU16 b );
 };
 
-INLINE TU32 DictionaryHash( const CWBKerningPair &i );
+INLINE uint32_t DictionaryHash( const CWBKerningPair &i );
 
 class CWBDrawAPI;
 

@@ -4,7 +4,7 @@
 #include "CSSItem.h"
 #include "Skin.h"
 
-typedef TU32 WBGUID;
+typedef uint32_t WBGUID;
 class CWBDrawAPI;
 class CWBApplication;
 class CWBMessage;
@@ -310,8 +310,8 @@ public:
 
   CRect GetPosition();
 
-  TU32 NumChildren();
-  CWBItem * GetChild( TU32 idx );
+  uint32_t NumChildren();
+  CWBItem * GetChild( uint32_t idx );
 
   TBOOL InFocus();
   TBOOL InLocalFocus();

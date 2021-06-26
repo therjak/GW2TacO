@@ -177,7 +177,7 @@ TBOOL CCoreDX11Device::CreateDepthBuffer( int32_t XRes, int32_t YRes )
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateClassicSwapChain( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
+TBOOL CCoreDX11Device::CreateClassicSwapChain( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
 {
   LOG_NFO( "[core] Creating classic swap chain" );
 
@@ -243,7 +243,7 @@ TBOOL CCoreDX11Device::CreateClassicSwapChain( const TU32 hWnd, const TBOOL Full
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
+TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
 {
   LOG_NFO( "[core] Creating DirectComposition swap chain" );
 
@@ -415,7 +415,7 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const TU32 hWnd, const 
   return true;
 }
 
-TBOOL CCoreDX11Device::InitAPI( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel/* =0 */, const int32_t RefreshRate/* =60 */ )
+TBOOL CCoreDX11Device::InitAPI( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel/* =0 */, const int32_t RefreshRate/* =60 */ )
 {
   auto dcomp = LoadLibrary( "dcomp.dll" );
 

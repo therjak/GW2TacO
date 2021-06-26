@@ -4,12 +4,12 @@
 
 class CProfile
 {
-  TU32 Time;
-  TU64 Key;
+  uint32_t Time;
+  uint64_t Key;
   CString Label;
 
 public:
-  CProfile( TU64, const CString &label );
+  CProfile( uint64_t, const CString &label );
   ~CProfile( void );
 
 };

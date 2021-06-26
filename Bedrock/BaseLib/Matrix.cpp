@@ -48,13 +48,13 @@ CMatrix2x2::operator TF32*( )
   return &_11;
 }
 
-TF32 CMatrix2x2::operator()( TU32 Row, TU32 Col ) const
+TF32 CMatrix2x2::operator()( uint32_t Row, uint32_t Col ) const
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 2 && Col < 2, m[ 0 ][ 0 ] );
   return m[ Row & 1 ][ Col & 1 ];
 }
 
-TF32 & CMatrix2x2::operator()( TU32 Row, TU32 Col )
+TF32 & CMatrix2x2::operator()( uint32_t Row, uint32_t Col )
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 2 && Col < 2, m[ 0 ][ 0 ] );
   return m[ Row & 1 ][ Col & 1 ];
@@ -224,13 +224,13 @@ CMatrix3x3::CMatrix3x3()
 
 }
 
-TF32 &CMatrix3x3::operator() ( TU32 Row, TU32 Col )
+TF32 &CMatrix3x3::operator() ( uint32_t Row, uint32_t Col )
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 3 && Col < 3, m[ 0 ][ 0 ] );
   return m[ Row % 3 ][ Col % 3 ];
 }
 
-TF32 CMatrix3x3::operator() ( TU32 Row, TU32 Col ) const
+TF32 CMatrix3x3::operator() ( uint32_t Row, uint32_t Col ) const
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 3 && Col < 3, m[ 0 ][ 0 ] );
   return m[ Row % 3 ][ Col % 3 ];
@@ -589,13 +589,13 @@ CMatrix4x4::CMatrix4x4()
 
 }
 
-TF32 &CMatrix4x4::operator() ( TU32 Row, TU32 Col )
+TF32 &CMatrix4x4::operator() ( uint32_t Row, uint32_t Col )
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[ 0 ][ 0 ] );
   return m[ Row & 3 ][ Col & 3 ];
 }
 
-TF32 CMatrix4x4::operator() ( TU32 Row, TU32 Col ) const
+TF32 CMatrix4x4::operator() ( uint32_t Row, uint32_t Col ) const
 {
   BASEASSERTR( Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[ 0 ][ 0 ] );
   return m[ Row & 3 ][ Col & 3 ];

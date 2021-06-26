@@ -85,7 +85,7 @@ public:
 	virtual TBOOL DeviceOK() = 0;
 	virtual void ToggleFullScreen() = 0;
 
-	virtual TU32 GetHandle() = 0;
+	virtual uint32_t GetHandle() = 0;
 
 	virtual int32_t GetXRes();
 	virtual int32_t GetYRes();
@@ -139,7 +139,7 @@ public:
 	virtual TBOOL DeviceOK();
 	virtual void ToggleFullScreen();
 
-	TU32 GetHandle();
+	uint32_t GetHandle();
 
 	virtual void FinalizeMouseCursor();
 	virtual void SetWindowTitle(CString &Title);

@@ -568,7 +568,7 @@ void TS3Connection::ProcessClientList( CString &clientdata, int32_t handler )
 CString TS3Connection::unescape( CString string )
 {
   CString result;
-  for ( TU32 x = 0; x < string.Length(); x++ )
+  for ( uint32_t x = 0; x < string.Length(); x++ )
   {
     if ( string[ x ] == '\\' )
     {

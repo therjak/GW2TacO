@@ -175,10 +175,10 @@ public:
 
 const int32_t Lerp( const int32_t v1, const int32_t v2, const TF32 t );
 const TF32 Lerp( const TF32 v1, const TF32 v2, const TF32 t );
-const TU32 Lerp( const TU32 v1, const TU32 v2, const TF32 t );
+const uint32_t Lerp( const uint32_t v1, const uint32_t v2, const TF32 t );
 const int64_t Lerp( const int64_t v1, const int64_t v2, const TF32 t );
 const double Lerp( const double v1, const double v2, const TF32 t );
-const TU64 Lerp( const TU64 v1, const TU64 v2, const TF32 t );
+const uint64_t Lerp( const uint64_t v1, const uint64_t v2, const TF32 t );
 const CVector2 Lerp( const CVector2 &v1, const CVector2 &v2, const TF32 t );
 const CVector2I Lerp( const CVector2I &v1, const CVector2I &v2, const TF32 t );
 const CVector3 Lerp( const CVector3 &v1, const CVector3 &v2, const TF32 t );

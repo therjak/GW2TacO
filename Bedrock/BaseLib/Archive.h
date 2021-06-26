@@ -19,7 +19,7 @@ class CArchiveEntry
 
   int32_t StartChunk;
   int32_t FileSize;
-  TU64 Hash;
+  uint64_t Hash;
   CString FileName;
 
   void Init( const CArchiveEntry &f );
@@ -52,8 +52,8 @@ class CArchive
   TU8 *TempChunk;
   FILE *Handle;
 
-  TU64 FileSize;
-  //TU64 CurrentPos;
+  uint64_t FileSize;
+  //uint64_t CurrentPos;
 
   TU16 ChunkSize;
   int32_t EmptySequenceStartChunk;
@@ -73,7 +73,7 @@ class CArchive
   TBOOL WriteFile( TU8 *Data, int32_t Size, int32_t &startchunk );
   TBOOL WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize );
 
-  TU64 CalculateHash( const CString &Filename );
+  uint64_t CalculateHash( const CString &Filename );
 
 public:
 

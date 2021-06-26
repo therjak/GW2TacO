@@ -10,9 +10,9 @@ const TF32 Lerp( const TF32 v1, const TF32 v2, const TF32 t )
   return ( v2 - v1 )*t + v1;
 }
 
-const TU32 Lerp( const TU32 v1, const TU32 v2, const TF32 t )
+const uint32_t Lerp( const uint32_t v1, const uint32_t v2, const TF32 t )
 {
-  return (TU32)( ( v2 - v1 )*t + v1 );
+  return (uint32_t)( ( v2 - v1 )*t + v1 );
 }
 
 const int64_t Lerp( const int64_t v1, const int64_t v2, const TF32 t )
@@ -25,9 +25,9 @@ const double Lerp( const double v1, const double v2, const TF32 t )
   return ( v2 - v1 )*t + v1;
 }
 
-const TU64 Lerp( const TU64 v1, const TU64 v2, const TF32 t )
+const uint64_t Lerp( const uint64_t v1, const uint64_t v2, const TF32 t )
 {
-  return (TU64)( ( v2 - v1 )*t + v1 );
+  return (uint64_t)( ( v2 - v1 )*t + v1 );
 }
 
 const CVector2 Lerp( const CVector2 &v1, const CVector2 &v2, const TF32 t )

@@ -182,7 +182,7 @@ TBOOL CCoreDevice::ApplyIndexBuffer(CCoreIndexBuffer *IdxBuffer)
 	return IdxBuffer->Apply();
 }
 
-TBOOL CCoreDevice::ApplyVertexBuffer(CCoreVertexBuffer *VxBuffer, TU32 Offset)
+TBOOL CCoreDevice::ApplyVertexBuffer(CCoreVertexBuffer *VxBuffer, uint32_t Offset)
 {
 	if (!VxBuffer) return false;
 	return VxBuffer->Apply(Offset);
@@ -248,7 +248,7 @@ TBOOL CCoreDevice::SetDomainShader(CCoreDomainShader *Shader)
 	return true;
 }
 
-TBOOL CCoreDevice::SetVertexBuffer(CCoreVertexBuffer *VertexBuffer, TU32 Offset)
+TBOOL CCoreDevice::SetVertexBuffer(CCoreVertexBuffer *VertexBuffer, uint32_t Offset)
 {
 	RequestedVertexBuffer = VertexBuffer;
 	RequestedVertexBufferOffset = Offset;

@@ -53,7 +53,7 @@ void GW2MarkerEditor::OnDraw( CWBDrawAPI *API )
       if ( autoHide )
       {
         if ( Hidden )
-          for ( TU32 z = 0; z < NumChildren(); z++ )
+          for ( uint32_t z = 0; z < NumChildren(); z++ )
             GetChild( z )->Hide( false );
         Hidden = false;
       }
@@ -81,7 +81,7 @@ void GW2MarkerEditor::OnDraw( CWBDrawAPI *API )
   if ( autoHide )
   {
     if ( !Hidden )
-      for ( TU32 x = 0; x < NumChildren(); x++ )
+      for ( uint32_t x = 0; x < NumChildren(); x++ )
         GetChild( x )->Hide( true );
 
     Hidden = true;
@@ -89,7 +89,7 @@ void GW2MarkerEditor::OnDraw( CWBDrawAPI *API )
   else
   {
     if ( Hidden )
-      for ( TU32 x = 0; x < NumChildren(); x++ )
+      for ( uint32_t x = 0; x < NumChildren(); x++ )
         GetChild( x )->Hide( false );
 
     Hidden = false;

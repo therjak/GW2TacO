@@ -13,7 +13,7 @@ public:
   {
   public:
     KeyType Key;
-    TU32 Hash;
+    uint32_t Hash;
     ItemType Data;
     KDPair *Next;
 
@@ -94,7 +94,7 @@ protected:
 
   virtual KDPair *Find( const KeyType &Key ) const
   {
-    TU32 idx = DictionaryHash( Key ) % TableSize;
+    uint32_t idx = DictionaryHash( Key ) % TableSize;
 
     KDPair *p = HashTable[ idx ];
 
@@ -165,7 +165,7 @@ public:
 
   virtual void Delete( const KeyType &Key )
   {
-    TU32 idx = DictionaryHash( Key ) % TableSize;
+    uint32_t idx = DictionaryHash( Key ) % TableSize;
 
     KDPair *p = HashTable[ idx ];
     KDPair *Previous = 0;
@@ -653,24 +653,24 @@ public:
     //qsort implementation - calling crt qsort isn't viable here due to template hackery
     //implementation taken from crt
 
-    TU32 lostk[ SORTSTACKSIZE ], histk[ SORTSTACKSIZE ];
+    uint32_t lostk[ SORTSTACKSIZE ], histk[ SORTSTACKSIZE ];
     int32_t stkptr = 0;
 
-    TU32 lo = 0;
-    TU32 hi = ItemCount - 1;
+    uint32_t lo = 0;
+    uint32_t hi = ItemCount - 1;
 
   recurse:
 
-    TU32 size = ( hi - lo ) + 1;
+    uint32_t size = ( hi - lo ) + 1;
 
     if ( size <= 8 ) //cutoff = 8
     {
-      TU32 _hi = hi, _lo = lo;
+      uint32_t _hi = hi, _lo = lo;
 
       while ( _hi > _lo )
       {
-        TU32 max = _lo;
-        for ( TU32 p = _lo + 1; p <= _hi; p++ )
+        uint32_t max = _lo;
+        for ( uint32_t p = _lo + 1; p <= _hi; p++ )
           if ( SortCallback( IndexMap[ p ]->Key, IndexMap[ max ]->Key ) > 0 )
             max = p;
         swap( max, _hi );
@@ -679,14 +679,14 @@ public:
     }
     else
     {
-      TU32 mid = lo + ( size / 2 );
+      uint32_t mid = lo + ( size / 2 );
 
       if ( SortCallback( IndexMap[ lo ]->Key, IndexMap[ mid ]->Key ) > 0 ) swap( lo, mid );
       if ( SortCallback( IndexMap[ lo ]->Key, IndexMap[ hi ]->Key ) > 0 ) swap( lo, hi );
       if ( SortCallback( IndexMap[ mid ]->Key, IndexMap[ hi ]->Key ) > 0 ) swap( mid, hi );
 
-      TU32 loguy = lo;
-      TU32 higuy = hi;
+      uint32_t loguy = lo;
+      uint32_t higuy = hi;
 
       for ( ;;)
       {
@@ -727,24 +727,24 @@ public:
     //qsort implementation - calling crt qsort isn't viable here due to template hackery
     //implementation taken from crt
 
-    TU32 lostk[ SORTSTACKSIZE ], histk[ SORTSTACKSIZE ];
+    uint32_t lostk[ SORTSTACKSIZE ], histk[ SORTSTACKSIZE ];
     int32_t stkptr = 0;
 
-    TU32 lo = 0;
-    TU32 hi = ItemCount - 1;
+    uint32_t lo = 0;
+    uint32_t hi = ItemCount - 1;
 
   recurse:
 
-    TU32 size = ( hi - lo ) + 1;
+    uint32_t size = ( hi - lo ) + 1;
 
     if ( size <= 8 ) //cutoff = 8
     {
-      TU32 _hi = hi, _lo = lo;
+      uint32_t _hi = hi, _lo = lo;
 
       while ( _hi > _lo )
       {
-        TU32 max = _lo;
-        for ( TU32 p = _lo + 1; p <= _hi; p++ )
+        uint32_t max = _lo;
+        for ( uint32_t p = _lo + 1; p <= _hi; p++ )
           if ( SortCallback( IndexMap[ p ]->Data, IndexMap[ max ]->Data ) > 0 )
             max = p;
         swap( max, _hi );
@@ -753,14 +753,14 @@ public:
     }
     else
     {
-      TU32 mid = lo + ( size / 2 );
+      uint32_t mid = lo + ( size / 2 );
 
       if ( SortCallback( IndexMap[ lo ]->Data, IndexMap[ mid ]->Data ) > 0 ) swap( lo, mid );
       if ( SortCallback( IndexMap[ lo ]->Data, IndexMap[ hi ]->Data ) > 0 ) swap( lo, hi );
       if ( SortCallback( IndexMap[ mid ]->Data, IndexMap[ hi ]->Data ) > 0 ) swap( mid, hi );
 
-      TU32 loguy = lo;
-      TU32 higuy = hi;
+      uint32_t loguy = lo;
+      uint32_t higuy = hi;
 
       for ( ;;)
       {
@@ -827,5 +827,5 @@ public:
 };
 
 
-TU32 DictionaryHash( const int32_t &i );
-TU32 DictionaryHash( const void *i );
+uint32_t DictionaryHash( const int32_t &i );
+uint32_t DictionaryHash( const void *i );

@@ -4,14 +4,14 @@
 
 class CRandom
 {
-  TU32 Seed;
+  uint32_t Seed;
 
 public:
 
   CRandom();
-  CRandom( TU32 seed );
-  void srand( TU32 seed );
-  TU32 rand();
+  CRandom( uint32_t seed );
+  void srand( uint32_t seed );
+  uint32_t rand();
   TF32 frand();
   TF32 frand( TF32 min, TF32 max );
 };

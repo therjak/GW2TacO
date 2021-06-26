@@ -679,7 +679,7 @@ void FetchMarkerPackOnline( CString& ourl )
     mz_zip_reader_end( &zip );
 
     int32_t cnt = 0;
-    for ( TU32 x = 0; x < url.Length(); x++ )
+    for ( uint32_t x = 0; x < url.Length(); x++ )
       if ( url[ x ] == '\\' || url[ x ] == '/' )
         cnt = x;
 
@@ -696,7 +696,7 @@ void FetchMarkerPackOnline( CString& ourl )
     if ( fileName.Find( ".taco" ) == fileName.Length() - 5 )
       fileName = fileName.Substring( 0, fileName.Length() - 5 );
 
-    for ( TU32 x = 0; x < fileName.Length(); x++ )
+    for ( uint32_t x = 0; x < fileName.Length(); x++ )
       if ( !isalnum( fileName[ x ] ) )
         fileName[ x ] = '_';
 
@@ -729,7 +729,7 @@ void ImportMarkerPack( CWBApplication* App, const CString& zipFile );
 
 void FlushZipDict();
 
-TU32 lastSlowEventTime = 0;
+uint32_t lastSlowEventTime = 0;
 int gw2WindowCount = 0;
 
 BOOL __stdcall gw2WindowCountFunc( HWND   hwnd, LPARAM lParam )

@@ -44,25 +44,25 @@ CString::CString( const wchar_t *str )
   Append( str );
 }
 
-CString::CString( const CString &str, const TU32 len )
+CString::CString( const CString &str, const uint32_t len )
 {
   Initialize();
   Append( str, len );
 }
 
-CString::CString( const TS8 *str, const TU32 len )
+CString::CString( const TS8 *str, const uint32_t len )
 {
   Initialize();
   Append( str, len );
 }
 
-CString::CString( const wchar_t *str, const TU32 len )
+CString::CString( const wchar_t *str, const uint32_t len )
 {
   Initialize();
   Append( str, len );
 }
 
-void CString::WriteAsMultiByte( TS8 *Copy, TU32 SizeInChars ) const
+void CString::WriteAsMultiByte( TS8 *Copy, uint32_t SizeInChars ) const
 {
   if ( !Copy || !SizeInChars ) return;
   int32_t len = min( Length(), SizeInChars - 1 );
@@ -77,7 +77,7 @@ void CString::WriteAsMultiByte( TS8 *Copy, TU32 SizeInChars ) const
 }
 
 
-void CString::WriteAsWideChar( wchar_t *Copy, TU32 SizeInChars ) const
+void CString::WriteAsWideChar( wchar_t *Copy, uint32_t SizeInChars ) const
 {
   if ( !Copy || !SizeInChars ) return;
   int32_t len = min( Length(), SizeInChars - 1 );
@@ -114,7 +114,7 @@ const CString &CString::operator+=( const CString &str )
   return *this;
 }
 
-const CString &CString::Append( const CString &str, const TU32 len )
+const CString &CString::Append( const CString &str, const uint32_t len )
 {
   int32_t lengthOriginal = Length();
   int32_t lengthIncoming = len;//str.Length();
@@ -164,7 +164,7 @@ const CString operator+( const TS8 *str, const CString &str2 )
   return CString( str ).Append( str2 );
 }
 
-const CString &CString::Append( const TS8 *str, const TU32 len )
+const CString &CString::Append( const TS8 *str, const uint32_t len )
 {
   int32_t lengthOriginal = Length();
   int32_t lengthIncoming = len;
@@ -231,7 +231,7 @@ CString operator+( const wchar_t *str, const CString &str2 )
   return CString( str ).Append( str2 );
 }
 
-const CString &CString::Append( const wchar_t *str, const TU32 len )
+const CString &CString::Append( const wchar_t *str, const uint32_t len )
 {
   int32_t lengthOriginal = Length();
   int32_t lengthIncoming = len;
@@ -309,18 +309,18 @@ const CString operator+( const long v, const CString &str )
 }
 
 //unsigned int
-CString CString::operator+( const TU32 v ) const
+CString CString::operator+( const uint32_t v ) const
 {
   return ( *this ) + CString::Format( DEFAULTINTFORMAT, v );
 }
 
-CString &CString::operator+=( const TU32 v )
+CString &CString::operator+=( const uint32_t v )
 {
   Append( CString::Format( DEFAULTINTFORMAT, v ) );
   return *this;
 }
 
-const CString operator+( const TU32 v, const CString &str )
+const CString operator+( const uint32_t v, const CString &str )
 {
   return CString::Format( DEFAULTINTFORMAT, v ) + str;
 }
@@ -476,7 +476,7 @@ TCHAR &CString::operator[]( const int32_t idx ) const
 //////////////////////////////////////////////////////////////////////////
 //
 
-TU32 CString::Length() const
+uint32_t CString::Length() const
 {
   return LengthCached;
 }
@@ -549,12 +549,12 @@ void CString::DeleteRegion( int32_t pos, int32_t size )
 
 void CString::ToUnixNewline()
 {
-  TU32 cnt = 0;
+  uint32_t cnt = 0;
   for ( int32_t x = 0; x < (int32_t)Length(); x++ )
     if ( String[ x ] == '\r' ) cnt++;
   if ( !cnt ) return;
 
-  TU32 pos = 0;
+  uint32_t pos = 0;
   TCHAR *str = new TCHAR[ Length() - cnt + 2 ];
   for ( int32_t x = 0; x < (int32_t)Length(); x++ )
     if ( String[ x ] != '\r' ) str[ pos++ ] = String[ x ];
@@ -589,14 +589,14 @@ void CString::ToWindowsNewline()
 
 void CString::ToLower()
 {
-  for ( TU32 x = 0; x < Length(); x++ )
+  for ( uint32_t x = 0; x < Length(); x++ )
     String[ x ] = _totlower( String[ x ] );
   StringChanged();
 }
 
 void CString::ToUpper()
 {
-  for ( TU32 x = 0; x < Length(); x++ )
+  for ( uint32_t x = 0; x < Length(); x++ )
     String[ x ] = _totupper( String[ x ] );
   StringChanged();
 }
@@ -621,20 +621,20 @@ void CString::CalculateHash()
     Hash = ( ( Hash << 5 ) + Hash ) + c; // hash * 33 + c
 }
 
-TU32 CString::GetHash() const
+uint32_t CString::GetHash() const
 {
   return Hash;
 }
 #endif
 
-TU32 DictionaryHash( const CString &i )
+uint32_t DictionaryHash( const CString &i )
 {
 #ifndef HASHED_STRINGS
   int32_t c;
   TCHAR *str = i.GetPointer();
 
   //djb2 hash
-  TU32 Hash = 5381;
+  uint32_t Hash = 5381;
   while ( c = *str++ )
     Hash = ( ( Hash << 5 ) + Hash ) + c; // hash * 33 + c
   return Hash;
@@ -734,7 +734,7 @@ int32_t CString::Scan( const CString format, ... )
   return s;
 }
 
-int32_t CString::Find( const CString &v, TU32 nStart ) const
+int32_t CString::Find( const CString &v, uint32_t nStart ) const
 {
   if ( nStart > Length() ) return -1;
   TCHAR * sz = _tcsstr( String + nStart, v.GetPointer() );
@@ -742,37 +742,37 @@ int32_t CString::Find( const CString &v, TU32 nStart ) const
   return (int32_t)( sz - String );
 }
 
-int32_t CString::Find( const TS8 *v, TU32 nStart ) const
+int32_t CString::Find( const TS8 *v, uint32_t nStart ) const
 {
   return Find( CString( v ), nStart );
 }
-int32_t CString::Find( const wchar_t *v, TU32 nStart ) const
+int32_t CString::Find( const wchar_t *v, uint32_t nStart ) const
 {
   return Find( CString( v ), nStart );
 }
 
-TU32 CString::GetSubstringCount( CString &v ) const
+uint32_t CString::GetSubstringCount( CString &v ) const
 {
-  TU32 nCount = 0;
-  TU32 nStart = 0;
+  uint32_t nCount = 0;
+  uint32_t nStart = 0;
   while ( ( nStart = Find( v, nStart ) + 1 ) != 0 )
     nCount++;
   return nCount;
 }
 
-TU32 CString::GetSubstringCount( const TS8 *v ) const
+uint32_t CString::GetSubstringCount( const TS8 *v ) const
 {
-  TU32 nCount = 0;
-  TU32 nStart = 0;
+  uint32_t nCount = 0;
+  uint32_t nStart = 0;
   while ( ( nStart = Find( v, nStart ) + 1 ) != 0 )
     nCount++;
   return nCount;
 }
 
-TU32 CString::GetSubstringCount( const wchar_t *v ) const
+uint32_t CString::GetSubstringCount( const wchar_t *v ) const
 {
-  TU32 nCount = 0;
-  TU32 nStart = 0;
+  uint32_t nCount = 0;
+  uint32_t nStart = 0;
   while ( ( nStart = Find( v, nStart ) + 1 ) != 0 )
     nCount++;
   return nCount;
@@ -897,9 +897,9 @@ CString CString::Substring( int32_t nStart, int32_t nLength ) const
     nLength = ( Length() - nStart ) + nLength;
   if ( nLength < 0 || nStart < 0 )
     return CString( _T( "" ) );
-  if ( (TU32)nStart > Length() )
+  if ( (uint32_t)nStart > Length() )
     return CString( _T( "" ) );
-  if ( (TU32)nStart + (TU32)nLength > Length() )
+  if ( (uint32_t)nStart + (uint32_t)nLength > Length() )
     return CString( _T( "" ) );
   return CString( String + nStart, nLength );
 }
@@ -1292,7 +1292,7 @@ void CString::RemoveNewLines()
 {
   TCHAR *txt = new TCHAR[ Length() + 1 ];
   int32_t pos = 0;
-  for ( TU32 x = 0; x < Length(); x++ )
+  for ( uint32_t x = 0; x < Length(); x++ )
   {
     if ( String[ x ] == '\n' || String[ x ] == '\r' ) continue;
     txt[ pos++ ] = String[ x ];

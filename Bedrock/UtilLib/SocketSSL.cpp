@@ -13,7 +13,7 @@ CSocketSSL::~CSocketSSL( void )
 {
 }
 
-int32_t CSocketSSL::Connect( const CString &Server, const TU32 Port )
+int32_t CSocketSSL::Connect( const CString &Server, const uint32_t Port )
 {
   if ( !CSocket::Connect( Server, Port ) ) return 0;
 
@@ -47,12 +47,12 @@ int32_t CSocketSSL::Close()
   return CSocket::Close();
 }
 
-int32_t CSocketSSL::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CSocketSSL::ReadStream( void *lpBuf, uint32_t nCount )
 {
   return SSL_read( (SSL*)ssl, lpBuf, nCount );
 }
 
-int32_t CSocketSSL::WriteStream( void* lpBuf, TU32 nCount )
+int32_t CSocketSSL::WriteStream( void* lpBuf, uint32_t nCount )
 {
   return SSL_write( (SSL*)ssl, lpBuf, nCount );
 }

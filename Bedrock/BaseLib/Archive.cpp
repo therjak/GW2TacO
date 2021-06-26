@@ -449,15 +449,15 @@ TBOOL CArchive::WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize )
 #define HASHSEED 0x811C9DC5
 #define HASHMULT 0x1000193
 
-TU64 CArchive::CalculateHash( const CString &Filename )
+uint64_t CArchive::CalculateHash( const CString &Filename )
 {
-  TU64 x = 0;
+  uint64_t x = 0;
 
   TS8 *String = new TS8[ Filename.Length() + 2 ];
   String[ Filename.Length() + 1 ] = 0;
   Filename.WriteAsMultiByte( String, Filename.Length() + 1 );
 
-  TU64 Hash = HASHSEED;
+  uint64_t Hash = HASHSEED;
   do
   {
     Hash = HASHMULT * ( tolower( String[ x++ ] ) ^ Hash );
@@ -485,7 +485,7 @@ TBOOL CArchive::OpenFile( const CString &FileName, CStreamReaderArchive *&Reader
 
   if ( idx == -1 )
   {
-    TU64 hash = CalculateHash( FileName );
+    uint64_t hash = CalculateHash( FileName );
 
     for ( int32_t x = 0; x < FileIndices.NumItems(); x++ )
       if ( FileIndices[ x ].Hash == hash )

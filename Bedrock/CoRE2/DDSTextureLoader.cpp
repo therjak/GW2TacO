@@ -33,8 +33,8 @@
 //--------------------------------------------------------------------------------------
 #ifndef MAKEFOURCC
 #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
-                ((TU32)(byte)(ch0) | ((TU32)(byte)(ch1) << 8) |       \
-                ((TU32)(byte)(ch2) << 16) | ((TU32)(byte)(ch3) << 24))
+                ((uint32_t)(byte)(ch0) | ((uint32_t)(byte)(ch1) << 8) |       \
+                ((uint32_t)(byte)(ch2) << 16) | ((uint32_t)(byte)(ch3) << 24))
 #endif /* defined(MAKEFOURCC) */
 
 //--------------------------------------------------------------------------------------
@@ -48,14 +48,14 @@
 
 struct DDS_PIXELFORMAT
 {
-	TU32  size;
-	TU32  flags;
-	TU32  fourCC;
-	TU32  RGBBitCount;
-	TU32  RBitMask;
-	TU32  GBitMask;
-	TU32  BBitMask;
-	TU32  ABitMask;
+	uint32_t  size;
+	uint32_t  flags;
+	uint32_t  fourCC;
+	uint32_t  RGBBitCount;
+	uint32_t  RBitMask;
+	uint32_t  GBitMask;
+	uint32_t  BBitMask;
+	uint32_t  ABitMask;
 };
 
 #define DDS_FOURCC      0x00000004  // DDPF_FOURCC
@@ -96,29 +96,29 @@ struct DDS_PIXELFORMAT
 
 typedef struct
 {
-	TU32          size;
-	TU32          flags;
-	TU32          height;
-	TU32          width;
-	TU32          pitchOrLinearSize;
-	TU32          depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
-	TU32          mipMapCount;
-	TU32          reserved1[11];
+	uint32_t          size;
+	uint32_t          flags;
+	uint32_t          height;
+	uint32_t          width;
+	uint32_t          pitchOrLinearSize;
+	uint32_t          depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
+	uint32_t          mipMapCount;
+	uint32_t          reserved1[11];
 	DDS_PIXELFORMAT ddspf;
-	TU32          caps;
-	TU32          caps2;
-	TU32          caps3;
-	TU32          caps4;
-	TU32          reserved2;
+	uint32_t          caps;
+	uint32_t          caps2;
+	uint32_t          caps3;
+	uint32_t          caps4;
+	uint32_t          reserved2;
 } DDS_HEADER;
 
 typedef struct
 {
 	DXGI_FORMAT dxgiFormat;
-	TU32      resourceDimension;
-	TU32      miscFlag; // see D3D11_RESOURCE_MISC_FLAG
-	TU32      arraySize;
-	TU32      reserved;
+	uint32_t      resourceDimension;
+	uint32_t      miscFlag; // see D3D11_RESOURCE_MISC_FLAG
+	uint32_t      arraySize;
+	uint32_t      reserved;
 } DDS_HEADER_DXT10;
 
 #pragma pack(pop)
@@ -651,7 +651,7 @@ static TBOOL FillInitData(
 //--------------------------------------------------------------------------------------
 static HRESULT CreateD3DResources(
 	_In_ ID3D11Device* d3dDevice,
-	_In_ TU32 resDim,
+	_In_ uint32_t resDim,
 	_In_ size_t width,
 	_In_ size_t height,
 	_In_ size_t depth,
@@ -873,7 +873,7 @@ static TBOOL CreateTextureFromDDS(
 	size_t height = header->height;
 	size_t depth = header->depth;
 
-	TU32 resDim = D3D11_RESOURCE_DIMENSION_UNKNOWN;
+	uint32_t resDim = D3D11_RESOURCE_DIMENSION_UNKNOWN;
 	size_t arraySize = 1;
 	DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
 	bool isCubeMap = false;
@@ -1069,12 +1069,12 @@ TBOOL CreateDDSTextureFromMemory(
 	if (!d3dDevice || !ddsData || (!texture && !textureView))  return false;
 
 	// Validate DDS file in memory
-	if (ddsDataSize < (sizeof(TU32) + sizeof(DDS_HEADER)))  return false;
+	if (ddsDataSize < (sizeof(uint32_t) + sizeof(DDS_HEADER)))  return false;
 
-	TU32 dwMagicNumber = *(const TU32*)(ddsData);
+	uint32_t dwMagicNumber = *(const uint32_t*)(ddsData);
 	if (dwMagicNumber != DDS_MAGIC) return false;
 
-	const DDS_HEADER* header = reinterpret_cast<const DDS_HEADER*>(ddsData + sizeof(TU32));
+	const DDS_HEADER* header = reinterpret_cast<const DDS_HEADER*>(ddsData + sizeof(uint32_t));
 
 	// Verify header to validate DDS file
 	if (header->size != sizeof(DDS_HEADER) ||
@@ -1086,12 +1086,12 @@ TBOOL CreateDDSTextureFromMemory(
 		(MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC))
 	{
 		// Must be long enough for both headers and magic value
-		if (ddsDataSize < (sizeof(DDS_HEADER) + sizeof(TU32) + sizeof(DDS_HEADER_DXT10))) return false;
+		if (ddsDataSize < (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_DXT10))) return false;
 
 		bDXT10Header = true;
 	}
 
-	ptrdiff_t offset = sizeof(TU32) + sizeof(DDS_HEADER) + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
+	ptrdiff_t offset = sizeof(uint32_t) + sizeof(DDS_HEADER) + (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
 
 	return CreateTextureFromDDS(d3dDevice, header, ddsData + offset, ddsDataSize - offset, texture, textureView, maxsize);	
 }

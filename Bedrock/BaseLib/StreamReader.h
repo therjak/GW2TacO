@@ -2,9 +2,9 @@
 
 class CStreamReader
 {
-  TU32 readerBitOffset;
+  uint32_t readerBitOffset;
   TU8 readerLastChar;
-  virtual int32_t ReadStream( void *lpBuf, TU32 nCount ) = NULL; //this reads nCount bytes from the stream
+  virtual int32_t ReadStream( void *lpBuf, uint32_t nCount ) = NULL; //this reads nCount bytes from the stream
 
 public:
 
@@ -13,12 +13,12 @@ public:
 
   //general purpose reading functions with bitstream support
   //these aren't virtual as they all fall back on ReadStream at one point and should not be overridden
-  int32_t Read( void *lpBuf, TU32 nCount );
-  TU64 ReadQWord();
-  TU32 ReadDWord();
+  int32_t Read( void *lpBuf, uint32_t nCount );
+  uint64_t ReadQWord();
+  uint32_t ReadDWord();
   TU16 ReadWord();
   TU8 ReadByte();
-  TU32 ReadBits( TU32 BitCount );
+  uint32_t ReadBits( uint32_t BitCount );
   TBOOL ReadBit();
   TF32 ReadTF32();
   void ReadRemainingBits();
@@ -30,31 +30,31 @@ public:
   virtual int64_t GetOffset() const = NULL;
   virtual TBOOL eof();
 
-  virtual void SeekFromStart( TU64 lOff ) = NULL;
+  virtual void SeekFromStart( uint64_t lOff ) = NULL;
   virtual void SeekRelative( int64_t lOff ) = NULL;
 };
 
 class CStreamReaderMemory : public CStreamReader
 {
   TU8 *Data;
-  TU64 DataSize;
-  TU64 Offset;
+  uint64_t DataSize;
+  uint64_t Offset;
 
-  virtual int32_t ReadStream( void *lpBuf, TU32 nCount );
+  virtual int32_t ReadStream( void *lpBuf, uint32_t nCount );
 
 public:
 
   CStreamReaderMemory();
   virtual ~CStreamReaderMemory();
 
-  virtual int32_t Open( TU8 *data, TU32 size );
+  virtual int32_t Open( TU8 *data, uint32_t size );
   virtual int32_t Open( TCHAR *filename );
 
   virtual TU8 *GetData() const;
   virtual int64_t GetLength() const;
   virtual int64_t GetOffset() const;
 
-  virtual void SeekFromStart( TU64 lOff );
+  virtual void SeekFromStart( uint64_t lOff );
   virtual void SeekRelative( int64_t lOff );
 };
 
@@ -62,7 +62,7 @@ class CStreamReaderFile : public CStreamReader
 {
   HANDLE File;
 
-  virtual int32_t ReadStream( void *lpBuf, TU32 nCount );
+  virtual int32_t ReadStream( void *lpBuf, uint32_t nCount );
 
 public:
 
@@ -74,6 +74,6 @@ public:
   virtual int64_t GetLength() const;
   virtual int64_t GetOffset() const;
 
-  virtual void SeekFromStart( TU64 lOff );
+  virtual void SeekFromStart( uint64_t lOff );
   virtual void SeekRelative( int64_t lOff );
 };

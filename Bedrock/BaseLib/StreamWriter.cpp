@@ -11,13 +11,13 @@ CStreamWriter::~CStreamWriter()
 
 }
 
-TBOOL CStreamWriter::Write( void* lpBuf, TU32 nCount )
+TBOOL CStreamWriter::Write( void* lpBuf, uint32_t nCount )
 {
   if ( writerBitOffset == 0 ) //non bitstream mode
     return WriteStream( lpBuf, nCount ) == nCount;
 
   //bitstream mode
-  for ( TU32 x = 0; x < nCount; x++ )
+  for ( uint32_t x = 0; x < nCount; x++ )
     BASEASSERT( WriteBits( ( (TU8 *)lpBuf )[ x ], 8 ) == 1 );
 
   return true;
@@ -33,12 +33,12 @@ TBOOL CStreamWriter::WriteWord( TU16 data )
   return Write( &data, 2 );
 }
 
-TBOOL CStreamWriter::WriteDWord( TU32 data )
+TBOOL CStreamWriter::WriteDWord( uint32_t data )
 {
   return Write( &data, 4 );
 }
 
-TBOOL CStreamWriter::WriteQWord( TU64 data )
+TBOOL CStreamWriter::WriteQWord( uint64_t data )
 {
   return Write( &data, 8 );
 }
@@ -48,14 +48,14 @@ TBOOL CStreamWriter::WriteTF32( TF32 data )
   return Write( &data, 4 );
 }
 
-TBOOL CStreamWriter::WriteBits( TU32 data, TU32 BitCount )
+TBOOL CStreamWriter::WriteBits( uint32_t data, uint32_t BitCount )
 {
   BASEASSERT( BitCount <= 64 );
 
   while ( BitCount > 0 )
   {
-    TU32 count = min( 8 - writerBitOffset, BitCount );
-    TU32 mask = ( 1 << count ) - 1;
+    uint32_t count = min( 8 - writerBitOffset, BitCount );
+    uint32_t mask = ( 1 << count ) - 1;
 
     writerCurrentChar = (TU8)( ( writerCurrentChar & ( ~( mask << writerBitOffset ) ) ) | ( ( ( data >> ( BitCount - count ) ) & mask ) << writerBitOffset ) );
 
@@ -172,11 +172,11 @@ CStreamWriterMemory::~CStreamWriterMemory()
   BufferSize = 0;
 }
 
-int32_t CStreamWriterMemory::WriteStream( void* lpBuf, TU32 nCount )
+int32_t CStreamWriterMemory::WriteStream( void* lpBuf, uint32_t nCount )
 {
   if ( DataLength + nCount > BufferSize )
   {
-    BufferSize = (TU32)( ( BufferSize + nCount )*1.2f );
+    BufferSize = (uint32_t)( ( BufferSize + nCount )*1.2f );
     TU8 *temp = Data;
     Data = new TU8[ BufferSize ];
     memcpy( Data, temp, DataLength );
@@ -194,7 +194,7 @@ TU8 *CStreamWriterMemory::GetData()
   return Data;
 }
 
-TU32 CStreamWriterMemory::GetLength()
+uint32_t CStreamWriterMemory::GetLength()
 {
   return DataLength;
 }
@@ -224,7 +224,7 @@ CStreamWriterFile::~CStreamWriterFile()
     CloseHandle( File );
 }
 
-int32_t CStreamWriterFile::WriteStream( void *lpBuf, TU32 nCount )
+int32_t CStreamWriterFile::WriteStream( void *lpBuf, uint32_t nCount )
 {
   DWORD nWritten = 0;
   BOOL b = WriteFile( File, lpBuf, nCount, &nWritten, NULL );

@@ -41,8 +41,8 @@ class CWBWindow : public CWBItem
 
 protected:
 
-  TU32 Style;
-  TU32 DragMode;
+  uint32_t Style;
+  uint32_t DragMode;
 
   virtual void OnDraw( CWBDrawAPI *API );
   virtual TBOOL MessageProc( CWBMessage &Message );
@@ -50,20 +50,20 @@ protected:
 public:
 
   CWBWindow();
-  CWBWindow( CWBItem *Parent, const CRect &Pos, const TCHAR *txt = _T( "" ), TU32 style = WB_WINDOW_DEFAULT );
+  CWBWindow( CWBItem *Parent, const CRect &Pos, const TCHAR *txt = _T( "" ), uint32_t style = WB_WINDOW_DEFAULT );
   virtual ~CWBWindow();
 
-  virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position, const TCHAR *txt = _T( "" ), TU32 style = WB_WINDOW_DEFAULT );
+  virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position, const TCHAR *txt = _T( "" ), uint32_t style = WB_WINDOW_DEFAULT );
   virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray &pseudo );
 
   CString GetTitle() const { return WindowTitle; }
   void SetTitle( CString val ) { WindowTitle = val; }
 
-  TU32 GetDragMode();
+  uint32_t GetDragMode();
   static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
 
   CRect GetElementPos( WBWINDOWELEMENT Element );
-  TU32 GetBorderSelectionArea( CPoint &mousepos );
+  uint32_t GetBorderSelectionArea( CPoint &mousepos );
 
   WB_DECLARE_GUIITEM( _T( "window" ), CWBItem );
 };

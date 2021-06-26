@@ -18,9 +18,9 @@
 #pragma init_seg(compiler)
 CMemTracker memTracker;
 
-TU32 TotalLeaked = 0;
-TU32 TotalAllocCount = 0;
-TU32 CurrentAllocCount = 0;
+uint32_t TotalLeaked = 0;
+uint32_t TotalAllocCount = 0;
+uint32_t CurrentAllocCount = 0;
 
 CMemTracker::CMemTracker()
 {

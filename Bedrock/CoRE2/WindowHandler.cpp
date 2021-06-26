@@ -478,9 +478,9 @@ void CCoreWindowHandlerWin::HandleResize()
 		Device->Resize(XRes, YRes);
 }
 
-TU32 CCoreWindowHandlerWin::GetHandle()
+uint32_t CCoreWindowHandlerWin::GetHandle()
 {
-	return (TU32)hWnd;
+	return (uint32_t)hWnd;
 }
 
 void CCoreWindowHandlerWin::FinalizeMouseCursor()

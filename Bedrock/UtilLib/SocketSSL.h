@@ -6,9 +6,9 @@ class CSocketSSL : public CSocket
 public:
   CSocketSSL( void );
   ~CSocketSSL( void );
-  virtual int32_t ReadStream( void *lpBuf, TU32 nCount );
-  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
-  virtual int32_t Connect( const CString &Server, const TU32 Port );
+  virtual int32_t ReadStream( void *lpBuf, uint32_t nCount );
+  virtual int32_t WriteStream( void* lpBuf, uint32_t nCount );
+  virtual int32_t Connect( const CString &Server, const uint32_t Port );
   virtual int32_t Close();
   void LogSSLError();
 private:

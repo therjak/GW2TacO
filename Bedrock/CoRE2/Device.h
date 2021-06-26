@@ -35,7 +35,7 @@ protected:
 
 	void ResetDevice();
 	virtual void ResetPrivateResources() = 0;
-	virtual TBOOL InitAPI(const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel = 0, const int32_t RefreshRate = 60) = 0;
+	virtual TBOOL InitAPI(const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel = 0, const int32_t RefreshRate = 60) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
 	// renderstate management
@@ -44,7 +44,7 @@ protected:
 	CDictionaryEnumerable<CORERENDERSTATEID, CORERENDERSTATEVALUE> RequestedRenderState;
 
 	CCoreVertexBuffer *CurrentVertexBuffer, *RequestedVertexBuffer;
-	TU32 CurrentVertexBufferOffset, RequestedVertexBufferOffset;
+	uint32_t CurrentVertexBufferOffset, RequestedVertexBufferOffset;
 	int32_t CurrentVertexFormatSize;
 
 	CCoreBlendState *DefaultBlendState;
@@ -60,7 +60,7 @@ protected:
 	TBOOL ApplyPixelShader(CCorePixelShader *Shader);
 	TBOOL ApplyVertexFormat(CCoreVertexFormat *Format);
 	TBOOL ApplyIndexBuffer(CCoreIndexBuffer *IdxBuffer);
-	TBOOL ApplyVertexBuffer(CCoreVertexBuffer *VxBuffer, TU32 Offset);
+	TBOOL ApplyVertexBuffer(CCoreVertexBuffer *VxBuffer, uint32_t Offset);
 	virtual TBOOL ApplyRenderState(const CORESAMPLER Sampler, const CORERENDERSTATE RenderState, const CORERENDERSTATEVALUE Value) = 0;
 	virtual TBOOL SetNoVertexBuffer() = 0;
 
@@ -130,7 +130,7 @@ public:
 	TBOOL SetSamplerState(CORESAMPLER Sampler, CCoreSamplerState *SamplerState);
 	TBOOL SetTexture(CORESAMPLER Sampler, CCoreTexture *Texture);
 	TBOOL SetIndexBuffer(CCoreIndexBuffer *IndexBuffer);
-	TBOOL SetVertexBuffer(CCoreVertexBuffer *VertexBuffer, TU32 Offset);
+	TBOOL SetVertexBuffer(CCoreVertexBuffer *VertexBuffer, uint32_t Offset);
 	TBOOL SetVertexFormat(CCoreVertexFormat *VertexFormat);
 	int32_t GetVertexFormatSize();
 	CCoreTexture *GetTexture(CORESAMPLER Sampler);
@@ -168,7 +168,7 @@ public:
 
 	virtual TBOOL BeginScene() = 0;
 	virtual TBOOL EndScene() = 0;
-	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((TU32)0), const TF32 Depth = 1, const int32_t Stencil = 0) = 0;
+	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const TF32 Depth = 1, const int32_t Stencil = 0) = 0;
 	virtual TBOOL Flip(TBOOL Vsync = true) = 0;
 	virtual TBOOL DrawIndexedTriangles(int32_t Count, int32_t NumVertices) = 0;
 	virtual TBOOL DrawIndexedLines(int32_t Count, int32_t NumVertices) = 0;

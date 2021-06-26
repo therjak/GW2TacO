@@ -310,7 +310,7 @@ void LoadWvWObjectives()
       if ( obj.has<String>( "name" ) )
         o.nameToken = o.name = CString( obj.get<String>( "name" ).data() );
 
-      for ( TU32 n = 0; n < o.nameToken.Length(); n++ )
+      for ( uint32_t n = 0; n < o.nameToken.Length(); n++ )
         if ( !isalnum( o.nameToken[ n ] ) )
           o.nameToken[ n ] = '_';
         else

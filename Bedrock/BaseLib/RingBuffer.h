@@ -8,7 +8,7 @@ template <typename ItemType> class CRingBuffer
 
 public:
 
-	CRingBuffer(const TU32 Size = 500)
+	CRingBuffer(const uint32_t Size = 500)
   {
     Capacity = Size;
     Array = new ItemType[ Size ];

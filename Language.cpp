@@ -169,7 +169,7 @@ CArray<int>& Localization::GetUsedGlyphs()
 
 void Localization::ProcessStringForUsedGlyphs( CString& string )
 {
-  string.DecodeUtf8( [ & ]( TU32 Char )->TBOOL
+  string.DecodeUtf8( [ & ]( uint32_t Char )->TBOOL
   {
     usedGlyphs.AddUnique( Char );
     return true;

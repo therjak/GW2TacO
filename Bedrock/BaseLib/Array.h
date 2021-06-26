@@ -239,7 +239,7 @@ public:
     ItemCount -= count;
   }
 
-  void Expand( TU32 AddedItemCount )
+  void Expand( uint32_t AddedItemCount )
   {
     if ( !Array )
     {

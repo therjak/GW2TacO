@@ -265,7 +265,7 @@ TBOOL CCoreDX11VertexShader::CompileAndCreate(CString *Err)
 	memset(version, 0, ShaderVersion.Length() + 2);
 	ShaderVersion.WriteAsMultiByte(version, ShaderVersion.Length() + 1);
 
-	TU32 tmp;
+	uint32_t tmp;
 	_controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
 #ifdef CORE_API_D3DX
@@ -316,7 +316,7 @@ TBOOL CCoreDX11VertexShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSiz
 {
   Release();
   TBOOL Success = true;
-  TU32 tmp;
+  uint32_t tmp;
   _controlfp_s( &tmp, _RC_NEAR, _MCW_RC );
   Success = Create( CodeBlob, CodeBlobSize );
 #ifndef _WIN64
@@ -414,7 +414,7 @@ TBOOL CCoreDX11PixelShader::CompileAndCreate(CString *Err)
 	memset(version, 0, ShaderVersion.Length() + 2);
 	ShaderVersion.WriteAsMultiByte(version, ShaderVersion.Length() + 1);
 
-	TU32 tmp;
+	uint32_t tmp;
 	_controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
 #ifdef CORE_API_D3DX
@@ -465,7 +465,7 @@ TBOOL CCoreDX11PixelShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize
 {
   Release();
   TBOOL Success = true;
-  TU32 tmp;
+  uint32_t tmp;
   _controlfp_s( &tmp, _RC_NEAR, _MCW_RC );
   Success = Create( CodeBlob, CodeBlobSize );
 #ifndef _WIN64
@@ -563,7 +563,7 @@ TBOOL CCoreDX11GeometryShader::CompileAndCreate(CString *Err)
 	memset(version, 0, ShaderVersion.Length() + 2);
 	ShaderVersion.WriteAsMultiByte(version, ShaderVersion.Length() + 1);
 
-	TU32 tmp;
+	uint32_t tmp;
 	_controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
 #ifdef CORE_API_D3DX
@@ -611,7 +611,7 @@ TBOOL CCoreDX11GeometryShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobS
 {
   Release();
   TBOOL Success = true;
-  TU32 tmp;
+  uint32_t tmp;
   _controlfp_s( &tmp, _RC_NEAR, _MCW_RC );
   Success = Create( CodeBlob, CodeBlobSize );
 #ifndef _WIN64
@@ -709,7 +709,7 @@ TBOOL CCoreDX11DomainShader::CompileAndCreate(CString *Err)
 	memset(version, 0, ShaderVersion.Length() + 2);
 	ShaderVersion.WriteAsMultiByte(version, ShaderVersion.Length() + 1);
 
-	TU32 tmp;
+	uint32_t tmp;
 	_controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
 #ifdef CORE_API_D3DX
@@ -757,7 +757,7 @@ TBOOL CCoreDX11DomainShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSiz
 {
   Release();
   TBOOL Success = true;
-  TU32 tmp;
+  uint32_t tmp;
   _controlfp_s( &tmp, _RC_NEAR, _MCW_RC );
   Success = Create( CodeBlob, CodeBlobSize );
 #ifndef _WIN64
@@ -855,7 +855,7 @@ TBOOL CCoreDX11HullShader::CompileAndCreate(CString *Err)
 	memset(version, 0, ShaderVersion.Length() + 2);
 	ShaderVersion.WriteAsMultiByte(version, ShaderVersion.Length() + 1);
 
-	TU32 tmp;
+	uint32_t tmp;
 	_controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
 #ifdef CORE_API_D3DX
@@ -903,7 +903,7 @@ TBOOL CCoreDX11HullShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize 
 {
   Release();
   TBOOL Success = true;
-  TU32 tmp;
+  uint32_t tmp;
   _controlfp_s( &tmp, _RC_NEAR, _MCW_RC );
   Success = Create( CodeBlob, CodeBlobSize );
 #ifndef _WIN64
@@ -1002,7 +1002,7 @@ TBOOL CCoreDX11ComputeShader::CompileAndCreate(CString *Err)
 	memset(version, 0, ShaderVersion.Length() + 2);
 	ShaderVersion.WriteAsMultiByte(version, ShaderVersion.Length() + 1);
 
-	TU32 tmp;
+	uint32_t tmp;
 	_controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
 #ifdef CORE_API_D3DX
@@ -1050,7 +1050,7 @@ TBOOL CCoreDX11ComputeShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSi
 {
   Release();
   TBOOL Success = true;
-  TU32 tmp;
+  uint32_t tmp;
   _controlfp_s( &tmp, _RC_NEAR, _MCW_RC );
   Success = Create( CodeBlob, CodeBlobSize );
 #ifndef _WIN64

@@ -2,7 +2,7 @@
 
 class CFPUDouble
 {
-  TU32 OriginalFPUState;
+  uint32_t OriginalFPUState;
 
 public:
 
@@ -12,7 +12,7 @@ public:
 
 class CFPUAnsiCRounding
 {
-  TU32 OriginalFPUState;
+  uint32_t OriginalFPUState;
 
 public:
 

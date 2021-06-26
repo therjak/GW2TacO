@@ -755,7 +755,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     }
 
     /*
-        if ( Message.Data >= Menu_RebindKey_Base + sizeof( ActionNames ) / sizeof( CString ) && TU32( Message.Data ) < Menu_RebindKey_Base + sizeof( ActionNames ) / sizeof( CString ) + scriptKeyBinds.NumItems() )
+        if ( Message.Data >= Menu_RebindKey_Base + sizeof( ActionNames ) / sizeof( CString ) && uint32_t( Message.Data ) < Menu_RebindKey_Base + sizeof( ActionNames ) / sizeof( CString ) + scriptKeyBinds.NumItems() )
         {
           RebindScriptKey( Message.Data - Menu_RebindKey_Base - sizeof( ActionNames ) / sizeof( CString ) );
           break;

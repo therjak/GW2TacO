@@ -324,7 +324,7 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
 
   struct DDSHEAD
   {
-    TU32 DDS;
+    uint32_t DDS;
     int32_t dwSize;
     int32_t dwFlags;
     int32_t dwHeight;
@@ -1020,18 +1020,18 @@ static HRESULT CaptureTexture( ID3D11Device *d3dDevice, _In_ ID3D11DeviceContext
 
 HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource* pSource, CStreamWriter &Writer )
 {
-  const TU32 DDS_MAGIC = 0x20534444; // "DDS "
+  const uint32_t DDS_MAGIC = 0x20534444; // "DDS "
 
   struct DDS_PIXELFORMAT
   {
-    TU32    size;
-    TU32    flags;
-    TU32    fourCC;
-    TU32    RGBBitCount;
-    TU32    RBitMask;
-    TU32    GBitMask;
-    TU32    BBitMask;
-    TU32    ABitMask;
+    uint32_t    size;
+    uint32_t    flags;
+    uint32_t    fourCC;
+    uint32_t    RGBBitCount;
+    uint32_t    RBitMask;
+    uint32_t    GBitMask;
+    uint32_t    BBitMask;
+    uint32_t    ABitMask;
   };
 
 #define DDS_FOURCC      0x00000004  // DDPF_FOURCC
@@ -1043,7 +1043,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
 #define DDS_PAL8        0x00000020  // DDPF_PALETTEINDEXED8
 
 #ifndef MAKEFOURCC
-#define MAKEFOURCC(ch0, ch1, ch2, ch3) ((TU32)(TU8)(ch0) | ((TU32)(TU8)(ch1) << 8) | ((TU32)(TU8)(ch2) << 16) | ((TU32)(TU8)(ch3) << 24 ))
+#define MAKEFOURCC(ch0, ch1, ch2, ch3) ((uint32_t)(TU8)(ch0) | ((uint32_t)(TU8)(ch1) << 8) | ((uint32_t)(TU8)(ch2) << 16) | ((uint32_t)(TU8)(ch3) << 24 ))
 #endif // !MAKEFOURCC
 
 #define DDS_HEADER_FLAGS_TEXTURE        0x00001007  // DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT 
@@ -1095,29 +1095,29 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
 
   struct DDS_HEADER
   {
-    TU32        size;
-    TU32        flags;
-    TU32        height;
-    TU32        width;
-    TU32        pitchOrLinearSize;
-    TU32        depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
-    TU32        mipMapCount;
-    TU32        reserved1[ 11 ];
+    uint32_t        size;
+    uint32_t        flags;
+    uint32_t        height;
+    uint32_t        width;
+    uint32_t        pitchOrLinearSize;
+    uint32_t        depth; // only if DDS_HEADER_FLAGS_VOLUME is set in flags
+    uint32_t        mipMapCount;
+    uint32_t        reserved1[ 11 ];
     DDS_PIXELFORMAT ddspf;
-    TU32        caps;
-    TU32        caps2;
-    TU32        caps3;
-    TU32        caps4;
-    TU32        reserved2;
+    uint32_t        caps;
+    uint32_t        caps2;
+    uint32_t        caps3;
+    uint32_t        caps4;
+    uint32_t        reserved2;
   };
 
   struct DDS_HEADER_DXT10
   {
     DXGI_FORMAT     dxgiFormat;
-    TU32        resourceDimension;
-    TU32        miscFlag; // see D3D11_RESOURCE_MISC_FLAG
-    TU32        arraySize;
-    TU32        miscFlags2; // see DDS_MISC_FLAGS2
+    uint32_t        resourceDimension;
+    uint32_t        miscFlag; // see D3D11_RESOURCE_MISC_FLAG
+    uint32_t        arraySize;
+    uint32_t        miscFlags2; // see DDS_MISC_FLAGS2
   };
 
 
@@ -1176,13 +1176,13 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   //		return HRESULT_FROM_WIN32(GetLastError());
 
   // Setup header
-  const size_t MAX_HEADER_SIZE = sizeof( TU32 ) + sizeof( DDS_HEADER ) + sizeof( DDS_HEADER_DXT10 );
+  const size_t MAX_HEADER_SIZE = sizeof( uint32_t ) + sizeof( DDS_HEADER ) + sizeof( DDS_HEADER_DXT10 );
   TU8 fileHeader[ MAX_HEADER_SIZE ];
 
-  *( (TU32*)( &fileHeader[ 0 ] ) ) = DDS_MAGIC;
+  *( (uint32_t*)( &fileHeader[ 0 ] ) ) = DDS_MAGIC;
 
-  auto header = (DDS_HEADER*)( &fileHeader[ 0 ] + sizeof( TU32 ) );
-  size_t headerSize = sizeof( TU32 ) + sizeof( DDS_HEADER );
+  auto header = (DDS_HEADER*)( &fileHeader[ 0 ] + sizeof( uint32_t ) );
+  size_t headerSize = sizeof( uint32_t ) + sizeof( DDS_HEADER );
   memset( header, 0, sizeof( DDS_HEADER ) );
   header->size = sizeof( DDS_HEADER );
   header->flags = DDS_HEADER_FLAGS_TEXTURE | DDS_HEADER_FLAGS_MIPMAP;
@@ -1240,7 +1240,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
     memcpy_s( &header->ddspf, sizeof( header->ddspf ), &DDSPF_DX10, sizeof( DDS_PIXELFORMAT ) );
 
     headerSize += sizeof( DDS_HEADER_DXT10 );
-    extHeader = (DDS_HEADER_DXT10*)( (TU8*)( &fileHeader[ 0 ] ) + sizeof( TU32 ) + sizeof( DDS_HEADER ) );
+    extHeader = (DDS_HEADER_DXT10*)( (TU8*)( &fileHeader[ 0 ] ) + sizeof( uint32_t ) + sizeof( DDS_HEADER ) );
     memset( extHeader, 0, sizeof( DDS_HEADER_DXT10 ) );
     extHeader->dxgiFormat = desc.Format;
     extHeader->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
@@ -1254,12 +1254,12 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   if ( IsCompressed( desc.Format ) )
   {
     header->flags |= DDS_HEADER_FLAGS_LINEARSIZE;
-    header->pitchOrLinearSize = (TU32)( slicePitch );
+    header->pitchOrLinearSize = (uint32_t)( slicePitch );
   }
   else
   {
     header->flags |= DDS_HEADER_FLAGS_PITCH;
-    header->pitchOrLinearSize = (TU32)( rowPitch );
+    header->pitchOrLinearSize = (uint32_t)( rowPitch );
   }
 
   // Setup pixels

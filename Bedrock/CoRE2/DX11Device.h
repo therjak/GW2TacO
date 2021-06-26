@@ -25,7 +25,7 @@ class CCoreDX11Device : public CCoreDevice
   ID3D11Query *OcclusionQuery = nullptr;
 
 	virtual void ResetPrivateResources();
-	virtual TBOOL InitAPI(const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel = 0, const int32_t RefreshRate = 60);
+	virtual TBOOL InitAPI(const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel = 0, const int32_t RefreshRate = 60);
 	virtual TBOOL ApplyRenderState(const CORESAMPLER Sampler, const CORERENDERSTATE RenderState, const CORERENDERSTATEVALUE Value);
 	virtual TBOOL SetNoVertexBuffer();
 	virtual TBOOL CommitRenderStates();
@@ -33,8 +33,8 @@ class CCoreDX11Device : public CCoreDevice
 	virtual TBOOL CreateBackBuffer(int32_t XRes, int32_t YRes);
 	virtual TBOOL CreateDepthBuffer(int32_t XRes, int32_t YRes);
 
-	TBOOL CreateClassicSwapChain( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate );
-	TBOOL CreateDirectCompositionSwapchain( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate );
+	TBOOL CreateClassicSwapChain( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate );
+	TBOOL CreateDirectCompositionSwapchain( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate );
 
 public:
 
@@ -109,7 +109,7 @@ public:
 
 	virtual TBOOL BeginScene();
 	virtual TBOOL EndScene();
-	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((TU32)0), const TF32 Depth = 1, const int32_t Stencil = 0);
+	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const TF32 Depth = 1, const int32_t Stencil = 0);
 	virtual TBOOL Flip(TBOOL Vsync = true);
 	virtual TBOOL DrawIndexedTriangles(int32_t Count, int32_t NumVertices);
 	virtual TBOOL DrawTriangles(int32_t Count);

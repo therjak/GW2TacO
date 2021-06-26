@@ -29,17 +29,17 @@ TU8 & CColor::R()
   return r;
 }
 
-CColor::operator TU32() const
+CColor::operator uint32_t() const
 {
   return argb();
 }
 
-TU32 CColor::argb() const
+uint32_t CColor::argb() const
 {
   return ( a << 24 ) | ( r << 16 ) | ( g << 8 ) | b;
 }
 
-CColor CColor::FromABGR( const TU32 v )
+CColor CColor::FromABGR( const uint32_t v )
 {
   CColor res;
   res.a = (TU8)( v >> 24 );
@@ -49,7 +49,7 @@ CColor CColor::FromABGR( const TU32 v )
   return res;
 }
 
-CColor CColor::FromARGB( const TU32 v )
+CColor CColor::FromARGB( const uint32_t v )
 {
   CColor res;
   res.a = (TU8)( v >> 24 );
@@ -77,7 +77,7 @@ CColor CColor::FromFloat( const TF32 _r, const TF32 _g, const TF32 _b, const TF3
   return res;
 }
 
-CColor::CColor( const TU32 argb )
+CColor::CColor( const uint32_t argb )
 {
   r = (TU8)( argb >> 16 );
   g = (TU8)( argb >> 8 );

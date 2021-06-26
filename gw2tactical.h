@@ -177,8 +177,8 @@ struct POIRoute
   int32_t activeItem = -1;
 };
 
-TU32 DictionaryHash( const GUID &i );
-TU32 DictionaryHash( const POIActivationDataKey &i );
+uint32_t DictionaryHash( const GUID &i );
+uint32_t DictionaryHash( const POIActivationDataKey &i );
 
 extern CDictionaryEnumerable<GUID, POI> POIs;
 extern CDictionaryEnumerable<POIActivationDataKey, POIActivationData> ActivationData;

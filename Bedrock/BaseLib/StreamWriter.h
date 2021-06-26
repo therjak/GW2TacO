@@ -2,21 +2,21 @@
 
 class CStreamWriter
 {
-  TU32 writerBitOffset;
+  uint32_t writerBitOffset;
   TU8 writerCurrentChar;
-  virtual int32_t WriteStream( void* lpBuf, TU32 nCount ) = 0;
+  virtual int32_t WriteStream( void* lpBuf, uint32_t nCount ) = 0;
 
 public:
   CStreamWriter();
   virtual ~CStreamWriter();
 
-  TBOOL Write( void* lpBuf, TU32 nCount );
-  TBOOL WriteQWord( TU64 data );
-  TBOOL WriteDWord( TU32 data );
+  TBOOL Write( void* lpBuf, uint32_t nCount );
+  TBOOL WriteQWord( uint64_t data );
+  TBOOL WriteDWord( uint32_t data );
   TBOOL WriteWord( TU16 data );
   TBOOL WriteByte( TU8 data );
   TBOOL WriteTF32( TF32 data );
-  TBOOL WriteBits( TU32 data, TU32 bitcount );
+  TBOOL WriteBits( uint32_t data, uint32_t bitcount );
   TBOOL WriteBool( TBOOL data );
   TBOOL WriteRemainingBits();
   TBOOL WriteASCIIZ( CString &s );
@@ -30,17 +30,17 @@ public:
 class CStreamWriterMemory : public CStreamWriter
 {
   TU8 *Data;
-  TU32 BufferSize;
-  TU32 DataLength;
+  uint32_t BufferSize;
+  uint32_t DataLength;
 
-  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
+  virtual int32_t WriteStream( void* lpBuf, uint32_t nCount );
 
 public:
   CStreamWriterMemory();
   virtual ~CStreamWriterMemory();
 
   TU8 *GetData();
-  TU32 GetLength();
+  uint32_t GetLength();
 
   void Flush();
 };
@@ -49,7 +49,7 @@ class CStreamWriterFile : public CStreamWriter
 {
   HANDLE File;
 
-  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
+  virtual int32_t WriteStream( void* lpBuf, uint32_t nCount );
 
 public:
   CStreamWriterFile();

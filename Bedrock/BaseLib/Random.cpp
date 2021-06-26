@@ -12,18 +12,18 @@ TF32 CRandom::frand()
   return r / (TF32)RAND_MAX;
 }
 
-TU32 CRandom::rand()
+uint32_t CRandom::rand()
 {
   Seed = Seed * 214013L + 2531011L;
   return ( Seed >> 16 )&RAND_MAX;
 }
 
-void CRandom::srand( TU32 seed )
+void CRandom::srand( uint32_t seed )
 {
   Seed = seed;
 }
 
-CRandom::CRandom( TU32 seed )
+CRandom::CRandom( uint32_t seed )
 {
   srand( seed );
 }

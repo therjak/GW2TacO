@@ -20,7 +20,7 @@ CSocket::~CSocket()
   //don't close the socket here as any copy of the class will invalidate the socket on destruction
 }
 
-int32_t CSocket::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CSocket::ReadStream( void *lpBuf, uint32_t nCount )
 {
   if ( Socket == INVALID_SOCKET ) return 0;
   int32_t r = recv( Socket, (TS8*)lpBuf, nCount, NULL );
@@ -28,14 +28,14 @@ int32_t CSocket::ReadStream( void *lpBuf, TU32 nCount )
   return r;
 }
 
-int32_t CSocket::WriteStream( void* lpBuf, TU32 nCount )
+int32_t CSocket::WriteStream( void* lpBuf, uint32_t nCount )
 {
   int32_t res = send( Socket, (TS8*)lpBuf, nCount, NULL );
   if ( res == SOCKET_ERROR ) return 0;
   return res;
 }
 
-int32_t CSocket::Connect( const CString &Server, const TU32 Port )
+int32_t CSocket::Connect( const CString &Server, const uint32_t Port )
 {
   TS8 Address[ 256 ];
   Server.WriteAsMultiByte( Address, 256 );
@@ -60,7 +60,7 @@ int32_t CSocket::Connect( const CString &Server, const TU32 Port )
   return 1;
 }
 
-int32_t CSocket::Listen( const TU32 Port, const TBOOL ReuseAddress )
+int32_t CSocket::Listen( const uint32_t Port, const TBOOL ReuseAddress )
 {
   Socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 
@@ -125,9 +125,9 @@ int32_t CSocket::AcceptConnection( CSocket &NewConnection )
   return 1;
 }
 
-TU32 CSocket::Resolve( const TS8 *Address )
+uint32_t CSocket::Resolve( const TS8 *Address )
 {
-  TU32 addr = inet_addr( Address );
+  uint32_t addr = inet_addr( Address );
 
   if ( addr == INADDR_NONE )
   {
@@ -159,7 +159,7 @@ int64_t CSocket::GetOffset() const
   return 0;
 }
 
-void CSocket::SeekFromStart( TU64 lOff )
+void CSocket::SeekFromStart( uint64_t lOff )
 {
 }
 
@@ -167,7 +167,7 @@ void CSocket::SeekRelative( int64_t lOff )
 {
 }
 
-int32_t CSocket::ReadFull( void *data, TU32 size )
+int32_t CSocket::ReadFull( void *data, uint32_t size )
 {
   int32_t progress = 0;
   while ( 1 )
@@ -181,7 +181,7 @@ int32_t CSocket::ReadFull( void *data, TU32 size )
   return size;
 }
 
-TBOOL CSocket::Peek( void *lpBuf, TU32 nCount )
+TBOOL CSocket::Peek( void *lpBuf, uint32_t nCount )
 {
   if ( Socket == INVALID_SOCKET ) return 0;
   int32_t r = recv( Socket, (TS8*)lpBuf, nCount, MSG_PEEK );

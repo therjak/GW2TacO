@@ -24,15 +24,15 @@ void CCoreDX11VertexBuffer::Release()
 	VertexBufferHandle = NULL;
 }
 
-TBOOL CCoreDX11VertexBuffer::Apply(const TU32 Offset)
+TBOOL CCoreDX11VertexBuffer::Apply(const uint32_t Offset)
 {
 	if (!VertexBufferHandle) return false;
-	TU32 stride = Device->GetVertexFormatSize();
+	uint32_t stride = Device->GetVertexFormatSize();
 	DeviceContext->IASetVertexBuffers(0, 1, &VertexBufferHandle, &stride, &Offset);
 	return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Create(const TU8 *Data, const TU32 size)
+TBOOL CCoreDX11VertexBuffer::Create(const TU8 *Data, const uint32_t size)
 {
 	if (!Data) return false;
 	if (size <= 0) return false;
@@ -62,7 +62,7 @@ TBOOL CCoreDX11VertexBuffer::Create(const TU8 *Data, const TU32 size)
 	return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::CreateDynamic(const TU32 size)
+TBOOL CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size)
 {
 	if (size <= 0) return false;
 	Release();
@@ -89,7 +89,7 @@ TBOOL CCoreDX11VertexBuffer::CreateDynamic(const TU32 size)
 	return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Update(const int32_t Offset, const TU8 *Data, const TU32 Size)
+TBOOL CCoreDX11VertexBuffer::Update(const int32_t Offset, const TU8 *Data, const uint32_t Size)
 {
 	if (!VertexBufferHandle || !Data || Dynamic) return false;
 	if (!Size) return true;
@@ -105,7 +105,7 @@ TBOOL CCoreDX11VertexBuffer::Update(const int32_t Offset, const TU8 *Data, const
 }
 
 
-TBOOL CCoreDX11VertexBuffer::Lock(void **Result, const TU32 Offset, const int32_t size, const int32_t Flags)
+TBOOL CCoreDX11VertexBuffer::Lock(void **Result, const uint32_t Offset, const int32_t size, const int32_t Flags)
 {
 	if (!Dynamic)
 	{

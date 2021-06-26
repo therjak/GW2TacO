@@ -130,7 +130,7 @@ mz_zip_archive* OpenZipFile( const CString& zipFile )
 
 WBATLASHANDLE GetMapIcon( CWBApplication *App, CString &filename, const CString &zipFile, const CString& categoryZip )
 {
-  for ( TU32 x = 0; x < filename.Length(); x++ )
+  for ( uint32_t x = 0; x < filename.Length(); x++ )
     if ( filename[ x ] == '\\' ) filename[ x ] = '/';
 
   CString s = ( zipFile.Length() ? ( zipFile + "\\" ) : "" ) + filename;
@@ -238,19 +238,19 @@ CDictionaryEnumerable<POIActivationDataKey, POIActivationData> ActivationData;
 extern CDictionaryEnumerable<GUID, GW2Trail*> trails;
 CArray<POIRoute> Routes;
 
-TU32 DictionaryHash( const GUID &i )
+uint32_t DictionaryHash( const GUID &i )
 {
   TU8 *dta = (TU8*)( &i );
-  TU32 Hash = 5381;
+  uint32_t Hash = 5381;
   for ( int x = 0; x < sizeof( GUID ); x++ )
     Hash = ( ( Hash << 5 ) + Hash ) + dta[ x ]; // hash * 33 + c
   return Hash;
 }
 
-TU32 DictionaryHash( const POIActivationDataKey &i )
+uint32_t DictionaryHash( const POIActivationDataKey &i )
 {
   TU8 *dta = (TU8*)( &i );
-  TU32 Hash = 5381;
+  uint32_t Hash = 5381;
   for ( int x = 0; x < sizeof( POIActivationDataKey ); x++ )
     Hash = ( ( Hash << 5 ) + Hash ) + dta[ x ]; // hash * 33 + c
   return Hash;
@@ -1390,7 +1390,7 @@ void ImportMarkerPack( CWBApplication* App, const CString& zipFile )
   if ( !zip )
     return;
 
-  for ( TU32 x = 0; x < mz_zip_reader_get_num_files( zip ); x++ )
+  for ( uint32_t x = 0; x < mz_zip_reader_get_num_files( zip ); x++ )
   {
     mz_zip_archive_file_stat stat;
     if ( !mz_zip_reader_file_stat( zip, x, &stat ) )
@@ -1415,7 +1415,7 @@ void ImportMarkerPack( CWBApplication* App, const CString& zipFile )
       continue;
     }
 
-    CString doc( (TS8*)data, (TU32)stat.m_uncomp_size );
+    CString doc( (TS8*)data, (uint32_t)stat.m_uncomp_size );
     ImportPOIString( App, doc, zipFile );
 
     delete[] data;

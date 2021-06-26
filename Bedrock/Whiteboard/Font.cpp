@@ -2,7 +2,7 @@
 #include "Font.h"
 #include "DrawAPI.h"
 
-INLINE TU32 DictionaryHash( const CWBKerningPair &i )
+INLINE uint32_t DictionaryHash( const CWBKerningPair &i )
 {
   return i.First + ( i.Second << 16 );
 }
@@ -60,7 +60,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8
 
   struct BMCHAR
   {
-    TU32 id;
+    uint32_t id;
     TU16 x;
     TU16 y;
     TU16 width;
@@ -74,8 +74,8 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8
 
   struct BMKERNINGDATA
   {
-    TU32 first;
-    TU32 second;
+    uint32_t first;
+    uint32_t second;
     int16_t amount;
   };
 
@@ -135,7 +135,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8
 
       BMCHAR *c = (BMCHAR*)BlockData;
 
-      for ( TU32 x = 0; x < BlockSize / sizeof( BMCHAR ); x++ )
+      for ( uint32_t x = 0; x < BlockSize / sizeof( BMCHAR ); x++ )
       {
         if ( !enabledGlyphs.NumItems() || enabledGlyphs.Find( c[ x ].id ) >= 0 )
         {
@@ -161,7 +161,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8
 
       BMKERNINGDATA *k = (BMKERNINGDATA*)BlockData;
 
-      for ( TU32 x = 0; x < BlockSize / sizeof( BMKERNINGDATA ); x++ )
+      for ( uint32_t x = 0; x < BlockSize / sizeof( BMKERNINGDATA ); x++ )
       {
         WBKERNINGDATA d;
         d.First = k[ x ].first;
@@ -348,9 +348,9 @@ void CWBFont::AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &O
   }
 }
 
-TU32 ReadUTF8Char( _TUCHAR* &Text )
+uint32_t ReadUTF8Char( _TUCHAR* &Text )
 {
-  TU32 Char = *Text;
+  uint32_t Char = *Text;
   Text++;
 
   if ( (Char & 0x80) ) // decode utf-8
@@ -751,7 +751,7 @@ INLINE _TUCHAR CWBFont::ApplyTextTransform( _TUCHAR *Text, _TUCHAR *CurrPos, WBT
 
 INLINE TU16 CWBFont::ApplyTextTransformUtf8( _TUCHAR *Text, _TUCHAR *&CurrPos, WBTEXTTRANSFORM Transform )
 {
-  TU32 decoded = ReadUTF8Char( CurrPos );
+  uint32_t decoded = ReadUTF8Char( CurrPos );
 
   if ( Transform <= 0 ) 
     return decoded;

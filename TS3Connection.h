@@ -33,7 +33,7 @@ public:
     int32_t inputmuted = 0;
     int32_t outputmuted = 0;
 
-    TU64 lastTalkTime = 0;
+    uint64_t lastTalkTime = 0;
   };
 
   class TS3Channel

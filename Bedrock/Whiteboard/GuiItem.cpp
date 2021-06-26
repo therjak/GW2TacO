@@ -880,12 +880,12 @@ void CWBItem::SetSavedPosition( CRect& savedPos )
   StoredPosition = savedPos;
 }
 
-TU32 CWBItem::NumChildren()
+uint32_t CWBItem::NumChildren()
 {
   return Children.NumItems();
 }
 
-CWBItem * CWBItem::GetChild( TU32 idx )
+CWBItem * CWBItem::GetChild( uint32_t idx )
 {
   return Children[ idx ];
 }
@@ -1565,7 +1565,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
     for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
-      TU32 dw = 0;
+      uint32_t dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
       if ( Attribs[ x ] == ( _T( "none" ) ) )
       {
@@ -1605,7 +1605,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
     for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
-      TU32 dw = 0;
+      uint32_t dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
       if ( Attribs[ x ] == ( _T( "none" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, 0, pseudo );
 
@@ -1630,7 +1630,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
     for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
-      TU32 dw = 0;
+      uint32_t dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
       if ( Attribs[ x ] == ( _T( "none" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR, 0, pseudo );
 
@@ -1655,7 +1655,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
     for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
-      TU32 dw = 0;
+      uint32_t dw = 0;
 
       if ( Attribs[ x ] == ( _T( "left" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT, pseudo );
       if ( Attribs[ x ] == ( _T( "center" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER, pseudo );
@@ -1674,7 +1674,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
     for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
-      TU32 dw = 0;
+      uint32_t dw = 0;
 
       if ( Attribs[ x ] == ( _T( "none" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE, 0xffffffff, pseudo );
 
@@ -1688,7 +1688,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
   if ( prop == _T( "border-color" ) )
   {
-    TU32 dw = 0;
+    uint32_t dw = 0;
     value.Scan( _T( "#%x" ), &dw );
     VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BORDERCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
     return true;
@@ -1762,7 +1762,7 @@ TBOOL CWBItem::InterpretFontString( CWBCSSPropertyBatch &props, CString & prop, 
 
   if ( prop == _T( "font-color" ) )
   {
-    TU32 dw = 0;
+    uint32_t dw = 0;
     if ( value.Scan( _T( "#%x" ), &dw ) == 1 )
     {
       VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FONTCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
@@ -1793,7 +1793,7 @@ TBOOL CWBItem::InterpretFontString( CWBCSSPropertyBatch &props, CString & prop, 
     for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       //try to apply as color
-      TU32 dw = 0;
+      uint32_t dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )
       {
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FONTCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
@@ -2307,7 +2307,7 @@ void CWBItem::ChangeContentOffset( CPoint ContentOff )
 {
   if ( ContentOff == ContentOffset ) return;
   ContentOffset = ContentOff;
-  for ( TU32 x = 0; x < NumChildren(); x++ )
+  for ( uint32_t x = 0; x < NumChildren(); x++ )
     GetChild( x )->UpdateScreenRect();
 }
 
