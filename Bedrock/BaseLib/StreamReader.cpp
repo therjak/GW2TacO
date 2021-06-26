@@ -14,7 +14,7 @@ CStreamReader::~CStreamReader()
 
 }
 
-TS32 CStreamReader::Read( void *lpBuf, TU32 nCount )
+int32_t CStreamReader::Read( void *lpBuf, TU32 nCount )
 {
   if ( readerBitOffset == 0 ) //non bitstream mode
     return ReadStream( lpBuf, nCount );
@@ -156,15 +156,15 @@ CStreamReaderMemory::~CStreamReaderMemory()
   SAFEDELETEA( Data );
 }
 
-TS32 CStreamReaderMemory::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CStreamReaderMemory::ReadStream( void *lpBuf, TU32 nCount )
 {
   int64_t bytestoread = max( 0, min( nCount, DataSize - Offset ) );
   memcpy( lpBuf, Data + Offset, (size_t)bytestoread );
   Offset += bytestoread;
-  return (TS32)bytestoread;
+  return (int32_t)bytestoread;
 }
 
-TS32 CStreamReaderMemory::Open( TU8 *data, TU32 size )
+int32_t CStreamReaderMemory::Open( TU8 *data, TU32 size )
 {
   if ( !data || !size ) return 0;
 
@@ -178,12 +178,12 @@ TS32 CStreamReaderMemory::Open( TU8 *data, TU32 size )
   return 1;
 }
 
-TS32 CStreamReaderMemory::Open( TCHAR *Filename )
+int32_t CStreamReaderMemory::Open( TCHAR *Filename )
 {
   HANDLE hFile = CreateFile( Filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL );
   if ( hFile == INVALID_HANDLE_VALUE ) return 0;
 
-  TS32 tDataSize = GetFileSize( hFile, NULL );
+  int32_t tDataSize = GetFileSize( hFile, NULL );
 
   TU8 *tData = new TU8[ tDataSize ];
   DWORD nRead = 0;
@@ -243,7 +243,7 @@ CStreamReaderFile::~CStreamReaderFile()
   CloseHandle( File );
 }
 
-TS32 CStreamReaderFile::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CStreamReaderFile::ReadStream( void *lpBuf, TU32 nCount )
 {
   DWORD nRead = 0;
   BOOL b = ReadFile( File, lpBuf, nCount, &nRead, NULL );
@@ -251,7 +251,7 @@ TS32 CStreamReaderFile::ReadStream( void *lpBuf, TU32 nCount )
   return nRead;
 }
 
-TS32 CStreamReaderFile::Open( TCHAR *Filename )
+int32_t CStreamReaderFile::Open( TCHAR *Filename )
 {
   if ( File )
     CloseHandle( File ); //close previous handle

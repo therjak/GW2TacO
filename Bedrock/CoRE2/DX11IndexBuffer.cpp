@@ -60,7 +60,7 @@ TBOOL CCoreDX11IndexBuffer::Create(const TU32 idxcount, const TU32 idxsize)
 	return true;
 }
 
-TBOOL CCoreDX11IndexBuffer::Lock(void **Result, const TU32 idxoffset, const TS32 idxcount)
+TBOOL CCoreDX11IndexBuffer::Lock(void **Result, const TU32 idxoffset, const int32_t idxcount)
 {
 	if (!IndexBufferHandle) return false;
 

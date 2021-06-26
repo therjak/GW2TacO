@@ -2,7 +2,7 @@
 #include "ItemSelector.h"
 
 //globally unique item IDs for automatically generated item IDs
-TS32 wbItemIDCounter = 0;
+int32_t wbItemIDCounter = 0;
 
 //////////////////////////////////////////////////////////////////////////
 // CWBSelectableItem
@@ -131,7 +131,7 @@ SELECTABLEID CWBItemSelector::AddItem( const TCHAR *Text, SELECTABLEID ID )
 
 TBOOL CWBItemSelector::DeleteItem( SELECTABLEID ID )
 {
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
   {
     if ( List[ x ].GetID() == ID )
     {
@@ -158,7 +158,7 @@ void CWBItemSelector::Flush()
 
 CWBSelectableItem * CWBItemSelector::GetItem( SELECTABLEID ID )
 {
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
     if ( List[ x ].GetID() == ID ) return &List[ x ];
   return NULL;
 }
@@ -167,35 +167,35 @@ CWBSelectableItem * CWBItemSelector::GetItem( SELECTABLEID ID )
 //{
 //}
 
-TS32 CWBItemSelector::NumItems()
+int32_t CWBItemSelector::NumItems()
 {
   return List.NumItems();
 }
 
-CWBSelectableItem &CWBItemSelector::GetItemByIndex( TS32 x )
+CWBSelectableItem &CWBItemSelector::GetItemByIndex( int32_t x )
 {
   return List[ x ];
 }
 
-TS32 CWBItemSelector::GetItemIndex( SELECTABLEID ItemID )
+int32_t CWBItemSelector::GetItemIndex( SELECTABLEID ItemID )
 {
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
     if ( List[ x ].GetID() == ItemID ) return x;
   return -1;
 }
 
-TS32 CWBItemSelector::NumSelected()
+int32_t CWBItemSelector::NumSelected()
 {
-  TS32 Count = 0;
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  int32_t Count = 0;
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
     if ( List[ x ].IsSelected() ) Count++;
   return Count;
 }
 
-TS32 CWBItemSelector::GetSelectedIndex( TS32 Idx )
+int32_t CWBItemSelector::GetSelectedIndex( int32_t Idx )
 {
-  TS32 Count = 0;
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  int32_t Count = 0;
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
     if ( List[ x ].IsSelected() )
     {
       if ( Count == Idx ) return x;
@@ -204,33 +204,33 @@ TS32 CWBItemSelector::GetSelectedIndex( TS32 Idx )
   return -1;
 }
 
-CArray<TS32> CWBItemSelector::GetSelectedIndices()
+CArray<int32_t> CWBItemSelector::GetSelectedIndices()
 {
-  CArray<TS32> Dic;
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  CArray<int32_t> Dic;
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
     if ( List[ x ].IsSelected() ) Dic += x;
   return Dic;
 }
 
-TS32 CWBItemSelector::GetCursorPosition()
+int32_t CWBItemSelector::GetCursorPosition()
 {
   return CursorPosition;
 }
 
 void CWBItemSelector::SelectItem( SELECTABLEID ItemID )
 {
-  TS32 idx = GetItemIndex( ItemID );
+  int32_t idx = GetItemIndex( ItemID );
   if ( idx >= 0 ) SelectItemByIndex( idx );
 }
 
-void CWBItemSelector::SelectItemByIndex( TS32 Idx ) //single select implementation only
+void CWBItemSelector::SelectItemByIndex( int32_t Idx ) //single select implementation only
 {
   //LOG_DBG("[itemselector] %s selecting idx %d", GetID().GetPointer(), Idx);
 
   //if (CursorPosition == Idx) return;
 
   //clear selection
-  for ( TS32 x = 0; x < List.NumItems(); x++ )
+  for ( int32_t x = 0; x < List.NumItems(); x++ )
     List[ x ].Select( false );
 
   CursorPosition = AnchorPosition = Idx;

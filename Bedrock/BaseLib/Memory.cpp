@@ -64,7 +64,7 @@ CMemTracker::~CMemTracker()
   SAFEDELETE( temp );
 }
 
-void CMemTracker::AddPointer( void *p, const TS8* file, TS32 line, TS32 size )
+void CMemTracker::AddPointer( void *p, const TS8* file, int32_t line, int32_t size )
 {
   CLightweightCriticalSection cs( &critsec );
   if ( MemTrackerPool && !Paused && p )
@@ -107,12 +107,12 @@ void CMemTracker::RemovePointer( void *p )
   }
 }
 
-TS32 CMemTracker::GetAllocatedMemorySize()
+int32_t CMemTracker::GetAllocatedMemorySize()
 {
   Pause();
 
-  TS32 mem = 0;
-  for ( TS32 x = 0; x < MemTrackerPool->NumItems(); x++ )
+  int32_t mem = 0;
+  for ( int32_t x = 0; x < MemTrackerPool->NumItems(); x++ )
     mem += MemTrackerPool->GetByIndex( x ).Size;
 
   Resume();
@@ -122,14 +122,14 @@ TS32 CMemTracker::GetAllocatedMemorySize()
 //#pragma push_macro("new")
 //#undef new
 
-void* __cdecl operator new( size_t size, const TS8* file, TS32 line )
+void* __cdecl operator new( size_t size, const TS8* file, int32_t line )
 {
   void *p = malloc( size );
   memTracker.AddPointer( p, file, line, size );
   return p;
 }
 
-void* __cdecl operator new[]( size_t size, const TS8* file, TS32 line )
+void* __cdecl operator new[]( size_t size, const TS8* file, int32_t line )
 {
   void *p = malloc( size );
   memTracker.AddPointer( p, file, line, size );
@@ -150,13 +150,13 @@ void __cdecl operator delete[]( void* pointer )
   free( pointer );
 }
 
-void __cdecl operator delete( void* pointer, const TS8* file, TS32 line )
+void __cdecl operator delete( void* pointer, const TS8* file, int32_t line )
 {
   memTracker.RemovePointer( pointer );
   free( pointer );
 }
 
-void __cdecl operator delete[]( void* pointer, const TS8* file, TS32 line )
+void __cdecl operator delete[]( void* pointer, const TS8* file, int32_t line )
 {
   memTracker.RemovePointer( pointer );
   free( pointer );

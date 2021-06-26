@@ -9,5 +9,5 @@ CString TacOBuild = CString::Format( "%.3d.%dr", RELEASECOUNT, BUILDCOUNT );
 
 CString buildDateTime = CString::Format( __DATE__ " " __TIME__ );
 
-TS32 TacORelease = RELEASECOUNT;
-TS32 TacOBuildCount = BUILDCOUNT;
+int32_t TacORelease = RELEASECOUNT;
+int32_t TacOBuildCount = BUILDCOUNT;

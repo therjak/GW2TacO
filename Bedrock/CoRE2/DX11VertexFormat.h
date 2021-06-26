@@ -9,7 +9,7 @@ class CCoreDX11VertexFormat : public CCoreVertexFormat
 	ID3D11Device *Dev;
 	ID3D11DeviceContext *DeviceContext;
 	ID3D11InputLayout *VertexFormatHandle;
-	TS32 Size;
+	int32_t Size;
 
 	virtual void Release();
 	virtual TBOOL Apply();
@@ -20,7 +20,7 @@ public:
 	virtual ~CCoreDX11VertexFormat();
 
 	virtual TBOOL Create(const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *vs = NULL);
-	virtual TS32 GetSize();
+	virtual int32_t GetSize();
 };
 
 #endif

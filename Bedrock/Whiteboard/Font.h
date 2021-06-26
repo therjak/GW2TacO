@@ -28,7 +28,7 @@ struct WBSYMBOLINPUT
   TU16 Char;
   CRect UV;
   CPoint Offset;
-  TS32 Advance;
+  int32_t Advance;
 };
 
 struct WBSYMBOL
@@ -68,40 +68,40 @@ class CWBFontDescription
   friend class CWBFont;
 
   TU8 *Image;
-  TS32 XRes, YRes;
+  int32_t XRes, YRes;
 
   CArray<WBSYMBOLINPUT> Alphabet;
   CArray<WBKERNINGDATA> KerningData;
 
-  TS32 LineHeight;
-  TS32 Base;
+  int32_t LineHeight;
+  int32_t Base;
 
 public:
 
   CWBFontDescription();
   ~CWBFontDescription();
 
-  TBOOL LoadBMFontBinary( TU8 *Binary, TS32 BinarySize, TU8 *Image, TS32 XRes, TS32 YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
-  TBOOL LoadBMFontText( TU8 *Binary, TS32 BinarySize, TU8 *Image, TS32 XRes, TS32 YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
+  TBOOL LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8 *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
+  TBOOL LoadBMFontText( TU8 *Binary, int32_t BinarySize, TU8 *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
 };
 
 class CWBFont
 {
   CAtlas *Atlas;
   //CDictionary<TU16,WBSYMBOL> Alphabet;
-  TS32 AlphabetSize = 0;
+  int32_t AlphabetSize = 0;
   WBSYMBOL *Alphabet;
   CDictionary<CWBKerningPair, TS16> Kerning;
 
-  TS32 LineHeight;
-  TS32 Base;
+  int32_t LineHeight;
+  int32_t Base;
 
-  TS32 Offset_X_Char;
-  TS32 Height_X_Char;
+  int32_t Offset_X_Char;
+  int32_t Height_X_Char;
 
   TCHAR MissingChar;
 
-  void AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, TS32 Advance, CRect contentRect );
+  void AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect );
   void AddKerningPair( TU16 First, TU16 Second, TS16 Amount );
 
 public:
@@ -110,30 +110,30 @@ public:
   virtual ~CWBFont();
   TBOOL Initialize( CWBFontDescription *Description, TCHAR MissingChar = _T( 'o' ) );
 
-  TS32 GetLineHeight();
-  TS32 GetBase();
-  TS32 GetOffsetX( TCHAR Char );
-  TS32 GetOffsetY( TCHAR Char );
-  TS32 GetCenterWidth( TS32 x1, TS32 x2, TCHAR *Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  TS32 GetCenterWidth( TS32 x1, TS32 x2, CString &Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  TS32 GetCenterHeight( TS32 y1, TS32 y2 );
+  int32_t GetLineHeight();
+  int32_t GetBase();
+  int32_t GetOffsetX( TCHAR Char );
+  int32_t GetOffsetY( TCHAR Char );
+  int32_t GetCenterWidth( int32_t x1, int32_t x2, TCHAR *Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  int32_t GetCenterWidth( int32_t x1, int32_t x2, CString &Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  int32_t GetCenterHeight( int32_t y1, int32_t y2 );
   CPoint GetCenter( TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
   CPoint GetCenter( CString &Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  TS32 GetMedian();
+  int32_t GetMedian();
 
-	TS32 WriteChar(CWBDrawAPI *DrawApi, int Char, TS32 x, TS32 y, CColor Color = 0xffffffff);
-  TS32 Write( CWBDrawAPI *DrawApi, TCHAR *String, TS32 x, TS32 y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  TS32 Write( CWBDrawAPI *DrawApi, CString &String, TS32 x, TS32 y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-	TS32 WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color = 0xffffffff);
-  TS32 Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  TS32 Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  TS32 GetWidth( TU16 Char, TBOOL Advance = true ); //if Advance is set to false this returns the width of the image in pixels
-  TS32 GetWidth( TCHAR *String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
-  TS32 GetWidth( CString &String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
+	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y, CColor Color = 0xffffffff);
+  int32_t Write( CWBDrawAPI *DrawApi, TCHAR *String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, CString &String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color = 0xffffffff);
+  int32_t Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t GetWidth( TU16 Char, TBOOL Advance = true ); //if Advance is set to false this returns the width of the image in pixels
+  int32_t GetWidth( TCHAR *String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
+  int32_t GetWidth( CString &String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
 
-  TS32 GetHeight( TU16 Char );
-  TS32 GetHeight( TCHAR* String );
-  TS32 GetHeight( CString& String );
+  int32_t GetHeight( TU16 Char );
+  int32_t GetHeight( TCHAR* String );
+  int32_t GetHeight( CString& String );
 
   CPoint GetTextPosition( CString &String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform, TBOOL DoKerning = true );
   CPoint GetTextPosition( TCHAR *String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform, TBOOL DoKerning = true );

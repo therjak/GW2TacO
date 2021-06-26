@@ -248,7 +248,7 @@ CString buildText2( "WW91IGNhbiBzdXBwb3J0IGRldmVsb3BtZW50IGJ5IGRvbmF0aW5nIGluLWd
 
 CString GW2TacO::GetKeybindString(TacOKeyAction action)
 {
-  for (TS32 x = 0; x < KeyBindings.NumItems(); x++)
+  for (int32_t x = 0; x < KeyBindings.NumItems(); x++)
     if (KeyBindings.GetByIndex(x) == action)
     {
       return CString::Format(" [%c]", KeyBindings.GetKDPair(x)->Key);
@@ -408,7 +408,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         {
           auto itm = ctx->AddItem( DICT( "configmaptimer" ), 0 );
 
-          for ( TS32 x = 0; x < timer->maps.NumItems(); x++ )
+          for ( int32_t x = 0; x < timer->maps.NumItems(); x++ )
           {
             TBOOL open = true;
             CString str = CString( "maptimer_mapopen_" ) + timer->maps[ x ].id;
@@ -429,11 +429,11 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         markerEditor->AddItem( DICT( "autohidemarkereditor" ) + ( GetConfigValue( "AutoHideMarkerEditor" ) ? " [x]" : " [ ]" ), Menu_ToggleAutoHideMarkerEditor );
         markerEditor->AddSeparator();
         int cnt = 1;
-        for ( TS32 x = 1; x < sizeof( ActionNames ) / sizeof( CString ); x++ )
+        for ( int32_t x = 1; x < sizeof( ActionNames ) / sizeof( CString ); x++ )
         {
           CString str = DICT( ActionNames[ x ] ) + " " + DICT( "action_no_key_bound" );
-          for ( TS32 y = 0; y < KeyBindings.NumItems(); y++ )
-            if ( (TS32)KeyBindings.GetByIndex( y ) == x )
+          for ( int32_t y = 0; y < KeyBindings.NumItems(); y++ )
+            if ( (int32_t)KeyBindings.GetByIndex( y ) == x )
             {
               str = DICT( ActionNames[ x ] ) + CString::Format( " [%c]", KeyBindings.GetKDPair( y )->Key );
               break;
@@ -451,15 +451,15 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
       //if (teamSpeakConnection.IsConnected() && teamSpeakConnection.handlers.NumItems())
       //{
-      //	TS32 connectednum = 0;
-      //	for (TS32 x = 0; x < teamSpeakConnection.handlers.NumItems(); x++)
+      //	int32_t connectednum = 0;
+      //	for (int32_t x = 0; x < teamSpeakConnection.handlers.NumItems(); x++)
       //		if (teamSpeakConnection.handlers[x].Connected)
       //			connectednum++;
 
       //	if (connectednum)
       //	{
       //		auto chn = ctx->AddItem("Switch Teamspeak channel", 0);
-      //		for (TS32 x = 0; x < teamSpeakConnection.handlers.NumItems(); x++)
+      //		for (int32_t x = 0; x < teamSpeakConnection.handlers.NumItems(); x++)
       //			if (teamSpeakConnection.handlers[x].Connected)
       //			{
       //				auto hndlr = chn->AddItem(teamSpeakConnection.handlers[x].name.GetPointer(), 0);
@@ -481,7 +481,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
           auto& raids = rp->GetRaids();
           if ( raids.NumItems() )
             raid->AddSeparator();
-          for ( TS32 x = 0; x < raids.NumItems(); x++ )
+          for ( int32_t x = 0; x < raids.NumItems(); x++ )
           {
             raid->AddItem( ( ( HasConfigValue( raids[ x ].configName.GetPointer() ) && !GetConfigValue( raids[ x ].configName.GetPointer() ) ) ? "[ ] " : "[x] " ) + DICT( raids[ x ].configName, raids[ x ].name ), Menu_RaidToggles + x, false, false );
           }
@@ -516,11 +516,11 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       settings->AddItem(DICT("togglekeybinds") + (GetConfigValue("KeybindsEnabled") ? " [x]" : " [ ]"), Menu_KeyBindsEnabled);
       auto bind = settings->AddItem( DICT( "rebindkeys" ), 0 );
       int cnt = 1;
-      for ( TS32 x = 1; x < sizeof( ActionNames ) / sizeof( CString ); x++ )
+      for ( int32_t x = 1; x < sizeof( ActionNames ) / sizeof( CString ); x++ )
       {
         CString str = DICT( ActionNames[ x ] ) + " " + DICT( "action_no_key_bound" );
-        for ( TS32 y = 0; y < KeyBindings.NumItems(); y++ )
-          if ( (TS32)KeyBindings.GetByIndex( y ) == x )
+        for ( int32_t y = 0; y < KeyBindings.NumItems(); y++ )
+          if ( (int32_t)KeyBindings.GetByIndex( y ) == x )
           {
             str = DICT( ActionNames[ x ] ) + CString::Format( " [%c]", KeyBindings.GetKDPair( y )->Key );
             break;
@@ -533,10 +533,10 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       /*
       if ( scriptKeyBinds.NumItems() )
       bind->AddSeparator();
-      for ( TS32 x = 0; x < scriptKeyBinds.NumItems(); x++ )
+      for ( int32_t x = 0; x < scriptKeyBinds.NumItems(); x++ )
       {
       CString str = scriptKeyBinds[ x ].eventDescription + " [no key bound]";
-      for ( TS32 y = 0; y < ScriptKeyBindings.NumItems(); y++ )
+      for ( int32_t y = 0; y < ScriptKeyBindings.NumItems(); y++ )
       if ( ScriptKeyBindings.GetKDPair( y )->Data == scriptKeyBinds[ x ].eventName )
       {
       str = scriptKeyBinds[ x ].eventDescription + CString::Format( " [%c]", ScriptKeyBindings.GetKDPair( y )->Key );
@@ -559,7 +559,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
       auto currKey = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-      for (TS32 x = 0; x < GW2::apiKeyManager.keys.NumItems(); x++)
+      for (int32_t x = 0; x < GW2::apiKeyManager.keys.NumItems(); x++)
       {
         auto key = GW2::apiKeyManager.keys[x];
         auto keyMenu = gw2keys->AddItem(key->accountName.Length() ? key->accountName : key->apiKey, Menu_GW2APIKey_Base + x, key == currKey);
@@ -607,7 +607,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
     if ( Message.Data >= Menu_RaidToggles && Message.Data < Menu_RaidToggles_End )
     {
-      TS32 raidToggle = Message.Data - Menu_RaidToggles;
+      int32_t raidToggle = Message.Data - Menu_RaidToggles;
       
       auto* rp = FindChildByID<RaidProgress>( "RaidProgressView" );
       if ( rp )
@@ -651,7 +651,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     {
       CWBContextMenu* ctxMenu = (CWBContextMenu*)App->FindItemByGuid( Message.Position[ 1 ] );
       auto itm = ctxMenu->GetItem( Message.Data );
-      TS32 mapIdx = Message.Data - Menu_ToggleMapTimerMap;
+      int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
 
       GW2MapTimer *timer = (GW2MapTimer *)App->GetRoot()->FindChildByID( "MapTimer", "maptimer" );
       if ( !timer )
@@ -716,14 +716,14 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
     if (Message.Data >= Menu_GW2APIKey_Base && Message.Data < Menu_GW2APIKey_End)
     {
-      TS32 idx = Message.Data - Menu_GW2APIKey_Base;
+      int32_t idx = Message.Data - Menu_GW2APIKey_Base;
       ApiKeyInputAction(APIKeys::GW2APIKey, idx);
       return true;
     }
 
     if (Message.Data >= Menu_DeleteGW2APIKey_Base && Message.Data < Menu_DeleteGW2APIKey_End)
     {
-      TS32 idx = Message.Data - Menu_DeleteGW2APIKey_Base;
+      int32_t idx = Message.Data - Menu_DeleteGW2APIKey_Base;
       GW2::apiKeyManager.keys.FreeByIndex(idx);
       GW2::apiKeyManager.RebuildConfigValues();
       return true;
@@ -731,7 +731,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
     if ( Message.Data >= Menu_RaidToggles && Message.Data < Menu_RaidToggles_End )
     {
-      TS32 raidToggle = Message.Data - Menu_RaidToggles;
+      int32_t raidToggle = Message.Data - Menu_RaidToggles;
 
       auto* rp = FindChildByID<RaidProgress>( "RaidProgressView" );
       if ( rp )
@@ -788,7 +788,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       {
         if ( Message.Data < Menu_ToggleMapTimerMap + timer->maps.NumItems() )
         {
-          TS32 mapIdx = Message.Data - Menu_ToggleMapTimerMap;
+          int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
           CString str = CString( "maptimer_mapopen_" ) + timer->maps[ mapIdx ].id;
           timer->maps[ mapIdx ].display = !timer->maps[ mapIdx ].display;
           SetConfigValue( str.GetPointer(), timer->maps[ mapIdx ].display );
@@ -1100,7 +1100,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         "Y29kZT1VU0QmYm49UFAtRG9uYXRpb25zQkY6YnRuX2RvbmF0ZUNDX0xHLmdpZjpOb25Ib3N0ZWQ=");
 
       TU8* data = nullptr;
-      TS32 dataLength = 0;
+      int32_t dataLength = 0;
 
       string.DecodeBase64(data, dataLength);
       if (data)
@@ -1127,7 +1127,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     {
       if ( !ScriptRebindMode )
       {
-        for ( TS32 x = 0; x < KeyBindings.NumItems(); x++ )
+        for ( int32_t x = 0; x < KeyBindings.NumItems(); x++ )
         {
           if ( KeyBindings.GetByIndex( x ) == ActionToRebind )
           {
@@ -1146,7 +1146,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       else
       {
         /*
-                for ( TS32 x = 0; x < ScriptKeyBindings.NumItems(); x++ )
+                for ( int32_t x = 0; x < ScriptKeyBindings.NumItems(); x++ )
                 {
                   if ( ScriptKeyBindings.GetByIndex( x ) == scriptKeyBinds[ ScriptActionToRebind ].eventName )
                   {
@@ -1333,7 +1333,7 @@ void GW2TacO::InitScriptEngines()
     scriptEngines[ 0 ]->AddScriptSection( "test.angel" );
     scriptEngines[ 0 ]->BuildScript();
 
-    for ( TS32 x = 0; x < scriptEngines.NumItems(); x++ )
+    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
       scriptEngines[ x ]->InitScript();
   */
 }
@@ -1341,7 +1341,7 @@ void GW2TacO::InitScriptEngines()
 void GW2TacO::TickScriptEngine()
 {
   /*
-    for ( TS32 x = 0; x < scriptEngines.NumItems(); x++ )
+    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
       scriptEngines[ x ]->CallScriptTick();
   */
 }
@@ -1349,7 +1349,7 @@ void GW2TacO::TickScriptEngine()
 void GW2TacO::TriggerScriptEngineAction( GUID& guid )
 {
   /*
-    for ( TS32 x = 0; x < scriptEngines.NumItems(); x++ )
+    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
       scriptEngines[ x ]->TriggerAction( guid );
   */
 }
@@ -1357,7 +1357,7 @@ void GW2TacO::TriggerScriptEngineAction( GUID& guid )
 void GW2TacO::TriggerScriptEngineKeyEvent( const CString& eventID )
 {
   /*
-    for ( TS32 x = 0; x < scriptEngines.NumItems(); x++ )
+    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
       scriptEngines[ x ]->TriggerKeyPress( eventID );
   */
 }
@@ -1389,8 +1389,8 @@ void GW2TacO::OpenAboutWindow()
   auto TacoIcon = new CWBButton( w, CRect( -50, -40 + 16, 50, 72 + 16 ) + w->GetClientRect().Center() );
   TacoIcon->ApplyStyleDeclarations( "background-color:none;background: skin(TacoIcon) center middle;" );
 
-  TS32 width = w->GetClientRect().Width();
-  TS32 height = w->GetClientRect().Height();
+  int32_t width = w->GetClientRect().Width();
+  int32_t height = w->GetClientRect().Height();
 
   auto WebsiteButton = new CWBButton( w, CRect( 3, height - 25, width / 2 - 1, height - 3 ), "WebSite" );
   WebsiteButton->SetID( "GoToWebsite" );
@@ -1469,7 +1469,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     {
 #define speed 500.0f
 
-      TS32 currTime = GetTime();
+      int32_t currTime = GetTime();
       TF32 delta = max( 0, min( 1, ( currTime - lastMenuHoverTransitionTime ) / speed ) );
 
       TBOOL hover = ClientToScreen( it->GetClientRect() ).Contains( App->GetMousePos() );
@@ -1484,7 +1484,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
 
       if ( hover != menuHoverLastFrame )
       {
-        lastMenuHoverTransitionTime = TS32( currTime - ( 1 - delta ) * speed );
+        lastMenuHoverTransitionTime = int32_t( currTime - ( 1 - delta ) * speed );
         delta = 1 - delta;
       }
 
@@ -1492,7 +1492,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
       if ( hover )
         col = 0.5f + delta*0.5f;
 
-      TS32 o = (TS32)max( 0, min( 255, col * 255 ) );
+      int32_t o = (int32_t)max( 0, min( 255, col * 255 ) );
 
       //taco->ApplyStyleDeclarations( CString::Format( "opacity:%f", col ) );
 
@@ -1629,7 +1629,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     ypos += font->GetLineHeight();
 
     TU8 *data2 = nullptr;
-    TS32 size = 0;
+    int32_t size = 0;
     buildText2.DecodeBase64( data2, size );
     CString build( (TS8*)data2, size );
     SAFEDELETEA( data2 );
@@ -1670,8 +1670,8 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
 
     if ( !ScriptRebindMode )
     {
-      TS32 key = -1;
-      for ( TS32 x = 0; x < KeyBindings.NumItems(); x++ )
+      int32_t key = -1;
+      for ( int32_t x = 0; x < KeyBindings.NumItems(); x++ )
         if ( KeyBindings.GetByIndex( x ) == ActionToRebind )
         {
           key = KeyBindings.GetKDPair( x )->Key;
@@ -1680,11 +1680,11 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
 
       if (key == -1)
       {
-        line1 = DICT("action") + " '" + DICT(ActionNames[(TS32)ActionToRebind]) + "' " + DICT("currently_not_bound");
+        line1 = DICT("action") + " '" + DICT(ActionNames[(int32_t)ActionToRebind]) + "' " + DICT("currently_not_bound");
       }
       else
       {
-        line1 = DICT("action") + " '" + DICT(ActionNames[(TS32)ActionToRebind]) + "' " + DICT("currently_bound") + CString::Format(" '%c'", key);
+        line1 = DICT("action") + " '" + DICT(ActionNames[(int32_t)ActionToRebind]) + "' " + DICT("currently_bound") + CString::Format(" '%c'", key);
       }
     }
     else
@@ -1697,8 +1697,8 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
       else
       {
         /*
-                TS32 key = 0;
-                for ( TS32 x = 0; x < ScriptKeyBindings.NumItems(); x++ )
+                int32_t key = 0;
+                for ( int32_t x = 0; x < ScriptKeyBindings.NumItems(); x++ )
                   if ( ScriptKeyBindings.GetKDPair( x )->Data == scriptKeyBinds[ ScriptActionToRebind ].eventName )
                   {
                     key = ScriptKeyBindings.GetKDPair( x )->Key;
@@ -1723,7 +1723,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     API->DrawRect( GetClientRect(), 0x60000000 );
     CWBFont *f = GetFont( GetState() );
 
-    CString line1 = DICT( "enter_api" ) + " " + DICT( APIKeyNames[ (TS32)ApiKeyToSet ] ) + " " + DICT( "below_and_press" );
+    CString line1 = DICT( "enter_api" ) + " " + DICT( APIKeyNames[ (int32_t)ApiKeyToSet ] ) + " " + DICT( "below_and_press" );
     CPoint line1p = f->GetTextPosition( line1, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
 
     if ( ApiKeyToSet == APIKeys::TS3APIKey )
@@ -1776,7 +1776,7 @@ void GW2TacO::OnPostDraw(CWBDrawAPI* API)
   if (!mouseToolTip.Length())
     return;
 
-  TS32 width = font->GetWidth(mouseToolTip);
+  int32_t width = font->GetWidth(mouseToolTip);
 
   CPoint pos = GetApplication()->GetMousePos();
   pos.x += 6;
@@ -1873,9 +1873,9 @@ void GW2TacO::OpenWindow( CString s )
   }
 }
 
-void GW2TacO::BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *parentitm, TS32 ParentID )
+void GW2TacO::BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *parentitm, int32_t ParentID )
 {
-  for ( TS32 x = 0; x < h.Channels.NumItems(); x++ )
+  for ( int32_t x = 0; x < h.Channels.NumItems(); x++ )
   {
     TS3Connection::TS3Channel &chn = h.Channels[ x ];
     if ( chn.parentid == ParentID )
@@ -1895,7 +1895,7 @@ void GW2TacO::RebindAction( TacOKeyAction Action )
   SetFocus();
 }
 
-void GW2TacO::RebindScriptKey( TS32 eventIndex )
+void GW2TacO::RebindScriptKey( int32_t eventIndex )
 {
   RebindMode = true;
   ScriptRebindMode = true;
@@ -1903,7 +1903,7 @@ void GW2TacO::RebindScriptKey( TS32 eventIndex )
   SetFocus();
 }
 
-void GW2TacO::ApiKeyInputAction( APIKeys keyType, TS32 idx )
+void GW2TacO::ApiKeyInputAction( APIKeys keyType, int32_t idx )
 {
   ApiKeyInputMode = true;
   ApiKeyToSet = keyType;
@@ -1967,12 +1967,12 @@ void GW2TacO::CheckItemPickup()
       Object json;
       json.parse( query.GetPointer() );
 
-      TS32 coins = 0;
-      TS32 itemCount = 0;
+      int32_t coins = 0;
+      int32_t itemCount = 0;
 
       if ( json.has<Number>( "coins" ) )
       {
-        coins = (TS32)( json.get<Number>( "coins" ) );
+        coins = (int32_t)( json.get<Number>( "coins" ) );
 
         if ( json.has<Array>( "items" ) )
         {

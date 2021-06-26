@@ -14,7 +14,7 @@ void GW2TacticalCompass::DrawTacticalCompass( CWBDrawAPI *API )
   CMatrix4x4 persp;
   persp.SetPerspectiveFovLH( mumbleLink.fov, drawrect.Width() / (TF32)drawrect.Height(), 0.01f, 1000.0f );
 
-  TS32 resolution = 60;
+  int32_t resolution = 60;
 
   CVector4 charpos = CVector4( mumbleLink.averagedCharPosition.x, mumbleLink.averagedCharPosition.y, mumbleLink.averagedCharPosition.z, 1.0f );;
   float rworld = GameToWorldCoords( 40 );

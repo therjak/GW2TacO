@@ -20,27 +20,27 @@ CSocket::~CSocket()
   //don't close the socket here as any copy of the class will invalidate the socket on destruction
 }
 
-TS32 CSocket::ReadStream( void *lpBuf, TU32 nCount )
+int32_t CSocket::ReadStream( void *lpBuf, TU32 nCount )
 {
   if ( Socket == INVALID_SOCKET ) return 0;
-  TS32 r = recv( Socket, (TS8*)lpBuf, nCount, NULL );
+  int32_t r = recv( Socket, (TS8*)lpBuf, nCount, NULL );
   if ( r != 0 ) LastActivity = GetTickCount64();
   return r;
 }
 
-TS32 CSocket::WriteStream( void* lpBuf, TU32 nCount )
+int32_t CSocket::WriteStream( void* lpBuf, TU32 nCount )
 {
-  TS32 res = send( Socket, (TS8*)lpBuf, nCount, NULL );
+  int32_t res = send( Socket, (TS8*)lpBuf, nCount, NULL );
   if ( res == SOCKET_ERROR ) return 0;
   return res;
 }
 
-TS32 CSocket::Connect( const CString &Server, const TU32 Port )
+int32_t CSocket::Connect( const CString &Server, const TU32 Port )
 {
   TS8 Address[ 256 ];
   Server.WriteAsMultiByte( Address, 256 );
 
-  TS32 addr = Resolve( Address );
+  int32_t addr = Resolve( Address );
   if ( addr == INADDR_NONE )
     return 0;
 
@@ -60,7 +60,7 @@ TS32 CSocket::Connect( const CString &Server, const TU32 Port )
   return 1;
 }
 
-TS32 CSocket::Listen( const TU32 Port, const TBOOL ReuseAddress )
+int32_t CSocket::Listen( const TU32 Port, const TBOOL ReuseAddress )
 {
   Socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
 
@@ -85,11 +85,11 @@ TS32 CSocket::Listen( const TU32 Port, const TBOOL ReuseAddress )
     return 0;
   }
 
-  TS32 r = listen( Socket, 10 );
+  int32_t r = listen( Socket, 10 );
   return r != SOCKET_ERROR;
 }
 
-TS32 CSocket::Close()
+int32_t CSocket::Close()
 {
   if ( Socket != INVALID_SOCKET )
   {
@@ -101,7 +101,7 @@ TS32 CSocket::Close()
   return 1;
 }
 
-TS32 CSocket::AcceptConnection( CSocket &NewConnection )
+int32_t CSocket::AcceptConnection( CSocket &NewConnection )
 {
   fd_set Check;
   Check.fd_array[ 0 ] = Socket;
@@ -114,7 +114,7 @@ TS32 CSocket::AcceptConnection( CSocket &NewConnection )
   if ( select( 0, &Check, NULL, NULL, &t ) != 1 ) return 0;
 
   sockaddr_in addr;
-  TS32 l = sizeof( sockaddr_in );
+  int32_t l = sizeof( sockaddr_in );
 
   SOCKET s = accept( Socket, ( struct sockaddr * )&addr, &l );
   if ( s == INVALID_SOCKET ) return 0;
@@ -167,12 +167,12 @@ void CSocket::SeekRelative( int64_t lOff )
 {
 }
 
-TS32 CSocket::ReadFull( void *data, TU32 size )
+int32_t CSocket::ReadFull( void *data, TU32 size )
 {
-  TS32 progress = 0;
+  int32_t progress = 0;
   while ( 1 )
   {
-    TS32 n = Read( ( (TS8*)data ) + progress, size - progress );
+    int32_t n = Read( ( (TS8*)data ) + progress, size - progress );
     if ( n == SOCKET_ERROR )
       return SOCKET_ERROR;
     progress += n;
@@ -184,7 +184,7 @@ TS32 CSocket::ReadFull( void *data, TU32 size )
 TBOOL CSocket::Peek( void *lpBuf, TU32 nCount )
 {
   if ( Socket == INVALID_SOCKET ) return 0;
-  TS32 r = recv( Socket, (TS8*)lpBuf, nCount, MSG_PEEK );
+  int32_t r = recv( Socket, (TS8*)lpBuf, nCount, MSG_PEEK );
   if ( r != 0 ) LastActivity = GetTickCount64();
   if ( r == SOCKET_ERROR )
     Socket = INVALID_SOCKET;
@@ -215,9 +215,9 @@ TBOOL CSocket::IsConnected()
   return true;
 }
 
-TS32 CSocket::TimeSinceLastActivity()
+int32_t CSocket::TimeSinceLastActivity()
 {
-  return (TS32)( GetTickCount64() - LastActivity );
+  return (int32_t)( GetTickCount64() - LastActivity );
 }
 
 const TBOOL CSocket::operator==( const CSocket &b )
@@ -233,13 +233,13 @@ CString CSocket::ReadLine()
   {
     if ( !IsConnected() )
       return result;
-    TS32 len = (TS32)GetLength();
+    int32_t len = (int32_t)GetLength();
     if ( len )
     {
       TS8 *dat = new TS8[ len ];
       if ( Peek( dat, len ) )
       {
-        for ( TS32 x = 0; x < len; x++ )
+        for ( int32_t x = 0; x < len; x++ )
           if ( dat[ x ] == '\n' )
           {
             ReadFull( dat, x + 1 );
@@ -273,7 +273,7 @@ CString CSocket::ReadLine()
   //return result;
 }
 
-TS32 InitWinsock()
+int32_t InitWinsock()
 {
   return WSAStartup( MAKEWORD( 2, 2 ), &wsaData ) == 0;
 }
@@ -286,7 +286,7 @@ void DeinitWinsock()
 //////////////////////////////////////////////////////////////////////////
 // helper functions
 
-TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
+TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 {
   CSocket sock;
 
@@ -304,7 +304,7 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
     while ( !sock.GetLength() )
       if ( globalTimer.GetTime() - time > 1000 ) break;
 
-    TS32 len = (TS32)sock.GetLength();
+    int32_t len = (int32_t)sock.GetLength();
 
     if ( len )
     {
@@ -315,8 +315,8 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
       //check http header
 
       CString head = CString( (TS8*)headerdata );
-      TS32 contentlength = -1;
-      TS32 contentpos = head.Find( _T( "Content-Length: " ) );
+      int32_t contentlength = -1;
+      int32_t contentpos = head.Find( _T( "Content-Length: " ) );
 
       if ( contentpos >= 0 )
       {
@@ -328,7 +328,7 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
         }
       }
 
-      TS32 contentstart = head.Find( _T( "\r\n\r\n" ) );
+      int32_t contentstart = head.Find( _T( "\r\n\r\n" ) );
       if ( contentstart < 0 )
       {
         SAFEDELETE( headerdata );
@@ -337,7 +337,7 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
 
       contentstart += 4;
 
-      TS32 byteslefttoread = contentlength - len;
+      int32_t byteslefttoread = contentlength - len;
 
       if ( byteslefttoread <= 0 && contentlength != -1 )
       {
@@ -345,7 +345,7 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
         return NULL;
       }
 
-      TS32 currentdatasize = len - contentstart;
+      int32_t currentdatasize = len - contentstart;
 
       if ( currentdatasize > 0 )
       {
@@ -355,13 +355,13 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
 
       while ( byteslefttoread > 0 || contentlength == -1 )
       {
-        TS32 dlen = (TS32)sock.GetLength();
+        int32_t dlen = (int32_t)sock.GetLength();
         if ( dlen )
         {
           TU8 *newdata = new TU8[ currentdatasize + dlen ];
           if ( result )
             memcpy( newdata, result, currentdatasize );
-          TS32 numread = sock.ReadFull( newdata + currentdatasize, dlen );
+          int32_t numread = sock.ReadFull( newdata + currentdatasize, dlen );
           if ( numread == dlen )
           {
             currentdatasize += numread;
@@ -378,7 +378,7 @@ TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize )
           result = newdata;
         }
 
-        TS32 len;
+        int32_t len;
         if ( !sock.Peek( &len, 1 ) )
           break;
       }

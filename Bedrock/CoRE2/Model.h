@@ -8,8 +8,8 @@ class CCoreMesh
 	CCoreVertexFormat *VxFormat;
 	CCoreVertexBuffer *Vertices;
 	CCoreIndexBuffer *Indices;
-	TS32 TriCount;
-	TS32 VxCount;
+	int32_t TriCount;
+	int32_t VxCount;
 
 public:
 
@@ -19,12 +19,12 @@ public:
 	CCoreVertexFormat *GetVertexFormat();
 	CCoreVertexBuffer *GetVertices();
 	CCoreIndexBuffer *GetIndices();
-	TS32 GetTriCount();
-	TS32 GetVxCount();
+	int32_t GetTriCount();
+	int32_t GetVxCount();
 
 	void SetVertexFormat(CCoreVertexFormat *v);
-	void SetVertexBuffer(CCoreVertexBuffer *b, TS32 Count);
-	void SetIndexBuffer(CCoreIndexBuffer *i, TS32 TriangleCount);
+	void SetVertexBuffer(CCoreVertexBuffer *b, int32_t Count);
+	void SetIndexBuffer(CCoreIndexBuffer *i, int32_t TriangleCount);
 
 };
 
@@ -41,8 +41,8 @@ public:
 	CCoreModel();
 	virtual ~CCoreModel();
 
-	INLINE TS32 GetMeshCount() { return Meshes.NumItems(); }
-	INLINE CCoreMesh *GetMesh(TS32 x) { return Meshes[x]; }
+	INLINE int32_t GetMeshCount() { return Meshes.NumItems(); }
+	INLINE CCoreMesh *GetMesh(int32_t x) { return Meshes[x]; }
 	virtual void AddMesh(CCoreMesh *m) { Meshes += m; }
 	virtual void SetMaterial(CCoreMaterial *m) { Material = m; }
 

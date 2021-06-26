@@ -12,10 +12,10 @@ class CWBTextBoxHistoryEntry
   friend class CWBTextBox;
 
   TBOOL Remove;
-  TS32 StartPosition;
+  int32_t StartPosition;
   CString Data;
 
-  TS32 CursorPos_Before, SelectionStart_Before, SelectionEnd_Before;
+  int32_t CursorPos_Before, SelectionStart_Before, SelectionEnd_Before;
 
 public:
 
@@ -27,23 +27,23 @@ public:
 class CWBTextBox : public CWBItem
 {
   CArray<CWBTextBoxHistoryEntry*> History;
-  TS32 HistoryPosition;
+  int32_t HistoryPosition;
 
-  TS32 HiglightStartTime;
-  TS32 CursorBlinkStartTime;
+  int32_t HiglightStartTime;
+  int32_t CursorBlinkStartTime;
 
-  TS32 Flags;
+  int32_t Flags;
   TCHAR PasswordStar; //character to display instead of characters
 
-  TS32 CursorPos;
-  TS32 DesiredCursorPosXinPixels; //used when moving up and down
+  int32_t CursorPos;
+  int32_t DesiredCursorPosXinPixels; //used when moving up and down
 
-  TS32 SelectionStart, SelectionEnd, SelectionOrigin;
+  int32_t SelectionStart, SelectionEnd, SelectionOrigin;
 
   CWBCSSPropertyBatch Selection;
 
   INLINE void DrawCursor( CWBDrawAPI *API, CPoint &p );
-  void SetCursorPosXpxY( TS32 x, TS32 y, TBOOL Selecting );
+  void SetCursorPosXpxY( int32_t x, int32_t y, TBOOL Selecting );
   void RemoveSelectedText();
   void Copy();
   void Cut();
@@ -51,12 +51,12 @@ class CWBTextBox : public CWBItem
   void Undo();
   void Redo();
 
-  TS32 GetCursorX();
-  TS32 GetCursorXinPixels();
-  TS32 GetCursorY();
-  TS32 GetLineSize();
-  TS32 GetCursorPosMouse();
-  TS32 GetLineLeadingWhiteSpaceSize();
+  int32_t GetCursorX();
+  int32_t GetCursorXinPixels();
+  int32_t GetCursorY();
+  int32_t GetLineSize();
+  int32_t GetCursorPosMouse();
+  int32_t GetLineLeadingWhiteSpaceSize();
 
   CPoint GetTextStartOffset();
 
@@ -64,13 +64,13 @@ class CWBTextBox : public CWBItem
   virtual void OnTextChange( bool nonHumanInteraction = false );
   CWBTextBoxHistoryEntry *CreateNewHistoryEntry( bool Remove, int Start, int Length );
 
-  virtual CColor GetTextColor( TS32 Index, CColor &DefaultColor );
-  virtual TBOOL GetTextBackground( TS32 Index, CColor &Result ) { return false; }
+  virtual CColor GetTextColor( int32_t Index, CColor &DefaultColor );
+  virtual TBOOL GetTextBackground( int32_t Index, CColor &Result ) { return false; }
   virtual TBOOL ColoredText() { return false; }
-  virtual void OnCursorPosChange( TS32 CursorPos ) {}
-  virtual void PostCharInsertion( TS32 CursorPos, TS32 Key ) {};
+  virtual void OnCursorPosChange( int32_t CursorPos ) {}
+  virtual void PostCharInsertion( int32_t CursorPos, int32_t Key ) {};
 
-  virtual void SelectWord( TS32 CharacterInWord );
+  virtual void SelectWord( int32_t CharacterInWord );
 
   void SetTextInternal( CString val, TBOOL EnableUndo = false, TBOOL nonHumanInteraction = false );
 
@@ -82,16 +82,16 @@ protected:
 
   virtual void OnDraw( CWBDrawAPI *API );
   virtual TBOOL MessageProc( CWBMessage &Message );
-  void InsertText( TS32 Position, TCHAR *Text, TS32 Length, TS32 CursorPosAfter, TBOOL ChangeHistory = true );
-  void RemoveText( TS32 Position, TS32 Length, TS32 CursorPosAfter, TBOOL ChangeHistory = true );
+  void InsertText( int32_t Position, TCHAR *Text, int32_t Length, int32_t CursorPosAfter, TBOOL ChangeHistory = true );
+  void RemoveText( int32_t Position, int32_t Length, int32_t CursorPosAfter, TBOOL ChangeHistory = true );
 
 public:
 
   CWBTextBox();
-  CWBTextBox( CWBItem *Parent, const CRect &Pos, TS32 flags = WB_TEXTBOX_SINGLELINE, const TCHAR *txt = _T( "" ) );
+  CWBTextBox( CWBItem *Parent, const CRect &Pos, int32_t flags = WB_TEXTBOX_SINGLELINE, const TCHAR *txt = _T( "" ) );
   virtual ~CWBTextBox();
 
-  virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position, TS32 flags = WB_TEXTBOX_SINGLELINE, const TCHAR *txt = _T( "" ) );
+  virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position, int32_t flags = WB_TEXTBOX_SINGLELINE, const TCHAR *txt = _T( "" ) );
   virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray &pseudo );
 
   CString GetText() const { return Text; } //text returned here will always be in unix newline format ('\n' instead of the windows '\r\n')
@@ -100,6 +100,6 @@ public:
   static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
   WB_DECLARE_GUIITEM( _T( "textbox" ), CWBItem );
 
-  virtual void SetSelection( TS32 start, TS32 end );
-  void SetCursorPos( TS32 pos, TBOOL Selecting );
+  virtual void SetSelection( int32_t start, int32_t end );
+  void SetCursorPos( int32_t pos, TBOOL Selecting );
 };

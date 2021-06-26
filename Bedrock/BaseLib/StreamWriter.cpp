@@ -172,7 +172,7 @@ CStreamWriterMemory::~CStreamWriterMemory()
   BufferSize = 0;
 }
 
-TS32 CStreamWriterMemory::WriteStream( void* lpBuf, TU32 nCount )
+int32_t CStreamWriterMemory::WriteStream( void* lpBuf, TU32 nCount )
 {
   if ( DataLength + nCount > BufferSize )
   {
@@ -224,7 +224,7 @@ CStreamWriterFile::~CStreamWriterFile()
     CloseHandle( File );
 }
 
-TS32 CStreamWriterFile::WriteStream( void *lpBuf, TU32 nCount )
+int32_t CStreamWriterFile::WriteStream( void *lpBuf, TU32 nCount )
 {
   DWORD nWritten = 0;
   BOOL b = WriteFile( File, lpBuf, nCount, &nWritten, NULL );
@@ -232,7 +232,7 @@ TS32 CStreamWriterFile::WriteStream( void *lpBuf, TU32 nCount )
   return nWritten;
 }
 
-TS32 CStreamWriterFile::Open( TCHAR *Filename )
+int32_t CStreamWriterFile::Open( TCHAR *Filename )
 {
   if ( File )
     CloseHandle( File ); //close previous handle

@@ -15,8 +15,8 @@ public:
   CVector2( const TF32* v );
   CVector2( const CVector2 &v );
 
-  TF32 const operator[]( TS32 idx ) const;
-  TF32 &operator[]( TS32 idx );
+  TF32 const operator[]( int32_t idx ) const;
+  TF32 &operator[]( int32_t idx );
   operator TF32* ( );
   operator const TF32* ( ) const;
   CVector2 &operator+= ( const CVector2 &v );
@@ -46,37 +46,37 @@ class CVector2I
 {
 public:
 
-  TS32 x, y;
+  int32_t x, y;
 
   CVector2I();
-  CVector2I( const TS32 _x, const TS32 _y );
-  CVector2I( const TS32* v );
+  CVector2I( const int32_t _x, const int32_t _y );
+  CVector2I( const int32_t* v );
   CVector2I( const CVector2I &v );
 
-  TS32 const operator[]( TS32 idx ) const;
-  TS32 &operator[]( TS32 idx );
-  operator TS32* ( );
-  operator const TS32* ( ) const;
+  int32_t const operator[]( int32_t idx ) const;
+  int32_t &operator[]( int32_t idx );
+  operator int32_t* ( );
+  operator const int32_t* ( ) const;
   CVector2I &operator+= ( const CVector2I &v );
   CVector2I &operator-= ( const CVector2I &v );
   CVector2I &operator*= ( const TF32 f );
   CVector2I &operator/= ( const TF32 f );
-  CVector2I &operator/= ( const TS32 f );
+  CVector2I &operator/= ( const int32_t f );
   CVector2I operator+ () const;
   CVector2I operator- () const;
   CVector2I operator+ ( const CVector2I &v ) const;
   CVector2I operator- ( const CVector2I &v ) const;
   CVector2I operator* ( const TF32 f ) const;
   CVector2I operator/ ( const TF32 f ) const;
-  CVector2I operator/ ( const TS32 f ) const;
+  CVector2I operator/ ( const int32_t f ) const;
   TBOOL operator== ( const CVector2I &v ) const;
   TBOOL operator!= ( const CVector2I &v ) const;
-  TS32 operator* ( const CVector2I &v ) const; //dot product
+  int32_t operator* ( const CVector2I &v ) const; //dot product
   TF32 Length() const;
   TF32 LengthSquared() const;
   CVector2I Normalized() const;
   void Normalize();
-  static TS32 Dot( const CVector2I &v1, const CVector2I &v2 );
+  static int32_t Dot( const CVector2I &v1, const CVector2I &v2 );
 };
 
 typedef CVector2I CPoint;
@@ -95,8 +95,8 @@ public:
   CVector3( const TF32* v );
   CVector3( const CVector3 &v );
 
-  TF32 const operator[]( TS32 idx ) const;
-  TF32 &operator[]( TS32 idx );
+  TF32 const operator[]( int32_t idx ) const;
+  TF32 &operator[]( int32_t idx );
   operator TF32* ( );
   operator const TF32* ( ) const;
   CVector3 &operator+= ( const CVector3 &v );
@@ -142,8 +142,8 @@ public:
   CVector4( const TF32* v );
   CVector4( const CVector4 &v );
 
-  TF32 const operator[]( TS32 idx ) const;
-  TF32 &operator[]( TS32 idx );
+  TF32 const operator[]( int32_t idx ) const;
+  TF32 &operator[]( int32_t idx );
   operator TF32* ( );
   operator const TF32* ( ) const;
   operator CVector3 ();
@@ -173,7 +173,7 @@ public:
 };
 
 
-const TS32 Lerp( const TS32 v1, const TS32 v2, const TF32 t );
+const int32_t Lerp( const int32_t v1, const int32_t v2, const TF32 t );
 const TF32 Lerp( const TF32 v1, const TF32 v2, const TF32 t );
 const TU32 Lerp( const TU32 v1, const TU32 v2, const TF32 t );
 const int64_t Lerp( const int64_t v1, const int64_t v2, const TF32 t );
@@ -184,6 +184,6 @@ const CVector2I Lerp( const CVector2I &v1, const CVector2I &v2, const TF32 t );
 const CVector3 Lerp( const CVector3 &v1, const CVector3 &v2, const TF32 t );
 const CVector4 Lerp( const CVector4 &v1, const CVector4 &v2, const TF32 t );
 TF32 mod( TF32 v, TF32 m );
-TS32 Mod( TS32 a, TS32 b );
+int32_t Mod( int32_t a, int32_t b );
 TF32 Mod( TF32 a, TF32 b );
-TF32 Mod( TF32 a, TS32 b );
+TF32 Mod( TF32 a, int32_t b );

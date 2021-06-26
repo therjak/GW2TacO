@@ -95,7 +95,7 @@ namespace GW2
           accountName = CString( json.get<String>( "name" ).data() );
 
         if ( json.has<Number>( "world" ) )
-          worldId = (TS32)( json.get<Number>( "world" ) );
+          worldId = (int32_t)( json.get<Number>( "world" ) );
       }
 
       initialized = true;

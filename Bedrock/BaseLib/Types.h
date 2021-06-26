@@ -10,7 +10,7 @@ typedef unsigned int		TU32;
 typedef unsigned __int64	TU64;
 typedef char				TS8;
 typedef short				TS16;
-typedef int					TS32;
+// typedef int					int32_t;
 // typedef __int64				int64_t;
 typedef float				TF32;
 // typedef double				double;

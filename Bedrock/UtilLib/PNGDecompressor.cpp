@@ -5,9 +5,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-TBOOL DecompressPNG( const TU8 *IData, TS32 IDataSize, TU8 *&Image, TS32 &XRes, TS32 &YRes )
+TBOOL DecompressPNG( const TU8 *IData, int32_t IDataSize, TU8 *&Image, int32_t &XRes, int32_t &YRes )
 {
-  TS32 x, y, n;
+  int32_t x, y, n;
   TU8 *Data = stbi_load_from_memory( IData, IDataSize, &x, &y, &n, 4 );
 
   if ( !Data )
@@ -25,11 +25,11 @@ TBOOL DecompressPNG( const TU8 *IData, TS32 IDataSize, TU8 *&Image, TS32 &XRes, 
   return true;
 }
 
-void ARGBtoABGR( TU8 *Image, TS32 XRes, TS32 YRes )
+void ARGBtoABGR( TU8 *Image, int32_t XRes, int32_t YRes )
 {
   TU8 *img = Image;
 
-  for ( TS32 x = 0; x < XRes*YRes; x++ )
+  for ( int32_t x = 0; x < XRes*YRes; x++ )
   {
     TU8 t = img[ 0 ];
     img[ 0 ] = img[ 2 ];
@@ -38,11 +38,11 @@ void ARGBtoABGR( TU8 *Image, TS32 XRes, TS32 YRes )
   }
 }
 
-void ClearZeroAlpha( TU8 *Image, TS32 XRes, TS32 YRes )
+void ClearZeroAlpha( TU8 *Image, int32_t XRes, int32_t YRes )
 {
   TU8 *img = Image;
 
-  for ( TS32 x = 0; x < XRes*YRes; x++ )
+  for ( int32_t x = 0; x < XRes*YRes; x++ )
   {
     if ( img[ 3 ] == 0 )
       img[ 0 ] = img[ 1 ] = img[ 2 ] = 0;
@@ -51,13 +51,13 @@ void ClearZeroAlpha( TU8 *Image, TS32 XRes, TS32 YRes )
   }
 }
 
-TBOOL ExportPNG( TU8 *Image, TS32 XRes, TS32 YRes, TBOOL ClearAlpha, CString OutFile )
+TBOOL ExportPNG( TU8 *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile )
 {
   TU8 *Data = new TU8[ XRes*YRes * 4 ];
   memcpy( Data, Image, XRes*YRes * 4 );
 
   if ( ClearAlpha )
-    for ( TS32 x = 0; x < XRes*YRes; x++ )
+    for ( int32_t x = 0; x < XRes*YRes; x++ )
       Image[ x * 4 + 3 ] = 255;
 
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
@@ -74,10 +74,10 @@ TBOOL ExportPNG( TU8 *Image, TS32 XRes, TS32 YRes, TBOOL ClearAlpha, CString Out
   return result;
 }
 
-TBOOL ExportTga( TU8 *Image, TS32 XRes, TS32 YRes, TBOOL ClearAlpha, CString OutFile )
+TBOOL ExportTga( TU8 *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile )
 {
   if ( ClearAlpha )
-    for ( TS32 x = 0; x < XRes*YRes; x++ )
+    for ( int32_t x = 0; x < XRes*YRes; x++ )
       Image[ x * 4 + 3 ] = 255;
 
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
@@ -93,7 +93,7 @@ TBOOL ExportTga( TU8 *Image, TS32 XRes, TS32 YRes, TBOOL ClearAlpha, CString Out
   return result;
 }
 
-TBOOL ExportBmp( TU8 *Image, TS32 XRes, TS32 YRes, CString OutFile )
+TBOOL ExportBmp( TU8 *Image, int32_t XRes, int32_t YRes, CString OutFile )
 {
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
   OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
@@ -108,7 +108,7 @@ TBOOL ExportBmp( TU8 *Image, TS32 XRes, TS32 YRes, CString OutFile )
   return result;
 }
 
-TBOOL ExportRaw( TU8 *Image, TS32 XRes, TS32 YRes, CString OutFile )
+TBOOL ExportRaw( TU8 *Image, int32_t XRes, int32_t YRes, CString OutFile )
 {
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
   OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );

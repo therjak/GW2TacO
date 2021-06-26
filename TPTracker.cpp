@@ -8,15 +8,15 @@ using namespace jsonxx;
 
 LIGHTWEIGHT_CRITICALSECTION itemCacheCritSec;
 
-CDictionary<TS32, GW2ItemData> itemDataCache;
+CDictionary<int32_t, GW2ItemData> itemDataCache;
 
-TBOOL HasGW2ItemData( TS32 itemID )
+TBOOL HasGW2ItemData( int32_t itemID )
 {
   CLightweightCriticalSection cs( &itemCacheCritSec );
   return itemDataCache.HasKey( itemID );
 }
 
-GW2ItemData GetGW2ItemData( TS32 itemID )
+GW2ItemData GetGW2ItemData( int32_t itemID )
 {
   CLightweightCriticalSection cs( &itemCacheCritSec );
   if ( itemDataCache.HasKey( itemID ) )
@@ -32,11 +32,11 @@ void SetGW2ItemData( GW2ItemData& data )
 
 CString FetchHTTPS( LPCWSTR url, LPCWSTR path );
 
-__inline CString ToGold( TS32 value )
+__inline CString ToGold( int32_t value )
 {
-  TS32 copper = value % 100;
+  int32_t copper = value % 100;
   value /= 100;
-  TS32 silver = value % 100;
+  int32_t silver = value % 100;
   value /= 100;
 
   CString result;
@@ -63,7 +63,7 @@ __inline CString ToGold( TS32 value )
 void TPTracker::OnDraw( CWBDrawAPI *API )
 {
   CWBFont *f = GetFont( GetState() );
-  TS32 size = f->GetLineHeight();
+  int32_t size = f->GetLineHeight();
 
   if ( !HasConfigValue( "TPTrackerOnlyShowOutbid" ) )
     SetConfigValue( "TPTrackerOnlyShowOutbid", 0 );
@@ -77,8 +77,8 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
   if ( !HasConfigValue( "TPTrackerNextSellOnly" ) )
     SetConfigValue( "TPTrackerNextSellOnly", 0 );
 
-  TS32 onlyShowOutbid = GetConfigValue( "TPTrackerOnlyShowOutbid" );
-  TS32 nextSellOnly = GetConfigValue( "TPTrackerNextSellOnly" );
+  int32_t onlyShowOutbid = GetConfigValue( "TPTrackerOnlyShowOutbid" );
+  int32_t nextSellOnly = GetConfigValue( "TPTrackerNextSellOnly" );
 
   GW2::APIKeyManager::Status status = GW2::apiKeyManager.DisplayStatusText(API, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
@@ -99,8 +99,8 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
       CArray<TransactionItem> incoming;
       CArray<TransactionItem> outgoing;
 
-      CArray<TS32> unknownItems;
-      CArray<TS32> priceCheckList;
+      CArray<int32_t> unknownItems;
+      CArray<int32_t> priceCheckList;
 
       if ( json.has<Array>( "buys" ) )
       {
@@ -176,7 +176,7 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
             if ( !item.has<String>( "name" ) || !item.has<Number>( "id" ) )
               continue;
             itemData.name = CString( item.get<String>( "name" ).data() );
-            itemData.itemID = TS32( item.get<Number>( "id" ) );
+            itemData.itemID = int32_t( item.get<Number>( "id" ) );
             if ( item.has<String>( "icon" ) )
             {
               CString iconFile = CString( item.get<String>( "icon" ).data() );
@@ -189,7 +189,7 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
                 CString png = FetchHTTPS( L"render.guildwars2.com", wpath );
                 
                 TU8 *imageData = nullptr;
-                TS32 xres, yres;
+                int32_t xres, yres;
                 if ( DecompressPNG( (TU8*)png.GetPointer(), png.Length(), imageData, xres, yres ) )
                 {
                   ARGBtoABGR( imageData, xres, yres );
@@ -228,7 +228,7 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
             if ( !item.has<Number>( "id" ) || !item.has<Object>( "buys" ) || !item.has<Object>( "sells" ) )
               continue;
 
-            TS32 id = TS32( item.get<Number>( "id" ) );
+            int32_t id = int32_t( item.get<Number>( "id" ) );
             if ( !HasGW2ItemData( id ) )
               continue;
             
@@ -238,8 +238,8 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
               continue;
 
             GW2ItemData itemData = GetGW2ItemData( id );
-            itemData.buyPrice = TS32( buys.get<Number>( "unit_price" ) );
-            itemData.sellPrice = TS32( sells.get<Number>( "unit_price" ) );
+            itemData.buyPrice = int32_t( buys.get<Number>( "unit_price" ) );
+            itemData.sellPrice = int32_t( sells.get<Number>( "unit_price" ) );
             SetGW2ItemData( itemData );
           }
         }
@@ -264,15 +264,15 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
   {
     CLightweightCriticalSection cs( &itemCacheCritSec );
 
-    TS32 posy = 0;
-    TS32 lh = f->GetLineHeight();
+    int32_t posy = 0;
+    int32_t lh = f->GetLineHeight();
 
     if ( buys.NumItems() && GetConfigValue( "TPTrackerShowBuys" ) )
     {
-      CArray<TS32> showedAlready;
+      CArray<int32_t> showedAlready;
 
-      TS32 textPosy = posy;
-      TS32 writtenCount = 0;
+      int32_t textPosy = posy;
+      int32_t writtenCount = 0;
 
       posy += lh + 2;
 
@@ -289,7 +289,7 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
         if ( !onlyShowOutbid || outbid )
         {
-          TS32 price = buys[ x ].price;
+          int32_t price = buys[ x ].price;
           if ( nextSellOnly )
           {
             for ( int y = x; y < buys.NumItems(); y++ )
@@ -319,10 +319,10 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
     if ( sells.NumItems() && GetConfigValue( "TPTrackerShowSells" ) )
     {
-      CArray<TS32> showedAlready;
+      CArray<int32_t> showedAlready;
 
-      TS32 textPosy = posy;
-      TS32 writtenCount = 0;
+      int32_t textPosy = posy;
+      int32_t writtenCount = 0;
 
       posy += lh + 2;
 
@@ -338,7 +338,7 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
         if ( !onlyShowOutbid || outbid )
         {
-          TS32 price = sells[ x ].price;
+          int32_t price = sells[ x ].price;
           if ( nextSellOnly )
           {
             for ( int y = x; y < sells.NumItems(); y++ )
@@ -372,10 +372,10 @@ TBOOL TPTracker::ParseTransaction( Object& object, TransactionItem& output )
 {
   if ( !object.has<Number>( "id" ) || !object.has<Number>( "item_id" ) || !object.has<Number>( "price" ) || !object.has<Number>( "quantity" ) )
     return false;
-  output.transactionID = TS32( object.get<Number>( "id" ) );
-  output.itemID = TS32( object.get<Number>( "item_id" ) );
-  output.price = TS32( object.get<Number>( "price" ) );
-  output.quantity = TS32( object.get<Number>( "quantity" ) );
+  output.transactionID = int32_t( object.get<Number>( "id" ) );
+  output.itemID = int32_t( object.get<Number>( "item_id" ) );
+  output.price = int32_t( object.get<Number>( "price" ) );
+  output.quantity = int32_t( object.get<Number>( "quantity" ) );
   return true;
 }
 

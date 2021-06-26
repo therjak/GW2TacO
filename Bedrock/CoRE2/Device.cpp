@@ -49,7 +49,7 @@ CCoreDevice::~CCoreDevice()
 		LOG(LOG_ERROR, _T("[core] ---Leaked graphical resources start here---"));
 #endif // _DEBUG
 	}
-	TS32 Counter = 0;
+	int32_t Counter = 0;
 #endif
 
 	//remove remaining (leaked) resources:
@@ -77,12 +77,12 @@ CCoreDevice::~CCoreDevice()
 
 void CCoreDevice::ResetDevice()
 {
-	for (TS32 x = 0; x < Resources.NumItems(); x++)
+	for (int32_t x = 0; x < Resources.NumItems(); x++)
 		Resources[x]->OnDeviceLost();
 
 	ResetPrivateResources();
 
-	for (TS32 x = 0; x < Resources.NumItems(); x++)
+	for (int32_t x = 0; x < Resources.NumItems(); x++)
 		Resources[x]->OnDeviceReset();
 
 	//reload render state
@@ -92,7 +92,7 @@ void CCoreDevice::ResetDevice()
 
 TBOOL CCoreDevice::ApplyRequestedRenderState()
 {
-	for (TS32 x = 0; x < RequestedRenderState.NumItems(); x++)
+	for (int32_t x = 0; x < RequestedRenderState.NumItems(); x++)
 	{
 		CORERENDERSTATEID ID = 0;
 		CORERENDERSTATEVALUE Value = RequestedRenderState.GetByIndex(x, ID);
@@ -267,7 +267,7 @@ TBOOL CCoreDevice::SetVertexFormat(CCoreVertexFormat *VertexFormat)
 	return true;
 }
 
-TS32 CCoreDevice::GetVertexFormatSize()
+int32_t CCoreDevice::GetVertexFormatSize()
 {
 	return CurrentVertexFormatSize;
 }
@@ -312,7 +312,7 @@ void CCoreDevice::AddRenderLayer(CCoreRenderLayerDescriptor *Desc)
 
 CCoreRenderLayerDescriptor * CCoreDevice::GetRenderLayer(CString &Name)
 {
-	for (TS32 x = 0; x < RenderLayers.NumItems(); x++)
+	for (int32_t x = 0; x < RenderLayers.NumItems(); x++)
 		if (RenderLayers[x]->GetName() == Name) return RenderLayers[x];
 
 	return NULL;
@@ -325,7 +325,7 @@ void CCoreDevice::AddMaterialTechnique(CCoreMaterialTechnique *Tech)
 
 CCoreMaterialTechnique * CCoreDevice::GetMaterialTechnique(CString &Name)
 {
-	for (TS32 x = 0; x < TechPool.NumItems(); x++)
+	for (int32_t x = 0; x < TechPool.NumItems(); x++)
 		if (TechPool[x]->GetName() == Name) return TechPool[x];
 	return NULL;
 }
@@ -340,7 +340,7 @@ TBOOL CCoreDevice::ImportMaterialTechnique(CXMLNode *Root)
 		return false;
 	}
 
-	for (TS32 x = 0; x < TechPool.NumItems(); x++)
+	for (int32_t x = 0; x < TechPool.NumItems(); x++)
 		if (TechPool[x]->GetName() == Tech->GetName())
 		{
 			LOG_WARN("[core] Material Technique name '%s' not unique", Tech->GetName().GetPointer());

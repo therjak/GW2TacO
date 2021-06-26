@@ -3,8 +3,8 @@
 template <typename ItemType> class CRingBuffer
 {
   ItemType *Array;
-  TS32 Capacity;
-  TS32 Count;
+  int32_t Capacity;
+  int32_t Count;
 
 public:
 
@@ -32,25 +32,25 @@ public:
     return *this;
   }
 
-  virtual ItemType const operator[]( const TS32 idx ) const
+  virtual ItemType const operator[]( const int32_t idx ) const
   {
-    TS32 start = Count - Capacity;
+    int32_t start = Count - Capacity;
     if ( start < 0 ) start = 0;
-    TS32 realindex = start + idx;
+    int32_t realindex = start + idx;
     BASEASSERT( realindex < Count );
     return (const ItemType)Array[ realindex%Capacity ];
   }
 
-  virtual ItemType &operator[]( const TS32 idx )
+  virtual ItemType &operator[]( const int32_t idx )
   {
-    TS32 start = Count - Capacity;
+    int32_t start = Count - Capacity;
     if ( start < 0 ) start = 0;
-    TS32 realindex = start + idx;
+    int32_t realindex = start + idx;
     BASEASSERT( realindex < Count );
     return Array[ realindex%Capacity ];
   }
 
-  TS32 NumItems()
+  int32_t NumItems()
   {
     if ( Capacity < Count ) return Capacity;
     return Count;

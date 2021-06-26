@@ -3,5 +3,5 @@
 
 extern CString TacOBuild;
 extern CString buildDateTime;
-extern TS32 TacORelease;
-extern TS32 TacOBuildCount;
+extern int32_t TacORelease;
+extern int32_t TacOBuildCount;

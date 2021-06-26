@@ -2,7 +2,7 @@
 #include "Bedrock/WhiteBoard/whiteboard.h"
 #include <objbase.h>
 
-enum class POIBehavior : TS32
+enum class POIBehavior : int32_t
 {
   AlwaysVisible,
   ReappearOnMapChange,
@@ -70,7 +70,7 @@ struct MarkerTypeData
   TF32 triggerRange = 2.0f;
   TF32 animSpeed = 1;
   TF32 trailScale = 1;
-  TS32 miniMapSize = 20;
+  int32_t miniMapSize = 20;
   TF32 miniMapFadeOutLevel = 100.0f;
   TF32 infoRange = 2.0f;
 
@@ -98,7 +98,7 @@ class GW2TacticalCategory;
 struct Achievement
 {
   bool done = false;
-  CArray<TS32> bits;
+  CArray<int32_t> bits;
 };
 
 struct POI
@@ -109,7 +109,7 @@ struct POI
   CVector4 cameraSpacePosition;
 
   CVector3 position;
-  TS32 mapID;
+  int32_t mapID;
   TU8 wvwObjectiveID;
   CString Type;
 
@@ -125,7 +125,7 @@ struct POI
   GW2TacticalCategory *category = nullptr;
   void SetCategory( CWBApplication *App, GW2TacticalCategory *t );
 
-  bool IsVisible( const tm& ptm, const time_t& currtime, bool achievementsFetched, CDictionary<TS32, Achievement> &achievements, LIGHTWEIGHT_CRITICALSECTION &dataWriteCritSec );
+  bool IsVisible( const tm& ptm, const time_t& currtime, bool achievementsFetched, CDictionary<int32_t, Achievement> &achievements, LIGHTWEIGHT_CRITICALSECTION &dataWriteCritSec );
 };
 
 struct POIActivationDataKey
@@ -174,7 +174,7 @@ struct POIRoute
   float resetRad = 0;
   int MapID = 0;
 
-  TS32 activeItem = -1;
+  int32_t activeItem = -1;
 };
 
 TU32 DictionaryHash( const GUID &i );
@@ -205,11 +205,11 @@ class GW2TacticalDisplay : public CWBItem
 
   bool beingFetched = false;
   bool achievementsFetched = false;
-  TS32 lastFetchTime = 0;
+  int32_t lastFetchTime = 0;
   std::thread fetchThread;
   LIGHTWEIGHT_CRITICALSECTION dataWriteCritSec;
 
-  CDictionary<TS32, Achievement> achievements;
+  CDictionary<int32_t, Achievement> achievements;
 
 public:
 
@@ -259,13 +259,13 @@ void ExportPOIS();
 void ImportPOIActivationData();
 void ExportPOIActivationData();
 
-void OpenTypeContextMenu( CWBContextMenu *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, TS32 BaseID = 0, TBOOL closeOnClick = false );
-void OpenTypeContextMenu( CWBContextItem *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, TS32 BaseID = 0, TBOOL closeOnClick = false );
+void OpenTypeContextMenu( CWBContextMenu *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
+void OpenTypeContextMenu( CWBContextItem *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
 
 float WorldToGameCoords( float world );
 float GameToWorldCoords( float game );
 void FindClosestRouteMarkers( TBOOL force );
 
-TS32 GetTime();
-TS32 AddStringToMap( const CString& string );
-CString& GetStringFromMap( TS32 idx );
+int32_t GetTime();
+int32_t AddStringToMap( const CString& string );
+CString& GetStringFromMap( int32_t idx );

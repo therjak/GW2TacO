@@ -131,8 +131,8 @@ CMatrix2x2 CMatrix2x2::operator- () const
 CMatrix2x2 CMatrix2x2::operator *( const CMatrix2x2& mat ) const
 {
   CMatrix2x2 matT;
-  for ( TS32 i = 0; i < 2; i++ )
-    for ( TS32 j = 0; j < 2; j++ )
+  for ( int32_t i = 0; i < 2; i++ )
+    for ( int32_t j = 0; j < 2; j++ )
       matT.m[ i ][ j ] = m[ i ][ 0 ] * mat.m[ 0 ][ j ] + m[ i ][ 1 ] * mat.m[ 1 ][ j ];
   return matT;
 }
@@ -300,8 +300,8 @@ CMatrix3x3 CMatrix3x3::operator- () const
 CMatrix3x3 CMatrix3x3::operator *( const CMatrix3x3& mat ) const
 {
   CMatrix3x3 matT;
-  for ( TS32 i = 0; i < 3; i++ )
-    for ( TS32 j = 0; j < 3; j++ )
+  for ( int32_t i = 0; i < 3; i++ )
+    for ( int32_t j = 0; j < 3; j++ )
       matT.m[ i ][ j ] = m[ i ][ 0 ] * mat.m[ 0 ][ j ] + m[ i ][ 1 ] * mat.m[ 1 ][ j ] + m[ i ][ 2 ] * mat.m[ 2 ][ j ];
   return matT;
 }
@@ -497,9 +497,9 @@ CMatrix4x4 CMatrix4x4::Inverted() const
 
   BASEASSERT( det != 0 );
 
-  for ( TS32 i = 0; i < 4; i++ )
+  for ( int32_t i = 0; i < 4; i++ )
   {
-    for ( TS32 j = 0; j < 4; j++ )
+    for ( int32_t j = 0; j < 4; j++ )
       if ( i != j )
         vec[ j > i ? j - 1 : j ] = Row( j );
 
@@ -611,13 +611,13 @@ CMatrix4x4::operator const TF32*( ) const
   return (const TF32*)&_11;
 }
 
-CVector4 CMatrix4x4::Row( TS32 x ) const
+CVector4 CMatrix4x4::Row( int32_t x ) const
 {
   BASEASSERTR( x >= 0 && x < 4, m[ 0 ] );
   return m[ x & 3 ];
 }
 
-CVector4 CMatrix4x4::Col( TS32 x ) const
+CVector4 CMatrix4x4::Col( int32_t x ) const
 {
   BASEASSERTR( x >= 0 && x < 4, m[ 0 ] );
   return CVector4( m[ 0 ][ x & 3 ], m[ 1 ][ x & 3 ], m[ 2 ][ x & 3 ], m[ 3 ][ x & 3 ] );
@@ -681,8 +681,8 @@ CMatrix4x4 CMatrix4x4::operator- () const
 CMatrix4x4 CMatrix4x4::operator *( const CMatrix4x4& mat ) const
 {
   CMatrix4x4 matT;
-  for ( TS32 i = 0; i < 4; i++ )
-    for ( TS32 j = 0; j < 4; j++ )
+  for ( int32_t i = 0; i < 4; i++ )
+    for ( int32_t j = 0; j < 4; j++ )
       matT.m[ i ][ j ] = m[ i ][ 0 ] * mat.m[ 0 ][ j ] + m[ i ][ 1 ] * mat.m[ 1 ][ j ] + m[ i ][ 2 ] * mat.m[ 2 ][ j ] + m[ i ][ 3 ] * mat.m[ 3 ][ j ];
   return matT;
 }

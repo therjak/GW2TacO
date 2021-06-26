@@ -3,7 +3,7 @@
 #include "MumbleLink.h"
 #include "gw2tactical.h"
 
-void GlobalDoTrailLogging( TS32 mapID, CVector3 charPos );
+void GlobalDoTrailLogging( int32_t mapID, CVector3 charPos );
 
 struct GW2TrailVertex
 {
@@ -19,7 +19,7 @@ class GW2Trail
 
   CArray<CVector3> positions;
 
-  void Reset( TS32 _mapID = 0 );
+  void Reset( int32_t _mapID = 0 );
 
   TBOOL SaveToFile( const CString& fname );
 
@@ -27,17 +27,17 @@ public:
 
   virtual ~GW2Trail();
 
-  TS32 length = 0;
+  int32_t length = 0;
   CCoreVertexBuffer* trailMesh = nullptr;
   CCoreDevice* dev = nullptr;
   CCoreIndexBuffer* idxBuf = nullptr;
 
-  TS32 map = 0;
+  int32_t map = 0;
 
-  void Build( CCoreDevice* dev, TS32 mapID, float* points, int pointCount );
+  void Build( CCoreDevice* dev, int32_t mapID, float* points, int pointCount );
   void Draw();
   void Update();
-  void SetupAndDraw( CCoreConstantBuffer* constBuffer, CCoreTexture* texture, CMatrix4x4& cam, CMatrix4x4& persp, float& one, bool scaleData, TS32 fadeoutBubble, float* data, float fadeAlpha, float width, float uvScale, float width2d );
+  void SetupAndDraw( CCoreConstantBuffer* constBuffer, CCoreTexture* texture, CMatrix4x4& cam, CMatrix4x4& persp, float& one, bool scaleData, int32_t fadeoutBubble, float* data, float fadeAlpha, float width, float uvScale, float width2d );
 
   MarkerTypeData typeData;
   CString Type;
@@ -96,7 +96,7 @@ public:
 
   virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
 
-  void DoTrailLogging( TS32 mapID, CVector3 charPos );
+  void DoTrailLogging( int32_t mapID, CVector3 charPos );
 
   void StartStopTrailRecording( TBOOL start );
   void PauseTrail( TBOOL pause, TBOOL newSection = false );

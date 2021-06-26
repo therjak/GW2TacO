@@ -9,9 +9,9 @@ public:
   struct TimerEvent
   {
     CString Text;
-    TS32 Time;
-    TS32 CountdownLength;
-    TS32 OnScreenLength;
+    int32_t Time;
+    int32_t CountdownLength;
+    int32_t OnScreenLength;
     CArray<CVector3> PolyPoints;
     CColor PolyColor = CColor( 255, 0, 0, 255 );
   };
@@ -21,17 +21,17 @@ public:
     CArray<TimerEvent> Events;
   };
 
-  TS32 MapID = 0;
+  int32_t MapID = 0;
   CSphere EnterSphere = CSphere( CVector3( 0, 0, 0 ), 0 );
   CSphere ExitSphere = CSphere( CVector3( 0, 0, 0 ), 0 );
   CVector3 ResetPoint = CVector3( 0, 0, 0 );
-  TS32 TimerLength = 0;
-  TS32 StartDelay = 0;
+  int32_t TimerLength = 0;
+  int32_t StartDelay = 0;
 
   CArray<TimerEvent> Events;
 
   TBOOL IsRunning = false;
-  TS32 StartTime = 0;
+  int32_t StartTime = 0;
 
   LocationalTimer();
   virtual ~LocationalTimer();

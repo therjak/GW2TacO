@@ -26,7 +26,7 @@ TBOOL CXMLDocument::LoadFromFile(TCHAR * szFileName)
   if ( !memStream.Open( szFileName ) )
     return false;
 
-  memString = CString( (char*)memStream.GetData(), (TS32)memStream.GetLength() );
+  memString = CString( (char*)memStream.GetData(), (int32_t)memStream.GetLength() );
 
   try
   {
@@ -100,7 +100,7 @@ TBOOL CXMLDocument::SaveToFile(TCHAR * sz)
 	char * sz8 = new char[s.Length() * 3];
 	s.WriteAsMultiByte(sz8, s.Length() * 3);
 	DWORD b;
-	WriteFile(h, sz8, (TS32)strlen(sz8), &b, NULL);
+	WriteFile(h, sz8, (int32_t)strlen(sz8), &b, NULL);
 	CloseHandle(h);
 
 	delete[] sz8;
@@ -143,10 +143,10 @@ TBOOL CXMLDocument::Cleanup()
 	return true;
 }
 
-//CXMLNode CXMLDocument::CreateNode(VARIANT type, BSTR Name, TS32 Level)
+//CXMLNode CXMLDocument::CreateNode(VARIANT type, BSTR Name, int32_t Level)
 //{
 //	//MSXML2::IXMLDOMNode * pNewNode = NULL;
-//	//pDoc->createNode(_variant_t((TS32)MSXML2::NODE_TEXT), NULL, NULL, &pNewNode);
+//	//pDoc->createNode(_variant_t((int32_t)MSXML2::NODE_TEXT), NULL, NULL, &pNewNode);
 //	//return CXMLNode(pNewNode, this, Level);
 //  return CXMLNode();
 //}

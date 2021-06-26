@@ -78,9 +78,9 @@ public:
   //////////////////////////////////////////////////////////////////////////
   //numeric functions
 
-  CString operator+( const TS32 v ) const;
-  CString &operator+=( const TS32 v );
-  const friend CString operator+( const TS32 v, const CString &str );
+  CString operator+( const int32_t v ) const;
+  CString &operator+=( const int32_t v );
+  const friend CString operator+( const int32_t v, const CString &str );
 
   CString operator+( const long v ) const;
   CString &operator+=( const long v );
@@ -117,24 +117,24 @@ public:
   TBOOL operator>( const TS8 *v ) const;
   TBOOL operator>( const wchar_t *v ) const;
 
-  TCHAR &operator[]( const TS32 idx ) const;
+  TCHAR &operator[]( const int32_t idx ) const;
 
-  TS32 Find( const CString &v, TU32 nStart = 0 ) const;
-  TS32 Find( const TS8 *v, TU32 nStart = 0 ) const;
-  TS32 Find( const wchar_t *v, TU32 nStart = 0 ) const;
+  int32_t Find( const CString &v, TU32 nStart = 0 ) const;
+  int32_t Find( const TS8 *v, TU32 nStart = 0 ) const;
+  int32_t Find( const wchar_t *v, TU32 nStart = 0 ) const;
 
   TU32 GetSubstringCount( CString &v ) const;
   TU32 GetSubstringCount( const TS8 *v ) const;
   TU32 GetSubstringCount( const wchar_t *v ) const;
 
-  CString Substring( TS32 nStart ) const;
-  CString Substring( TS32 nStart, TS32 nLength ) const;
+  CString Substring( int32_t nStart ) const;
+  CString Substring( int32_t nStart, int32_t nLength ) const;
 
   CString Trimmed() const;
 
-  static TS32 CompareNoCase( const CString &a, const CString &b );
-  static CString EncodeToBase64( TU8 *Data, TS32 Length );
-  void DecodeBase64( TU8 *&Data, TS32 &Length );
+  static int32_t CompareNoCase( const CString &a, const CString &b );
+  static CString EncodeToBase64( TU8 *Data, int32_t Length );
+  void DecodeBase64( TU8 *&Data, int32_t &Length );
 
   //////////////////////////////////////////////////////////////////////////
   // misc
@@ -144,9 +144,9 @@ public:
   static CString Format( const TCHAR *format, ... );
   //static void FormatVA(const wchar_t *format, va_list list, CString &Result);
   static void FormatVA( const TCHAR *format, va_list list, CString &Result );
-  TS32 Scan( const TCHAR *format, ... );
-  TS32 Scan( const CString format, ... );
-  void ScanVA( const TCHAR *format, va_list list, TS32 &Result );
+  int32_t Scan( const TCHAR *format, ... );
+  int32_t Scan( const CString format, ... );
+  void ScanVA( const TCHAR *format, va_list list, int32_t &Result );
 
   CStringArray Explode( CString &sDelimiter ) const;
   CStringArray Explode( TCHAR *sDelimiter ) const;
@@ -156,10 +156,10 @@ public:
   CStringArrayMarkers GetExplodeMarkers( TCHAR *sDelimiter ) const;
   CStringArrayMarkers GetExplodeMarkersByWhiteSpace() const;
 
-  static TS32 Strcmp( const TCHAR *str, const TCHAR *str2 );
-  static TS32 Strncmp( const TCHAR *str, const TCHAR *str2, const TS32 len );
+  static int32_t Strcmp( const TCHAR *str, const TCHAR *str2 );
+  static int32_t Strncmp( const TCHAR *str, const TCHAR *str2, const int32_t len );
   static TF32 Atof( const TCHAR *str );
-  static TS32 Atoi( const TCHAR *str );
+  static int32_t Atoi( const TCHAR *str );
 
   typedef std::function<TBOOL( TU32 )> UTF8CHARCALLBACK;
 
@@ -169,10 +169,10 @@ public:
   //////////////////////////////////////////////////////////////////////////
   // manipulation functions
 
-  void Insert( TS32 pos, const TCHAR Input );
-  void Insert( TS32 pos, const TCHAR *Input );
-  void DeleteChar( TS32 pos );
-  void DeleteRegion( TS32 pos, TS32 size );
+  void Insert( int32_t pos, const TCHAR Input );
+  void Insert( int32_t pos, const TCHAR *Input );
+  void DeleteChar( int32_t pos );
+  void DeleteRegion( int32_t pos, int32_t size );
   void ToUnixNewline();
   void ToWindowsNewline();
   void ToLower();
@@ -195,11 +195,11 @@ private:
 
 struct CStringMarker
 {
-  TS32 start = 0;
-  TS32 length = 0;
+  int32_t start = 0;
+  int32_t length = 0;
 
   CStringMarker() = default;
-  CStringMarker( TS32 start, TS32 length ) : start( start ), length( length ) {};
+  CStringMarker( int32_t start, int32_t length ) : start( start ), length( length ) {};
 };
 
 class CStringArrayMarkers : public CArray<CStringMarker>
@@ -215,5 +215,5 @@ public:
 };
 
 TU32 DictionaryHash( const CString &i );
-TS32 EstimateStringFormatLength( const wchar_t *szFormat, va_list vlArgList );
-TS32 EstimateStringFormatLength( const TS8 *szFormat, va_list vlArgList );
+int32_t EstimateStringFormatLength( const wchar_t *szFormat, va_list vlArgList );
+int32_t EstimateStringFormatLength( const TS8 *szFormat, va_list vlArgList );

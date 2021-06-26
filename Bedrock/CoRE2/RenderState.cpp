@@ -17,7 +17,7 @@ CCoreBlendState::CCoreBlendState(CCoreDevice *Device) : CCoreRenderStateBatch(De
 	AlphaToCoverage = false;
 	IndependentBlend = false;
 
-	for (TS32 x = 0; x < 8; x++)
+	for (int32_t x = 0; x < 8; x++)
 	{
 		RenderTargetBlendStates[x].BlendEnable = false;
 		RenderTargetBlendStates[x].SrcBlend = COREBLEND_ONE;
@@ -35,49 +35,49 @@ CCoreBlendState::~CCoreBlendState()
 
 }
 
-void CCoreBlendState::SetRenderTargetWriteMask(TS32 rt, TU8 e)
+void CCoreBlendState::SetRenderTargetWriteMask(int32_t rt, TU8 e)
 {
 	if (RenderTargetBlendStates[rt].RenderTargetWriteMask != e) Dirty = true;
 	RenderTargetBlendStates[rt].RenderTargetWriteMask = e;
 }
 
-void CCoreBlendState::SetBlendOpAlpha(TS32 rt, COREBLENDOP e)
+void CCoreBlendState::SetBlendOpAlpha(int32_t rt, COREBLENDOP e)
 {
 	if (RenderTargetBlendStates[rt].BlendOpAlpha != e) Dirty = true;
 	RenderTargetBlendStates[rt].BlendOpAlpha = e;
 }
 
-void CCoreBlendState::SetDestBlendAlpha(TS32 rt, COREBLENDFACTOR e)
+void CCoreBlendState::SetDestBlendAlpha(int32_t rt, COREBLENDFACTOR e)
 {
 	if (RenderTargetBlendStates[rt].DestBlendAlpha != e) Dirty = true;
 	RenderTargetBlendStates[rt].DestBlendAlpha = e;
 }
 
-void CCoreBlendState::SetSrcBlendAlpha(TS32 rt, COREBLENDFACTOR e)
+void CCoreBlendState::SetSrcBlendAlpha(int32_t rt, COREBLENDFACTOR e)
 {
 	if (RenderTargetBlendStates[rt].SrcBlendAlpha != e) Dirty = true;
 	RenderTargetBlendStates[rt].SrcBlendAlpha = e;
 }
 
-void CCoreBlendState::SetBlendOp(TS32 rt, COREBLENDOP e)
+void CCoreBlendState::SetBlendOp(int32_t rt, COREBLENDOP e)
 {
 	if (RenderTargetBlendStates[rt].BlendOp != e) Dirty = true;
 	RenderTargetBlendStates[rt].BlendOp = e;
 }
 
-void CCoreBlendState::SetDestBlend(TS32 rt, COREBLENDFACTOR e)
+void CCoreBlendState::SetDestBlend(int32_t rt, COREBLENDFACTOR e)
 {
 	if (RenderTargetBlendStates[rt].DestBlend != e) Dirty = true;
 	RenderTargetBlendStates[rt].DestBlend = e;
 }
 
-void CCoreBlendState::SetSrcBlend(TS32 rt, COREBLENDFACTOR e)
+void CCoreBlendState::SetSrcBlend(int32_t rt, COREBLENDFACTOR e)
 {
 	if (RenderTargetBlendStates[rt].SrcBlend != e) Dirty = true;
 	RenderTargetBlendStates[rt].SrcBlend = e;
 }
 
-void CCoreBlendState::SetBlendEnable(TS32 rt, TBOOL e)
+void CCoreBlendState::SetBlendEnable(int32_t rt, TBOOL e)
 {
 	if (RenderTargetBlendStates[rt].BlendEnable != e) Dirty = true;
 	RenderTargetBlendStates[rt].BlendEnable = e;
@@ -102,20 +102,20 @@ TBOOL CCoreBlendState::Import(CXMLNode *n)
 	if (n->HasAttribute(_T("AlphaToCoverage"))) { n->GetChild(_T("AlphaToCoverage")).GetValue(AlphaToCoverage); }
 	if (n->HasAttribute(_T("IndependentBlend"))) { n->GetChild(_T("IndependentBlend")).GetValue(IndependentBlend); }
 
-	for (TS32 x = 0; x < n->GetChildCount(_T("RenderTarget")); x++)
+	for (int32_t x = 0; x < n->GetChildCount(_T("RenderTarget")); x++)
 	{
 		CXMLNode c = n->GetChild(_T("RenderTarget"), x);
-		TS32 id = 0;
+		int32_t id = 0;
 		c.GetAttributeAsInteger(_T("Target"), &id);
 
 		if (c.GetChildCount(_T("BlendEnable"))) { c.GetChild(_T("BlendEnable")).GetValue(RenderTargetBlendStates[id].BlendEnable); }
-		if (c.GetChildCount(_T("SrcBlend"))) { s = c.GetChild(_T("SrcBlend")).GetText(); FindEnumByName(BlendFactorNames, s, (TS32&)RenderTargetBlendStates[id].SrcBlend); }
-		if (c.GetChildCount(_T("DestBlend"))) { s = c.GetChild(_T("DestBlend")).GetText(); FindEnumByName(BlendFactorNames, s, (TS32&)RenderTargetBlendStates[id].DestBlend); }
-		if (c.GetChildCount(_T("BlendOp"))) { s = c.GetChild(_T("BlendOp")).GetText(); FindEnumByName(BlendOpNames, s, (TS32&)RenderTargetBlendStates[id].BlendOp); }
+		if (c.GetChildCount(_T("SrcBlend"))) { s = c.GetChild(_T("SrcBlend")).GetText(); FindEnumByName(BlendFactorNames, s, (int32_t&)RenderTargetBlendStates[id].SrcBlend); }
+		if (c.GetChildCount(_T("DestBlend"))) { s = c.GetChild(_T("DestBlend")).GetText(); FindEnumByName(BlendFactorNames, s, (int32_t&)RenderTargetBlendStates[id].DestBlend); }
+		if (c.GetChildCount(_T("BlendOp"))) { s = c.GetChild(_T("BlendOp")).GetText(); FindEnumByName(BlendOpNames, s, (int32_t&)RenderTargetBlendStates[id].BlendOp); }
 
-		if (c.GetChildCount(_T("SrcBlendAlpha"))) { s = c.GetChild(_T("SrcBlendAlpha")).GetText(); FindEnumByName(BlendFactorNames, s, (TS32&)RenderTargetBlendStates[id].SrcBlendAlpha); }
-		if (c.GetChildCount(_T("DestBlendAlpha"))) { s = c.GetChild(_T("DestBlendAlpha")).GetText(); FindEnumByName(BlendFactorNames, s, (TS32&)RenderTargetBlendStates[id].DestBlendAlpha); }
-		if (c.GetChildCount(_T("BlendOpAlpha"))) { s = c.GetChild(_T("BlendOpAlpha")).GetText(); FindEnumByName(BlendOpNames, s, (TS32&)RenderTargetBlendStates[id].BlendOpAlpha); }
+		if (c.GetChildCount(_T("SrcBlendAlpha"))) { s = c.GetChild(_T("SrcBlendAlpha")).GetText(); FindEnumByName(BlendFactorNames, s, (int32_t&)RenderTargetBlendStates[id].SrcBlendAlpha); }
+		if (c.GetChildCount(_T("DestBlendAlpha"))) { s = c.GetChild(_T("DestBlendAlpha")).GetText(); FindEnumByName(BlendFactorNames, s, (int32_t&)RenderTargetBlendStates[id].DestBlendAlpha); }
+		if (c.GetChildCount(_T("BlendOpAlpha"))) { s = c.GetChild(_T("BlendOpAlpha")).GetText(); FindEnumByName(BlendOpNames, s, (int32_t&)RenderTargetBlendStates[id].BlendOpAlpha); }
 
 		if (c.GetChildCount(_T("RenderTargetWriteMask"))) { c.GetChild(_T("RenderTargetWriteMask")).GetValue(RenderTargetBlendStates[id].RenderTargetWriteMask); }
 	}
@@ -129,7 +129,7 @@ void CCoreBlendState::Export(CXMLNode *n)
 	n->AddChild(_T("AlphaToCoverage"), false).SetInt(AlphaToCoverage);
 	n->AddChild(_T("IndependentBlend"), false).SetInt(IndependentBlend);
 
-	for (TS32 x = 0; x < 8; x++)
+	for (int32_t x = 0; x < 8; x++)
 	{
 		CXMLNode b = n->AddChild(_T("RenderTarget"));
 		b.SetAttributeFromInteger(_T("Target"), x);
@@ -181,7 +181,7 @@ TBOOL CCoreDepthStencilState::Import(CXMLNode *n)
 {
 	if (n->GetChildCount(_T("DepthEnable"))) { n->GetChild(_T("DepthEnable")).GetValue(DepthEnable); }
 	if (n->GetChildCount(_T("ZWriteEnable"))) { n->GetChild(_T("ZWriteEnable")).GetValue(ZWriteEnable); }
-	if (n->GetChildCount(_T("DepthFunc"))) { CString s = n->GetChild(_T("DepthFunc")).GetText(); FindEnumByName(ComparisonFunctionNames, s, (TS32&)DepthFunc); }
+	if (n->GetChildCount(_T("DepthFunc"))) { CString s = n->GetChild(_T("DepthFunc")).GetText(); FindEnumByName(ComparisonFunctionNames, s, (int32_t&)DepthFunc); }
 
 	Dirty = true;
 	return true;
@@ -249,7 +249,7 @@ void CCoreRasterizerState::SetDepthBiasClamp(TF32 e)
 	DepthBiasClamp = e;
 }
 
-void CCoreRasterizerState::SetDepthBias(TS32 e)
+void CCoreRasterizerState::SetDepthBias(int32_t e)
 {
 	if (DepthBias != e) Dirty = true;
 	DepthBias = e;
@@ -275,8 +275,8 @@ void CCoreRasterizerState::SetFillMode(COREFILLMODE e)
 
 TBOOL CCoreRasterizerState::Import(CXMLNode *n)
 {
-	if (n->GetChildCount(_T("FillMode"))) { CString s = n->GetChild(_T("FillMode")).GetText(); FindEnumByName(FillModeNames, s, (TS32&)FillMode); }
-	if (n->GetChildCount(_T("CullMode"))) { CString s = n->GetChild(_T("CullMode")).GetText(); FindEnumByName(CullModeNames, s, (TS32&)CullMode); }
+	if (n->GetChildCount(_T("FillMode"))) { CString s = n->GetChild(_T("FillMode")).GetText(); FindEnumByName(FillModeNames, s, (int32_t&)FillMode); }
+	if (n->GetChildCount(_T("CullMode"))) { CString s = n->GetChild(_T("CullMode")).GetText(); FindEnumByName(CullModeNames, s, (int32_t&)CullMode); }
 
 	if (n->GetChildCount(_T("DepthBias"))) { n->GetChild(_T("DepthBias")).GetValue(DepthBias); }
 	if (n->GetChildCount(_T("DepthBiasClamp"))) { n->GetChild(_T("DepthBiasClamp")).GetValue(DepthBiasClamp); }
@@ -352,7 +352,7 @@ void CCoreSamplerState::SetComparisonFunc(CORECOMPARISONFUNCTION e)
 	ComparisonFunc = e;
 }
 
-void CCoreSamplerState::SetMaxAnisotropy(TS32 e)
+void CCoreSamplerState::SetMaxAnisotropy(int32_t e)
 {
 	if (MaxAnisotropy != e) Dirty = true;
 	MaxAnisotropy = e;
@@ -390,12 +390,12 @@ void CCoreSamplerState::SetFilter(COREFILTER e)
 
 TBOOL CCoreSamplerState::Import(CXMLNode *n)
 {
-	if (n->GetChildCount(_T("Filter"))) { CString s = n->GetChild(_T("Filter")).GetText(); FindEnumByName(FilterNames, s, (TS32&)Filter); }
-	if (n->GetChildCount(_T("AddressU"))) { CString s = n->GetChild(_T("AddressU")).GetText(); FindEnumByName(AddressModeNames, s, (TS32&)AddressU); }
-	if (n->GetChildCount(_T("AddressV"))) { CString s = n->GetChild(_T("AddressV")).GetText(); FindEnumByName(AddressModeNames, s, (TS32&)AddressV); }
-	if (n->GetChildCount(_T("AddressW"))) { CString s = n->GetChild(_T("AddressW")).GetText(); FindEnumByName(AddressModeNames, s, (TS32&)AddressW); }
+	if (n->GetChildCount(_T("Filter"))) { CString s = n->GetChild(_T("Filter")).GetText(); FindEnumByName(FilterNames, s, (int32_t&)Filter); }
+	if (n->GetChildCount(_T("AddressU"))) { CString s = n->GetChild(_T("AddressU")).GetText(); FindEnumByName(AddressModeNames, s, (int32_t&)AddressU); }
+	if (n->GetChildCount(_T("AddressV"))) { CString s = n->GetChild(_T("AddressV")).GetText(); FindEnumByName(AddressModeNames, s, (int32_t&)AddressV); }
+	if (n->GetChildCount(_T("AddressW"))) { CString s = n->GetChild(_T("AddressW")).GetText(); FindEnumByName(AddressModeNames, s, (int32_t&)AddressW); }
 
-	if (n->GetChildCount(_T("ComparisonFunc"))) { CString s = n->GetChild(_T("ComparisonFunc")).GetText(); FindEnumByName(ComparisonFunctionNames, s, (TS32&)ComparisonFunc); }
+	if (n->GetChildCount(_T("ComparisonFunc"))) { CString s = n->GetChild(_T("ComparisonFunc")).GetText(); FindEnumByName(ComparisonFunctionNames, s, (int32_t&)ComparisonFunc); }
 
 	if (n->GetChildCount(_T("MipLODBias"))) { n->GetChild(_T("MipLODBias")).GetValue(MipLODBias); }
 	if (n->GetChildCount(_T("MinLOD"))) { n->GetChild(_T("MinLOD")).GetValue(MinLOD); }

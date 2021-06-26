@@ -25,8 +25,8 @@ public:
   CCoreDevice *Device = nullptr;
 	HINSTANCE hInstance;
 	TBOOL FullScreen;
-	TS32 XRes;
-	TS32 YRes;
+	int32_t XRes;
+	int32_t YRes;
 	TCHAR *WindowTitle;
 	HICON Icon;
 	TBOOL Maximized;
@@ -36,9 +36,9 @@ public:
 	DWORD OverrideWindowStyleEx = 0;
 
 	CCoreWindowParameters();
-	CCoreWindowParameters(HINSTANCE hinst, TBOOL FullScreen, TS32 XRes, TS32 YRes, TCHAR *WindowTitle, HICON Icon = 0, TBOOL Maximized = false, TBOOL ResizeDisabled = false);
+	CCoreWindowParameters(HINSTANCE hinst, TBOOL FullScreen, int32_t XRes, int32_t YRes, TCHAR *WindowTitle, HICON Icon = 0, TBOOL Maximized = false, TBOOL ResizeDisabled = false);
 
-	virtual void Initialize(CCoreDevice *device, HINSTANCE hinst, TBOOL FullScreen, TS32 XRes, TS32 YRes, TCHAR *WindowTitle, HICON Icon = 0, TBOOL Maximized = false, TBOOL ResizeDisabled = false);
+	virtual void Initialize(CCoreDevice *device, HINSTANCE hinst, TBOOL FullScreen, int32_t XRes, int32_t YRes, TCHAR *WindowTitle, HICON Icon = 0, TBOOL Maximized = false, TBOOL ResizeDisabled = false);
 };
 
 
@@ -57,10 +57,10 @@ protected:
 	CRect ClientRect;
 
 	TBOOL InactiveFrameLimiter;
-	TS32 LimitedFPS;
-	TS32 LastRenderedFrame;
+	int32_t LimitedFPS;
+	int32_t LastRenderedFrame;
 
-	TS32 XRes, YRes;
+	int32_t XRes, YRes;
 
 	CCoreWindowParameters InitParameters;
 
@@ -87,8 +87,8 @@ public:
 
 	virtual TU32 GetHandle() = 0;
 
-	virtual TS32 GetXRes();
-	virtual TS32 GetYRes();
+	virtual int32_t GetXRes();
+	virtual int32_t GetYRes();
 	virtual CCoreWindowParameters &GetInitParameters();
 
 	virtual void SelectMouseCursor(COREMOUSECURSOR Cursor);
@@ -116,8 +116,8 @@ protected:
 
 	HWND hWnd;
 	WINDOWPLACEMENT WindowPlacement;
-	TS32 dwStyle;
-	TS32 FullScreenX, FullScreenY;
+	int32_t dwStyle;
+	int32_t FullScreenX, FullScreenY;
 
 	static LRESULT CALLBACK WndProcProxy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);

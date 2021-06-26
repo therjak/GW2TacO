@@ -2,10 +2,10 @@
 
 struct EnumNamePair
 {
-  TS32 Value;
+  int32_t Value;
   const TCHAR *Name;
 };
 
-TBOOL FindEnumByName( EnumNamePair *Pairs, TCHAR *Name, TS32 &Result );
-TBOOL FindEnumByName( EnumNamePair *Pairs, CString &Name, TS32 &Result );
-const TCHAR *FindNameByEnum( EnumNamePair *Pairs, TS32 Enum );
+TBOOL FindEnumByName( EnumNamePair *Pairs, TCHAR *Name, int32_t &Result );
+TBOOL FindEnumByName( EnumNamePair *Pairs, CString &Name, int32_t &Result );
+const TCHAR *FindNameByEnum( EnumNamePair *Pairs, int32_t Enum );

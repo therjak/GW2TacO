@@ -7,7 +7,7 @@
 void TS3Control::OnDraw( CWBDrawAPI *API )
 {
   CWBFont *f = GetFont( GetState() );
-  TS32 size = f->GetLineHeight();
+  int32_t size = f->GetLineHeight();
 
   if ( !teamSpeakConnection.authenticated )
   {
@@ -37,10 +37,10 @@ void TS3Control::OnDraw( CWBDrawAPI *API )
 
   CRect displayrect = GetClientRect();
 
-  for ( TS32 cnt = 0; cnt < 2; cnt++ )
+  for ( int32_t cnt = 0; cnt < 2; cnt++ )
   {
-    TS32 ypos = 0;
-    for ( TS32 x = 0; x < teamSpeakConnection.handlers.NumItems(); x++ )
+    int32_t ypos = 0;
+    for ( int32_t x = 0; x < teamSpeakConnection.handlers.NumItems(); x++ )
     {
       TS3Connection::TS3Schandler &handler = teamSpeakConnection.handlers[ x ];
       if ( handler.Connected && handler.Clients.HasKey( handler.myclientid ) )
@@ -50,12 +50,12 @@ void TS3Control::OnDraw( CWBDrawAPI *API )
           f->Write( API, handler.name, p );
         ypos += f->GetLineHeight();
 
-        TS32 mychannelid = handler.Clients[ handler.myclientid ].channelid;
+        int32_t mychannelid = handler.Clients[ handler.myclientid ].channelid;
 
         if ( handler.Channels.HasKey( mychannelid ) )
         {
-          TS32 participants = 0;
-          for ( TS32 y = 0; y < handler.Clients.NumItems(); y++ )
+          int32_t participants = 0;
+          for ( int32_t y = 0; y < handler.Clients.NumItems(); y++ )
           {
             TS3Connection::TS3Client &cl = handler.Clients[ y ];
             if ( cl.channelid == mychannelid )
@@ -69,7 +69,7 @@ void TS3Control::OnDraw( CWBDrawAPI *API )
             f->Write( API, channelText, p );
           ypos += f->GetLineHeight();
         }
-        for ( TS32 y = 0; y < handler.Clients.NumItems(); y++ )
+        for ( int32_t y = 0; y < handler.Clients.NumItems(); y++ )
         {
           if ( ( ypos + f->GetLineHeight() ) > displayrect.y2 )
             break;

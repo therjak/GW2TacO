@@ -23,7 +23,7 @@ GW2Notepad::GW2Notepad( CWBItem *Parent, CRect Position ) : CWBItem( Parent, Pos
     return;
 
   tb->SetForcedMouseTransparency( true );
-  tb->SetText( CString( (TS8*)nptext.GetData(), (TS32)( nptext.GetLength() ) ) );
+  tb->SetText( CString( (TS8*)nptext.GetData(), (int32_t)( nptext.GetLength() ) ) );
   tb->SetCursorPos( 0, false );
 }
 

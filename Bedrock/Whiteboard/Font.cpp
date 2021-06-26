@@ -33,7 +33,7 @@ CWBFontDescription::~CWBFontDescription()
   SAFEDELETE( Image );
 }
 
-TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, TS32 BinarySize, TU8 *img, TS32 xr, TS32 yr, CArray<int>& enabledGlyphs )
+TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, int32_t BinarySize, TU8 *img, int32_t xr, int32_t yr, CArray<int>& enabledGlyphs )
 {
   if ( !img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0 ) return false;
 
@@ -92,8 +92,8 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, TS32 BinarySize, TU8 *i
 
   while ( !m.eof() )
   {
-    TS32 BlockType = m.ReadByte();
-    TS32 BlockSize = m.ReadDWord();
+    int32_t BlockType = m.ReadByte();
+    int32_t BlockSize = m.ReadDWord();
     TU8 *BlockData = new TU8[ BlockSize ];
 
     if ( m.Read( BlockData, BlockSize ) != BlockSize )
@@ -184,7 +184,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( TU8 *Binary, TS32 BinarySize, TU8 *i
   return true;
 }
 
-bool ReadInt( const CString& s, const CString& val, TS32& result )
+bool ReadInt( const CString& s, const CString& val, int32_t& result )
 {
   int p = s.Find( val + "=" );
   if ( p < 0 )
@@ -192,7 +192,7 @@ bool ReadInt( const CString& s, const CString& val, TS32& result )
   return s.Substring( p ).Scan( ( val + "=%d" ).GetPointer(), &result ) == 1;
 }
 
-TBOOL CWBFontDescription::LoadBMFontText( TU8 *Binary, TS32 BinarySize, TU8 *img, TS32 xr, TS32 yr, CArray<int>& enabledGlyphs )
+TBOOL CWBFontDescription::LoadBMFontText( TU8 *Binary, int32_t BinarySize, TU8 *img, int32_t xr, int32_t yr, CArray<int>& enabledGlyphs )
 {
   if ( !img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0 ) return false;
 
@@ -238,7 +238,7 @@ TBOOL CWBFontDescription::LoadBMFontText( TU8 *Binary, TS32 BinarySize, TU8 *img
         continue;
 
       WBSYMBOLINPUT r;
-      TS32 v;
+      int32_t v;
 
       if ( !ReadInt( s, "id", v ) )
         return false;
@@ -284,7 +284,7 @@ TBOOL CWBFontDescription::LoadBMFontText( TU8 *Binary, TS32 BinarySize, TU8 *img
         continue;
 
       WBKERNINGDATA d;
-      TS32 v;
+      int32_t v;
 
       if ( !ReadInt( s, "first", v ) )
         return false;
@@ -317,13 +317,13 @@ CWBFont::CWBFont( CAtlas *atlas )
 
 CWBFont::~CWBFont()
 {
-  for ( TS32 x = 0; x < AlphabetSize; x++ )
+  for ( int32_t x = 0; x < AlphabetSize; x++ )
     if ( Alphabet[ x ].Char == x )
       Atlas->DeleteImage( Alphabet[ x ].Handle );
   SAFEDELETEA( Alphabet );
 }
 
-void CWBFont::AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, TS32 Advance, CRect contentRect )
+void CWBFont::AddSymbol( TU16 Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect )
 {
   if ( Char >= AlphabetSize )
     return;
@@ -424,7 +424,7 @@ TU32 ReadUTF8Char( _TUCHAR* &Text )
   return Char;
 }
 
-TS32 CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, TS32 x, TS32 y, CColor Color)
+int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y, CColor Color)
 {
   if ( Char >= AlphabetSize || Alphabet[ (TU16)Char ].Char != Char ) //missing character replaced by a simple rectangle
   {
@@ -434,7 +434,7 @@ TS32 CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, TS32 x, TS32 y, CColor Co
       return 0;
     }
 
-    TS32 width = GetWidth( MissingChar );
+    int32_t width = GetWidth( MissingChar );
 
     if ( Char != ' ' )
     {
@@ -445,19 +445,19 @@ TS32 CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, TS32 x, TS32 y, CColor Co
   }
 
   WBSYMBOL &Symbol = Alphabet[ (TU16)Char ];
-  TS32 width = Symbol.Advance;
+  int32_t width = Symbol.Advance;
   if ( !width ) return 0;
   //DrawApi->DrawRect(CRect(x + Symbol.OffsetX, y + Symbol.OffsetY, x + Symbol.OffsetX + Symbol.SizeX, y + Symbol.OffsetY + Symbol.SizeY), 0x80808080);
   DrawApi->DrawAtlasElement( Symbol.Handle, x + Symbol.OffsetX, y + Symbol.OffsetY, Color );
   return width;
 }
 
-TS32 CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, TS32 x, TS32 y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   _TUCHAR *Text = (_TUCHAR*)String;
   if ( !Text ) return 0;
-  TS32 xp = x;
-  TS32 yp = y;
+  int32_t xp = x;
+  int32_t yp = y;
 
   while ( *Text )
   {
@@ -485,27 +485,27 @@ TS32 CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, TS32 x, TS32 y, CColor 
   return xp - x;
 }
 
-TS32 CWBFont::Write( CWBDrawAPI *DrawApi, CString &String, TS32 x, TS32 y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, CString &String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   return Write( DrawApi, String.GetPointer(), x, y, Color, Transform, DoKerning );
 }
 
-TS32 CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color)
+int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color)
 {
   return WriteChar( DrawApi, Char, p.x, p.y, Color );
 }
 
-TS32 CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   return Write( DrawApi, String, p.x, p.y, Color, Transform, DoKerning );
 }
 
-TS32 CWBFont::Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   return Write( DrawApi, String, p.x, p.y, Color, Transform, DoKerning );
 }
 
-TS32 CWBFont::GetWidth( TU16 Char, TBOOL Advance )
+int32_t CWBFont::GetWidth( TU16 Char, TBOOL Advance )
 {
   if ( Char >= AlphabetSize || Alphabet[ (TU16)Char ].Char != Char ) //missing character
   {
@@ -516,12 +516,12 @@ TS32 CWBFont::GetWidth( TU16 Char, TBOOL Advance )
   return Advance ? Alphabet[ (TU16)Char ].Advance : ( Alphabet[ (TU16)Char ].OffsetX + Alphabet[ (TU16)Char ].calculatedContentRect.x2 );
 }
 
-TS32 CWBFont::GetWidth( TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
+int32_t CWBFont::GetWidth( TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
 {
   _TUCHAR *Text = (_TUCHAR*)String;
   if ( !Text ) return 0;
-  TS32 xp = 0;
-  TS32 maxXp = 0;
+  int32_t xp = 0;
+  int32_t maxXp = 0;
 
   bool firstChar = true;
 
@@ -567,7 +567,7 @@ TS32 CWBFont::GetWidth( TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Tr
   return max( maxXp, xp );
 }
 
-TS32 CWBFont::GetWidth( CString &String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
+int32_t CWBFont::GetWidth( CString &String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
 {
   return GetWidth( String.GetPointer(), AdvanceLastChar, Transform, DoKerning, firstCharHack );
 }
@@ -590,10 +590,10 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
 
   Alphabet = new WBSYMBOL[ AlphabetSize ];
   memset( Alphabet, 0, AlphabetSize * sizeof( WBSYMBOL ) );
-  for ( TS32 x = 0; x < AlphabetSize; x++ )
+  for ( int32_t x = 0; x < AlphabetSize; x++ )
     Alphabet[ x ].Char = (TS16)( x - 1 );
 
-  for ( TS32 x = 0; x < Description->Alphabet.NumItems(); x++ )
+  for ( int32_t x = 0; x < Description->Alphabet.NumItems(); x++ )
     if ( Description->Alphabet[ x ].UV.Area() > 0 )
     {
       WBATLASHANDLE h = Atlas->AddImage( Description->Image, Description->XRes, Description->YRes, Description->Alphabet[ x ].UV );
@@ -630,7 +630,7 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
       AddSymbol( Description->Alphabet[ x ].Char, h, Description->Alphabet[ x ].UV.Size(), Description->Alphabet[ x ].Offset, Description->Alphabet[ x ].Advance, content );
     }
 
-  for ( TS32 x = 0; x < Description->KerningData.NumItems(); x++ )
+  for ( int32_t x = 0; x < Description->KerningData.NumItems(); x++ )
   {
     AddKerningPair( Description->KerningData[ x ].First, Description->KerningData[ x ].Second, Description->KerningData[ x ].Amount );
   }
@@ -641,17 +641,17 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
   return true;
 }
 
-TS32 CWBFont::GetLineHeight()
+int32_t CWBFont::GetLineHeight()
 {
   return LineHeight;
 }
 
-TS32 CWBFont::GetBase()
+int32_t CWBFont::GetBase()
 {
   return Base;
 }
 
-TS32 CWBFont::GetOffsetX( TCHAR Char )
+int32_t CWBFont::GetOffsetX( TCHAR Char )
 {
   if ( Char >= AlphabetSize || Alphabet[ (TU16)Char ].Char != Char ) Char = MissingChar;
   if ( Char >= AlphabetSize || Alphabet[ (TU16)Char ].Char != Char ) return 0;
@@ -659,7 +659,7 @@ TS32 CWBFont::GetOffsetX( TCHAR Char )
   return Alphabet[ (TU16)Char ].OffsetX;
 }
 
-TS32 CWBFont::GetOffsetY( TCHAR Char )
+int32_t CWBFont::GetOffsetY( TCHAR Char )
 {
   if ( Char >= AlphabetSize || Alphabet[ (TU16)Char ].Char != Char ) Char = MissingChar;
   if ( Char >= AlphabetSize || Alphabet[ (TU16)Char ].Char != Char ) return 0;
@@ -667,7 +667,7 @@ TS32 CWBFont::GetOffsetY( TCHAR Char )
   return Alphabet[ (TU16)Char ].OffsetY;
 }
 
-TS32 CWBFont::GetCenterWidth( TS32 x1, TS32 x2, TCHAR *Text, WBTEXTTRANSFORM Transform )
+int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, TCHAR *Text, WBTEXTTRANSFORM Transform )
 {
   //_TUCHAR Char = 0;
   //if (Text && *Text)
@@ -676,12 +676,12 @@ TS32 CWBFont::GetCenterWidth( TS32 x1, TS32 x2, TCHAR *Text, WBTEXTTRANSFORM Tra
   return ( x1 + x2 - GetWidth( Text, false, Transform, true ) ) / 2;// -GetOffsetX(Char);
 }
 
-TS32 CWBFont::GetCenterWidth( TS32 x1, TS32 x2, CString &Text, WBTEXTTRANSFORM Transform )
+int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, CString &Text, WBTEXTTRANSFORM Transform )
 {
   return GetCenterWidth( x1, x2, Text.GetPointer(), Transform );
 }
 
-TS32 CWBFont::GetCenterHeight( TS32 y1, TS32 y2 )
+int32_t CWBFont::GetCenterHeight( int32_t y1, int32_t y2 )
 {
   return y1 + ( y2 - y1 ) / 2 - GetMedian();
 }
@@ -696,14 +696,14 @@ CPoint CWBFont::GetCenter( CString &Text, CRect Rect, WBTEXTTRANSFORM Transform 
   return GetCenter( Text.GetPointer(), Rect, Transform );
 }
 
-TS32 CWBFont::GetMedian()
+int32_t CWBFont::GetMedian()
 {
   return Offset_X_Char + Height_X_Char / 2;// (Base - Offset_X_Char) / 2;// +1;// Height_X_Char / 2;
 }
 
 void CWBFont::ConvertToUppercase()
 {
-  for ( TS32 x = 0; x < AlphabetSize; x++ )
+  for ( int32_t x = 0; x < AlphabetSize; x++ )
     if ( Alphabet[ x ].Char == x )
     {
       WBSYMBOL &c = Alphabet[ x ];
@@ -777,14 +777,14 @@ INLINE TU16 CWBFont::ApplyTextTransformUtf8( _TUCHAR *Text, _TUCHAR *&CurrPos, W
   return 0;
 }
 
-TS32 CWBFont::GetHeight( TU16 Char )
+int32_t CWBFont::GetHeight( TU16 Char )
 {
   return GetLineHeight();
 }
 
-TS32 CWBFont::GetHeight( TCHAR* String )
+int32_t CWBFont::GetHeight( TCHAR* String )
 {
-  TS32 lineCount = 1;
+  int32_t lineCount = 1;
   while ( *String )
   {
     if ( *String == '\n' )
@@ -795,7 +795,7 @@ TS32 CWBFont::GetHeight( TCHAR* String )
   return LineHeight * lineCount;
 }
 
-TS32 CWBFont::GetHeight( CString& String )
+int32_t CWBFont::GetHeight( CString& String )
 {
   return GetHeight( String.GetPointer() );
 }
@@ -804,8 +804,8 @@ CPoint CWBFont::GetTextPosition( CString &String, CRect &Container, WBTEXTALIGNM
 {
   CPoint p = Container.TopLeft();
 
-  TS32 Width = GetWidth( String, false, Transform, DoKerning );
-  TS32 Height = GetLineHeight();
+  int32_t Width = GetWidth( String, false, Transform, DoKerning );
+  int32_t Height = GetLineHeight();
 
   if ( XAlign == WBTA_CENTERX ) p.x = GetCenterWidth( Container.x1, Container.x2, String, Transform );
   if ( XAlign == WBTA_RIGHT ) p.x = Container.x2 - Width;

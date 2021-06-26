@@ -8,17 +8,17 @@ struct ARCHIVEHEADER
 {
   TS8 Signature[ 8 ];
   TU16 ChunkSize;
-  TS32 EmptyChunk;
-  TS32 FileIndexChunk;
-  TS32 FileIndexSize;
+  int32_t EmptyChunk;
+  int32_t FileIndexChunk;
+  int32_t FileIndexSize;
 };
 
 class CArchiveEntry
 {
   friend CArchive;
 
-  TS32 StartChunk;
-  TS32 FileSize;
+  int32_t StartChunk;
+  int32_t FileSize;
   TU64 Hash;
   CString FileName;
 
@@ -40,7 +40,7 @@ public:
   CStreamReaderArchive();
   virtual ~CStreamReaderArchive();
 
-  virtual TS32 Open( CArchive *BF, TS32 StartChunk, TS32 FileSize );
+  virtual int32_t Open( CArchive *BF, int32_t StartChunk, int32_t FileSize );
 };
 
 class CArchive
@@ -56,22 +56,22 @@ class CArchive
   //TU64 CurrentPos;
 
   TU16 ChunkSize;
-  TS32 EmptySequenceStartChunk;
-  TS32 FileIndexChunk;
-  TS32 FileIndexSize;
+  int32_t EmptySequenceStartChunk;
+  int32_t FileIndexChunk;
+  int32_t FileIndexSize;
 
   CArray<CArchiveEntry> FileIndices;
 
-  TS32 ReadChunk( TS32 ChunkID, TU8 *Data, TS32 BufferSize, TS32 &NextChunk );
+  int32_t ReadChunk( int32_t ChunkID, TU8 *Data, int32_t BufferSize, int32_t &NextChunk );
   TBOOL ReadIndex( CStreamReaderArchive *idx );
 
-  TBOOL SeekToChunk( TS32 Chunk );
+  TBOOL SeekToChunk( int32_t Chunk );
 
   TBOOL UpdateHeader();
   TBOOL UpdateIndex( TBOOL IncludeFilenames = true );
-  TBOOL ClearChunkSequence( TS32 StartChunk );
-  TBOOL WriteFile( TU8 *Data, TS32 Size, TS32 &startchunk );
-  TBOOL WriteChunk( TS32 &Chunk, TU8 *&Data, TS32 &DataSize );
+  TBOOL ClearChunkSequence( int32_t StartChunk );
+  TBOOL WriteFile( TU8 *Data, int32_t Size, int32_t &startchunk );
+  TBOOL WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize );
 
   TU64 CalculateHash( const CString &Filename );
 
@@ -84,6 +84,6 @@ public:
   TBOOL Create( const CString &FileName, TU16 ChunkSize = 1024 );
 
   TBOOL OpenFile( const CString &FileName, CStreamReaderArchive *&Reader );
-  TBOOL AddFile( TU8 *Data, TS32 Size, const CString &FileName );
+  TBOOL AddFile( TU8 *Data, int32_t Size, const CString &FileName );
 
 };

@@ -15,7 +15,7 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin()
   DefaultFont = NULL;
   Alt = Ctrl = Shift = Left = Middle = Right = false;
   Vsync = true;
-  FrameTimes = new CRingBuffer<TS32>( 60 );
+  FrameTimes = new CRingBuffer<int32_t>( 60 );
   LastFrameTime = 0;
 
   //initialize default factory calls
@@ -56,7 +56,7 @@ TBOOL CWBApplication::SendMessageToItem( CWBMessage &Message, CWBItem *Target )
     Target = Target->GetParent();
   }
 
-  for ( TS32 x = MessagePath.NumItems() - 1; x >= 0; x-- )
+  for ( int32_t x = MessagePath.NumItems() - 1; x >= 0; x-- )
     if ( MessagePath[ x ]->MessageProc( Message ) ) return true;
 
   return false;
@@ -126,7 +126,7 @@ void CWBApplication::ProcessMessage( CWBMessage &Message )
     Target = Target->GetChildInFocus();
   }
 
-  for ( TS32 x = MessagePath.NumItems() - 1; x >= 0; x-- )
+  for ( int32_t x = MessagePath.NumItems() - 1; x >= 0; x-- )
     if ( MessagePath[ x ]->MessageProc( Message ) ) return;
 
 }
@@ -157,21 +157,21 @@ void CWBApplication::UpdateControlKeyStates()
   Shift = ( GetKeyState( VK_SHIFT ) < 0 ) || ( GetAsyncKeyState( VK_SHIFT ) & 0x8000 ) || ( GetAsyncKeyState( VK_LSHIFT ) & 0x8000 ) || ( GetAsyncKeyState( VK_RSHIFT ) & 0x8000 );
 }
 
-TS32 CWBApplication::GetKeyboardState()
+int32_t CWBApplication::GetKeyboardState()
 {
   return ( Alt*WB_KBSTATE_ALT ) | ( Ctrl*WB_KBSTATE_CTRL ) | ( Shift*WB_KBSTATE_SHIFT );
 }
 
-TS32 CWBApplication::GetInitialKeyboardDelay()
+int32_t CWBApplication::GetInitialKeyboardDelay()
 {
-  TS32 setting = 0;
+  int32_t setting = 0;
   if ( !SystemParametersInfo( SPI_GETKEYBOARDDELAY, 0, &setting, 0 ) ) return ( 1 + 1 ) * 250;  //1 by default
   return ( setting + 1 ) * 250;
 }
 
-TS32 CWBApplication::GetKeyboardRepeatTime()
+int32_t CWBApplication::GetKeyboardRepeatTime()
 {
-  TS32 setting = 0;
+  int32_t setting = 0;
   if ( !SystemParametersInfo( SPI_GETKEYBOARDSPEED, 0, &setting, 0 ) ) return 400 - ( 31 * 12 ); //31 by default
   return 400 - ( setting * 12 );
 }
@@ -410,7 +410,7 @@ TBOOL CWBApplication::HandleMessages()
 
   //handle gui messages here
 
-  for ( TS32 x = 0; x < MessageBuffer.NumItems(); x++ )
+  for ( int32_t x = 0; x < MessageBuffer.NumItems(); x++ )
   {
     CWBMessage currentMessage;
     memcpy( &currentMessage, &MessageBuffer[ x ], sizeof( CWBMessage ) );
@@ -482,7 +482,7 @@ void CWBApplication::Display( CWBDrawAPI *API )
   Logger.ResetEntryCounter();
 
   //update frame time
-  TS32 frametime = globalTimer.GetTime();
+  int32_t frametime = globalTimer.GetTime();
   FrameTimes->Add( frametime - LastFrameTime );
   LastFrameTime = frametime;
 }
@@ -673,7 +673,7 @@ TBOOL CWBApplication::LoadXMLLayoutFromFile( CString FileName )
     return false;
   }
 
-  CString s( (char*)f.GetData(), (TS32)f.GetLength() );
+  CString s( (char*)f.GetData(), (int32_t)f.GetLength() );
   return LoadXMLLayout( s );
 }
 
@@ -762,7 +762,7 @@ TBOOL CWBApplication::LoadCSSFromFile( CString FileName, TBOOL ResetStyleManager
     return false;
   }
 
-  CString s( (char*)f.GetData(), (TS32)f.GetLength() );
+  CString s( (char*)f.GetData(), (int32_t)f.GetLength() );
   TBOOL b = LoadCSS( s, ResetStyleManager );
   //if (b)
   //	LOG_NFO("[gui] Successfully loaded CSS '%s'",FileName.GetPointer());
@@ -788,23 +788,23 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
 
   CXMLNode r = doc.GetDocumentNode().GetChild( _T( "whiteboardskin" ) );
 
-  for ( TS32 x = 0; x < r.GetChildCount( _T( "image" ) ); x++ )
+  for ( int32_t x = 0; x < r.GetChildCount( _T( "image" ) ); x++ )
   {
     CXMLNode n = r.GetChild( _T( "image" ), x );
     CString img = n.GetAttributeAsString( _T( "image" ) );
 
     TU8 *Data = NULL;
-    TS32 Size = 0;
+    int32_t Size = 0;
     img.DecodeBase64( Data, Size );
 
     TU8 *Image;
-    TS32 XRes, YRes;
+    int32_t XRes, YRes;
     if ( DecompressPNG( Data, Size, Image, XRes, YRes ) )
     {
       ARGBtoABGR( Image, XRes, YRes );
       ClearZeroAlpha( Image, XRes, YRes );
 
-      for ( TS32 y = 0; y < n.GetChildCount( _T( "element" ) ); y++ )
+      for ( int32_t y = 0; y < n.GetChildCount( _T( "element" ) ); y++ )
       {
         CXMLNode e = n.GetChild( _T( "element" ), y );
 
@@ -828,7 +828,7 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
     SAFEDELETEA( Data );
   }
 
-  for ( TS32 x = 0; x < r.GetChildCount( _T( "mosaic" ) ); x++ )
+  for ( int32_t x = 0; x < r.GetChildCount( _T( "mosaic" ) ); x++ )
   {
     CXMLNode m = r.GetChild( _T( "mosaic" ), x );
 
@@ -841,7 +841,7 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
     Skin->AddMosaic( m.GetAttributeAsString( _T( "name" ) ), m.GetAttributeAsString( _T( "description" ) ), r2.x1, r2.y1, r2.x2, r2.y2 );
   }
 
-  for ( TS32 x = 0; x < r.GetChildCount( _T( "font" ) ); x++ )
+  for ( int32_t x = 0; x < r.GetChildCount( _T( "font" ) ); x++ )
   {
     CXMLNode n = r.GetChild( _T( "font" ), x );
 
@@ -852,12 +852,12 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
 
     TU8 *Dataimg = NULL;
     TU8 *Databin = NULL;
-    TS32 Sizeimg = 0;
-    TS32 Sizebin = 0;
+    int32_t Sizeimg = 0;
+    int32_t Sizebin = 0;
     img.DecodeBase64( Dataimg, Sizeimg );
     bin.DecodeBase64( Databin, Sizebin );
 
-    TS32 XRes, YRes;
+    int32_t XRes, YRes;
     TU8 *Image;
     if ( DecompressPNG( Dataimg, Sizeimg, Image, XRes, YRes ) )
     {
@@ -893,7 +893,7 @@ TBOOL CWBApplication::LoadSkinFromFile( CString FileName, CArray<int>& enabledGl
     return false;
   }
 
-  CString s( (char*)f.GetData(), (TS32)f.GetLength() );
+  CString s( (char*)f.GetData(), (int32_t)f.GetLength() );
   TBOOL b = LoadSkin( s, enabledGlyphs );
   if ( b )
     LOG_NFO( "[gui] Successfully loaded Skin '%s'", FileName.GetPointer() );
@@ -927,7 +927,7 @@ TBOOL CWBApplication::GenerateGUITemplateFromXML( CWBItem *Root, CXMLDocument *d
 
   root = root.GetChild( _T( "guidescriptor" ) );
 
-  for ( TS32 x = 0; x < root.GetChildCount( _T( "guitemplate" ) ); x++ )
+  for ( int32_t x = 0; x < root.GetChildCount( _T( "guitemplate" ) ); x++ )
   {
     CXMLNode t = root.GetChild( _T( "guitemplate" ), x );
 
@@ -1030,19 +1030,19 @@ void CWBApplication::TakeScreenshot()
 {
   CreateDirectory( _T( "Screenshots" ), NULL );
 
-  TS32 maxcnt = 0;
+  int32_t maxcnt = 0;
   {
     CString s = ScreenShotName + _T( "_*.png" );
     CFileList fl( s, _T( "Screenshots" ) );
 
-    for ( TS32 x = 0; x < fl.Files.NumItems(); x++ )
+    for ( int32_t x = 0; x < fl.Files.NumItems(); x++ )
     {
       if ( fl.Files[ x ].FileName.Find( ScreenShotName ) == 0 )
       {
         CString s2 = ScreenShotName + _T( "_%d" );
 
-        TS32 no = -1;
-        TS32 i = fl.Files[ x ].FileName.Scan( s2.GetPointer(), &no );
+        int32_t no = -1;
+        int32_t i = fl.Files[ x ].FileName.Scan( s2.GetPointer(), &no );
         maxcnt = max( maxcnt, no );
       }
     }
@@ -1072,9 +1072,9 @@ void CWBApplication::TakeScreenshot()
 
 TF32 CWBApplication::GetFrameRate()
 {
-  TS32 FrameTimeAcc = 0;
-  TS32 FrameCount = 0;
-  for ( TS32 x = 0; x < 60; x++ )
+  int32_t FrameTimeAcc = 0;
+  int32_t FrameCount = 0;
+  for ( int32_t x = 0; x < 60; x++ )
   {
     if ( FrameTimes->NumItems() < x ) break;
     FrameTimeAcc += ( *FrameTimes )[ FrameTimes->NumItems() - 1 - x ];

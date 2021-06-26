@@ -119,12 +119,12 @@ CSize CWBButton::GetContentSize()
   return CSize( Font->GetWidth( Text, false, TextTransform ), Font->GetLineHeight() );
 }
 
-//void CWBButton::ResizeToContentSize(TBOOL Width, TBOOL Height, TS32 AddedWidth, TS32 AddedHeight)
+//void CWBButton::ResizeToContentSize(TBOOL Width, TBOOL Height, int32_t AddedWidth, int32_t AddedHeight)
 //{
 //	CSize s = GetContentSize();
 //
-//	TS32 width = GetPosition().Width();
-//	TS32 height = GetPosition().Height();
+//	int32_t width = GetPosition().Width();
+//	int32_t height = GetPosition().Height();
 //
 //	if (Width) width = s.x + AddedWidth;
 //	if (Height) height = s.y + AddedHeight;

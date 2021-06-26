@@ -1,7 +1,7 @@
 #pragma once
 #include "Application.h"
 
-typedef TS32 SELECTABLEID;
+typedef int32_t SELECTABLEID;
 
 class CWBSelectableItem
 {
@@ -37,8 +37,8 @@ protected:
   CArray<CWBSelectableItem> List;
   TBOOL MessageProc( CWBMessage &Message );
 
-  TS32 CursorPosition; //position of the cursor - always selected for single-select, may or may not be selected for multi-select
-  TS32 AnchorPosition; //reference point for multi-select: last item where selected got turned to true without multi-select
+  int32_t CursorPosition; //position of the cursor - always selected for single-select, may or may not be selected for multi-select
+  int32_t AnchorPosition; //reference point for multi-select: last item where selected got turned to true without multi-select
 
 public:
 
@@ -61,18 +61,18 @@ public:
   virtual void Flush();
 
   virtual CWBSelectableItem *GetItem( SELECTABLEID ID );
-  virtual TS32 NumItems();
-  virtual CWBSelectableItem &GetItemByIndex( TS32 x );
-  virtual TS32 GetItemIndex( SELECTABLEID ItemID );
+  virtual int32_t NumItems();
+  virtual CWBSelectableItem &GetItemByIndex( int32_t x );
+  virtual int32_t GetItemIndex( SELECTABLEID ItemID );
 
-  virtual TS32 NumSelected(); //Get the number of selected items
-  virtual TS32 GetSelectedIndex( TS32 Idx ); //Get the index of the Nth selected item
-  virtual CArray<TS32> GetSelectedIndices(); //Get an array with the indices of the selected items
+  virtual int32_t NumSelected(); //Get the number of selected items
+  virtual int32_t GetSelectedIndex( int32_t Idx ); //Get the index of the Nth selected item
+  virtual CArray<int32_t> GetSelectedIndices(); //Get an array with the indices of the selected items
 
   virtual void SelectItem( SELECTABLEID ItemID );
-  virtual void SelectItemByIndex( TS32 Idx );
+  virtual void SelectItemByIndex( int32_t Idx );
 
-  virtual TS32 GetCursorPosition();
+  virtual int32_t GetCursorPosition();
   virtual SELECTABLEID GetCursorItemID();
   virtual CWBSelectableItem *GetCursorItem();
   virtual void SetItemColor( SELECTABLEID ID, CColor color );

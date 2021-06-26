@@ -4,7 +4,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 
-typedef TS32 CORERENDERLAYERID;
+typedef int32_t CORERENDERLAYERID;
 
 class CCoreMaterialRenderPass;
 class CCoreMesh;
@@ -21,8 +21,8 @@ class CCoreAtom
 
 	CCoreVertexFormat *VxFormat;
 
-	TS32 TriCount;
-	TS32 VxCount;
+	int32_t TriCount;
+	int32_t VxCount;
 
 public:
 

@@ -18,7 +18,7 @@ class CCoreShader : public CCoreResource
 	virtual TBOOL Apply() = 0;
 
 	void *Binary;
-	TS32 BinaryLength;
+	int32_t BinaryLength;
 
 protected:
 
@@ -26,7 +26,7 @@ protected:
 	CString EntryFunction;
 	CString ShaderVersion;
 
-	INLINE void FetchBinary(void *binary, TS32 length)
+	INLINE void FetchBinary(void *binary, int32_t length)
 	{
 		Binary = new TU8[length];
 		memcpy(Binary, binary, length);
@@ -42,14 +42,14 @@ public:
 	};
 	virtual ~CCoreShader();
 
-	virtual TBOOL Create(void *Binary, TS32 Length) = 0;
+	virtual TBOOL Create(void *Binary, int32_t Length) = 0;
 
 	INLINE void *GetBinary()
 	{
 		return Binary;
 	}
 
-	INLINE TS32 GetBinaryLength()
+	INLINE int32_t GetBinaryLength()
 	{
 		return BinaryLength;
 	}
@@ -67,9 +67,9 @@ public:
 	}
 
 	virtual TBOOL CompileAndCreate(CString *Err) = 0;
-  virtual TBOOL CreateFromBlob( void *Code, TS32 CodeSize ) = 0;
+  virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize ) = 0;
 
-	//virtual TS32 GetConstantBufferIndex(TS8 *Name) = 0;
+	//virtual int32_t GetConstantBufferIndex(TS8 *Name) = 0;
 	virtual void *GetHandle() = 0;
 };
 

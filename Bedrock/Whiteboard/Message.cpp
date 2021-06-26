@@ -20,7 +20,7 @@ CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target )
   Target = target;
 }
 
-CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target, TS32 x )
+CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target, int32_t x )
 {
   App = app;
   Message = message;
@@ -28,7 +28,7 @@ CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target, T
   Data = x;
 }
 
-CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target, TS32 x, TS32 y )
+CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target, int32_t x, int32_t y )
 {
   App = app;
   Message = message;

@@ -76,8 +76,8 @@ public:
 class CLogger
 {
   CArray<CLoggerOutput*> Outputs;
-  TS32 Verbosity;
-  TS32 NewEntryCount;
+  int32_t Verbosity;
+  int32_t NewEntryCount;
 
 public:
 
@@ -89,7 +89,7 @@ public:
   void AddOutput( CLoggerOutput *Output );
   void RemoveOutput( CLoggerOutput *Output );
   void ResetEntryCounter();
-  TS32 GetNewEntryCount();
+  int32_t GetNewEntryCount();
 };
 
 extern CLogger Logger;

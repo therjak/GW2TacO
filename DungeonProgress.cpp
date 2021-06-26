@@ -4,14 +4,14 @@
 #include "Bedrock/UtilLib/jsonxx.h"
 #include "Language.h"
 
-CDictionary<CString, TS32> dungeonToAchievementMap;
+CDictionary<CString, int32_t> dungeonToAchievementMap;
 
 using namespace jsonxx;
 
 void DungeonProgress::OnDraw( CWBDrawAPI *API )
 {
   CWBFont *f = GetFont( GetState() );
-  TS32 size = f->GetLineHeight();
+  int32_t size = f->GetLineHeight();
 
   GW2::APIKeyManager::Status status = GW2::apiKeyManager.DisplayStatusText(API, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
@@ -107,8 +107,8 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
               continue;
 
             CString eventName = CString(dungeonData[x]->get<String>().data());
-            for (TS32 a = 0; a < dungeons.NumItems(); a++)
-              for (TS32 b = 0; b < dungeons[a].paths.NumItems(); b++)
+            for (int32_t a = 0; a < dungeons.NumItems(); a++)
+              for (int32_t b = 0; b < dungeons[a].paths.NumItems(); b++)
               {
                 if (dungeons[a].paths[b].name == eventName)
                   dungeons[a].paths[b].finished = true;
@@ -120,8 +120,8 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
         {
           auto dungeonData = json2.get<Array>("dungeons").values();
 
-          for (TS32 a = 0; a < dungeons.NumItems(); a++)
-            for (TS32 b = 0; b < dungeons[a].paths.NumItems(); b++)
+          for (int32_t a = 0; a < dungeons.NumItems(); a++)
+            for (int32_t b = 0; b < dungeons[a].paths.NumItems(); b++)
               dungeons[a].paths[b].frequenter = false;
 
           if (dungeonData.size() >= 1 && dungeonData[0]->is<Object>())
@@ -136,9 +136,9 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
                 {
                   if (bits[x]->is<Number>())
                   {
-                    TS32 frequentedID = (TS32)(bits[x]->get<Number>());
-                    for (TS32 a = 0; a < dungeons.NumItems(); a++)
-                      for (TS32 b = 0; b < dungeons[a].paths.NumItems(); b++)
+                    int32_t frequentedID = (int32_t)(bits[x]->get<Number>());
+                    for (int32_t a = 0; a < dungeons.NumItems(); a++)
+                      for (int32_t b = 0; b < dungeons[a].paths.NumItems(); b++)
                       {
                         if (dungeonToAchievementMap.HasKey(dungeons[a].paths[b].name))
                         {
@@ -165,9 +165,9 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
 
   if ( hasFullDungeonInfo )
   {
-    TS32 posy = 1;
+    int32_t posy = 1;
 
-    TS32 textwidth = 0;
+    int32_t textwidth = 0;
     for ( int x = 0; x < dungeons.NumItems(); x++ )
       textwidth = max( textwidth, f->GetWidth( dungeons[ x ].shortName, false ) );
 
@@ -176,7 +176,7 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
       auto& d = dungeons[ x ];
 
       f->Write( API, d.shortName + ":", CPoint( 0, posy + 1 ), 0xffffffff );
-      TS32 posx = textwidth + f->GetLineHeight() / 2;
+      int32_t posx = textwidth + f->GetLineHeight() / 2;
       for ( int y = 0; y < d.paths.NumItems(); y++ )
       {
         auto& p = d.paths[ y ];

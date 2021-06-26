@@ -12,7 +12,7 @@ void ImportLocationalTimers()
   if ( !d.GetDocumentNode().GetChildCount( "timers" ) ) return;
   CXMLNode root = d.GetDocumentNode().GetChild( "timers" );
 
-  for ( TS32 x = 0; x < root.GetChildCount( "areatriggeredtimer" ); x++ )
+  for ( int32_t x = 0; x < root.GetChildCount( "areatriggeredtimer" ); x++ )
   {
     LocationalTimer t;
     t.ImportData( root.GetChild( "areatriggeredtimer", x ) );
@@ -78,7 +78,7 @@ void LocationalTimer::ImportData( CXMLNode &node )
   if ( node.HasAttribute( "resetpointy" ) ) node.GetAttributeAsFloat( "resetpointy", &ResetPoint.y );
   if ( node.HasAttribute( "resetpointz" ) ) node.GetAttributeAsFloat( "resetpointz", &ResetPoint.z );
 
-  for ( TS32 x = 0; x < node.GetChildCount( "timeevent" ); x++ )
+  for ( int32_t x = 0; x < node.GetChildCount( "timeevent" ); x++ )
   {
     CXMLNode te = node.GetChild( "timeevent", x );
     TimerEvent tmr;
@@ -97,12 +97,12 @@ void TimerDisplay::OnDraw( CWBDrawAPI *API )
   if ( !GetConfigValue( "LocationalTimersVisible" ) )
     return;
 
-  TS32 tme = GetTime();
+  int32_t tme = GetTime();
   CWBFont *f = GetFont( GetState() );
 
-  TS32 ypos = Lerp( GetClientRect().y1, GetClientRect().y2, 0.25f );
+  int32_t ypos = Lerp( GetClientRect().y1, GetClientRect().y2, 0.25f );
 
-  for ( TS32 x = 0; x < LocationalTimers.NumItems(); x++ )
+  for ( int32_t x = 0; x < LocationalTimers.NumItems(); x++ )
   {
     LocationalTimer &t = LocationalTimers[ x ];
 
@@ -112,7 +112,7 @@ void TimerDisplay::OnDraw( CWBDrawAPI *API )
 
     TF32 timepos = ( tme - LocationalTimers[ x ].StartTime ) / 1000.0f - t.StartDelay;
 
-    for ( TS32 y = 0; y < t.Events.NumItems(); y++ )
+    for ( int32_t y = 0; y < t.Events.NumItems(); y++ )
     {
       auto &e = t.Events[ y ];
       if ( !( timepos > e.Time - e.CountdownLength && timepos < e.Time + e.OnScreenLength ) )
@@ -120,7 +120,7 @@ void TimerDisplay::OnDraw( CWBDrawAPI *API )
 
       CString s = e.Text;
       if ( timepos<e.Time && timepos>e.Time - e.CountdownLength )
-        s += CString::Format( " in %d", (TS32)( e.Time - timepos ) );
+        s += CString::Format( " in %d", (int32_t)( e.Time - timepos ) );
 
       CPoint pos = f->GetTextPosition( s, CRect( GetClientRect().x1, ypos, GetClientRect().x2, ypos ), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
       ypos += f->GetLineHeight();

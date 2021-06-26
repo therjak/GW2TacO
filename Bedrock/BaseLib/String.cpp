@@ -12,7 +12,7 @@ void CString::Initialize()
 void CString::StringChanged()
 {
   LengthCached = 0;
-  if ( String ) LengthCached = (TS32)_tcslen( String );
+  if ( String ) LengthCached = (int32_t)_tcslen( String );
   CALCULATEHASH();
 }
 
@@ -65,7 +65,7 @@ CString::CString( const wchar_t *str, const TU32 len )
 void CString::WriteAsMultiByte( TS8 *Copy, TU32 SizeInChars ) const
 {
   if ( !Copy || !SizeInChars ) return;
-  TS32 len = min( Length(), SizeInChars - 1 );
+  int32_t len = min( Length(), SizeInChars - 1 );
 
 #ifdef UNICODE
   WideCharToMultiByte( CP_UTF8, 0, String, -1, Copy, len, NULL, NULL );
@@ -80,7 +80,7 @@ void CString::WriteAsMultiByte( TS8 *Copy, TU32 SizeInChars ) const
 void CString::WriteAsWideChar( wchar_t *Copy, TU32 SizeInChars ) const
 {
   if ( !Copy || !SizeInChars ) return;
-  TS32 len = min( Length(), SizeInChars - 1 );
+  int32_t len = min( Length(), SizeInChars - 1 );
 
 #ifdef UNICODE
   _tcsncpy_s( Copy, SizeInChars, String, len );
@@ -116,8 +116,8 @@ const CString &CString::operator+=( const CString &str )
 
 const CString &CString::Append( const CString &str, const TU32 len )
 {
-  TS32 lengthOriginal = Length();
-  TS32 lengthIncoming = len;//str.Length();
+  int32_t lengthOriginal = Length();
+  int32_t lengthIncoming = len;//str.Length();
 
   TCHAR *newString = new TCHAR[ lengthOriginal + lengthIncoming + 1 ];
 
@@ -166,9 +166,9 @@ const CString operator+( const TS8 *str, const CString &str2 )
 
 const CString &CString::Append( const TS8 *str, const TU32 len )
 {
-  TS32 lengthOriginal = Length();
-  TS32 lengthIncoming = len;
-  TS32 lengthCalculated = lengthIncoming;
+  int32_t lengthOriginal = Length();
+  int32_t lengthIncoming = len;
+  int32_t lengthCalculated = lengthIncoming;
 
 #ifdef UNICODE
   lengthCalculated = MultiByteToWideChar( CP_UTF8, 0, str, lengthIncoming, NULL, 0 );
@@ -201,7 +201,7 @@ const CString &CString::Append( const TS8 *str, const TU32 len )
 const CString &CString::Append( const TS8 *str )
 {
   if ( !str ) return *this;
-  return Append( str, (TS32)strlen( str ) );
+  return Append( str, (int32_t)strlen( str ) );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -233,9 +233,9 @@ CString operator+( const wchar_t *str, const CString &str2 )
 
 const CString &CString::Append( const wchar_t *str, const TU32 len )
 {
-  TS32 lengthOriginal = Length();
-  TS32 lengthIncoming = len;
-  TS32 lengthCalculated = lengthIncoming;
+  int32_t lengthOriginal = Length();
+  int32_t lengthIncoming = len;
+  int32_t lengthCalculated = lengthIncoming;
 
 #ifndef UNICODE
   lengthCalculated = WideCharToMultiByte( CP_UTF8, 0, str, lengthIncoming, NULL, 0, NULL, NULL );
@@ -267,7 +267,7 @@ const CString &CString::Append( const wchar_t *str, const TU32 len )
 const CString &CString::Append( const wchar_t *str )
 {
   if ( !str ) return *this;
-  return Append( str, (TS32)wcslen( str ) );
+  return Append( str, (int32_t)wcslen( str ) );
 }
 
 
@@ -275,18 +275,18 @@ const CString &CString::Append( const wchar_t *str )
 // numeric functions
 
 //int
-CString CString::operator+( const TS32 v ) const
+CString CString::operator+( const int32_t v ) const
 {
   return ( *this ) + CString::Format( DEFAULTINTFORMAT, v );
 }
 
-CString &CString::operator+=( const TS32 v )
+CString &CString::operator+=( const int32_t v )
 {
   Append( CString::Format( DEFAULTINTFORMAT, v ) );
   return *this;
 }
 
-const CString operator+( const TS32 v, const CString &str )
+const CString operator+( const int32_t v, const CString &str )
 {
   return CString::Format( DEFAULTINTFORMAT, v ) + str;
 }
@@ -468,7 +468,7 @@ TBOOL CString::operator>( const wchar_t *v ) const
   return *this > CString( v );
 }
 
-TCHAR &CString::operator[]( const TS32 idx ) const
+TCHAR &CString::operator[]( const int32_t idx ) const
 {
   return String[ idx ];
 }
@@ -484,7 +484,7 @@ TU32 CString::Length() const
 //////////////////////////////////////////////////////////////////////////
 // manipulation functions
 
-void CString::Insert( TS32 pos, const TCHAR Input )
+void CString::Insert( int32_t pos, const TCHAR Input )
 {
   TCHAR *start = new TCHAR[ pos + 2 ];
   memcpy( start, String, sizeof( TCHAR )*pos );
@@ -494,7 +494,7 @@ void CString::Insert( TS32 pos, const TCHAR Input )
   delete[] start;
 }
 
-void CString::Insert( TS32 pos, const TCHAR *Input )
+void CString::Insert( int32_t pos, const TCHAR *Input )
 {
   TCHAR *start = new TCHAR[ pos + 1 ];
   memcpy( start, String, sizeof( TCHAR )*pos );
@@ -503,9 +503,9 @@ void CString::Insert( TS32 pos, const TCHAR *Input )
   delete[] start;
 }
 
-void CString::DeleteChar( TS32 pos )
+void CString::DeleteChar( int32_t pos )
 {
-  if ( pos < 0 || pos >= (TS32)Length() ) return;
+  if ( pos < 0 || pos >= (int32_t)Length() ) return;
   if ( pos == 0 )
   {
     *this = CString( String + 1 );
@@ -519,16 +519,16 @@ void CString::DeleteChar( TS32 pos )
   delete[] txt;
 }
 
-void CString::DeleteRegion( TS32 pos, TS32 size )
+void CString::DeleteRegion( int32_t pos, int32_t size )
 {
   if ( !size ) return;
-  if ( pos < 0 || pos >= (TS32)Length() ) return;
-  if ( size >= (TS32)Length() )
+  if ( pos < 0 || pos >= (int32_t)Length() ) return;
+  if ( size >= (int32_t)Length() )
   {
     *this = _T( "" );
     return;
   }
-  if ( pos + size >= (TS32)Length() ) //cut the end
+  if ( pos + size >= (int32_t)Length() ) //cut the end
   {
     String[ pos ] = 0;
     *this = CString( String );
@@ -550,13 +550,13 @@ void CString::DeleteRegion( TS32 pos, TS32 size )
 void CString::ToUnixNewline()
 {
   TU32 cnt = 0;
-  for ( TS32 x = 0; x < (TS32)Length(); x++ )
+  for ( int32_t x = 0; x < (int32_t)Length(); x++ )
     if ( String[ x ] == '\r' ) cnt++;
   if ( !cnt ) return;
 
   TU32 pos = 0;
   TCHAR *str = new TCHAR[ Length() - cnt + 2 ];
-  for ( TS32 x = 0; x < (TS32)Length(); x++ )
+  for ( int32_t x = 0; x < (int32_t)Length(); x++ )
     if ( String[ x ] != '\r' ) str[ pos++ ] = String[ x ];
 
   str[ pos ] = 0;
@@ -568,14 +568,14 @@ void CString::ToUnixNewline()
 void CString::ToWindowsNewline()
 {
   ToUnixNewline(); //make sure there aren't any '\r's in the string
-  TS32 cnt = 0;
-  for ( TS32 x = 0; x < (TS32)Length(); x++ )
+  int32_t cnt = 0;
+  for ( int32_t x = 0; x < (int32_t)Length(); x++ )
     if ( String[ x ] == '\n' ) cnt++;
   if ( !cnt ) return;
 
-  TS32 pos = 0;
+  int32_t pos = 0;
   TCHAR *str = new TCHAR[ Length() + cnt + 2 ];
-  for ( TS32 x = 0; x < (TS32)Length(); x++ )
+  for ( int32_t x = 0; x < (int32_t)Length(); x++ )
   {
     if ( String[ x ] == '\n' ) str[ pos++ ] = '\r';
     str[ pos++ ] = String[ x ];
@@ -613,7 +613,7 @@ void CString::CalculateHash()
   if ( !String )
     return;
 
-  TS32 c;
+  int32_t c;
   TCHAR *str = String;
 
   //djb2 hash
@@ -630,7 +630,7 @@ TU32 CString::GetHash() const
 TU32 DictionaryHash( const CString &i )
 {
 #ifndef HASHED_STRINGS
-  TS32 c;
+  int32_t c;
   TCHAR *str = i.GetPointer();
 
   //djb2 hash
@@ -666,7 +666,7 @@ TU32 DictionaryHash( const CString &i )
 //	}
 //
 //	va_list argListBegin = argList;
-//	TS32 n = _vscwprintf(format, argList);
+//	int32_t n = _vscwprintf(format, argList);
 //
 //	wchar_t* mText = new wchar_t[n + 1];
 //	ZeroMemory(mText, (n + 1)*sizeof(wchar_t));
@@ -698,7 +698,7 @@ void CString::FormatVA( const TCHAR *format, va_list argList, CString &Result )
     return;
   }
 
-  TS32 n = _vsctprintf( format, argList );
+  int32_t n = _vsctprintf( format, argList );
 
   TCHAR* mText = new TCHAR[ n + 1 ];
   ZeroMemory( mText, ( n + 1 ) * sizeof( TCHAR ) );
@@ -708,11 +708,11 @@ void CString::FormatVA( const TCHAR *format, va_list argList, CString &Result )
   delete[] mText;
 }
 
-TS32 CString::Scan( const TCHAR *format, ... )
+int32_t CString::Scan( const TCHAR *format, ... )
 {
   if ( !format ) return 0;
 
-  TS32 s;
+  int32_t s;
 
   va_list argList;
   va_start( argList, format );
@@ -722,9 +722,9 @@ TS32 CString::Scan( const TCHAR *format, ... )
   return s;
 }
 
-TS32 CString::Scan( const CString format, ... )
+int32_t CString::Scan( const CString format, ... )
 {
-  TS32 s;
+  int32_t s;
 
   va_list argList;
   va_start( argList, format );
@@ -734,19 +734,19 @@ TS32 CString::Scan( const CString format, ... )
   return s;
 }
 
-TS32 CString::Find( const CString &v, TU32 nStart ) const
+int32_t CString::Find( const CString &v, TU32 nStart ) const
 {
   if ( nStart > Length() ) return -1;
   TCHAR * sz = _tcsstr( String + nStart, v.GetPointer() );
   if ( !sz ) return -1;
-  return (TS32)( sz - String );
+  return (int32_t)( sz - String );
 }
 
-TS32 CString::Find( const TS8 *v, TU32 nStart ) const
+int32_t CString::Find( const TS8 *v, TU32 nStart ) const
 {
   return Find( CString( v ), nStart );
 }
-TS32 CString::Find( const wchar_t *v, TU32 nStart ) const
+int32_t CString::Find( const wchar_t *v, TU32 nStart ) const
 {
   return Find( CString( v ), nStart );
 }
@@ -881,7 +881,7 @@ CStringArrayMarkers CString::GetExplodeMarkersByWhiteSpace() const
 }
 
 
-CString CString::Substring( TS32 nStart ) const
+CString CString::Substring( int32_t nStart ) const
 {
   if ( nStart < 0 )
     return Substring( Length() + nStart, -nStart );
@@ -889,7 +889,7 @@ CString CString::Substring( TS32 nStart ) const
     return Substring( nStart, Length() - nStart );
 }
 
-CString CString::Substring( TS32 nStart, TS32 nLength ) const
+CString CString::Substring( int32_t nStart, int32_t nLength ) const
 {
   if ( nStart < 0 )
     nStart = Length() + nStart;
@@ -904,7 +904,7 @@ CString CString::Substring( TS32 nStart, TS32 nLength ) const
   return CString( String + nStart, nLength );
 }
 
-TS32 CString::CompareNoCase( const CString &a, const CString &b )
+int32_t CString::CompareNoCase( const CString &a, const CString &b )
 {
   return _tcsicmp( a.GetPointer(), b.GetPointer() );
 }
@@ -934,15 +934,15 @@ TBOOL is_base64( TCHAR c )
 
 TS8 find_base64( TCHAR t )
 {
-  for ( TS32 x = 0; x < (TS32)_tcslen( base64_chars ); x++ )
+  for ( int32_t x = 0; x < (int32_t)_tcslen( base64_chars ); x++ )
     if ( base64_chars[ x ] == t ) return x;
   return -1;
 }
 
-CString CString::EncodeToBase64( TU8 *Data, TS32 Length )
+CString CString::EncodeToBase64( TU8 *Data, int32_t Length )
 {
-  TS32 i = 0;
-  TS32 j = 0;
+  int32_t i = 0;
+  int32_t j = 0;
   TU8 char_array_3[ 3 ];
   TU8 char_array_4[ 4 ];
 
@@ -951,7 +951,7 @@ CString CString::EncodeToBase64( TU8 *Data, TS32 Length )
   TCHAR * p = szret;
 
   TU8 * szText = (TU8 *)Data;
-  TS32 nLength = Length;
+  int32_t nLength = Length;
   while ( nLength-- ) {
     char_array_3[ i++ ] = *( szText++ );
     if ( i == 3 ) {
@@ -992,7 +992,7 @@ CString CString::EncodeToBase64( TU8 *Data, TS32 Length )
   //#ifdef _DEBUG
   //
   //	TU8 *Data2 = NULL;
-  //	TS32 Length2 = 0;
+  //	int32_t Length2 = 0;
   //	ret.DecodeBase64(Data2, Length2);
   //	if (Length2 == Length)
   //		if (!memcmp(Data, Data2, Length))
@@ -1012,7 +1012,7 @@ CString CString::EncodeToBase64( TU8 *Data, TS32 Length )
   return ret;
 }
 
-void CString::DecodeBase64( TU8 *&Data, TS32 &outsize )
+void CString::DecodeBase64( TU8 *&Data, int32_t &outsize )
 {
   int in_len = Length();
   int i = 0;
@@ -1167,7 +1167,7 @@ void CString::DecodeBase64( TU8 *&Data, TS32 &outsize )
 //#endif
 //}
 
-void CString::ScanVA( const TCHAR *format, va_list argList, TS32 &Result )
+void CString::ScanVA( const TCHAR *format, va_list argList, int32_t &Result )
 {
   if ( !format )
   {
@@ -1182,12 +1182,12 @@ void CString::ScanVA( const TCHAR *format, va_list argList, TS32 &Result )
 #endif
 }
 
-TS32 CString::Strcmp( const TCHAR *str, const TCHAR *str2 )
+int32_t CString::Strcmp( const TCHAR *str, const TCHAR *str2 )
 {
   return _tcscmp( str, str2 );
 }
 
-TS32 CString::Strncmp( const TCHAR *str, const TCHAR *str2, const TS32 len )
+int32_t CString::Strncmp( const TCHAR *str, const TCHAR *str2, const int32_t len )
 {
   return _tcsncmp( str, str2, len );
 }
@@ -1197,7 +1197,7 @@ TF32 CString::Atof( const TCHAR *str )
   return (TF32)_tstof( str );
 }
 
-TS32 CString::Atoi( const TCHAR *str )
+int32_t CString::Atoi( const TCHAR *str )
 {
   return _tstoi( str );
 }
@@ -1291,7 +1291,7 @@ void CString::DecodeUtf8( UTF8CHARCALLBACK callback )
 void CString::RemoveNewLines()
 {
   TCHAR *txt = new TCHAR[ Length() + 1 ];
-  TS32 pos = 0;
+  int32_t pos = 0;
   for ( TU32 x = 0; x < Length(); x++ )
   {
     if ( String[ x ] == '\n' || String[ x ] == '\r' ) continue;

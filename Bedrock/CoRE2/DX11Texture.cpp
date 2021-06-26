@@ -45,7 +45,7 @@ TBOOL CCoreDX11Texture2D::SetToSampler( const CORESAMPLER smp )
   return true;
 }
 
-TBOOL CCoreDX11Texture2D::Create( const TS32 xres, const TS32 yres, const TU8 *Data, const TS8 BytesPerPixel, const COREFORMAT format, const TBOOL rendertarget )
+TBOOL CCoreDX11Texture2D::Create( const int32_t xres, const int32_t yres, const TU8 *Data, const TS8 BytesPerPixel, const COREFORMAT format, const TBOOL rendertarget )
 {
   if ( xres <= 0 || yres <= 0 || format == COREFMT_UNKNOWN ) return false;
   Release();
@@ -108,7 +108,7 @@ TBOOL CCoreDX11Texture2D::Create( const TS32 xres, const TS32 yres, const TU8 *D
   return true;
 }
 
-TBOOL CCoreDX11Texture2D::Create( const TU8 *Data, const TS32 Size )
+TBOOL CCoreDX11Texture2D::Create( const TU8 *Data, const int32_t Size )
 {
   TBOOL ViewCreated = false;
 
@@ -126,7 +126,7 @@ TBOOL CCoreDX11Texture2D::Create( const TU8 *Data, const TS32 Size )
   TextureHandle = (ID3D11Texture2D*)r;
 #else
 
-  TS32 xr, yr;
+  int32_t xr, yr;
   TU8 *Img = DecompressImage( Data, Size, xr, yr );
 
   if ( !Img )
@@ -180,7 +180,7 @@ TBOOL CCoreDX11Texture2D::Create( const TU8 *Data, const TS32 Size )
   return true;
 }
 
-TBOOL CCoreDX11Texture2D::Lock( void **Result, TS32 &pitch )
+TBOOL CCoreDX11Texture2D::Lock( void **Result, int32_t &pitch )
 {
   //if (!TextureHandle) return false;
 
@@ -213,7 +213,7 @@ void CCoreDX11Texture2D::OnDeviceReset()
     BASEASSERT( Create( XRes, YRes, NULL, 4, Format, RenderTarget ) );
 }
 
-TBOOL CCoreDX11Texture2D::Update( const TU8 *Data, const TS32 XRes, const TS32 YRes, const TS8 BytesPerPixel )
+TBOOL CCoreDX11Texture2D::Update( const TU8 *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel )
 {
   if ( !TextureHandle ) return false;
   if ( !View ) return false;
@@ -325,29 +325,29 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
   struct DDSHEAD
   {
     TU32 DDS;
-    TS32 dwSize;
-    TS32 dwFlags;
-    TS32 dwHeight;
-    TS32 dwWidth;
-    TS32 dwPitchOrLinearSize;
-    TS32 dwDepth;
-    TS32 dwMipMapCount;
-    TS32 dwReserved1[ 11 ];
+    int32_t dwSize;
+    int32_t dwFlags;
+    int32_t dwHeight;
+    int32_t dwWidth;
+    int32_t dwPitchOrLinearSize;
+    int32_t dwDepth;
+    int32_t dwMipMapCount;
+    int32_t dwReserved1[ 11 ];
 
-    TS32 _dwSize;
-    TS32 _dwFlags;
-    TS32 dwFourCC;
-    TS32 dwRGBBitCount;
-    TS32 dwRBitMask;
-    TS32 dwGBitMask;
-    TS32 dwBBitMask;
-    TS32 dwABitMask;
+    int32_t _dwSize;
+    int32_t _dwFlags;
+    int32_t dwFourCC;
+    int32_t dwRGBBitCount;
+    int32_t dwRBitMask;
+    int32_t dwGBitMask;
+    int32_t dwBBitMask;
+    int32_t dwABitMask;
 
-    TS32 dwCaps;
-    TS32 dwCaps2;
-    TS32 dwCaps3;
-    TS32 dwCaps4;
-    TS32 dwReserved2;
+    int32_t dwCaps;
+    int32_t dwCaps2;
+    int32_t dwCaps3;
+    int32_t dwCaps4;
+    int32_t dwReserved2;
   };
 
   struct DDS_HEADER_DXT10
@@ -375,10 +375,10 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
       memcpy( image, Data, head.dwWidth*head.dwHeight * 4 );
 
       if ( head.dwRBitMask == 0x00ff0000 && head.dwBBitMask == 0x000000ff )
-        for ( TS32 x = 0; x < head.dwWidth*head.dwHeight; x++ )
+        for ( int32_t x = 0; x < head.dwWidth*head.dwHeight; x++ )
         {
-          TS32 p = x * 4;
-          TS32 t = image[ p ];
+          int32_t p = x * 4;
+          int32_t t = image[ p ];
           image[ p ] = image[ p + 2 ];
           image[ p + 2 ] = t;
         }
@@ -395,7 +395,7 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
   case 36:
   {
     TU16 *inimg = (TU16*)Data;
-    for ( TS32 x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
+    for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
       image[ x ] = ( !degamma ? inimg[ x ] : degammaint16( inimg[ x ] ) ) / 256;
   }
   break;
@@ -407,12 +407,12 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
 
     if ( !degamma )
     {
-      for ( TS32 x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
+      for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
         image[ x ] = (TU8)max( 0, min( 255, img2[ x ] * 255 ) );
     }
     else
     {
-      for ( TS32 x = 0; x < head.dwWidth*head.dwHeight * 4; )
+      for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; )
       {
         for ( int y = 0; y < 3; y++, x++ )
           image[ x ] = (TU8)max( 0, min( 255, degammafloat( img2[ x ] ) * 255 ) );
@@ -433,10 +433,10 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
     {
     case DXGI_FORMAT_B8G8R8A8_UNORM:
       memcpy( image, Data, head.dwWidth*head.dwHeight * 4 );
-      for ( TS32 x = 0; x < head.dwWidth*head.dwHeight; x++ )
+      for ( int32_t x = 0; x < head.dwWidth*head.dwHeight; x++ )
       {
-        TS32 p = x * 4;
-        TS32 t = image[ p ];
+        int32_t p = x * 4;
+        int32_t t = image[ p ];
         image[ p ] = image[ p + 2 ];
         image[ p + 2 ] = t;
       }
@@ -473,7 +473,7 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
   SAFEDELETEA( image );
 }
 
-TBOOL CCoreDX11Texture2D::CreateDepthBuffer( const TS32 xres, const TS32 yres, const TS32 MSCount )
+TBOOL CCoreDX11Texture2D::CreateDepthBuffer( const int32_t xres, const int32_t yres, const int32_t MSCount )
 {
   if ( xres <= 0 || yres <= 0 ) return false;
   Release();

@@ -25,7 +25,7 @@ void CWBMetricValue::SetValue( TF32 Relative, TF32 Pixels )
   MetricsUsed[ WB_PIXELS ] = true;
 }
 
-TF32 CWBMetricValue::GetValue( TF32 ParentSize, TS32 ContentSize )
+TF32 CWBMetricValue::GetValue( TF32 ParentSize, int32_t ContentSize )
 {
   if ( AutoSize ) return ContentSize + 0.5f;
   TF32 v = 0;
@@ -51,12 +51,12 @@ CRect CWBPositionDescriptor::GetPosition( CSize ParentSize, CSize ContentSize, C
 {
   CRect r( 0, 0, 0, 0 );
 
-  TS32 Width = 0;
-  TS32 Height = 0;
-  TS32 Top = 0;
-  TS32 Left = 0;
-  TS32 Right = 0;
-  TS32 Bottom = 0;
+  int32_t Width = 0;
+  int32_t Height = 0;
+  int32_t Top = 0;
+  int32_t Left = 0;
+  int32_t Right = 0;
+  int32_t Bottom = 0;
 
   TBOOL WidthSet = Positions.HasKey( WB_WIDTH );
   TBOOL HeightSet = Positions.HasKey( WB_HEIGHT );
@@ -65,12 +65,12 @@ CRect CWBPositionDescriptor::GetPosition( CSize ParentSize, CSize ContentSize, C
   TBOOL RightSet = Positions.HasKey( WB_MARGIN_RIGHT );
   TBOOL BottomSet = Positions.HasKey( WB_MARGIN_BOTTOM );
 
-  if ( WidthSet )	Width = (TS32)Positions[ WB_WIDTH ].GetValue( (TF32)ParentSize.x, ContentSize.x );
-  if ( HeightSet )	Height = (TS32)Positions[ WB_HEIGHT ].GetValue( (TF32)ParentSize.y, ContentSize.y );
-  if ( TopSet )		Top = (TS32)Positions[ WB_MARGIN_TOP ].GetValue( (TF32)ParentSize.y, 0 );
-  if ( LeftSet )	Left = (TS32)Positions[ WB_MARGIN_LEFT ].GetValue( (TF32)ParentSize.x, 0 );
-  if ( RightSet )	Right = (TS32)Positions[ WB_MARGIN_RIGHT ].GetValue( (TF32)ParentSize.x, 0 );
-  if ( BottomSet )	Bottom = (TS32)Positions[ WB_MARGIN_BOTTOM ].GetValue( (TF32)ParentSize.y, 0 );
+  if ( WidthSet )	Width = (int32_t)Positions[ WB_WIDTH ].GetValue( (TF32)ParentSize.x, ContentSize.x );
+  if ( HeightSet )	Height = (int32_t)Positions[ WB_HEIGHT ].GetValue( (TF32)ParentSize.y, ContentSize.y );
+  if ( TopSet )		Top = (int32_t)Positions[ WB_MARGIN_TOP ].GetValue( (TF32)ParentSize.y, 0 );
+  if ( LeftSet )	Left = (int32_t)Positions[ WB_MARGIN_LEFT ].GetValue( (TF32)ParentSize.x, 0 );
+  if ( RightSet )	Right = (int32_t)Positions[ WB_MARGIN_RIGHT ].GetValue( (TF32)ParentSize.x, 0 );
+  if ( BottomSet )	Bottom = (int32_t)Positions[ WB_MARGIN_BOTTOM ].GetValue( (TF32)ParentSize.y, 0 );
 
   r.x1 = LeftSet ? Left : ( ParentSize.x - ( Right + Width ) );
   r.y1 = TopSet ? Top : ( ParentSize.y - ( Bottom + Height ) );
@@ -108,10 +108,10 @@ CRect CWBPositionDescriptor::GetPadding( CSize ParentSize, CRect &BorderSizes )
 {
   CRect r( 0, 0, 0, 0 );
 
-  r.x1 = (TS32)Positions[ WB_PADDING_LEFT ].GetValue( (TF32)ParentSize.x, 0 ) + BorderSizes.x1;
-  r.y1 = (TS32)Positions[ WB_PADDING_TOP ].GetValue( (TF32)ParentSize.y, 0 ) + BorderSizes.y1;
-  r.x2 = ParentSize.x - (TS32)Positions[ WB_PADDING_RIGHT ].GetValue( (TF32)ParentSize.x, 0 ) - BorderSizes.x2;
-  r.y2 = ParentSize.y - (TS32)Positions[ WB_PADDING_BOTTOM ].GetValue( (TF32)ParentSize.y, 0 ) - BorderSizes.y2;
+  r.x1 = (int32_t)Positions[ WB_PADDING_LEFT ].GetValue( (TF32)ParentSize.x, 0 ) + BorderSizes.x1;
+  r.y1 = (int32_t)Positions[ WB_PADDING_TOP ].GetValue( (TF32)ParentSize.y, 0 ) + BorderSizes.y1;
+  r.x2 = ParentSize.x - (int32_t)Positions[ WB_PADDING_RIGHT ].GetValue( (TF32)ParentSize.x, 0 ) - BorderSizes.x2;
+  r.y2 = ParentSize.y - (int32_t)Positions[ WB_PADDING_BOTTOM ].GetValue( (TF32)ParentSize.y, 0 ) - BorderSizes.y2;
 
   return r;
 }
@@ -141,17 +141,17 @@ TBOOL CWBPositionDescriptor::IsHeightSet()
   return Positions.HasKey( WB_HEIGHT );
 }
 
-TS32 CWBPositionDescriptor::GetWidth( CSize ParentSize, CSize ContentSize )
+int32_t CWBPositionDescriptor::GetWidth( CSize ParentSize, CSize ContentSize )
 {
   TBOOL WidthSet = Positions.HasKey( WB_WIDTH );
-  if ( WidthSet )	return (TS32)Positions[ WB_WIDTH ].GetValue( (TF32)ParentSize.x, ContentSize.x );
+  if ( WidthSet )	return (int32_t)Positions[ WB_WIDTH ].GetValue( (TF32)ParentSize.x, ContentSize.x );
   return 0;
 }
 
-TS32 CWBPositionDescriptor::GetHeight( CSize ParentSize, CSize ContentSize )
+int32_t CWBPositionDescriptor::GetHeight( CSize ParentSize, CSize ContentSize )
 {
   TBOOL HeightSet = Positions.HasKey( WB_HEIGHT );
-  if ( HeightSet )	return (TS32)Positions[ WB_HEIGHT ].GetValue( (TF32)ParentSize.y, ContentSize.y );
+  if ( HeightSet )	return (int32_t)Positions[ WB_HEIGHT ].GetValue( (TF32)ParentSize.y, ContentSize.y );
   return 0;
 }
 
@@ -176,16 +176,16 @@ void CWBPositionDescriptor::SetAutoSize( WBPOSITIONTYPE p )
 
 CWBPositionDescriptorPixels::CWBPositionDescriptorPixels()
 {
-  for ( TS32 x = 0; x < 6; x++ )
+  for ( int32_t x = 0; x < 6; x++ )
   {
     Set[ x ] = false;
     Positions[ x ] = 0;
   }
 }
 
-void CWBPositionDescriptorPixels::SetValue( WBPOSITIONTYPE p, TS32 Pixels )
+void CWBPositionDescriptorPixels::SetValue( WBPOSITIONTYPE p, int32_t Pixels )
 {
-  if ( (TS32)p<0 || p>WB_HEIGHT ) return;
+  if ( (int32_t)p<0 || p>WB_HEIGHT ) return;
   Positions[ p ] = Pixels;
   Set[ p ] = true;
 }
@@ -222,17 +222,17 @@ CWBMosaicImage::CWBMosaicImage()
   Color = 0xffffffff;
 }
 
-void CWBMosaicImage::SetPositionValue( WBPOSITIONTYPE p, TS32 Pixels )
+void CWBMosaicImage::SetPositionValue( WBPOSITIONTYPE p, int32_t Pixels )
 {
   Position.SetValue( p, Pixels );
 }
 
-void CWBMosaicImage::SetTiling( TS32 Axis, TBOOL y )
+void CWBMosaicImage::SetTiling( int32_t Axis, TBOOL y )
 {
   Tiling[ Axis ] = y;
 }
 
-void CWBMosaicImage::SetStretching( TS32 Axis, TBOOL y )
+void CWBMosaicImage::SetStretching( int32_t Axis, TBOOL y )
 {
   Stretching[ Axis ] = y;
 }
@@ -266,7 +266,7 @@ void CWBMosaic::AddImage( CWBMosaicImage &Image )
 
 void CWBMosaic::Render( CWBDrawAPI *API, CRect &Position )
 {
-  for ( TS32 x = 0; x < Images.NumItems(); x++ )
+  for ( int32_t x = 0; x < Images.NumItems(); x++ )
     Images[ x ].Render( API, Position + CRect( Overshoot[ 0 ], Overshoot[ 1 ], Overshoot[ 2 ], Overshoot[ 3 ] ) );
 }
 
@@ -284,13 +284,13 @@ CWBMosaic::CWBMosaic( const CWBMosaic &Copy )
 {
   Name = Copy.Name;
   Images = Copy.Images;
-  for ( TS32 x = 0; x < 4; x++ )
+  for ( int32_t x = 0; x < 4; x++ )
     Overshoot[ x ] = Copy.Overshoot[ x ];
 }
 
 CWBMosaic::CWBMosaic()
 {
-  for ( TS32 x = 0; x < 4; x++ )
+  for ( int32_t x = 0; x < 4; x++ )
     Overshoot[ x ] = 0;
 }
 
@@ -299,7 +299,7 @@ CWBMosaic & CWBMosaic::operator=( const CWBMosaic &Copy )
   if ( &Copy == this ) return *this;
   Name = Copy.Name;
   Images = Copy.Images;
-  for ( TS32 x = 0; x < 4; x++ )
+  for ( int32_t x = 0; x < 4; x++ )
     Overshoot[ x ] = Copy.Overshoot[ x ];
   return *this;
 }
@@ -309,7 +309,7 @@ void CWBMosaic::Flush()
   Images.Flush();
 }
 
-void CWBMosaic::SetOverShoot( WBRECTSIDE side, TS32 val )
+void CWBMosaic::SetOverShoot( WBRECTSIDE side, int32_t val )
 {
   Overshoot[ side ] = val;
 }
@@ -338,12 +338,12 @@ void CWBSkinElement::SetHandle( WBATLASHANDLE h )
   Handle = h;
 }
 
-void CWBSkinElement::SetBehavior( TS32 Axis, WBSKINELEMENTBEHAVIOR Behavior )
+void CWBSkinElement::SetBehavior( int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior )
 {
   DefaultBehavior[ Axis ] = Behavior;
 }
 
-WBSKINELEMENTBEHAVIOR CWBSkinElement::GetBehavior( TS32 Axis )
+WBSKINELEMENTBEHAVIOR CWBSkinElement::GetBehavior( int32_t Axis )
 {
   return DefaultBehavior[ Axis ];
 }
@@ -387,7 +387,7 @@ void CWBSkin::RenderElement( CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos )
 {
   if ( ID == 0xffffffff ) return;
 
-  TS32 idx = ID & 0x7fffffff;
+  int32_t idx = ID & 0x7fffffff;
 
   if ( !( ID & 0x80000000 ) )
   {
@@ -412,11 +412,11 @@ void CWBSkin::RenderElement( CWBDrawAPI *API, TCHAR *Name, CRect &Pos )
 
 WBSKINELEMENTID CWBSkin::GetElementID( CString &Name )
 {
-  for ( TS32 x = 0; x < Mosaics.NumItems(); x++ )
+  for ( int32_t x = 0; x < Mosaics.NumItems(); x++ )
     if ( Mosaics[ x ].GetName() == Name )
       return x;
 
-  for ( TS32 x = 0; x < SkinItems.NumItems(); x++ )
+  for ( int32_t x = 0; x < SkinItems.NumItems(); x++ )
     if ( SkinItems[ x ].GetName() == Name )
       return x | 0x80000000;
 
@@ -425,7 +425,7 @@ WBSKINELEMENTID CWBSkin::GetElementID( CString &Name )
 
 void CWBSkin::AddElement( const CString &Name, WBATLASHANDLE Handle, WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav )
 {
-  for ( TS32 x = 0; x < SkinItems.NumItems(); x++ )
+  for ( int32_t x = 0; x < SkinItems.NumItems(); x++ )
     if ( SkinItems[ x ].GetName() == Name )
     {
       SkinItems[ x ].SetHandle( Handle );
@@ -442,9 +442,9 @@ void CWBSkin::AddElement( const CString &Name, WBATLASHANDLE Handle, WBSKINELEME
   SkinItems.Last().SetBehavior( 1, Ybehav );
 }
 
-CWBMosaic * CWBSkin::AddMosaic( const CString &Name, CString &Description, TS32 OverShootLeft, TS32 OverShootTop, TS32 OverShootRight, TS32 OverShootBottom )
+CWBMosaic * CWBSkin::AddMosaic( const CString &Name, CString &Description, int32_t OverShootLeft, int32_t OverShootTop, int32_t OverShootRight, int32_t OverShootBottom )
 {
-  for ( TS32 x = 0; x < Mosaics.NumItems(); x++ )
+  for ( int32_t x = 0; x < Mosaics.NumItems(); x++ )
     if ( Mosaics[ x ].GetName() == Name )
       return &Mosaics[ x ];
 
@@ -458,7 +458,7 @@ CWBMosaic * CWBSkin::AddMosaic( const CString &Name, CString &Description, TS32 
   Mosaics.Last().SetOverShoot( WB_RECTSIDE_BOTTOM, OverShootBottom );
 
   CStringArray Lines = Description.Explode( _T( ")" ) );
-  for ( TS32 x = 0; x < Lines.NumItems(); x++ )
+  for ( int32_t x = 0; x < Lines.NumItems(); x++ )
   {
     CStringArray Data = Lines[ x ].Trimmed().Explode( _T( "(" ) );
     CWBMosaicImage i;
@@ -476,7 +476,7 @@ CWBMosaic * CWBSkin::AddMosaic( const CString &Name, CString &Description, TS32 
 
         CStringArray Data2 = Data[ 1 ].Explode( _T( ";" ) );
 
-        for ( TS32 y = 0; y < Data2.NumItems(); y++ )
+        for ( int32_t y = 0; y < Data2.NumItems(); y++ )
         {
           CStringArray keyvalue = Data2[ y ].Explode( _T( ":" ) );
           if ( keyvalue.NumItems() > 0 )
@@ -486,7 +486,7 @@ CWBMosaic * CWBSkin::AddMosaic( const CString &Name, CString &Description, TS32 
 
             if ( keyvalue.NumItems() > 1 ) value = keyvalue[ 1 ].Trimmed();
 
-            TS32 v = 0;
+            int32_t v = 0;
             if ( key == _T( "top" ) )
             {
               value.Scan( _T( "%d" ), &v );
@@ -540,7 +540,7 @@ CWBMosaic * CWBSkin::AddMosaic( const CString &Name, CString &Description, TS32 
 
 CWBSkinElement * CWBSkin::GetElement( CString &Name )
 {
-  for ( TS32 x = 0; x < SkinItems.NumItems(); x++ )
+  for ( int32_t x = 0; x < SkinItems.NumItems(); x++ )
     if ( SkinItems[ x ].GetName() == Name )
       return &SkinItems[ x ];
 
@@ -551,7 +551,7 @@ CWBSkinElement * CWBSkin::GetElement( WBSKINELEMENTID id )
 {
   if ( id == 0xffffffff ) return NULL;
   if ( !( id & 0x80000000 ) ) return NULL; //mosaic
-  TS32 idx = id & 0x7fffffff;
+  int32_t idx = id & 0x7fffffff;
   if ( idx < 0 || idx >= SkinItems.NumItems() ) return NULL;
   return &SkinItems[ idx ];
 }
@@ -560,7 +560,7 @@ CSize CWBSkin::GetElementSize( CWBDrawAPI *API, WBSKINELEMENTID ID )
 {
   if ( ID == 0xffffffff ) return CSize( 0, 0 );
 
-  TS32 idx = ID & 0x7fffffff;
+  int32_t idx = ID & 0x7fffffff;
 
   if ( !( ID & 0x80000000 ) ) return CSize( 0, 0 ); //mosaics don't have sizes
 

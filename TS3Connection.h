@@ -8,30 +8,30 @@ class TS3Connection
   struct CommandResponse
   {
     CStringArray Lines;
-    TS32 ErrorCode = -1;
+    int32_t ErrorCode = -1;
     CString Message;
   };
 
-  TS32 currentHandlerID = 1;
+  int32_t currentHandlerID = 1;
 
   void ProcessNotification( CString &s );
-  void ProcessChannelList( CString &channeldata, TS32 handler );
-  void ProcessClientList( CString &clientdata, TS32 handler );
+  void ProcessChannelList( CString &channeldata, int32_t handler );
+  void ProcessClientList( CString &clientdata, int32_t handler );
   CString ReadLine();
 
-  TS32 LastPingTime = 0;
+  int32_t LastPingTime = 0;
 
 public:
 
   class TS3Client
   {
   public:
-    TS32 clientid = 0;
-    TS32 channelid = 0;
+    int32_t clientid = 0;
+    int32_t channelid = 0;
     CString name;
-    TS32 talkStatus = 0;
-    TS32 inputmuted = 0;
-    TS32 outputmuted = 0;
+    int32_t talkStatus = 0;
+    int32_t inputmuted = 0;
+    int32_t outputmuted = 0;
 
     TU64 lastTalkTime = 0;
   };
@@ -39,25 +39,25 @@ public:
   class TS3Channel
   {
   public:
-    TS32 id = 0;
-    TS32 parentid = 0;
-    TS32 order = 0;
+    int32_t id = 0;
+    int32_t parentid = 0;
+    int32_t order = 0;
     CString name;
   };
 
   class TS3Schandler
   {
   public:
-    TS32 id = 0;
+    int32_t id = 0;
     TBOOL Connected = false;
-    TS32 myclientid = 0;
+    int32_t myclientid = 0;
     TBOOL clientIDInvalid = true;
-    CDictionaryEnumerable<TS32, TS3Channel> Channels;
-    CDictionaryEnumerable<TS32, TS3Client> Clients;
+    CDictionaryEnumerable<int32_t, TS3Channel> Channels;
+    CDictionaryEnumerable<int32_t, TS3Client> Clients;
     CString name;
   };
 
-  CDictionary<TS32, TS3Schandler> handlers;
+  CDictionary<int32_t, TS3Schandler> handlers;
 
   TS3Connection();
   virtual ~TS3Connection();

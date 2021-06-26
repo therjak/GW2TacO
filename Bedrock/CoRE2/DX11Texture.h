@@ -26,13 +26,13 @@ public:
 	virtual void OnDeviceLost();
 	virtual void OnDeviceReset();
 
-	virtual TBOOL Create(const TS32 XRes, const TS32 YRes, const TU8 *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
-	virtual TBOOL Create(const TU8 *Data, const TS32 Size);
-	virtual TBOOL CreateDepthBuffer(const TS32 XRes, const TS32 YRes, const TS32 MSCount = 1);
-	virtual TBOOL Lock(void **Result, TS32 &pitch);
+	virtual TBOOL Create(const int32_t XRes, const int32_t YRes, const TU8 *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
+	virtual TBOOL Create(const TU8 *Data, const int32_t Size);
+	virtual TBOOL CreateDepthBuffer(const int32_t XRes, const int32_t YRes, const int32_t MSCount = 1);
+	virtual TBOOL Lock(void **Result, int32_t &pitch);
 	virtual TBOOL UnLock();
 
-	virtual TBOOL Update(const TU8 *Data, const TS32 XRes, const TS32 YRes, const TS8 BytesPerPixel = 4);
+	virtual TBOOL Update(const TU8 *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel = 4);
 	void SetTextureHandle(ID3D11Texture2D *Hnd) { TextureHandle = Hnd; }
 	void SetView(ID3D11ShaderResourceView *v) { View = v; }
 

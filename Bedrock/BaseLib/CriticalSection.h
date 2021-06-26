@@ -2,9 +2,9 @@
 
 volatile struct LIGHTWEIGHT_CRITICALSECTION
 {
-  volatile TS32 threadID = 0;
-  volatile TS32 spinCount = 0;
-  volatile TS32 threadDibsID = 0;
+  volatile int32_t threadID = 0;
+  volatile int32_t spinCount = 0;
+  volatile int32_t threadDibsID = 0;
 };
 
 #define THREAD_UNUSED 0

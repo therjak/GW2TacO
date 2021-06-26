@@ -12,19 +12,19 @@ void CCoreModel::CreateAtoms(CDictionaryEnumerable<CORERENDERLAYERID, CCoreRende
 {
 	if (!Material) return;
 
-	for (TS32 x = 0; x < Meshes.NumItems(); x++)
+	for (int32_t x = 0; x < Meshes.NumItems(); x++)
 	{
 		Material->CreateAtoms(Layers, SceneBuffer, ObjectBuffer, (CDictionary<CCoreMaterialTechnique*, CCoreConstantBuffer*>**)Buffers, Atoms, Meshes[x]);
 	}
 }
 
-void CCoreMesh::SetIndexBuffer(CCoreIndexBuffer *i, TS32 TriangleCount)
+void CCoreMesh::SetIndexBuffer(CCoreIndexBuffer *i, int32_t TriangleCount)
 {
 	Indices = i;
 	TriCount = TriangleCount;
 }
 
-void CCoreMesh::SetVertexBuffer(CCoreVertexBuffer *b, TS32 Count)
+void CCoreMesh::SetVertexBuffer(CCoreVertexBuffer *b, int32_t Count)
 {
 	Vertices = b;
 	VxCount = Count;
@@ -35,12 +35,12 @@ void CCoreMesh::SetVertexFormat(CCoreVertexFormat *v)
 	VxFormat = v;
 }
 
-TS32 CCoreMesh::GetVxCount()
+int32_t CCoreMesh::GetVxCount()
 {
 	return VxCount;
 }
 
-TS32 CCoreMesh::GetTriCount()
+int32_t CCoreMesh::GetTriCount()
 {
 	return TriCount;
 }

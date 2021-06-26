@@ -26,7 +26,7 @@ void CCoreScene::Render(CCoreDevice *Device)
 	//set scene constant buffer here
 	Device->SetShaderConstants(0, 1, &ShaderData);
 
-	for (TS32 x = 0; x < Layers.NumItems(); x++)
+	for (int32_t x = 0; x < Layers.NumItems(); x++)
 		Layers[x]->Render(Device);
 }
 

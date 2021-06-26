@@ -1,8 +1,8 @@
 #include "BaseLib.h"
 
-const TS32 Lerp( const TS32 v1, const TS32 v2, const TF32 t )
+const int32_t Lerp( const int32_t v1, const int32_t v2, const TF32 t )
 {
-  return (TS32)( ( v2 - v1 )*t + v1 );
+  return (int32_t)( ( v2 - v1 )*t + v1 );
 }
 
 const TF32 Lerp( const TF32 v1, const TF32 v2, const TF32 t )
@@ -52,10 +52,10 @@ const CVector4 Lerp( const CVector4 &v1, const CVector4 &v2, const TF32 t )
 
 TF32 mod( TF32 v, TF32 m )
 {
-  return m * (TS32)floor( v / m );
+  return m * (int32_t)floor( v / m );
 }
 
-TS32 Mod( TS32 a, TS32 b )
+int32_t Mod( int32_t a, int32_t b )
 {
   return ( ( a%b ) + b ) % b;
 }
@@ -65,7 +65,7 @@ TF32 Mod( TF32 a, TF32 b )
   return fmodf( ( ( fmodf( a, b ) ) + b ), b );
 }
 
-TF32 Mod( TF32 a, TS32 b )
+TF32 Mod( TF32 a, int32_t b )
 {
   return fmodf( ( ( fmodf( a, (TF32)b ) ) + b ), (TF32)b );
 }
@@ -298,12 +298,12 @@ CVector2::CVector2()
 
 }
 
-TF32 const CVector2::operator[]( TS32 idx ) const
+TF32 const CVector2::operator[]( int32_t idx ) const
 {
   return ( ( const TF32* )this )[ idx ];
 }
 
-TF32 &CVector2::operator[]( TS32 idx )
+TF32 &CVector2::operator[]( int32_t idx )
 {
   return ( ( TF32* )this )[ idx ];
 }
@@ -400,7 +400,7 @@ TF32 CVector2::operator* ( const CVector2 &v ) const //dot product
   return x*v.x + y*v.y;
 }
 
-TS32 CVector2I::Dot( const CVector2I &v1, const CVector2I &v2 )
+int32_t CVector2I::Dot( const CVector2I &v1, const CVector2I &v2 )
 {
   return v1*v2;
 }
@@ -431,13 +431,13 @@ CVector2I::CVector2I( const CVector2I &v )
   y = v.y;
 }
 
-CVector2I::CVector2I( const TS32* v )
+CVector2I::CVector2I( const int32_t* v )
 {
   x = v[ 0 ];
   y = v[ 1 ];
 }
 
-CVector2I::CVector2I( const TS32 _x, const TS32 _y )
+CVector2I::CVector2I( const int32_t _x, const int32_t _y )
 {
   x = _x;
   y = _y;
@@ -448,24 +448,24 @@ CVector2I::CVector2I()
 
 }
 
-TS32 const CVector2I::operator[]( TS32 idx ) const
+int32_t const CVector2I::operator[]( int32_t idx ) const
 {
-  return ( ( const TS32* )this )[ idx ];
+  return ( ( const int32_t* )this )[ idx ];
 }
 
-TS32 &CVector2I::operator[]( TS32 idx )
+int32_t &CVector2I::operator[]( int32_t idx )
 {
-  return ( ( TS32* )this )[ idx ];
+  return ( ( int32_t* )this )[ idx ];
 }
 
-CVector2I::operator TS32* ( )
+CVector2I::operator int32_t* ( )
 {
-  return (TS32*)&x;
+  return (int32_t*)&x;
 }
 
-CVector2I::operator const TS32* ( ) const
+CVector2I::operator const int32_t* ( ) const
 {
-  return (const TS32*)&x;
+  return (const int32_t*)&x;
 }
 
 CVector2I &CVector2I::operator+= ( const CVector2I &v )
@@ -484,20 +484,20 @@ CVector2I &CVector2I::operator-= ( const CVector2I &v )
 
 CVector2I &CVector2I::operator*= ( const TF32 f )
 {
-  x = (TS32)( x*f );
-  y = (TS32)( y*f );
+  x = (int32_t)( x*f );
+  y = (int32_t)( y*f );
   return *this;
 }
 
 CVector2I &CVector2I::operator/= ( const TF32 f )
 {
   TF32 fi = 1 / f;
-  x = (TS32)( x*fi );
-  y = (TS32)( y*fi );
+  x = (int32_t)( x*fi );
+  y = (int32_t)( y*fi );
   return *this;
 }
 
-CVector2I &CVector2I::operator/= ( const TS32 f )
+CVector2I &CVector2I::operator/= ( const int32_t f )
 {
   x = x / f;
   y = y / f;
@@ -526,16 +526,16 @@ CVector2I CVector2I::operator- ( const CVector2I &v ) const
 
 CVector2I CVector2I::operator* ( const TF32 f ) const
 {
-  return CVector2I( (TS32)( x*f ), (TS32)( y*f ) );
+  return CVector2I( (int32_t)( x*f ), (int32_t)( y*f ) );
 }
 
 CVector2I CVector2I::operator/ ( const TF32 f ) const
 {
   TF32 fi = 1 / f;
-  return CVector2I( (TS32)( x*fi ), (TS32)( y*fi ) );
+  return CVector2I( (int32_t)( x*fi ), (int32_t)( y*fi ) );
 }
 
-CVector2I CVector2I::operator/ ( const TS32 f ) const
+CVector2I CVector2I::operator/ ( const int32_t f ) const
 {
   return CVector2I( x / f, y / f );
 }
@@ -550,17 +550,17 @@ TBOOL CVector2I::operator!= ( const CVector2I &v ) const
   return x != v.x || y != v.y;
 }
 
-TS32 CVector2I::operator* ( const CVector2I &v ) const //dot product
+int32_t CVector2I::operator* ( const CVector2I &v ) const //dot product
 {
   return x*v.x + y*v.y;
 }
 
-TF32 const CVector3::operator[]( TS32 idx ) const
+TF32 const CVector3::operator[]( int32_t idx ) const
 {
   return ( ( const TF32* )this )[ idx ];
 }
 
-TF32 &CVector3::operator[]( TS32 idx )
+TF32 &CVector3::operator[]( int32_t idx )
 {
   return ( ( TF32* )this )[ idx ];
 }
@@ -659,12 +659,12 @@ CVector3 CVector3::operator% ( const CVector3 &v ) const //cross product
   return CVector3( y*v.z - z*v.y, z*v.x - x*v.z, x*v.y - y*v.x );
 }
 
-TF32 const CVector4::operator[]( TS32 idx ) const
+TF32 const CVector4::operator[]( int32_t idx ) const
 {
   return ( ( const TF32* )this )[ idx ];
 }
 
-TF32 &CVector4::operator[]( TS32 idx )
+TF32 &CVector4::operator[]( int32_t idx )
 {
   return ( ( TF32* )this )[ idx ];
 }

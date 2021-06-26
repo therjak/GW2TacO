@@ -84,9 +84,9 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
   TBOOL compact = GetConfigValue( "MapTimerCompact" );
 
-  TS32 timeWindow = 120;
-  TS32 mapheight = 40;
-  TS32 barheight = 20;
+  int32_t timeWindow = 120;
+  int32_t mapheight = 40;
+  int32_t barheight = 20;
 
   CRect cl = GetClientRect();
 
@@ -107,8 +107,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
   if ( compact )
     mapheight = barheight;
 
-  TS32 mapCount = 0;
-  for ( TS32 x = 0; x < maps.NumItems(); x++ )
+  int32_t mapCount = 0;
+  for ( int32_t x = 0; x < maps.NumItems(); x++ )
     if ( maps[ x ].display )
       mapCount++;
 
@@ -117,11 +117,11 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
 
-  //TS32 minutes = systime.wHour * 60 + systime.wMinute;
-  TS32 minutes = ptm.tm_hour * 60 + ptm.tm_min;
-  TS32 lefttime = minutes - timeWindow / 2;
+  //int32_t minutes = systime.wHour * 60 + systime.wMinute;
+  int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
+  int32_t lefttime = minutes - timeWindow / 2;
 
-  TS32 ypos = 0;
+  int32_t ypos = 0;
 
   CArray< CRect > highlightRects;
 
@@ -130,8 +130,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
     if ( !maps[ x ].display )
       continue;
 
-    TS32 currtime = -48 * 60 + maps[ x ].Length + maps[ x ].Start - lefttime;
-    TS32 currevent = 0;
+    int32_t currtime = -48 * 60 + maps[ x ].Length + maps[ x ].Start - lefttime;
+    int32_t currevent = 0;
 
     if ( ( ypos > cl.y2 ) || ( ypos < cl.y1 - mapheight ) )
       continue;
@@ -141,8 +141,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
     if ( !compact )
       f->Write( API, maps[ x ].name, CPoint( p.x, ypos + 2 ), 0xffffffff, TextTransform );
 
-    TS32 toppos = ypos + mapheight - barheight;
-    TS32 bottompos = ypos + mapheight + 1;
+    int32_t toppos = ypos + mapheight - barheight;
+    int32_t bottompos = ypos + mapheight + 1;
 
     {
       CLightweightCriticalSection cs( &critSec );
@@ -152,8 +152,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
     while ( currtime < 72 * 60 )
     {
-      TS32 p1 = (TS32)( cl.Width() * currtime / (TF32)timeWindow );
-      TS32 p2 = (TS32)( cl.Width() * ( currtime + maps[ x ].events[ currevent ].length ) / (TF32)timeWindow ) + 1;
+      int32_t p1 = (int32_t)( cl.Width() * currtime / (TF32)timeWindow );
+      int32_t p2 = (int32_t)( cl.Width() * ( currtime + maps[ x ].events[ currevent ].length ) / (TF32)timeWindow ) + 1;
 
       if ( p2 >= 0 && p1 <= cl.Width() )
       {
@@ -168,7 +168,7 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
         //if ( minutes >= currtime && minutes < currtime + maps[x].events[currevent].length)
         {
-          TS32 timeleft = currtime * 60 - ptm.tm_sec - timeWindow * 30 + maps[ x ].events[ currevent ].length * 60;// (currtime + maps[x].events[currevent].length) * 60 - (minutes * 60 + systime.wSecond);
+          int32_t timeleft = currtime * 60 - ptm.tm_sec - timeWindow * 30 + maps[ x ].events[ currevent ].length * 60;// (currtime + maps[x].events[currevent].length) * 60 - (minutes * 60 + systime.wSecond);
           if ( timeleft >= 0 && timeleft <= maps[ x ].events[ currevent ].length * 60 )
             text = CString::Format( "%s %d:%.2d", text.GetPointer(), timeleft / 60, timeleft % 60 );
         }

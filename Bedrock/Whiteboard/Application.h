@@ -24,8 +24,8 @@ class CWBApplication : public CCoreWindowHandlerWin
   friend class CWBItem;
   CArray<CWBItem*> MessagePath;
 
-  CRingBuffer<TS32> *FrameTimes;
-  TS32 LastFrameTime;
+  CRingBuffer<int32_t> *FrameTimes;
+  int32_t LastFrameTime;
 
   CDictionary<WBGUID, CWBItem*> Items;
   CArrayThreadSafe<CWBMessage> MessageBuffer;
@@ -51,7 +51,7 @@ class CWBApplication : public CCoreWindowHandlerWin
   virtual void UpdateMouseItem();
   virtual void CleanTrash();
   virtual void UpdateControlKeyStates(); //update ctrl alt shift states
-  virtual TS32 GetKeyboardState();
+  virtual int32_t GetKeyboardState();
 
   WBMOUSECLICKREPEATMODE ClickRepeaterMode;
   int64_t NextRepeatedClickTime;
@@ -170,8 +170,8 @@ public:
   void SetClearColor( CColor color ) { ClearColor = color; }
 
   TF32 GetFrameRate();
-  TS32 GetInitialKeyboardDelay();
-  TS32 GetKeyboardRepeatTime();
+  int32_t GetInitialKeyboardDelay();
+  int32_t GetKeyboardRepeatTime();
 
   virtual void HandleResize();
 

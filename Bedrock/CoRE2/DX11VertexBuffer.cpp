@@ -89,7 +89,7 @@ TBOOL CCoreDX11VertexBuffer::CreateDynamic(const TU32 size)
 	return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Update(const TS32 Offset, const TU8 *Data, const TU32 Size)
+TBOOL CCoreDX11VertexBuffer::Update(const int32_t Offset, const TU8 *Data, const TU32 Size)
 {
 	if (!VertexBufferHandle || !Data || Dynamic) return false;
 	if (!Size) return true;
@@ -105,7 +105,7 @@ TBOOL CCoreDX11VertexBuffer::Update(const TS32 Offset, const TU8 *Data, const TU
 }
 
 
-TBOOL CCoreDX11VertexBuffer::Lock(void **Result, const TU32 Offset, const TS32 size, const TS32 Flags)
+TBOOL CCoreDX11VertexBuffer::Lock(void **Result, const TU32 Offset, const int32_t size, const int32_t Flags)
 {
 	if (!Dynamic)
 	{

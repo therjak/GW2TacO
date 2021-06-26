@@ -5,10 +5,10 @@
 
 #ifdef MEMORY_TRACKING
 
-void* __cdecl operator new( size_t size, const TS8* file, TS32 line );
-void* __cdecl operator new[]( size_t size, const TS8* file, TS32 line );
-void __cdecl operator delete( void* pointer, const TS8* file, TS32 line );
-void __cdecl operator delete[]( void* pointer, const TS8* file, TS32 line );
+void* __cdecl operator new( size_t size, const TS8* file, int32_t line );
+void* __cdecl operator new[]( size_t size, const TS8* file, int32_t line );
+void __cdecl operator delete( void* pointer, const TS8* file, int32_t line );
+void __cdecl operator delete[]( void* pointer, const TS8* file, int32_t line );
 
 #define new new(__FILE__, __LINE__)
 
@@ -19,15 +19,15 @@ class CAllocationInfo
 {
 public:
   TS8 *File;
-  TS32 Line;
-  TS32 Size;
+  int32_t Line;
+  int32_t Size;
 
 #ifdef ENABLE_MALLOC_STACK_TRACE
   CStackTracker Stack;
 #endif
 
   CAllocationInfo() {};
-  CAllocationInfo( TS8 *file, TS32 line, TS32 size )
+  CAllocationInfo( TS8 *file, int32_t line, int32_t size )
   {
     File = file;
     Line = line;
@@ -47,7 +47,7 @@ public:
 
   CMemTracker();
   virtual ~CMemTracker();
-  void AddPointer( void *p, const TS8* file, TS32 line, TS32 size );
+  void AddPointer( void *p, const TS8* file, int32_t line, int32_t size );
   void RemovePointer( void *p );
   TBOOL SetMissingIgnore( TBOOL b )
   {
@@ -60,7 +60,7 @@ public:
   void Pause() { Paused = true; }
   void Resume() { Paused = false; }
 
-  TS32 GetAllocatedMemorySize();
+  int32_t GetAllocatedMemorySize();
 };
 
 extern CMemTracker memTracker;

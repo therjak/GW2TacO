@@ -16,7 +16,7 @@ public:
   CVector3 Project( const CVector3 &v ) const;
   CLine Project( const CLine &l ) const;
   TF32 Distance( const CVector3 &v ) const;
-  TS32 Side( const CVector3 &v ) const;
+  int32_t Side( const CVector3 &v ) const;
   CVector3 Intersect( const CLine &l ) const;
 
   //CLine Intersect(const CPlane &p) const

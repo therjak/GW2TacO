@@ -640,7 +640,7 @@ CArrayThreadSafe< CString > loadList;
 
 void FetchMarkerPackOnline( CString& ourl )
 {
-  TS32 pos = ourl.Find( "gw2taco://markerpack/" );
+  int32_t pos = ourl.Find( "gw2taco://markerpack/" );
   if ( pos < 0 )
   {
     LOG_ERR( "[GW2TacO] Trying to access malformed package url %s", ourl.GetPointer() );
@@ -678,7 +678,7 @@ void FetchMarkerPackOnline( CString& ourl )
 
     mz_zip_reader_end( &zip );
 
-    TS32 cnt = 0;
+    int32_t cnt = 0;
     for ( TU32 x = 0; x < url.Length(); x++ )
       if ( url[ x ] == '\\' || url[ x ] == '/' )
         cnt = x;
@@ -789,7 +789,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     TCHAR szFileName[ MAX_PATH + 1 ];
     GetModuleFileName( NULL, szFileName, MAX_PATH + 1 );
     CString s( szFileName );
-    for ( TS32 x = s.Length() - 1; x >= 0; x-- )
+    for ( int32_t x = s.Length() - 1; x >= 0; x-- )
       if ( s[ x ] == '\\' || s[ x ] == '/' )
       {
         s[ x ] = 0;
@@ -996,16 +996,16 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
       []( LPVOID data )
     {
       CString s = FetchHTTP( L"www.gw2taco.com", L"/2000/01/buildid.html" );
-      TS32 idpos = s.Find( "[buildid:" );
+      int32_t idpos = s.Find( "[buildid:" );
       if ( idpos >= 0 )
       {
         CString sub = s.Substring( idpos );
-        TS32 release = 0;
-        TS32 build = 0;
+        int32_t release = 0;
+        int32_t build = 0;
         if ( sub.Scan( "[buildid:%d.%dr]", &release, &build ) == 2 )
         {
-          extern TS32 TacORelease;
-          extern TS32 TacOBuildCount;
+          extern int32_t TacORelease;
+          extern int32_t TacOBuildCount;
           if ( release > TacORelease || build > TacOBuildCount )
           {
             NewTacOVersion = release;
@@ -1075,7 +1075,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   bool frameThrottling = GetConfigValue( "FrameThrottling" ) != 0;
 
-  TS32 hideOnLoadingScreens = GetConfigValue( "HideOnLoadingScreens" );
+  int32_t hideOnLoadingScreens = GetConfigValue( "HideOnLoadingScreens" );
 
   while ( App->HandleMessages() )
   {

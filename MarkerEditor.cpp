@@ -40,7 +40,7 @@ void GW2MarkerEditor::OnDraw( CWBDrawAPI *API )
   if ( !mumbleLink.IsValid() ) return;
 
   if ( mumbleLink.mapID == -1 ) return;
-  for ( TS32 x = 0; x < POIs.NumItems(); x++ )
+  for ( int32_t x = 0; x < POIs.NumItems(); x++ )
   {
     auto &cpoi = POIs.GetByIndex( x );
 

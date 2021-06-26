@@ -19,12 +19,12 @@ CCoreWindowParameters::CCoreWindowParameters()
 	ResizeDisabled = false;
 }
 
-CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, TBOOL fs, TS32 x, TS32 y, TCHAR *title, HICON icon, TBOOL maximize, TBOOL noresize)
+CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, TBOOL fs, int32_t x, int32_t y, TCHAR *title, HICON icon, TBOOL maximize, TBOOL noresize)
 {
 	Initialize(new CCore(), hinst, fs, x, y, title, icon, maximize, noresize);
 }
 
-void CCoreWindowParameters::Initialize(CCoreDevice *device, HINSTANCE hinst, TBOOL fs, TS32 x, TS32 y, TCHAR *title, HICON icon, TBOOL maximize, TBOOL noresize)
+void CCoreWindowParameters::Initialize(CCoreDevice *device, HINSTANCE hinst, TBOOL fs, int32_t x, int32_t y, TCHAR *title, HICON icon, TBOOL maximize, TBOOL noresize)
 {
 	Device = device;
 	hInstance = hinst;
@@ -64,12 +64,12 @@ void CCoreWindowHandler::Destroy()
 	Done = true;
 }
 
-TS32 CCoreWindowHandler::GetXRes()
+int32_t CCoreWindowHandler::GetXRes()
 {
 	return XRes;
 }
 
-TS32 CCoreWindowHandler::GetYRes()
+int32_t CCoreWindowHandler::GetYRes()
 {
 	return YRes;
 }
@@ -263,7 +263,7 @@ TBOOL CCoreWindowHandlerWin::DeviceOK()
 	{
 		if (!InactiveFrameLimiter) return Device && Device->DeviceOk();
 
-		TS32 time = globalTimer.GetTime();
+		int32_t time = globalTimer.GetTime();
 		if (time - LastRenderedFrame >= 1000 / LimitedFPS)
 		{
 			LastRenderedFrame = time;

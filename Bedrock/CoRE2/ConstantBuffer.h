@@ -19,8 +19,8 @@ class CCoreConstantBuffer : public CCoreResource
 protected:
 
 	TU8 *Data;
-	TS32 BufferLength;
-	TS32 DataLength;
+	int32_t BufferLength;
+	int32_t DataLength;
 
 public:
 
@@ -28,7 +28,7 @@ public:
 	virtual ~CCoreConstantBuffer();
 
 	void Reset();
-	void AddData(void *Data, TS32 Length);
+	void AddData(void *Data, int32_t Length);
 	virtual void Upload();
 	virtual void *GetBufferPointer() = 0;
 

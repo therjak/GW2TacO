@@ -61,7 +61,7 @@ void CWBDrawAPI::AddDisplayRect( const CRect &Rect, const TF32 u1, const TF32 v1
   BR.y = (TF32)Pos.y2;
 
   DisplayList.AllocateNewUninitialized( 4 );
-  TS32 idx = DisplayList.NumItems() - 4;
+  int32_t idx = DisplayList.NumItems() - 4;
 
   DisplayList[ idx + 0 ].Initialize( TL.x, TL.y, u1f, v1f, Color );
   DisplayList[ idx + 1 ].Initialize( BR.x, TL.y, u2f, v1f, Color );
@@ -175,7 +175,7 @@ void CWBDrawAPI::AddDisplayRectRotated( const CRect &Rect, const TF32 u1, const 
   d = CVector2( TL.x, BR.y ).Rotated( center, rotation );
 
   DisplayList.AllocateNewUninitialized( 4 );
-  TS32 idx = DisplayList.NumItems() - 4;
+  int32_t idx = DisplayList.NumItems() - 4;
 
   DisplayList[ idx + 0 ].Initialize( a.x, a.y, u1f, v1f, Color );
   DisplayList[ idx + 1 ].Initialize( b.x, b.y, u2f, v1f, Color );
@@ -192,10 +192,10 @@ WBGUIVERTEX Lerp( WBGUIVERTEX &a, WBGUIVERTEX &b, float t )
   return r;
 }
 
-void CWBDrawAPI::ClipTriX( TS32 x, TBOOL KeepRight, WBGUIVERTEX Vertices[ 6 ], TS32 &VertexCount )
+void CWBDrawAPI::ClipTriX( int32_t x, TBOOL KeepRight, WBGUIVERTEX Vertices[ 6 ], int32_t &VertexCount )
 {
   WBGUIVERTEX NewVertices[ 6 ];
-  TS32 NewVertexCount = 0;
+  int32_t NewVertexCount = 0;
 
   if ( VertexCount > 6 )
   {
@@ -203,7 +203,7 @@ void CWBDrawAPI::ClipTriX( TS32 x, TBOOL KeepRight, WBGUIVERTEX Vertices[ 6 ], T
   }
 
   WBGUIVERTEX S = Vertices[ VertexCount - 1 ];
-  for ( TS32 e = 0; e < VertexCount; e++ )
+  for ( int32_t e = 0; e < VertexCount; e++ )
   {
     WBGUIVERTEX E = Vertices[ e ];
 
@@ -222,18 +222,18 @@ void CWBDrawAPI::ClipTriX( TS32 x, TBOOL KeepRight, WBGUIVERTEX Vertices[ 6 ], T
     S = E;
   }
 
-  for ( TS32 y = 0; y < NewVertexCount; y++ )
+  for ( int32_t y = 0; y < NewVertexCount; y++ )
     Vertices[ y ] = NewVertices[ y ];
   VertexCount = NewVertexCount;
 }
 
-void CWBDrawAPI::ClipTriY( TS32 y, TBOOL KeepBottom, WBGUIVERTEX Vertices[ 6 ], TS32 &VertexCount )
+void CWBDrawAPI::ClipTriY( int32_t y, TBOOL KeepBottom, WBGUIVERTEX Vertices[ 6 ], int32_t &VertexCount )
 {
   WBGUIVERTEX NewVertices[ 6 ];
-  TS32 NewVertexCount = 0;
+  int32_t NewVertexCount = 0;
 
   WBGUIVERTEX S = Vertices[ VertexCount - 1 ];
-  for ( TS32 e = 0; e < VertexCount; e++ )
+  for ( int32_t e = 0; e < VertexCount; e++ )
   {
     WBGUIVERTEX E = Vertices[ e ];
 
@@ -252,7 +252,7 @@ void CWBDrawAPI::ClipTriY( TS32 y, TBOOL KeepBottom, WBGUIVERTEX Vertices[ 6 ], 
     S = E;
   }
 
-  for ( TS32 x = 0; x < NewVertexCount; x++ )
+  for ( int32_t x = 0; x < NewVertexCount; x++ )
     Vertices[ x ] = NewVertices[ x ];
   VertexCount = NewVertexCount;
 }
@@ -276,7 +276,7 @@ void CWBDrawAPI::AddDisplayTri( const CPoint &_p1, const CPoint &_p2, const CPoi
   DrawMode = WBD_TRIANGLES;
 
   WBGUIVERTEX Vertices[ 6 ]; //max vertex count is 6, when all triangle edges are cut
-  TS32 VertexCount = 3;
+  int32_t VertexCount = 3;
   Vertices[ 0 ].Pos = CVector4( (TF32)p1.x, (TF32)p1.y, 0, 1 );
   Vertices[ 0 ].UV = CVector2( u1, v1 );
   Vertices[ 0 ].Color = a;
@@ -295,13 +295,13 @@ void CWBDrawAPI::AddDisplayTri( const CPoint &_p1, const CPoint &_p2, const CPoi
     ClipTriY( CropRect.y2, false, Vertices, VertexCount );
   }
 
-  for ( TS32 x = 0; x < VertexCount; x++ )
+  for ( int32_t x = 0; x < VertexCount; x++ )
   {
     CVector2 p = CVector2( Vertices[ x ].Pos.x, Vertices[ x ].Pos.y );
     Vertices[ x ].Pos = CVector4( p.x, p.y, 0, 1 );
   }
 
-  for ( TS32 x = 2; x < VertexCount; x++ )
+  for ( int32_t x = 2; x < VertexCount; x++ )
   {
     DisplayList += Vertices[ 0 ];
     DisplayList += Vertices[ x - 1 ];
@@ -322,10 +322,10 @@ void CWBDrawAPI::RenderDisplayList()
 
   Device->SetVertexBuffer( VertexBuffer, 0 );
 
-  TS32 VxCount = DisplayList.NumItems();
+  int32_t VxCount = DisplayList.NumItems();
   while ( VxCount > 0 )
   {
-    TS32 Count = min( VxCount, VERTEXBUFFERVERTEXCOUNT );
+    int32_t Count = min( VxCount, VERTEXBUFFERVERTEXCOUNT );
 
     void *Buffer = NULL;
 
@@ -440,7 +440,7 @@ TBOOL CWBDrawAPI::Initialize( CWBApplication *Application, CCoreDevice *Dev, CAt
 
   if ( rectIndexBuffer->Lock( (void**)&Locked ) )
   {
-    for ( TS32 x = 0; x < VERTEXBUFFERRECTCOUNT; x++ )
+    for ( int32_t x = 0; x < VERTEXBUFFERRECTCOUNT; x++ )
     {
       Locked[ x * 6 + 0 ] = x * 4;
       Locked[ x * 6 + 1 ] = x * 4 + 1;
@@ -541,14 +541,14 @@ TBOOL CWBDrawAPI::Initialize( CWBApplication *Application, CCoreDevice *Dev, CAt
 
   //(a)/(TF32)(c)*2.0f-1,(-b)/(TF32)(d)*2.0f+1
 
-  VxShader = Device->CreateVertexShaderFromBlob( raw_ui_vxshader, raw_ui_vxshader_size );// ( shader, (TS32)strlen( shader ), "vsmain", "vs_4_0" );
+  VxShader = Device->CreateVertexShaderFromBlob( raw_ui_vxshader, raw_ui_vxshader_size );// ( shader, (int32_t)strlen( shader ), "vsmain", "vs_4_0" );
   if ( !VxShader )
   {
     LOG( LOG_WARNING, _T( "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 functionality" ) );
     if ( Device->GetAPIType() == COREAPI_DX11 ) return false;
   }
 
-  PxShader = Device->CreatePixelShaderFromBlob( raw_ui_pxshader, raw_ui_pxshader_size );// shader, (TS32)strlen( shader ), "psmain", "ps_4_0" );
+  PxShader = Device->CreatePixelShaderFromBlob( raw_ui_pxshader, raw_ui_pxshader_size );// shader, (int32_t)strlen( shader ), "psmain", "ps_4_0" );
   if ( !PxShader )
   {
     LOG( LOG_WARNING, _T( "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 functionality" ) );
@@ -750,7 +750,7 @@ CSize CWBDrawAPI::GetAtlasElementSize( WBATLASHANDLE h )
   return Atlas->GetSize( h );
 }
 
-static TS32 defragmentReportCount = 0;
+static int32_t defragmentReportCount = 0;
 
 TBOOL CWBDrawAPI::RequestAtlasImageUse( WBATLASHANDLE h, CRect &UV )
 {
@@ -799,7 +799,7 @@ TBOOL CWBDrawAPI::RequestAtlasImageUse( WBATLASHANDLE h, CRect &UV )
   return true;
 }
 
-void CWBDrawAPI::DrawAtlasElement( WBATLASHANDLE h, TS32 x, TS32 y, CColor Color )
+void CWBDrawAPI::DrawAtlasElement( WBATLASHANDLE h, int32_t x, int32_t y, CColor Color )
 {
   if ( !Atlas ) return;
 
@@ -859,8 +859,8 @@ void CWBDrawAPI::DrawAtlasElement( WBATLASHANDLE h, CRect &Position, TBOOL TileX
   CRect cr = CropRect;
   SetCropRect( target + Offset );
 
-  for ( TS32 x = target.x1; x < target.x2; x += tilesize.x )
-    for ( TS32 y = target.y1; y < target.y2; y += tilesize.y )
+  for ( int32_t x = target.x1; x < target.x2; x += tilesize.x )
+    for ( int32_t y = target.y1; y < target.y2; y += tilesize.y )
     {
       DrawRect( p + CPoint( x, y ),
                 UVTRANSLATION( UV.x1 + uvmod.x, Atlas->GetXRes() ),
@@ -923,14 +923,14 @@ void CWBDrawAPI::SetOpacity( TU8 o )
   Opacity = o;
 }
 
-void ZoomToMouseCenter( CPoint &Offset, TS32 &Zoom, TS32 NewZoom, CPoint ZoomCenter )
+void ZoomToMouseCenter( CPoint &Offset, int32_t &Zoom, int32_t NewZoom, CPoint ZoomCenter )
 {
   //dz=zoom'/zoom
   //xoff'=xpos+xoff-xpos*dz
   float dz = NewZoom / (float)Zoom;
 
   CVector2 v = CVector2( (TF32)ZoomCenter.x, (TF32)ZoomCenter.y )*( 1 - dz );
-  Offset += CPoint( (TS32)v.x, (TS32)v.y );
+  Offset += CPoint( (int32_t)v.x, (int32_t)v.y );
 
   Zoom = NewZoom;
 }
@@ -941,8 +941,8 @@ void ZoomToMouseCenter( CPoint &Offset, TF32 &Zoom, TF32 NewZoom, CPoint Pos )
   //xoff'=xpos+xoff-xpos*dz
   TF32 dz = NewZoom / (TF32)Zoom;
 
-  Offset.x = (TS32)( Pos.x + Offset.x - Pos.x*dz );
-  Offset.y = (TS32)( Pos.y + Offset.y - Pos.y*dz );
+  Offset.x = (int32_t)( Pos.x + Offset.x - Pos.x*dz );
+  Offset.y = (int32_t)( Pos.y + Offset.y - Pos.y*dz );
 
   Zoom = NewZoom;
 }

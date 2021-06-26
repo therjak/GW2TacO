@@ -19,7 +19,7 @@ void CCoreConstantBuffer::Reset()
 	DataLength = 0;
 }
 
-void CCoreConstantBuffer::AddData(void *DataIn, TS32 Length)
+void CCoreConstantBuffer::AddData(void *DataIn, int32_t Length)
 {
 	if (DataLength + Length > BufferLength)
 	{

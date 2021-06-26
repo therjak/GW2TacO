@@ -91,8 +91,8 @@ class CWBDrawAPI
   void AddDisplayRectRotated( const CRect &r, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v3, const CColor a, TF32 rotation );
   void AddDisplayLine( const CPoint &p1, const CPoint &p2, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v2, const CColor a, const CColor b );
   void AddDisplayTri( const CPoint &p1, const CPoint &p2, const CPoint &p3, const TF32 u1, const TF32 v1, const TF32 u2, const TF32 v2, const TF32 u3, const TF32 v3, const CColor a, const CColor b, const CColor c );
-  void ClipTriX( TS32 x, TBOOL KeepRight, WBGUIVERTEX Vertices[ 6 ], TS32 &VertexCount );
-  void ClipTriY( TS32 y, TBOOL KeepBottom, WBGUIVERTEX Vertices[ 6 ], TS32 &VertexCount );
+  void ClipTriX( int32_t x, TBOOL KeepRight, WBGUIVERTEX Vertices[ 6 ], int32_t &VertexCount );
+  void ClipTriY( int32_t y, TBOOL KeepBottom, WBGUIVERTEX Vertices[ 6 ], int32_t &VertexCount );
   void RenderDisplayList();
 
   TBOOL RequestAtlasImageUse( WBATLASHANDLE h, CRect &r );
@@ -130,7 +130,7 @@ public:
   void SetUISamplerState( CCoreSamplerState *SamplerState );
 
   CSize GetAtlasElementSize( WBATLASHANDLE h );
-  void DrawAtlasElement( WBATLASHANDLE h, TS32 x, TS32 y, CColor Color = 0xffffffff );
+  void DrawAtlasElement( WBATLASHANDLE h, int32_t x, int32_t y, CColor Color = 0xffffffff );
   void DrawAtlasElement( WBATLASHANDLE h, CRect &Position, TBOOL TileX, TBOOL TileY, TBOOL StretchX, TBOOL StretchY, CColor Color = 0xffffffff );
   void DrawAtlasElementRotated( WBATLASHANDLE h, CRect& Position, CColor Color, TF32 rotation );
   void SetCropToClient( CWBItem *i );
@@ -146,5 +146,5 @@ public:
 };
 
 //helper functions for common use cases
-void ZoomToMouseCenter( CPoint &Offset, TS32 &Zoom, TS32 NewZoom, CPoint ZoomCenter );
+void ZoomToMouseCenter( CPoint &Offset, int32_t &Zoom, int32_t NewZoom, CPoint ZoomCenter );
 void ZoomToMouseCenter( CPoint &Offset, TF32 &Zoom, TF32 NewZoom, CPoint Pos );

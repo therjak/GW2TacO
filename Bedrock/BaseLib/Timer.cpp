@@ -19,7 +19,7 @@ CTimer::~CTimer()
 
 void CTimer::Update()
 {
-  TS32 CurrentTime = timeGetTime();
+  int32_t CurrentTime = timeGetTime();
   double ElapsedTime = CurrentTime - LastUpdateTime;
 
   if ( !Paused )
@@ -27,7 +27,7 @@ void CTimer::Update()
   else
     TimeExtension += ElapsedTime;
 
-  Time = (TS32)( ( CurrentTime - StartTime ) - TimeExtension );
+  Time = (int32_t)( ( CurrentTime - StartTime ) - TimeExtension );
   LastUpdateTime = CurrentTime;
 }
 

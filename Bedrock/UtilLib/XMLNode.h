@@ -16,34 +16,34 @@ class CXMLNode
 public:
   CXMLNode( void );
   CXMLNode( const CXMLNode &Original );
-  //CXMLNode(MSXML2::IXMLDOMNode *, CXMLDocument *, TS32);
-  CXMLNode( xml_node<char> *, CXMLDocument *, TS32 );
+  //CXMLNode(MSXML2::IXMLDOMNode *, CXMLDocument *, int32_t);
+  CXMLNode( xml_node<char> *, CXMLDocument *, int32_t );
   virtual ~CXMLNode();
 
   CXMLNode operator=( const CXMLNode Original );
 
-  TS32 GetChildCount();
-  TS32 GetChildCount( TCHAR * );
-  CXMLNode GetChild( TS32 );
+  int32_t GetChildCount();
+  int32_t GetChildCount( TCHAR * );
+  CXMLNode GetChild( int32_t );
   CXMLNode GetChild( TCHAR * );
-  CXMLNode GetChild( TCHAR *, TS32 );
+  CXMLNode GetChild( TCHAR *, int32_t );
 
   TBOOL Next( CXMLNode& out );
   TBOOL Next( CXMLNode& out, TCHAR* );
 
-  TS32 IsValid();
+  int32_t IsValid();
 
   CString GetNodeName();
 
-  void GetText( TCHAR*, TS32 );
+  void GetText( TCHAR*, int32_t );
   CString GetText();
-  TBOOL GetValue( TS32 &Int );
+  TBOOL GetValue( int32_t &Int );
   TBOOL GetValue( TBOOL &Int );
   TBOOL GetValue( TF32 &Float );
 
-  TBOOL GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, TS32 nBufferSize );
+  TBOOL GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize );
   CString GetAttribute( TCHAR * szAttribute );
-  void GetAttributeAsInteger( TCHAR * szAttribute, TS32 * nValue );
+  void GetAttributeAsInteger( TCHAR * szAttribute, int32_t * nValue );
   void GetAttributeAsFloat( TCHAR * szAttribute, TF32 * fValue );
   CString GetAttributeAsString( TCHAR * szAttribute );
   TBOOL HasAttribute( TCHAR * szAttribute );
@@ -52,24 +52,24 @@ public:
   CXMLNode& AddChild( TCHAR*, TBOOL PostEnter = true );
   void SetText( const TCHAR* );
   void SetText( CString &s );
-  void SetInt( TS32 Int );
+  void SetInt( int32_t Int );
   void SetFloat( TF32 Float );
   void SetAttribute( TCHAR * szAttributeName, const TCHAR * szValue );
-  void SetAttributeFromInteger( TCHAR * szAttributeName, TS32 nValue );
+  void SetAttributeFromInteger( TCHAR * szAttributeName, int32_t nValue );
   void SetAttributeFromFloat( TCHAR * szAttributeName, TF32 nValue );
 
   //MSXML2::IXMLDOMNode * GetNode() { return pNode; }
 
 private:
 
-  TS32 childCount = -1;
-  CDictionary< TS32, TS32 > childCounts;
+  int32_t childCount = -1;
+  CDictionary< int32_t, int32_t > childCounts;
   CArray<CString*> stringStore;
   CArray<CXMLNode*> children;
 
   CString value;
 
-  TS32 nLevel;
+  int32_t nLevel;
   xml_node<char>* pNode;
   //MSXML2::IXMLDOMNode * pNode;
   //MSXML2::IXMLDOMDocument * pDoc;

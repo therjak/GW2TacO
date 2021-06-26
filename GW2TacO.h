@@ -4,7 +4,7 @@
 #include "TS3Connection.h"
 #include <thread>
 
-enum class TacOKeyAction : TS32
+enum class TacOKeyAction : int32_t
 {
   NoAction = 0,
   AddPOI,
@@ -48,28 +48,28 @@ class GW2TacO : public CWBItem
   TBOOL RebindMode = false;
   TBOOL ScriptRebindMode = false;
   TacOKeyAction ActionToRebind = TacOKeyAction::NoAction;
-  TS32 ScriptActionToRebind = 0;
+  int32_t ScriptActionToRebind = 0;
 
   TBOOL ApiKeyInputMode = false;
   APIKeys ApiKeyToSet = APIKeys::None;
-  TS32 ApiKeyIndex = 0;
+  int32_t ApiKeyIndex = 0;
 
   void OpenAboutWindow();
-  void BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *parentitm, TS32 ParentID );
+  void BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *parentitm, int32_t ParentID );
 
-  CDictionary<TS32, TacOKeyAction> KeyBindings;
-  CDictionary<TS32, CString> ScriptKeyBindings;
+  CDictionary<int32_t, TacOKeyAction> KeyBindings;
+  CDictionary<int32_t, CString> ScriptKeyBindings;
 
   void RebindAction( TacOKeyAction Action );
-  void RebindScriptKey( TS32 evendIDX );
+  void RebindScriptKey( int32_t evendIDX );
   CArray<GW2TacticalCategory*> CategoryList;
   //CArray<AngelWrapper*> scriptEngines;
 
-  void ApiKeyInputAction( APIKeys keyType, TS32 idx );
+  void ApiKeyInputAction( APIKeys keyType, int32_t idx );
   CWBTextBox* APIKeyInput = nullptr;
 
   TBOOL menuHoverLastFrame = false;
-  TS32 lastMenuHoverTransitionTime = 0;
+  int32_t lastMenuHoverTransitionTime = 0;
 
   void TurnOnTPLight();
   void TurnOffTPLight();
@@ -79,7 +79,7 @@ class GW2TacO : public CWBItem
   CString lastItemPickup;
   TBOOL pickupsBeingFetched = false;
   std::thread pickupFetcherThread;
-  TS32 lastPickupFetchTime = 0;
+  int32_t lastPickupFetchTime = 0;
   TBOOL showPickupHighlight = false;
   float lastScaleValue = 1.0f;
 

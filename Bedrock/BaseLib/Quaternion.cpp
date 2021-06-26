@@ -180,9 +180,9 @@ void CQuaternion::FromRotationMatrix( const CMatrix4x4 &m )
     return;
   }
 
-  TS32 maxdiagidx = 0;
+  int32_t maxdiagidx = 0;
   TF32 maxdiag = m( 0, 0 );
-  for ( TS32 i = 1; i < 3; i++ )
+  for ( int32_t i = 1; i < 3; i++ )
   {
     if ( m( i, i ) > maxdiag )
     {
@@ -259,12 +259,12 @@ void CQuaternion::FromEuler( const TF32 _x, const TF32 _y, const TF32 _z )
   z = sin_z*cos_y*cos_x - cos_z*sin_y*sin_x;
 }
 
-TF32 const CQuaternion::operator[]( TS32 idx ) const
+TF32 const CQuaternion::operator[]( int32_t idx ) const
 {
   return ( ( const TF32* )this )[ idx ];
 }
 
-TF32 &CQuaternion::operator[]( TS32 idx )
+TF32 &CQuaternion::operator[]( int32_t idx )
 {
   return ( ( TF32* )this )[ idx ];
 }

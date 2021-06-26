@@ -22,6 +22,6 @@ public:
   CString SaveToString();
   CXMLNode GetDocumentNode();
 
-  //CXMLNode CreateNode(VARIANT type, BSTR Name, TS32 Level);
+  //CXMLNode CreateNode(VARIANT type, BSTR Name, int32_t Level);
   //MSXML2::IXMLDOMDocument *GetDoc() { return pDoc; }
 };

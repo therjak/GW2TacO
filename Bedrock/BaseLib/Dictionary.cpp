@@ -1,6 +1,6 @@
 #include "BaseLib.h"
 
-TU32 DictionaryHash( const TS32 &i )
+TU32 DictionaryHash( const int32_t &i )
 {
   return i;
 }
@@ -9,7 +9,7 @@ TU32 DictionaryHash( const void *i ) //hash for a pointer
 {
   int64_t v = (int64_t)i;
 
-  TS32 c;
+  int32_t c;
 
   //djb2 hash
   TU32 Hash = 5381;

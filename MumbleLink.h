@@ -82,13 +82,13 @@ public:
   CVector3 camDir;
   CVector3 camUp;
   TF32 fov;
-  TS32 mapID = 0;
-  TS32 worldID = 0;
-  TS32 mapType = 0;
-  TS32 mapInstance = 0;
-  TS32 charIDHash = 0;
+  int32_t mapID = 0;
+  int32_t worldID = 0;
+  int32_t mapType = 0;
+  int32_t mapInstance = 0;
+  int32_t charIDHash = 0;
 
-  TS32 lastMapChangeTime = 0;
+  int32_t lastMapChangeTime = 0;
   bool isMapOpen; // bit 1: IsMapOpen, bit2: IsCompassTopRight, bit3: DoesCompassHaveRotationEnabled
   bool isMinimapTopRight;
   bool isMinimapRotating;
@@ -100,7 +100,7 @@ public:
   CompassData miniMap;
   CompassData bigMap;
 
-  TS32 uiSize = 1;
+  int32_t uiSize = 1;
 
   CString charName;
 
@@ -109,10 +109,10 @@ public:
   void Update();
   TBOOL IsValid();
 
-  CRingBuffer<TS32> *FrameTimes;
+  CRingBuffer<int32_t> *FrameTimes;
   TF32 GetFrameRate();
 
-  TS32 LastFrameTime = 0;
+  int32_t LastFrameTime = 0;
   CMumbleLink();
   virtual ~CMumbleLink();
 

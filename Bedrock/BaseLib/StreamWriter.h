@@ -4,7 +4,7 @@ class CStreamWriter
 {
   TU32 writerBitOffset;
   TU8 writerCurrentChar;
-  virtual TS32 WriteStream( void* lpBuf, TU32 nCount ) = 0;
+  virtual int32_t WriteStream( void* lpBuf, TU32 nCount ) = 0;
 
 public:
   CStreamWriter();
@@ -33,7 +33,7 @@ class CStreamWriterMemory : public CStreamWriter
   TU32 BufferSize;
   TU32 DataLength;
 
-  virtual TS32 WriteStream( void* lpBuf, TU32 nCount );
+  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
 
 public:
   CStreamWriterMemory();
@@ -49,12 +49,12 @@ class CStreamWriterFile : public CStreamWriter
 {
   HANDLE File;
 
-  virtual TS32 WriteStream( void* lpBuf, TU32 nCount );
+  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
 
 public:
   CStreamWriterFile();
   virtual ~CStreamWriterFile();
 
-  TS32 Open( TCHAR *filename );
+  int32_t Open( TCHAR *filename );
   TBOOL Flush();
 };

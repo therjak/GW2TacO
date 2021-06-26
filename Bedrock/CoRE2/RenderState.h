@@ -78,14 +78,14 @@ public:
 
 	void SetAlphaToCoverage(TBOOL e);
 	void SetIndependentBlend(TBOOL e);
-	void SetBlendEnable(TS32 rt, TBOOL e);
-	void SetSrcBlend(TS32 rt, COREBLENDFACTOR e);
-	void SetDestBlend(TS32 rt, COREBLENDFACTOR e);
-	void SetBlendOp(TS32 rt, COREBLENDOP e);
-	void SetSrcBlendAlpha(TS32 rt, COREBLENDFACTOR e);
-	void SetDestBlendAlpha(TS32 rt, COREBLENDFACTOR e);
-	void SetBlendOpAlpha(TS32 rt, COREBLENDOP e);
-	void SetRenderTargetWriteMask(TS32 rt, TU8 e);
+	void SetBlendEnable(int32_t rt, TBOOL e);
+	void SetSrcBlend(int32_t rt, COREBLENDFACTOR e);
+	void SetDestBlend(int32_t rt, COREBLENDFACTOR e);
+	void SetBlendOp(int32_t rt, COREBLENDOP e);
+	void SetSrcBlendAlpha(int32_t rt, COREBLENDFACTOR e);
+	void SetDestBlendAlpha(int32_t rt, COREBLENDFACTOR e);
+	void SetBlendOpAlpha(int32_t rt, COREBLENDOP e);
+	void SetRenderTargetWriteMask(int32_t rt, TU8 e);
 
 	virtual TBOOL Import(CXMLNode *n);
 	virtual void Export(CXMLNode *n);
@@ -131,7 +131,7 @@ protected:
 	COREFILLMODE FillMode;
 	CORECULLMODE CullMode;
 	TBOOL FrontCounterClockwise;
-	TS32 DepthBias;
+	int32_t DepthBias;
 	TF32 DepthBiasClamp;
 	TF32 SlopeScaledDepthBias;
 	TBOOL DepthClipEnable;
@@ -150,7 +150,7 @@ public:
 	void SetFillMode(COREFILLMODE e);
 	void SetCullMode(CORECULLMODE e);
 	void SetFrontCounterClockwise(TBOOL e);
-	void SetDepthBias(TS32 e);
+	void SetDepthBias(int32_t e);
 	void SetDepthBiasClamp(TF32 e);
 	void SetSlopeScaledDepthBias(TF32 e);
 	void SetDepthClipEnable(TBOOL e);
@@ -172,7 +172,7 @@ protected:
 	CORETEXTUREADDRESSMODE AddressV;
 	CORETEXTUREADDRESSMODE AddressW;
 	TF32 MipLODBias;
-	TS32 MaxAnisotropy;
+	int32_t MaxAnisotropy;
 	CORECOMPARISONFUNCTION ComparisonFunc;
 	TF32 BorderColor[4];
 	TF32 MinLOD;
@@ -193,7 +193,7 @@ public:
 	void SetAddressW(CORETEXTUREADDRESSMODE e);
 
 	void SetMipLODBias(TF32 e);
-	void SetMaxAnisotropy(TS32 e);
+	void SetMaxAnisotropy(int32_t e);
 	void SetComparisonFunc(CORECOMPARISONFUNCTION e);
 	void SetMinLOD(TF32 e);
 	void SetMaxLOD(TF32 e);

@@ -38,7 +38,7 @@ void CBBox::Expand( const CVector3 &v )
     return;
   }
 
-  for ( TS32 i = 0; i < 3; i++ )
+  for ( int32_t i = 0; i < 3; i++ )
   {
     lo[ i ] = lo[ i ] < v[ i ] ? lo[ i ] : v[ i ];
     hi[ i ] = hi[ i ] > v[ i ] ? hi[ i ] : v[ i ];

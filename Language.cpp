@@ -109,7 +109,7 @@ void Localization::Import()
 
   CFileList list;
   list.ExpandSearch( "TacO_Language_*.xml", ".", false );
-  for ( TS32 x = 0; x < list.Files.NumItems(); x++ )
+  for ( int32_t x = 0; x < list.Files.NumItems(); x++ )
     if ( CString::CompareNoCase( list.Files[ x ].FileName, CString( "TacO_Language_en.xml" ) ) != 0 )
     {
       ImportFile( list.Files[ x ].Path + list.Files[ x ].FileName );

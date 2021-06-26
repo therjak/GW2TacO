@@ -6,8 +6,8 @@
 // this function is just a test to see how shader text and compiled
 // shader sizes compare
 
-//TS32 shadercnt = 0;
-//void DumpShader(CString s, void *Binary, TS32 Length)
+//int32_t shadercnt = 0;
+//void DumpShader(CString s, void *Binary, int32_t Length)
 //{
 //	CreateDirectory(_T("ShaderDump"), 0);
 //
@@ -79,7 +79,7 @@ void *GetFunctionFromD3DXDLL( TCHAR *FunctName )
     "d3dx10_31.dll",
   };
 
-  for ( TS32 x = 0; x < sizeof( CompilerDLLs ) / sizeof( void* ); x++ )
+  for ( int32_t x = 0; x < sizeof( CompilerDLLs ) / sizeof( void* ); x++ )
   {
     dll = LoadLibraryA( CompilerDLLs[x] );
     if ( dll )
@@ -127,7 +127,7 @@ void *GetFunctionFromD3DCompileDLL(TCHAR *FunctName)
 		"d3dcompiler_33.dll"
 	};
 
-	for (TS32 x = 0; x < sizeof(CompilerDLLs) / sizeof(void*); x++)
+	for (int32_t x = 0; x < sizeof(CompilerDLLs) / sizeof(void*); x++)
 	{
 		dll = LoadLibraryA(CompilerDLLs[x]);
 		if (dll)
@@ -212,7 +212,7 @@ CCoreDX11VertexShader::~CCoreDX11VertexShader()
 	Release();
 }
 
-TBOOL CCoreDX11VertexShader::Create(void *Binary, TS32 Length)
+TBOOL CCoreDX11VertexShader::Create(void *Binary, int32_t Length)
 {
 	if (!Binary || Length <= 0) return false;
 	FetchBinary(Binary, Length);
@@ -287,7 +287,7 @@ TBOOL CCoreDX11VertexShader::CompileAndCreate(CString *Err)
     //fwrite( PS->GetBufferPointer(), PS->GetBufferSize(), 1, f );
     //fclose( f );
 		//DumpShader(code, PS->GetBufferPointer(), PS->GetBufferSize());
-		Success = Create(PS->GetBufferPointer(), (TS32)PS->GetBufferSize());
+		Success = Create(PS->GetBufferPointer(), (int32_t)PS->GetBufferSize());
 		//if (Success)
 		//{
 		//	HRESULT r = D3DReflectFunc(PS->GetBufferPointer(), PS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflection);
@@ -312,7 +312,7 @@ TBOOL CCoreDX11VertexShader::CompileAndCreate(CString *Err)
 	return Success;
 }
 
-TBOOL CCoreDX11VertexShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
+TBOOL CCoreDX11VertexShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize )
 {
   Release();
   TBOOL Success = true;
@@ -325,13 +325,13 @@ TBOOL CCoreDX11VertexShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
   return Success;
 }
 
-//TS32 CCoreDX11VertexShader::GetConstantBufferIndex(TS8 *Name)
+//int32_t CCoreDX11VertexShader::GetConstantBufferIndex(TS8 *Name)
 //{
 //	if (!Reflection) return -1;
 //
 //	CString s = Name;
 //
-//	for (TS32 x = 0; x < 15; x++)
+//	for (int32_t x = 0; x < 15; x++)
 //	{
 //		ID3D11ShaderReflectionConstantBuffer *cb = Reflection->GetConstantBufferByIndex(x);
 //		if (cb)
@@ -361,7 +361,7 @@ CCoreDX11PixelShader::~CCoreDX11PixelShader()
 	Release();
 }
 
-TBOOL CCoreDX11PixelShader::Create(void *Binary, TS32 Length)
+TBOOL CCoreDX11PixelShader::Create(void *Binary, int32_t Length)
 {
 	if (!Binary || Length <= 0) return false;
 	FetchBinary(Binary, Length);
@@ -436,7 +436,7 @@ TBOOL CCoreDX11PixelShader::CompileAndCreate(CString *Err)
     //fwrite( PS->GetBufferPointer(), PS->GetBufferSize(), 1, f );
     //fclose( f );
     //DumpShader(code, PS->GetBufferPointer(), PS->GetBufferSize());
-		Success = Create(PS->GetBufferPointer(), (TS32)PS->GetBufferSize());
+		Success = Create(PS->GetBufferPointer(), (int32_t)PS->GetBufferSize());
 		//if (Success)
 		//{
 		//	HRESULT r = D3DReflectFunc(PS->GetBufferPointer(), PS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflection);
@@ -461,7 +461,7 @@ TBOOL CCoreDX11PixelShader::CompileAndCreate(CString *Err)
 	return Success;
 }
 
-TBOOL CCoreDX11PixelShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
+TBOOL CCoreDX11PixelShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize )
 {
   Release();
   TBOOL Success = true;
@@ -474,13 +474,13 @@ TBOOL CCoreDX11PixelShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
   return Success;
 }
 
-//TS32 CCoreDX11PixelShader::GetConstantBufferIndex(TS8 *Name)
+//int32_t CCoreDX11PixelShader::GetConstantBufferIndex(TS8 *Name)
 //{
 //	if (!Reflection) return -1;
 //
 //	CString s = Name;
 //
-//	for (TS32 x = 0; x < 15; x++)
+//	for (int32_t x = 0; x < 15; x++)
 //	{
 //		ID3D11ShaderReflectionConstantBuffer *cb = Reflection->GetConstantBufferByIndex(x);
 //		if (cb)
@@ -510,7 +510,7 @@ CCoreDX11GeometryShader::~CCoreDX11GeometryShader()
 	Release();
 }
 
-TBOOL CCoreDX11GeometryShader::Create(void *Binary, TS32 Length)
+TBOOL CCoreDX11GeometryShader::Create(void *Binary, int32_t Length)
 {
 	if (!Binary || Length <= 0) return false;
 	FetchBinary(Binary, Length);
@@ -582,7 +582,7 @@ TBOOL CCoreDX11GeometryShader::CompileAndCreate(CString *Err)
 	if (Success)
 	{
 		//DumpShader(code, PS->GetBufferPointer(), PS->GetBufferSize());
-		Success = Create(PS->GetBufferPointer(), (TS32)PS->GetBufferSize());
+		Success = Create(PS->GetBufferPointer(), (int32_t)PS->GetBufferSize());
 		//if (Success)
 		//{
 		//	HRESULT r = D3DReflectFunc(PS->GetBufferPointer(), PS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflection);
@@ -607,7 +607,7 @@ TBOOL CCoreDX11GeometryShader::CompileAndCreate(CString *Err)
 	return Success;
 }
 
-TBOOL CCoreDX11GeometryShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
+TBOOL CCoreDX11GeometryShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize )
 {
   Release();
   TBOOL Success = true;
@@ -620,13 +620,13 @@ TBOOL CCoreDX11GeometryShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize
   return Success;
 }
 
-//TS32 CCoreDX11GeometryShader::GetConstantBufferIndex(TS8 *Name)
+//int32_t CCoreDX11GeometryShader::GetConstantBufferIndex(TS8 *Name)
 //{
 //	if (!Reflection) return -1;
 //
 //	CString s = Name;
 //
-//	for (TS32 x = 0; x < 15; x++)
+//	for (int32_t x = 0; x < 15; x++)
 //	{
 //		ID3D11ShaderReflectionConstantBuffer *cb = Reflection->GetConstantBufferByIndex(x);
 //		if (cb)
@@ -656,7 +656,7 @@ CCoreDX11DomainShader::~CCoreDX11DomainShader()
 	Release();
 }
 
-TBOOL CCoreDX11DomainShader::Create(void *Binary, TS32 Length)
+TBOOL CCoreDX11DomainShader::Create(void *Binary, int32_t Length)
 {
 	if (!Binary || Length <= 0) return false;
 	FetchBinary(Binary, Length);
@@ -728,7 +728,7 @@ TBOOL CCoreDX11DomainShader::CompileAndCreate(CString *Err)
 	if (Success)
 	{
 		//DumpShader(code, PS->GetBufferPointer(), PS->GetBufferSize());
-		Success = Create(PS->GetBufferPointer(), (TS32)PS->GetBufferSize());
+		Success = Create(PS->GetBufferPointer(), (int32_t)PS->GetBufferSize());
 		//if (Success)
 		//{
 		//	HRESULT r = D3DReflectFunc(PS->GetBufferPointer(), PS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflection);
@@ -753,7 +753,7 @@ TBOOL CCoreDX11DomainShader::CompileAndCreate(CString *Err)
 	return Success;
 }
 
-TBOOL CCoreDX11DomainShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
+TBOOL CCoreDX11DomainShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize )
 {
   Release();
   TBOOL Success = true;
@@ -766,13 +766,13 @@ TBOOL CCoreDX11DomainShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
   return Success;
 }
 
-//TS32 CCoreDX11DomainShader::GetConstantBufferIndex(TS8 *Name)
+//int32_t CCoreDX11DomainShader::GetConstantBufferIndex(TS8 *Name)
 //{
 //	if (!Reflection) return -1;
 //
 //	CString s = Name;
 //
-//	for (TS32 x = 0; x < 15; x++)
+//	for (int32_t x = 0; x < 15; x++)
 //	{
 //		ID3D11ShaderReflectionConstantBuffer *cb = Reflection->GetConstantBufferByIndex(x);
 //		if (cb)
@@ -802,7 +802,7 @@ CCoreDX11HullShader::~CCoreDX11HullShader()
 	Release();
 }
 
-TBOOL CCoreDX11HullShader::Create(void *Binary, TS32 Length)
+TBOOL CCoreDX11HullShader::Create(void *Binary, int32_t Length)
 {
 	if (!Binary || Length <= 0) return false;
 	FetchBinary(Binary, Length);
@@ -874,7 +874,7 @@ TBOOL CCoreDX11HullShader::CompileAndCreate(CString *Err)
 	if (Success)
 	{
 		//DumpShader(code, PS->GetBufferPointer(), PS->GetBufferSize());
-		Success = Create(PS->GetBufferPointer(), (TS32)PS->GetBufferSize());
+		Success = Create(PS->GetBufferPointer(), (int32_t)PS->GetBufferSize());
 		//if (Success)
 		//{
 		//	HRESULT r = D3DReflectFunc(PS->GetBufferPointer(), PS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflection);
@@ -899,7 +899,7 @@ TBOOL CCoreDX11HullShader::CompileAndCreate(CString *Err)
 	return Success;
 }
 
-TBOOL CCoreDX11HullShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
+TBOOL CCoreDX11HullShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize )
 {
   Release();
   TBOOL Success = true;
@@ -912,13 +912,13 @@ TBOOL CCoreDX11HullShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
   return Success;
 }
 
-//TS32 CCoreDX11HullShader::GetConstantBufferIndex(TS8 *Name)
+//int32_t CCoreDX11HullShader::GetConstantBufferIndex(TS8 *Name)
 //{
 //	if (!Reflection) return -1;
 //
 //	CString s = Name;
 //
-//	for (TS32 x = 0; x < 15; x++)
+//	for (int32_t x = 0; x < 15; x++)
 //	{
 //		ID3D11ShaderReflectionConstantBuffer *cb = Reflection->GetConstantBufferByIndex(x);
 //		if (cb)
@@ -949,7 +949,7 @@ CCoreDX11ComputeShader::~CCoreDX11ComputeShader()
 	Release();
 }
 
-TBOOL CCoreDX11ComputeShader::Create(void *Binary, TS32 Length)
+TBOOL CCoreDX11ComputeShader::Create(void *Binary, int32_t Length)
 {
 	if (!Binary || Length <= 0) return false;
 	FetchBinary(Binary, Length);
@@ -1021,7 +1021,7 @@ TBOOL CCoreDX11ComputeShader::CompileAndCreate(CString *Err)
 	if (Success)
 	{
 		//DumpShader(code, PS->GetBufferPointer(), PS->GetBufferSize());
-		Success = Create(PS->GetBufferPointer(), (TS32)PS->GetBufferSize());
+		Success = Create(PS->GetBufferPointer(), (int32_t)PS->GetBufferSize());
 		//if (Success)
 		//{
 		//	HRESULT r = D3DReflectFunc(PS->GetBufferPointer(), PS->GetBufferSize(), IID_ID3D11ShaderReflection, (void**)&Reflection);
@@ -1046,7 +1046,7 @@ TBOOL CCoreDX11ComputeShader::CompileAndCreate(CString *Err)
 	return Success;
 }
 
-TBOOL CCoreDX11ComputeShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize )
+TBOOL CCoreDX11ComputeShader::CreateFromBlob( void *CodeBlob, int32_t CodeBlobSize )
 {
   Release();
   TBOOL Success = true;
@@ -1059,13 +1059,13 @@ TBOOL CCoreDX11ComputeShader::CreateFromBlob( void *CodeBlob, TS32 CodeBlobSize 
   return Success;
 }
 
-//TS32 CCoreDX11ComputeShader::GetConstantBufferIndex(TS8 *Name)
+//int32_t CCoreDX11ComputeShader::GetConstantBufferIndex(TS8 *Name)
 //{
 //	if (!Reflection) return -1;
 //
 //	CString s = Name;
 //
-//	for (TS32 x = 0; x < 15; x++)
+//	for (int32_t x = 0; x < 15; x++)
 //	{
 //		ID3D11ShaderReflectionConstantBuffer *cb = Reflection->GetConstantBufferByIndex(x);
 //		if (cb)

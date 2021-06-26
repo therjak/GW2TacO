@@ -15,8 +15,8 @@ public:
   static CColor FromARGB( const TU32 v );
   static CColor FromABGR( const TU32 v );
 
-  TU8 const operator[]( TS32 idx ) const;
-  TU8 &operator[]( TS32 idx );
+  TU8 const operator[]( int32_t idx ) const;
+  TU8 &operator[]( int32_t idx );
   operator TU8* ( );
   operator const TU8* ( ) const;
   TBOOL operator== ( const CColor &c ) const;

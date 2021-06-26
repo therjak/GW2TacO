@@ -23,7 +23,7 @@ public:
   WB_DECLARE_GUIITEM( _T( "button" ), CWBItem );
 
   virtual CSize GetContentSize();
-  //virtual void ResizeToContentSize(TBOOL Width, TBOOL Height, TS32 AddedWidth, TS32 AddedHeight);
+  //virtual void ResizeToContentSize(TBOOL Width, TBOOL Height, int32_t AddedWidth, int32_t AddedHeight);
 
   virtual void Push( TBOOL pushed );
   virtual TBOOL IsPushed();

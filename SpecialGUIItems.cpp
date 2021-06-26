@@ -23,7 +23,7 @@ CWBItem * ClickThroughButton::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos
 
   if ( node.HasAttribute( _T( "hidden" ) ) )
   {
-    TS32 x = 0;
+    int32_t x = 0;
     node.GetAttributeAsInteger( _T( "hidden" ), &x );
     button->Hide( x );
   }

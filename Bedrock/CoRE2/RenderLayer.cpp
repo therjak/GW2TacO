@@ -45,6 +45,6 @@ void CCoreRenderLayer::Render(CCoreDevice *Device)
 	//set layer constant buffer here
 	Device->SetShaderConstants(1, 1, &LayerData);
 
-	for (TS32 x = 0; x < RenderList.NumItems(); x++)
+	for (int32_t x = 0; x < RenderList.NumItems(); x++)
 		RenderList[x]->Render(Device);
 }

@@ -57,7 +57,7 @@ void GW2HPGrid::LoadGrids()
   if ( !d.GetDocumentNode().GetChildCount( "hpgrids" ) ) return;
   CXMLNode root = d.GetDocumentNode().GetChild( "hpgrids" );
 
-  for ( TS32 x = 0; x < root.GetChildCount( "grid" ); x++ )
+  for ( int32_t x = 0; x < root.GetChildCount( "grid" ); x++ )
   {
     CXMLNode node = root.GetChild( "grid", x );
     GridData d;
@@ -74,7 +74,7 @@ void GW2HPGrid::LoadGrids()
     if ( node.HasAttribute( "radius" ) )
       node.GetAttributeAsFloat( "radius", &d.bSphere.Radius );
 
-    for ( TS32 y = 0; y < node.GetChildCount( "percentage" ); y++ )
+    for ( int32_t y = 0; y < node.GetChildCount( "percentage" ); y++ )
     {
       CXMLNode perc = node.GetChild( "percentage", y );
       GridLine line;

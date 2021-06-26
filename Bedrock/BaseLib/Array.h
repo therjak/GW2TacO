@@ -10,17 +10,17 @@ template <typename ItemType> class CArray
 {
 protected:
 
-  TS32 Capacity;
-  TS32 ItemCount;
+  int32_t Capacity;
+  int32_t ItemCount;
   ItemType *Array;
 
-  TS32 GetCapacity() const
+  int32_t GetCapacity() const
   {
     return Capacity;
   }
 
 public:
-  typedef TS32( __cdecl *ARRAYSORTCALLBACK )( ItemType *a, ItemType *b );
+  typedef int32_t( __cdecl *ARRAYSORTCALLBACK )( ItemType *a, ItemType *b );
 
   CArray()
   {
@@ -29,7 +29,7 @@ public:
     Array = 0;
   }
 
-  CArray( TS32 Size )
+  CArray( int32_t Size )
   {
     Array = new ItemType[ Size ];
     Capacity = Size;
@@ -40,7 +40,7 @@ public:
   {
     ItemCount = Capacity = original.NumItems();
     Array = new ItemType[ ItemCount ];
-    for ( TS32 x = 0; x < ItemCount; x++ )
+    for ( int32_t x = 0; x < ItemCount; x++ )
       Array[ x ] = original[ x ];
   }
 
@@ -51,7 +51,7 @@ public:
     Array = 0;
   }
 
-  TS32 NumItems() const
+  int32_t NumItems() const
   {
     return ItemCount;
   }
@@ -70,7 +70,7 @@ public:
 
   void Add( const ItemType &Item )
   {
-    if ( ItemCount == Capacity || !Array ) Expand( (TS32)( Capacity*EXPANSIONRATIO + 1 ) );
+    if ( ItemCount == Capacity || !Array ) Expand( (int32_t)( Capacity*EXPANSIONRATIO + 1 ) );
     Array[ ItemCount ] = Item;
     ItemCount++;
   }
@@ -83,9 +83,9 @@ public:
     Array[ 0 ] = Item;
   }
 
-  void AllocateNewUninitialized( const TS32 Count )
+  void AllocateNewUninitialized( const int32_t Count )
   {
-    if ( ItemCount + Count > Capacity || !Array ) Expand( (TS32)( Capacity*EXPANSIONRATIO + Count ) );
+    if ( ItemCount + Count > Capacity || !Array ) Expand( (int32_t)( Capacity*EXPANSIONRATIO + Count ) );
     ItemCount += Count;
   }
 
@@ -106,7 +106,7 @@ public:
 
   CArray<ItemType> &operator+= ( const CArray<ItemType> &i )
   {
-    for ( TS32 x = 0; x < i.NumItems(); x++ )
+    for ( int32_t x = 0; x < i.NumItems(); x++ )
       Add( i[ x ] );
     return *this;
   }
@@ -117,7 +117,7 @@ public:
     return *this;
   }
 
-  TS32 AddUnique( const ItemType &Item )
+  int32_t AddUnique( const ItemType &Item )
   {
     auto idx = Find( Item );
     if ( idx != -1 ) return idx;
@@ -125,13 +125,13 @@ public:
     return ItemCount - 1;
   }
 
-  ItemType const operator[]( const TS32 idx ) const
+  ItemType const operator[]( const int32_t idx ) const
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
     return (const ItemType)Array[ idx ];
   }
 
-  ItemType &operator[]( const TS32 idx )
+  ItemType &operator[]( const int32_t idx )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
     return Array[ idx ];
@@ -143,18 +143,18 @@ public:
     return Array[ ItemCount - 1 ];
   }
 
-  TS32 const Find( const ItemType &i ) const
+  int32_t const Find( const ItemType &i ) const
   {
-    for ( TS32 x = 0; x < ItemCount; x++ )
+    for ( int32_t x = 0; x < ItemCount; x++ )
       if ( Array[ x ] == i ) return x;
     return -1;
   }
 
-  void DeleteByIndex( const TS32 idx )
+  void DeleteByIndex( const int32_t idx )
   {
     if ( idx < 0 || idx >= ItemCount ) return;
     ItemCount--;
-    for ( TS32 x = idx; x < ItemCount; x++ )
+    for ( int32_t x = idx; x < ItemCount; x++ )
       Array[ x ] = Array[ x + 1 ];
   }
 
@@ -163,12 +163,12 @@ public:
     DeleteByIndex( Find( i ) );
   }
 
-  void FreeByIndex( const TS32 idx )
+  void FreeByIndex( const int32_t idx )
   {
     if ( idx < 0 || idx >= ItemCount ) return;
     delete Array[ idx ];
     ItemCount--;
-    for ( TS32 x = idx; x < ItemCount; x++ )
+    for ( int32_t x = idx; x < ItemCount; x++ )
       Array[ x ] = Array[ x + 1 ];
   }
 
@@ -177,12 +177,12 @@ public:
     FreeByIndex( Find( i ) );
   }
 
-  void FreeAByIndex( const TS32 idx )
+  void FreeAByIndex( const int32_t idx )
   {
     if ( idx < 0 || idx >= ItemCount ) return;
     delete[] Array[ idx ];
     ItemCount--;
-    for ( TS32 x = idx; x < ItemCount; x++ )
+    for ( int32_t x = idx; x < ItemCount; x++ )
       Array[ x ] = Array[ x + 1 ];
   }
 
@@ -191,7 +191,7 @@ public:
     FreeAByIndex( Find( i ) );
   }
 
-  void Swap( const TS32 a, const TS32 b )
+  void Swap( const int32_t a, const int32_t b )
   {
     ItemType temp = Array[ a ];
     Array[ a ] = Array[ b ];
@@ -200,17 +200,17 @@ public:
 
   void Sort( ARRAYSORTCALLBACK SortFunct )
   {
-    qsort( Array, ItemCount, sizeof( ItemType ), ( TS32( _cdecl* )( const void*, const void* ) )SortFunct );
+    qsort( Array, ItemCount, sizeof( ItemType ), ( int32_t( _cdecl* )( const void*, const void* ) )SortFunct );
   }
 
-  ItemType *GetPointer( const TS32 idx ) const
+  ItemType *GetPointer( const int32_t idx ) const
   {
     return &Array[ idx ];
   }
 
   void FreeArray()
   {
-    for ( TS32 x = NumItems() - 1; x >= 0; x-- )
+    for ( int32_t x = NumItems() - 1; x >= 0; x-- )
       if ( Array[ x ] )
         delete Array[ x ];
     FlushFast();
@@ -218,13 +218,13 @@ public:
 
   void FreeArrayA()
   {
-    for ( TS32 x = NumItems() - 1; x >= 0; x-- )
+    for ( int32_t x = NumItems() - 1; x >= 0; x-- )
       if ( Array[ x ] )
         delete[] Array[ x ];
     FlushFast();
   }
 
-  void TrimHead( TS32 count )
+  void TrimHead( int32_t count )
   {
     if ( count < 0 ) return;
 
@@ -234,7 +234,7 @@ public:
       return;
     }
 
-    for ( TS32 x = 0; x < ItemCount - count; x++ )
+    for ( int32_t x = 0; x < ItemCount - count; x++ )
       Array[ x ] = Array[ x + count ];
     ItemCount -= count;
   }
@@ -250,7 +250,7 @@ public:
     }
 
     ItemType *NewArray = new ItemType[ ItemCount + AddedItemCount ];
-    for ( TS32 x = 0; x < ItemCount; x++ )
+    for ( int32_t x = 0; x < ItemCount; x++ )
       NewArray[ x ] = Array[ x ];
 
     delete[] Array;
@@ -259,7 +259,7 @@ public:
   }
 };
 
-template<typename ItemType> __inline void SimulateAddItem( ItemType *&dataArray, TS32 &numItems, ItemType newItem )
+template<typename ItemType> __inline void SimulateAddItem( ItemType *&dataArray, int32_t &numItems, ItemType newItem )
 {
   if ( !dataArray )
   {
@@ -270,7 +270,7 @@ template<typename ItemType> __inline void SimulateAddItem( ItemType *&dataArray,
   }
 
   ItemType *n = new ItemType[ numItems + 1 ];
-  for ( TS32 x = 0; x < numItems; x++ )
+  for ( int32_t x = 0; x < numItems; x++ )
     n[ x ] = dataArray[ x ];
   n[ numItems ] = newItem;
 
@@ -283,7 +283,7 @@ template<typename ItemType> __inline void SimulateAddItem( ItemType *&dataArray,
   return;
 }
 
-template<typename ItemType> __inline void SimulateDeleteByIndex( ItemType *&dataArray, TS32 &numItems, TS32 index )
+template<typename ItemType> __inline void SimulateDeleteByIndex( ItemType *&dataArray, int32_t &numItems, int32_t index )
 {
   if ( !dataArray )
     return;
@@ -297,12 +297,12 @@ template<typename ItemType> __inline void SimulateDeleteByIndex( ItemType *&data
   return;
 }
 
-template<typename ItemType> __inline void SimulateFreeArray( ItemType *&dataArray, TS32 &numItems )
+template<typename ItemType> __inline void SimulateFreeArray( ItemType *&dataArray, int32_t &numItems )
 {
   if ( !dataArray )
     return;
 
-  for ( TS32 x = numItems - 1; x >= 0; x-- )
+  for ( int32_t x = numItems - 1; x >= 0; x-- )
     if ( dataArray[ x ] )
       delete dataArray[ x ];
 
@@ -317,21 +317,21 @@ template <typename ItemType> class CArrayThreadSafe
 
 protected:
 
-  TS32 GetCapacity()
+  int32_t GetCapacity()
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.GetCapacity();
   }
 
 public:
-  typedef TS32( __cdecl *ARRAYSORTCALLBACK )( ItemType *a, ItemType *b );
+  typedef int32_t( __cdecl *ARRAYSORTCALLBACK )( ItemType *a, ItemType *b );
 
 	CArrayThreadSafe() //: CArray<ItemType>()
   {
     InitializeLightweightCS( &critsec );
   }
 
-	CArrayThreadSafe(TS32 Size) //: CArray<ItemType>(Size)
+	CArrayThreadSafe(int32_t Size) //: CArray<ItemType>(Size)
   {
     InitializeLightweightCS( &critsec );
     Array.Expand( Size );
@@ -351,7 +351,7 @@ public:
   {
   }
 
-  TS32 NumItems()
+  int32_t NumItems()
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.NumItems();
@@ -403,13 +403,13 @@ public:
     return *this;
   }
 
-  TS32 AddUnique( const ItemType &Item )
+  int32_t AddUnique( const ItemType &Item )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.AddUnique( Item );
   }
 
-  ItemType &operator[]( const TS32 idx )
+  ItemType &operator[]( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.operator[]( idx );
@@ -421,13 +421,13 @@ public:
     return Array.Last();
   }
 
-  TS32 const Find( const ItemType &i )
+  int32_t const Find( const ItemType &i )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.Find( i );
   }
 
-  void DeleteByIndex( const TS32 idx )
+  void DeleteByIndex( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.DeleteByIndex( idx );
@@ -439,7 +439,7 @@ public:
     return Array.Delete( i );
   }
 
-  void FreeByIndex( const TS32 idx )
+  void FreeByIndex( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.FreeByIndex( idx );
@@ -451,7 +451,7 @@ public:
     return Array.Free( i );
   }
 
-  void FreeAByIndex( const TS32 idx )
+  void FreeAByIndex( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.FreeAByIndex( idx );
@@ -463,7 +463,7 @@ public:
     return Array.FreeA( i );
   }
 
-  void Swap( const TS32 a, const TS32 b )
+  void Swap( const int32_t a, const int32_t b )
   {
     CLightweightCriticalSection cs( &critsec );
     Array.Swap( a, b );
@@ -475,7 +475,7 @@ public:
     Array.Sort( SortFunct );
   }
 
-  ItemType *GetPointer( const TS32 idx )
+  ItemType *GetPointer( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     return Array.GetPointer( idx );
@@ -493,7 +493,7 @@ public:
     FreeArrayA();
   }
 
-  void Expand( TS32 size )
+  void Expand( int32_t size )
   {
     CLightweightCriticalSection cs( &critsec );
     Array.Expand( size );

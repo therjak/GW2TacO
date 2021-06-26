@@ -25,7 +25,7 @@ class DungeonProgress : public CWBItem
   virtual void OnDraw( CWBDrawAPI *API );
 
   bool beingFetched = false;
-  TS32 lastFetchTime = 0;
+  int32_t lastFetchTime = 0;
 
   bool hasFullDungeonInfo = false;
 

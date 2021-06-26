@@ -33,7 +33,7 @@ protected:
   void RearrangeVertical();
   void UpdateScrollbarData();
 
-  TS32 Spacing;
+  int32_t Spacing;
   WBBOXARRANGEMENT Arrangement;
   WBALIGNMENT AlignmentX, AlignmentY;
   WBBOXSIZING SizingX, SizingY;
@@ -52,7 +52,7 @@ public:
 
   virtual void SetArrangement( WBBOXARRANGEMENT a );
   WBBOXARRANGEMENT GetArrangement();
-  virtual void SetSpacing( TS32 s );
+  virtual void SetSpacing( int32_t s );
   virtual void SetAlignment( WBBOXAXIS axis, WBALIGNMENT align );
   virtual void SetSizing( WBBOXAXIS axis, WBBOXSIZING siz );
   virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray & pseudo );

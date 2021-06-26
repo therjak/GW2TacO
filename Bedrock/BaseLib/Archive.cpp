@@ -42,19 +42,19 @@ CStreamReaderArchive::~CStreamReaderArchive()
 {
 }
 
-TS32 CStreamReaderArchive::Open( CArchive *BF, TS32 StartChunk, TS32 FileSize )
+int32_t CStreamReaderArchive::Open( CArchive *BF, int32_t StartChunk, int32_t FileSize )
 {
   if ( !BF || !FileSize || !StartChunk ) return 0;
 
   TU8 *FileData = new TU8[ FileSize ];
 
-  TS32 pos = 0;
-  TS32 remaining = FileSize;
-  TS32 Chunk = StartChunk;
+  int32_t pos = 0;
+  int32_t remaining = FileSize;
+  int32_t Chunk = StartChunk;
 
   while ( remaining )
   {
-    TS32 read = BF->ReadChunk( Chunk, FileData + pos, remaining, Chunk );
+    int32_t read = BF->ReadChunk( Chunk, FileData + pos, remaining, Chunk );
     remaining -= read;
     pos += read;
     if ( !read || remaining < 0 || !Chunk ) break;
@@ -95,13 +95,13 @@ CArchive::~CArchive()
   SAFEDELETEA( TempChunk );
 }
 
-TBOOL CArchive::SeekToChunk( TS32 Chunk )
+TBOOL CArchive::SeekToChunk( int32_t Chunk )
 {
   if ( !Handle ) return false;
   return fseek( Handle, Chunk*ChunkSize, SEEK_SET ) == 0;
 }
 
-TS32 CArchive::ReadChunk( TS32 ChunkID, TU8 *Data, TS32 BufferSize, TS32 &NextChunk )
+int32_t CArchive::ReadChunk( int32_t ChunkID, TU8 *Data, int32_t BufferSize, int32_t &NextChunk )
 {
   NextChunk = 0;
 
@@ -111,7 +111,7 @@ TS32 CArchive::ReadChunk( TS32 ChunkID, TU8 *Data, TS32 BufferSize, TS32 &NextCh
   if ( fread_s( TempChunk, ChunkSize, ChunkSize, 1, Handle ) != 1 )
     return 0;
 
-  NextChunk = ( (TS32*)TempChunk )[ 0 ];
+  NextChunk = ( (int32_t*)TempChunk )[ 0 ];
   TU16 DataSize = ( (TU16*)TempChunk )[ 2 ];
   if ( DataSize > BufferSize )
   {
@@ -187,7 +187,7 @@ TBOOL CArchive::Open( const CString &FileName, TBOOL ro )
   }
 
   TempChunk = new TU8[ ChunkSize ];
-  for ( TS32 x = 0; x < ChunkSize; x++ )
+  for ( int32_t x = 0; x < ChunkSize; x++ )
     TempChunk[ x ] = ARCHIVE_FILLER[ x % ( sizeof( ARCHIVE_FILLER ) - 1 ) ];
 
   if ( FileIndexChunk > 0 )
@@ -236,7 +236,7 @@ TBOOL CArchive::Create( const CString &FileName, TU16 chunksize )
   }
 
   TempChunk = new TU8[ ChunkSize ];
-  for ( TS32 x = 0; x < ChunkSize; x++ )
+  for ( int32_t x = 0; x < ChunkSize; x++ )
     TempChunk[ x ] = ARCHIVE_FILLER[ x % ( sizeof( ARCHIVE_FILLER ) - 1 ) ];
 
   //fill up the rest of chunk #0
@@ -279,7 +279,7 @@ TBOOL CArchive::UpdateIndex( TBOOL IncludeFilenames )
   if ( !Handle || ReadOnly ) return false;
 
   CStreamWriterMemory mf;
-  for ( TS32 x = 0; x < FileIndices.NumItems(); x++ )
+  for ( int32_t x = 0; x < FileIndices.NumItems(); x++ )
   {
     mf.WriteDWord( FileIndices[ x ].StartChunk );
     mf.WriteDWord( FileIndices[ x ].FileSize );
@@ -295,7 +295,7 @@ TBOOL CArchive::UpdateIndex( TBOOL IncludeFilenames )
       mf.WriteByte( 0 );
   }
 
-  TS32 OldIdxStart = FileIndexChunk;
+  int32_t OldIdxStart = FileIndexChunk;
 
   if ( !WriteFile( mf.GetData(), mf.GetLength(), FileIndexChunk ) )
   {
@@ -316,13 +316,13 @@ TBOOL CArchive::UpdateIndex( TBOOL IncludeFilenames )
   else return UpdateHeader();
 }
 
-TBOOL CArchive::ClearChunkSequence( TS32 StartChunk )
+TBOOL CArchive::ClearChunkSequence( int32_t StartChunk )
 {
   if ( ReadOnly ) return false;
   if ( StartChunk <= 0 || StartChunk*ChunkSize >= FileSize ) return false; //invalid chunk id
 
-  TS32 chunk = StartChunk;
-  TS32 LastChunk = chunk;
+  int32_t chunk = StartChunk;
+  int32_t LastChunk = chunk;
   while ( chunk )
   {
     LastChunk = chunk;
@@ -334,7 +334,7 @@ TBOOL CArchive::ClearChunkSequence( TS32 StartChunk )
   if ( fwrite( &EmptySequenceStartChunk, 4, 1, Handle ) != 1 ) return false;
 
   //this code zeros the chunk - debug use only
-  //for (TS32 x=0; x<ChunkSize-4; x++)
+  //for (int32_t x=0; x<ChunkSize-4; x++)
   //{
   //	char y='.';
   //	fwrite(&y,1,1,Handle);
@@ -346,11 +346,11 @@ TBOOL CArchive::ClearChunkSequence( TS32 StartChunk )
   return UpdateHeader();
 }
 
-TBOOL CArchive::AddFile( TU8 *Data, TS32 Size, const CString &FileName )
+TBOOL CArchive::AddFile( TU8 *Data, int32_t Size, const CString &FileName )
 {
   if ( ReadOnly || !Handle ) return false;
 
-  TS32 sc = 0;
+  int32_t sc = 0;
   CArchiveEntry f;
   f.FileName = FileName;
   f.FileSize = Size;
@@ -366,12 +366,12 @@ TBOOL CArchive::AddFile( TU8 *Data, TS32 Size, const CString &FileName )
   return UpdateIndex();
 }
 
-TBOOL CArchive::WriteFile( TU8 *Data, TS32 Size, TS32 &startchunk )
+TBOOL CArchive::WriteFile( TU8 *Data, int32_t Size, int32_t &startchunk )
 {
   if ( !Handle || ReadOnly ) return false;
 
-  TS32 TargetChunk = startchunk = EmptySequenceStartChunk;
-  if ( !startchunk ) startchunk = (TS32)( FileSize / ChunkSize );
+  int32_t TargetChunk = startchunk = EmptySequenceStartChunk;
+  if ( !startchunk ) startchunk = (int32_t)( FileSize / ChunkSize );
 
   while ( Size )
   {
@@ -393,7 +393,7 @@ TBOOL CArchive::WriteFile( TU8 *Data, TS32 Size, TS32 &startchunk )
   return true;
 }
 
-TBOOL CArchive::WriteChunk( TS32 &Chunk, TU8 *&Data, TS32 &DataSize )
+TBOOL CArchive::WriteChunk( int32_t &Chunk, TU8 *&Data, int32_t &DataSize )
 {
   if ( !Handle || ReadOnly ) return false;
 
@@ -405,23 +405,23 @@ TBOOL CArchive::WriteChunk( TS32 &Chunk, TU8 *&Data, TS32 &DataSize )
   {
     if ( fseek( Handle, 0, SEEK_END ) ) return false;
 
-    TS32 NextChunk = 0;
-    if ( !FileFits ) NextChunk = (TS32)( ftell( Handle ) / ChunkSize ) + 1; //file isn't over yet, reference the next chunk
+    int32_t NextChunk = 0;
+    if ( !FileFits ) NextChunk = (int32_t)( ftell( Handle ) / ChunkSize ) + 1; //file isn't over yet, reference the next chunk
 
     if ( fwrite( &NextChunk, 4, 1, Handle ) != 1 ) return false; //write next chunk id
   }
   else //we're replacing chunks inside the Archive
   {
-    TS32 CurrentChunk = Chunk;
+    int32_t CurrentChunk = Chunk;
 
     //first read the next chunk id from the empty sequence
     if ( !SeekToChunk( CurrentChunk ) ) return false;
     if ( fread_s( &Chunk, 4, 4, 1, Handle ) != 1 ) return false; //also advances empty sequence by overwriting the currently checked chunk id
 
     //modify if needed
-    TS32 NextChunk = Chunk;
+    int32_t NextChunk = Chunk;
     if ( FileFits ) NextChunk = 0; //file is over, sequence needs to be terminated
-    if ( !Chunk && !FileFits ) NextChunk = (TS32)( FileSize / ChunkSize ); //file isn't over yet but the empty sequence is, refer to eof chunk (to be added later)
+    if ( !Chunk && !FileFits ) NextChunk = (int32_t)( FileSize / ChunkSize ); //file isn't over yet but the empty sequence is, refer to eof chunk (to be added later)
 
     if ( Chunk != NextChunk ) //next chunk id changed
     {
@@ -472,9 +472,9 @@ TBOOL CArchive::OpenFile( const CString &FileName, CStreamReaderArchive *&Reader
 {
   if ( !Reader || !Handle ) return NULL;
 
-  TS32 idx = -1;
+  int32_t idx = -1;
 
-  for ( TS32 x = 0; x < FileIndices.NumItems(); x++ )
+  for ( int32_t x = 0; x < FileIndices.NumItems(); x++ )
   {
     if ( CString::CompareNoCase( FileIndices[ x ].FileName, FileName ) == 0 )
     {
@@ -487,7 +487,7 @@ TBOOL CArchive::OpenFile( const CString &FileName, CStreamReaderArchive *&Reader
   {
     TU64 hash = CalculateHash( FileName );
 
-    for ( TS32 x = 0; x < FileIndices.NumItems(); x++ )
+    for ( int32_t x = 0; x < FileIndices.NumItems(); x++ )
       if ( FileIndices[ x ].Hash == hash )
       {
         idx = x;

@@ -3,23 +3,23 @@
 class CRect
 {
 public:
-  TS32 x1, y1, x2, y2;
+  int32_t x1, y1, x2, y2;
 
   CRect();
-  CRect( const TS32 a, const TS32 b, const TS32 c, const TS32 d );
+  CRect( const int32_t a, const int32_t b, const int32_t c, const int32_t d );
   CRect( const CPoint p1, const CPoint p2 );
   CRect( const CRect &r );
-  const TBOOL Contains( const TS32 x, const TS32 y ) const;
+  const TBOOL Contains( const int32_t x, const int32_t y ) const;
   const TBOOL Contains( CPoint&p ) const;
   const TBOOL Contains( const CPoint&p ) const;
-  const TS32 Width() const;
-  const TS32 Height() const;
-  const TS32 Area() const;
+  const int32_t Width() const;
+  const int32_t Height() const;
+  const int32_t Area() const;
   const TBOOL Intersects( const CRect &r ) const;
 
   CRect operator +( const CRect &a ) const;
   CRect operator -( const CRect &a ) const;
-  CRect operator *( const TS32 a ) const;
+  CRect operator *( const int32_t a ) const;
   CRect &operator += ( const CRect &a ); //inflate by rect
   CRect operator+( const CPoint&p ) const;
   CRect &operator += ( const CPoint&p );
@@ -32,10 +32,10 @@ public:
   CRect operator&( const CRect&r )const;
   CRect &operator &= ( const CRect&r );
 
-  void Move( TS32 x, TS32 y );
+  void Move( int32_t x, int32_t y );
   void Move( const CPoint&p );
-  void MoveTo( TS32 x, TS32 y );
-  void SetSize( TS32 x, TS32 y );
+  void MoveTo( int32_t x, int32_t y );
+  void SetSize( int32_t x, int32_t y );
   void Normalize();
   CPoint TopLeft() const;
   CPoint BottomRight() const;
@@ -47,4 +47,4 @@ public:
   CRect GetIntersection( const CRect&r )const;
 };
 
-bool IntervalIntersection( TS32 a1, TS32 a2, TS32 b1, TS32 b2 );
+bool IntervalIntersection( int32_t a1, int32_t a2, int32_t b1, int32_t b2 );

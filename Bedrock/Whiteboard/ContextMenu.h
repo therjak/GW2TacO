@@ -8,7 +8,7 @@ class CWBContextItem
   friend class CWBContextMenu;
 
   CString Text;
-  TS32 ReturnID;
+  int32_t ReturnID;
   TBOOL Separator;
   TBOOL Highlighted;
   TBOOL closesContext;
@@ -22,8 +22,8 @@ public:
 
   CWBContextItem();
   virtual ~CWBContextItem();
-  virtual CWBContextItem *AddItem( const TCHAR *Text, TS32 ID, TBOOL Highlighted = false, TBOOL closesContext = true );
-  virtual CWBContextItem *AddItem( const CString& Text, TS32 ID, TBOOL Highlighted = false, TBOOL closesContext = true );
+  virtual CWBContextItem *AddItem( const TCHAR *Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
+  virtual CWBContextItem *AddItem( const CString& Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
   virtual void AddSeparator();
   virtual void SetText( const CString& text );
   virtual void SetHighlight( TBOOL highlighted );
@@ -41,8 +41,8 @@ class CWBContextMenu : public CWBItem
   TBOOL MessageProc( CWBMessage &Message );
   virtual void ResizeToContentSize();
   virtual void OnDraw( CWBDrawAPI *API );
-  void SpawnSubMenu( TS32 itemidx );
-  CRect GetItemRect( TS32 idx );
+  void SpawnSubMenu( int32_t itemidx );
+  CRect GetItemRect( int32_t idx );
   void MarkParentForDeletion();
 
   TBOOL MouseInContextHierarchy();
@@ -61,10 +61,10 @@ public:
 
   WB_DECLARE_GUIITEM( _T( "contextmenu" ), CWBItem );
 
-  virtual CWBContextItem *AddItem( const TCHAR *Text, TS32 ID, TBOOL Highlighted = false, TBOOL closesContext = true );
-  virtual CWBContextItem *AddItem( const CString &Text, TS32 ID, TBOOL Highlighted = false, TBOOL closesContext = true );
+  virtual CWBContextItem *AddItem( const TCHAR *Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
+  virtual CWBContextItem *AddItem( const CString &Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
   virtual void AddSeparator();
 
   virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray &pseudo );
-  virtual CWBContextItem *GetItem( TS32 ID );
+  virtual CWBContextItem *GetItem( int32_t ID );
 };

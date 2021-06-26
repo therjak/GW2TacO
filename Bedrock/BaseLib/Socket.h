@@ -6,8 +6,8 @@ protected:
   int64_t LastActivity;
   SOCKET Socket;
 
-  virtual TS32 ReadStream( void *lpBuf, TU32 nCount );
-  virtual TS32 WriteStream( void* lpBuf, TU32 nCount );
+  virtual int32_t ReadStream( void *lpBuf, TU32 nCount );
+  virtual int32_t WriteStream( void* lpBuf, TU32 nCount );
 
 public:
 
@@ -18,11 +18,11 @@ public:
   //////////////////////////////////////////////////////////////////////////
   //socket functions
 
-  virtual TS32 Connect( const CString &Server, const TU32 Port );
-  virtual TS32 Listen( const TU32 Port, const TBOOL ReuseAddress = false );
+  virtual int32_t Connect( const CString &Server, const TU32 Port );
+  virtual int32_t Listen( const TU32 Port, const TBOOL ReuseAddress = false );
 
-  virtual TS32 Close();
-  virtual TS32 AcceptConnection( CSocket &Socket );
+  virtual int32_t Close();
+  virtual int32_t AcceptConnection( CSocket &Socket );
 
   static TU32 Resolve( const TS8 *Address );
 
@@ -35,7 +35,7 @@ public:
   virtual void SeekFromStart( TU64 lOff ); //these do nothing
   virtual void SeekRelative( int64_t lOff ); //these do nothing
 
-  TS32 ReadFull( void *lpBuf, TU32 nCount );
+  int32_t ReadFull( void *lpBuf, TU32 nCount );
   virtual CString ReadLine() override;
 
   TBOOL Peek( void *lpBuf, TU32 nCount );
@@ -44,14 +44,14 @@ public:
 
   const TBOOL operator==( const CSocket &b );
 
-  TS32 TimeSinceLastActivity();
+  int32_t TimeSinceLastActivity();
 
   //////////////////////////////////////////////////////////////////////////
   //streamwriter functions
 
 };
 
-TS32 InitWinsock();
+int32_t InitWinsock();
 void DeinitWinsock();
 
-TU8 *FetchHTTP( CString host, CString path, TS32 &ContentSize );
+TU8 *FetchHTTP( CString host, CString path, int32_t &ContentSize );

@@ -35,17 +35,17 @@ TBOOL CCoreDX11VertexFormat::Create(const CArray<COREVERTEXATTRIBUTE> &Attribute
 	if (!Attributes.NumItems()) return false;
 	Release();
 
-	TS32 PosUsages = 0;
-	TS32 NormUsages = 0;
-	TS32 UVUsages = 0;
-	TS32 ColUsages = 0;
+	int32_t PosUsages = 0;
+	int32_t NormUsages = 0;
+	int32_t UVUsages = 0;
+	int32_t ColUsages = 0;
 
 	Size = 0;
 
 	D3D11_INPUT_ELEMENT_DESC *vxdecl = new D3D11_INPUT_ELEMENT_DESC[Attributes.NumItems() + 1];
 	memset(vxdecl, 0, sizeof(D3D11_INPUT_ELEMENT_DESC)*(Attributes.NumItems() + 1));
 
-	for (TS32 x = 0; x < Attributes.NumItems(); x++)
+	for (int32_t x = 0; x < Attributes.NumItems(); x++)
 	{
 		vxdecl[x].InputSlot = 0;
 		vxdecl[x].AlignedByteOffset = Size;
@@ -141,7 +141,7 @@ TBOOL CCoreDX11VertexFormat::Create(const CArray<COREVERTEXATTRIBUTE> &Attribute
 	return true;
 }
 
-TS32 CCoreDX11VertexFormat::GetSize()
+int32_t CCoreDX11VertexFormat::GetSize()
 {
 	return Size;
 }

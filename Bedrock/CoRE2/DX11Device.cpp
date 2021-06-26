@@ -80,7 +80,7 @@ void CCoreDX11Device::ResetPrivateResources()
 
 #define BACKBUFFERFORMAT D3DFMT_A8R8G8B8
 
-TBOOL CCoreDX11Device::CreateBackBuffer( TS32 XRes, TS32 YRes )
+TBOOL CCoreDX11Device::CreateBackBuffer( int32_t XRes, int32_t YRes )
 {
   if ( BackBufferView ) BackBufferView->Release();
 
@@ -122,7 +122,7 @@ TBOOL CCoreDX11Device::CreateBackBuffer( TS32 XRes, TS32 YRes )
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDepthBuffer( TS32 XRes, TS32 YRes )
+TBOOL CCoreDX11Device::CreateDepthBuffer( int32_t XRes, int32_t YRes )
 {
   if ( DepthBufferView ) DepthBufferView->Release();
   if ( DepthBuffer ) DepthBuffer->Release();
@@ -177,7 +177,7 @@ TBOOL CCoreDX11Device::CreateDepthBuffer( TS32 XRes, TS32 YRes )
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateClassicSwapChain( const TU32 hWnd, const TBOOL FullScreen, const TS32 XRes, const TS32 YRes, const TS32 AALevel, const TS32 RefreshRate )
+TBOOL CCoreDX11Device::CreateClassicSwapChain( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
 {
   LOG_NFO( "[core] Creating classic swap chain" );
 
@@ -243,7 +243,7 @@ TBOOL CCoreDX11Device::CreateClassicSwapChain( const TU32 hWnd, const TBOOL Full
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const TU32 hWnd, const TBOOL FullScreen, const TS32 XRes, const TS32 YRes, const TS32 AALevel, const TS32 RefreshRate )
+TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
 {
   LOG_NFO( "[core] Creating DirectComposition swap chain" );
 
@@ -415,7 +415,7 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const TU32 hWnd, const 
   return true;
 }
 
-TBOOL CCoreDX11Device::InitAPI( const TU32 hWnd, const TBOOL FullScreen, const TS32 XRes, const TS32 YRes, const TS32 AALevel/* =0 */, const TS32 RefreshRate/* =60 */ )
+TBOOL CCoreDX11Device::InitAPI( const TU32 hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel/* =0 */, const int32_t RefreshRate/* =60 */ )
 {
   auto dcomp = LoadLibrary( "dcomp.dll" );
 
@@ -433,7 +433,7 @@ TBOOL CCoreDX11Device::InitAPI( const TU32 hWnd, const TBOOL FullScreen, const T
     FreeLibrary( dcomp );
 }
 
-TBOOL CCoreDX11Device::Initialize( CCoreWindowHandler* window, const TS32 AALevel )
+TBOOL CCoreDX11Device::Initialize( CCoreWindowHandler* window, const int32_t AALevel )
 {
   FORCEDDEBUGLOG( "Initializing DX11 device" );
   Window = window;
@@ -466,7 +466,7 @@ TBOOL CCoreDX11Device::IsWindowed()
   return fs;
 }
 
-void CCoreDX11Device::Resize( const TS32 xr, const TS32 yr )
+void CCoreDX11Device::Resize( const int32_t xr, const int32_t yr )
 {
   //LOG(LOG_INFO,_T("[core] Resizing backbuffer to %dx%d"),xr,yr);
 
@@ -510,7 +510,7 @@ void CCoreDX11Device::Resize( const TS32 xr, const TS32 yr )
 
 }
 
-void CCoreDX11Device::SetFullScreenMode( const TBOOL FullScreen, const TS32 xr, const TS32 yr )
+void CCoreDX11Device::SetFullScreenMode( const TBOOL FullScreen, const int32_t xr, const int32_t yr )
 {
   //if (xr && yr)
   //{
@@ -538,7 +538,7 @@ TBOOL CCoreDX11Device::DeviceOk()
 //////////////////////////////////////////////////////////////////////////
 // texture functions
 
-CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TS32 XRes, const TS32 YRes, const TU8* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
+CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int32_t YRes, const TU8* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
 {
   CCoreTexture2D* Result = new CCoreDX11Texture2D( this );
   if ( !Result->Create( XRes, YRes, Data, BytesPerPixel, Format, RenderTarget ) )
@@ -546,7 +546,7 @@ CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TS32 XRes, const TS32 YR
   return Result;
 }
 
-CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TU8* Data, const TS32 Size )
+CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TU8* Data, const int32_t Size )
 {
   CCoreTexture2D* Result = new CCoreDX11Texture2D( this );
   if ( !Result->Create( Data, Size ) )
@@ -557,7 +557,7 @@ CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const TU8* Data, const TS32 Si
 //////////////////////////////////////////////////////////////////////////
 // vertexbuffer functions
 
-CCoreVertexBuffer* CCoreDX11Device::CreateVertexBuffer( const TU8* Data, const TS32 Size )
+CCoreVertexBuffer* CCoreDX11Device::CreateVertexBuffer( const TU8* Data, const int32_t Size )
 {
   CCoreDX11VertexBuffer* Result = new CCoreDX11VertexBuffer( this );
   if ( !Result->Create( Data, Size ) )
@@ -565,7 +565,7 @@ CCoreVertexBuffer* CCoreDX11Device::CreateVertexBuffer( const TU8* Data, const T
   return Result;
 }
 
-CCoreVertexBuffer* CCoreDX11Device::CreateVertexBufferDynamic( const TS32 Size )
+CCoreVertexBuffer* CCoreDX11Device::CreateVertexBufferDynamic( const int32_t Size )
 {
   CCoreDX11VertexBuffer* Result = new CCoreDX11VertexBuffer( this );
   if ( !Result->CreateDynamic( Size ) )
@@ -576,7 +576,7 @@ CCoreVertexBuffer* CCoreDX11Device::CreateVertexBufferDynamic( const TS32 Size )
 //////////////////////////////////////////////////////////////////////////
 // indexbuffer functions
 
-CCoreIndexBuffer* CCoreDX11Device::CreateIndexBuffer( const TS32 IndexCount, const TS32 IndexSize )
+CCoreIndexBuffer* CCoreDX11Device::CreateIndexBuffer( const int32_t IndexCount, const int32_t IndexSize )
 {
   CCoreDX11IndexBuffer* Result = new CCoreDX11IndexBuffer( this );
   if ( !Result->Create( IndexCount, IndexSize ) )
@@ -603,7 +603,7 @@ CCoreVertexFormat* CCoreDX11Device::CreateVertexFormat( const CArray<COREVERTEXA
 //#pragma comment(lib,"d3dcompiler.lib")
 //#endif
 
-CCoreVertexShader* CCoreDX11Device::CreateVertexShader( LPCSTR Code, TS32 CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+CCoreVertexShader* CCoreDX11Device::CreateVertexShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
 {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
@@ -620,7 +620,7 @@ CCoreVertexShader* CCoreDX11Device::CreateVertexShader( LPCSTR Code, TS32 CodeSi
   return s;
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShader( LPCSTR Code, TS32 CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+CCorePixelShader* CCoreDX11Device::CreatePixelShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
 {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
@@ -637,7 +637,7 @@ CCorePixelShader* CCoreDX11Device::CreatePixelShader( LPCSTR Code, TS32 CodeSize
   return s;
 }
 
-CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( TU8* Code, TS32 CodeSize )
+CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( TU8* Code, int32_t CodeSize )
 {
   CCoreDX11VertexShader* s = new CCoreDX11VertexShader( this );
   if ( !s->CreateFromBlob( Code, CodeSize ) )
@@ -649,7 +649,7 @@ CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( TU8* Code, TS32 
   return s;
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShaderFromBlob( TU8* Code, TS32 CodeSize )
+CCorePixelShader* CCoreDX11Device::CreatePixelShaderFromBlob( TU8* Code, int32_t CodeSize )
 {
   CCoreDX11PixelShader* s = new CCoreDX11PixelShader( this );
   if ( !s->CreateFromBlob( Code, CodeSize ) )
@@ -661,7 +661,7 @@ CCorePixelShader* CCoreDX11Device::CreatePixelShaderFromBlob( TU8* Code, TS32 Co
   return s;
 }
 
-CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader( LPCSTR Code, TS32 CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
 {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
@@ -678,7 +678,7 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader( LPCSTR Code, TS32 Co
   return s;
 }
 
-CCoreDomainShader* CCoreDX11Device::CreateDomainShader( LPCSTR Code, TS32 CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+CCoreDomainShader* CCoreDX11Device::CreateDomainShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
 {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
@@ -695,7 +695,7 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader( LPCSTR Code, TS32 CodeSi
   return s;
 }
 
-CCoreHullShader* CCoreDX11Device::CreateHullShader( LPCSTR Code, TS32 CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+CCoreHullShader* CCoreDX11Device::CreateHullShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
 {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
@@ -712,7 +712,7 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader( LPCSTR Code, TS32 CodeSize, 
   return s;
 }
 
-CCoreComputeShader* CCoreDX11Device::CreateComputeShader( LPCSTR Code, TS32 CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+CCoreComputeShader* CCoreDX11Device::CreateComputeShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
 {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
@@ -934,9 +934,9 @@ TBOOL CCoreDX11Device::EndScene()
   return true;
 }
 
-TBOOL CCoreDX11Device::Clear( const TBOOL clearPixels, const TBOOL clearDepth, const CColor& Color, const TF32 Depth, const TS32 Stencil )
+TBOOL CCoreDX11Device::Clear( const TBOOL clearPixels, const TBOOL clearDepth, const CColor& Color, const TF32 Depth, const int32_t Stencil )
 {
-  TS32 Flags = 0;
+  int32_t Flags = 0;
 
   float col[ 4 ] = { Color[ 0 ] / 255.0f, Color[ 1 ] / 255.0f, Color[ 2 ] / 255.0f, Color[ 3 ] / 255.0f };
 
@@ -981,7 +981,7 @@ TBOOL CCoreDX11Device::Flip( TBOOL Vsync )
   return res == S_OK;
 }
 
-TBOOL CCoreDX11Device::DrawIndexedTriangles( TS32 Count, TS32 NumVertices )
+TBOOL CCoreDX11Device::DrawIndexedTriangles( int32_t Count, int32_t NumVertices )
 {
   DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
   if ( !ApplyRequestedRenderState() ) return false;
@@ -989,7 +989,7 @@ TBOOL CCoreDX11Device::DrawIndexedTriangles( TS32 Count, TS32 NumVertices )
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawLines( TS32 Count )
+TBOOL CCoreDX11Device::DrawLines( int32_t Count )
 {
   DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
   if ( !ApplyRequestedRenderState() ) return false;
@@ -997,7 +997,7 @@ TBOOL CCoreDX11Device::DrawLines( TS32 Count )
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawIndexedLines( TS32 Count, TS32 NumVertices )
+TBOOL CCoreDX11Device::DrawIndexedLines( int32_t Count, int32_t NumVertices )
 {
   DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
   if ( !ApplyRequestedRenderState() ) return false;
@@ -1005,7 +1005,7 @@ TBOOL CCoreDX11Device::DrawIndexedLines( TS32 Count, TS32 NumVertices )
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawTriangles( TS32 Count )
+TBOOL CCoreDX11Device::DrawTriangles( int32_t Count )
 {
   DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
   if ( !ApplyRequestedRenderState() ) return false;
@@ -1029,13 +1029,13 @@ TBOOL CCoreDX11Device::SetViewport( CRect Viewport )
   return true;
 }
 
-void CCoreDX11Device::SetShaderConstants( TS32 Slot, TS32 Count, CCoreConstantBuffer** Buffers )
+void CCoreDX11Device::SetShaderConstants( int32_t Slot, int32_t Count, CCoreConstantBuffer** Buffers )
 {
   void* buffers[ 16 ];
 
   if ( Buffers )
   {
-    for ( TS32 x = 0; x < Count; x++ )
+    for ( int32_t x = 0; x < Count; x++ )
       buffers[ x ] = Buffers[ x ] ? Buffers[ x ]->GetBufferPointer() : NULL;
   }
   else

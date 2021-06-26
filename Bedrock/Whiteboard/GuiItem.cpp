@@ -9,7 +9,7 @@ static WBGUID WB_GUID_COUNTER = 1337;
 
 CWBDisplayState::CWBDisplayState()
 {
-  memset( Visuals, 0, sizeof( TS32 )*WB_ITEM_COUNT );
+  memset( Visuals, 0, sizeof( int32_t )*WB_ITEM_COUNT );
   memset( VisualSet, 0, sizeof( TBOOL )*WB_ITEM_COUNT );
 }
 
@@ -27,7 +27,7 @@ TBOOL CWBDisplayState::IsSet( WBITEMVISUALCOMPONENT v )
   return VisualSet[ v ];//.HasKey(v);
 }
 
-void CWBDisplayState::SetValue( WBITEMVISUALCOMPONENT v, TS32 value )
+void CWBDisplayState::SetValue( WBITEMVISUALCOMPONENT v, int32_t value )
 {
   Visuals[ v ] = value;
   VisualSet[ v ] = true;
@@ -38,7 +38,7 @@ WBSKINELEMENTID CWBDisplayState::GetSkin( WBITEMVISUALCOMPONENT v )
   return Visuals[ v ];
 }
 
-TS32 CWBDisplayState::GetValue( WBITEMVISUALCOMPONENT v )
+int32_t CWBDisplayState::GetValue( WBITEMVISUALCOMPONENT v )
 {
   return Visuals[ v ];
 }
@@ -93,12 +93,12 @@ CColor CWBDisplayProperties::GetColor( WBITEMSTATE s, WBITEMVISUALCOMPONENT v )
   return 0xffffffff;
 }
 
-void CWBDisplayProperties::SetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, TS32 value )
+void CWBDisplayProperties::SetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, int32_t value )
 {
   States[ s ].SetValue( v, value );
 }
 
-TS32 CWBDisplayProperties::GetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v )
+int32_t CWBDisplayProperties::GetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v )
 {
   if ( States[ s ].IsSet( v ) )
     return States[ s ].GetValue( v );
@@ -139,7 +139,7 @@ void CWBItem::UpdateScreenRect()
     ScreenRect = Position;
 
   if ( sr != ScreenRect )
-    for ( TS32 x = 0; x < Children.NumItems(); x++ )
+    for ( int32_t x = 0; x < Children.NumItems(); x++ )
       Children[ x ]->UpdateScreenRect();
 }
 
@@ -272,13 +272,13 @@ TBOOL CWBItem::MessageProc( CWBMessage &Message )
 
         if ( HScrollbar.Dragmode == WB_SCROLLDRAG_THUMB )
         {
-          TS32 newpos = CalculateScrollbarMovement( HScrollbar, GetClientRect().Width(), md.x );
+          int32_t newpos = CalculateScrollbarMovement( HScrollbar, GetClientRect().Width(), md.x );
           HScrollbar.ScrollPos = newpos;
           App->SendMessage( CWBMessage( App, WBM_HSCROLL, GetGuid(), newpos ) );
         }
         if ( VScrollbar.Dragmode == WB_SCROLLDRAG_THUMB )
         {
-          TS32 newpos = CalculateScrollbarMovement( VScrollbar, GetClientRect().Height(), md.y );
+          int32_t newpos = CalculateScrollbarMovement( VScrollbar, GetClientRect().Height(), md.y );
           VScrollbar.ScrollPos = newpos;
           App->SendMessage( CWBMessage( App, WBM_VSCROLL, GetGuid(), newpos ) );
         }
@@ -309,7 +309,7 @@ TBOOL CWBItem::MessageProc( CWBMessage &Message )
       {
         OnResize( Message.Rectangle.Size() );
       }
-      for ( TS32 x = 0; x < Children.NumItems(); x++ )
+      for ( int32_t x = 0; x < Children.NumItems(); x++ )
         Children[ x ]->CalculateWindowPosition( GetClientRect().Size() );
 
       return true;
@@ -523,7 +523,7 @@ void CWBItem::DrawTree( CWBDrawAPI *API )
   //crop children to client rect
   API->SetCropRect( ClientToScreen( GetClientRect() ) );
 
-  for ( TS32 x = 0; x < Children.NumItems(); x++ )
+  for ( int32_t x = 0; x < Children.NumItems(); x++ )
     Children[ x ]->DrawTree( API );
 
   OnPostDraw( API );
@@ -598,7 +598,7 @@ CWBItem *CWBItem::GetItemUnderMouse( CPoint &Pos, CRect &CropRect, WBMESSAGE Mes
 
   CropRect = CropRect | ClientToScreen( GetClientRect() );
 
-  for ( TS32 x = 0; x < Children.NumItems(); x++ )
+  for ( int32_t x = 0; x < Children.NumItems(); x++ )
   {
     CWBItem *Res = Children[ Children.NumItems() - 1 - x ]->GetItemUnderMouse( Pos, CropRect, MessageType );
     if ( Res ) return Res;
@@ -612,14 +612,14 @@ CWBItem *CWBItem::GetItemUnderMouse( CPoint &Pos, CRect &CropRect, WBMESSAGE Mes
   return this;
 }
 
-void CWBItem::SetChildAsTopmost( TS32 Index )
+void CWBItem::SetChildAsTopmost( int32_t Index )
 {
   CWBItem *i = Children[ Index ];
   Children.DeleteByIndex( Index );
   Children += i;
 }
 
-void CWBItem::SetChildAsBottommost( TS32 Index )
+void CWBItem::SetChildAsBottommost( int32_t Index )
 {
   CWBItem *i = Children[ Index ];
   Children.DeleteByIndex( Index );
@@ -629,7 +629,7 @@ void CWBItem::SetChildAsBottommost( TS32 Index )
 void CWBItem::SetTopmost()
 {
   if ( !GetParent() ) return;
-  TS32 x = GetParent()->Children.Find( this );
+  int32_t x = GetParent()->Children.Find( this );
   if ( x < 0 ) return;
   Parent->SetChildAsTopmost( x );
 }
@@ -637,7 +637,7 @@ void CWBItem::SetTopmost()
 void CWBItem::SetBottommost()
 {
   if ( !GetParent() ) return;
-  TS32 x = GetParent()->Children.Find( this );
+  int32_t x = GetParent()->Children.Find( this );
   if ( x < 0 ) return;
   Parent->SetChildAsBottommost( x );
 }
@@ -677,7 +677,7 @@ void CWBItem::AddChild( CWBItem *Item )
   Children.Add( Item );
 }
 
-TS32 CWBItem::GetChildIndex( CWBItem *Item )
+int32_t CWBItem::GetChildIndex( CWBItem *Item )
 {
   return Children.Find( Item );
 }
@@ -775,7 +775,7 @@ void CWBItem::SetPosition( const CRect &Pos )
   App->SendMessage( m );
 }
 
-void CWBItem::SetClientPadding( TS32 left, TS32 top, TS32 right, TS32 bottom )
+void CWBItem::SetClientPadding( int32_t left, int32_t top, int32_t right, int32_t bottom )
 {
   if ( left != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_LEFT, 0, (TF32)left );
   if ( right != WBMARGIN_KEEP ) CSSProperties.PositionDescriptor.SetValue( WB_PADDING_RIGHT, 0, (TF32)right );
@@ -795,12 +795,12 @@ TBOOL CWBItem::IsHeightSet()
   return CSSProperties.PositionDescriptor.IsHeightSet();
 }
 
-TS32 CWBItem::GetCalculatedWidth( CSize ParentSize )
+int32_t CWBItem::GetCalculatedWidth( CSize ParentSize )
 {
   return CSSProperties.PositionDescriptor.GetWidth( ParentSize, StoredContentSize );
 }
 
-TS32 CWBItem::GetCalculatedHeight( CSize ParentSize )
+int32_t CWBItem::GetCalculatedHeight( CSize ParentSize )
 {
   return CSSProperties.PositionDescriptor.GetHeight( ParentSize, StoredContentSize );
 }
@@ -935,39 +935,39 @@ CWBContextMenu *CWBItem::OpenContextMenu( CPoint pos )
   return ctx;
 }
 
-void CWBItem::ScrollbardisplayHelperFunct( CWBScrollbarParams &s, TS32 &a1, TS32 &a2, TS32 &thumbsize, TS32 &thumbpos )
+void CWBItem::ScrollbardisplayHelperFunct( CWBScrollbarParams &s, int32_t &a1, int32_t &a2, int32_t &thumbsize, int32_t &thumbpos )
 {
   a1 += Scrollbar_ButtonSize;
   a2 -= Scrollbar_ButtonSize;
 
-  TS32 mi = s.MinScroll;
-  TS32 ma = s.MaxScroll;
+  int32_t mi = s.MinScroll;
+  int32_t ma = s.MaxScroll;
 
   TF32 scrollsize = (TF32)( ma - mi );
   TF32 rs = max( 0.0f, min( 1.0f, s.ViewSize / scrollsize ) );
   TF32 rp = max( 0.0f, min( 1.0f, ( s.ScrollPos - mi ) / ( scrollsize - s.ViewSize ) ) );
 
-  thumbsize = (TS32)max( Scrollbar_ThumbMinimalSize, rs*( a2 - a1 ) );
-  thumbpos = (TS32)( ( a2 - thumbsize - a1 )*rp ) + a1;
+  thumbsize = (int32_t)max( Scrollbar_ThumbMinimalSize, rs*( a2 - a1 ) );
+  thumbpos = (int32_t)( ( a2 - thumbsize - a1 )*rp ) + a1;
 }
 
-TS32 CWBItem::CalculateScrollbarMovement( CWBScrollbarParams &s, TS32 scrollbarsize, TS32 delta )
+int32_t CWBItem::CalculateScrollbarMovement( CWBScrollbarParams &s, int32_t scrollbarsize, int32_t delta )
 {
-  TS32 a1 = 0;
-  TS32 a2 = scrollbarsize;
-  TS32 thumbsize = 0;
-  TS32 thumbpos = 0;
+  int32_t a1 = 0;
+  int32_t a2 = scrollbarsize;
+  int32_t thumbsize = 0;
+  int32_t thumbpos = 0;
   ScrollbardisplayHelperFunct( s, a1, a2, thumbsize, thumbpos );
 
-  TS32 mi = s.MinScroll;
-  TS32 ma = s.MaxScroll;
+  int32_t mi = s.MinScroll;
+  int32_t ma = s.MaxScroll;
   TF32 scrollsize = (TF32)( ma - mi );
 
   TF32 sp = max( 0.0f, min( 1.0f, ( s.DragStartPosition - mi ) / ( scrollsize - s.ViewSize ) ) );
-  TS32 thumbposstart = (TS32)( ( a2 - thumbsize - a1 )*sp );
+  int32_t thumbposstart = (int32_t)( ( a2 - thumbsize - a1 )*sp );
 
-  TS32 thumbposdelta = max( 0, min( a2 - thumbsize - a1, thumbposstart + delta ) );
-  TS32 newscrollpos = (TS32)( ( thumbposdelta / (float)( a2 - thumbsize - a1 ) )*( scrollsize - s.ViewSize ) ) + mi;
+  int32_t thumbposdelta = max( 0, min( a2 - thumbsize - a1, thumbposstart + delta ) );
+  int32_t newscrollpos = (int32_t)( ( thumbposdelta / (float)( a2 - thumbsize - a1 ) )*( scrollsize - s.ViewSize ) ) + mi;
 
   if ( a2 - thumbsize - a1 == 0 ) //invalid state
   {
@@ -1053,7 +1053,7 @@ TBOOL CWBItem::GetHScrollbarRectangles( CRect &button1, CRect &Scrollup, CRect &
   button1 = CRect( r.TopLeft(), r.BottomLeft() + CPoint( Scrollbar_ButtonSize, 0 ) );
   button2 = CRect( r.TopRight() - CPoint( Scrollbar_ButtonSize, 0 ), r.BottomRight() );
 
-  TS32 thumbsize, thumbpos;
+  int32_t thumbsize, thumbpos;
   ScrollbardisplayHelperFunct( HScrollbar, r.x1, r.x2, thumbsize, thumbpos );
   if ( ScrollbarRequired( HScrollbar ) )
   {
@@ -1139,7 +1139,7 @@ TBOOL CWBItem::GetVScrollbarRectangles( CRect &button1, CRect &Scrollup, CRect &
   button1 = CRect( r.TopLeft(), r.TopRight() + CPoint( 0, Scrollbar_ButtonSize ) );
   button2 = CRect( r.BottomLeft() - CPoint( 0, Scrollbar_ButtonSize ), r.BottomRight() );
 
-  TS32 thumbsize, thumbpos;
+  int32_t thumbsize, thumbpos;
   ScrollbardisplayHelperFunct( VScrollbar, r.y1, r.y2, thumbsize, thumbpos );
   if ( ScrollbarRequired( VScrollbar ) )
   {
@@ -1203,7 +1203,7 @@ TBOOL CWBItem::ScrollbarDragged()
   return HScrollbar.Dragmode != WB_SCROLLDRAG_NONE || VScrollbar.Dragmode != WB_SCROLLDRAG_NONE;
 }
 
-void CWBItem::ScrollbarHelperFunct( CWBScrollbarParams &s, TS32 &r, TBOOL ScrollbarNeeded )
+void CWBItem::ScrollbarHelperFunct( CWBScrollbarParams &s, int32_t &r, TBOOL ScrollbarNeeded )
 {
   if ( !s.Enabled )
   {
@@ -1255,7 +1255,7 @@ void CWBItem::AdjustClientAreaToFitScrollbars()
   //if (ClientRect != crect)
   //{
   //	if (GetType() != _T("console"))
-  //	LOG_DBG("Scrollbar added/removed (HScroll: %d VScroll: %d) from clientarea of %d (%s #%s - .%s)", (TS32)ScrollbarRequired(HScrollbar), (TS32)ScrollbarRequired(VScrollbar), GetGuid(), GetType().GetPointer(), GetID().GetPointer(), GetClassString().GetPointer());
+  //	LOG_DBG("Scrollbar added/removed (HScroll: %d VScroll: %d) from clientarea of %d (%s #%s - .%s)", (int32_t)ScrollbarRequired(HScrollbar), (int32_t)ScrollbarRequired(VScrollbar), GetGuid(), GetType().GetPointer(), GetID().GetPointer(), GetClassString().GetPointer());
   //}
 
   if ( App && crect != ClientRect )
@@ -1288,7 +1288,7 @@ TBOOL CWBItem::IsVScrollbarEnabled()
   return VScrollbar.Enabled;
 }
 
-void CWBItem::SetHScrollbarParameters( TS32 MinScroll, TS32 MaxScroll, TS32 ViewSize )
+void CWBItem::SetHScrollbarParameters( int32_t MinScroll, int32_t MaxScroll, int32_t ViewSize )
 {
   TBOOL Changed = HScrollbar.MinScroll != MinScroll || HScrollbar.MaxScroll != MaxScroll || HScrollbar.ViewSize != ViewSize;
   HScrollbar.MinScroll = MinScroll;
@@ -1297,7 +1297,7 @@ void CWBItem::SetHScrollbarParameters( TS32 MinScroll, TS32 MaxScroll, TS32 View
   if ( Changed ) CalculateClientPosition();
 }
 
-void CWBItem::SetVScrollbarParameters( TS32 MinScroll, TS32 MaxScroll, TS32 ViewSize )
+void CWBItem::SetVScrollbarParameters( int32_t MinScroll, int32_t MaxScroll, int32_t ViewSize )
 {
   TBOOL Changed = VScrollbar.MinScroll != MinScroll || VScrollbar.MaxScroll != MaxScroll || VScrollbar.ViewSize != ViewSize;
   VScrollbar.MinScroll = MinScroll;
@@ -1306,23 +1306,23 @@ void CWBItem::SetVScrollbarParameters( TS32 MinScroll, TS32 MaxScroll, TS32 View
   if ( Changed ) CalculateClientPosition();
 }
 
-void CWBItem::GetHScrollbarParameters( TS32 &MinScroll, TS32 &MaxScroll, TS32 &ViewSize )
+void CWBItem::GetHScrollbarParameters( int32_t &MinScroll, int32_t &MaxScroll, int32_t &ViewSize )
 {
   MinScroll = HScrollbar.MinScroll;
   MaxScroll = HScrollbar.MaxScroll;
   ViewSize = HScrollbar.ViewSize;
 }
 
-void CWBItem::GetVScrollbarParameters( TS32 &MinScroll, TS32 &MaxScroll, TS32 &ViewSize )
+void CWBItem::GetVScrollbarParameters( int32_t &MinScroll, int32_t &MaxScroll, int32_t &ViewSize )
 {
   MinScroll = VScrollbar.MinScroll;
   MaxScroll = VScrollbar.MaxScroll;
   ViewSize = VScrollbar.ViewSize;
 }
 
-void CWBItem::SetHScrollbarPos( TS32 ScrollPos, TBOOL Clamp )
+void CWBItem::SetHScrollbarPos( int32_t ScrollPos, TBOOL Clamp )
 {
-  TS32 sc = ScrollPos;
+  int32_t sc = ScrollPos;
   if ( Clamp )
     sc = max( HScrollbar.MinScroll, min( sc, HScrollbar.MaxScroll - HScrollbar.ViewSize ) );
   if ( sc != HScrollbar.ScrollPos )
@@ -1333,9 +1333,9 @@ void CWBItem::SetHScrollbarPos( TS32 ScrollPos, TBOOL Clamp )
   }
 }
 
-void CWBItem::SetVScrollbarPos( TS32 ScrollPos, TBOOL Clamp )
+void CWBItem::SetVScrollbarPos( int32_t ScrollPos, TBOOL Clamp )
 {
-  TS32 sc = ScrollPos;
+  int32_t sc = ScrollPos;
   if ( Clamp )
     sc = max( VScrollbar.MinScroll, min( sc, VScrollbar.MaxScroll - VScrollbar.ViewSize ) );
   if ( sc != VScrollbar.ScrollPos )
@@ -1352,10 +1352,10 @@ void CWBItem::ApplyRelativePosition()
     SetPosition( CSSProperties.PositionDescriptor.GetPosition( Parent->GetClientRect().Size(), StoredContentSize, GetPosition() ) );
 }
 
-void CWBItem::VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOMPONENT TargetComponent, TS32 Value, CStringArray &pseudo )
+void CWBItem::VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOMPONENT TargetComponent, int32_t Value, CStringArray &pseudo )
 {
-  TS32 StateCount = 0;
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  int32_t StateCount = 0;
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     CString p = pseudo[ x ].Trimmed();
     if ( p == _T( "active" ) || p == _T( "hover" ) || p == _T( "disabled" ) || p == _T( "disabled-active" ) || p == _T( "normal" ) ) StateCount++;
@@ -1371,7 +1371,7 @@ void CWBItem::VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOM
   }
   else
   {
-    for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+    for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
     {
       CString p = pseudo[ x ].Trimmed();
       if ( p == _T( "active" ) )
@@ -1483,7 +1483,7 @@ TBOOL CWBItem::InterpretPositionString( CWBCSSPropertyBatch &props, CString & pr
     return true;
   }
 
-  TS32 dw = 0;
+  int32_t dw = 0;
 
   if ( prop == _T( "border" ) )
   {
@@ -1534,7 +1534,7 @@ CStringArray CWBItem::ExplodeValueWithoutSplittingParameters( CString String )
 #endif
 
   unsigned int x = 0;
-  TS32 bracketcnt = 0;
+  int32_t bracketcnt = 0;
 
   while ( x < String.Length() )
   {
@@ -1563,7 +1563,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   {
     CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( TS32 x = 0; x < Attribs.NumItems(); x++ )
+    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       TU32 dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
@@ -1603,7 +1603,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   {
     CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( TS32 x = 0; x < Attribs.NumItems(); x++ )
+    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       TU32 dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
@@ -1628,7 +1628,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   {
     CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( TS32 x = 0; x < Attribs.NumItems(); x++ )
+    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       TU32 dw = 0;
       if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
@@ -1653,7 +1653,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   {
     CStringArray Attribs = value.ExplodeByWhiteSpace();
 
-    for ( TS32 x = 0; x < Attribs.NumItems(); x++ )
+    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       TU32 dw = 0;
 
@@ -1672,7 +1672,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   {
     CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( TS32 x = 0; x < Attribs.NumItems(); x++ )
+    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       TU32 dw = 0;
 
@@ -1699,7 +1699,7 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
     TF32 dw = 0;
     value.Scan( _T( "%f" ), &dw );
 
-    TS32 o = (TS32)max( 0, min( 255, dw * 255 ) );
+    int32_t o = (int32_t)max( 0, min( 255, dw * 255 ) );
 
     VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_OPACITY, CColor::FromARGB( o * 0x01010101 ), pseudo );
     return true;
@@ -1790,7 +1790,7 @@ TBOOL CWBItem::InterpretFontString( CWBCSSPropertyBatch &props, CString & prop, 
   {
     CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( TS32 x = 0; x < Attribs.NumItems(); x++ )
+    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
     {
       //try to apply as color
       TU32 dw = 0;
@@ -1936,7 +1936,7 @@ TBOOL CWBItem::ApplyStyle( CString & prop, CString & value, CStringArray &pseudo
 
   if ( prop[ 0 ] == _T( 's' ) ) //quick check for scrollbar related stuff
   {
-    TS32 dw = 0;
+    int32_t dw = 0;
 
     if ( prop == _T( "scrollbar-size" ) )
     {
@@ -2093,7 +2093,7 @@ CWBItem * CWBItem::ChildSearcherFunct( CString &value, CString &type )
     //LOG_WARN( "[gui] Found UI item '%s' of wrong type '%s'. Type should be '%s'", value.GetPointer(), GetType().GetPointer(), type.GetPointer() );
   }
 
-  for ( TS32 x = 0; x < Children.NumItems(); x++ )
+  for ( int32_t x = 0; x < Children.NumItems(); x++ )
   {
     CWBItem *i = Children[ x ]->ChildSearcherFunct( value, type );
     if ( i ) return i;
@@ -2134,7 +2134,7 @@ void CWBItem::SetBorderSizes( TS8 Left, TS8 Top, TS8 Right, TS8 Bottom )
   CSSProperties.BorderSizes = CRect( Left, Top, Right, Bottom );
 }
 
-void CWBItem::SetDisplayProperty( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, TS32 value )
+void CWBItem::SetDisplayProperty( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, int32_t value )
 {
   CSSProperties.DisplayDescriptor.SetValue( s, v, value );
 }
@@ -2188,8 +2188,8 @@ TBOOL CWBItem::ParseRGBA( CString description, CColor &output )
   CStringArray Params = description.Explode( _T( "," ) );
   if ( Params.NumItems() < 3 || Params.NumItems() > 4 ) return false;
 
-  TS32 result = 0;
-  TS32 c[ 3 ];
+  int32_t result = 0;
+  int32_t c[ 3 ];
   result += Params[ 0 ].Scan( _T( "rgba(%d" ), &c[ 0 ] );
   result += Params[ 1 ].Scan( _T( "%d" ), &c[ 1 ] );
   result += Params[ 2 ].Scan( _T( "%d" ), &c[ 2 ] );
@@ -2201,10 +2201,10 @@ TBOOL CWBItem::ParseRGBA( CString description, CColor &output )
   if ( Params.NumItems() == 4 )
     if ( Params[ 3 ].Scan( _T( "%f" ), &a ) != 1 ) return false;
 
-  TS32 Colors[ 3 ];
-  for ( TS32 y = 0; y < 3; y++ )
+  int32_t Colors[ 3 ];
+  for ( int32_t y = 0; y < 3; y++ )
     Colors[ y ] = max( 0, min( 255, c[ y ] ) );
-  TS32 Alpha = (TS32)( max( 0, min( 1, a ) ) * 255 );
+  int32_t Alpha = (int32_t)( max( 0, min( 1, a ) ) * 255 );
 
   output = CColor::FromARGB( ( Alpha << 24 ) + ( Colors[ 0 ] << 16 ) + ( Colors[ 1 ] << 8 ) + Colors[ 2 ] );
   return true;
@@ -2219,7 +2219,7 @@ void CWBItem::FontStyleApplicator( CWBCSSPropertyBatch &desc, CStringArray &pseu
   }
   else
   {
-    for ( TS32 y = 1; y < pseudo.NumItems(); y++ )
+    for ( int32_t y = 1; y < pseudo.NumItems(); y++ )
     {
       CString p = pseudo[ y ].Trimmed();
       if ( p == _T( "active" ) )
@@ -2251,7 +2251,7 @@ void CWBItem::FontStyleApplicator( CWBCSSPropertyBatch &desc, CStringArray &pseu
   }
 }
 
-TBOOL CWBItem::ScanPXValue( CString &Value, TS32 &Result, CString &PropName )
+TBOOL CWBItem::ScanPXValue( CString &Value, int32_t &Result, CString &PropName )
 {
   Result = 0;
   if ( Value.Scan( _T( "%dpx" ), &Result ) != 1 )
@@ -2266,7 +2266,7 @@ TBOOL CWBItem::ScanSkinValue( CString &Value, WBSKINELEMENTID &Result, CString &
 {
   if ( Value.Find( _T( "skin(" ) ) == 0 )
   {
-    TS32 i = Value.Find( _T( ")" ) );
+    int32_t i = Value.Find( _T( ")" ) );
     if ( i > 0 )
     {
       Value.GetPointer()[ i ] = 0;
@@ -2311,12 +2311,12 @@ void CWBItem::ChangeContentOffset( CPoint ContentOff )
     GetChild( x )->UpdateScreenRect();
 }
 
-void CWBItem::ChangeContentOffsetX( TS32 OffsetX )
+void CWBItem::ChangeContentOffsetX( int32_t OffsetX )
 {
   App->SendMessage( CWBMessage( App, WBM_CONTENTOFFSETCHANGE, GetGuid(), OffsetX, ContentOffset.y ) );
 }
 
-void CWBItem::ChangeContentOffsetY( TS32 OffsetY )
+void CWBItem::ChangeContentOffsetY( int32_t OffsetY )
 {
   App->SendMessage( CWBMessage( App, WBM_CONTENTOFFSETCHANGE, GetGuid(), ContentOffset.x, OffsetY ) );
 }
@@ -2329,7 +2329,7 @@ TBOOL CWBItem::ScrollbarsEnabled()
 void CWBItem::SetTreeOpacityMultiplier( TF32 OpacityMul )
 {
   OpacityMultiplier = OpacityMul;
-  for ( TS32 x = 0; x < Children.NumItems(); x++ )
+  for ( int32_t x = 0; x < Children.NumItems(); x++ )
     Children[ x ]->SetTreeOpacityMultiplier( OpacityMul );
 }
 

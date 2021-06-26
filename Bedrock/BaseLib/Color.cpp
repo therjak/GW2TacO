@@ -4,7 +4,7 @@
 const CColor Lerp( const CColor a, const CColor b, const TF32 t )
 {
   CColor c;
-  for ( TS32 x = 0; x < 4; x++ )
+  for ( int32_t x = 0; x < 4; x++ )
     c[ x ] = (TU8)( ( b[ x ] - a[ x ] )*t + a[ x ] );
   return c;
 }
@@ -68,7 +68,7 @@ CColor CColor::FromFloat( const TF32 _r, const TF32 _g, const TF32 _b, const TF3
   c[ 1 ] = _g;
   c[ 2 ] = _b;
   c[ 3 ] = _a;
-  for ( TS32 x = 0; x < 4; x++ )
+  for ( int32_t x = 0; x < 4; x++ )
   {
     if ( c[ x ] < 0 ) c[ x ] = 0;
     if ( c[ x ] > 1 ) c[ x ] = 1;
@@ -106,12 +106,12 @@ CColor::CColor()
 
 }
 
-TU8 const CColor::operator[]( TS32 idx ) const
+TU8 const CColor::operator[]( int32_t idx ) const
 {
   return ( ( const TU8* )this )[ idx ]; // nem fog ez kesobb fajni?!
 }
 
-TU8 &CColor::operator[]( TS32 idx )
+TU8 &CColor::operator[]( int32_t idx )
 {
   return ( ( TU8* )this )[ idx ];
 }

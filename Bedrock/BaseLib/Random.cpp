@@ -8,7 +8,7 @@ TF32 CRandom::frand( TF32 min, TF32 max )
 
 TF32 CRandom::frand()
 {
-  TS32 r = rand();
+  int32_t r = rand();
   return r / (TF32)RAND_MAX;
 }
 

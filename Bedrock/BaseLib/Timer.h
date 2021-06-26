@@ -2,8 +2,8 @@
 
 class CTimer
 {
-  TS32 LastUpdateTime;
-  TS32 StartTime;
+  int32_t LastUpdateTime;
+  int32_t StartTime;
   TF32 SpeedModifier;
   double TimeExtension;
   TBOOL Paused;

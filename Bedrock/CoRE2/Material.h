@@ -23,7 +23,7 @@ class CCoreMaterialParameter
 	CString Name;
 	COREMATERIALPARAMETERSCOPE Scope;
 	COREMATERIALPARAMETERTYPE Type;
-	TS32 ValueSize;
+	int32_t ValueSize;
 	TU8 *Value;
 
 public:
@@ -32,12 +32,12 @@ public:
 	virtual ~CCoreMaterialParameter();
 	INLINE COREMATERIALPARAMETERSCOPE &GetScope();
 	INLINE TU8 *&GetData();
-	INLINE TS32 &GetDataSize();
+	INLINE int32_t &GetDataSize();
 	INLINE CString &GetName();
 	void SetName(CString &s);
 	void SetScope(COREMATERIALPARAMETERSCOPE s);
 	void SetType(COREMATERIALPARAMETERTYPE t);
-	void SetData(TS32 Size, void *Data);
+	void SetData(int32_t Size, void *Data);
 
 	TBOOL Import(CXMLNode *n);
 	void Export(CXMLNode *Node);
@@ -59,7 +59,7 @@ class CCoreMaterialRenderPass
 
 	CDictionary<CORESAMPLER, CCoreSamplerState*> SamplerStates;
 
-	TS32 ConstantBufferIndices[CORESHADERTYPECOUNT][COREBUFFERSCOPECOUNT];
+	int32_t ConstantBufferIndices[CORESHADERTYPECOUNT][COREBUFFERSCOPECOUNT];
 	//void SetConstantBufferIndices(CORESHADERTYPE s, CCoreShader *sh);
 
 public:
@@ -97,7 +97,7 @@ public:
 	void SetName(CString &name);
 
 	TBOOL HasParameters(COREBUFFERSCOPE Scope);
-	void AddParameter(CString &Name, COREMATERIALPARAMETERSCOPE Scope, COREMATERIALPARAMETERTYPE Type, TS32 ValueSize, void *Value);
+	void AddParameter(CString &Name, COREMATERIALPARAMETERSCOPE Scope, COREMATERIALPARAMETERTYPE Type, int32_t ValueSize, void *Value);
 	void AddPass(CCoreMaterialRenderPass *Pass);
 	void GatherData(COREBUFFERSCOPE TargetBuffer, CCoreConstantBuffer *Buffer, CCoreObjectGroup *Group);
 	void CreateAtoms(CArray<CCoreAtom*> &Atoms, CCoreMesh *Mesh, CCoreConstantBuffer *Buffers[COREBUFFERSCOPECOUNT]);
@@ -115,8 +115,8 @@ class CCoreMaterial
 
 public:
 
-	TS32 GetTechCount();
-	CCoreMaterialTechnique *GetTech(TS32 x);
+	int32_t GetTechCount();
+	CCoreMaterialTechnique *GetTech(int32_t x);
 	void GatherData(CCoreDevice *Device, COREBUFFERSCOPE Scope, CCoreObjectGroup *Group, CDictionary<CCoreMaterialTechnique*, CCoreConstantBuffer*> *Buffers[3], CDictionaryEnumerable<CORERENDERLAYERID, CCoreRenderLayer*> &Layers);
 	void CreateAtoms(CDictionaryEnumerable<CORERENDERLAYERID, CCoreRenderLayer*> &Layers, CCoreConstantBuffer *SceneBuffer, CCoreConstantBuffer *ObjectBuffer, CDictionary<CCoreMaterialTechnique*, CCoreConstantBuffer*> *Buffers[3], CArray<CCoreAtom*> &Atoms, CCoreMesh *Mesh);
 };

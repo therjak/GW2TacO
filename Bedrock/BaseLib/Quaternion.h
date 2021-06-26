@@ -20,8 +20,8 @@ public:
   void ToAxisAngle( CVector3 &Axis, TF32 &Angle ) const;
   void FromRotationMatrix( const CMatrix4x4 &m );
 
-  TF32 const operator[]( TS32 idx ) const;
-  TF32 &operator[]( TS32 idx );
+  TF32 const operator[]( int32_t idx ) const;
+  TF32 &operator[]( int32_t idx );
   operator TF32* ( );
   operator const TF32* ( ) const;
   CQuaternion &operator= ( const CQuaternion &q );

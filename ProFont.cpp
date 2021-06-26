@@ -249,7 +249,7 @@ unsigned char raw_profont_bin[] =
   6, 0, 0, 15,
 };
 
-TS32 raw_profont_bin_size = 7786;
+int32_t raw_profont_bin_size = 7786;
 
 unsigned char raw_profontgifsmall[] =
 {
@@ -319,7 +319,7 @@ unsigned char raw_profontgifsmall[] =
   21, 191, 152, 193, 14, 94, 46, 53, 94, 4, 163, 25, 207, 136, 198, 52, 170, 241, 138, 5, 0, 0, 59,
 };
 
-TS32 raw_profontgifsmall_size = 1348;
+int32_t raw_profontgifsmall_size = 1348;
 
 unsigned char raw_uni_fnt[] =
 {
@@ -899,11 +899,11 @@ unsigned char raw_uni_png[] =
 
 int raw_uni_png_size = 2711;
 
-TBOOL LoadBMFontBinaryMonochrome( CWBFontDescription *fd, TU8 *Binary, TS32 BinarySize, TU8 *image, TS32 ImageSize )
+TBOOL LoadBMFontBinaryMonochrome( CWBFontDescription *fd, TU8 *Binary, int32_t BinarySize, TU8 *image, int32_t ImageSize )
 {
   if ( !Binary || !BinarySize || !image || !ImageSize ) return false;
 
-  TS32 xr, yr;
+  int32_t xr, yr;
 
   TU8 *img = DecompressImage( image, ImageSize, xr, yr );
   if ( !img )
@@ -912,7 +912,7 @@ TBOOL LoadBMFontBinaryMonochrome( CWBFontDescription *fd, TU8 *Binary, TS32 Bina
     return false;
   }
 
-  for ( TS32 x = 0; x < xr*yr; x++ )
+  for ( int32_t x = 0; x < xr*yr; x++ )
     img[ x * 4 + 1 ] = img[ x * 4 + 2 ] = img[ x * 4 + 3 ] = img[ x * 4 ];
 
   TBOOL res = fd->LoadBMFontBinary( Binary, BinarySize, img, xr, yr );

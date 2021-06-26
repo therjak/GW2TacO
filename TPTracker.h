@@ -5,22 +5,22 @@
 
 struct TransactionItem
 {
-  TS32 transactionID = 0;
-  TS32 itemID = 0;
-  TS32 price = 0;
-  TS32 quantity = 0;
+  int32_t transactionID = 0;
+  int32_t itemID = 0;
+  int32_t price = 0;
+  int32_t quantity = 0;
 };
 
 struct GW2ItemData
 {
-  TS32 itemID = 0;
+  int32_t itemID = 0;
   CString name;
   WBATLASHANDLE icon = 0;
-  TS32 buyPrice = 0;
-  TS32 sellPrice = 0;
+  int32_t buyPrice = 0;
+  int32_t sellPrice = 0;
 };
 
-extern CDictionary<TS32, GW2ItemData> itemDataCache;
+extern CDictionary<int32_t, GW2ItemData> itemDataCache;
 
 class TPTracker : public CWBItem
 {
@@ -28,7 +28,7 @@ class TPTracker : public CWBItem
   virtual void OnDraw( CWBDrawAPI *API );
 
   bool beingFetched = false;
-  TS32 lastFetchTime = 0;
+  int32_t lastFetchTime = 0;
 
   //bool hasFullDungeonInfo = false;
 

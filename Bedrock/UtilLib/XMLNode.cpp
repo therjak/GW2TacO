@@ -3,16 +3,16 @@
 #include "XMLNode.h"
 #include "XMLDocument.h"
 
-TS32 GetStringHash( TCHAR* string )
+int32_t GetStringHash( TCHAR* string )
 {
   if ( !string )
     return 0;
 
-  TS32 c;
+  int32_t c;
   TCHAR *str = string;
 
   //djb2 hash
-  TS32 Hash = 5381;
+  int32_t Hash = 5381;
   while ( c = *str++ )
     Hash = ( ( Hash << 5 ) + Hash ) + c; // hash * 33 + c
 
@@ -26,7 +26,7 @@ CXMLNode::CXMLNode()
 	nLevel = 0;
 }
 
-//CXMLNode::CXMLNode(MSXML2::IXMLDOMNode * p, CXMLDocument * d, TS32 l)
+//CXMLNode::CXMLNode(MSXML2::IXMLDOMNode * p, CXMLDocument * d, int32_t l)
 //{
 //	pNode = p;
 //	pDoc = d;
@@ -41,7 +41,7 @@ CXMLNode::CXMLNode(const CXMLNode &Original)
 	pDoc = Original.pDoc;
 }
 
-CXMLNode::CXMLNode( xml_node<char> *p, CXMLDocument *d, TS32 l)
+CXMLNode::CXMLNode( xml_node<char> *p, CXMLDocument *d, int32_t l)
 {
   pNode = p;
   pDoc = d;
@@ -67,7 +67,7 @@ CXMLNode::~CXMLNode()
 	//	pNode->Release();
 }
 
-TS32 CXMLNode::GetChildCount()
+int32_t CXMLNode::GetChildCount()
 {
   if ( !pNode )
     return 0;
@@ -82,7 +82,7 @@ TS32 CXMLNode::GetChildCount()
     return 0;
   }
 
-  TS32 count = 1;
+  int32_t count = 1;
 
   while ( node = node->next_sibling() )
     count++;
@@ -92,9 +92,9 @@ TS32 CXMLNode::GetChildCount()
   return count;
 }
 
-TS32 CXMLNode::GetChildCount( TCHAR * szNodeName )
+int32_t CXMLNode::GetChildCount( TCHAR * szNodeName )
 {
-  TS32 hash = GetStringHash( szNodeName );
+  int32_t hash = GetStringHash( szNodeName );
 
   if ( childCounts.HasKey( hash ) )
     return childCounts[ hash ];
@@ -106,7 +106,7 @@ TS32 CXMLNode::GetChildCount( TCHAR * szNodeName )
     return 0;
   }
 
-  TS32 count = 1;
+  int32_t count = 1;
 
   while ( node = node->next_sibling( szNodeName ) )
     count++;
@@ -123,7 +123,7 @@ CString CXMLNode::GetNodeName()
   return CString( pNode->name() );
 }
 
-CXMLNode CXMLNode::GetChild(TS32 n)
+CXMLNode CXMLNode::GetChild(int32_t n)
 {
   if ( !pNode )
     return CXMLNode();
@@ -135,7 +135,7 @@ CXMLNode CXMLNode::GetChild(TS32 n)
   if ( n == 0 )
     return CXMLNode( node, pDoc, nLevel + 1 );
 
-  TS32 count = 1;
+  int32_t count = 1;
 
   while ( node = node->next_sibling() )
   {
@@ -159,7 +159,7 @@ CXMLNode CXMLNode::GetChild(TCHAR * szNodeName)
   return CXMLNode( node, pDoc, nLevel + 1 );
 }
 
-CXMLNode CXMLNode::GetChild(TCHAR * szNodeName, TS32 n)
+CXMLNode CXMLNode::GetChild(TCHAR * szNodeName, int32_t n)
 {
   if ( !pNode )
     return CXMLNode();
@@ -171,7 +171,7 @@ CXMLNode CXMLNode::GetChild(TCHAR * szNodeName, TS32 n)
   if ( n == 0 )
     return CXMLNode( node, pDoc, nLevel + 1 );
 
-  TS32 count = 1;
+  int32_t count = 1;
 
   while ( node = node->next_sibling( szNodeName ) )
   {
@@ -209,7 +209,7 @@ TBOOL CXMLNode::Next( CXMLNode& out, TCHAR* szNodeName )
   return true;
 }
 
-void CXMLNode::GetText(TCHAR * szBuffer, TS32 nBufferSize)
+void CXMLNode::GetText(TCHAR * szBuffer, int32_t nBufferSize)
 {
 	//WCHAR * bStr;
 	//pNode->get_text(&bStr);
@@ -228,7 +228,7 @@ CString CXMLNode::GetText()
   return CString();
 }
 
-TBOOL CXMLNode::GetAttribute(TCHAR * szAttribute, TCHAR * szBuffer, TS32 nBufferSize)
+TBOOL CXMLNode::GetAttribute(TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize)
 {
   if ( !pNode )
     return false;
@@ -269,12 +269,12 @@ TBOOL CXMLNode::HasAttribute(TCHAR * szAttribute)
   return attr != nullptr;
 }
 
-TS32 CXMLNode::IsValid()
+int32_t CXMLNode::IsValid()
 {
 	return pNode != NULL;
 }
 
-void CXMLNode::GetAttributeAsInteger(TCHAR * szAttribute, TS32 * pnValue)
+void CXMLNode::GetAttributeAsInteger(TCHAR * szAttribute, int32_t * pnValue)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);
@@ -361,7 +361,7 @@ void CXMLNode::SetAttribute(TCHAR * szAttributeName, const TCHAR * szValue)
   attr->value( strVal->GetPointer() );
 }
 
-void CXMLNode::SetAttributeFromInteger(TCHAR * szAttributeName, TS32 nValue)
+void CXMLNode::SetAttributeFromInteger(TCHAR * szAttributeName, int32_t nValue)
 {
 	TCHAR s[64];
   memset( s, 0, sizeof( TCHAR ) * 64 );
@@ -398,7 +398,7 @@ void CXMLNode::SetText(CString &s)
 	SetText(s.GetPointer());
 }
 
-void CXMLNode::SetInt(TS32 Int)
+void CXMLNode::SetInt(int32_t Int)
 {
 	TCHAR s[64];
 	_sntprintf_s(s, 64, _T("%d"), Int);
@@ -412,7 +412,7 @@ void CXMLNode::SetFloat(TF32 Float)
 	SetText(s);
 }
 
-TBOOL CXMLNode::GetValue(TS32 &Int)
+TBOOL CXMLNode::GetValue(int32_t &Int)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);
@@ -425,8 +425,8 @@ TBOOL CXMLNode::GetValue(TBOOL &Int)
 	TCHAR s[20];
 	ZeroMemory(s, 20);
 	GetText(s, 20);
-	TS32 x = 0;
-	TS32 r = _stscanf_s(s, _T("%d"), &x);
+	int32_t x = 0;
+	int32_t r = _stscanf_s(s, _T("%d"), &x);
 	if (r == 1)
 		Int = x != 0;
 	return r == 1;

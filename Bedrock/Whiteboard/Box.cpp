@@ -147,12 +147,12 @@ TBOOL CWBBox::MessageProc( CWBMessage &Message )
 void CWBBox::RearrangeHorizontal()
 {
   CRect ClientRect = GetClientRect();
-  TS32 pos = 0;
+  int32_t pos = 0;
   TF32 Excess = 0;
 
-  TS32 NumDynamicChildren = 0;
-  TS32 NonDynamicWidth = 0;
-  TS32 LastDynamic = 0;
+  int32_t NumDynamicChildren = 0;
+  int32_t NonDynamicWidth = 0;
+  int32_t LastDynamic = 0;
 
   for ( TU32 x = 0; x < NumChildren(); x++ )
   {
@@ -164,8 +164,8 @@ void CWBBox::RearrangeHorizontal()
     else NonDynamicWidth += GetChild( x )->GetCalculatedWidth( ClientRect.Size() );
   }
 
-  TS32 width = ( NumChildren() - 1 )*Spacing;
-  TS32 DynamicWidth = GetClientRect().Width() - NonDynamicWidth - width;
+  int32_t width = ( NumChildren() - 1 )*Spacing;
+  int32_t DynamicWidth = GetClientRect().Width() - NonDynamicWidth - width;
   TF32 itemsizes = DynamicWidth / (TF32)NumDynamicChildren;
 
   for ( TU32 x = 0; x < NumChildren(); x++ ) width += GetChild( x )->GetPosition().Width();
@@ -185,8 +185,8 @@ void CWBBox::RearrangeHorizontal()
       {
         ChildPosition.x1 = pos;
         Excess += itemsizes;
-        ChildPosition.x2 = ChildPosition.x1 + (TS32)Excess;
-        Excess -= (TS32)Excess;
+        ChildPosition.x2 = ChildPosition.x1 + (int32_t)Excess;
+        Excess -= (int32_t)Excess;
         if ( x == LastDynamic && Excess >= 0.5 ) ChildPosition.x2++; //fucking float inaccuracies...
       }
       else
@@ -197,7 +197,7 @@ void CWBBox::RearrangeHorizontal()
     }
     else
     {
-      TS32 posw = ChildPosition.Width();
+      int32_t posw = ChildPosition.Width();
       ChildPosition.x1 = pos;
       ChildPosition.x2 = pos + posw;
     }
@@ -208,7 +208,7 @@ void CWBBox::RearrangeHorizontal()
       ChildPosition.y2 = GetClientRect().Height();
     }
 
-    TS32 off = 0;
+    int32_t off = 0;
     if ( AlignmentY == WB_ALIGN_BOTTOM )
       off = ClientRect.Height() - ChildPosition.Height();
     if ( AlignmentY == WB_ALIGN_CENTER )
@@ -230,12 +230,12 @@ void CWBBox::RearrangeHorizontal()
 void CWBBox::RearrangeVertical()
 {
   CRect ClientRect = GetClientRect();
-  TS32 pos = 0;
+  int32_t pos = 0;
   TF32 Excess = 0;
 
-  TS32 NumDynamicChildren = 0;
-  TS32 NonDynamicHeight = 0;
-  TS32 LastDynamic = 0;
+  int32_t NumDynamicChildren = 0;
+  int32_t NonDynamicHeight = 0;
+  int32_t LastDynamic = 0;
 
   for ( TU32 x = 0; x < NumChildren(); x++ )
   {
@@ -247,8 +247,8 @@ void CWBBox::RearrangeVertical()
     else NonDynamicHeight += GetChild( x )->GetCalculatedHeight( ClientRect.Size() );
   }
 
-  TS32 height = ( NumChildren() - 1 )*Spacing;
-  TS32 DynamicHeight = GetClientRect().Height() - NonDynamicHeight - height;
+  int32_t height = ( NumChildren() - 1 )*Spacing;
+  int32_t DynamicHeight = GetClientRect().Height() - NonDynamicHeight - height;
   TF32 itemsizes = DynamicHeight / (TF32)NumDynamicChildren;
 
   for ( TU32 x = 0; x < NumChildren(); x++ ) height += GetChild( x )->GetPosition().Height();
@@ -274,8 +274,8 @@ void CWBBox::RearrangeVertical()
       {
         ChildPosition.y1 = pos;
         Excess += itemsizes;
-        ChildPosition.y2 = ChildPosition.y1 + (TS32)Excess;
-        Excess -= (TS32)Excess;
+        ChildPosition.y2 = ChildPosition.y1 + (int32_t)Excess;
+        Excess -= (int32_t)Excess;
         if ( x == LastDynamic && Excess >= 0.5 ) ChildPosition.y2++; //fucking float inaccuracies...
       }
       else
@@ -286,12 +286,12 @@ void CWBBox::RearrangeVertical()
     }
     else
     {
-      TS32 posh = ChildPosition.Height();
+      int32_t posh = ChildPosition.Height();
       ChildPosition.y1 = pos;
       ChildPosition.y2 = pos + posh;
     }
 
-    TS32 off = 0;
+    int32_t off = 0;
     if ( AlignmentX == WB_ALIGN_BOTTOM )
       off = ClientRect.Width() - ChildPosition.Width();
     if ( AlignmentX == WB_ALIGN_CENTER )
@@ -346,7 +346,7 @@ WBBOXARRANGEMENT CWBBox::GetArrangement()
   return Arrangement;
 }
 
-void CWBBox::SetSpacing( TS32 s )
+void CWBBox::SetSpacing( int32_t s )
 {
   Spacing = s;
   RearrangeChildren();
@@ -443,7 +443,7 @@ CWBItem * CWBBox::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
 
   if ( node.HasAttribute( _T( "clickthrough" ) ) )
   {
-    TS32 b = 0;
+    int32_t b = 0;
     node.GetAttributeAsInteger( _T( "clickthrough" ), &b );
     box->ClickThrough = b != 0;
   }

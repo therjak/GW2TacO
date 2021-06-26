@@ -7,7 +7,7 @@ CVector3 CPlane::Intersect( const CLine &l ) const
   return l.GetPoint( u );
 }
 
-TS32 CPlane::Side( const CVector3 &v ) const
+int32_t CPlane::Side( const CVector3 &v ) const
 {
   TF32 f = Distance( v );
   if ( f > 0 ) return 1;

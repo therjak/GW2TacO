@@ -39,25 +39,25 @@ public:
 
 protected:
 
-  TS32 ItemCount;
-  TS32 TableSize;
+  int32_t ItemCount;
+  int32_t TableSize;
   KDPair **HashTable;
 
   ItemType _dummy; //return item for out of bounds requests
 
   virtual void Insert( KDPair *p )
   {
-    TS32 idx = p->Hash%TableSize;
+    int32_t idx = p->Hash%TableSize;
     p->Next = HashTable[ idx ];
     HashTable[ idx ] = p;
   }
 
-  virtual void ResizeTable( const TS32 NewSize )
+  virtual void ResizeTable( const int32_t NewSize )
   {
     if ( NewSize < 8 ) return; //that's small enough
 
     KDPair **OldTable = HashTable;
-    TS32 OldSize = TableSize;
+    int32_t OldSize = TableSize;
 
     //expand hash table
     TableSize = NewSize;
@@ -65,7 +65,7 @@ protected:
     memset( HashTable, 0, sizeof( KDPair* )*TableSize );
 
     //re-add items
-    for ( TS32 x = 0; x < OldSize; x++ )
+    for ( int32_t x = 0; x < OldSize; x++ )
     {
       while ( OldTable[ x ] )
       {
@@ -110,7 +110,7 @@ protected:
 public:
   typedef void( __cdecl *DICTIONARYPROCESSCALLBACK )( ItemType &a );
 
-  CDictionary( TS32 tblsize = 8 )
+  CDictionary( int32_t tblsize = 8 )
   {
     TableSize = tblsize;
     ItemCount = 0;
@@ -120,7 +120,7 @@ public:
 
   virtual ~CDictionary()
   {
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       delete HashTable[ x ];
       HashTable[ x ] = 0;
@@ -221,14 +221,14 @@ public:
     Delete( Key );
   }
 
-  void FreeByIndex( const TS32 idx )
+  void FreeByIndex( const int32_t idx )
   {
     ItemType i = GetByIndex( idx );
     if ( i ) delete i;
     DeleteByIndex( idx );
   }
 
-  void FreeAByIndex( const TS32 idx )
+  void FreeAByIndex( const int32_t idx )
   {
     ItemType i = GetByIndex( idx );
     if ( i ) delete[] i;
@@ -237,23 +237,23 @@ public:
 
   void FreeAll()
   {
-    for ( TS32 x = NumItems() - 1; x >= 0; x-- )
+    for ( int32_t x = NumItems() - 1; x >= 0; x-- )
       FreeByIndex( x );
   }
 
   void FreeAllA()
   {
-    for ( TS32 x = NumItems() - 1; x >= 0; x-- )
+    for ( int32_t x = NumItems() - 1; x >= 0; x-- )
       FreeAByIndex( x );
   }
 
-  virtual void DeleteByIndex( const TS32 idx )
+  virtual void DeleteByIndex( const int32_t idx )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
 
-    TS32 cntr = 0;
+    int32_t cntr = 0;
 
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       KDPair *p = HashTable[ x ];
       while ( p )
@@ -274,18 +274,18 @@ public:
     return Find( Key ) != 0;
   }
 
-  virtual TS32 NumItems() const
+  virtual int32_t NumItems() const
   {
     return ItemCount;
   }
 
-  virtual ItemType &GetByIndex( TS32 idx )
+  virtual ItemType &GetByIndex( int32_t idx )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
 
-    TS32 cntr = 0;
+    int32_t cntr = 0;
 
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       KDPair *p = HashTable[ x ];
       while ( p )
@@ -301,13 +301,13 @@ public:
     return _dummy;
   }
 
-  virtual KDPair *GetKDPair( TS32 idx )
+  virtual KDPair *GetKDPair( int32_t idx )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
 
-    TS32 cntr = 0;
+    int32_t cntr = 0;
 
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       KDPair *p = HashTable[ x ];
       while ( p )
@@ -323,13 +323,13 @@ public:
     return 0;
   }
 
-  virtual ItemType &GetByIndex( TS32 idx, KeyType &Key )
+  virtual ItemType &GetByIndex( int32_t idx, KeyType &Key )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
 
-    TS32 cntr = 0;
+    int32_t cntr = 0;
 
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       KDPair *p = HashTable[ x ];
       while ( p )
@@ -350,7 +350,7 @@ public:
 
   virtual void ForEach( const DICTIONARYPROCESSCALLBACK Callback ) const
   {
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       KDPair *p = HashTable[ x ];
       while ( p )
@@ -363,7 +363,7 @@ public:
 
   virtual void Flush()
   {
-    for ( TS32 x = 0; x < TableSize; x++ )
+    for ( int32_t x = 0; x < TableSize; x++ )
     {
       delete HashTable[ x ];
       HashTable[ x ] = 0;
@@ -373,7 +373,7 @@ public:
 
   virtual CDictionary<KeyType, ItemType> &operator+= ( const CDictionary<KeyType, ItemType> &i )
   {
-    for ( TS32 x = 0; x < i.TableSize; x++ )
+    for ( int32_t x = 0; x < i.TableSize; x++ )
     {
       KDPair *p = i.HashTable[ x ];
       while ( p )
@@ -412,7 +412,7 @@ public:
 
   typedef void( __cdecl *DICTIONARYPROCESSCALLBACK )( ItemType &a );
 
-  CDictionaryThreadSafe( TS32 tblsize = 8 )
+  CDictionaryThreadSafe( int32_t tblsize = 8 )
   {
     InitializeLightweightCS( &critsec );
   }
@@ -468,13 +468,13 @@ public:
     Dictionary.FreeA( Key );
   }
 
-  void FreeByIndex( const TS32 idx )
+  void FreeByIndex( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     Dictionary.FreeByIndex( idx );
   }
 
-  void FreeAByIndex( const TS32 idx )
+  void FreeAByIndex( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     Dictionary.FreeAByIndex( idx );
@@ -492,7 +492,7 @@ public:
     Dictionary.FreeAllA();
   }
 
-  virtual void DeleteByIndex( const TS32 idx )
+  virtual void DeleteByIndex( const int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     Dictionary.DeleteByIndex( idx );
@@ -504,19 +504,19 @@ public:
     return Dictionary.HasKey( Key );
   }
 
-  virtual TS32 NumItems()
+  virtual int32_t NumItems()
   {
     CLightweightCriticalSection cs( &critsec );
     return Dictionary.NumItems();
   }
 
-  virtual ItemType &GetByIndex( TS32 idx )
+  virtual ItemType &GetByIndex( int32_t idx )
   {
     CLightweightCriticalSection cs( &critsec );
     return Dictionary.GetByIndex( idx );
   }
 
-  virtual ItemType &GetByIndex( TS32 idx, KeyType &Key )
+  virtual ItemType &GetByIndex( int32_t idx, KeyType &Key )
   {
     CLightweightCriticalSection cs( &critsec );
     return Dictionary.GetByIndex( idx, Key );
@@ -568,14 +568,14 @@ template <typename KeyType, typename ItemType> class CDictionaryEnumerable : pub
 #define SORTSTACKSIZE (8*sizeof(void*) - 2)
 
 public:
-  typedef TS32( *KEYSORTCALLBACK )( const KeyType &a, const KeyType &b );
-  typedef TS32( *VALUESORTCALLBACK )( const ItemType &a, const ItemType &b );
+  typedef int32_t( *KEYSORTCALLBACK )( const KeyType &a, const KeyType &b );
+  typedef int32_t( *VALUESORTCALLBACK )( const ItemType &a, const ItemType &b );
 
 private:
 
   CArray<KDPair*> IndexMap;
 
-  void swap( TS32 a, TS32 b )
+  void swap( int32_t a, int32_t b )
   {
     KDPair *k = IndexMap[ a ];
     IndexMap[ a ] = IndexMap[ b ];
@@ -620,26 +620,26 @@ public:
       IndexMap.Delete( p );
   }
 
-  virtual ItemType &GetByIndex( TS32 idx )
+  virtual ItemType &GetByIndex( int32_t idx )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
     return ( (KDPair*)IndexMap[ idx ] )->Data;
   }
 
-  virtual void DeleteByIndex( const TS32 idx )
+  virtual void DeleteByIndex( const int32_t idx )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
     Delete( IndexMap[ idx ]->Key );
   }
 
-  virtual ItemType &GetByIndex( TS32 idx, KeyType &Key )
+  virtual ItemType &GetByIndex( int32_t idx, KeyType &Key )
   {
     BASEASSERT( idx >= 0 && idx < ItemCount );
     Key = ( (KDPair*)IndexMap[ idx ] )->Key;
     return ( (KDPair*)IndexMap[ idx ] )->Data;
   }
 
-  virtual KDPair* GetKDPairByIndex( TS32 idx )
+  virtual KDPair* GetKDPairByIndex( int32_t idx )
   {
     return (KDPair*)IndexMap[ idx ];
   }
@@ -654,7 +654,7 @@ public:
     //implementation taken from crt
 
     TU32 lostk[ SORTSTACKSIZE ], histk[ SORTSTACKSIZE ];
-    TS32 stkptr = 0;
+    int32_t stkptr = 0;
 
     TU32 lo = 0;
     TU32 hi = ItemCount - 1;
@@ -728,7 +728,7 @@ public:
     //implementation taken from crt
 
     TU32 lostk[ SORTSTACKSIZE ], histk[ SORTSTACKSIZE ];
-    TS32 stkptr = 0;
+    int32_t stkptr = 0;
 
     TU32 lo = 0;
     TU32 hi = ItemCount - 1;
@@ -802,7 +802,7 @@ public:
 
   virtual CDictionaryEnumerable<KeyType, ItemType> &operator+= ( const CDictionaryEnumerable<KeyType, ItemType> &i )
   {
-    for ( TS32 x = 0; x < i.NumItems(); x++ )
+    for ( int32_t x = 0; x < i.NumItems(); x++ )
     {
       KDPair *p = i.IndexMap[ x ];
       ( *this )[ p->Key ] = p->Data;
@@ -827,5 +827,5 @@ public:
 };
 
 
-TU32 DictionaryHash( const TS32 &i );
+TU32 DictionaryHash( const int32_t &i );
 TU32 DictionaryHash( const void *i );

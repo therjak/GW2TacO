@@ -99,7 +99,7 @@ void CMumbleLink::Update()
     tick = lm->uiTick;
 
     globalTimer.Update();
-    TS32 frametime = GetTime();
+    int32_t frametime = GetTime();
     FrameTimes->Add( frametime - LastFrameTime );
     LastFrameTime = frametime;
     frameTriggered = true;
@@ -124,7 +124,7 @@ void CMumbleLink::Update()
   if ( ( CVector3( lastData.fAvatarPosition ) - CVector3( prevData.fAvatarPosition ) ).Length() > GameToWorldCoords( 2000 ) )
     FindClosestRouteMarkers( true );
 
-  TS32 oldMapID = mapID;
+  int32_t oldMapID = mapID;
   mapID = -1;
 
   CString ident = CString( lm->identity, 255 );
@@ -148,7 +148,7 @@ void CMumbleLink::Update()
 
   GlobalDoTrailLogging( mapID, CVector3( lastData.fAvatarPosition ) );
 
-  TS32 oldUISize = uiSize;
+  int32_t oldUISize = uiSize;
 
   id = ident.Find( "\"uisz\":" );
   if ( id >= 0 )
@@ -297,9 +297,9 @@ void CMumbleLink::Update()
 
 TF32 CMumbleLink::GetFrameRate()
 {
-  TS32 FrameTimeAcc = 0;
-  TS32 FrameCount = 0;
-  for ( TS32 x = 0; x < 60; x++ )
+  int32_t FrameTimeAcc = 0;
+  int32_t FrameCount = 0;
+  for ( int32_t x = 0; x < 60; x++ )
   {
     if ( FrameTimes->NumItems() < x ) break;
     FrameTimeAcc += ( *FrameTimes )[ FrameTimes->NumItems() - 1 - x ];
@@ -314,7 +314,7 @@ TF32 CMumbleLink::GetFrameRate()
 CMumbleLink::CMumbleLink()
 {
   LastFrameTime = GetTime();
-  FrameTimes = new CRingBuffer<TS32>( 60 );
+  FrameTimes = new CRingBuffer<int32_t>( 60 );
 }
 
 CMumbleLink::~CMumbleLink()

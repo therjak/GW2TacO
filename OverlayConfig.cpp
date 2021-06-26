@@ -1,7 +1,7 @@
 #include "OverlayConfig.h"
 #include "Bedrock/UtilLib/XMLDocument.h"
 
-CDictionaryEnumerable<CString, TS32> ConfigNums;
+CDictionaryEnumerable<CString, int32_t> ConfigNums;
 CDictionaryEnumerable<CString, CString> ConfigStrings;
 bool configChanged = false;
 auto lastConfigChangeTime = globalTimer.GetTime();
@@ -29,14 +29,14 @@ void LoadConfig()
 
   FORCEDDEBUGLOG( "Config root found." );
 
-  for ( TS32 x = 0; x < root.GetChildCount(); x++ )
+  for ( int32_t x = 0; x < root.GetChildCount(); x++ )
   {
     FORCEDDEBUGLOG( "Loading config value %d/%d.", x, root.GetChildCount() );
 
     auto item = root.GetChild( x );
     if ( item.HasAttribute( "Data" ) )
     {
-      TS32 data = 0;
+      int32_t data = 0;
       item.GetAttributeAsInteger( "Data", &data );
       ConfigNums[ item.GetNodeName() ] = data;
     }
@@ -70,12 +70,12 @@ void SaveConfig()
   root = root.AddChild( "TacOConfig" );
   ConfigNums.SortByKey( StringSorter );
   ConfigStrings.SortByKey( StringSorter );
-  for ( TS32 x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
   {
     auto kdp = ConfigNums.GetKDPairByIndex( x );
     root.AddChild( kdp->Key.GetPointer() ).SetAttributeFromInteger( "Data", kdp->Data );
   }
-  for ( TS32 x = 0; x < ConfigStrings.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigStrings.NumItems(); x++ )
   {
     auto kdp = ConfigStrings.GetKDPairByIndex( x );
     root.AddChild( kdp->Key.GetPointer() ).SetAttribute( "String", kdp->Data.GetPointer() );
@@ -89,7 +89,7 @@ void ToggleConfigValue( CString &value )
   lastConfigChangeTime = globalTimer.GetTime();
   if ( ConfigNums.HasKey( value ) )
   {
-    TS32 v = ConfigNums[ value ];
+    int32_t v = ConfigNums[ value ];
     ConfigNums[ value ] = !v;
   }
   else
@@ -101,14 +101,14 @@ void ToggleConfigValue( TCHAR *value )
   ToggleConfigValue( CString( value ) );
 }
 
-TS32 GetConfigValue( TCHAR *value )
+int32_t GetConfigValue( TCHAR *value )
 {
   if ( ConfigNums.HasKey( value ) )
     return ConfigNums[ value ];
   return 0;
 }
 
-void SetConfigValue( TCHAR *value, TS32 val )
+void SetConfigValue( TCHAR *value, int32_t val )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
@@ -181,19 +181,19 @@ TBOOL HasWindowData( TCHAR *windowname )
     HasConfigValue( ( s + L"_y2" ).GetPointer() );
 }
 
-void GetKeyBindings( CDictionary<TS32, TacOKeyAction> &KeyBindings )
+void GetKeyBindings( CDictionary<int32_t, TacOKeyAction> &KeyBindings )
 {
   KeyBindings.Flush();
 
-  for ( TS32 x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
   {
     auto kdp = ConfigNums.GetKDPair( x );
     if ( kdp->Key.Find( "KeyboardKey_" ) != 0 )
       continue;
-    TS32 key;
+    int32_t key;
     if ( kdp->Key.Scan( "KeyboardKey_%d", &key ) != 1 )
       continue;
-    if ( kdp->Data == (TS32)TacOKeyAction::NoAction )
+    if ( kdp->Data == (int32_t)TacOKeyAction::NoAction )
       continue;
     KeyBindings[ key ] = (TacOKeyAction)kdp->Data;
   }
@@ -214,21 +214,21 @@ void GetKeyBindings( CDictionary<TS32, TacOKeyAction> &KeyBindings )
   }
 }
 
-void SetKeyBinding( TacOKeyAction action, TS32 key )
+void SetKeyBinding( TacOKeyAction action, int32_t key )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ CString::Format( "KeyboardKey_%d", key ) ] = (TS32)action;
+  ConfigNums[ CString::Format( "KeyboardKey_%d", key ) ] = (int32_t)action;
 }
 
-void DeleteKeyBinding( TS32 keyToDelete )
+void DeleteKeyBinding( int32_t keyToDelete )
 {
-  for ( TS32 x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
   {
     auto kdp = ConfigNums.GetKDPair( x );
     if ( kdp->Key.Find( "KeyboardKey_" ) != 0 )
       continue;
-    TS32 key;
+    int32_t key;
     if ( kdp->Key.Scan( "KeyboardKey_%d", &key ) != 1 )
       continue;
 
@@ -240,11 +240,11 @@ void DeleteKeyBinding( TS32 keyToDelete )
   }
 }
 
-void GetScriptKeyBindings( CDictionary<TS32, CString> &ScriptKeyBindings )
+void GetScriptKeyBindings( CDictionary<int32_t, CString> &ScriptKeyBindings )
 {
   ScriptKeyBindings.Flush();
 
-  for ( TS32 x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
   {
     auto kdp = ConfigNums.GetKDPair( x );
     if ( kdp->Key.Find( "ScriptKey_" ) != 0 )
@@ -256,16 +256,16 @@ void GetScriptKeyBindings( CDictionary<TS32, CString> &ScriptKeyBindings )
   }
 }
 
-void SetScriptKeyBinding( const CString& scriptEvent, TS32 key )
+void SetScriptKeyBinding( const CString& scriptEvent, int32_t key )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ CString::Format( "ScriptKey_%s", scriptEvent.GetPointer() ) ] = (TS32)key;
+  ConfigNums[ CString::Format( "ScriptKey_%s", scriptEvent.GetPointer() ) ] = (int32_t)key;
 }
 
 void DeleteScriptKeyBinding( const CString& scriptEvent )
 {
-  for ( TS32 x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
   {
     auto kdp = ConfigNums.GetKDPair( x );
     if ( kdp->Key.Find( "ScriptKey_" ) != 0 )
@@ -286,7 +286,7 @@ GW2TacticalCategory *GetCategory( CString s );
 
 void LoadMarkerCategoryVisibilityInfo()
 {
-  for ( TS32 x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
   {
     auto kdp = ConfigNums.GetKDPair( x );
     if ( kdp->Key.Find( "CategoryVisible_" ) != 0 )

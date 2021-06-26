@@ -110,7 +110,7 @@ void CWBWindow::OnDraw( CWBDrawAPI *API )
   if ( ScrollbarDragged() ) return;
 
   //change mouse cursor
-  TS32 border = DragMode;
+  int32_t border = DragMode;
   if ( !border ) border = GetBorderSelectionArea( App->GetMousePos() );
 
   if ( ( border & WB_DRAGMODE_LEFT ) || ( border & WB_DRAGMODE_RIGHT ) )
@@ -266,7 +266,7 @@ TBOOL CWBWindow::ApplyStyle( CString & prop, CString & value, CStringArray &pseu
 {
   TBOOL ElementTarget = false;
 
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     if ( pseudo[ x ] == _T( "title" ) ||
          pseudo[ x ] == _T( "close" ) ||
@@ -284,7 +284,7 @@ TBOOL CWBWindow::ApplyStyle( CString & prop, CString & value, CStringArray &pseu
 
   TBOOL Handled = false;
 
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     if ( pseudo[ x ] == _T( "title" ) )
     {

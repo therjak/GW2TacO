@@ -16,7 +16,7 @@ void CWBContextMenu::OnDraw( CWBDrawAPI *API )
 
   CPoint Offset = CPoint( padding.x1, padding.y1 );
 
-  for ( TS32 x = 0; x < Items.NumItems(); x++ )
+  for ( int32_t x = 0; x < Items.NumItems(); x++ )
   {
     if ( Items[ x ]->Separator )
     {
@@ -64,7 +64,7 @@ void CWBContextMenu::OnDraw( CWBDrawAPI *API )
           textColor = CSSProperties.DisplayDescriptor.GetColor( WB_STATE_HOVER, WB_ITEM_FONTCOLOR );
         }
 
-        TS32 width = Font->Write( API, Items[ x ]->Text, Offset, textColor, TextTransform );
+        int32_t width = Font->Write( API, Items[ x ]->Text, Offset, textColor, TextTransform );
 
         if ( Items[ x ]->Children.NumItems() ) //draw sub arrow
         {
@@ -74,7 +74,7 @@ void CWBContextMenu::OnDraw( CWBDrawAPI *API )
           }
           else
           {
-            TS32 wi = Font->GetWidth( _T( ">" ) );
+            int32_t wi = Font->GetWidth( _T( ">" ) );
             Font->Write( API, _T( ">" ), CPoint( GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 - ( Client.x2 - padding.x2 ), Offset.y ), textColor );
           }
         }
@@ -113,7 +113,7 @@ void CWBContextMenu::ResizeToContentSize()
   CSize ContentSize = CSize( 0, 0 );
 
   TBOOL NeedsSubArrow = false;
-  for ( TS32 x = 0; x < Items.NumItems(); x++ )
+  for ( int32_t x = 0; x < Items.NumItems(); x++ )
     if ( Items[ x ]->Children.NumItems() )
       NeedsSubArrow = true;
 
@@ -127,7 +127,7 @@ void CWBContextMenu::ResizeToContentSize()
 
   ContentSize.y = padding.y1;
 
-  for ( TS32 x = 0; x < Items.NumItems(); x++ )
+  for ( int32_t x = 0; x < Items.NumItems(); x++ )
   {
     if ( Items[ x ]->Separator )
     {
@@ -136,7 +136,7 @@ void CWBContextMenu::ResizeToContentSize()
     else
       if ( Font )
       {
-        TS32 arrowPadding = 0;
+        int32_t arrowPadding = 0;
 
         if ( Items[ x ]->Children.NumItems() ) //account for sub arrow
         {
@@ -187,12 +187,12 @@ TBOOL CWBContextMenu::Initialize( CWBItem *Parent, const CRect &Position, WBGUID
   return true;
 }
 
-CWBContextItem *CWBContextMenu::AddItem( const TCHAR *Text, TS32 ID, TBOOL Highlighted, TBOOL closesContext )
+CWBContextItem *CWBContextMenu::AddItem( const TCHAR *Text, int32_t ID, TBOOL Highlighted, TBOOL closesContext )
 {
   return AddItem( CString( Text ), ID, Highlighted, closesContext );
 }
 
-CWBContextItem * CWBContextMenu::AddItem( const CString &Text, TS32 ID, TBOOL Highlighted, TBOOL closesContext )
+CWBContextItem * CWBContextMenu::AddItem( const CString &Text, int32_t ID, TBOOL Highlighted, TBOOL closesContext )
 {
   CWBContextItem *Item = new CWBContextItem();
   Item->Text = Text;
@@ -231,7 +231,7 @@ TBOOL CWBContextMenu::MessageProc( CWBMessage &Message )
   case WBM_MOUSEMOVE:
     if ( MouseOver() )
     {
-      for ( TS32 x = 0; x < Items.NumItems(); x++ )
+      for ( int32_t x = 0; x < Items.NumItems(); x++ )
         if ( !Items[ x ]->Separator )
         {
           CRect EntryPos = GetItemRect( x );
@@ -270,7 +270,7 @@ TBOOL CWBContextMenu::MessageProc( CWBMessage &Message )
     if ( !Pushed ) return true; //original click doesn't count
 
     //check if any of the items are clicked on
-    for ( TS32 x = 0; x < Items.NumItems(); x++ )
+    for ( int32_t x = 0; x < Items.NumItems(); x++ )
       if ( !Items[ x ]->Separator )
       {
         CRect EntryPos = GetItemRect( x );
@@ -307,7 +307,7 @@ TBOOL CWBContextMenu::MessageProc( CWBMessage &Message )
   return CWBItem::MessageProc( Message );
 }
 
-void CWBContextMenu::SpawnSubMenu( TS32 itemidx )
+void CWBContextMenu::SpawnSubMenu( int32_t itemidx )
 {
   if ( itemidx < 0 || itemidx >= Items.NumItems() ) return;
   SAFEDELETE( SubMenu );
@@ -325,7 +325,7 @@ void CWBContextMenu::SpawnSubMenu( TS32 itemidx )
   SubMenu->ParentMenu = this;
   App->SetCapture( GetContextRoot() ); //message control must stay with the root item
 
-  for ( TS32 x = 0; x < Items[ itemidx ]->Children.NumItems(); x++ )
+  for ( int32_t x = 0; x < Items[ itemidx ]->Children.NumItems(); x++ )
   {
     CWBContextItem *olditm = Items[ itemidx ]->Children[ x ];
     CWBContextItem *newitm = SubMenu->AddItem( olditm->Text.GetPointer(), olditm->ReturnID );
@@ -340,7 +340,7 @@ void CWBContextMenu::SpawnSubMenu( TS32 itemidx )
 
 }
 
-CRect CWBContextMenu::GetItemRect( TS32 idx )
+CRect CWBContextMenu::GetItemRect( int32_t idx )
 {
   CPoint Offset = CPoint( 0, 0 );
 
@@ -355,7 +355,7 @@ CRect CWBContextMenu::GetItemRect( TS32 idx )
   Offset.y = padding.y1;
 
   CWBFont *Font = GetFont( WB_STATE_HOVER );
-  for ( TS32 x = 0; x < Items.NumItems(); x++ )
+  for ( int32_t x = 0; x < Items.NumItems(); x++ )
   {
     if ( Items[ x ]->Separator )
     {
@@ -408,7 +408,7 @@ CWBContextItem::~CWBContextItem()
 
 void CWBContextItem::CopyChildrenFrom( CWBContextItem *itm )
 {
-  for ( TS32 x = 0; x < itm->Children.NumItems(); x++ )
+  for ( int32_t x = 0; x < itm->Children.NumItems(); x++ )
   {
     CWBContextItem *olditm = itm->Children[ x ];
     CWBContextItem *newitm = AddItem( olditm->Text.GetPointer(), olditm->ReturnID );
@@ -420,7 +420,7 @@ void CWBContextItem::CopyChildrenFrom( CWBContextItem *itm )
   }
 }
 
-CWBContextItem * CWBContextItem::AddItem( const TCHAR *Text, TS32 ID, TBOOL Highlighted, TBOOL closesContext )
+CWBContextItem * CWBContextItem::AddItem( const TCHAR *Text, int32_t ID, TBOOL Highlighted, TBOOL closesContext )
 {
   CWBContextItem *Item = new CWBContextItem();
   Item->Text = Text;
@@ -431,7 +431,7 @@ CWBContextItem * CWBContextItem::AddItem( const TCHAR *Text, TS32 ID, TBOOL High
   return Item;
 }
 
-CWBContextItem * CWBContextItem::AddItem( const CString& Text, TS32 ID, TBOOL Highlighted, TBOOL closesContext )
+CWBContextItem * CWBContextItem::AddItem( const CString& Text, int32_t ID, TBOOL Highlighted, TBOOL closesContext )
 {
   return AddItem( Text.GetPointer(), ID, Highlighted, closesContext );
 }
@@ -461,7 +461,7 @@ TBOOL CWBContextMenu::ApplyStyle( CString & prop, CString & value, CStringArray 
 {
   TBOOL ElementTarget = false;
 
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     if ( pseudo[ x ] == _T( "separator" ) )
     {
@@ -476,7 +476,7 @@ TBOOL CWBContextMenu::ApplyStyle( CString & prop, CString & value, CStringArray 
 
   TBOOL Handled = false;
 
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     if ( pseudo[ x ] == _T( "separator" ) )
     {
@@ -488,9 +488,9 @@ TBOOL CWBContextMenu::ApplyStyle( CString & prop, CString & value, CStringArray 
   return Handled;
 }
 
-CWBContextItem * CWBContextMenu::GetItem( TS32 ID )
+CWBContextItem * CWBContextMenu::GetItem( int32_t ID )
 {
-  for ( TS32 x = 0; x < Items.NumItems(); x++ )
+  for ( int32_t x = 0; x < Items.NumItems(); x++ )
     if ( Items[ x ]->ReturnID == ID )
       return Items[ x ];
   return nullptr;

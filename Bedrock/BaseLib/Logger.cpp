@@ -101,7 +101,7 @@ CLoggerOutput_File::CLoggerOutput_File()
   fname = _T( "log.log" );
 }
 
-TS32 CLogger::GetNewEntryCount()
+int32_t CLogger::GetNewEntryCount()
 {
   return NewEntryCount;
 }
@@ -156,7 +156,7 @@ void CLogger::Log( LOGVERBOSITY v, TBOOL Prefix, TBOOL AddTimeStamp, TCHAR *Stri
   if ( AddTimeStamp )
     LogString = TimeStamp + LogString;
 
-  for ( TS32 x = 0; x < Outputs.NumItems(); x++ )
+  for ( int32_t x = 0; x < Outputs.NumItems(); x++ )
     Outputs[ x ]->Process( v, LogString.GetPointer() );
 
   NewEntryCount++;
@@ -198,7 +198,7 @@ void CLoggerOutput_RingBuffer::Dump( CString fname )
 {
   FILE* f = nullptr;
   fopen_s(&f, fname.GetPointer(), "w+b");
-  for ( TS32 x = 0; x < Buffer.NumItems(); x++ )
+  for ( int32_t x = 0; x < Buffer.NumItems(); x++ )
     fprintf( f, "%s\n", Buffer[ x ].GetPointer() );
   fclose( f );
 }

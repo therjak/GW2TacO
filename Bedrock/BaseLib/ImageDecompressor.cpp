@@ -3,7 +3,7 @@
 
 #define HIMETRIC_INCH	2540
 
-TU8 *DecompressImage( const TU8 *ImageData, TS32 ImageDataSize, TS32 &XSize, TS32 &YSize )
+TU8 *DecompressImage( const TU8 *ImageData, int32_t ImageDataSize, int32_t &XSize, int32_t &YSize )
 {
   if ( !ImageData || !ImageDataSize ) return 0;
 
@@ -112,7 +112,7 @@ TU8 *DecompressImage( const TU8 *ImageData, TS32 ImageDataSize, TS32 &XSize, TS3
 
   gpPicture->Release();
 
-  for ( TS32 x = 0; x < XSize*YSize; x++ )
+  for ( int32_t x = 0; x < XSize*YSize; x++ )
     Image[ x * 4 + 3 ] = 255;
 
   return Image;

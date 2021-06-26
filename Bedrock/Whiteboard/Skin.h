@@ -21,7 +21,7 @@ public:
   CWBMetricValue();
   void SetMetric( WBMETRICTYPE w, TF32 Value );
   void SetValue( TF32 Relative, TF32 Pixels );
-  TF32 GetValue( TF32 ParentSize, TS32 ContentSize );
+  TF32 GetValue( TF32 ParentSize, int32_t ContentSize );
   void SetAutoSize( TBOOL Auto );
   TBOOL IsAutoResizer();
 };
@@ -55,8 +55,8 @@ public:
 
   TBOOL IsWidthSet();
   TBOOL IsHeightSet();
-  TS32 GetWidth( CSize ParentSize, CSize ContentSize );
-  TS32 GetHeight( CSize ParentSize, CSize ContentSize );
+  int32_t GetWidth( CSize ParentSize, CSize ContentSize );
+  int32_t GetHeight( CSize ParentSize, CSize ContentSize );
 
   TBOOL IsAutoResizer();
 };
@@ -64,12 +64,12 @@ public:
 class CWBPositionDescriptorPixels
 {
   TBOOL Set[ 6 ];
-  TS32 Positions[ 6 ];
+  int32_t Positions[ 6 ];
 
 public:
 
   CWBPositionDescriptorPixels();
-  void SetValue( WBPOSITIONTYPE p, TS32 Pixels );
+  void SetValue( WBPOSITIONTYPE p, int32_t Pixels );
   FORCEINLINE CRect GetPosition( CSize ParentSize );
 };
 
@@ -101,8 +101,8 @@ public:
   CWBSkinElement &operator=( const CWBSkinElement &Copy );
 
   void SetHandle( WBATLASHANDLE h );
-  void SetBehavior( TS32 Axis, WBSKINELEMENTBEHAVIOR Behavior );
-  WBSKINELEMENTBEHAVIOR GetBehavior( TS32 Axis );
+  void SetBehavior( int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior );
+  WBSKINELEMENTBEHAVIOR GetBehavior( int32_t Axis );
   void SetName( CString Name );
   WBATLASHANDLE GetHandle();
   CString &GetName();
@@ -122,9 +122,9 @@ class CWBMosaicImage
 public:
 
   CWBMosaicImage();
-  void SetPositionValue( WBPOSITIONTYPE p, TS32 Pixels );
-  void SetTiling( TS32 Axis, TBOOL v );
-  void SetStretching( TS32 Axis, TBOOL v );
+  void SetPositionValue( WBPOSITIONTYPE p, int32_t Pixels );
+  void SetTiling( int32_t Axis, TBOOL v );
+  void SetStretching( int32_t Axis, TBOOL v );
   void SetHandle( WBATLASHANDLE handle );
   void SetColor( CColor color );
 
@@ -135,7 +135,7 @@ class CWBMosaic
 {
   CString Name;
   CArray<CWBMosaicImage> Images;
-  TS32 Overshoot[ 4 ];
+  int32_t Overshoot[ 4 ];
 
 public:
 
@@ -148,7 +148,7 @@ public:
   void AddImage( CWBMosaicImage &Image );
   void Flush();
   void Render( CWBDrawAPI *API, CRect &Position );
-  void SetOverShoot( WBRECTSIDE side, TS32 val );
+  void SetOverShoot( WBRECTSIDE side, int32_t val );
 };
 
 typedef TU32 WBSKINELEMENTID;
@@ -163,7 +163,7 @@ class CWBSkin
 public:
 
   void AddElement( const CString &Name, WBATLASHANDLE Handle, WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav );
-  CWBMosaic *AddMosaic( const CString &Name, CString &Description, TS32 OverShootLeft = 0, TS32 OverShootTop = 0, TS32 OverShootRight = 0, TS32 OverShootBottom = 0 );
+  CWBMosaic *AddMosaic( const CString &Name, CString &Description, int32_t OverShootLeft = 0, int32_t OverShootTop = 0, int32_t OverShootRight = 0, int32_t OverShootBottom = 0 );
 
   void RenderElement( CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos );
   void RenderElement( CWBDrawAPI *API, CString &Name, CRect &Pos );

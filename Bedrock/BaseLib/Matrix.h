@@ -131,8 +131,8 @@ public:
   TF32 operator() ( TU32 Row, TU32 Col ) const;
   operator TF32*( );
   operator const TF32*( ) const;
-  CVector4 Row( TS32 x ) const;
-  CVector4 Col( TS32 x ) const;
+  CVector4 Row( int32_t x ) const;
+  CVector4 Col( int32_t x ) const;
   CMatrix4x4 &operator*= ( const CMatrix4x4 &mat );
   CMatrix4x4 &operator+= ( const CMatrix4x4 &mat );
   CMatrix4x4 &operator-= ( const CMatrix4x4 &mat );

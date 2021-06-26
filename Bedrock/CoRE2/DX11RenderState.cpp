@@ -25,7 +25,7 @@ TBOOL CCoreDX11BlendState::Update()
 	D3D11_BLEND_DESC desc;
 	desc.AlphaToCoverageEnable = AlphaToCoverage;
 	desc.IndependentBlendEnable = IndependentBlend;
-	for (TS32 x = 0; x < 8; x++)
+	for (int32_t x = 0; x < 8; x++)
 	{
 		desc.RenderTarget[x].BlendEnable = RenderTargetBlendStates[x].BlendEnable;
 		desc.RenderTarget[x].SrcBlend = DX11BlendFactors[RenderTargetBlendStates[x].SrcBlend];

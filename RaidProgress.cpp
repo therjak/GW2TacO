@@ -34,7 +34,7 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
   TBOOL compact = GetConfigValue( "CompactRaidWindow" );
 
   CWBFont *f = GetFont( GetState() );
-  TS32 size = f->GetLineHeight();
+  int32_t size = f->GetLineHeight();
 
   GW2::APIKeyManager::Status status = GW2::apiKeyManager.DisplayStatusText(API, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
@@ -144,9 +144,9 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
             continue;
 
           CString eventName = CString( raidData[ x ]->get<String>().data() );
-          for ( TS32 a = 0; a < raids.NumItems(); a++ )
-            for ( TS32 b = 0; b < raids[ a ].wings.NumItems(); b++ )
-              for ( TS32 c = 0; c < raids[ a ].wings[ b ].events.NumItems(); c++ )
+          for ( int32_t a = 0; a < raids.NumItems(); a++ )
+            for ( int32_t b = 0; b < raids[ a ].wings.NumItems(); b++ )
+              for ( int32_t c = 0; c < raids[ a ].wings[ b ].events.NumItems(); c++ )
               {
                 if ( raids[ a ].wings[ b ].events[ c ].name == eventName )
                   raids[ a ].wings[ b ].events[ c ].finished = true;
@@ -168,16 +168,16 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
 
   if ( hasFullRaidInfo )
   {
-    TS32 posx = 0;
+    int32_t posx = 0;
     if ( compact )
     {
-      for ( TS32 x = 0; x < raids.NumItems(); x++ )
+      for ( int32_t x = 0; x < raids.NumItems(); x++ )
         posx = max( posx, f->GetWidth( raids[ x ].shortName ) );
     }
     posx += 3;
-    TS32 oposx = posx;
+    int32_t oposx = posx;
 
-    TS32 posy = 0;
+    int32_t posy = 0;
     for ( int x = 0; x < raids.NumItems(); x++ )
     {
       auto& r = raids[ x ];

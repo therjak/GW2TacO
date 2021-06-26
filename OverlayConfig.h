@@ -6,8 +6,8 @@ void LoadConfig();
 void SaveConfig();
 void ToggleConfigValue( TCHAR *value );
 void ToggleConfigValue( CString &value );
-TS32 GetConfigValue( TCHAR *value );
-void SetConfigValue( TCHAR *value, TS32 val );
+int32_t GetConfigValue( TCHAR *value );
+void SetConfigValue( TCHAR *value, int32_t val );
 TBOOL HasConfigValue( TCHAR *value );
 TBOOL HasConfigString( TCHAR *value );
 void SetConfigString( TCHAR *value, const CString& val );
@@ -19,12 +19,12 @@ void SetWindowOpenState( TCHAR *windowname, TBOOL Open );
 CRect GetWindowPosition( TCHAR *windowname );
 void SetWindowPosition( TCHAR *windowname, CRect Pos );
 
-void GetKeyBindings( CDictionary<TS32, TacOKeyAction> &KeyBindings );
-void DeleteKeyBinding( TS32 key );
-void SetKeyBinding( TacOKeyAction action, TS32 key );
+void GetKeyBindings( CDictionary<int32_t, TacOKeyAction> &KeyBindings );
+void DeleteKeyBinding( int32_t key );
+void SetKeyBinding( TacOKeyAction action, int32_t key );
 
-void GetScriptKeyBindings( CDictionary<TS32, CString> &ScriptKeyBindings );
-void SetScriptKeyBinding( const CString& scriptEvent, TS32 key );
+void GetScriptKeyBindings( CDictionary<int32_t, CString> &ScriptKeyBindings );
+void SetScriptKeyBinding( const CString& scriptEvent, int32_t key );
 void DeleteScriptKeyBinding( const CString& scriptEvent );
 
 void LoadMarkerCategoryVisibilityInfo();

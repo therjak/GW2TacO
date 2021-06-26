@@ -12,8 +12,8 @@ public:
 
 	virtual TBOOL Create(const TU8 *Data, const TU32 Size) = 0;
 	virtual TBOOL CreateDynamic(const TU32 Size) = 0;
-	virtual TBOOL Update(const TS32 Offset, const TU8 *Data, const TU32 Size) = 0;
-	virtual TBOOL Lock(void **Result, const TU32 Offset, const TS32 size, const TS32 Flags) = 0;
+	virtual TBOOL Update(const int32_t Offset, const TU8 *Data, const TU32 Size) = 0;
+	virtual TBOOL Lock(void **Result, const TU32 Offset, const int32_t size, const int32_t Flags) = 0;
 	virtual TBOOL Lock(void **Result) = 0;
 	virtual TBOOL UnLock() = 0;
 	virtual void* GetHandle() = 0;

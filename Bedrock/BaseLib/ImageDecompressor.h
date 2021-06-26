@@ -1,3 +1,3 @@
 #pragma once
 
-TU8 *DecompressImage( const TU8 *ImageData, TS32 ImageDataSize, TS32 &XSize, TS32 &YSize );
+TU8 *DecompressImage( const TU8 *ImageData, int32_t ImageDataSize, int32_t &XSize, int32_t &YSize );

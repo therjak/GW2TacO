@@ -4,7 +4,7 @@
 //cache size must be 2^x
 #define ATLASCACHESIZE 32
 
-typedef TS32 WBATLASHANDLE;
+typedef int32_t WBATLASHANDLE;
 
 class CAtlasImage;
 
@@ -20,7 +20,7 @@ class CAtlasNode //stores a node for the rectpacker
 public:
   CAtlasNode();
   virtual ~CAtlasNode();
-  CAtlasNode *AddNode( TS32 width, TS32 height );
+  CAtlasNode *AddNode( int32_t width, int32_t height );
   CRect &GetArea();
   CAtlasImage *GetImage();
 };
@@ -28,7 +28,7 @@ public:
 class CAtlasImage //stores image data not currently in the atlas
 {
   TU8 *Image;
-  TS32 XRes, YRes;
+  int32_t XRes, YRes;
   WBATLASHANDLE Handle;
 
   TBOOL Required;
@@ -36,7 +36,7 @@ class CAtlasImage //stores image data not currently in the atlas
 public:
 
   CAtlasImage();
-  CAtlasImage( TU8 *SourceImage, TS32 SrcXRes, TS32 SrcYRes, CRect &Source );
+  CAtlasImage( TU8 *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source );
   virtual ~CAtlasImage();
 
   WBATLASHANDLE GetHandle();
@@ -56,7 +56,7 @@ struct CAtlasCacheElement
 class CAtlas
 {
   friend class CWBDrawAPI;
-  TS32 XRes, YRes;
+  int32_t XRes, YRes;
   TU8 *Image;
   CCoreTexture2D *Atlas;
 
@@ -81,14 +81,14 @@ class CAtlas
 
 public:
 
-  CAtlas( TS32 XSize, TS32 YSize );
+  CAtlas( int32_t XSize, int32_t YSize );
   virtual ~CAtlas();
 
   TBOOL InitializeTexture( CCoreDevice *Device );
   TBOOL UpdateTexture();
   CCoreTexture2D *GetTexture();
 
-  WBATLASHANDLE AddImage( TU8 *Image, TS32 XRes, TS32 YRes, CRect &SourceArea );
+  WBATLASHANDLE AddImage( TU8 *Image, int32_t XRes, int32_t YRes, CRect &SourceArea );
   void DeleteImage( WBATLASHANDLE h ); //doesn't immediately remove image from atlas
 
   TBOOL Optimize( TBOOL DebugMode = false );
@@ -100,8 +100,8 @@ public:
 
   void ClearImageUsageflags();
 
-  INLINE TS32 GetXRes() const { return XRes; }
-  INLINE TS32 GetYRes() const { return YRes; }
+  INLINE int32_t GetXRes() const { return XRes; }
+  INLINE int32_t GetYRes() const { return YRes; }
 
-  TBOOL Resize( CCoreDevice *Device, TS32 XSize, TS32 YSize );
+  TBOOL Resize( CCoreDevice *Device, int32_t XSize, int32_t YSize );
 };

@@ -22,7 +22,7 @@ CRect &CAtlasNode::GetArea()
   return Area;
 }
 
-CAtlasNode *CAtlasNode::AddNode( TS32 width, TS32 height )
+CAtlasNode *CAtlasNode::AddNode( int32_t width, int32_t height )
 {
   CAtlasNode *NewNode;
   if ( Children[ 0 ] )
@@ -69,7 +69,7 @@ CAtlasImage::CAtlasImage()
   Required = false;
 }
 
-CAtlasImage::CAtlasImage( TU8 *SourceImage, TS32 SrcXRes, TS32 SrcYRes, CRect &Source )
+CAtlasImage::CAtlasImage( TU8 *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source )
 {
   Image = NULL;
   XRes = Source.Width();
@@ -84,7 +84,7 @@ CAtlasImage::CAtlasImage( TU8 *SourceImage, TS32 SrcXRes, TS32 SrcYRes, CRect &S
 
     TU8 *i = Image;
 
-    for ( TS32 y = 0; y < YRes; y++ )
+    for ( int32_t y = 0; y < YRes; y++ )
     {
       if ( y + Source.y1 < 0 || y + Source.y1 >= SrcYRes )
       {
@@ -92,7 +92,7 @@ CAtlasImage::CAtlasImage( TU8 *SourceImage, TS32 SrcXRes, TS32 SrcYRes, CRect &S
         return;
       }
 
-      for ( TS32 x = 0; x < XRes; x++ )
+      for ( int32_t x = 0; x < XRes; x++ )
       {
         if ( x + Source.x1 < 0 || x + Source.x1 >= SrcXRes )
         {
@@ -100,7 +100,7 @@ CAtlasImage::CAtlasImage( TU8 *SourceImage, TS32 SrcXRes, TS32 SrcYRes, CRect &S
           return;
         }
 
-        TS32 k = ( x + Source.x1 + ( y + Source.y1 )*SrcXRes ) * 4;
+        int32_t k = ( x + Source.x1 + ( y + Source.y1 )*SrcXRes ) * 4;
         i[ 0 ] = SourceImage[ k + 0 ];
         i[ 1 ] = SourceImage[ k + 1 ];
         i[ 2 ] = SourceImage[ k + 2 ];
@@ -146,7 +146,7 @@ TBOOL CAtlasImage::IsRequired()
   return Required;
 }
 
-CAtlas::CAtlas( TS32 XSize, TS32 YSize )
+CAtlas::CAtlas( int32_t XSize, int32_t YSize )
 {
   FlushCache();
   XRes = XSize;
@@ -159,7 +159,7 @@ CAtlas::CAtlas( TS32 XSize, TS32 YSize )
   Atlas = NULL;
   TextureUpdateNeeded = false;
 
-  TS32 White[ 4 ];
+  int32_t White[ 4 ];
   memset( White, 0xff, 4 * 4 );
 
   {
@@ -204,7 +204,7 @@ TBOOL CAtlas::PackImage( CAtlasImage *img )
   TU8 *target = Image + ( n->Area.x1 + n->Area.y1*XRes ) * 4;
   TU8 *source = img->GetImage();
 
-  for ( TS32 y = 0; y < s.y; y++ )
+  for ( int32_t y = 0; y < s.y; y++ )
   {
     memcpy( target, source, img->GetSize().x * 4 );
     target += XRes * 4;
@@ -229,7 +229,7 @@ TBOOL CAtlas::InitializeTexture( CCoreDevice *Device )
   return ( Atlas = Device->CreateTexture2D( XRes, YRes, Image ) ) != NULL;
 }
 
-WBATLASHANDLE CAtlas::AddImage( TU8 *i, TS32 xs, TS32 ys, CRect &a )
+WBATLASHANDLE CAtlas::AddImage( TU8 *i, int32_t xs, int32_t ys, CRect &a )
 {
   if ( a.Width() == 0 || a.Height() == 0 ) return 0;
 
@@ -259,8 +259,8 @@ int SortImageStorage( CAtlasImage * const &a, CAtlasImage * const &b )
   CSize ra = a->GetSize();
   CSize rb = b->GetSize();
 
-  TS32 w = rb.x - ra.x;
-  TS32 h = rb.y - ra.y;
+  int32_t w = rb.x - ra.x;
+  int32_t h = rb.y - ra.y;
 
   if ( w != 0 ) return w;
   return h;
@@ -277,7 +277,7 @@ TBOOL CAtlas::Optimize( TBOOL DebugMode )
   if ( DebugMode )
   {
     CLightweightCriticalSection cs( &critsec );
-    for ( TS32 x = 0; x < ImageStorage.NumItems(); x++ )
+    for ( int32_t x = 0; x < ImageStorage.NumItems(); x++ )
     {
       if ( Dictionary.HasKey( ImageStorage.GetByIndex( x )->GetHandle() ) )
         ImageStorage.GetByIndex( x )->TagRequired();
@@ -294,8 +294,8 @@ TBOOL CAtlas::Optimize( TBOOL DebugMode )
 
   {
     CLightweightCriticalSection cs( &critsec );
-    TS32 RequiredCount = 0;
-    for ( TS32 x = 0; x < ImageStorage.NumItems(); x++ )
+    int32_t RequiredCount = 0;
+    for ( int32_t x = 0; x < ImageStorage.NumItems(); x++ )
       RequiredCount += ImageStorage.GetByIndex( x )->IsRequired();
 
     WhitePixel->TagRequired();
@@ -303,7 +303,7 @@ TBOOL CAtlas::Optimize( TBOOL DebugMode )
     if ( RequiredCount )
     {
       ImageStorage.SortByValue( SortImageStorage );
-      for ( TS32 x = 0; x < ImageStorage.NumItems(); x++ )
+      for ( int32_t x = 0; x < ImageStorage.NumItems(); x++ )
       {
         if ( ImageStorage.GetByIndex( x )->IsRequired() )
           if ( !PackImage( ImageStorage.GetByIndex( x ) ) )
@@ -407,7 +407,7 @@ CPoint CAtlas::GetWhitePixelUV()
 void CAtlas::ClearImageUsageflags()
 {
   CLightweightCriticalSection cs( &critsec );
-  for ( TS32 x = 0; x < ImageStorage.NumItems(); x++ )
+  for ( int32_t x = 0; x < ImageStorage.NumItems(); x++ )
     ImageStorage.GetByIndex( x )->ClearRequired();
 }
 
@@ -418,7 +418,7 @@ void CAtlas::FlushCache()
 
 CAtlasNode * CAtlas::GetNodeCached( WBATLASHANDLE Handle )
 {
-  TS32 idx = Handle&( ATLASCACHESIZE - 1 );
+  int32_t idx = Handle&( ATLASCACHESIZE - 1 );
 
   if ( AtlasCache[ idx ].Handle == Handle ) return AtlasCache[ idx ].Node;
 
@@ -452,7 +452,7 @@ TBOOL CAtlas::Reset()
   return true;
 }
 
-TBOOL CAtlas::Resize( CCoreDevice *Device, TS32 XSize, TS32 YSize )
+TBOOL CAtlas::Resize( CCoreDevice *Device, int32_t XSize, int32_t YSize )
 {
   SAFEDELETE( Root );
   SAFEDELETEA( Image );

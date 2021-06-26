@@ -89,25 +89,25 @@ public:
       TBOOL Moved;
       TBOOL Resized;
     };
-    TS32 Position[ 2 ];
-    TS32 Data;
-    TS32 HumanEdit;
+    int32_t Position[ 2 ];
+    int32_t Data;
+    int32_t HumanEdit;
     struct
     {
-      TS32 Key;
-      TS32 KeyboardState;
+      int32_t Key;
+      int32_t KeyboardState;
     };
     struct
     {
-      TS32 ID;
-      TS32 Flags;
+      int32_t ID;
+      int32_t Flags;
     };
   };
 
   CWBMessage();
   CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target );
-  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target, TS32 x );
-  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target, TS32 x, TS32 y );
+  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target, int32_t x );
+  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target, int32_t x, int32_t y );
   virtual ~CWBMessage();
 
   INLINE WBMESSAGE GetMessage() const { return Message; }

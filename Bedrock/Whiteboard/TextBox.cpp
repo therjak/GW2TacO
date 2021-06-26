@@ -14,7 +14,7 @@ void CWBTextBox::OnDraw( CWBDrawAPI *API )
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont( i );
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
-  TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+  int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
   //API->DrawRect(GetWindowRect(),rgbBackground);
 
@@ -31,15 +31,15 @@ void CWBTextBox::OnDraw( CWBDrawAPI *API )
                                 Selection.DisplayDescriptor.GetColor( WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR ), min( 1.0f, ( globalTimer.GetTime() - HiglightStartTime ) / 300.0f ) );
   if ( !InFocus() ) SelectionColor = Selection.DisplayDescriptor.GetColor( WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR );
 
-  for ( TS32 x = 0; x < (TS32)Text.Length(); x++ )
+  for ( int32_t x = 0; x < (int32_t)Text.Length(); x++ )
   {
     if ( ColoredText() ) Color = GetTextColor( x, Color ); //color coding, to be implemented in child classes
 
     TCHAR Char = Flags&WB_TEXTBOX_PASSWORD ? PasswordStar : Font->ApplyTextTransform( (_TUCHAR*)Text.GetPointer(), (_TUCHAR*)Text.GetPointer() + x, TextTransform );
-    TS32 Width = Font->GetWidth( Char );
+    int32_t Width = Font->GetWidth( Char );
 
     if ( Char == '\t' )
-      Width = ( (TS32)( Pos.x + TabWidth ) / TabWidth )*TabWidth - Pos.x;
+      Width = ( (int32_t)( Pos.x + TabWidth ) / TabWidth )*TabWidth - Pos.x;
 
     //draw selection
     if ( !( Flags&WB_TEXTBOX_NOSELECTION ) && x >= SelectionStart && x < SelectionEnd )
@@ -70,7 +70,7 @@ void CWBTextBox::OnDraw( CWBDrawAPI *API )
       }
       if ( Char == '\t' )
       {
-        Pos.x = ( (TS32)( Pos.x + TabWidth ) / TabWidth )*TabWidth;
+        Pos.x = ( (int32_t)( Pos.x + TabWidth ) / TabWidth )*TabWidth;
       }
     }
     else
@@ -102,7 +102,7 @@ CWBTextBox::CWBTextBox() : CWBItem()
 {
 }
 
-CWBTextBox::CWBTextBox( CWBItem *Parent, const CRect &Pos, TS32 flags, const TCHAR *Txt ) : CWBItem()
+CWBTextBox::CWBTextBox( CWBItem *Parent, const CRect &Pos, int32_t flags, const TCHAR *Txt ) : CWBItem()
 {
   Initialize( Parent, Pos, flags, Txt );
 }
@@ -112,7 +112,7 @@ CWBTextBox::~CWBTextBox()
   History.FreeArray();
 }
 
-TBOOL CWBTextBox::Initialize( CWBItem *Parent, const CRect &Position, TS32 flags, const TCHAR *Txt )
+TBOOL CWBTextBox::Initialize( CWBItem *Parent, const CRect &Position, int32_t flags, const TCHAR *Txt )
 {
   Flags = flags;
   Selection.DisplayDescriptor.SetValue( WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR, 0 );
@@ -146,10 +146,10 @@ TBOOL CWBTextBox::Initialize( CWBItem *Parent, const CRect &Position, TS32 flags
   return true;
 }
 
-void CWBTextBox::SetCursorPos( TS32 pos, TBOOL Selecting )
+void CWBTextBox::SetCursorPos( int32_t pos, TBOOL Selecting )
 {
   CWBFont *Font = GetFont( GetState() );
-  TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+  int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
   CursorBlinkStartTime = globalTimer.GetTime();
 
@@ -169,20 +169,20 @@ void CWBTextBox::SetCursorPos( TS32 pos, TBOOL Selecting )
   CPoint CPos;
   CPos.y = GetCursorY()*Font->GetLineHeight();
   CPos.x = 0;
-  TS32 Cx = GetCursorX();
+  int32_t Cx = GetCursorX();
 
-  for ( TS32 x = 0; x < Cx; x++ )
+  for ( int32_t x = 0; x < Cx; x++ )
   {
     TCHAR Char = Text[ CursorPos - Cx + x ];
-    TS32 Width = Font->GetWidth( Char );
+    int32_t Width = Font->GetWidth( Char );
 
     if ( Char == '\t' )
-      Width = ( (TS32)( CPos.x + TabWidth ) / TabWidth )*TabWidth - CPos.x;
+      Width = ( (int32_t)( CPos.x + TabWidth ) / TabWidth )*TabWidth - CPos.x;
 
     CPos.x += Width;
   }
 
-  TS32 CurrCharWidth = Font->GetWidth( _T( ' ' ) );
+  int32_t CurrCharWidth = Font->GetWidth( _T( ' ' ) );
   if ( CursorPos != Text.Length() ) CurrCharWidth = Font->GetWidth( Text[ CursorPos ] );
 
   OnCursorPosChange( CursorPos );
@@ -199,17 +199,17 @@ void CWBTextBox::SetCursorPos( TS32 pos, TBOOL Selecting )
   if ( CPos.y + Font->GetLineHeight() > VisibleRect.y2 ) SetVScrollbarPos( GetVScrollbarPos() + ( CPos.y + Font->GetLineHeight() - VisibleRect.y2 ) );
 }
 
-void CWBTextBox::SetCursorPosXpxY( TS32 x, TS32 y, TBOOL Selecting )
+void CWBTextBox::SetCursorPosXpxY( int32_t x, int32_t y, TBOOL Selecting )
 {
-  TS32 p = 0;
+  int32_t p = 0;
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont( i );
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
-  TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+  int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
   if ( !( y < 0 || ( y == 0 && x < 0 ) ) )
   {
-    TS32 yp = 0;
+    int32_t yp = 0;
     while ( yp < y )
     {
       if ( p == Text.Length() )
@@ -222,8 +222,8 @@ void CWBTextBox::SetCursorPosXpxY( TS32 x, TS32 y, TBOOL Selecting )
     }
   }
 
-  TS32 pd = p;
-  TS32 xp = 0;
+  int32_t pd = p;
+  int32_t xp = 0;
   while ( xp < x )
   {
     if ( p == Text.Length() || Text[ p ] == '\n' )
@@ -234,10 +234,10 @@ void CWBTextBox::SetCursorPosXpxY( TS32 x, TS32 y, TBOOL Selecting )
     }
 
     TCHAR Char = Flags&WB_TEXTBOX_PASSWORD ? PasswordStar : Font->ApplyTextTransform( (_TUCHAR*)Text.GetPointer(), (_TUCHAR*)Text.GetPointer() + p, TextTransform );
-    TS32 Width = Font->GetWidth( Char );
+    int32_t Width = Font->GetWidth( Char );
 
     if ( Char == '\t' )
-      Width = ( (TS32)( xp + TabWidth ) / TabWidth )*TabWidth - xp;
+      Width = ( (int32_t)( xp + TabWidth ) / TabWidth )*TabWidth - xp;
 
     xp += Width;
     if ( xp > x ) break;
@@ -273,8 +273,8 @@ void CWBTextBox::Copy()
   if ( Flags&WB_TEXTBOX_NOSELECTION ) return;
   if ( Flags&WB_TEXTBOX_DISABLECOPY ) return;
 
-  TS32 strt = SelectionStart;
-  TS32 end = SelectionEnd;
+  int32_t strt = SelectionStart;
+  int32_t end = SelectionEnd;
 
   if ( SelectionStart == SelectionEnd )
   {
@@ -337,10 +337,10 @@ void CWBTextBox::Paste()
     {
       CString s;
 #ifndef UNICODE
-      TS32 len = wcslen( buffer );
+      int32_t len = wcslen( buffer );
       TCHAR *b2 = new TCHAR[ len + 1 ];
       memset( b2, 0, sizeof( TCHAR )*( len + 1 ) );
-      for ( TS32 x = 0; x < len; x++ )
+      for ( int32_t x = 0; x < len; x++ )
       {
         if ( buffer[ x ] >= 0 && buffer[ x ] <= 255 ) b2[ x ] = (TCHAR)buffer[ x ];
         else b2[ x ] = _T( '?' );
@@ -372,7 +372,7 @@ void CWBTextBox::Paste()
 
 CWBTextBoxHistoryEntry *CWBTextBox::CreateNewHistoryEntry( bool Remove, int Start, int Length )
 {
-  for ( TS32 x = History.NumItems() - 1; x >= HistoryPosition; x-- ) History.FreeByIndex( x );
+  for ( int32_t x = History.NumItems() - 1; x >= HistoryPosition; x-- ) History.FreeByIndex( x );
 
   CWBTextBoxHistoryEntry *entry = new CWBTextBoxHistoryEntry();
   entry->Remove = Remove;
@@ -421,10 +421,10 @@ void CWBTextBox::Redo()
   OnTextChange();
 }
 
-TS32 CWBTextBox::GetCursorX()
+int32_t CWBTextBox::GetCursorX()
 {
-  TS32 cnt = 0;
-  for ( TS32 x = CursorPos - 1; x >= 0; x-- )
+  int32_t cnt = 0;
+  for ( int32_t x = CursorPos - 1; x >= 0; x-- )
   {
     if ( Text[ x ] == '\n' ) return cnt;
     cnt++;
@@ -432,30 +432,30 @@ TS32 CWBTextBox::GetCursorX()
   return cnt;
 }
 
-TS32 CWBTextBox::GetCursorY()
+int32_t CWBTextBox::GetCursorY()
 {
-  TS32 cnt = 0;
-  for ( TS32 x = CursorPos - 1; x >= 0; x-- )
+  int32_t cnt = 0;
+  for ( int32_t x = CursorPos - 1; x >= 0; x-- )
     if ( Text[ x ] == '\n' ) cnt++;
   return cnt;
 }
 
-TS32 CWBTextBox::GetCursorXinPixels()
+int32_t CWBTextBox::GetCursorXinPixels()
 {
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont( i );
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
-  TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+  int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
-  TS32 c = GetCursorX();
-  TS32 Pixels = 0;
-  for ( TS32 x = CursorPos - c; x < CursorPos; x++ )
+  int32_t c = GetCursorX();
+  int32_t Pixels = 0;
+  for ( int32_t x = CursorPos - c; x < CursorPos; x++ )
   {
     TCHAR Char = Flags&WB_TEXTBOX_PASSWORD ? PasswordStar : Font->ApplyTextTransform( (_TUCHAR*)Text.GetPointer(), (_TUCHAR*)Text.GetPointer() + x, TextTransform );
-    TS32 Width = Font->GetWidth( Char );
+    int32_t Width = Font->GetWidth( Char );
 
     if ( Char == '\t' )
-      Width = ( (TS32)( Pixels + TabWidth ) / TabWidth )*TabWidth - Pixels;
+      Width = ( (int32_t)( Pixels + TabWidth ) / TabWidth )*TabWidth - Pixels;
 
     Pixels += Width;
   }
@@ -466,11 +466,11 @@ TS32 CWBTextBox::GetCursorXinPixels()
 }
 
 
-TS32 CWBTextBox::GetLineSize()
+int32_t CWBTextBox::GetLineSize()
 {
-  TS32 ls = CursorPos - GetCursorX();
-  TS32 cnt = 0;
-  for ( TS32 x = ls; x < (TS32)Text.Length(); x++ )
+  int32_t ls = CursorPos - GetCursorX();
+  int32_t cnt = 0;
+  for ( int32_t x = ls; x < (int32_t)Text.Length(); x++ )
   {
     if ( Text[ x ] == '\n' ) return cnt;
     cnt++;
@@ -478,11 +478,11 @@ TS32 CWBTextBox::GetLineSize()
   return cnt;
 }
 
-TS32 CWBTextBox::GetLineLeadingWhiteSpaceSize()
+int32_t CWBTextBox::GetLineLeadingWhiteSpaceSize()
 {
-  TS32 ls = CursorPos - GetCursorX();
-  TS32 cnt = 0;
-  for ( TS32 x = ls; x < (TS32)Text.Length(); x++ )
+  int32_t ls = CursorPos - GetCursorX();
+  int32_t cnt = 0;
+  for ( int32_t x = ls; x < (int32_t)Text.Length(); x++ )
   {
     if ( Text[ x ] == '\n' || !_istspace( Text[ x ] ) ) return cnt;
     cnt++;
@@ -509,12 +509,12 @@ CPoint CWBTextBox::GetTextStartOffset()
   return pos;
 }
 
-TS32 CWBTextBox::GetCursorPosMouse()
+int32_t CWBTextBox::GetCursorPosMouse()
 {
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont( i );
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
-  TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+  int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
   CPoint mp = ScreenToClient( App->GetMousePos() );
   CPoint Pos = CPoint( 0, 0 );
@@ -523,15 +523,15 @@ TS32 CWBTextBox::GetCursorPosMouse()
 
   if ( mp.y < Pos.y + Offset.y ) return 0;
 
-  for ( TS32 x = 0; x < (TS32)Text.Length(); x++ )
+  for ( int32_t x = 0; x < (int32_t)Text.Length(); x++ )
   {
     if ( ( Pos.y + Font->GetLineHeight() + Offset.y >= 0 && Pos.y + Offset.y < cr.Height() ) || Flags&WB_TEXTBOX_SINGLELINE )
     {
       TCHAR Char = Flags&WB_TEXTBOX_PASSWORD ? PasswordStar : Font->ApplyTextTransform( (_TUCHAR*)Text.GetPointer(), (_TUCHAR*)Text.GetPointer() + x, TextTransform );
-      TS32 Width = Font->GetWidth( Char );
+      int32_t Width = Font->GetWidth( Char );
 
       if ( Char == '\t' )
-        Width = ( (TS32)( Pos.x + TabWidth ) / TabWidth )*TabWidth - Pos.x;
+        Width = ( (int32_t)( Pos.x + TabWidth ) / TabWidth )*TabWidth - Pos.x;
 
       if ( ( Pos.y + Offset.y <= mp.y && mp.y < Pos.y + Font->GetLineHeight() + Offset.y ) || Flags&WB_TEXTBOX_SINGLELINE ) //we're in the correct line
       {
@@ -578,7 +578,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
   case WBM_REPOSITION:
   {
     TBOOL b = CWBItem::MessageProc( Message );
-    TS32 mi, ma, vi;
+    int32_t mi, ma, vi;
     GetHScrollbarParameters( mi, ma, vi );
     SetHScrollbarParameters( mi, ma, GetClientRect().Width() );
     GetVScrollbarParameters( mi, ma, vi );
@@ -615,7 +615,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
   case WBM_MOUSEWHEEL:
   {
     CWBFont *Font = GetFont( GetState() );
-    TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+    int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
     SetVScrollbarPos( GetVScrollbarPos() - Message.Data * 3 * Font->GetLineHeight(), true );
   }
   return true;
@@ -632,7 +632,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
       break; //altgr
 
     CWBFont *Font = GetFont( GetState() );
-    TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+    int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
     //handle cursor movement keys
     switch ( Message.Key )
@@ -643,7 +643,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
       return true;
 
     case VK_RIGHT:
-      SetCursorPos( min( (TS32)Text.Length(), CursorPos + 1 ), Message.KeyboardState&WB_KBSTATE_SHIFT );
+      SetCursorPos( min( (int32_t)Text.Length(), CursorPos + 1 ), Message.KeyboardState&WB_KBSTATE_SHIFT );
       DesiredCursorPosXinPixels = GetCursorXinPixels();
       return true;
 
@@ -656,12 +656,12 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
       return true;
 
     case VK_PRIOR: //page up
-      SetVScrollbarPos( GetVScrollbarPos() - ( (TS32)( GetClientRect().Height() / Font->GetLineHeight() ) )*Font->GetLineHeight(), true );
+      SetVScrollbarPos( GetVScrollbarPos() - ( (int32_t)( GetClientRect().Height() / Font->GetLineHeight() ) )*Font->GetLineHeight(), true );
       SetCursorPosXpxY( DesiredCursorPosXinPixels, GetVScrollbarPos() ? GetCursorY() - GetClientRect().Height() / Font->GetLineHeight() : 0, Message.KeyboardState&WB_KBSTATE_SHIFT );
       return true;
 
     case VK_NEXT: //page down
-      SetVScrollbarPos( GetVScrollbarPos() + ( (TS32)( GetClientRect().Height() / Font->GetLineHeight() ) )*Font->GetLineHeight(), true );
+      SetVScrollbarPos( GetVScrollbarPos() + ( (int32_t)( GetClientRect().Height() / Font->GetLineHeight() ) )*Font->GetLineHeight(), true );
       SetCursorPosXpxY( DesiredCursorPosXinPixels, GetCursorY() + GetClientRect().Height() / Font->GetLineHeight(), Message.KeyboardState&WB_KBSTATE_SHIFT );
       return true;
 
@@ -691,7 +691,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
       }
 
       //skip to the end of the line
-      for ( ; CursorPos < (TS32)Text.Length(); CursorPos++ )
+      for ( ; CursorPos < (int32_t)Text.Length(); CursorPos++ )
         if ( Text[ CursorPos ] == _T( '\n' ) )
         {
           SetCursorPos( CursorPos, Message.KeyboardState&WB_KBSTATE_SHIFT );
@@ -715,7 +715,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
       if ( Message.KeyboardState&WB_KBSTATE_SHIFT ) Cut();
       else
       {
-        if ( CursorPos < 0 || CursorPos >= (TS32)Text.Length() )
+        if ( CursorPos < 0 || CursorPos >= (int32_t)Text.Length() )
         {
           RemoveSelectedText();
           OnTextChange();
@@ -810,7 +810,7 @@ TBOOL CWBTextBox::MessageProc( CWBMessage &Message )
 
     //translate VK_RETURN to '\n':
 
-    TS32 Key = Message.Key;
+    int32_t Key = Message.Key;
 
     if ( Message.Key == VK_RETURN )
       Key = _T( '\n' );
@@ -864,20 +864,20 @@ void CWBTextBox::OnTextChange( bool nonHumanInteraction/* = false*/ )
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont( i );
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
-  TS32 TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
+  int32_t TabWidth = Font->GetWidth( _T( ' ' ) ) * 4;
 
   App->SendMessage( CWBMessage( App, WBM_TEXTCHANGED, GetGuid(), App->GetFocusItem() == this && !nonHumanInteraction ) );
 
   CPoint Size = CPoint( 0, Font->GetLineHeight() );
-  TS32 XSize = 0;
+  int32_t XSize = 0;
 
-  for ( TS32 x = 0; x < (TS32)Text.Length(); x++ )
+  for ( int32_t x = 0; x < (int32_t)Text.Length(); x++ )
   {
     TCHAR Char = Flags&WB_TEXTBOX_PASSWORD ? PasswordStar : Font->ApplyTextTransform( (_TUCHAR*)Text.GetPointer(), (_TUCHAR*)Text.GetPointer() + x, TextTransform );
-    TS32 Width = Font->GetWidth( Char );
+    int32_t Width = Font->GetWidth( Char );
 
     if ( Char == '\t' )
-      Width = ( (TS32)( XSize + TabWidth ) / TabWidth )*TabWidth - XSize;
+      Width = ( (int32_t)( XSize + TabWidth ) / TabWidth )*TabWidth - XSize;
 
     XSize += Width;
 
@@ -898,7 +898,7 @@ void CWBTextBox::OnTextChange( bool nonHumanInteraction/* = false*/ )
   DoSyntaxHighlight();
 }
 
-void CWBTextBox::InsertText( TS32 Position, TCHAR *txt, TS32 Length, TS32 CursorPosAfter, TBOOL ChangeHistory )
+void CWBTextBox::InsertText( int32_t Position, TCHAR *txt, int32_t Length, int32_t CursorPosAfter, TBOOL ChangeHistory )
 {
   if ( ChangeHistory )
   {
@@ -915,7 +915,7 @@ void CWBTextBox::InsertText( TS32 Position, TCHAR *txt, TS32 Length, TS32 Cursor
   SetCursorPos( CursorPosAfter, false );
 }
 
-void CWBTextBox::RemoveText( TS32 Position, TS32 Length, TS32 CursorPosAfter, TBOOL ChangeHistory )
+void CWBTextBox::RemoveText( int32_t Position, int32_t Length, int32_t CursorPosAfter, TBOOL ChangeHistory )
 {
   if ( ChangeHistory )
   {
@@ -932,13 +932,13 @@ void CWBTextBox::RemoveText( TS32 Position, TS32 Length, TS32 CursorPosAfter, TB
   SetCursorPos( CursorPosAfter, false );
 }
 
-void CWBTextBox::SetSelection( TS32 start, TS32 end )
+void CWBTextBox::SetSelection( int32_t start, int32_t end )
 {
   SelectionStart = max( 0, min( start, end ) );
-  SelectionEnd = min( (TS32)Text.Length(), max( start, end ) );
+  SelectionEnd = min( (int32_t)Text.Length(), max( start, end ) );
 }
 
-CColor CWBTextBox::GetTextColor( TS32 Index, CColor &DefaultColor )
+CColor CWBTextBox::GetTextColor( int32_t Index, CColor &DefaultColor )
 {
   return DefaultColor;
 }
@@ -947,7 +947,7 @@ TBOOL CWBTextBox::ApplyStyle( CString & prop, CString & value, CStringArray &pse
 {
   TBOOL ElementTarget = false;
 
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     if ( pseudo[ x ] == _T( "selection" ) )
     {
@@ -960,7 +960,7 @@ TBOOL CWBTextBox::ApplyStyle( CString & prop, CString & value, CStringArray &pse
 
   TBOOL Handled = false;
 
-  for ( TS32 x = 1; x < pseudo.NumItems(); x++ )
+  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
   {
     if ( pseudo[ x ] == _T( "selection" ) )
     {
@@ -974,31 +974,31 @@ TBOOL CWBTextBox::ApplyStyle( CString & prop, CString & value, CStringArray &pse
 
 CWBItem * CWBTextBox::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
 {
-  TS32 Flags = 0;
+  int32_t Flags = 0;
   if ( node.HasAttribute( _T( "singleline" ) ) )
   {
-    TS32 b = 0;
+    int32_t b = 0;
     node.GetAttributeAsInteger( _T( "singleline" ), &b );
     Flags |= b*WB_TEXTBOX_SINGLELINE;
   }
 
   if ( node.HasAttribute( _T( "password" ) ) )
   {
-    TS32 b = 0;
+    int32_t b = 0;
     node.GetAttributeAsInteger( _T( "password" ), &b );
     Flags |= b*WB_TEXTBOX_PASSWORD;
   }
 
   if ( node.HasAttribute( _T( "linenumbers" ) ) )
   {
-    TS32 b = 0;
+    int32_t b = 0;
     node.GetAttributeAsInteger( _T( "linenumbers" ), &b );
     Flags |= b*WB_TEXTBOX_LINENUMS;
   }
 
   if ( node.HasAttribute( _T( "selection" ) ) )
   {
-    TS32 b = 0;
+    int32_t b = 0;
     node.GetAttributeAsInteger( _T( "selection" ), &b );
     Flags |= ( !b )*WB_TEXTBOX_NOSELECTION;
   }
@@ -1016,9 +1016,9 @@ CWBItem * CWBTextBox::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
   return textbox;
 }
 
-void CWBTextBox::SelectWord( TS32 CharacterInWord )
+void CWBTextBox::SelectWord( int32_t CharacterInWord )
 {
-  if ( CharacterInWord < 0 || CharacterInWord >= (TS32)Text.Length() ) return;
+  if ( CharacterInWord < 0 || CharacterInWord >= (int32_t)Text.Length() ) return;
 
   TBOOL IsWhiteSpace = _istspace( Text[ CharacterInWord ] );
   TBOOL IsAlNum = _istalnum( Text[ CharacterInWord ] );
@@ -1029,20 +1029,20 @@ void CWBTextBox::SelectWord( TS32 CharacterInWord )
     return;
   }
 
-  TS32 Start = CharacterInWord;
-  TS32 End = CharacterInWord;
+  int32_t Start = CharacterInWord;
+  int32_t End = CharacterInWord;
 
   if ( IsWhiteSpace )
   {
     while ( Start >= 0 && _istspace( Text[ Start ] ) && Text[ Start ] != _T( '\n' ) && Text[ Start ] != _T( '\r' ) ) { Start--; }
-    while ( End < (TS32)Text.Length() && _istspace( Text[ End ] ) && Text[ End ] != _T( '\n' ) && Text[ End ] != _T( '\r' ) ) { End++; }
-    End = min( (TS32)Text.Length() - 1, End );
+    while ( End < (int32_t)Text.Length() && _istspace( Text[ End ] ) && Text[ End ] != _T( '\n' ) && Text[ End ] != _T( '\r' ) ) { End++; }
+    End = min( (int32_t)Text.Length() - 1, End );
   }
   else
   {
     while ( Start >= 0 && _istalnum( Text[ Start ] ) || Text[ Start ] == _T( '_' ) ) { Start--; }
-    while ( End < (TS32)Text.Length() && _istalnum( Text[ End ] ) || Text[ End ] == _T( '_' ) ) { End++; }
-    End = min( (TS32)Text.Length() - 1, End );
+    while ( End < (int32_t)Text.Length() && _istalnum( Text[ End ] ) || Text[ End ] == _T( '_' ) ) { End++; }
+    End = min( (int32_t)Text.Length() - 1, End );
   }
 
   Start++;

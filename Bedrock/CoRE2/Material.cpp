@@ -37,7 +37,7 @@ CCoreMaterialParameter::~CCoreMaterialParameter()
 	SAFEDELETE(Value);
 }
 
-void CCoreMaterialParameter::SetData(TS32 Size, void *Data)
+void CCoreMaterialParameter::SetData(int32_t Size, void *Data)
 {
 	SAFEDELETE(Value);
 	ValueSize = Size;
@@ -66,7 +66,7 @@ INLINE CString & CCoreMaterialParameter::GetName()
 	return Name;
 }
 
-INLINE TS32 & CCoreMaterialParameter::GetDataSize()
+INLINE int32_t & CCoreMaterialParameter::GetDataSize()
 {
 	return ValueSize;
 }
@@ -107,7 +107,7 @@ TBOOL CCoreMaterialParameter::Import(CXMLNode *Root)
 	CString Scope = Root->GetChild(_T("Scope")).GetText();
 	COREMATERIALPARAMETERSCOPE eScope;
 
-	if (!FindEnumByName(MaterialParameterScopeNames, Scope, (TS32&)eScope))
+	if (!FindEnumByName(MaterialParameterScopeNames, Scope, (int32_t&)eScope))
 	{
 		LOG_ERR("[core] Error importing Material Tech Input '%s': Scope value '%s' unknown", Name.GetPointer(), Scope.GetPointer());
 		return false;
@@ -122,7 +122,7 @@ TBOOL CCoreMaterialParameter::Import(CXMLNode *Root)
 	CString Type = Root->GetChild(_T("Type")).GetText();
 	COREMATERIALPARAMETERTYPE eType;
 
-	if (!FindEnumByName(MaterialParameterTypeNames, Type, (TS32&)eType))
+	if (!FindEnumByName(MaterialParameterTypeNames, Type, (int32_t&)eType))
 	{
 		LOG_ERR("[core] Error importing Material Tech Input '%s': Type value '%s' unknown", Name.GetPointer(), Type.GetPointer());
 		return false;
@@ -147,8 +147,8 @@ CCoreMaterialRenderPass::CCoreMaterialRenderPass(CCoreDevice *Device)
 {
 	Dev = Device;
 
-	for (TS32 x = 0; x < COREBUFFERSCOPECOUNT; x++)
-		for (TS32 y = 0; y < 3; y++)
+	for (int32_t x = 0; x < COREBUFFERSCOPECOUNT; x++)
+		for (int32_t y = 0; y < 3; y++)
 			ConstantBufferIndices[y][x] = -1;
 
 	PixelShader = Device->CreatePixelShader();
@@ -185,7 +185,7 @@ void CCoreMaterialRenderPass::Apply()
 	Dev->SetVertexShader(VertexShader);
 	Dev->SetGeometryShader(GeometryShader);
 
-	for (TS32 x = 0; x < SamplerStates.NumItems(); x++)
+	for (int32_t x = 0; x < SamplerStates.NumItems(); x++)
 	{
 		CDictionary<CORESAMPLER, CCoreSamplerState*>::KDPair *kp = SamplerStates.GetKDPair(x);
 		Dev->SetSamplerState(kp->Key, kp->Data);
@@ -201,7 +201,7 @@ void CCoreMaterialRenderPass::Export(CXMLNode *Node)
 	DepthStencilState->Export(&n);
 	n = Node->AddChild(_T("RasterizerState"));
 	RasterizerState->Export(&n);
-	for (TS32 x = 0; x < SamplerStates.NumItems(); x++)
+	for (int32_t x = 0; x < SamplerStates.NumItems(); x++)
 	{
 		n = Node->AddChild(_T("SamplerState"));
 		SamplerStates.GetByIndex(x)->Export(&n);
@@ -234,7 +234,7 @@ TBOOL CCoreMaterialRenderPass::Import(CXMLNode *Root)
 		Success &= RasterizerState->Import(&n);
 	}
 
-	for (TS32 x = 0; x < Root->GetChildCount(_T("SamplerState")); x++)
+	for (int32_t x = 0; x < Root->GetChildCount(_T("SamplerState")); x++)
 	{
 		CXMLNode n = Root->GetChild(_T("SamplerState"), x);
 
@@ -244,7 +244,7 @@ TBOOL CCoreMaterialRenderPass::Import(CXMLNode *Root)
 		{
 			CString sampler = n.GetAttributeAsString(_T("Sampler"));
 			CORESAMPLER s;
-			if (!FindEnumByName(SamplerNames, sampler, (TS32&)s)) Success = false;
+			if (!FindEnumByName(SamplerNames, sampler, (int32_t&)s)) Success = false;
 			if (Success)
 			{
 				if (SamplerStates.HasKey(s)) SamplerStates.Free(s);
@@ -276,7 +276,7 @@ TBOOL CCoreMaterialRenderPass::Import(CXMLNode *Root)
 //{
 //	if (!sh)
 //	{
-//		for (TS32 x = 0; x < COREBUFFERSCOPECOUNT; x++)
+//		for (int32_t x = 0; x < COREBUFFERSCOPECOUNT; x++)
 //			ConstantBufferIndices[s][x] = -1;
 //		return;
 //	}
@@ -307,7 +307,7 @@ void CCoreMaterialTechnique::GatherData(COREBUFFERSCOPE Target, CCoreConstantBuf
 {
 	Buffer->Reset();
 
-	for (TS32 x = 0; x < Inputs.NumItems(); x++)
+	for (int32_t x = 0; x < Inputs.NumItems(); x++)
 	{
 		TBOOL Gather = false;
 		CCoreMaterialParameter *i = Inputs[x];
@@ -343,7 +343,7 @@ void CCoreMaterialTechnique::GatherData(COREBUFFERSCOPE Target, CCoreConstantBuf
 
 TBOOL CCoreMaterialTechnique::HasParameters(COREBUFFERSCOPE Scope)
 {
-	for (TS32 x = 0; x < Inputs.NumItems(); x++)
+	for (int32_t x = 0; x < Inputs.NumItems(); x++)
 	{
 		CCoreMaterialParameter *i = Inputs[x];
 		switch (Scope)
@@ -365,11 +365,11 @@ TBOOL CCoreMaterialTechnique::HasParameters(COREBUFFERSCOPE Scope)
 
 void CCoreMaterialTechnique::CreateAtoms(CArray<CCoreAtom*> &Atoms, CCoreMesh *Mesh, CCoreConstantBuffer *Buffers[COREBUFFERSCOPECOUNT])
 {
-	for (TS32 x = 0; x < Passes.NumItems(); x++)
+	for (int32_t x = 0; x < Passes.NumItems(); x++)
 		Atoms += Passes[x]->SpawnAtom(TargetLayer, Mesh, Buffers);
 }
 
-void CCoreMaterialTechnique::AddParameter(CString &nme, COREMATERIALPARAMETERSCOPE Scope, COREMATERIALPARAMETERTYPE Type, TS32 ValueSize, void *Value)
+void CCoreMaterialTechnique::AddParameter(CString &nme, COREMATERIALPARAMETERSCOPE Scope, COREMATERIALPARAMETERTYPE Type, int32_t ValueSize, void *Value)
 {
 	CCoreMaterialParameter *p = new CCoreMaterialParameter();
 	Inputs += p;
@@ -408,11 +408,11 @@ TBOOL CCoreMaterialTechnique::Import(CXMLNode *Root, CCoreDevice *Device)
 
 	//import passes
 
-	TS32 passcount = Root->GetChildCount(_T("RenderPass"));
+	int32_t passcount = Root->GetChildCount(_T("RenderPass"));
 	if (!passcount)
 		LOG_WARN("[core] Material Technique '%s' has no renderpasses and will do nothing", Name.GetPointer());
 
-	for (TS32 x = 0; x < passcount; x++)
+	for (int32_t x = 0; x < passcount; x++)
 	{
 		CCoreMaterialRenderPass *p = new CCoreMaterialRenderPass(Device);
 		if (!p->Import(&Root->GetChild(_T("RenderPass"), x)))
@@ -423,15 +423,15 @@ TBOOL CCoreMaterialTechnique::Import(CXMLNode *Root, CCoreDevice *Device)
 
 	//import inputs
 
-	TS32 inputcount = Root->GetChildCount(_T("InputParameter"));
-	for (TS32 x = 0; x < inputcount; x++)
+	int32_t inputcount = Root->GetChildCount(_T("InputParameter"));
+	for (int32_t x = 0; x < inputcount; x++)
 	{
 		CCoreMaterialParameter *p = new CCoreMaterialParameter();
 		if (!p->Import(&Root->GetChild(_T("InputParameter"), x)))
 			delete p;
 		else
 		{
-			for (TS32 y = 0; y < Inputs.NumItems(); y++)
+			for (int32_t y = 0; y < Inputs.NumItems(); y++)
 				if (Inputs[y]->GetName() == p->GetName())
 				{
 					LOG_WARN("[core] Material Tech Input name '%s' not unique", Name.GetPointer());
@@ -447,12 +447,12 @@ TBOOL CCoreMaterialTechnique::Import(CXMLNode *Root, CCoreDevice *Device)
 void CCoreMaterialTechnique::Export(CXMLNode *Node)
 {
 	Node->SetAttribute(_T("Name"), Name.GetPointer());
-	for (TS32 x = 0; x < Passes.NumItems(); x++)
+	for (int32_t x = 0; x < Passes.NumItems(); x++)
 	{
 		CXMLNode n = Node->AddChild(_T("RenderPass"));
 		Passes[x]->Export(&n);
 	}
-	for (TS32 x = 0; x < Inputs.NumItems(); x++)
+	for (int32_t x = 0; x < Inputs.NumItems(); x++)
 	{
 		CXMLNode n = Node->AddChild(_T("InputParameter"));
 		Inputs[x]->Export(&n);
@@ -469,13 +469,13 @@ void CCoreMaterialTechnique::AddPass(CCoreMaterialRenderPass *Pass)
 
 void CCoreMaterial::GatherData(CCoreDevice *Device, COREBUFFERSCOPE Scope, CCoreObjectGroup *Group, CDictionary<CCoreMaterialTechnique*, CCoreConstantBuffer*> *Buffers[3], CDictionaryEnumerable<CORERENDERLAYERID, CCoreRenderLayer*> &Layers)
 {
-	TS32 TargetBuffer = -1;
+	int32_t TargetBuffer = -1;
 	if (Scope == CORE_BUFFER_GAMEDATA) TargetBuffer = 0;
 	if (Scope == CORE_BUFFER_TECHSTATIC) TargetBuffer = 1;
 	if (Scope == CORE_BUFFER_TECHDYNAMIC) TargetBuffer = 2;
 	if (TargetBuffer == -1) return;
 
-	for (TS32 x = 0; x < Techniques.NumItems(); x++)
+	for (int32_t x = 0; x < Techniques.NumItems(); x++)
 	{
 		CCoreMaterialTechnique *tech = Techniques[x];
 
@@ -491,7 +491,7 @@ void CCoreMaterial::GatherData(CCoreDevice *Device, COREBUFFERSCOPE Scope, CCore
 
 void CCoreMaterial::CreateAtoms(CDictionaryEnumerable<CORERENDERLAYERID, CCoreRenderLayer*> &Layers, CCoreConstantBuffer *SceneBuffer, CCoreConstantBuffer *ObjectBuffer, CDictionary<CCoreMaterialTechnique*, CCoreConstantBuffer*> *Buffers[3], CArray<CCoreAtom*> &Atoms, CCoreMesh *Mesh)
 {
-	for (TS32 x = 0; x < Techniques.NumItems(); x++)
+	for (int32_t x = 0; x < Techniques.NumItems(); x++)
 	{
 		CCoreRenderLayer *Layer = Layers.GetExisting(Techniques[x]->GetTargetLayer());
 		if (!Layer) continue;
@@ -505,19 +505,19 @@ void CCoreMaterial::CreateAtoms(CDictionaryEnumerable<CORERENDERLAYERID, CCoreRe
 		Buf[CORE_BUFFER_TECHSTATIC] = Buffers[1]->GetExisting(Techniques[x]);
 		Buf[CORE_BUFFER_TECHDYNAMIC] = Buffers[2]->GetExisting(Techniques[x]);
 
-		//for (TS32 y=0; y<3; y++)
+		//for (int32_t y=0; y<3; y++)
 		//	Buf[y+1]=Buffers[y]->GetExisting(Techniques[x]);
 
 		Techniques[x]->CreateAtoms(Atoms, Mesh, Buf);
 	}
 }
 
-CCoreMaterialTechnique * CCoreMaterial::GetTech(TS32 x)
+CCoreMaterialTechnique * CCoreMaterial::GetTech(int32_t x)
 {
 	return Techniques[x];
 }
 
-TS32 CCoreMaterial::GetTechCount()
+int32_t CCoreMaterial::GetTechCount()
 {
 	return Techniques.NumItems();
 }

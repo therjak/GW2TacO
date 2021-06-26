@@ -82,13 +82,13 @@ public:
   TBOOL Visible; //if true the client area has been adjusted so the scrollbar can fit
 
   //position data
-  TS32 MinScroll, MaxScroll;
-  TS32 ScrollPos;
-  TS32 ViewSize;
+  int32_t MinScroll, MaxScroll;
+  int32_t ScrollPos;
+  int32_t ViewSize;
 
   //dragging data
   WBSCROLLDRAGMODE Dragmode;
-  TS32 DragStartPosition;
+  int32_t DragStartPosition;
 
   CWBScrollbarParams()
   {
@@ -102,9 +102,9 @@ public:
 
 class CWBDisplayState
 {
-  TS32 Visuals[ WB_ITEM_COUNT ];
+  int32_t Visuals[ WB_ITEM_COUNT ];
   TBOOL VisualSet[ WB_ITEM_COUNT ];
-  //CDictionary<WBITEMVISUALCOMPONENT,TS32> Visuals;
+  //CDictionary<WBITEMVISUALCOMPONENT,int32_t> Visuals;
 
 public:
 
@@ -114,8 +114,8 @@ public:
   TBOOL IsSet( WBITEMVISUALCOMPONENT v );
   CColor GetColor( WBITEMVISUALCOMPONENT v );
   WBSKINELEMENTID GetSkin( WBITEMVISUALCOMPONENT v );
-  void SetValue( WBITEMVISUALCOMPONENT v, TS32 value );
-  TS32 GetValue( WBITEMVISUALCOMPONENT v );
+  void SetValue( WBITEMVISUALCOMPONENT v, int32_t value );
+  int32_t GetValue( WBITEMVISUALCOMPONENT v );
 };
 
 class CWBDisplayProperties
@@ -130,8 +130,8 @@ public:
 
   CColor GetColor( WBITEMSTATE s, WBITEMVISUALCOMPONENT v );
   WBSKINELEMENTID GetSkin( WBITEMSTATE s, WBITEMVISUALCOMPONENT v );
-  void SetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, TS32 value );
-  TS32 GetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v );
+  void SetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, int32_t value );
+  int32_t GetValue( WBITEMSTATE s, WBITEMVISUALCOMPONENT v );
 };
 
 class CWBCSSPropertyBatch
@@ -166,16 +166,16 @@ class CWBItem : public IWBCSS
   CWBItem *Parent;
   CArray<CWBItem*> Children;
 
-  TS32 SortLayer;
-  TS32 ZIndex;
+  int32_t SortLayer;
+  int32_t ZIndex;
   TF32 OpacityMultiplier = 1;
 
   TBOOL Hidden;
   TBOOL Disabled;
   TBOOL ForceMouseTransparent = false;
-  TS32 Scrollbar_Size;
-  TS32 Scrollbar_ButtonSize;
-  TS32 Scrollbar_ThumbMinimalSize;
+  int32_t Scrollbar_Size;
+  int32_t Scrollbar_ButtonSize;
+  int32_t Scrollbar_ThumbMinimalSize;
   CWBScrollbarParams HScrollbar, VScrollbar;
 
   //////////////////////////////////////////////////////////////////////////
@@ -197,12 +197,12 @@ class CWBItem : public IWBCSS
   void *Data;
 
   virtual void AdjustClientAreaToFitScrollbars();
-  virtual void ScrollbarHelperFunct( CWBScrollbarParams &s, TS32 &r, TBOOL ScrollbarNeeded );
-  virtual void ScrollbardisplayHelperFunct( CWBScrollbarParams &s, TS32 &a1, TS32 &a2, TS32 &thumbsize, TS32 &thumbpos );
+  virtual void ScrollbarHelperFunct( CWBScrollbarParams &s, int32_t &r, TBOOL ScrollbarNeeded );
+  virtual void ScrollbardisplayHelperFunct( CWBScrollbarParams &s, int32_t &a1, int32_t &a2, int32_t &thumbsize, int32_t &thumbpos );
   virtual TBOOL GetHScrollbarRectangles( CRect &button1, CRect &Scrollup, CRect &Thumb, CRect &Scrolldown, CRect &button2 ); //returns the highlight areas of the scrollbar in client space
   virtual TBOOL GetVScrollbarRectangles( CRect &button1, CRect &Scrollup, CRect &Thumb, CRect &Scrolldown, CRect &button2 );
   virtual TBOOL ScrollbarRequired( CWBScrollbarParams &s );
-  virtual TS32 CalculateScrollbarMovement( CWBScrollbarParams &s, TS32 scrollbarsize, TS32 delta );
+  virtual int32_t CalculateScrollbarMovement( CWBScrollbarParams &s, int32_t scrollbarsize, int32_t delta );
   virtual void DrawScrollbarButton( CWBDrawAPI *API, CWBScrollbarParams &s, CRect &r, WBITEMVISUALCOMPONENT Button );
   virtual void DrawHScrollbar( CWBDrawAPI *API );
   virtual void DrawVScrollbar( CWBDrawAPI *API );
@@ -210,7 +210,7 @@ class CWBItem : public IWBCSS
   virtual void HandleVScrollbarClick( WBSCROLLDRAGMODE m );
   virtual TBOOL AllowMouseHighlightWhileCaptureItem() { return false; }
 
-  TBOOL ScanPXValue( CString &Value, TS32 &Result, CString &PropName );
+  TBOOL ScanPXValue( CString &Value, int32_t &Result, CString &PropName );
   TBOOL ScanSkinValue( CString &Value, WBSKINELEMENTID &Result, CString &PropName );
 
   CWBItem *ChildSearcherFunct( CString &value, CString &type = CString( _T( "" ) ) );
@@ -237,14 +237,14 @@ protected:
   CWBCSSPropertyBatch CSSProperties;
 
   virtual CWBItem *GetItemUnderMouse( CPoint &Point, CRect &CropRect, WBMESSAGE MessageType );
-  virtual void SetChildAsTopmost( TS32 Index );
-  virtual void SetChildAsBottommost( TS32 Index );
+  virtual void SetChildAsTopmost( int32_t Index );
+  virtual void SetChildAsBottommost( int32_t Index );
   virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
 
   CWBItem *SetCapture();
   TBOOL ReleaseCapture() const;
   virtual void AddChild( CWBItem *Item );
-  virtual TS32 GetChildIndex( CWBItem *Item );
+  virtual int32_t GetChildIndex( CWBItem *Item );
 
   virtual TBOOL ScrollbarDragged();
 
@@ -261,14 +261,14 @@ protected:
   virtual TBOOL ParseRGBA( CString description, CColor &output );
 
   static void PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Type, CString &Value );
-  static void VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOMPONENT TargetComponent, TS32 Value, CStringArray &pseudo );
+  static void VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOMPONENT TargetComponent, int32_t Value, CStringArray &pseudo );
   static void FontStyleApplicator( CWBCSSPropertyBatch &desc, CStringArray &pseudo, CString &name );
 
   //auto resize stuff
   virtual CSize GetContentSize();
   virtual void ContentChanged();
-  virtual void ChangeContentOffsetX( TS32 OffsetX );
-  virtual void ChangeContentOffsetY( TS32 OffsetY );
+  virtual void ChangeContentOffsetX( int32_t OffsetX );
+  virtual void ChangeContentOffsetY( int32_t OffsetY );
   TBOOL ScrollbarsEnabled();
 
   virtual CPoint GetContentOffset() { return ContentOffset; }
@@ -301,12 +301,12 @@ public:
   virtual void SetPosition( const CRect &Pos );
   virtual void ApplyRelativePosition();
   virtual void ApplyPosition( const CRect &Pos ); //only to be used by the parent item when moving the item around
-  virtual void SetClientPadding( TS32 left, TS32 top, TS32 right, TS32 bottom );
+  virtual void SetClientPadding( int32_t left, int32_t top, int32_t right, int32_t bottom );
 
   TBOOL IsWidthSet(); //tells if the width has been specified in the style of the item
   TBOOL IsHeightSet(); //tells if the height has been specified in the style of the item
-  TS32 GetCalculatedWidth( CSize ParentSize ); //tells if the width has been specified in the style of the item
-  TS32 GetCalculatedHeight( CSize ParentSize ); //tells if the height has been specified in the style of the item
+  int32_t GetCalculatedWidth( CSize ParentSize ); //tells if the width has been specified in the style of the item
+  int32_t GetCalculatedHeight( CSize ParentSize ); //tells if the height has been specified in the style of the item
 
   CRect GetPosition();
 
@@ -351,14 +351,14 @@ public:
   virtual void EnableVScrollbar( TBOOL Enabled, TBOOL Dynamic );
   virtual TBOOL IsHScrollbarEnabled();
   virtual TBOOL IsVScrollbarEnabled();
-  virtual void SetHScrollbarParameters( TS32 MinScroll, TS32 MaxScroll, TS32 ViewSize );
-  virtual void SetVScrollbarParameters( TS32 MinScroll, TS32 MaxScroll, TS32 ViewSize );
-  virtual void GetHScrollbarParameters( TS32 &MinScroll, TS32 &MaxScroll, TS32 &ViewSize );
-  virtual void GetVScrollbarParameters( TS32 &MinScroll, TS32 &MaxScroll, TS32 &ViewSize );
-  virtual void SetHScrollbarPos( TS32 ScrollPos, TBOOL Clamp = false );
-  virtual void SetVScrollbarPos( TS32 ScrollPos, TBOOL Clamp = false );
-  virtual TS32 GetHScrollbarPos() { return HScrollbar.ScrollPos; };
-  virtual TS32 GetVScrollbarPos() { return VScrollbar.ScrollPos; };
+  virtual void SetHScrollbarParameters( int32_t MinScroll, int32_t MaxScroll, int32_t ViewSize );
+  virtual void SetVScrollbarParameters( int32_t MinScroll, int32_t MaxScroll, int32_t ViewSize );
+  virtual void GetHScrollbarParameters( int32_t &MinScroll, int32_t &MaxScroll, int32_t &ViewSize );
+  virtual void GetVScrollbarParameters( int32_t &MinScroll, int32_t &MaxScroll, int32_t &ViewSize );
+  virtual void SetHScrollbarPos( int32_t ScrollPos, TBOOL Clamp = false );
+  virtual void SetVScrollbarPos( int32_t ScrollPos, TBOOL Clamp = false );
+  virtual int32_t GetHScrollbarPos() { return HScrollbar.ScrollPos; };
+  virtual int32_t GetVScrollbarPos() { return VScrollbar.ScrollPos; };
   virtual void SetTopmost();
   virtual void SetBottommost();
 
@@ -415,7 +415,7 @@ public:
   void ApplyStyleDeclarations( const CString &String );
 
   virtual WBITEMSTATE GetState();
-  void SetDisplayProperty( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, TS32 value );
+  void SetDisplayProperty( WBITEMSTATE s, WBITEMVISUALCOMPONENT v, int32_t value );
   CWBDisplayProperties &GetDisplayDescriptor() { return CSSProperties.DisplayDescriptor; }
   CWBCSSPropertyBatch &GetCSSProperties() { return CSSProperties; }
 

@@ -4,7 +4,7 @@
 TF32 InvSqrt( TF32 x )
 {
   TF32 xhalf = 0.5f*x;
-  TS32 i = *(TS32*)&x; // get bits for TF32ing value
+  int32_t i = *(int32_t*)&x; // get bits for TF32ing value
   i = 0x5f3759df - ( i >> 1 ); // gives initial guess y0
   x = *(TF32*)&i; // convert bits back to TF32
   x = x*( 1.5f - xhalf*x*x ); // Newton step, repeating increases accuracy

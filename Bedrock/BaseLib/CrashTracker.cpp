@@ -15,7 +15,7 @@ LONG WINAPI baseCrashTracker( struct _EXCEPTION_POINTERS * excpInfo )
 
   CreateDirectory( _T( "Crashlogs" ), NULL );
 
-  TS32 filename[ 1024 ];
+  int32_t filename[ 1024 ];
   ZeroMemory( filename, 1024 );
   CString fname = CString::Format( _T( "Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp" ), BuildVersion.GetPointer(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond );
 
@@ -80,7 +80,7 @@ LONG WINAPI baseCrashTracker( struct _EXCEPTION_POINTERS * excpInfo )
 
 	//CreateDirectory(_T("Crashlogs"),NULL);
 
-	//TS32 filename[1024];
+	//int32_t filename[1024];
 	//ZeroMemory(filename,1024);
 	//CString fname=CString::Format(_T("Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp"),BuildVersion.GetPointer(),st.wYear,st.wMonth,st.wDay,st.wHour,st.wMinute,st.wSecond);
 
@@ -125,7 +125,7 @@ LONG WINAPI FullDumpCrashTracker( struct _EXCEPTION_POINTERS * excpInfo )
 
   CreateDirectory( _T( "Crashlogs" ), NULL );
 
-  TS32 filename[ 1024 ];
+  int32_t filename[ 1024 ];
   ZeroMemory( filename, 1024 );
   CString fname = CString::Format( _T( "Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp" ), BuildVersion.GetPointer(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond );
 

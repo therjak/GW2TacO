@@ -29,7 +29,7 @@ class GW2MapTimer : public CWBItem
   void SetLayout( CXMLNode &node );
 
   bool beingFetched = false;
-  TS32 lastFetchTime = 0;
+  int32_t lastFetchTime = 0;
 
   bool hasWorldBossInfo = false;
 

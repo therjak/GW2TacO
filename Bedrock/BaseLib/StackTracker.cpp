@@ -42,7 +42,7 @@ CStackTracker::CStackTracker( void *Context, TS8 Offset )
   machine_type = IMAGE_FILE_MACHINE_I386;
 #endif  
 
-  for ( TS32 i = 0; i < STACK_TRACE_DEPTH + Offset; i++ )
+  for ( int32_t i = 0; i < STACK_TRACE_DEPTH + Offset; i++ )
   {
     if ( StackWalk( machine_type,
                     GetCurrentProcess(),
@@ -70,7 +70,7 @@ void CStackTracker::DumpToLog( LOGVERBOSITY v )
 {
   InitializeSym();
 
-  for ( TS32 x = 0; x < STACK_TRACE_DEPTH; x++ )
+  for ( int32_t x = 0; x < STACK_TRACE_DEPTH; x++ )
   {
     if ( Stack[ x ] )
     {
@@ -96,7 +96,7 @@ void CStackTracker::DumpToDebugOutput()
 {
   InitializeSym();
 
-  for ( TS32 x = 0; x < STACK_TRACE_DEPTH; x++ )
+  for ( int32_t x = 0; x < STACK_TRACE_DEPTH; x++ )
   {
     if ( Stack[ x ] )
     {
@@ -124,7 +124,7 @@ TS8 *CStackTracker::DumpToString()
 
   InitializeSym();
 
-  for ( TS32 x = 0; x < STACK_TRACE_DEPTH; x++ )
+  for ( int32_t x = 0; x < STACK_TRACE_DEPTH; x++ )
   {
     if ( Stack[ x ] )
     {

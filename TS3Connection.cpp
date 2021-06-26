@@ -39,7 +39,7 @@ TBOOL TS3Connection::TryConnect()
 
 void TS3Connection::TryValidateClientID()
 {
-  for ( TS32 x = 0; x < handlers.NumItems(); x++ )
+  for ( int32_t x = 0; x < handlers.NumItems(); x++ )
     if ( handlers[ x ].Connected && handlers[ x ].clientIDInvalid )
     {
       currentHandlerID = handlers[ x ].id;
@@ -56,7 +56,7 @@ void TS3Connection::TryValidateClientID()
       {
         handlers[ currentHandlerID ].clientIDInvalid = false;
         currentHandlerID = currentHandlerID;
-        TS32 clid = 0, cid = 0;
+        int32_t clid = 0, cid = 0;
         whoami.Lines[ 0 ].Scan( "clid=%d cid=%d", &clid, &cid );
         handlers[ currentHandlerID ].Clients[ clid ].clientid = clid;
         handlers[ currentHandlerID ].Clients[ clid ].channelid = cid;
@@ -140,7 +140,7 @@ void TS3Connection::InitConnection()
   if ( !response.ErrorCode && response.Lines.NumItems() )
   {
     CStringArray schandlers = response.Lines[ 0 ].Explode( "|" );
-    for ( TS32 x = 0; x < schandlers.NumItems(); x++ )
+    for ( int32_t x = 0; x < schandlers.NumItems(); x++ )
       if ( schandlers[ x ].Find( "schandlerid=" ) == 0 )
       {
         TS3Schandler handler;
@@ -159,7 +159,7 @@ void TS3Connection::InitConnection()
         {
           handlers[ handler.id ].clientIDInvalid = false;
           currentHandlerID = handler.id;
-          TS32 clid = 0, cid = 0;
+          int32_t clid = 0, cid = 0;
           whoami.Lines[ 0 ].Scan( "clid=%d cid=%d", &clid, &cid );
           handlers[ handler.id ].Clients[ clid ].clientid = clid;
           handlers[ handler.id ].Clients[ clid ].channelid = cid;
@@ -248,16 +248,16 @@ void TS3Connection::ProcessNotification( CString &s )
 {
   CStringArray cmd = s.ExplodeByWhiteSpace();
 
-  TS32 schandlerid = 0;
-  for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+  int32_t schandlerid = 0;
+  for ( int32_t x = 1; x < cmd.NumItems(); x++ )
     if ( cmd[ x ].Find( "schandlerid=" ) == 0 )
       cmd[ x ].Scan( "schandlerid=%d", &schandlerid );
 
   if ( cmd[ 0 ] == "notifytalkstatuschange" )
   {
-    TS32 clientid = -1;
-    TS32 status = -1;
-    for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+    int32_t clientid = -1;
+    int32_t status = -1;
+    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
     {
       if ( cmd[ x ].Find( "status=" ) == 0 )
         cmd[ x ].Scan( "status=%d", &status );
@@ -286,9 +286,9 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifyclientmoved" )
   {
-    TS32 clientid = -1;
-    TS32 channelid = -1;
-    for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+    int32_t clientid = -1;
+    int32_t channelid = -1;
+    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
     {
       if ( cmd[ x ].Find( "ctid=" ) == 0 )
         cmd[ x ].Scan( "ctid=%d", &channelid );
@@ -316,7 +316,7 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifyconnectstatuschange" )
   {
-    for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
     {
       if ( cmd[ x ].Find( "status=disconnected" ) == 0 )
       {
@@ -342,7 +342,7 @@ void TS3Connection::ProcessNotification( CString &s )
           CommandResponse whoami = SendCommand( "whoami" );
           if ( !whoami.ErrorCode )
           {
-            TS32 clid = 0, cid = 0;
+            int32_t clid = 0, cid = 0;
             whoami.Lines[ 0 ].Scan( "clid=%d cid=%d", &clid, &cid );
             handlers[ schandlerid ].Clients[ clid ].clientid = clid;
             handlers[ schandlerid ].Clients[ clid ].channelid = cid;
@@ -379,8 +379,8 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifyclientleftview" )
   {
-    TS32 clientid = -1;
-    for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+    int32_t clientid = -1;
+    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
     {
       if ( cmd[ x ].Find( "clid=" ) == 0 )
         cmd[ x ].Scan( "clid=%d", &clientid );
@@ -410,8 +410,8 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifyclientupdated" )
   {
-    TS32 clientid = -1;
-    for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+    int32_t clientid = -1;
+    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
     {
       if ( cmd[ x ].Find( "clid=" ) == 0 )
         cmd[ x ].Scan( "clid=%d", &clientid );
@@ -419,7 +419,7 @@ void TS3Connection::ProcessNotification( CString &s )
 
     if ( clientid >= 0 )
     {
-      for ( TS32 x = 1; x < cmd.NumItems(); x++ )
+      for ( int32_t x = 1; x < cmd.NumItems(); x++ )
       {
         if ( cmd[ x ].Find( "client_input_muted=" ) == 0 )
           cmd[ x ].Scan( "client_input_muted=%d", &handlers[ schandlerid ].Clients[ clientid ].inputmuted );
@@ -468,14 +468,14 @@ CString TS3Connection::ReadLine()
   return lne;
 }
 
-void TS3Connection::ProcessChannelList( CString &channeldata, TS32 handler )
+void TS3Connection::ProcessChannelList( CString &channeldata, int32_t handler )
 {
   CStringArray channels = channeldata.Explode( "|" );
-  for ( TS32 x = 0; x < channels.NumItems(); x++ )
+  for ( int32_t x = 0; x < channels.NumItems(); x++ )
   {
     CStringArray channelData = channels[ x ].ExplodeByWhiteSpace();
     TS3Channel channel;
-    for ( TS32 y = 0; y < channelData.NumItems(); y++ )
+    for ( int32_t y = 0; y < channelData.NumItems(); y++ )
     {
       if ( channelData[ y ].Find( "cid=" ) == 0 )
       {
@@ -507,16 +507,16 @@ void TS3Connection::ProcessChannelList( CString &channeldata, TS32 handler )
   }
 }
 
-void TS3Connection::ProcessClientList( CString &clientdata, TS32 handler )
+void TS3Connection::ProcessClientList( CString &clientdata, int32_t handler )
 {
   bool needsSort = false;
 
   CStringArray channels = clientdata.Explode( "|" );
-  for ( TS32 x = 0; x < channels.NumItems(); x++ )
+  for ( int32_t x = 0; x < channels.NumItems(); x++ )
   {
     CStringArray clientData = channels[ x ].ExplodeByWhiteSpace();
     TS3Client client;
-    for ( TS32 y = 0; y < clientData.NumItems(); y++ )
+    for ( int32_t y = 0; y < clientData.NumItems(); y++ )
     {
       if ( clientData[ y ].Find( "cid=" ) == 0 )
       {
@@ -630,7 +630,7 @@ TBOOL TS3Connection::IsConnected()
 
 //CString TS3Connection::GetIncoming()
 //{
-//	TS32 dataLength = (TS32)connection.GetLength();
+//	int32_t dataLength = (int32_t)connection.GetLength();
 //
 //	if (!dataLength)
 //		return "";

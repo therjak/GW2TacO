@@ -7,7 +7,7 @@ CCoreAtom::CCoreAtom()
 {
 	TargetLayer = 0;
 	RenderPass = NULL;
-	for (TS32 x = 0; x < 4; x++)
+	for (int32_t x = 0; x < 4; x++)
 		Buffers[x] = NULL;
 	Vertices = NULL;
 	Indices = NULL;
@@ -21,7 +21,7 @@ CCoreAtom::CCoreAtom(CORERENDERLAYERID tl, CCoreMaterialRenderPass *Pass, CCoreC
 	TriCount = Mesh->GetTriCount();
 	VxCount = Mesh->GetVxCount();
 	RenderPass = Pass;
-	for (TS32 x = 0; x < 4; x++)
+	for (int32_t x = 0; x < 4; x++)
 		Buffers[x] = b[x];
 	Vertices = Mesh->GetVertices();
 	Indices = Mesh->GetIndices();

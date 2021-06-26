@@ -29,9 +29,9 @@ enum WBWINDOWELEMENT
 
 class CWBWindow : public CWBItem
 {
-  TS32 BorderWidth;
-  TS32 TitleBarHeight;
-  TS32 CornerSelectionSize;
+  int32_t BorderWidth;
+  int32_t TitleBarHeight;
+  int32_t CornerSelectionSize;
 
   CSize MinSize;
 
