@@ -51,13 +51,13 @@ class CLoggerOutput_File : public CLoggerOutput
 {
   FILE *f;
   CString fname;
-  TBOOL Append;
+  bool Append;
 public:
 
   CLoggerOutput_File();
-  CLoggerOutput_File( TCHAR *Filename, TBOOL append = true );
+  CLoggerOutput_File( TCHAR *Filename, bool append = true );
   virtual ~CLoggerOutput_File();
-  TBOOL OpenLogFile( TCHAR *Filename, TBOOL Append = true );
+  bool OpenLogFile( TCHAR *Filename, bool Append = true );
   virtual void Process( LOGVERBOSITY v, TCHAR *String );
 };
 
@@ -76,15 +76,15 @@ public:
 class CLogger
 {
   CArray<CLoggerOutput*> Outputs;
-  int32_t Verbosity;
-  int32_t NewEntryCount;
+  int32_t Verbosity = 0;
+  int32_t NewEntryCount = 0;
 
 public:
 
   CLogger();
   virtual ~CLogger();
   void Close();
-  void Log( LOGVERBOSITY v, TBOOL Prefix, TBOOL TimeStamp, TCHAR *String, ... );
+  void Log( LOGVERBOSITY v, bool Prefix, bool TimeStamp, const TCHAR *String, ... );
   void SetVerbosity( LOGVERBOSITY v );
   void AddOutput( CLoggerOutput *Output );
   void RemoveOutput( CLoggerOutput *Output );

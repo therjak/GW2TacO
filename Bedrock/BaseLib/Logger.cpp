@@ -62,7 +62,7 @@ void CLoggerOutput_File::Process( LOGVERBOSITY v, TCHAR *String )
 #endif
 }
 
-TBOOL CLoggerOutput_File::OpenLogFile( TCHAR *Filename, TBOOL Append /*= true*/ )
+bool CLoggerOutput_File::OpenLogFile( TCHAR *Filename, bool Append /*= true*/ )
 {
 #ifndef UNICODE
   if ( !Append )
@@ -87,7 +87,7 @@ CLoggerOutput_File::~CLoggerOutput_File()
   f = 0;
 }
 
-CLoggerOutput_File::CLoggerOutput_File( TCHAR *Filename, TBOOL append /*= true*/ )
+CLoggerOutput_File::CLoggerOutput_File( TCHAR *Filename, bool append /*= true*/ )
 {
   Append = append;
   fname = Filename;
@@ -126,7 +126,7 @@ void CLogger::SetVerbosity( LOGVERBOSITY v )
   Verbosity = v;
 }
 
-void CLogger::Log( LOGVERBOSITY v, TBOOL Prefix, TBOOL AddTimeStamp, TCHAR *String, ... )
+void CLogger::Log( LOGVERBOSITY v, bool Prefix, bool AddTimeStamp, const TCHAR *String, ... )
 {
   if ( Verbosity < v ) return;
 
