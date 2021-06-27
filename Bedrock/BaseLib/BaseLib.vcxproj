@@ -74,7 +74,6 @@
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Memory.h" />
     <ClInclude Include="Plane.h" />
-    <ClInclude Include="Profile.h" />
     <ClInclude Include="PRS.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
@@ -111,7 +110,6 @@
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="Plane.cpp" />
-    <ClCompile Include="Profile.cpp" />
     <ClCompile Include="PRS.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Random.cpp" />

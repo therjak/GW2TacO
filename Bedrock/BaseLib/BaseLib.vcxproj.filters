@@ -102,9 +102,6 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="Profile.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="FloatControl.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
@@ -173,9 +170,6 @@
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Dictionary.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Profile.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Quaternion.cpp">

@@ -50,7 +50,6 @@
 #include "Rectangle.h"
 
 #include "FileList.h"
-#include "Profile.h"
 
 #include "ImageDecompressor.h"
 #include "Hash.h"
