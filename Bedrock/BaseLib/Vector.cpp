@@ -50,31 +50,6 @@ float Mod(float a, int32_t b) {
   return fmodf(((fmodf(a, (float)b)) + b), (float)b);
 }
 
-CVector3 CVector3::operator*(const CQuaternion &q) const {
-  return *this * CMatrix3x3(q);
-}
-
-CVector3 &CVector3::operator*=(const CQuaternion &q) {
-  return *this = *this * CMatrix3x3(q);
-}
-
-CVector3 CVector3::operator/(const CQuaternion &q) const {
-  return *this * CMatrix3x3(q).Transposed();  // rot matrix inverse=transpose
-}
-
-CVector3 &CVector3::operator/=(const CQuaternion &q) {
-  return *this = *this *
-                 CMatrix3x3(q).Transposed();  // rot matrix inverse=transpose
-}
-
-CVector3 CVector3::operator*(const CMatrix3x3 &q) const {
-  return q.Apply(*this);
-}
-
-CVector3 &CVector3::operator*=(const CMatrix3x3 &q) {
-  return *this = q.Apply(*this);
-}
-
 CVector4 CVector3::operator*(const CMatrix4x4 &q) const {
   return q.Apply(*this);
 }
@@ -137,10 +112,6 @@ CVector4::CVector4(const float _x, const float _y, const float _z,
 }
 
 CVector4::CVector4() {}
-
-CVector3 CVector3::operator*(const CPRS &q) const { return q.Apply(*this); }
-
-CVector3 &CVector3::operator*=(const CPRS &q) { return *this = q.Apply(*this); }
 
 CVector3 CVector3::Cross(const CVector3 &v1, const CVector3 &v2) {
   return v1 % v2;

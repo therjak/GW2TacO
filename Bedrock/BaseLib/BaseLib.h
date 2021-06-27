@@ -41,11 +41,9 @@
 #include "Line.h"
 #include "Plane.h"
 #include "Sphere.h"
-#include "Spline.h"
 #include "Matrix.h"
 #include "BBox.h"
 #include "Quaternion.h"
-#include "PRS.h"
 #include "Rectangle.h"
 
 #include "FileList.h"

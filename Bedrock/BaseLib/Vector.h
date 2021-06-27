@@ -1,7 +1,6 @@
 #pragma once
 
 class CQuaternion;
-class CMatrix3x3;
 class CMatrix4x4;
 
 class CVector2 {
@@ -78,7 +77,6 @@ class CVector2I {
 typedef CVector2I CPoint;
 typedef CVector2I CSize;
 class CVector4;
-class CPRS;
 
 class CVector3 {
  public:
@@ -112,10 +110,6 @@ class CVector3 {
   CVector3 operator/(const CQuaternion &q) const;  // reverse rotation
   CVector3 &operator/=(const CQuaternion &q);      // reverse rotation
   CVector4 operator*(const CMatrix4x4 &q) const;   // transformation
-  CVector3 operator*(const CMatrix3x3 &q) const;   // transformation
-  CVector3 &operator*=(const CMatrix3x3 &q);       // transformation
-  CVector3 operator*(const CPRS &q) const;         // transformation
-  CVector3 &operator*=(const CPRS &q);             // transformation
 
   float Length() const;
   float LengthSquared() const;
