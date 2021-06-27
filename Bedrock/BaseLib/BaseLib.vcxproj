@@ -65,7 +65,6 @@
     <ClInclude Include="Dictionary.h" />
     <ClInclude Include="EnumHelpers.h" />
     <ClInclude Include="FileList.h" />
-    <ClInclude Include="FloatControl.h" />
     <ClInclude Include="Hash.h" />
     <ClInclude Include="string_format.h" />
     <ClInclude Include="ImageDecompressor.h" />
@@ -103,7 +102,6 @@
     <ClCompile Include="Dictionary.cpp" />
     <ClCompile Include="EnumHelpers.cpp" />
     <ClCompile Include="FileList.cpp" />
-    <ClCompile Include="FloatControl.cpp" />
     <ClCompile Include="ImageDecompressor.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Logger.cpp" />

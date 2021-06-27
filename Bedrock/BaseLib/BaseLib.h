@@ -36,7 +36,6 @@
 #include "StreamWriter.h"
 #include "Socket.h"
 #include "Logger.h"
-#include "FloatControl.h"
 
 #include "Vector.h"
 #include "Line.h"

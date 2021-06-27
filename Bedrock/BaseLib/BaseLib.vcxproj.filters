@@ -102,9 +102,6 @@
     <ClInclude Include="Timer.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="FloatControl.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="SpecMath.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>
@@ -237,9 +234,6 @@
     </ClCompile>
     <ClCompile Include="Random.cpp">
       <Filter>Source Files\Basic Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="FloatControl.cpp">
-      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="string_format.cpp">
       <Filter>Source Files\Basic Classes</Filter>
