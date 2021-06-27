@@ -1,27 +1,25 @@
 #pragma once
 
-class CTimer
-{
+class CTimer {
   int32_t LastUpdateTime;
   int32_t StartTime;
   float SpeedModifier;
   double TimeExtension;
-  TBOOL Paused;
+  bool Paused;
 
   unsigned long Time;
-public:
 
+ public:
   CTimer();
   virtual ~CTimer();
 
   void Update();
-  void SetSpeed( float Speed );
-  void Pause( TBOOL Pause );
+  void SetSpeed(float Speed);
+  void Pause(bool Pause);
   unsigned long GetTime();
 
-  TBOOL isPaused();
-  void SkipTime( unsigned long Time );
+  bool isPaused();
+  void SkipTime(unsigned long Time);
 };
 
 extern CTimer globalTimer;
-//float GetAccurateTime();
