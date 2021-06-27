@@ -69,7 +69,6 @@
     <ClInclude Include="Hash.h" />
     <ClInclude Include="string_format.h" />
     <ClInclude Include="ImageDecompressor.h" />
-    <ClInclude Include="JobHandler.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Matrix.h" />
@@ -88,7 +87,6 @@
     <ClInclude Include="StreamReader.h" />
     <ClInclude Include="StreamWriter.h" />
     <ClInclude Include="String.h" />
-    <ClInclude Include="Thread.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="StackTracker.h" />
     <ClInclude Include="Types.h" />
@@ -108,7 +106,6 @@
     <ClCompile Include="FileList.cpp" />
     <ClCompile Include="FloatControl.cpp" />
     <ClCompile Include="ImageDecompressor.cpp" />
-    <ClCompile Include="JobHandler.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Matrix.cpp" />

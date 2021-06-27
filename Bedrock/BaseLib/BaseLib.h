@@ -58,9 +58,6 @@
 #include "Archive.h"
 #include "EnumHelpers.h"
 
-#include "Thread.h"
-#include "JobHandler.h"
-
 #include "CrashTracker.h"
 
 #define NoEmptyFile()   namespace { char NoEmptyFileDummy##__LINE__; }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include <thread>
 
 class GW2MapTimer : public CWBItem
 {

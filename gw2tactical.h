@@ -1,6 +1,7 @@
 #pragma once
 #include "Bedrock/WhiteBoard/whiteboard.h"
 #include <objbase.h>
+#include <thread>
 
 enum class POIBehavior : int32_t
 {

@@ -146,12 +146,6 @@
     <ClInclude Include="CrashTracker.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="Thread.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="JobHandler.h">
-      <Filter>Header Files\Basic Classes</Filter>
-    </ClInclude>
     <ClInclude Include="String.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
@@ -219,9 +213,6 @@
     </ClCompile>
     <ClCompile Include="CrashTracker.cpp">
       <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="JobHandler.cpp">
-      <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>
     <ClCompile Include="BBox.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
