@@ -5,6 +5,7 @@
 #include <tchar.h>
 #include <time.h>
 
+#include <cstdint>
 #include <string>
 #include <string_view>
 

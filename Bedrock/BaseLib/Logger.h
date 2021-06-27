@@ -1,6 +1,7 @@
 #pragma once
 #include <time.h>
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
