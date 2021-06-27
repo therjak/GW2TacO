@@ -48,9 +48,6 @@
     <ClInclude Include="BBox.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Line.h">
-      <Filter>Header Files\Basic Classes\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Matrix.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>
@@ -197,9 +194,6 @@
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="BBox.cpp">
-      <Filter>Source Files\Basic Classes\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="Line.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
     <ClCompile Include="Matrix.cpp">

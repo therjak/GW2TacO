@@ -38,7 +38,6 @@
 #include "Logger.h"
 
 #include "Vector.h"
-#include "Line.h"
 #include "Plane.h"
 #include "Sphere.h"
 #include "Matrix.h"

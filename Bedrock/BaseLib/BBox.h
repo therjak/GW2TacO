@@ -17,6 +17,5 @@ public:
   CBBox &operator+=( const CVector3 &v );
   CBBox operator+( const CBBox &v ) const;
   CBBox &operator+=( const CBBox &v );
-  TBOOL Intersect( const CLine &ln, float &tmin, float &tmax );
   TBOOL Intersect( const CPlane &pl );
 };
