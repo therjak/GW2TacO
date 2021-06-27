@@ -56,7 +56,6 @@
     <ClInclude Include="BaseConfig.h" />
     <ClInclude Include="BaseLib.h" />
     <ClInclude Include="BBox.h" />
-    <ClInclude Include="Archive.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CrashTracker.h" />
@@ -64,7 +63,6 @@
     <ClInclude Include="Dictionary.h" />
     <ClInclude Include="EnumHelpers.h" />
     <ClInclude Include="FileList.h" />
-    <ClInclude Include="Hash.h" />
     <ClInclude Include="string_format.h" />
     <ClInclude Include="ImageDecompressor.h" />
     <ClInclude Include="Logger.h" />
@@ -90,7 +88,6 @@
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Archive.cpp" />
     <ClCompile Include="BBox.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="CrashTracker.cpp" />

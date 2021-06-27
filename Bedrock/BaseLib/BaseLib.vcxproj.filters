@@ -101,12 +101,6 @@
     <ClInclude Include="ImageDecompressor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hash.h">
-      <Filter>Header Files\Basic Classes\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Archive.h">
-      <Filter>Header Files\Basic Classes\I/O</Filter>
-    </ClInclude>
     <ClInclude Include="FileList.h">
       <Filter>Header Files\Basic Classes\I/O</Filter>
     </ClInclude>
@@ -165,9 +159,6 @@
     </ClCompile>
     <ClCompile Include="ImageDecompressor.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Archive.cpp">
-      <Filter>Source Files\Basic Classes\I/O</Filter>
     </ClCompile>
     <ClCompile Include="FileList.cpp">
       <Filter>Source Files\Basic Classes\I/O</Filter>

@@ -48,9 +48,7 @@
 #include "FileList.h"
 
 #include "ImageDecompressor.h"
-#include "Hash.h"
 
-#include "Archive.h"
 #include "EnumHelpers.h"
 
 #include "CrashTracker.h"
