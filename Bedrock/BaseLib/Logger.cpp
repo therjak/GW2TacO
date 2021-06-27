@@ -1,9 +1,13 @@
 #include "BaseLib.h"
+#include "Logger.h"
+#include <time.h>
+#include <string_view>
+#include <string>
+
 
 CLogger Logger;
 
-void CLoggerOutput::Process( LOGVERBOSITY v, TCHAR *String )
-{
+void CLoggerOutput::Process(LOGVERBOSITY v, std::string_view String) {
 
 }
 
@@ -17,9 +21,9 @@ CLoggerOutput::CLoggerOutput()
 
 }
 
-void CLoggerOutput_DebugOutput::Process( LOGVERBOSITY v, TCHAR *String )
-{
-  OutputDebugString( String );
+void CLoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
+                                        std::string_view String) {
+  OutputDebugString( String.data() );
   OutputDebugString( _T( "\n" ) );
 }
 
@@ -33,9 +37,8 @@ CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput()
 
 }
 
-void CLoggerOutput_StdOut::Process( LOGVERBOSITY v, TCHAR *String )
-{
-  _tprintf( _T( "%s\n" ), String );
+void CLoggerOutput_StdOut::Process(LOGVERBOSITY v, std::string_view String) {
+  _tprintf( _T( "%s\n" ), String.data() );
 }
 
 CLoggerOutput_StdOut::~CLoggerOutput_StdOut()
@@ -48,27 +51,26 @@ CLoggerOutput_StdOut::CLoggerOutput_StdOut()
 
 }
 
-void CLoggerOutput_File::Process( LOGVERBOSITY v, TCHAR *String )
-{
+void CLoggerOutput_File::Process(LOGVERBOSITY v, std::string_view String) {
   if ( !f )
   {
-    if ( !OpenLogFile( fname.GetPointer(), Append ) ) return;
+    if ( !OpenLogFile( fname, Append ) ) return;
     if ( !f ) return;
   }
 #ifndef UNICODE
-  fprintf( f, "%s\n", String );
+  fprintf( f, "%s\n", String.data() );
 #else
-  fwprintf( f, _T( "%s\n" ), String );
+  fwprintf( f, _T( "%s\n" ), String.data() );
 #endif
 }
 
-bool CLoggerOutput_File::OpenLogFile( TCHAR *Filename, bool Append /*= true*/ )
-{
+bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
+                                     bool Append /*= true*/) {
 #ifndef UNICODE
   if ( !Append )
-    return ( !fopen_s( &f, Filename, "wt" ) );
+    return ( !fopen_s( &f, Filename.data(), "wt" ) );
   else
-    return ( !fopen_s( &f, Filename, "at" ) );
+    return ( !fopen_s( &f, Filename.data(), "at" ) );
 #else
   CString s = Filename;
   char Fname[ 2048 ];
@@ -87,8 +89,8 @@ CLoggerOutput_File::~CLoggerOutput_File()
   f = 0;
 }
 
-CLoggerOutput_File::CLoggerOutput_File( TCHAR *Filename, bool append /*= true*/ )
-{
+CLoggerOutput_File::CLoggerOutput_File(std::string_view Filename,
+                                       bool append /*= true*/) {
   Append = append;
   fname = Filename;
   OpenLogFile( Filename, Append );
@@ -126,15 +128,15 @@ void CLogger::SetVerbosity( LOGVERBOSITY v )
   Verbosity = v;
 }
 
-void CLogger::Log( LOGVERBOSITY v, bool Prefix, bool AddTimeStamp, const TCHAR *String, ... )
-{
+void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
+                  std::string_view String, ...) {
   if ( Verbosity < v ) return;
 
   CString LogString;
 
   va_list argList;
   va_start( argList, String );
-  CString::FormatVA( String, argList, LogString );
+  CString::FormatVA( String.data(), argList, LogString );
   va_end( argList );
 
   time_t rawtime;
@@ -189,16 +191,14 @@ CLoggerOutput_RingBuffer::~CLoggerOutput_RingBuffer()
 
 }
 
-void CLoggerOutput_RingBuffer::Process( LOGVERBOSITY v, TCHAR *String )
-{
-  Buffer.Add( String );
+void CLoggerOutput_RingBuffer::Process(LOGVERBOSITY v, std::string_view String) {
+  Buffer.Add( std::string(String) );
 }
 
-void CLoggerOutput_RingBuffer::Dump( CString fname )
-{
+void CLoggerOutput_RingBuffer::Dump(std::string_view fname) {
   FILE* f = nullptr;
-  fopen_s(&f, fname.GetPointer(), "w+b");
+  fopen_s(&f, fname.data(), "w+b");
   for ( int32_t x = 0; x < Buffer.NumItems(); x++ )
-    fprintf( f, "%s\n", Buffer[ x ].GetPointer() );
+    fprintf( f, "%s\n", Buffer[ x ].c_str() );
   fclose( f );
 }

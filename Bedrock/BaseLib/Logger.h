@@ -1,5 +1,8 @@
 #pragma once
 #include <time.h>
+#include <string_view>
+#include <string>
+#include "RingBuffer.h"
 
 #define ENABLE_LOGGING
 
@@ -26,7 +29,7 @@ public:
 
   CLoggerOutput();
   virtual ~CLoggerOutput();
-  virtual void Process( LOGVERBOSITY v, TCHAR *String );
+  virtual void Process( LOGVERBOSITY v, std::string_view String );
 };
 
 class CLoggerOutput_DebugOutput : public CLoggerOutput
@@ -35,7 +38,7 @@ public:
 
   CLoggerOutput_DebugOutput();
   virtual ~CLoggerOutput_DebugOutput();
-  virtual void Process( LOGVERBOSITY v, TCHAR *String );
+  virtual void Process(LOGVERBOSITY v, std::string_view String);
 };
 
 class CLoggerOutput_StdOut : public CLoggerOutput
@@ -44,33 +47,34 @@ public:
 
   CLoggerOutput_StdOut();
   virtual ~CLoggerOutput_StdOut();
-  virtual void Process( LOGVERBOSITY v, TCHAR *String );
+  virtual void Process(LOGVERBOSITY v, std::string_view String);
 };
 
 class CLoggerOutput_File : public CLoggerOutput
 {
   FILE *f;
-  CString fname;
+  std::string fname;
   bool Append;
 public:
 
   CLoggerOutput_File();
-  CLoggerOutput_File( TCHAR *Filename, bool append = true );
+ CLoggerOutput_File(std::string_view Filename, bool append = true);
   virtual ~CLoggerOutput_File();
-  bool OpenLogFile( TCHAR *Filename, bool Append = true );
-  virtual void Process( LOGVERBOSITY v, TCHAR *String );
+ bool OpenLogFile(std::string_view Filename, bool Append = true);
+  virtual void Process(LOGVERBOSITY v, std::string_view String);
 };
 
 class CLoggerOutput_RingBuffer : public CLoggerOutput
 {
-public:
+  CRingBuffer<std::string> Buffer;
 
-  CRingBuffer<CString> Buffer;
+ public:
+
 
   CLoggerOutput_RingBuffer();
   virtual ~CLoggerOutput_RingBuffer();
-  virtual void Process( LOGVERBOSITY v, TCHAR *String );
-  void Dump( CString fname );
+  virtual void Process(LOGVERBOSITY v, std::string_view String);
+  void Dump(std::string_view fname);
 };
 
 class CLogger
@@ -84,7 +88,8 @@ public:
   CLogger();
   virtual ~CLogger();
   void Close();
-  void Log( LOGVERBOSITY v, bool Prefix, bool TimeStamp, const TCHAR *String, ... );
+  void Log(LOGVERBOSITY v, bool Prefix, bool TimeStamp,
+           std::string_view String, ...);
   void SetVerbosity( LOGVERBOSITY v );
   void AddOutput( CLoggerOutput *Output );
   void RemoveOutput( CLoggerOutput *Output );
