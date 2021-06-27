@@ -1,6 +1,7 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "BaseLib.h"
 WSADATA wsaData;
+#include <memory>
 #include <MMSystem.h>
 
 CSocket::CSocket() : CStreamReader(), CStreamWriter()
@@ -236,22 +237,20 @@ CString CSocket::ReadLine()
     int32_t len = (int32_t)GetLength();
     if ( len )
     {
-      TS8 *dat = new TS8[ len ];
-      if ( Peek( dat, len ) )
+      auto dat = std::make_unique< TS8[]>( len );
+      if ( Peek( dat.get(), len ) )
       {
         for ( int32_t x = 0; x < len; x++ )
           if ( dat[ x ] == '\n' )
           {
-            ReadFull( dat, x + 1 );
-            result += CString( dat, x );
-            SAFEDELETE( dat );
+            ReadFull( dat.get(), x + 1 );
+            result += CString( dat.get()  , x );
             return result;
           }
       }
 
-      ReadFull( dat, len );
-      result += CString( dat, len );
-      SAFEDELETE( dat );
+      ReadFull( dat.get(), len );
+      result += CString( dat.get(), len );
     }
 
     if ( !Peek( &len, 1 ) )
@@ -290,7 +289,7 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 {
   CSocket sock;
 
-  uint8_t *result = NULL;
+  std::unique_ptr<uint8_t[]> result;
   ContentSize = 0;
 
   if ( sock.Connect( host, 80 ) )
@@ -308,22 +307,21 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 
     if ( len )
     {
-      uint8_t *headerdata = new uint8_t[ len + 1 ];
-      memset( headerdata, 0, len + 1 );
-      sock.ReadFull( headerdata, len );
+      auto headerdata = std::make_unique<uint8_t[]>( len + 1 );
+      memset( headerdata.get(), 0, len + 1 );
+      sock.ReadFull( headerdata.get()  , len );
 
       //check http header
 
-      CString head = CString( (TS8*)headerdata );
+      CString head = CString( (TS8*)headerdata.get() );
       int32_t contentlength = -1;
       int32_t contentpos = head.Find( _T( "Content-Length: " ) );
 
       if ( contentpos >= 0 )
       {
-        CString ctlen = CString( (TS8*)headerdata + contentpos );
+        CString ctlen = CString( (TS8*)headerdata.get() + contentpos );
         if ( ctlen.Scan( "Content-Length: %d", &contentlength ) != 1 )
         {
-          SAFEDELETE( headerdata );
           return NULL;
         }
       }
@@ -331,7 +329,6 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
       int32_t contentstart = head.Find( _T( "\r\n\r\n" ) );
       if ( contentstart < 0 )
       {
-        SAFEDELETE( headerdata );
         return NULL;
       }
 
@@ -341,7 +338,6 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 
       if ( byteslefttoread <= 0 && contentlength != -1 )
       {
-        SAFEDELETE( headerdata );
         return NULL;
       }
 
@@ -349,8 +345,8 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
 
       if ( currentdatasize > 0 )
       {
-        result = new uint8_t[ currentdatasize ];
-        memcpy( result, headerdata + contentstart, currentdatasize );
+        result = std::make_unique<uint8_t[]>( currentdatasize );
+        memcpy( result.get(), headerdata.get() + contentstart, currentdatasize );
       }
 
       while ( byteslefttoread > 0 || contentlength == -1 )
@@ -358,10 +354,10 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
         int32_t dlen = (int32_t)sock.GetLength();
         if ( dlen )
         {
-          uint8_t *newdata = new uint8_t[ currentdatasize + dlen ];
+          auto newdata = std::make_unique<uint8_t[]>( currentdatasize + dlen );
           if ( result )
-            memcpy( newdata, result, currentdatasize );
-          int32_t numread = sock.ReadFull( newdata + currentdatasize, dlen );
+            memcpy( newdata.get(), result.get(), currentdatasize );
+          int32_t numread = sock.ReadFull( newdata.get() + currentdatasize, dlen );
           if ( numread == dlen )
           {
             currentdatasize += numread;
@@ -369,13 +365,10 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
           }
           else
           {
-            SAFEDELETE( newdata );
-            SAFEDELETE( result );
             return NULL;
           }
 
-          SAFEDELETE( result );
-          result = newdata;
+          result.swap(newdata);
         }
 
         int32_t len;
@@ -390,6 +383,6 @@ uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
     sock.Close();
   }
 
-  return result;
+  return result.release();
 }
 
