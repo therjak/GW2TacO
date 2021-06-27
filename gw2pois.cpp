@@ -1,6 +1,7 @@
 #include "OverlayApplication.h"
 #include "ProFont.h"
 #include <dwmapi.h>
+#include <memory>
 #include "gw2tactical.h"
 #include "TrailLogger.h"
 #include "MapTimer.h"
@@ -775,7 +776,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   InitializeCrashTracker( CString( "GW2 TacO " ) + TacOBuild, CrashOverride );
   FORCEDDEBUGLOG( "Crash tracker initialized." );
 
-  Logger.AddOutput(new CLoggerOutput_File(_T("GW2TacO.log")));
+  Logger.AddOutput(std::make_unique<CLoggerOutput_File>(_T("GW2TacO.log")));
   Logger.SetVerbosity(LOG_DEBUG);
   FORCEDDEBUGLOG("Logger set up.");
 

@@ -158,6 +158,9 @@
     <ClInclude Include="RingBuffer.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
+    <ClInclude Include="string_format.h">
+      <Filter>Header Files\Basic Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />
@@ -252,6 +255,9 @@
     </ClCompile>
     <ClCompile Include="FloatControl.cpp">
       <Filter>Source Files\System</Filter>
+    </ClCompile>
+    <ClCompile Include="string_format.cpp">
+      <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
