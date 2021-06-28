@@ -1,31 +1,23 @@
-#include "BaseLib.h"
+#include "EnumHelpers.h"
 
+#include <cstdint>
+#include <vector>
 
-TBOOL FindEnumByName( EnumNamePair *Pairs, TCHAR *Name, int32_t &Result )
-{
-  for ( int32_t x = 0; Pairs[ x ].Name; x++ )
-  {
-    if ( Name == Pairs[ x ].Name )
-    {
-      Result = Pairs[ x ].Value;
+bool FindEnumByName(const std::vector<EnumNamePair>& Pairs,
+                    const std::string_view& Name, int32_t& Result) {
+  for (const auto& p : Pairs) {
+    if (Name == p.Name) {
+      Result = p.Value;
       return true;
     }
   }
   return false;
 }
 
-TBOOL FindEnumByName( EnumNamePair *Pairs, CString &Name, int32_t &Result )
-{
-  return FindEnumByName( Pairs, Name.GetPointer(), Result );
-}
-
-const TCHAR *FindNameByEnum( EnumNamePair *Pairs, int32_t Enum )
-{
-  TCHAR *Name = NULL;
-  for ( int32_t x = 0; Pairs[ x ].Name; x++ )
-  {
-    if ( Enum == Pairs[ x ].Value )
-      return Pairs[ x ].Name;
+std::string_view FindNameByEnum(const std::vector<EnumNamePair>& Pairs,
+                                int32_t Enum) {
+  for (const auto& p : Pairs) {
+    if (Enum == p.Value) return p.Name;
   }
-  return Name;
+  return std::string_view();
 }

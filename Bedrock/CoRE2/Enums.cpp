@@ -1,8 +1,10 @@
 #include "BasePCH.h"
 #include "Enums.h"
 
-EnumNamePair ComparisonFunctionNames[]=
-{
+#include <vector>
+
+
+const std::vector<EnumNamePair> ComparisonFunctionNames = {
 	{CORECMP_NEVER,			_T("Never")},
 	{CORECMP_LESS,			_T("Less")},
 	{CORECMP_EQUAL,			_T("Equal")},
@@ -14,8 +16,7 @@ EnumNamePair ComparisonFunctionNames[]=
 	{-1,NULL}
 };
 
-EnumNamePair BlendFactorNames[]=
-{
+const std::vector<EnumNamePair> BlendFactorNames = {
 	{COREBLEND_ZERO,				_T("Zero")},
 	{COREBLEND_ONE,					_T("One")},
 	{COREBLEND_SRCCOL,				_T("SrcCol")},
@@ -29,11 +30,11 @@ EnumNamePair BlendFactorNames[]=
 	{COREBLEND_SRCALPHASATURATE,	_T("SrcAlphaSaturate")},
 	{COREBLEND_BLENDFACTOR,			_T("BlendFactor")},
 	{COREBLEND_INVBLENDFACTOR,		_T("InvBlendFactor")},
+    {-1, NULL}
 };
 
 
-EnumNamePair BlendOpNames[]=
-{
+const std::vector<EnumNamePair> BlendOpNames = {
 	{COREBLENDOP_ADD,		_T("Add")},
 	{COREBLENDOP_SUB,		_T("Sub")},
 	{COREBLENDOP_REVSUB,	_T("RevSub")},
@@ -42,24 +43,21 @@ EnumNamePair BlendOpNames[]=
 	{-1,NULL}
 };
 
-EnumNamePair CullModeNames[]=
-{
+const std::vector<EnumNamePair> CullModeNames = {
 	{CORECULL_NONE,			_T("None")},
 	{CORECULL_CW,			_T("CW")},
 	{CORECULL_CCW,			_T("CCW")},
 	{-1,NULL}
 };
 
-EnumNamePair FillModeNames[]=
-{
+const std::vector<EnumNamePair> FillModeNames = {
 	{COREFILL_SOLID,		_T("Solid")},
 	{COREFILL_EDGES,		_T("Edges")},
 	{COREFILL_POINTS,		_T("Points")},
 	{-1,NULL}
 };
 
-EnumNamePair AddressModeNames[]=
-{
+const std::vector<EnumNamePair> AddressModeNames = {
 	{CORETEXADDRESS_WRAP,		_T("Wrap")},
 	{CORETEXADDRESS_MIRROR,		_T("Mirror")},
 	{CORETEXADDRESS_CLAMP,		_T("Clamp")},
@@ -68,8 +66,7 @@ EnumNamePair AddressModeNames[]=
 	{-1,NULL}
 };
 
-EnumNamePair SamplerNames[]=
-{
+const std::vector<EnumNamePair> SamplerNames = {
 	{CORESMP_PS0,			_T("PS0")},
 	{CORESMP_PS1,			_T("PS1")},
 	{CORESMP_PS2,			_T("PS2")},
@@ -97,8 +94,7 @@ EnumNamePair SamplerNames[]=
 	{-1,NULL}
 };
 
-EnumNamePair FilterNames[]=
-{
+const std::vector<EnumNamePair> FilterNames = {
 	{COREFILTER_MIN_MAG_MIP_POINT                           ,_T("Min_Mag_Mip_Point")},
 	{COREFILTER_MIN_MAG_POINT_MIP_LINEAR                    ,_T("Min_Mag_Point_Mip_Linear")},
 	{COREFILTER_MIN_POINT_MAG_LINEAR_MIP_POINT              ,_T("Min_Point_Mag_Linear_Mip_Point")},

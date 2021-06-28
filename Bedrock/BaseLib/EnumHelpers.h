@@ -1,11 +1,15 @@
 #pragma once
 
-struct EnumNamePair
-{
-  int32_t Value;
-  const TCHAR *Name;
+#include <cstdint>
+#include <string_view>
+#include <vector>
+
+struct EnumNamePair {
+  const int32_t Value;
+  const std::string_view Name;
 };
 
-TBOOL FindEnumByName( EnumNamePair *Pairs, TCHAR *Name, int32_t &Result );
-TBOOL FindEnumByName( EnumNamePair *Pairs, CString &Name, int32_t &Result );
-const TCHAR *FindNameByEnum( EnumNamePair *Pairs, int32_t Enum );
+bool FindEnumByName(const std::vector<EnumNamePair>& Pairs,
+                    const std::string_view& Name, int32_t& Result);
+std::string_view FindNameByEnum(const std::vector<EnumNamePair>& Pairs,
+                                int32_t Enum);

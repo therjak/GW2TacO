@@ -1,6 +1,8 @@
 #pragma once
 #include "../BaseLib/BaseLib.h"
 
+#include <vector>
+
 enum COREDEVICEAPI
 {
 	COREAPI_DX9,
@@ -43,7 +45,7 @@ enum CORECOMPARISONFUNCTION
 	CORECMP_GEQUAL = 6,
 	CORECMP_ALWAYS = 7,
 };
-extern EnumNamePair ComparisonFunctionNames[];
+extern const std::vector<EnumNamePair> ComparisonFunctionNames;
 
 
 enum COREBLENDFACTOR
@@ -62,7 +64,7 @@ enum COREBLENDFACTOR
 	COREBLEND_BLENDFACTOR = 11,
 	COREBLEND_INVBLENDFACTOR = 12,
 };
-extern EnumNamePair BlendFactorNames[];
+extern const std::vector<EnumNamePair> BlendFactorNames;
 
 enum COREBLENDOP
 {
@@ -72,7 +74,7 @@ enum COREBLENDOP
 	COREBLENDOP_MIN = 3,
 	COREBLENDOP_MAX = 4,
 };
-extern EnumNamePair BlendOpNames[];
+extern const std::vector<EnumNamePair> BlendOpNames;
 
 enum CORECULLMODE
 {
@@ -80,7 +82,7 @@ enum CORECULLMODE
 	CORECULL_CW = 1,
 	CORECULL_CCW = 2,
 };
-extern EnumNamePair CullModeNames[];
+extern const std::vector<EnumNamePair> CullModeNames;
 
 
 enum COREFILLMODE
@@ -89,7 +91,7 @@ enum COREFILLMODE
 	COREFILL_EDGES = 1,
 	COREFILL_POINTS = 2,
 };
-extern EnumNamePair FillModeNames[];
+extern const std::vector<EnumNamePair> FillModeNames;
 
 enum CORETEXTUREADDRESSMODE
 {
@@ -99,7 +101,7 @@ enum CORETEXTUREADDRESSMODE
 	CORETEXADDRESS_BORDER = 3,
 	CORETEXADDRESS_MIRRORONCE = 4,
 };
-extern EnumNamePair AddressModeNames[];
+extern const std::vector<EnumNamePair> AddressModeNames;
 
 enum CORETEXTUREWRAPMODE
 {
@@ -161,7 +163,7 @@ enum CORESAMPLER
 	CORESMP_GS2 = 202,
 	CORESMP_GS3 = 203,
 };
-extern EnumNamePair SamplerNames[];
+extern const std::vector<EnumNamePair> SamplerNames;
 
 enum COREFILTER
 {
@@ -184,7 +186,7 @@ enum COREFILTER
 	COREFILTER_COMPARISON_MIN_MAG_MIP_LINEAR = 16,
 	COREFILTER_COMPARISON_ANISOTROPIC = 17,
 };
-extern EnumNamePair FilterNames[];
+extern const std::vector<EnumNamePair> FilterNames;
 
 
 #define CORELOCK_READONLY           0x00000010L
