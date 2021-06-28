@@ -53,3 +53,13 @@ out/maptimer.xml
 /Bedrock/CoRE2/Debug_MultiByte
 /Bedrock/UtilLib/Debug_MultiByte
 /Bedrock/Whiteboard/Debug_MultiByte
+/Bedrock/Whiteboard/Release_Unicode
+/Bedrock/BaseLib/Release_MultiByte
+/Bedrock/BaseLib/Release_Unicode
+/Bedrock/CoRE2/Release_MultiByte
+/Bedrock/CoRE2/Release_Unicode
+/Bedrock/UtilLib/Release_MultiByte
+/Bedrock/UtilLib/Release_Unicode
+/Bedrock/Whiteboard/Release_MultiByte
+/TacOConfig.xml
+/POIs/tw_ALL_IN_ONE.taco

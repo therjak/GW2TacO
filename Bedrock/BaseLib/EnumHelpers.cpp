@@ -3,8 +3,6 @@
 
 TBOOL FindEnumByName( EnumNamePair *Pairs, TCHAR *Name, int32_t &Result )
 {
-  int32_t r = -1;
-  CString s = Name;
   for ( int32_t x = 0; Pairs[ x ].Name; x++ )
   {
     if ( Name == Pairs[ x ].Name )

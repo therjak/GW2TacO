@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 class CQuaternion;
 class CMatrix4x4;
 
@@ -26,8 +28,8 @@ class CVector2 {
   CVector2 operator-(const CVector2 &v) const;
   CVector2 operator*(const float f) const;
   CVector2 operator/(const float f) const;
-  TBOOL operator==(const CVector2 &v) const;
-  TBOOL operator!=(const CVector2 &v) const;
+  bool operator==(const CVector2 &v) const;
+  bool operator!=(const CVector2 &v) const;
   float operator*(const CVector2 &v) const;  // dot product
 
   CVector2 Rotated(const CVector2 &center, float rotation);
@@ -64,8 +66,8 @@ class CVector2I {
   CVector2I operator*(const float f) const;
   CVector2I operator/(const float f) const;
   CVector2I operator/(const int32_t f) const;
-  TBOOL operator==(const CVector2I &v) const;
-  TBOOL operator!=(const CVector2I &v) const;
+  bool operator==(const CVector2I &v) const;
+  bool operator!=(const CVector2I &v) const;
   int32_t operator*(const CVector2I &v) const;  // dot product
   float Length() const;
   float LengthSquared() const;
@@ -101,8 +103,8 @@ class CVector3 {
   CVector3 operator-(const CVector3 &v) const;
   CVector3 operator*(const float f) const;
   CVector3 operator/(const float f) const;
-  TBOOL operator==(const CVector3 &v) const;
-  TBOOL operator!=(const CVector3 &v) const;
+  bool operator==(const CVector3 &v) const;
+  bool operator!=(const CVector3 &v) const;
   float operator*(const CVector3 &v) const;        // dot product
   CVector3 operator%(const CVector3 &v) const;     // cross product
   CVector3 operator*(const CQuaternion &q) const;  // rotation
@@ -144,8 +146,8 @@ class CVector4 {
   CVector4 operator-(const CVector4 &v) const;
   CVector4 operator*(const float f) const;
   CVector4 operator/(const float f) const;
-  TBOOL operator==(const CVector4 &v) const;
-  TBOOL operator!=(const CVector4 &v) const;
+  bool operator==(const CVector4 &v) const;
+  bool operator!=(const CVector4 &v) const;
   float operator*(const CVector4 &v) const;       // dot product
   CVector4 operator*(const CMatrix4x4 &q) const;  // transformation
   float Length() const;

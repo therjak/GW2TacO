@@ -69,9 +69,9 @@ extern uint32_t CurrentAllocCount;
 
 #endif
 
-#define SAFEDELETE(x)  do { if (x) delete x;     x=NULL; } while (0)
-#define SAFEDELETEA(x) do { if (x) delete[] x;   x=NULL; } while (0)
-#define SAFEFREE(x)    do { if (x) free(x);      x=NULL; } while (0)
+#define SAFEDELETE(x)  { delete x;     x=NULL; }
+#define SAFEDELETEA(x) { delete[] x;   x=NULL; }
+#define SAFEFREE(x)    { free(x);      x=NULL; }
 
 #ifdef MEMORY_TRACKING
 #define IGNOREFREEERRORS(x) do { memTracker.SetMissingIgnore(x); } while(0)

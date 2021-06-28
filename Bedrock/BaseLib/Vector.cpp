@@ -1,4 +1,10 @@
-#include "BaseLib.h"
+#include "Vector.h"
+
+#include <cmath>
+#include <cstdint>
+
+#include "Matrix.h"
+#include "SpecMath.h"
 
 const int32_t Lerp(const int32_t v1, const int32_t v2, const float t) {
   return (int32_t)((v2 - v1) * t + v1);
@@ -89,27 +95,13 @@ float CVector4::LengthSquared() const { return x * x + y * y + z * z + w * w; }
 
 float CVector4::Length() const { return sqrtf(LengthSquared()); }
 
-CVector4::CVector4(const CVector4 &v) {
-  x = v.x;
-  y = v.y;
-  z = v.z;
-  w = v.w;
-}
+CVector4::CVector4(const CVector4 &v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
 
-CVector4::CVector4(const float *v) {
-  x = v[0];
-  y = v[1];
-  z = v[2];
-  w = v[3];
-}
+CVector4::CVector4(const float *v) : x(v[0]), y(v[1]), z(v[2]), w(v[3]) {}
 
 CVector4::CVector4(const float _x, const float _y, const float _z,
-                   const float _w) {
-  x = _x;
-  y = _y;
-  z = _z;
-  w = _w;
-}
+                   const float _w)
+    : x(_x), y(_y), z(_z), w(_w) {}
 
 CVector4::CVector4() {}
 
@@ -129,23 +121,12 @@ float CVector3::LengthSquared() const { return x * x + y * y + z * z; }
 
 float CVector3::Length() const { return sqrtf(LengthSquared()); }
 
-CVector3::CVector3(const CVector3 &v) {
-  x = v.x;
-  y = v.y;
-  z = v.z;
-}
+CVector3::CVector3(const CVector3 &v) : x(v.x), y(v.y), z(v.z) {}
 
-CVector3::CVector3(const float *v) {
-  x = v[0];
-  y = v[1];
-  z = v[2];
-}
+CVector3::CVector3(const float *v) : x(v[0]), y(v[1]), z(v[2]) {}
 
-CVector3::CVector3(const float _x, const float _y, const float _z) {
-  x = _x;
-  y = _y;
-  z = _z;
-}
+CVector3::CVector3(const float _x, const float _y, const float _z)
+    : x(_x), y(_y), z(_z) {}
 
 CVector3::CVector3() {}
 
@@ -161,20 +142,11 @@ float CVector2::LengthSquared() const { return x * x + y * y; }
 
 float CVector2::Length() const { return sqrtf(LengthSquared()); }
 
-CVector2::CVector2(const CVector2 &v) {
-  x = v.x;
-  y = v.y;
-}
+CVector2::CVector2(const CVector2 &v) : x(v.x), y(v.y) {}
 
-CVector2::CVector2(const float *v) {
-  x = v[0];
-  y = v[1];
-}
+CVector2::CVector2(const float *v) : x(v[0]), y(v[1]) {}
 
-CVector2::CVector2(const float _x, const float _y) {
-  x = _x;
-  y = _y;
-}
+CVector2::CVector2(const float _x, const float _y) : x(_x), y(_y) {}
 
 CVector2::CVector2() {}
 
@@ -241,11 +213,11 @@ CVector2 CVector2::operator/(const float f) const {
   return CVector2(x * fi, y * fi);
 }
 
-TBOOL CVector2::operator==(const CVector2 &v) const {
+bool CVector2::operator==(const CVector2 &v) const {
   return x == v.x && y == v.y;
 }
 
-TBOOL CVector2::operator!=(const CVector2 &v) const {
+bool CVector2::operator!=(const CVector2 &v) const {
   return x != v.x || y != v.y;
 }
 
@@ -268,20 +240,11 @@ float CVector2I::LengthSquared() const { return (float)(x * x + y * y); }
 
 float CVector2I::Length() const { return sqrtf(LengthSquared()); }
 
-CVector2I::CVector2I(const CVector2I &v) {
-  x = v.x;
-  y = v.y;
-}
+CVector2I::CVector2I(const CVector2I &v) : x(v.x), y(v.y) {}
 
-CVector2I::CVector2I(const int32_t *v) {
-  x = v[0];
-  y = v[1];
-}
+CVector2I::CVector2I(const int32_t *v) : x(v[0]), y(v[1]) {}
 
-CVector2I::CVector2I(const int32_t _x, const int32_t _y) {
-  x = _x;
-  y = _y;
-}
+CVector2I::CVector2I(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
 
 CVector2I::CVector2I() {}
 
@@ -351,11 +314,11 @@ CVector2I CVector2I::operator/(const int32_t f) const {
   return CVector2I(x / f, y / f);
 }
 
-TBOOL CVector2I::operator==(const CVector2I &v) const {
+bool CVector2I::operator==(const CVector2I &v) const {
   return x == v.x && y == v.y;
 }
 
-TBOOL CVector2I::operator!=(const CVector2I &v) const {
+bool CVector2I::operator!=(const CVector2I &v) const {
   return x != v.x || y != v.y;
 }
 
@@ -424,11 +387,11 @@ CVector3 CVector3::operator/(const float f) const {
   return CVector3(x * fi, y * fi, z * fi);
 }
 
-TBOOL CVector3::operator==(const CVector3 &v) const {
+bool CVector3::operator==(const CVector3 &v) const {
   return x == v.x && y == v.y && z == v.z;
 }
 
-TBOOL CVector3::operator!=(const CVector3 &v) const {
+bool CVector3::operator!=(const CVector3 &v) const {
   return x != v.x || y != v.y || z != v.z;
 }
 
@@ -510,11 +473,11 @@ CVector4 CVector4::operator/(const float f) const {
   return CVector4(x * fi, y * fi, z * fi, w * fi);
 }
 
-TBOOL CVector4::operator==(const CVector4 &v) const {
+bool CVector4::operator==(const CVector4 &v) const {
   return x == v.x && y == v.y && z == v.z && w == v.w;
 }
 
-TBOOL CVector4::operator!=(const CVector4 &v) const {
+bool CVector4::operator!=(const CVector4 &v) const {
   return x != v.x || y != v.y || z != v.z || w != v.w;
 }
 
