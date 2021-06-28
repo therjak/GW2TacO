@@ -55,7 +55,6 @@
     <ClInclude Include="Assert.h" />
     <ClInclude Include="BaseConfig.h" />
     <ClInclude Include="BaseLib.h" />
-    <ClInclude Include="BBox.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CrashTracker.h" />
@@ -88,7 +87,6 @@
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BBox.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="CrashTracker.cpp" />
     <ClCompile Include="CriticalSection.cpp" />

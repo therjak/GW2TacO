@@ -2,8 +2,6 @@
 
 #include <cstdint>
 
-constexpr auto RAND_MAX = 0x7fff;
-
 class CRandom {
   uint32_t Seed;
 

@@ -41,7 +41,6 @@
 #include "Plane.h"
 #include "Sphere.h"
 #include "Matrix.h"
-#include "BBox.h"
 #include "Quaternion.h"
 #include "Rectangle.h"
 

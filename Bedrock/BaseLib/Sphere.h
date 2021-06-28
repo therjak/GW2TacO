@@ -1,16 +1,19 @@
 #pragma once
 
+#include "Vector.h"
+#include "Plane.h"
+
 class CSphere
 {
 public:
 
-  float Radius;
-  CVector3 Position;
+  float Radius = 0;
+ CVector3 Position = {0, 0, 0};
 
   CSphere();
   ~CSphere();
   CSphere( const CVector3 &p, const float r );
 
-  const TBOOL Intersect( const CPlane &p ) const;
-  const TBOOL Contains( const CVector3 &p ) const;
+  const bool Intersect( const CPlane &p ) const;
+  const bool Contains( const CVector3 &p ) const;
 };

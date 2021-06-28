@@ -1,6 +1,7 @@
 #include "Random.h"
 
 #include <cstdint>
+#include <cstdlib>
 
 float CRandom::frand(float min, float max) {
   return (max - min) * frand() + min;
