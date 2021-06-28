@@ -27,12 +27,12 @@ public:
 class CStackTracker
 {
 public:
-  INLINE CStackTracker( TS8 Offset = 0 ) {};
-  INLINE CStackTracker( void *Context, TS8 Offset = 0 ) {}
-  INLINE virtual ~CStackTracker() {}
-  INLINE void DumpToLog( LOGVERBOSITY v ) {}
-  INLINE void DumpToDebugOutput() {}
-  INLINE TS8 *DumpToString() { return 0; }
+  CStackTracker( TS8 Offset = 0 ) {};
+  CStackTracker( void *Context, TS8 Offset = 0 ) {}
+  virtual ~CStackTracker() {}
+  void DumpToLog( LOGVERBOSITY v ) {}
+  void DumpToDebugOutput() {}
+  TS8 *DumpToString() { return 0; }
 };
 
 #endif

@@ -5,20 +5,19 @@
 
 #ifdef MEMORY_TRACKING
 
-void* __cdecl operator new( size_t size, const TS8* file, int32_t line );
-void* __cdecl operator new[]( size_t size, const TS8* file, int32_t line );
-void __cdecl operator delete( void* pointer, const TS8* file, int32_t line );
-void __cdecl operator delete[]( void* pointer, const TS8* file, int32_t line );
+void* __cdecl operator new(size_t size, const TS8* file, int32_t line);
+void* __cdecl operator new[](size_t size, const TS8* file, int32_t line);
+void __cdecl operator delete(void* pointer, const TS8* file, int32_t line);
+void __cdecl operator delete[](void* pointer, const TS8* file, int32_t line);
 
-#define new new(__FILE__, __LINE__)
+#define new new (__FILE__, __LINE__)
 
 #include "Dictionary.h"
 #include "StackTracker.h"
 
-class CAllocationInfo
-{
-public:
-  TS8 *File = 0;
+class CAllocationInfo {
+ public:
+  TS8* File = 0;
   int32_t Line = 0;
   int32_t Size = 0;
 
@@ -26,33 +25,29 @@ public:
   CStackTracker Stack;
 #endif
 
-  CAllocationInfo() {};
-  CAllocationInfo( TS8 *file, int32_t line, int32_t size )
-  {
+  CAllocationInfo(){};
+  CAllocationInfo(TS8* file, int32_t line, int32_t size) {
     File = file;
     Line = line;
     Size = size;
   };
 };
 
-class CMemTracker
-{
+class CMemTracker {
   LIGHTWEIGHT_CRITICALSECTION critsec;
 
-  CDictionary<void*, CAllocationInfo> *MemTrackerPool;
-  TBOOL Paused;
-  TBOOL IgnoreMissing;
+  CDictionary<void*, CAllocationInfo>* MemTrackerPool;
+  bool Paused;
+  bool IgnoreMissing;
 
-public:
-
+ public:
   CMemTracker();
   virtual ~CMemTracker();
-  void AddPointer( void *p, const TS8* file, int32_t line, int32_t size );
-  void RemovePointer( void *p );
-  TBOOL SetMissingIgnore( TBOOL b )
-  {
-    CLightweightCriticalSection cs( &critsec );
-    TBOOL old = IgnoreMissing;
+  void AddPointer(void* p, const TS8* file, int32_t line, int32_t size);
+  void RemovePointer(void* p);
+  bool SetMissingIgnore(bool b) {
+    CLightweightCriticalSection cs(&critsec);
+    bool old = IgnoreMissing;
     IgnoreMissing = b;
     return old;
   }
@@ -69,12 +64,27 @@ extern uint32_t CurrentAllocCount;
 
 #endif
 
-#define SAFEDELETE(x)  { delete x;     x=NULL; }
-#define SAFEDELETEA(x) { delete[] x;   x=NULL; }
-#define SAFEFREE(x)    { free(x);      x=NULL; }
+#define SAFEDELETE(x) \
+  {                   \
+    delete x;         \
+    x = NULL;         \
+  }
+#define SAFEDELETEA(x) \
+  {                    \
+    delete[] x;        \
+    x = NULL;          \
+  }
+#define SAFEFREE(x) \
+  {                 \
+    free(x);        \
+    x = NULL;       \
+  }
 
 #ifdef MEMORY_TRACKING
-#define IGNOREFREEERRORS(x) do { memTracker.SetMissingIgnore(x); } while(0)
+#define IGNOREFREEERRORS(x)         \
+  do {                              \
+    memTracker.SetMissingIgnore(x); \
+  } while (0)
 #else
 #define IGNOREFREEERRORS(x)
 #endif
