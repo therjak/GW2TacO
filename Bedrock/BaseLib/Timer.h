@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cstdint>
+
 class CTimer {
   int32_t LastUpdateTime;
   int32_t StartTime;
-  float SpeedModifier;
-  double TimeExtension;
-  bool Paused;
+  float SpeedModifier = 1;
+  double TimeExtension = 0;
+  bool Paused = false;
 
   unsigned long Time;
 

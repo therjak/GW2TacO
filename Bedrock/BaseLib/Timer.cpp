@@ -1,15 +1,13 @@
-#include "BaseLib.h"
+#include "Timer.h"
+
+#include <Windows.h>
+#include <timeapi.h>
 #include <MMSystem.h>
 #pragma comment(lib, "winmm.lib")
 
 CTimer globalTimer;
 
-CTimer::CTimer() {
-  LastUpdateTime = StartTime = timeGetTime();
-  SpeedModifier = 1;
-  Paused = false;
-  TimeExtension = 0;
-}
+CTimer::CTimer() { LastUpdateTime = StartTime = timeGetTime(); }
 
 CTimer::~CTimer() {}
 
