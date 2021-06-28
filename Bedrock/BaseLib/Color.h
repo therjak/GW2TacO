@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstdint>
+
 class CColor
 {
-  uint8_t b, g, r, a;
+  uint8_t b = 0, g = 0, r = 0, a = 0;
 
 public:
 
@@ -19,8 +21,8 @@ public:
   uint8_t &operator[]( int32_t idx );
   operator uint8_t* ( );
   operator const uint8_t* ( ) const;
-  TBOOL operator== ( const CColor &c ) const;
-  TBOOL operator!= ( const CColor &c ) const;
+  bool operator== ( const CColor &c ) const;
+  bool operator!= ( const CColor &c ) const;
   uint32_t argb() const;
 
   operator uint32_t() const;
