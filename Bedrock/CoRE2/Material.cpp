@@ -6,18 +6,18 @@
 // enum names
 
 const std::vector<EnumNamePair> MaterialParameterScopeNames = {
-    {CORE_MATERIAL_CONSTANT, _T("Constant")},
-    {CORE_MATERIAL_VARIABLE, _T("Variable")},
-    {CORE_MATERIAL_ANIMATED, _T("Animated")},
-    {CORE_MATERIAL_EXTERNAL, _T("External")},
+    {CORE_MATERIAL_CONSTANT, ("Constant")},
+    {CORE_MATERIAL_VARIABLE, ("Variable")},
+    {CORE_MATERIAL_ANIMATED, ("Animated")},
+    {CORE_MATERIAL_EXTERNAL, ("External")},
 
-    {-1, NULL}  // leave this here
+    {-1, ""}  // leave this here
 };
 
 const std::vector<EnumNamePair> MaterialParameterTypeNames = {
-    {CORE_MATERIAL_FLOAT, _T("Float")},
+    {CORE_MATERIAL_FLOAT, ("Float")},
 
-    {-1, NULL}  // leave this here
+    {-1, ""}  // leave this here
 };
 
 //////////////////////////////////////////////////////////////////////////

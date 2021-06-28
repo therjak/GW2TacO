@@ -22,6 +22,8 @@
 #include "SpecialGUIItems.h"
 #include "Language.h"
 
+#include <string_view>
+
 #pragma comment(lib,"Dwmapi.lib")
 
 CWBApplication *App = NULL;
@@ -723,7 +725,7 @@ void FetchMarkerPackOnline( CString& ourl )
   }, urlPtr, 0, &downloadThreadID );
 }
 
-void ImportMarkerPack( CWBApplication* App, const CString& zipFile );
+void ImportMarkerPack( CWBApplication* App, const std::string_view& zipFile );
 
 #include <imm.h>
 #pragma comment(lib,"Imm32.lib")
@@ -1097,7 +1099,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
       CString file = loadList[ 0 ];
       loadList.DeleteByIndex( 0 );
-      ImportMarkerPack( App, file );
+      ImportMarkerPack( App, file.GetPointer() );
       //FlushZipDict();
     }
 

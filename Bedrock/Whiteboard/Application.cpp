@@ -4,6 +4,8 @@
 #include "../UtilLib/PNGDecompressor.h"
 #include "WhiteBoard.h"
 
+#include <cstdio>
+
 CWBApplication::CWBApplication() : CCoreWindowHandlerWin()
 {
   Root = NULL;
@@ -1033,16 +1035,16 @@ void CWBApplication::TakeScreenshot()
   int32_t maxcnt = 0;
   {
     CString s = ScreenShotName + _T( "_*.png" );
-    CFileList fl( s, _T( "Screenshots" ) );
+    CFileList fl( s.GetPointer(), _T( "Screenshots" ) );
 
-    for ( int32_t x = 0; x < fl.Files.NumItems(); x++ )
+    for ( uint32_t x = 0; x < fl.Files.size(); x++ )
     {
-      if ( fl.Files[ x ].FileName.Find( ScreenShotName ) == 0 )
+      if ( fl.Files[ x ].FileName.find( ScreenShotName.GetPointer() ) == std::string::npos )
       {
         CString s2 = ScreenShotName + _T( "_%d" );
 
         int32_t no = -1;
-        int32_t i = fl.Files[ x ].FileName.Scan( s2.GetPointer(), &no );
+        int32_t i = sscanf(fl.Files[ x ].FileName.c_str(), s2.GetPointer(), &no );
         maxcnt = max( maxcnt, no );
       }
     }

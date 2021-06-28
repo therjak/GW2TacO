@@ -1,24 +1,20 @@
 #include "BaseLib.h"
 
-const TBOOL operator == ( const CFileListEntry &f1, const CFileListEntry &f2 )
-{
+const bool operator==(const CFileListEntry &f1, const CFileListEntry &f2) {
   return f1.Path == f2.Path && f1.FileName == f2.FileName;
 }
 
-TBOOL exists( const CString &fname )
+bool exists( const std::string_view& fname )
 {
-  char Fname[ 2048 ];
-  fname.WriteAsMultiByte( Fname, 2048 );
-
   FILE *f = NULL;
-  if ( fopen_s( &f, Fname, "rb" ) )
+  if ( fopen_s( &f, fname.data(), "rb" ) )
     return false;
   if ( !f ) return false;
   fclose( f );
   return true;
 }
 
-CFileList::CFileList( const CString &Mask, const CString &Path/* ="" */, TBOOL Recursive/* =false */ )
+CFileList::CFileList( const std::string_view& Mask, const std::string_view& Path/* ="" */, bool Recursive/* =false */ )
 {
   ExpandSearch( Mask, Path, Recursive );
 }
@@ -28,34 +24,34 @@ CFileList::CFileList()
 
 }
 
-void CFileList::ExpandSearch( const CString &Mask, const CString &Path, TBOOL Recursive, TBOOL getDirectories )
+void CFileList::ExpandSearch( const std::string_view& Mask, const std::string_view& Path, bool Recursive, bool getDirectories )
 {
   HANDLE hSearch;
   WIN32_FIND_DATA FileData;
 
-  CString ValidPath = Path;
-  if ( ValidPath[ ValidPath.Length() - 1 ] != '/' && ValidPath[ ValidPath.Length() - 1 ] != '\\' )
+  std::string ValidPath(Path);
+  if ( ValidPath[ ValidPath.length() - 1 ] != '/' && ValidPath[ ValidPath.length() - 1 ] != '\\' )
     ValidPath += "/";
 
-  hSearch = FindFirstFile( ( ValidPath + Mask ).GetPointer(), &FileData );
+  hSearch = FindFirstFile( ( ValidPath + Mask.data() ).c_str(), &FileData );
 
   if ( hSearch != INVALID_HANDLE_VALUE )
   {
     BOOL fFinished = FALSE;
     while ( !fFinished )
     {
-      CString FileName = FileData.cFileName;
+      std::string FileName = FileData.cFileName;
 
       if ( !( FileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY ) && FileName != "." && FileName != ".." )
       {
-        Files.Add( CFileListEntry( ValidPath, FileName ) );
+        Files.emplace_back( CFileListEntry( ValidPath, FileName ) );
       }
 
       if ( getDirectories && ( ( FileData.dwFileAttributes&FILE_ATTRIBUTE_DIRECTORY ) && FileName != "." && FileName != ".." ) )
       {
-        CFileListEntry e = CFileListEntry( ValidPath, FileName );
+        CFileListEntry e( ValidPath, FileName );
         e.isDirectory = true;
-        Files.Add( e );
+        Files.emplace_back(e);
       }
 
       fFinished = !FindNextFile( hSearch, &FileData );
@@ -66,7 +62,7 @@ void CFileList::ExpandSearch( const CString &Mask, const CString &Path, TBOOL Re
   //find all directories
   if ( Recursive )
   {
-    hSearch = FindFirstFile( ( ValidPath + "*.*" ).GetPointer(), &FileData );
+    hSearch = FindFirstFile( ( ValidPath + "*.*" ).c_str(), &FileData );
     if ( hSearch != INVALID_HANDLE_VALUE )
     {
       BOOL fFinished = FALSE;
@@ -85,18 +81,15 @@ void CFileList::ExpandSearch( const CString &Mask, const CString &Path, TBOOL Re
   }
 }
 
-CFileList::~CFileList()
-{
+CFileList::~CFileList() {}
 
-}
+CFileListEntry::CFileListEntry(std::string &&pth, std::string &&fn)
+    :
 
-CFileListEntry::CFileListEntry( const CString &pth, const CString &fn )
-{
-  Path = pth;
-  FileName = fn;
-}
+      Path(std::move(pth)),
+      FileName(std::move(fn)) {}
 
-CFileListEntry::CFileListEntry()
-{
+CFileListEntry::CFileListEntry(const std::string &pth, const std::string &fn)
+    : Path(pth), FileName(fn) {}
 
-}
+CFileListEntry::CFileListEntry() {}

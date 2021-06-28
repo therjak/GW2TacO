@@ -48,7 +48,7 @@ public:
   virtual ~CStreamReaderMemory();
 
   virtual int32_t Open( uint8_t *data, uint32_t size );
-  virtual int32_t Open( TCHAR *filename );
+  virtual int32_t Open( const TCHAR *filename );
 
   virtual uint8_t *GetData() const;
   virtual int64_t GetLength() const;

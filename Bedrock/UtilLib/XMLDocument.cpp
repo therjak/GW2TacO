@@ -20,7 +20,7 @@ CXMLDocument::~CXMLDocument(void)
 	CoUninitialize();
 }
 
-TBOOL CXMLDocument::LoadFromFile(TCHAR * szFileName)
+TBOOL CXMLDocument::LoadFromFile(const TCHAR * szFileName)
 {
   CStreamReaderMemory memStream;
   if ( !memStream.Open( szFileName ) )
@@ -91,7 +91,7 @@ CString CXMLDocument::SaveToString()
   return CString( result_xml.data() );
 }
 
-TBOOL CXMLDocument::SaveToFile(TCHAR * sz)
+TBOOL CXMLDocument::SaveToFile(const TCHAR * sz)
 {
 	CString s = SaveToString();
 

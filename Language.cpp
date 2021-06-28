@@ -1,6 +1,8 @@
 #include "Language.h"
 #include "OverlayConfig.h"
 
+#include <algorithm>
+
 Localization* localization = nullptr;
 
 void Localization::ImportFile( const CString& s )
@@ -103,16 +105,25 @@ CStringArray Localization::GetLanguages()
   return langs;
 }
 
+std::string str_tolower(std::string s) {
+  std::transform(s.begin(), s.end(), s.begin(),
+                 [](unsigned char c) { return std::tolower(c); } 
+  );
+  return s;
+}
+
+const std::string taco_lang_en = str_tolower("TacO_Language_en.xml");
+
 void Localization::Import()
 {
   ImportFile( "TacO_Language_en.xml" );
 
   CFileList list;
   list.ExpandSearch( "TacO_Language_*.xml", ".", false );
-  for ( int32_t x = 0; x < list.Files.NumItems(); x++ )
-    if ( CString::CompareNoCase( list.Files[ x ].FileName, CString( "TacO_Language_en.xml" ) ) != 0 )
+  for ( const auto& f : list.Files )
+    if ( str_tolower(f.FileName) == taco_lang_en )
     {
-      ImportFile( list.Files[ x ].Path + list.Files[ x ].FileName );
+      ImportFile( (f.Path + f.FileName).c_str() );
     }
 
   if ( HasConfigString( "language" ) )

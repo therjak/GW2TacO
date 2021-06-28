@@ -1370,10 +1370,10 @@ void ImportPOIDocument( CWBApplication *App, CXMLDocument& d, TBOOL External, co
   }
 }
 
-void ImportPOIFile( CWBApplication *App, CString s, TBOOL External )
+void ImportPOIFile( CWBApplication *App, const std::string_view& s, bool External )
 {
   CXMLDocument d;
-  if ( !d.LoadFromFile( s.GetPointer() ) ) return;
+  if ( !d.LoadFromFile( s.data() ) ) return;
   ImportPOIDocument( App, d, External, CString( "" ) );
 }
 
@@ -1384,9 +1384,9 @@ void ImportPOIString( CWBApplication *App, const CString& data, const CString& z
   ImportPOIDocument( App, d, true, zipFile );
 }
 
-void ImportMarkerPack( CWBApplication* App, const CString& zipFile )
+void ImportMarkerPack( CWBApplication* App, const std::string_view& zipFile )
 {
-  mz_zip_archive* zip = OpenZipFile( zipFile );
+  mz_zip_archive* zip = OpenZipFile( zipFile.data() );
   if ( !zip )
     return;
 
@@ -1416,7 +1416,7 @@ void ImportMarkerPack( CWBApplication* App, const CString& zipFile )
     }
 
     CString doc( (TS8*)data, (uint32_t)stat.m_uncomp_size );
-    ImportPOIString( App, doc, zipFile );
+    ImportPOIString( App, doc, zipFile.data() );
 
     delete[] data;
   }
@@ -1433,21 +1433,21 @@ void ImportPOIS( CWBApplication *App )
   {
     CFileList list;
     list.ExpandSearch( "*.xml", "POIs", false );
-    for ( int32_t x = 0; x < list.Files.NumItems(); x++ )
+    for ( uint32_t x = 0; x < list.Files.size(); x++ )
       ImportPOIFile( App, list.Files[ x ].Path + list.Files[ x ].FileName, true );
   }
 
   {
     CFileList list;
     list.ExpandSearch( "*.zip", "POIs", false );
-    for ( int32_t x = 0; x < list.Files.NumItems(); x++ )
+    for ( uint32_t x = 0; x < list.Files.size(); x++ )
       ImportMarkerPack( App, list.Files[ x ].Path + list.Files[ x ].FileName );
   }
 
   {
     CFileList list;
     list.ExpandSearch( "*.taco", "POIs", false );
-    for ( int32_t x = 0; x < list.Files.NumItems(); x++ )
+    for ( uint32_t x = 0; x < list.Files.size(); x++ )
       ImportMarkerPack( App, list.Files[ x ].Path + list.Files[ x ].FileName );
   }
 

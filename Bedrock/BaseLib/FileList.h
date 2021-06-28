@@ -1,30 +1,33 @@
 #pragma once
 
-class CFileListEntry
-{
-public:
-  CString Path;
-  CString FileName;
-  TBOOL isDirectory = false;
+#include <string>
+#include <string_view>
+#include <vector>
+
+class CFileListEntry {
+ public:
+  std::string Path;
+  std::string FileName;
+  bool isDirectory = false;
 
   CFileListEntry();
-
-  CFileListEntry( const CString &pth, const CString &fn );
+  CFileListEntry(std::string&& pth, std::string&& fn);
+  CFileListEntry(const std::string& pth, const std::string& fn);
 };
 
-const TBOOL operator == ( const CFileListEntry &f1, const CFileListEntry &f2 );
+const bool operator==(const CFileListEntry& f1, const CFileListEntry& f2);
 
-class CFileList
-{
-public:
-  CArray<CFileListEntry> Files;
+class CFileList {
+ public:
+  std::vector<CFileListEntry> Files;
 
   CFileList();
-
   ~CFileList();
+  CFileList(const std::string_view& Mask, const std::string_view& Path = "",
+            bool Recursive = false);
 
-  CFileList( const CString &Mask, const CString &Path = "", TBOOL Recursive = false );
-  void ExpandSearch( const CString &Mask, const CString &Path, TBOOL Recursive, TBOOL getDirectories = false );
+  void ExpandSearch(const std::string_view& Mask, const std::string_view& Path,
+                    bool Recursive, bool getDirectories = false);
 };
 
-TBOOL exists( const CString &fname );
+bool exists(const std::string_view& fname);

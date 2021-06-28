@@ -16,9 +16,9 @@ public:
   TBOOL Allocate();
   TBOOL Cleanup();
 
-  TBOOL LoadFromFile( TCHAR * );
+  TBOOL LoadFromFile( const TCHAR * );
   TBOOL LoadFromString( CString );
-  TBOOL SaveToFile( TCHAR * );
+  TBOOL SaveToFile( const TCHAR * );
   CString SaveToString();
   CXMLNode GetDocumentNode();
 
