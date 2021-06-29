@@ -5,26 +5,15 @@ class CStreamWriter
   uint32_t writerBitOffset;
   uint8_t writerCurrentChar;
   virtual int32_t WriteStream( void* lpBuf, uint32_t nCount ) = 0;
+  bool WriteBits(uint32_t data, uint32_t bitcount);
 
-public:
+ public:
   CStreamWriter();
   virtual ~CStreamWriter();
 
-  TBOOL Write( void* lpBuf, uint32_t nCount );
-  TBOOL WriteQWord( uint64_t data );
-  TBOOL WriteDWord( uint32_t data );
-  TBOOL WriteWord( uint16_t data );
-  TBOOL WriteByte( uint8_t data );
-  TBOOL WriteTF32( float data );
-  TBOOL WriteBits( uint32_t data, uint32_t bitcount );
-  TBOOL WriteBool( TBOOL data );
-  TBOOL WriteRemainingBits();
-  TBOOL WriteASCIIZ( CString &s );
-
-  //TBOOL WriteFormat(const wchar_t *format, ...);
-  TBOOL WriteFormat( const TCHAR *format, ... );
-  //TBOOL WriteFormatZT(const wchar_t *format, ...);
-  TBOOL WriteFormatZT( const TCHAR *format, ... );
+  bool Write( void* lpBuf, uint32_t nCount );
+  bool WriteDWord( uint32_t data );
+  bool WriteByte( uint8_t data );
 };
 
 class CStreamWriterMemory : public CStreamWriter
@@ -56,5 +45,5 @@ public:
   virtual ~CStreamWriterFile();
 
   int32_t Open( TCHAR *filename );
-  TBOOL Flush();
+  void Flush();
 };

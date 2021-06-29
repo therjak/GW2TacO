@@ -61,35 +61,6 @@ int32_t CSocket::Connect( const CString &Server, const uint32_t Port )
   return 1;
 }
 
-int32_t CSocket::Listen( const uint32_t Port, const TBOOL ReuseAddress )
-{
-  Socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP );
-
-  if ( Socket == INVALID_SOCKET )
-    return 0;
-
-  //TS8 yes=1;
-  //if (ReuseAddress && setsockopt(Socket,SOL_SOCKET,SO_REUSEADDR,&yes,1)!=0)
-  //{
-  //	LOG(LOG_ERROR,CString::Format(_T("Winsock Error: %d"),WSAGetLastError()).GetPointer());
-  //	return 0;
-  //}
-
-  SOCKADDR_IN addr;
-  addr.sin_addr.s_addr = INADDR_ANY;
-  addr.sin_family = AF_INET;
-  addr.sin_port = htons( Port );
-
-  if ( bind( Socket, (SOCKADDR*)&addr, sizeof( SOCKADDR_IN ) ) == SOCKET_ERROR )
-  {
-    LOG( LOG_ERROR, _T( "[sock] Winsock Error: %d" ), WSAGetLastError() );
-    return 0;
-  }
-
-  int32_t r = listen( Socket, 10 );
-  return r != SOCKET_ERROR;
-}
-
 int32_t CSocket::Close()
 {
   if ( Socket != INVALID_SOCKET )
@@ -99,30 +70,6 @@ int32_t CSocket::Close()
   }
   Socket = INVALID_SOCKET;
 
-  return 1;
-}
-
-int32_t CSocket::AcceptConnection( CSocket &NewConnection )
-{
-  fd_set Check;
-  Check.fd_array[ 0 ] = Socket;
-  Check.fd_count = 1;
-  TIMEVAL t;
-  t.tv_sec = 0;
-  t.tv_usec = 1;
-
-  //check if we have an incoming connection
-  if ( select( 0, &Check, NULL, NULL, &t ) != 1 ) return 0;
-
-  sockaddr_in addr;
-  int32_t l = sizeof( sockaddr_in );
-
-  SOCKET s = accept( Socket, ( struct sockaddr * )&addr, &l );
-  if ( s == INVALID_SOCKET ) return 0;
-
-  LOG_NFO( "[connection] New connection accepted from %s:%d", inet_ntoa( addr.sin_addr ), ntohs( addr.sin_port ) );
-
-  NewConnection = CSocket( s );
   return 1;
 }
 
@@ -160,14 +107,6 @@ int64_t CSocket::GetOffset() const
   return 0;
 }
 
-void CSocket::SeekFromStart( uint64_t lOff )
-{
-}
-
-void CSocket::SeekRelative( int64_t lOff )
-{
-}
-
 int32_t CSocket::ReadFull( void *data, uint32_t size )
 {
   int32_t progress = 0;
@@ -182,7 +121,7 @@ int32_t CSocket::ReadFull( void *data, uint32_t size )
   return size;
 }
 
-TBOOL CSocket::Peek( void *lpBuf, uint32_t nCount )
+bool CSocket::Peek( void *lpBuf, uint32_t nCount )
 {
   if ( Socket == INVALID_SOCKET ) return 0;
   int32_t r = recv( Socket, (TS8*)lpBuf, nCount, MSG_PEEK );
@@ -192,7 +131,7 @@ TBOOL CSocket::Peek( void *lpBuf, uint32_t nCount )
   return r != SOCKET_ERROR;
 }
 
-TBOOL CSocket::IsConnected()
+bool CSocket::IsConnected()
 {
   if ( Socket == INVALID_SOCKET )
     return false;
@@ -216,12 +155,7 @@ TBOOL CSocket::IsConnected()
   return true;
 }
 
-int32_t CSocket::TimeSinceLastActivity()
-{
-  return (int32_t)( GetTickCount64() - LastActivity );
-}
-
-const TBOOL CSocket::operator==( const CSocket &b )
+const bool CSocket::operator==( const CSocket &b )
 {
   return Socket == b.Socket;
 }

@@ -11,7 +11,7 @@ CStreamWriter::~CStreamWriter()
 
 }
 
-TBOOL CStreamWriter::Write( void* lpBuf, uint32_t nCount )
+bool CStreamWriter::Write( void* lpBuf, uint32_t nCount )
 {
   if ( writerBitOffset == 0 ) //non bitstream mode
     return WriteStream( lpBuf, nCount ) == nCount;
@@ -23,32 +23,17 @@ TBOOL CStreamWriter::Write( void* lpBuf, uint32_t nCount )
   return true;
 }
 
-TBOOL CStreamWriter::WriteByte( uint8_t data )
+bool CStreamWriter::WriteByte( uint8_t data )
 {
   return Write( &data, 1 );
 }
 
-TBOOL CStreamWriter::WriteWord( uint16_t data )
-{
-  return Write( &data, 2 );
-}
-
-TBOOL CStreamWriter::WriteDWord( uint32_t data )
+bool CStreamWriter::WriteDWord( uint32_t data )
 {
   return Write( &data, 4 );
 }
 
-TBOOL CStreamWriter::WriteQWord( uint64_t data )
-{
-  return Write( &data, 8 );
-}
-
-TBOOL CStreamWriter::WriteTF32( float data )
-{
-  return Write( &data, 4 );
-}
-
-TBOOL CStreamWriter::WriteBits( uint32_t data, uint32_t BitCount )
+bool CStreamWriter::WriteBits( uint32_t data, uint32_t BitCount )
 {
   BASEASSERT( BitCount <= 64 );
 
@@ -72,88 +57,6 @@ TBOOL CStreamWriter::WriteBits( uint32_t data, uint32_t BitCount )
   }
 
   return true;
-}
-
-TBOOL CStreamWriter::WriteBool( TBOOL data )
-{
-  return WriteBits( data, 1 );
-}
-
-TBOOL CStreamWriter::WriteRemainingBits()
-{
-  if ( !writerBitOffset ) return true;
-
-  TBOOL b = WriteStream( &writerCurrentChar, 1 ) != 0;
-  writerBitOffset = 0;
-  writerCurrentChar = 0;
-  return b;
-}
-
-//TBOOL CStreamWriter::WriteFormat(const wchar_t *format, ...) {
-//	CString s;
-//
-//	va_list argList;
-//	va_start(argList, format);
-//	CString::FormatVA(format, argList, s);
-//	va_end(argList);
-//
-//	WCHAR * sz = new WCHAR[s.Length() + 1];
-//	s.WriteAsWideChar(sz, s.Length() + 1);
-//	TBOOL result = Write(sz, s.Length() * sizeof(wchar_t));
-//	delete[] sz;
-//	return result;
-//}
-
-TBOOL CStreamWriter::WriteFormat( const TCHAR *format, ... ) {
-  CString s;
-
-  va_list argList;
-  va_start( argList, format );
-  CString::FormatVA( format, argList, s );
-  va_end( argList );
-
-  char * sz = new char[ s.Length() + 1 ];
-  s.WriteAsMultiByte( sz, s.Length() + 1 );
-  TBOOL result = Write( sz, s.Length() * sizeof( char ) );
-  delete[] sz;
-  return result;
-}
-
-//TBOOL CStreamWriter::WriteFormatZT(const wchar_t *format, ...) {
-//	CString s;
-//
-//	va_list argList;
-//	va_start(argList, format);
-//	CString::FormatVA(format, argList, s);
-//	va_end(argList);
-//
-//	WCHAR * sz = new WCHAR[s.Length() + 1];
-//	s.WriteAsWideChar(sz, s.Length() + 1);
-//	TBOOL result = Write(sz, (s.Length() + 1) * sizeof(wchar_t));
-//	delete[] sz;
-//	return result;
-//}
-
-TBOOL CStreamWriter::WriteFormatZT( const TCHAR *format, ... ) {
-  CString s;
-
-  va_list argList;
-  va_start( argList, format );
-  CString::FormatVA( format, argList, s );
-  va_end( argList );
-
-  char * sz = new char[ s.Length() + 1 ];
-  s.WriteAsMultiByte( sz, s.Length() + 1 );
-  TBOOL result = Write( sz, ( s.Length() + 1 ) * sizeof( char ) );
-  delete[] sz;
-  return result;
-}
-
-TBOOL CStreamWriter::WriteASCIIZ( CString &s )
-{
-  TBOOL b = Write( s.GetPointer(), s.Length() * sizeof( TCHAR ) );
-  b |= WriteByte( 0 );
-  return b;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -255,8 +158,8 @@ int32_t CStreamWriterFile::Open( TCHAR *Filename )
   return 1;
 }
 
-TBOOL CStreamWriterFile::Flush()
+void CStreamWriterFile::Flush()
 {
   SetFilePointer( File, 0, NULL, FILE_BEGIN );
-  return SetEndOfFile( File ) != 0;
+  SetEndOfFile( File );
 }

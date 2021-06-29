@@ -33,31 +33,10 @@ uint32_t CStreamReader::ReadDWord()
   return i;
 }
 
-uint16_t CStreamReader::ReadWord()
-{
-  uint16_t i = 0;
-  BASEASSERT( Read( &i, sizeof( uint16_t ) ) == sizeof( uint16_t ) );
-  return i;
-}
-
 uint8_t CStreamReader::ReadByte()
 {
   uint8_t i = 0;
   BASEASSERT( Read( &i, sizeof( uint8_t ) ) == sizeof( uint8_t ) );
-  return i;
-}
-
-float CStreamReader::ReadTF32()
-{
-  float i = 0;
-  BASEASSERT( Read( &i, sizeof( float ) ) == sizeof( float ) );
-  return i;
-}
-
-uint64_t CStreamReader::ReadQWord()
-{
-  uint64_t i = 0;
-  BASEASSERT( Read( &i, sizeof( uint64_t ) ) == sizeof( uint64_t ) );
   return i;
 }
 
@@ -86,36 +65,7 @@ uint32_t CStreamReader::ReadBits( uint32_t BitCount )
   return result;
 }
 
-TBOOL CStreamReader::ReadBit()
-{
-  return ReadBits( 1 ) != 0;
-}
-
-void CStreamReader::ReadRemainingBits()
-{
-  readerBitOffset = 0;
-}
-
-CString CStreamReader::ReadASCIIZ()
-{
-  CString result;
-
-  TS8 s[ 2 ];
-  s[ 0 ] = s[ 1 ] = 0;
-
-  do
-  {
-    s[ 0 ] = ReadByte();
-
-    result += s;
-
-  } while ( s[ 0 ] );
-
-  return result;
-}
-
-CString CStreamReader::ReadLine()
-{
+CString CStreamReaderMemory::ReadLine() {
   CString result;
 
   TS8 s[ 2 ];
@@ -136,7 +86,7 @@ CString CStreamReader::ReadLine()
   return result;
 }
 
-TBOOL CStreamReader::eof()
+bool CStreamReader::eof()
 {
   return GetOffset() >= GetLength();
 }
@@ -218,69 +168,4 @@ int64_t CStreamReaderMemory::GetLength() const
 int64_t CStreamReaderMemory::GetOffset() const
 {
   return Offset;
-}
-
-void CStreamReaderMemory::SeekFromStart( uint64_t lOff )
-{
-  Offset = lOff;
-}
-
-void CStreamReaderMemory::SeekRelative( int64_t lOff )
-{
-  Offset = max( 0, min( DataSize, Offset + lOff ) );
-}
-
-//////////////////////////////////////////////////////////////////////////
-// streamreader file
-
-CStreamReaderFile::CStreamReaderFile() : CStreamReader()
-{
-  File = 0;
-}
-
-CStreamReaderFile::~CStreamReaderFile()
-{
-  CloseHandle( File );
-}
-
-int32_t CStreamReaderFile::ReadStream( void *lpBuf, uint32_t nCount )
-{
-  DWORD nRead = 0;
-  BOOL b = ReadFile( File, lpBuf, nCount, &nRead, NULL );
-  if ( !b ) return 0;
-  return nRead;
-}
-
-int32_t CStreamReaderFile::Open( TCHAR *Filename )
-{
-  if ( File )
-    CloseHandle( File ); //close previous handle
-
-  File = CreateFile( Filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL );
-  if ( File == INVALID_HANDLE_VALUE ) return 0;
-  return 1;
-}
-
-int64_t CStreamReaderFile::GetLength() const
-{
-  return GetFileSize( File, NULL );
-}
-
-int64_t CStreamReaderFile::GetOffset() const
-{
-  return SetFilePointer( File, NULL, NULL, FILE_CURRENT );
-}
-
-void CStreamReaderFile::SeekFromStart( uint64_t lOff )
-{
-  LARGE_INTEGER li;
-  li.QuadPart = lOff;
-  SetFilePointer( File, li.LowPart, &li.HighPart, FILE_BEGIN );
-}
-
-void CStreamReaderFile::SeekRelative( int64_t lOff )
-{
-  LARGE_INTEGER li;
-  li.QuadPart = lOff;
-  SetFilePointer( File, li.LowPart, &li.HighPart, FILE_CURRENT );
 }

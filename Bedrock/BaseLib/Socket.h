@@ -8,8 +8,9 @@ protected:
 
   virtual int32_t ReadStream( void *lpBuf, uint32_t nCount );
   virtual int32_t WriteStream( void* lpBuf, uint32_t nCount );
+  static uint32_t Resolve(const TS8 *Address);
 
-public:
+ public:
 
   CSocket();
   CSocket( SOCKET s );
@@ -19,12 +20,9 @@ public:
   //socket functions
 
   virtual int32_t Connect( const CString &Server, const uint32_t Port );
-  virtual int32_t Listen( const uint32_t Port, const TBOOL ReuseAddress = false );
+  int32_t ReadFull(void *lpBuf, uint32_t nCount);
 
   virtual int32_t Close();
-  virtual int32_t AcceptConnection( CSocket &Socket );
-
-  static uint32_t Resolve( const TS8 *Address );
 
   //////////////////////////////////////////////////////////////////////////
   //streamreader functions
@@ -32,19 +30,13 @@ public:
   virtual int64_t GetLength() const; //returns the currently available bytes in the socket
   virtual int64_t GetOffset() const; //is always 0
 
-  virtual void SeekFromStart( uint64_t lOff ); //these do nothing
-  virtual void SeekRelative( int64_t lOff ); //these do nothing
+  CString ReadLine();
 
-  int32_t ReadFull( void *lpBuf, uint32_t nCount );
-  virtual CString ReadLine() override;
+  bool Peek( void *lpBuf, uint32_t nCount );
 
-  TBOOL Peek( void *lpBuf, uint32_t nCount );
+  bool IsConnected();
 
-  TBOOL IsConnected();
-
-  const TBOOL operator==( const CSocket &b );
-
-  int32_t TimeSinceLastActivity();
+  const bool operator==( const CSocket &b );
 
   //////////////////////////////////////////////////////////////////////////
   //streamwriter functions
