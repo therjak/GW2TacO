@@ -58,7 +58,6 @@
     <ClCompile Include="jsonxx.cpp" />
     <ClCompile Include="miniz.c" />
     <ClCompile Include="PNGDecompressor.cpp" />
-    <ClCompile Include="SocketSSL.cpp" />
     <ClCompile Include="stb_vorbis.c" />
     <ClCompile Include="XMLDocument.cpp" />
     <ClCompile Include="XMLNode.cpp" />
@@ -66,7 +65,6 @@
   <ItemGroup>
     <ClInclude Include="jsonxx.h" />
     <ClInclude Include="PNGDecompressor.h" />
-    <ClInclude Include="SocketSSL.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="XMLDocument.h" />
