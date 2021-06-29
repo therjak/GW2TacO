@@ -1,36 +1,32 @@
 #include "../UtilLib/RapidXML/rapidxml.hpp"
 #include "../UtilLib/RapidXML/rapidxml_print.hpp"
 
+#include <sstream>
+#include <string>
+#include <string_view>
+#include <cstdio>
+
+#include "../BaseLib/read_file.h"
 #include "XMLDocument.h"
 
 CXMLDocument::CXMLDocument(void)
 {
-	//HRESULT res = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-	//if (res != S_OK && res!=S_FALSE)
-	//	LOG_ERR("[XML] Error during CoInitializeEx");
-
-	//pDoc = NULL;
-
-	Allocate();
 }
 
 CXMLDocument::~CXMLDocument(void)
 {
-	Cleanup();
 	CoUninitialize();
 }
 
-TBOOL CXMLDocument::LoadFromFile(const TCHAR * szFileName)
-{
-  CStreamReaderMemory memStream;
-  if ( !memStream.Open( szFileName ) )
+bool CXMLDocument::LoadFromFile(const std::string_view& szFileName) {
+  memString = baselib::ReadFile(szFileName);
+  if (memString.empty()) {
     return false;
-
-  memString = CString( (char*)memStream.GetData(), (int32_t)memStream.GetLength() );
+  }
 
   try
   {
-    doc.parse<0>( (char*)memString.GetPointer() );
+    doc.parse<0>( memString.data() );
   }
   catch ( const std::exception &e )
   {
@@ -59,13 +55,12 @@ TBOOL CXMLDocument::LoadFromFile(const TCHAR * szFileName)
 	throw (long)__hr; \
 }
 
-TBOOL CXMLDocument::LoadFromString(CString s)
-{
+bool CXMLDocument::LoadFromString(const std::string_view& s) {
   memString = s;
 
   try
   {
-    doc.parse<0>( (char*)memString.GetPointer() );
+    doc.parse<0>( memString.data() );
   }
   catch ( const std::exception &e )
   {
@@ -81,72 +76,21 @@ CXMLNode CXMLDocument::GetDocumentNode()
   return CXMLNode( &doc, this, 0 );
 }
 
-#include <sstream>
-
-CString CXMLDocument::SaveToString()
+std::string CXMLDocument::SaveToString()
 {
   std::stringstream ss;
   print<char>( ss, *doc.first_node() );
-  std::string result_xml = ss.str();
-  return CString( result_xml.data() );
+  return ss.str();
 }
 
-TBOOL CXMLDocument::SaveToFile(const TCHAR * sz)
-{
-	CString s = SaveToString();
+bool CXMLDocument::SaveToFile(const std::string_view& sz) {
+	auto s = SaveToString();
 
-	HANDLE h = CreateFile(sz, GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, NULL, NULL);
+	HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS, NULL, NULL);
 	if (h == INVALID_HANDLE_VALUE) return false;
-	char * sz8 = new char[s.Length() * 3];
-	s.WriteAsMultiByte(sz8, s.Length() * 3);
 	DWORD b;
-	WriteFile(h, sz8, (int32_t)strlen(sz8), &b, NULL);
+	WriteFile(h, s.c_str(), s.length(), &b, NULL);
 	CloseHandle(h);
 
-	delete[] sz8;
-
 	return true;
 }
-
-TBOOL CXMLDocument::Allocate()
-{
-	//if (pDoc) return true;
-
-	//if (CoCreateInstance(MSXML2::CLSID_DOMDocument, NULL, CLSCTX_INPROC_SERVER, MSXML2::IID_IXMLDOMDocument, (void**)&pDoc) != S_OK)
-	//{
-	//	LOG_ERR("[XML] Error during CoCreateInstance!");
-	//	return false;
-	//}
-
-	//if (!pDoc)
-	//{
-	//	LOG_ERR("[XML] Failed to create document object!");
-	//	return false;
-	//}
-
-	//pDoc->put_async(VARIANT_FALSE);
-	//pDoc->put_validateOnParse(VARIANT_FALSE);
-	//pDoc->put_resolveExternals(VARIANT_FALSE);
-
-	return true;
-}
-
-TBOOL CXMLDocument::Cleanup()
-{
-	//if (pDoc)
-	//{
-	//	pDoc->Release();
-	//	pDoc = NULL;
-	//}
-
-	//CoFreeUnusedLibraries();
-	return true;
-}
-
-//CXMLNode CXMLDocument::CreateNode(VARIANT type, BSTR Name, int32_t Level)
-//{
-//	//MSXML2::IXMLDOMNode * pNewNode = NULL;
-//	//pDoc->createNode(_variant_t((int32_t)MSXML2::NODE_TEXT), NULL, NULL, &pNewNode);
-//	//return CXMLNode(pNewNode, this, Level);
-//  return CXMLNode();
-//}

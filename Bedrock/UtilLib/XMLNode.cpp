@@ -1,6 +1,10 @@
-#include "../UtilLib/RapidXML/rapidxml.hpp"
-
 #include "XMLNode.h"
+
+#include <string_view>
+#include <memory>
+#include <cstdint>
+
+#include "../UtilLib/RapidXML/rapidxml.hpp"
 #include "XMLDocument.h"
 
 int32_t GetStringHash( TCHAR* string )
@@ -62,9 +66,6 @@ CXMLNode CXMLNode::operator=( const CXMLNode Original )
 
 CXMLNode::~CXMLNode()
 {
-  stringStore.FreeArray();
-	//if (pNode)
-	//	pNode->Release();
 }
 
 int32_t CXMLNode::GetChildCount()
@@ -183,20 +184,7 @@ CXMLNode CXMLNode::GetChild(TCHAR * szNodeName, int32_t n)
   return CXMLNode();
 }
 
-TBOOL CXMLNode::Next( CXMLNode& out )
-{
-  if ( !pNode )
-    return false;
-
-  auto node = pNode->next_sibling();
-  if ( !node )
-    return false;
-
-  out = CXMLNode( node, pDoc, nLevel );
-  return true;
-}
-
-TBOOL CXMLNode::Next( CXMLNode& out, TCHAR* szNodeName )
+bool CXMLNode::Next( CXMLNode& out, TCHAR* szNodeName )
 {
   if ( !pNode )
     return false;
@@ -228,7 +216,7 @@ CString CXMLNode::GetText()
   return CString();
 }
 
-TBOOL CXMLNode::GetAttribute(TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize)
+bool CXMLNode::GetAttribute(TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize)
 {
   if ( !pNode )
     return false;
@@ -260,7 +248,7 @@ CString CXMLNode::GetAttributeAsString(TCHAR * szAttribute)
   return GetAttribute( szAttribute );
 }
 
-TBOOL CXMLNode::HasAttribute(TCHAR * szAttribute)
+bool CXMLNode::HasAttribute(TCHAR * szAttribute)
 {
   if ( !pNode )
     return false;
@@ -309,7 +297,7 @@ void CXMLNode::GetAttributeAsFloat(TCHAR * szAttribute, float * pfValue)
 //	}
 //}
 
-CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName, TBOOL PostEnter)
+CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName)
 {
   TCHAR *tc = szNodeName;
   if ( szNodeName )
@@ -326,51 +314,51 @@ CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName, TBOOL PostEnter)
 
   if ( !pNode || !pDoc )
   {
-    children.Add( new CXMLNode() );
-    return *children.Last();
+    children.emplace_back( std::make_unique<CXMLNode>() );
+    return *children.back();
   }
 
   auto node = pNode->document()->allocate_node( node_type::node_element, szNodeName );
 
   pNode->append_node( node );
 
-  children.Add( new CXMLNode( node, pDoc, nLevel + 1 ) );
-  return *children.Last();
+  children.emplace_back( std::make_unique<CXMLNode>( node, pDoc, nLevel + 1 ) );
+  return *children.back();
 }
 
-void CXMLNode::SetAttribute(TCHAR * szAttributeName, const TCHAR * szValue)
-{
+void CXMLNode::SetAttribute(const std::string_view& szAttributeName,
+                            const std::string_view& szValue) {
   if ( !pNode || !pDoc )
     return;
 
-  CString* strVal = new CString( szValue );
-  stringStore += strVal;
+  stringStore.emplace_back(std::make_unique<std::string>(szValue));
+  std::string* strVal = stringStore.back().get();
 
-  CString* strNam = new CString( szAttributeName );
-  stringStore += strNam;
+  stringStore.emplace_back(std::make_unique<std::string>(szAttributeName));
+  std::string* strNam = stringStore.back().get();
 
-  auto attr = pNode->first_attribute( strNam->GetPointer() );
+  auto attr = pNode->first_attribute( strNam->c_str() );
 
   if ( !attr )
   {
-    attr = pNode->document()->allocate_attribute( strNam->GetPointer(), strVal->GetPointer() );
+    attr = pNode->document()->allocate_attribute( strNam->c_str(), strVal->c_str() );
     pNode->append_attribute( attr );
     return;
   }
 
-  attr->value( strVal->GetPointer() );
+  attr->value( strVal->c_str() );
 }
 
-void CXMLNode::SetAttributeFromInteger(TCHAR * szAttributeName, int32_t nValue)
-{
+void CXMLNode::SetAttributeFromInteger(const std::string_view& szAttributeName,
+                                       int32_t nValue) {
 	TCHAR s[64];
   memset( s, 0, sizeof( TCHAR ) * 64 );
 	_sntprintf_s(s, 64, _T("%d"), nValue);
 	SetAttribute(szAttributeName, s);
 }
 
-void CXMLNode::SetAttributeFromFloat(TCHAR * szAttributeName, float fValue)
-{
+void CXMLNode::SetAttributeFromFloat(const std::string_view& szAttributeName,
+                                     float fValue) {
 	TCHAR s[64];
 	_sntprintf_s(s, 64, _T("%g"), fValue);
 	SetAttribute(szAttributeName, s);
@@ -412,7 +400,7 @@ void CXMLNode::SetFloat(float Float)
 	SetText(s);
 }
 
-TBOOL CXMLNode::GetValue(int32_t &Int)
+bool CXMLNode::GetValue(int32_t &Int)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);
@@ -420,7 +408,7 @@ TBOOL CXMLNode::GetValue(int32_t &Int)
 	return _stscanf_s(s, _T("%d"), &Int) == 1;
 }
 
-TBOOL CXMLNode::GetValue(TBOOL &Int)
+bool CXMLNode::GetValue(TBOOL &Int)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);
@@ -432,7 +420,7 @@ TBOOL CXMLNode::GetValue(TBOOL &Int)
 	return r == 1;
 }
 
-TBOOL CXMLNode::GetValue(float &Float)
+bool CXMLNode::GetValue(float &Float)
 {
 	TCHAR s[20];
 	ZeroMemory(s, 20);

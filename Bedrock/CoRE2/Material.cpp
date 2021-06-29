@@ -58,7 +58,7 @@ INLINE COREMATERIALPARAMETERSCOPE &CCoreMaterialParameter::GetScope() {
 
 void CCoreMaterialParameter::Export(CXMLNode *Node) {
   Node->SetAttribute(_T("Name"), Name.GetPointer());
-  Node->AddChild(_T("Scope"), false)
+  Node->AddChild(_T("Scope"))
       .SetText(FindNameByEnum(MaterialParameterScopeNames, Scope).data());
   Node->AddChild(_T("Type"))
       .SetText(FindNameByEnum(MaterialParameterTypeNames, Type).data());

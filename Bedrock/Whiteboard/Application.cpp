@@ -623,7 +623,7 @@ void CWBApplication::AddToTrash( CWBItem *item )
 TBOOL CWBApplication::LoadXMLLayout( CString & XML )
 {
   CXMLDocument *doc = new CXMLDocument();
-  if ( !doc->LoadFromString( XML ) )
+  if ( !doc->LoadFromString( XML.GetPointer() ) )
   {
     LOG_ERR( "[gui] Error loading XML Layout: parsing failed" );
     delete doc;
@@ -785,7 +785,7 @@ CWBSkin * CWBApplication::GetSkin()
 TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
 {
   CXMLDocument doc;
-  if ( !doc.LoadFromString( XML ) ) return false;
+  if ( !doc.LoadFromString( XML.GetPointer() ) ) return false;
   if ( !doc.GetDocumentNode().GetChildCount( _T( "whiteboardskin" ) ) ) return false;
 
   CXMLNode r = doc.GetDocumentNode().GetChild( _T( "whiteboardskin" ) );

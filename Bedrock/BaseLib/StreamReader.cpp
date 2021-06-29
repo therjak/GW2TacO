@@ -1,5 +1,7 @@
 #include "BaseLib.h"
 
+#include <string_view>
+
 //////////////////////////////////////////////////////////////////////////
 // base class implementation
 
@@ -128,9 +130,8 @@ int32_t CStreamReaderMemory::Open( uint8_t *data, uint32_t size )
   return 1;
 }
 
-int32_t CStreamReaderMemory::Open( const TCHAR *Filename )
-{
-  HANDLE hFile = CreateFile( Filename, GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL );
+int32_t CStreamReaderMemory::Open(const std::string_view& Filename) {
+  HANDLE hFile = CreateFile( Filename.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL );
   if ( hFile == INVALID_HANDLE_VALUE ) return 0;
 
   int32_t tDataSize = GetFileSize( hFile, NULL );

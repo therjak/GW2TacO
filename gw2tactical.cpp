@@ -1380,7 +1380,7 @@ void ImportPOIFile( CWBApplication *App, const std::string_view& s, bool Externa
 void ImportPOIString( CWBApplication *App, const CString& data, const CString& zipFile )
 {
   CXMLDocument d;
-  if ( !d.LoadFromString( data ) ) return;
+  if ( !d.LoadFromString( data.GetPointer() ) ) return;
   ImportPOIDocument( App, d, true, zipFile );
 }
 

@@ -3,6 +3,10 @@
 
 #include "../BaseLib/BaseLib.h"
 
+#include <string_view>
+#include <memory>
+#include <cstdint>
+
 //#import "msxml3.dll" named_guids raw_interfaces_only
 //#include "msxml3.tlh"
 using namespace rapidxml;
@@ -16,7 +20,6 @@ class CXMLNode
 public:
   CXMLNode( void );
   CXMLNode( const CXMLNode &Original );
-  //CXMLNode(MSXML2::IXMLDOMNode *, CXMLDocument *, int32_t);
   CXMLNode( xml_node<char> *, CXMLDocument *, int32_t );
   virtual ~CXMLNode();
 
@@ -28,8 +31,7 @@ public:
   CXMLNode GetChild( TCHAR * );
   CXMLNode GetChild( TCHAR *, int32_t );
 
-  TBOOL Next( CXMLNode& out );
-  TBOOL Next( CXMLNode& out, TCHAR* );
+  bool Next( CXMLNode& out, TCHAR* );
 
   int32_t IsValid();
 
@@ -37,41 +39,37 @@ public:
 
   void GetText( TCHAR*, int32_t );
   CString GetText();
-  TBOOL GetValue( int32_t &Int );
-  TBOOL GetValue( TBOOL &Int );
-  TBOOL GetValue( float &Float );
+  bool GetValue( int32_t &Int );
+  bool GetValue( TBOOL &Int );
+  bool GetValue( float &Float );
 
-  TBOOL GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize );
+  bool GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize );
   CString GetAttribute( TCHAR * szAttribute );
   void GetAttributeAsInteger( TCHAR * szAttribute, int32_t * nValue );
   void GetAttributeAsFloat( TCHAR * szAttribute, float * fValue );
   CString GetAttributeAsString( TCHAR * szAttribute );
-  TBOOL HasAttribute( TCHAR * szAttribute );
+  bool HasAttribute( TCHAR * szAttribute );
 
-  //void FlushNode();
-  CXMLNode& AddChild( TCHAR*, TBOOL PostEnter = true );
+  CXMLNode& AddChild( TCHAR*);
   void SetText( const TCHAR* );
   void SetText( CString &s );
   void SetInt( int32_t Int );
   void SetFloat( float Float );
-  void SetAttribute( TCHAR * szAttributeName, const TCHAR * szValue );
-  void SetAttributeFromInteger( TCHAR * szAttributeName, int32_t nValue );
-  void SetAttributeFromFloat( TCHAR * szAttributeName, float nValue );
+  void SetAttribute( const std::string_view& szAttributeName, const std::string_view& szValue );
+  void SetAttributeFromInteger( const std::string_view& szAttributeName, int32_t nValue );
+  void SetAttributeFromFloat( const std::string_view& szAttributeName, float nValue );
 
-  //MSXML2::IXMLDOMNode * GetNode() { return pNode; }
 
 private:
 
   int32_t childCount = -1;
   CDictionary< int32_t, int32_t > childCounts;
-  CArray<CString*> stringStore;
-  CArray<CXMLNode*> children;
+  std::vector<std::unique_ptr<std::string>> stringStore;
+  std::vector<std::unique_ptr<CXMLNode>> children;
 
   CString value;
 
   int32_t nLevel;
   xml_node<char>* pNode;
-  //MSXML2::IXMLDOMNode * pNode;
-  //MSXML2::IXMLDOMDocument * pDoc;
   CXMLDocument *pDoc;
 };

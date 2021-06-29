@@ -128,6 +128,9 @@
     <ClInclude Include="string_format.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
+    <ClInclude Include="read_file.h">
+      <Filter>Header Files\Basic Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />
@@ -203,6 +206,9 @@
       <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>
     <ClCompile Include="string_format.cpp">
+      <Filter>Source Files\Basic Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="read_file.cpp">
       <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>
   </ItemGroup>

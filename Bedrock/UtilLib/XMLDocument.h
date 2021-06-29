@@ -1,27 +1,22 @@
 #pragma once
 
+#include <string>
+#include <string_view>
+
 #include "../BaseLib/BaseLib.h"
 #include "XMLNode.h"
 
-class CXMLDocument
-{
-  //MSXML2::IXMLDOMDocument2 * pDoc;
+class CXMLDocument {
   xml_document<> doc;
-  CString memString;
+  std::string memString;
 
 public:
   CXMLDocument( void );
   ~CXMLDocument( void );
 
-  TBOOL Allocate();
-  TBOOL Cleanup();
-
-  TBOOL LoadFromFile( const TCHAR * );
-  TBOOL LoadFromString( CString );
-  TBOOL SaveToFile( const TCHAR * );
-  CString SaveToString();
+  bool LoadFromFile(const std::string_view&);
+  bool LoadFromString( const std::string_view& );
+  bool SaveToFile(const std::string_view&);
+  std::string SaveToString();
   CXMLNode GetDocumentNode();
-
-  //CXMLNode CreateNode(VARIANT type, BSTR Name, int32_t Level);
-  //MSXML2::IXMLDOMDocument *GetDoc() { return pDoc; }
 };
