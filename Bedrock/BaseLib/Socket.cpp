@@ -10,12 +10,6 @@ CSocket::CSocket() : CStreamReader(), CStreamWriter()
   LastActivity = GetTickCount64();
 }
 
-CSocket::CSocket( SOCKET s ) : CStreamReader(), CStreamWriter()
-{
-  Socket = s;
-  LastActivity = GetTickCount64();
-}
-
 CSocket::~CSocket()
 {
   //don't close the socket here as any copy of the class will invalidate the socket on destruction
