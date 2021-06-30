@@ -3,11 +3,11 @@
 #include <string>
 #include <string_view>
 
-#include "../BaseLib/BaseLib.h"
 #include "XMLNode.h"
+#include "../UtilLib/RapidXML/rapidxml.hpp"
 
 class CXMLDocument {
-  xml_document<> doc;
+  rapidxml::xml_document<> doc;
   std::string memString;
 
 public:

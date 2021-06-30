@@ -7,12 +7,6 @@
 #include <memory>
 #include <cstdint>
 
-//#import "msxml3.dll" named_guids raw_interfaces_only
-//#include "msxml3.tlh"
-using namespace rapidxml;
-
-//using namespace MSXML2;
-
 class CXMLDocument;
 
 class CXMLNode
@@ -20,7 +14,7 @@ class CXMLNode
 public:
   CXMLNode( void );
   CXMLNode( const CXMLNode &Original );
-  CXMLNode( xml_node<char> *, CXMLDocument *, int32_t );
+  CXMLNode(rapidxml::xml_node<char>*, CXMLDocument*, int32_t);
   virtual ~CXMLNode();
 
   CXMLNode operator=( const CXMLNode Original );
@@ -67,9 +61,9 @@ private:
   std::vector<std::unique_ptr<std::string>> stringStore;
   std::vector<std::unique_ptr<CXMLNode>> children;
 
-  CString value;
+  std::string value;
 
   int32_t nLevel;
-  xml_node<char>* pNode;
+  rapidxml::xml_node<char>* pNode;
   CXMLDocument *pDoc;
 };

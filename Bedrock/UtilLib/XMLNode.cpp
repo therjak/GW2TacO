@@ -7,6 +7,10 @@
 #include "../UtilLib/RapidXML/rapidxml.hpp"
 #include "XMLDocument.h"
 
+using rapidxml::xml_node;
+using rapidxml::xml_node;
+using rapidxml::node_type;
+
 int32_t GetStringHash( TCHAR* string )
 {
   if ( !string )
@@ -15,7 +19,6 @@ int32_t GetStringHash( TCHAR* string )
   int32_t c;
   TCHAR *str = string;
 
-  //djb2 hash
   int32_t Hash = 5381;
   while ( c = *str++ )
     Hash = ( ( Hash << 5 ) + Hash ) + c; // hash * 33 + c
@@ -30,23 +33,14 @@ CXMLNode::CXMLNode()
 	nLevel = 0;
 }
 
-//CXMLNode::CXMLNode(MSXML2::IXMLDOMNode * p, CXMLDocument * d, int32_t l)
-//{
-//	pNode = p;
-//	pDoc = d;
-//	nLevel = l;
-//}
-
 CXMLNode::CXMLNode(const CXMLNode &Original)
 {
 	nLevel = Original.nLevel;
 	pNode = Original.pNode;
-	//if (pNode) pNode->AddRef();
 	pDoc = Original.pDoc;
 }
 
-CXMLNode::CXMLNode( xml_node<char> *p, CXMLDocument *d, int32_t l)
-{
+CXMLNode::CXMLNode(xml_node<char>* p, CXMLDocument* d, int32_t l) {
   pNode = p;
   pDoc = d;
   nLevel = l;
@@ -58,7 +52,6 @@ CXMLNode CXMLNode::operator=( const CXMLNode Original )
 
 	nLevel = Original.nLevel;
 	pNode = Original.pNode;
-	//if (pNode) pNode->AddRef();
 	pDoc = Original.pDoc;
 	return *this;
 }
@@ -199,20 +192,10 @@ bool CXMLNode::Next( CXMLNode& out, TCHAR* szNodeName )
 
 void CXMLNode::GetText(TCHAR * szBuffer, int32_t nBufferSize)
 {
-	//WCHAR * bStr;
-	//pNode->get_text(&bStr);
-	//CString s = bStr;
-	//_tcsncpy_s(szBuffer, nBufferSize, s.GetPointer(), _TRUNCATE);
-	//SysFreeString(bStr);
   int x = 0;
 }
 CString CXMLNode::GetText()
 {
-	//WCHAR * bStr;
-	//pNode->get_text(&bStr);
-	//CString s = CString(bStr);
-	//SysFreeString(bStr);
-	//return s;
   return CString();
 }
 
@@ -277,25 +260,6 @@ void CXMLNode::GetAttributeAsFloat(TCHAR * szAttribute, float * pfValue)
 	GetAttribute(szAttribute, s, 20);
 	_stscanf_s(s, _T("%g"), pfValue);
 }
-
-//void CXMLNode::FlushNode() 
-//{
-//	MSXML2::IXMLDOMNode * pChild=NULL;
-//	pNode->get_firstChild(&pChild);
-//	while (pChild) 
-//	{
-//		MSXML2::IXMLDOMNode * pOldChild=NULL;
-//		MSXML2::IXMLDOMNode * pRemoveChild=pChild;
-//		//pChild->get_nextSibling(&pChild);
-//		MSXML2::IXMLDOMNode * pSibling = NULL;
-//		pChild->get_nextSibling(&pSibling);
-//		pChild->Release();
-//		pChild = pSibling;
-//
-//		pNode->removeChild(pRemoveChild,&pOldChild);
-//		if (pOldChild) pOldChild->Release();
-//	}
-//}
 
 CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName)
 {
@@ -369,16 +333,9 @@ void CXMLNode::SetText(const TCHAR * sz)
   if ( !pNode )
     return;
 
-  value = CString( sz );
+  value = std::string( sz );
 
-  pNode->value( value.GetPointer() );
-
-	//IGNOREFREEERRORS(true);
-	//{
-	//	_bstr_t bs = sz;
-	//	pNode->put_text(bs);
-	//}
-	//IGNOREFREEERRORS(false);
+  pNode->value( value.c_str() );
 }
 
 void CXMLNode::SetText(CString &s)
