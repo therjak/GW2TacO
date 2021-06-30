@@ -1,6 +1,8 @@
 #pragma once
 #include "CriticalSection.h"
-#include "Array.h"
+
+#include <vector>
+#include <algorithm>
 
 #define HASHEXPANSIONTHRESHOLD 0.7f
 #define HASHCOLLAPSETHRESHOLD 0.2f
@@ -573,7 +575,7 @@ public:
 
 private:
 
-  CArray<KDPair*> IndexMap;
+  std::vector<KDPair*> IndexMap;
 
   void swap( int32_t a, int32_t b )
   {
@@ -585,7 +587,7 @@ private:
   virtual KDPair *AddNew( const KeyType &Key )
   {
     KDPair *p = CDictionary<KeyType, ItemType>::AddNew( Key );
-    IndexMap.Add( p );
+    IndexMap.push_back( p );
     return p;
   }
 
@@ -608,7 +610,7 @@ public:
     if ( !p )
     {
       p = Find( Key );
-      IndexMap.Add( p );
+      IndexMap.push_back( p );
     }
   }
 
@@ -617,7 +619,7 @@ public:
     KDPair *p = Find( Key );
     CDictionary<KeyType, ItemType>::Delete( Key );
     if ( p )
-      IndexMap.Delete( p );
+      IndexMap.erase(std::remove(IndexMap.begin(), IndexMap.end(), p));
   }
 
   virtual ItemType &GetByIndex( int32_t idx )
@@ -797,7 +799,7 @@ public:
   virtual void Flush()
   {
     CDictionary<KeyType, ItemType>::Flush();
-    IndexMap.Flush();
+    IndexMap.clear();
   }
 
   virtual CDictionaryEnumerable<KeyType, ItemType> &operator+= ( const CDictionaryEnumerable<KeyType, ItemType> &i )
