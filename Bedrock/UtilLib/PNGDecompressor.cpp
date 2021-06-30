@@ -5,7 +5,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-TBOOL DecompressPNG( const uint8_t *IData, int32_t IDataSize, uint8_t *&Image, int32_t &XRes, int32_t &YRes )
+bool DecompressPNG( const uint8_t *IData, int32_t IDataSize, uint8_t *&Image, int32_t &XRes, int32_t &YRes )
 {
   int32_t x, y, n;
   uint8_t *Data = stbi_load_from_memory( IData, IDataSize, &x, &y, &n, 4 );
@@ -51,7 +51,7 @@ void ClearZeroAlpha( uint8_t *Image, int32_t XRes, int32_t YRes )
   }
 }
 
-TBOOL ExportPNG( uint8_t *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile )
+bool ExportPNG( uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha, CString OutFile )
 {
   uint8_t *Data = new uint8_t[ XRes*YRes * 4 ];
   memcpy( Data, Image, XRes*YRes * 4 );
@@ -63,7 +63,7 @@ TBOOL ExportPNG( uint8_t *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, C
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
   OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
 
-  TBOOL result = stbi_write_png( FileName, XRes, YRes, 4, Image, XRes * 4 );
+  bool result = stbi_write_png( FileName, XRes, YRes, 4, Image, XRes * 4 );
 
   if ( !result )
     LOG_ERR( "[png] PNG export error ('%s')", OutFile.GetPointer() );
@@ -74,7 +74,7 @@ TBOOL ExportPNG( uint8_t *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, C
   return result;
 }
 
-TBOOL ExportTga( uint8_t *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, CString OutFile )
+bool ExportTga( uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha, CString OutFile )
 {
   if ( ClearAlpha )
     for ( int32_t x = 0; x < XRes*YRes; x++ )
@@ -83,7 +83,7 @@ TBOOL ExportTga( uint8_t *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, C
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
   OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
 
-  TBOOL result = stbi_write_tga( FileName, XRes, YRes, 4, Image );
+  bool result = stbi_write_tga( FileName, XRes, YRes, 4, Image );
 
   if ( !result )
     LOG_ERR( "[png] TGA export error ('%s')", OutFile.GetPointer() );
@@ -93,12 +93,12 @@ TBOOL ExportTga( uint8_t *Image, int32_t XRes, int32_t YRes, TBOOL ClearAlpha, C
   return result;
 }
 
-TBOOL ExportBmp( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
+bool ExportBmp( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
 {
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
   OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
 
-  TBOOL result = stbi_write_bmp( FileName, XRes, YRes, 4, Image );
+  bool result = stbi_write_bmp( FileName, XRes, YRes, 4, Image );
 
   if ( !result )
     LOG_ERR( "[png] BMP export error ('%s')", OutFile.GetPointer() );
@@ -108,12 +108,12 @@ TBOOL ExportBmp( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
   return result;
 }
 
-TBOOL ExportRaw( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
+bool ExportRaw( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
 {
   TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
   OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
 
-  TBOOL result = stbi_write_bmp( FileName, XRes, YRes, 4, Image );
+  bool result = stbi_write_bmp( FileName, XRes, YRes, 4, Image );
 
   if ( !result )
     LOG_ERR( "[png] BMP export error ('%s')", OutFile.GetPointer() );
