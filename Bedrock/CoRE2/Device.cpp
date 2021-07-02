@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Device.h"
 #include "Resource.h"
 

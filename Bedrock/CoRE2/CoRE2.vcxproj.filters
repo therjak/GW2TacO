@@ -92,9 +92,6 @@
     <ClInclude Include="DX11RenderState.h">
       <Filter>Header Files\DX11</Filter>
     </ClInclude>
-    <ClInclude Include="BasePCH.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
       <Filter>Header Files\DX11</Filter>
     </ClInclude>
@@ -150,9 +147,6 @@
     </ClCompile>
     <ClCompile Include="Enums.cpp">
       <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="BasePCH.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Source Files\DX11</Filter>

@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "RenderState.h"
 #include "../UtilLib/XMLDocument.h"
 

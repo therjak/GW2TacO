@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DX11Shader.h"
 #ifdef CORE_API_DX11
 

@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DX11Device.h"
 #include "DX11Texture.h"
 #include "DX11VertexBuffer.h"

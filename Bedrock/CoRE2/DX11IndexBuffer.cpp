@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DX11IndexBuffer.h"
 
 #ifdef CORE_API_DX11

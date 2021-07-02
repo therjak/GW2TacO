@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DX11RenderState.h"
 
 #ifdef CORE_API_DX11

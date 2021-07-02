@@ -15,7 +15,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
 
-#include "BasePCH.h"
 #include "DDSTextureLoader.h"
 //#include "pch.h"
 #include <dxgiformat.h>
@@ -562,7 +561,7 @@ static DXGI_FORMAT GetDXGIFormat(const DDS_PIXELFORMAT& ddpf)
 
 
 //--------------------------------------------------------------------------------------
-static TBOOL FillInitData(
+static bool FillInitData(
 	_In_ size_t width,
 	_In_ size_t height,
 	_In_ size_t depth,
@@ -857,7 +856,7 @@ static HRESULT CreateD3DResources(
 
 
 //--------------------------------------------------------------------------------------
-static TBOOL CreateTextureFromDDS(
+static bool CreateTextureFromDDS(
 	_In_ ID3D11Device* d3dDevice,
 	_In_ const DDS_HEADER* header,
 	_In_reads_bytes_(bitSize) const byte* bitData,
@@ -1057,7 +1056,7 @@ static TBOOL CreateTextureFromDDS(
 }
 
 //--------------------------------------------------------------------------------------
-TBOOL CreateDDSTextureFromMemory(
+bool CreateDDSTextureFromMemory(
 	_In_ ID3D11Device* d3dDevice,
 	_In_reads_bytes_(ddsDataSize) const byte* ddsData,
 	_In_ size_t ddsDataSize,

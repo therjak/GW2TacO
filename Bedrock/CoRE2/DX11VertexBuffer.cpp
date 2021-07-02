@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DX11VertexBuffer.h"
 
 #ifdef CORE_API_DX11

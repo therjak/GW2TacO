@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DX11Texture.h"
 #include "../UtilLib/PNGDecompressor.h"
 #include "DDSTextureLoader.h"

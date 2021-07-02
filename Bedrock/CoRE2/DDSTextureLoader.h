@@ -19,7 +19,7 @@
 #include "Core2_Config.h"
 
 #ifdef CORE_API_DX11
-TBOOL CreateDDSTextureFromMemory(
+bool CreateDDSTextureFromMemory(
 	_In_ ID3D11Device* d3dDevice,
 	_In_reads_bytes_(ddsDataSize) const byte* ddsData,
 	_In_ size_t ddsDataSize,

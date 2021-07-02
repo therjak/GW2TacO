@@ -1,5 +1,6 @@
-#include "BasePCH.h"
 #include "DX11ConstantBuffer.h"
+
+#include <cstring>
 
 #ifdef CORE_API_DX11
 CCoreDX11ConstantBuffer::CCoreDX11ConstantBuffer(CCoreDX11Device *dev) : CCoreConstantBuffer(dev)
@@ -58,7 +59,7 @@ void CCoreDX11ConstantBuffer::Upload()
 	}
 	else
 	{
-		memcpy(map.pData, Data, DataLength);
+		memcpy(map.pData, Data.get(), DataLength);
 		DeviceContext->Unmap(Buffer, 0);
 	}
 

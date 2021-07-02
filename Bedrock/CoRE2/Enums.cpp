@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Enums.h"
 
 #include <vector>

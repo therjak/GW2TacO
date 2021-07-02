@@ -1,43 +1,31 @@
-#include "BasePCH.h"
 #include "ConstantBuffer.h"
 
+#include <memory>
+#include <cstring>
 
-CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice *Device) : CCoreResource(Device)
-{
-	Data = NULL;
-	DataLength = 0;
-	BufferLength = 0;
+CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice *Device)
+    : CCoreResource(Device) {
 }
 
-CCoreConstantBuffer::~CCoreConstantBuffer()
-{
-	SAFEDELETEA(Data);
+CCoreConstantBuffer::~CCoreConstantBuffer() {}
+
+void CCoreConstantBuffer::Reset() { DataLength = 0; }
+
+void CCoreConstantBuffer::AddData(void *DataIn, int32_t Length) {
+  if (DataLength + Length > BufferLength) {
+    std::unique_ptr<uint8_t[]> OldData;
+    OldData.swap(Data);
+    Data = std::make_unique<uint8_t[]>(DataLength + Length);
+
+    if (OldData) {
+      memcpy(Data.get(), OldData.get(), DataLength);
+    }
+
+    BufferLength = DataLength + Length;
+  }
+
+  memcpy(Data.get() + DataLength, DataIn, Length);
+  DataLength += Length;
 }
 
-void CCoreConstantBuffer::Reset()
-{
-	DataLength = 0;
-}
-
-void CCoreConstantBuffer::AddData(void *DataIn, int32_t Length)
-{
-	if (DataLength + Length > BufferLength)
-	{
-		uint8_t *OldData = Data;
-		Data = new uint8_t[DataLength + Length];
-
-		if (OldData)
-			memcpy(Data, OldData, DataLength);
-
-		BufferLength = DataLength + Length;
-		SAFEDELETEA(OldData);
-	}
-
-	memcpy(Data + DataLength, DataIn, Length);
-	DataLength += Length;
-}
-
-void CCoreConstantBuffer::Upload()
-{
-
-}
+void CCoreConstantBuffer::Upload() {}
