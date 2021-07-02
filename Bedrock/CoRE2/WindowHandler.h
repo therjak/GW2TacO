@@ -1,6 +1,8 @@
 #pragma once
 #include "../BaseLib/BaseLib.h"
 
+#include <vector>
+
 class CCoreDevice;
 
 enum COREMOUSECURSOR
@@ -112,6 +114,8 @@ public:
 
 class CCoreWindowHandlerWin : public CCoreWindowHandler
 {
+  std::vector<HCURSOR> MouseCursors;
+
 protected:
 
 	HWND hWnd;
@@ -121,8 +125,6 @@ protected:
 
 	static LRESULT CALLBACK WndProcProxy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-	CArray<HCURSOR> MouseCursors;
 
 	virtual void HandleResize();
 	virtual void HandleAltEnter();

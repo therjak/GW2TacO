@@ -120,13 +120,10 @@ CCoreWindowHandlerWin::CCoreWindowHandlerWin() :CCoreWindowHandler()
 	FullScreenX = FullScreenY = 0;
 }
 
-CCoreWindowHandlerWin::~CCoreWindowHandlerWin()
-{
-	while (MouseCursors.NumItems())
-	{
-		DeleteObject(MouseCursors[MouseCursors.NumItems() - 1]);
-		MouseCursors.DeleteByIndex(MouseCursors.NumItems() - 1);
-	}
+CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
+  for (auto m : MouseCursors) {
+    DeleteObject(m);
+  }
 }
 
 TBOOL CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters &wp)
@@ -207,14 +204,14 @@ TBOOL CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters &wp)
 
   FORCEDDEBUGLOG( "window set to foreground etc" );
 
-	MouseCursors += LoadCursor(NULL, IDC_ARROW);
-	MouseCursors += LoadCursor(NULL, IDC_CROSS);
-	MouseCursors += LoadCursor(NULL, IDC_SIZEWE);
-	MouseCursors += LoadCursor(NULL, IDC_SIZENS);
-	MouseCursors += LoadCursor(NULL, IDC_SIZENESW);
-	MouseCursors += LoadCursor(NULL, IDC_SIZENWSE);
-	MouseCursors += LoadCursor(NULL, IDC_IBEAM);
-	MouseCursors += LoadCursor(NULL, IDC_WAIT);
+  MouseCursors.push_back(LoadCursor(NULL, IDC_ARROW));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_CROSS));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZEWE));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZENS));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZENESW));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZENWSE));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_IBEAM));
+  MouseCursors.push_back(LoadCursor(NULL, IDC_WAIT));
 
   FORCEDDEBUGLOG( "mouse cursors loaded" );
 
