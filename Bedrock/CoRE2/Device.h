@@ -13,6 +13,9 @@
 #include "RenderLayer.h"
 #include "Material.h"
 
+#include <vector>
+#include <memory>
+
 class CCoreDevice
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -21,10 +24,9 @@ class CCoreDevice
 	friend class CCoreResource;
 	void RemoveResource(CCoreResource *Resource);
 	void AddResource(CCoreResource *Resource);
-	CArray<CCoreResource*> Resources;
+	std::vector<CCoreResource*> Resources;
 
-	CArray<CCoreRenderLayerDescriptor*> RenderLayers;
-	CArray<CCoreMaterialTechnique*> TechPool;
+	std::vector<std::unique_ptr<CCoreRenderLayerDescriptor>> RenderLayers;
 
 protected:
 
@@ -85,8 +87,6 @@ public:
 
 	void AddRenderLayer(CCoreRenderLayerDescriptor *Desc);
 	CCoreRenderLayerDescriptor *GetRenderLayer(CString &Name);
-	void AddMaterialTechnique(CCoreMaterialTechnique *Tech);
-	CCoreMaterialTechnique *GetMaterialTechnique(CString &Name);
 
 	//////////////////////////////////////////////////////////////////////////
 	// texture functions
@@ -177,8 +177,6 @@ public:
 
 	//////////////////////////////////////////////////////////////////////////
 	// material import functions
-
-	TBOOL ImportMaterialTechnique(CXMLNode *Root);
 
 	virtual void ForceStateReset() = 0;
 

@@ -15,12 +15,12 @@ INLINE void RenderStateFromID(const CORERENDERSTATEID ID, CORERENDERSTATE &State
 
 void CCoreDevice::AddResource(CCoreResource *Resource)
 {
-	Resources.Add(Resource);
+	Resources.push_back(Resource);
 }
 
 void CCoreDevice::RemoveResource(CCoreResource *Resource)
 {
-	Resources.Delete(Resource);
+	Resources.erase(std::remove(Resources.begin(), Resources.end(), Resource));
 }
 
 CCoreDevice::CCoreDevice()
@@ -34,56 +34,54 @@ CCoreDevice::CCoreDevice()
 	DefaultRasterizerState = NULL;
 }
 
-CCoreDevice::~CCoreDevice()
-{
-	SAFEDELETE(DefaultRasterizerState);
-	SAFEDELETE(DefaultBlendState);
-	SAFEDELETE(DefaultDepthStencilState);
+CCoreDevice::~CCoreDevice() {
+  SAFEDELETE(DefaultRasterizerState);
+  SAFEDELETE(DefaultBlendState);
+  SAFEDELETE(DefaultDepthStencilState);
 
-	RenderLayers.FreeArray();
+  RenderLayers.clear();
 
 #ifdef ENABLE_STACKTRACKER_CLASS
-	if (Resources.NumItems())
-	{
+  if (!Resources.empty()) {
 #ifdef _DEBUG
-		LOG(LOG_ERROR, _T("[core] ---Leaked graphical resources start here---"));
-#endif // _DEBUG
-	}
-	int32_t Counter = 0;
+    LOG(LOG_ERROR, _T("[core] ---Leaked graphical resources start here---"));
+#endif  // _DEBUG
+  }
+  int32_t Counter = 0;
 #endif
 
-	//remove remaining (leaked) resources:
-	while (Resources.NumItems())
-	{
+  // remove remaining (leaked) resources:
+  for (auto r : Resources) {
 #ifdef ENABLE_STACKTRACKER_CLASS
 #ifdef _DEBUG
-		LOG(LOG_ERROR, _T("[core] Unfreed graphical resource found. Allocation stack:"));
-		Resources[Resources.NumItems() - 1]->StackInfo.DumpToLog(LOG_ERROR);
-#endif // _DEBUG
-		Counter++;
+    LOG(LOG_ERROR,
+        _T("[core] Unfreed graphical resource found. Allocation stack:"));
+    r->StackInfo.DumpToLog(LOG_ERROR);
+#endif  // _DEBUG
+    Counter++;
 #endif
-		delete Resources[Resources.NumItems() - 1]; //the resource removes itself from the array on deletion
-	}
+    delete r;
+  }
+  Resources.clear();
 
 #ifdef ENABLE_STACKTRACKER_CLASS
-	if (Counter > 0)
-		LOG(LOG_INFO, _T("[core] %d unfreed graphical resources found on exit. This is fine."), Counter);
-	//else
-	//	LOGSIMPLE(LOG_DEBUG, _T("\n**********************************************************\n\t\t\t\t\tNo gfxleaks found.\n**********************************************************\n"));
+  if (Counter > 0)
+    LOG(LOG_INFO,
+        _T("[core] %d unfreed graphical resources found on exit. This is ")
+        _T("fine."),
+        Counter);
 #endif
-
-	//SAFEDELETE(Window);
 }
 
 void CCoreDevice::ResetDevice()
 {
-	for (int32_t x = 0; x < Resources.NumItems(); x++)
-		Resources[x]->OnDeviceLost();
+	for (auto& r : Resources)
+		r->OnDeviceLost();
 
 	ResetPrivateResources();
 
-	for (int32_t x = 0; x < Resources.NumItems(); x++)
-		Resources[x]->OnDeviceReset();
+	for (auto& r: Resources)
+		r->OnDeviceReset();
 
 	//reload render state
 	RequestedRenderState = CurrentRenderState + RequestedRenderState;
@@ -307,50 +305,17 @@ TBOOL CCoreDevice::DestroyVertexFormat(CCoreVertexFormat *VertexFormat) const
 
 void CCoreDevice::AddRenderLayer(CCoreRenderLayerDescriptor *Desc)
 {
-	RenderLayers += Desc;
+	RenderLayers.emplace_back(std::move(Desc));
 }
 
 CCoreRenderLayerDescriptor * CCoreDevice::GetRenderLayer(CString &Name)
 {
-	for (int32_t x = 0; x < RenderLayers.NumItems(); x++)
-		if (RenderLayers[x]->GetName() == Name) return RenderLayers[x];
+	for (const auto& r:RenderLayers)
+		if (r->GetName() == Name) return r.get();
 
 	return NULL;
 }
 
-void CCoreDevice::AddMaterialTechnique(CCoreMaterialTechnique *Tech)
-{
-	TechPool += Tech;
-}
-
-CCoreMaterialTechnique * CCoreDevice::GetMaterialTechnique(CString &Name)
-{
-	for (int32_t x = 0; x < TechPool.NumItems(); x++)
-		if (TechPool[x]->GetName() == Name) return TechPool[x];
-	return NULL;
-}
-
-TBOOL CCoreDevice::ImportMaterialTechnique(CXMLNode *Root)
-{
-	CCoreMaterialTechnique *Tech = new CCoreMaterialTechnique();
-
-	if (!Tech->Import(Root, this))
-	{
-		delete Tech;
-		return false;
-	}
-
-	for (int32_t x = 0; x < TechPool.NumItems(); x++)
-		if (TechPool[x]->GetName() == Tech->GetName())
-		{
-			LOG_WARN("[core] Material Technique name '%s' not unique", Tech->GetName().GetPointer());
-			break;
-		}
-
-	TechPool += Tech;
-
-	return true;
-}
 
 TBOOL CCoreDevice::CreateDefaultRenderStates()
 {
