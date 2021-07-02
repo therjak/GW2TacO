@@ -75,8 +75,6 @@
     <ClInclude Include="RenderLayer.h" />
     <ClInclude Include="RenderState.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneNodes.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
@@ -136,8 +134,6 @@
     <ClCompile Include="RenderLayer.cpp" />
     <ClCompile Include="RenderState.cpp" />
     <ClCompile Include="Resource.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneNodes.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="WindowHandler.cpp" />
   </ItemGroup>

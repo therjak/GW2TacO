@@ -92,12 +92,6 @@
     <ClInclude Include="Atom.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneNodes.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
@@ -164,12 +158,6 @@
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Atom.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneNodes.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">

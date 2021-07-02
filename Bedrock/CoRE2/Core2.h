@@ -32,5 +32,4 @@ typedef CCoreDX11Device CCore;
 
 #include "Resource.h"
 #include "Texture.h"
-#include "Scene.h"
 

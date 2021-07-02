@@ -85,9 +85,6 @@ public:
 	virtual void Resize(const int32_t xr, const int32_t yr) = 0;
 	virtual void SetFullScreenMode(const TBOOL FullScreen, const int32_t xr, const int32_t yr) = 0;
 
-	void AddRenderLayer(CCoreRenderLayerDescriptor *Desc);
-	CCoreRenderLayerDescriptor *GetRenderLayer(CString &Name);
-
 	//////////////////////////////////////////////////////////////////////////
 	// texture functions
 
@@ -126,7 +123,6 @@ public:
 	TBOOL SetGeometryShader(CCoreGeometryShader *Shader);
 	TBOOL SetHullShader(CCoreHullShader *Shader);
 	TBOOL SetDomainShader(CCoreDomainShader *Shader);
-	TBOOL SetComputeShader(CCoreComputeShader *Shader);
 	TBOOL SetSamplerState(CORESAMPLER Sampler, CCoreSamplerState *SamplerState);
 	TBOOL SetTexture(CORESAMPLER Sampler, CCoreTexture *Texture);
 	TBOOL SetIndexBuffer(CCoreIndexBuffer *IndexBuffer);

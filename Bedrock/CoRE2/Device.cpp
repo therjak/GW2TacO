@@ -303,20 +303,6 @@ TBOOL CCoreDevice::DestroyVertexFormat(CCoreVertexFormat *VertexFormat) const
 	return true;
 }
 
-void CCoreDevice::AddRenderLayer(CCoreRenderLayerDescriptor *Desc)
-{
-	RenderLayers.emplace_back(std::move(Desc));
-}
-
-CCoreRenderLayerDescriptor * CCoreDevice::GetRenderLayer(CString &Name)
-{
-	for (const auto& r:RenderLayers)
-		if (r->GetName() == Name) return r.get();
-
-	return NULL;
-}
-
-
 TBOOL CCoreDevice::CreateDefaultRenderStates()
 {
 	TBOOL Success = true;
