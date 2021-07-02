@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Array.h"
 #include <functional>
 
 #ifdef HASHED_STRINGS
@@ -215,5 +216,3 @@ public:
 };
 
 uint32_t DictionaryHash( const CString &i );
-int32_t EstimateStringFormatLength( const wchar_t *szFormat, va_list vlArgList );
-int32_t EstimateStringFormatLength( const TS8 *szFormat, va_list vlArgList );

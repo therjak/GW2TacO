@@ -9,9 +9,7 @@
 #include "IndexBuffer.h"
 #include "VertexFormat.h"
 #include "RenderState.h"
-
-#include "RenderLayer.h"
-#include "Material.h"
+#include "ConstantBuffer.h"
 
 #include <vector>
 #include <memory>
@@ -25,8 +23,6 @@ class CCoreDevice
 	void RemoveResource(CCoreResource *Resource);
 	void AddResource(CCoreResource *Resource);
 	std::vector<CCoreResource*> Resources;
-
-	std::vector<std::unique_ptr<CCoreRenderLayerDescriptor>> RenderLayers;
 
 protected:
 

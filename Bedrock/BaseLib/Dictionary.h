@@ -1,5 +1,6 @@
 #pragma once
 #include "CriticalSection.h"
+#include "Assert.h"
 
 #include <vector>
 #include <algorithm>

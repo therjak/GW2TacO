@@ -86,24 +86,6 @@
     <ClInclude Include="DX11VertexFormat.h">
       <Filter>Header Files\DX11</Filter>
     </ClInclude>
-    <ClInclude Include="RenderLayer.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Atom.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="ConstantBuffer.h">
-      <Filter>Source Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjectGroup.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="DX11ConstantBuffer.h">
       <Filter>Header Files\DX11</Filter>
     </ClInclude>
@@ -115,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="DDSTextureLoader.h">
       <Filter>Header Files\DX11</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantBuffer.h">
+      <Filter>Header Files\System</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -154,25 +139,7 @@
     <ClCompile Include="DX11Shader.cpp">
       <Filter>Source Files\DX11</Filter>
     </ClCompile>
-    <ClCompile Include="RenderLayer.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Atom.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Device.cpp">
-      <Filter>Header Files\System</Filter>
-    </ClCompile>
     <ClCompile Include="ConstantBuffer.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjectGroup.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Model.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="DX11ConstantBuffer.cpp">
@@ -189,6 +156,9 @@
     </ClCompile>
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Source Files\DX11</Filter>
+    </ClCompile>
+    <ClCompile Include="Device.cpp">
+      <Filter>Source Files\System</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

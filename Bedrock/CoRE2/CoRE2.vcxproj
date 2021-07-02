@@ -51,7 +51,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Atom.h" />
     <ClInclude Include="BasePCH.h" />
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="DDSTextureLoader.h" />
@@ -69,10 +68,6 @@
     <ClInclude Include="DX11VertexFormat.h" />
     <ClInclude Include="Enums.h" />
     <ClInclude Include="IndexBuffer.h" />
-    <ClInclude Include="Material.h" />
-    <ClInclude Include="Model.h" />
-    <ClInclude Include="ObjectGroup.h" />
-    <ClInclude Include="RenderLayer.h" />
     <ClInclude Include="RenderState.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Shader.h" />
@@ -87,7 +82,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Atom.cpp" />
     <ClCompile Include="BasePCH.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_MultiByte|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_MultiByte|x64'">Create</PrecompiledHeader>
@@ -128,10 +122,6 @@
     <ClCompile Include="DX11VertexBuffer.cpp" />
     <ClCompile Include="DX11VertexFormat.cpp" />
     <ClCompile Include="Enums.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ObjectGroup.cpp" />
-    <ClCompile Include="RenderLayer.cpp" />
     <ClCompile Include="RenderState.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="Shader.cpp" />

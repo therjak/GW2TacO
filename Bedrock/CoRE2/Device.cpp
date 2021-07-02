@@ -39,8 +39,6 @@ CCoreDevice::~CCoreDevice() {
   SAFEDELETE(DefaultBlendState);
   SAFEDELETE(DefaultDepthStencilState);
 
-  RenderLayers.clear();
-
 #ifdef ENABLE_STACKTRACKER_CLASS
   if (!Resources.empty()) {
 #ifdef _DEBUG
