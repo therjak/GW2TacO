@@ -2,22 +2,26 @@
 
 //Call stack tracker class for tracking resource allocations
 
+#include <string>
+
+#include "BaseConfig.h"
+
 enum LOGVERBOSITY;
 
 #ifdef ENABLE_STACKTRACKER_CLASS
 
 class CStackTracker
 {
-  static TBOOL DbgInitialized;
+  static bool DbgInitialized;
 
 public:
   void *Stack[ STACK_TRACE_DEPTH ];
 
-  CStackTracker( TS8 Offset = 0 );
-  CStackTracker( void *Context, TS8 Offset = 0 );
+  CStackTracker();
+  CStackTracker( void *Context );
   void DumpToLog( LOGVERBOSITY v );
   void DumpToDebugOutput();
-  TS8 *DumpToString();
+  std::string DumpToString();
 
   static void InitializeSym();
 };
@@ -27,12 +31,12 @@ public:
 class CStackTracker
 {
 public:
-  CStackTracker( TS8 Offset = 0 ) {};
-  CStackTracker( void *Context, TS8 Offset = 0 ) {}
+  CStackTracker( ) {};
+  CStackTracker( void *Context ) {}
   virtual ~CStackTracker() {}
   void DumpToLog( LOGVERBOSITY v ) {}
   void DumpToDebugOutput() {}
-  TS8 *DumpToString() { return 0; }
+  std::string DumpToString() { return {}; }
 };
 
 #endif

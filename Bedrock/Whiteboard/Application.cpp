@@ -3,6 +3,7 @@
 #include <locale.h>
 #include "../UtilLib/PNGDecompressor.h"
 #include "WhiteBoard.h"
+#include "../BaseLib/read_file.h"
 
 #include <cstdio>
 

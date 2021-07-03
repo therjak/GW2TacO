@@ -40,7 +40,7 @@ LONG WINAPI baseCrashTracker( struct _EXCEPTION_POINTERS * excpInfo )
   CloseHandle( hFile );
 
   CStackTracker Stack( (void*)excpInfo->ContextRecord );
-  TS8 *Result = Stack.DumpToString();
+  auto Result = Stack.DumpToString();
 
   TS8 build[ 32 ];
   memset( build, 0, 32 );
@@ -53,7 +53,7 @@ LONG WINAPI baseCrashTracker( struct _EXCEPTION_POINTERS * excpInfo )
 
   char CrashString[ 2048 ];
   memset( CrashString, 0, 2048 );
-  sprintf_s( CrashString, "Crash occurred at: %d-%.2d-%.2d %.2d:%.2d:%.2d\nBuild version: %s\nException Type: %.8x\n%s\n\0", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, build, excpInfo->ExceptionRecord->ExceptionCode, Result );
+  sprintf_s( CrashString, "Crash occurred at: %d-%.2d-%.2d %.2d:%.2d:%.2d\nBuild version: %s\nException Type: %.8x\n%s\n\0", timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, build, excpInfo->ExceptionRecord->ExceptionCode, Result.c_str() );
 
   TBOOL Saved = false;
 
@@ -70,39 +70,6 @@ LONG WINAPI baseCrashTracker( struct _EXCEPTION_POINTERS * excpInfo )
 
   LOG( LOG_ERROR, CString( CrashString ).GetPointer() );
   Stack.DumpToDebugOutput();
-
-  SAFEDELETEA( Result );
-
-	//int nMoreDetail = 0;
-
-	//SYSTEMTIME st;
-	//GetLocalTime(&st);
-
-	//CreateDirectory(_T("Crashlogs"),NULL);
-
-	//int32_t filename[1024];
-	//ZeroMemory(filename,1024);
-	//CString fname=CString::Format(_T("Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp"),BuildVersion.GetPointer(),st.wYear,st.wMonth,st.wDay,st.wHour,st.wMinute,st.wSecond);
-
-	//HANDLE hFile=CreateFile(fname.GetPointer(),GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH,NULL);
-	//if (hFile==INVALID_HANDLE_VALUE)
-	//	return EXCEPTION_EXECUTE_HANDLER;
-
-	//MINIDUMP_EXCEPTION_INFORMATION eInfo;
-	//eInfo.ThreadId = GetCurrentThreadId();
-	//eInfo.ExceptionPointers = excpInfo;
-	//eInfo.ClientPointers = FALSE;
-
-	//MiniDumpWriteDump(
-	//	GetCurrentProcess(),
-	//	GetCurrentProcessId(),
-	//	hFile,
-	//	nMoreDetail ? (MINIDUMP_TYPE)(MiniDumpWithDataSegs + MiniDumpWithHandleData + MiniDumpWithIndirectlyReferencedMemory) : MiniDumpNormal,
-	//	excpInfo ? &eInfo : NULL,
-	//	NULL, 
-	//	NULL);
-
-	//CloseHandle(hFile);
 
   Logger.Close();
 

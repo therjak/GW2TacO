@@ -1,7 +1,6 @@
 #pragma once
-#include "../BaseLib/BaseLib.h"
-
 #include <vector>
+#include "../BaseLib/EnumHelpers.h"
 
 enum COREDEVICEAPI
 {
