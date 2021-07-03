@@ -3,6 +3,8 @@
 #include "OverlayConfig.h"
 #include "Language.h"
 #include "Bedrock/UtilLib/PNGDecompressor.h"
+#include <algorithm>
+#include <vector>
 
 using namespace jsonxx;
 
@@ -96,11 +98,11 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
       json.parse( qbuys.GetPointer() );
       json2.parse( qsells.GetPointer() );
 
-      CArray<TransactionItem> incoming;
-      CArray<TransactionItem> outgoing;
+      std::vector<TransactionItem> incoming;
+      std::vector<TransactionItem> outgoing;
 
-      CArray<int32_t> unknownItems;
-      CArray<int32_t> priceCheckList;
+      std::vector<int32_t> unknownItems;
+      std::vector<int32_t> priceCheckList;
 
       if ( json.has<Array>( "buys" ) )
       {
@@ -116,12 +118,15 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           TransactionItem itemData;
           if ( !TPTracker::ParseTransaction( item, itemData ) )
             continue;
-          incoming += itemData;
+          incoming.push_back(itemData);
 
           if ( !itemDataCache.HasKey( itemData.itemID ) )
-            unknownItems += itemData.itemID;
+            unknownItems.push_back(itemData.itemID);
 
-          priceCheckList.AddUnique( itemData.itemID );
+          if (std::find(priceCheckList.begin(), priceCheckList.end(),
+                        itemData.itemID) == priceCheckList.end()) {
+            priceCheckList.push_back(itemData.itemID);
+          }
         }
       }
 
@@ -139,21 +144,24 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           TransactionItem itemData;
           if ( !TPTracker::ParseTransaction( item, itemData ) )
             continue;
-          outgoing += itemData;
+          outgoing.push_back(itemData);
 
           if ( !itemDataCache.HasKey( itemData.itemID ) )
-            unknownItems += itemData.itemID;
+            unknownItems.push_back(itemData.itemID);
 
-          priceCheckList.AddUnique( itemData.itemID );
+          if (std::find(priceCheckList.begin(), priceCheckList.end(),
+                        itemData.itemID) == priceCheckList.end()) {
+            priceCheckList.push_back(itemData.itemID);
+          }
         }
       }
 
       CString itemIds;
 
-      if ( unknownItems.NumItems() )
+      if ( !unknownItems.empty() )
       {
-        for ( int x = 0; x < unknownItems.NumItems(); x++ )
-          itemIds += CString::Format( "%d,", unknownItems[ x ] );
+        for ( const auto& i:unknownItems)
+          itemIds += CString::Format( "%d,", i );
 
         //https://api.guildwars2.com/v2/items?ids=28445,12452
         CString items = CString( "{\"items\":" ) + key->QueryAPI( ( CString( "v2/items?ids=" ) + itemIds ).GetPointer() ) + "}";
@@ -205,8 +213,8 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
       }
 
       {
-        for ( int x = 0; x < priceCheckList.NumItems(); x++ )
-          itemIds += CString::Format( "%d,", priceCheckList[ x ] );
+        for ( const auto& i:priceCheckList )
+          itemIds += CString::Format( "%d,", i );
 
         //https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
         CString items = CString( "{\"items\":" ) + key->QueryAPI( ( CString( "v2/commerce/prices?ids=" ) + itemIds ).GetPointer() ) + "}";
@@ -267,16 +275,16 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
     int32_t posy = 0;
     int32_t lh = f->GetLineHeight();
 
-    if ( buys.NumItems() && GetConfigValue( "TPTrackerShowBuys" ) )
+    if ( !buys.empty() && GetConfigValue( "TPTrackerShowBuys" ) )
     {
-      CArray<int32_t> showedAlready;
+      std::vector<int32_t> showedAlready;
 
       int32_t textPosy = posy;
       int32_t writtenCount = 0;
 
       posy += lh + 2;
 
-      for ( int x = 0; x < buys.NumItems(); x++ )
+      for ( size_t x = 0; x < buys.size(); x++ )
       {
         if ( !HasGW2ItemData( buys[ x ].itemID ) )
           continue;
@@ -284,15 +292,18 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
         auto& itemData = GetGW2ItemData( buys[ x ].itemID );
         TBOOL outbid = buys[ x ].price < itemData.buyPrice;
 
-        if ( nextSellOnly && showedAlready.Find( itemData.itemID ) >= 0 )
+        if (nextSellOnly &&
+            std::find(showedAlready.begin(), showedAlready.end(),
+                      itemData.itemID) != showedAlready.end()) {
           continue;
+        }
 
         if ( !onlyShowOutbid || outbid )
         {
           int32_t price = buys[ x ].price;
           if ( nextSellOnly )
           {
-            for ( int y = x; y < buys.NumItems(); y++ )
+            for ( size_t y = x; y < buys.size(); y++ )
               if ( buys[ y ].itemID == buys[ x ].itemID )
                 price = max( buys[ y ].price, buys[ x ].price );
           }
@@ -305,8 +316,12 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           f->Write( API, text, CPoint( int( lh * 2.5 + 3 ), posy + 3 ), !outbid ? 0xffffffff : 0xffee6655 );
           writtenCount++;
           posy += lh + 6;
-          if ( nextSellOnly )
-            showedAlready.AddUnique( itemData.itemID );
+          if (nextSellOnly) {
+            if (std::find(showedAlready.begin(), showedAlready.end(),
+                          itemData.itemID) == showedAlready.end()) {
+              showedAlready.push_back(itemData.itemID);
+            }
+          }
         }
       }
       posy += 2;
@@ -317,31 +332,34 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
         posy -= lh + 4;
     }
 
-    if ( sells.NumItems() && GetConfigValue( "TPTrackerShowSells" ) )
+    if ( !sells.empty() && GetConfigValue( "TPTrackerShowSells" ) )
     {
-      CArray<int32_t> showedAlready;
+      std::vector<int32_t> showedAlready;
 
       int32_t textPosy = posy;
       int32_t writtenCount = 0;
 
       posy += lh + 2;
 
-      for ( int x = 0; x < sells.NumItems(); x++ )
+      for ( size_t x = 0; x < sells.size(); x++ )
       {
         if ( !HasGW2ItemData( sells[ x ].itemID ) )
           continue;
         auto& itemData = GetGW2ItemData( sells[ x ].itemID );
         TBOOL outbid = sells[ x ].price > itemData.sellPrice;
 
-        if ( nextSellOnly && showedAlready.Find( itemData.itemID ) >= 0 )
+        if (nextSellOnly &&
+            std::find(showedAlready.begin(), showedAlready.end(),
+                      itemData.itemID) != showedAlready.end()) {
           continue;
+        }
 
         if ( !onlyShowOutbid || outbid )
         {
           int32_t price = sells[ x ].price;
           if ( nextSellOnly )
           {
-            for ( int y = x; y < sells.NumItems(); y++ )
+            for ( size_t y = x; y < sells.size(); y++ )
               if ( sells[ y ].itemID == sells[ x ].itemID )
                 price = min( sells[ y ].price, sells[ x ].price );
           }
@@ -354,8 +372,12 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           f->Write( API, text, CPoint( int( lh * 2.5 + 3 ), posy + 3 ), !outbid ? 0xffffffff : 0xffee6655 );
           writtenCount++;
           posy += lh + 6;
-          if ( nextSellOnly )
-            showedAlready.AddUnique( itemData.itemID );
+          if (nextSellOnly) {
+            if (std::find(showedAlready.begin(), showedAlready.end(),
+                          itemData.itemID) == showedAlready.end()) {
+              showedAlready.push_back(itemData.itemID);
+            }
+          }
         }
       }
 

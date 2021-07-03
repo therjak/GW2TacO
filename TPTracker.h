@@ -2,6 +2,7 @@
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 #include "Bedrock/UtilLib/jsonxx.h"
 #include <thread>
+#include <vector>
 
 struct TransactionItem
 {
@@ -34,10 +35,8 @@ class TPTracker : public CWBItem
 
   std::thread fetchThread;
 
-  //CArray<Dungeon> dungeons;
-
-  CArray<TransactionItem> buys;
-  CArray<TransactionItem> sells;
+  std::vector<TransactionItem> buys;
+  std::vector<TransactionItem> sells;
   static TBOOL ParseTransaction( jsonxx::Object& object, TransactionItem& output );
 
   LIGHTWEIGHT_CRITICALSECTION dataWriteCritSec;
