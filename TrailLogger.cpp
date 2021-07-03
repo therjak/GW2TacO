@@ -283,7 +283,7 @@ void GW2TrailDisplay::DoTrailLogging( int32_t mapID, CVector3 charPos )
     return;
 
   lastMap = mapID;
-  editedTrail->positions += charPos;
+  editedTrail->positions.push_back(charPos);
   lastPos = charPos;
 
   editedTrail->Update();
@@ -523,7 +523,7 @@ void GW2TrailDisplay::PauseTrail( TBOOL pause, TBOOL newSection )
     btn->Hide( !pause );
 
   if ( !pause && newSection && editedTrail )
-    editedTrail->positions.Add( CVector3( 0, 0, 0 ) );
+    editedTrail->positions.emplace_back( CVector3( 0, 0, 0 ) );
 }
 
 void GW2TrailDisplay::DeleteLastTrailSegment()
@@ -531,8 +531,8 @@ void GW2TrailDisplay::DeleteLastTrailSegment()
   if ( !editedTrail )
     return;
 
-  if ( editedTrail->positions.NumItems() )
-    editedTrail->positions.DeleteByIndex( editedTrail->positions.NumItems() - 1 );
+  if ( !editedTrail->positions.empty() )
+    editedTrail->positions.pop_back();
 
   editedTrail->Update();
 }
@@ -669,12 +669,12 @@ void GW2TrailDisplay::ImportTrail()
 void GW2Trail::Reset( int32_t _mapID /*= 0 */ )
 {
   map = _mapID;
-  positions.FlushFast();
+  positions.clear();
 }
 
 TBOOL GW2Trail::SaveToFile( const CString& fname )
 {
-  if ( !positions.NumItems() )
+  if ( positions.empty() )
     return false;
 
   CStreamWriterFile TrailLog;
@@ -684,7 +684,7 @@ TBOOL GW2Trail::SaveToFile( const CString& fname )
   TrailLog.WriteDWord( TRAILFILEVERSION );
 
   TrailLog.WriteDWord( map );
-  TrailLog.Write( positions.GetPointer( 0 ), sizeof( CVector3 )*positions.NumItems() );
+  TrailLog.Write( &positions[0], sizeof( CVector3 )*positions.size() );
 
   return true;
 }
@@ -840,7 +840,7 @@ void GW2Trail::Update()
   if ( !App->GetDevice() )
     return;
 
-  Build( App->GetDevice(), map, (float*)positions.GetPointer( 0 ), positions.NumItems() );
+  Build( App->GetDevice(), map, (float*)&positions[0], positions.size() );
 }
 
 void GW2Trail::SetupAndDraw( CCoreConstantBuffer* constBuffer, CCoreTexture* texture, CMatrix4x4& cam, CMatrix4x4& persp, float& one, bool scaleData, int32_t fadeoutBubble, float* data, float fadeAlpha, float width, float uvScale, float width2d )
@@ -905,9 +905,9 @@ TBOOL GW2Trail::Import( CStreamReaderMemory& f, TBOOL keepPoints )
 {
   if ( keepPoints )
   {
-    positions.FlushFast();
+    positions.clear();
     for ( int32_t x = 0; x < ( f.GetLength() - 8 ) / 12; x++ )
-      positions.Add( CVector3( &( (float*)( f.GetData() + 8 ) )[ x * 3 ] ) );
+      positions.emplace_back( CVector3( &( (float*)( f.GetData() + 8 ) )[ x * 3 ] ) );
   }
 
   Build( App->GetDevice(), *(int32_t*)( f.GetData() + 4 ), (float*)( f.GetData() + 8 ), int32_t( ( f.GetLength() - 8 ) / 12 ) );

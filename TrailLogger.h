@@ -3,6 +3,8 @@
 #include "MumbleLink.h"
 #include "gw2tactical.h"
 
+#include <vector>
+
 void GlobalDoTrailLogging( int32_t mapID, CVector3 charPos );
 
 struct GW2TrailVertex
@@ -17,7 +19,7 @@ class GW2Trail
 {
   friend class GW2TrailDisplay;
 
-  CArray<CVector3> positions;
+  std::vector<CVector3> positions;
 
   void Reset( int32_t _mapID = 0 );
 
@@ -60,7 +62,6 @@ class GW2TrailDisplay : public CWBItem
   CRect drawrect;
 
   virtual void OnDraw( CWBDrawAPI *API );
-  void DrawMinimap( CWBDrawAPI *API );
 
   CCoreVertexFormat *vertexFormat = nullptr;
 
