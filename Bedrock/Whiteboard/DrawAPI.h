@@ -104,14 +104,14 @@ public:
 
   TBOOL Initialize( CWBApplication *App, CCoreDevice *Device, CAtlas *Atlas );
 
-  void DrawRect( CRect &r, CColor Color );
-  void DrawRect( CRect &r, float u1, float v1, float u2, float v2 );
-  void DrawRect( CRect &r, float u1, float v1, float u2, float v2, CColor Color );
-  void DrawRectBorder( CRect &r, CColor Color );
-  void DrawRectRotated( CRect &r, float u1, float v1, float u2, float v2, CColor Color, float rotation );
+  void DrawRect( const CRect &r, CColor Color );
+  void DrawRect( const CRect &r, float u1, float v1, float u2, float v2 );
+  void DrawRect( const CRect &r, float u1, float v1, float u2, float v2, CColor Color );
+  void DrawRectBorder( const CRect &r, CColor Color );
+  void DrawRectRotated( const CRect &r, float u1, float v1, float u2, float v2, CColor Color, float rotation );
 
-  void DrawLine( CPoint &p1, CPoint &p2, CColor Color );
-  void DrawLine( CPoint &p1, CPoint &p2, CColor Color1, CColor Color2 );
+  void DrawLine( const CPoint &p1, const CPoint &p2, CColor Color );
+  void DrawLine( const CPoint &p1, const CPoint &p2, CColor Color1, CColor Color2 );
 
   void DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, CColor Color );
   void DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, CColor a, CColor b, CColor c );

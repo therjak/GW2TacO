@@ -114,22 +114,22 @@ public:
   int32_t GetBase();
   int32_t GetOffsetX( TCHAR Char );
   int32_t GetOffsetY( TCHAR Char );
-  int32_t GetCenterWidth( int32_t x1, int32_t x2, TCHAR *Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  int32_t GetCenterWidth( int32_t x1, int32_t x2, CString &Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  int32_t GetCenterWidth( int32_t x1, int32_t x2, const TCHAR *Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  int32_t GetCenterWidth( int32_t x1, int32_t x2, const CString &Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
   int32_t GetCenterHeight( int32_t y1, int32_t y2 );
-  CPoint GetCenter( TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  CPoint GetCenter( CString &Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  CPoint GetCenter( const TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  CPoint GetCenter( const CString &Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
   int32_t GetMedian();
 
 	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y, CColor Color = 0xffffffff);
-  int32_t Write( CWBDrawAPI *DrawApi, TCHAR *String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  int32_t Write( CWBDrawAPI *DrawApi, CString &String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, const TCHAR *String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, const CString &String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
 	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color = 0xffffffff);
-  int32_t Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  int32_t Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, const TCHAR *String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, const CString &String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
   int32_t GetWidth( uint16_t Char, TBOOL Advance = true ); //if Advance is set to false this returns the width of the image in pixels
-  int32_t GetWidth( TCHAR *String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
-  int32_t GetWidth( CString &String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
+  int32_t GetWidth( const TCHAR *String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
+  int32_t GetWidth( const CString &String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
 
   int32_t GetHeight( uint16_t Char );
   int32_t GetHeight( TCHAR* String );

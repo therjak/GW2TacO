@@ -1,6 +1,7 @@
 #pragma once
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 #include <thread>
+#include <vector>
 
 class GW2MapTimer : public CWBItem
 {
@@ -22,7 +23,7 @@ class GW2MapTimer : public CWBItem
     int Start;
     CString id;
     TBOOL display = true;
-    CArray<Event> events;
+    std::vector<Event> events;
   };
 
   CPoint lastpos;
@@ -36,14 +37,14 @@ class GW2MapTimer : public CWBItem
 
   std::thread fetchThread;
 
-  CArray<CString> worldBosses;
-  CArray<CString> mapchests;
+  std::vector<CString> worldBosses;
+  std::vector<CString> mapchests;
 
   LIGHTWEIGHT_CRITICALSECTION critSec;
 
 public:
 
-  CArray<Map> maps;
+  std::vector<Map> maps;
 
   GW2MapTimer( CWBItem *Parent, CRect Position );
   virtual ~GW2MapTimer();

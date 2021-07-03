@@ -38,7 +38,7 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
             CLightweightCriticalSection cs(&critSec);
 
-            worldBosses.Flush();
+            worldBosses.clear();
 
             for (unsigned int x = 0; x < dungeonData.size(); x++)
             {
@@ -46,7 +46,7 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
                 continue;
 
               CString eventName = CString(dungeonData[x]->get<String>().data());
-              worldBosses += eventName;
+              worldBosses.push_back(eventName);
             }
           }
 
@@ -59,7 +59,7 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
             CLightweightCriticalSection cs(&critSec);
 
-            mapchests.Flush();
+            mapchests.clear();
 
             for (unsigned int x = 0; x < dungeonData.size(); x++)
             {
@@ -67,7 +67,7 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
                 continue;
 
               CString eventName = CString(dungeonData[x]->get<String>().data());
-              mapchests += eventName;
+              mapchests.push_back(eventName);
             }
           }
 
@@ -90,9 +90,6 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
   CRect cl = GetClientRect();
 
-  //SYSTEMTIME systime;
-  //GetSystemTime(&systime);
-
   time_t rawtime;
   time( &rawtime );
   struct tm ptm;
@@ -108,46 +105,44 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
     mapheight = barheight;
 
   int32_t mapCount = 0;
-  for ( int32_t x = 0; x < maps.NumItems(); x++ )
-    if ( maps[ x ].display )
+  for ( const auto& m:maps )
+    if ( m.display )
       mapCount++;
 
   DrawBackgroundItem( API, CSSProperties.DisplayDescriptor, CRect( cl.TopLeft(), CPoint( cl.Width(), mapCount * mapheight + 1 ) ), GetState() );
-  //API->DrawRect(CRect(cl.TopLeft(), CPoint(cl.Width(), maps.NumItems() * mapheight + 1)), 0x20ffffff);
-
+  
   WBTEXTTRANSFORM TextTransform = (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue( i, WB_ITEM_TEXTTRANSFORM );
 
-  //int32_t minutes = systime.wHour * 60 + systime.wMinute;
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
   int32_t lefttime = minutes - timeWindow / 2;
 
   int32_t ypos = 0;
 
-  CArray< CRect > highlightRects;
-
-  for ( int x = 0; x < maps.NumItems(); x++ )
+  std::vector< CRect > highlightRects;
+  int x = 0;
+  for ( const auto& map: maps) //int x = 0; x < maps.NumItems(); x++ )
   {
-    if ( !maps[ x ].display )
+    if ( !map.display )
       continue;
 
-    int32_t currtime = -48 * 60 + maps[ x ].Length + maps[ x ].Start - lefttime;
+    int32_t currtime = -48 * 60 + map.Length + map.Start - lefttime;
     int32_t currevent = 0;
 
     if ( ( ypos > cl.y2 ) || ( ypos < cl.y1 - mapheight ) )
       continue;
 
-    CPoint p = f->GetCenter( maps[ x ].name, CRect( cl.x1, ypos, cl.x2, ypos + mapheight - barheight + 1 ), TextTransform );
+    CPoint p = f->GetCenter( map.name, CRect( cl.x1, ypos, cl.x2, ypos + mapheight - barheight + 1 ), TextTransform );
     //p.y -= 3;
     if ( !compact )
-      f->Write( API, maps[ x ].name, CPoint( p.x, ypos + 2 ), 0xffffffff, TextTransform );
+      f->Write( API, map.name, CPoint( p.x, ypos + 2 ), 0xffffffff, TextTransform );
 
     int32_t toppos = ypos + mapheight - barheight;
     int32_t bottompos = ypos + mapheight + 1;
 
     {
       CLightweightCriticalSection cs( &critSec );
-      if ( maps[ x ].chestId.Length() > 0 && mapchests.Find( maps[ x ].chestId ) >= 0 )
-        highlightRects += CRect( cl.x1, toppos, cl.x2, bottompos );
+      if ( map.chestId.Length() > 0 && std::find(mapchests.begin(), mapchests.end(), map.chestId ) != mapchests.end() )
+        highlightRects.emplace_back(CRect( cl.x1, toppos, cl.x2, bottompos ));
     }
 
     while ( currtime < 72 * 60 )
@@ -159,17 +154,17 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
       {
         CRect r = CRect( max( 0, p1 ), toppos, min( cl.Width(), p2 ), bottompos );
 
-        API->DrawRect( r, maps[ x ].events[ currevent ].color );
+        API->DrawRect( r, map.events[ currevent ].color );
 
         CRect cr = API->GetCropRect();
         API->SetCropRect( ClientToScreen( r ) );
 
-        CString text = maps[ x ].events[ currevent ].name;
+        CString text = map.events[ currevent ].name;
 
         //if ( minutes >= currtime && minutes < currtime + maps[x].events[currevent].length)
         {
-          int32_t timeleft = currtime * 60 - ptm.tm_sec - timeWindow * 30 + maps[ x ].events[ currevent ].length * 60;// (currtime + maps[x].events[currevent].length) * 60 - (minutes * 60 + systime.wSecond);
-          if ( timeleft >= 0 && timeleft <= maps[ x ].events[ currevent ].length * 60 )
+          int32_t timeleft = currtime * 60 - ptm.tm_sec - timeWindow * 30 + map.events[ currevent ].length * 60;// (currtime + maps[x].events[currevent].length) * 60 - (minutes * 60 + systime.wSecond);
+          if ( timeleft >= 0 && timeleft <= map.events[ currevent ].length * 60 )
             text = CString::Format( "%s %d:%.2d", text.GetPointer(), timeleft / 60, timeleft % 60 );
         }
 
@@ -188,27 +183,28 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
 
         {
           CLightweightCriticalSection cs( &critSec );
-          if ( maps[ x ].events[ currevent ].worldBossId.Length() > 0 && worldBosses.Find( maps[ x ].events[ currevent ].worldBossId ) >= 0 )
+          const auto &bossId = map.events[currevent].worldBossId;
+          if ( map.events[ currevent ].worldBossId.Length() > 0 && std::find(worldBosses.begin(), worldBosses.end(), bossId) != worldBosses.end())
             isHighlighted = true;
-          if ( maps[ x ].events[ currevent ].worldBossId.Length() > 0 && mapchests.Find( maps[ x ].events[ currevent ].worldBossId ) >= 0 )
+          if ( map.events[ currevent ].worldBossId.Length() > 0 && std::find(mapchests.begin(), mapchests.end(), bossId) != mapchests.end())
             isHighlighted = true;
         }
 
         if ( !isHighlighted )
           API->DrawRectBorder( r, 0x80000000 );
         else
-          highlightRects.Add( r );
+          highlightRects.push_back( r );
       }
 
-      currtime += maps[ x ].events[ currevent ].length;
-      currevent = ( currevent + 1 ) % maps[ x ].events.NumItems();
+      currtime += map.events[ currevent ].length;
+      currevent = ( currevent + 1 ) % map.events.size();
     }
 
     ypos += mapheight;
   }
 
-  for ( int x = 0; x < highlightRects.NumItems(); x++ )
-    API->DrawRectBorder( highlightRects[ x ], 0xffffcc00 );
+  for ( const auto& r: highlightRects)
+    API->DrawRectBorder( r, 0xffffcc00 );
 
   API->DrawRect( CRect( cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos ), 0x80ffffff );
   SetMouseToolTip(mouseToolTip);
@@ -273,10 +269,10 @@ void GW2MapTimer::SetLayout( CXMLNode & node )
         event.color = CColor( c );
       }
 
-      map.events += event;
+      map.events.push_back(event);
     }
 
-    maps += map;
+    maps.push_back(map);
   }
 }
 

@@ -188,8 +188,6 @@ enum MainMenuItems
   Menu_MarkerFilter_Base = 0x65535,
 };
 
-//extern CArray<ScriptKeyBind> scriptKeyBinds;
-
 TBOOL GW2TacO::IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType )
 {
   return true;
@@ -408,7 +406,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         {
           auto itm = ctx->AddItem( DICT( "configmaptimer" ), 0 );
 
-          for ( int32_t x = 0; x < timer->maps.NumItems(); x++ )
+          for ( int32_t x = 0; x < timer->maps.size(); x++ )
           {
             TBOOL open = true;
             CString str = CString( "maptimer_mapopen_" ) + timer->maps[ x ].id;
@@ -786,7 +784,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
       if ( timer )
       {
-        if ( Message.Data < Menu_ToggleMapTimerMap + timer->maps.NumItems() )
+        if ( Message.Data < Menu_ToggleMapTimerMap + timer->maps.size() )
         {
           int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
           CString str = CString( "maptimer_mapopen_" ) + timer->maps[ mapIdx ].id;

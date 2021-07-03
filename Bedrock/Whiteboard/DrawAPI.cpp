@@ -622,7 +622,7 @@ void CWBDrawAPI::SetCropRect( CRect &r )
   CropRect = ParentCropRect | r;
 }
 
-void CWBDrawAPI::DrawRect( CRect &r, CColor Color )
+void CWBDrawAPI::DrawRect( const CRect &r, CColor Color )
 {
   CPoint white = Atlas->GetWhitePixelUV();
   float u, v;
@@ -631,7 +631,7 @@ void CWBDrawAPI::DrawRect( CRect &r, CColor Color )
   AddDisplayRect( r, u, v, u, v, Color );
 }
 
-void CWBDrawAPI::DrawRectBorder( CRect &r, CColor Color )
+void CWBDrawAPI::DrawRectBorder( const CRect &r, CColor Color )
 {
   DrawRect( CRect( r.TopLeft(), r.BottomLeft() + CPoint( 1, 0 ) ), Color );
   DrawRect( CRect( r.TopLeft(), r.TopRight() + CPoint( 0, 1 ) ), Color );
@@ -639,28 +639,28 @@ void CWBDrawAPI::DrawRectBorder( CRect &r, CColor Color )
   DrawRect( CRect( r.BottomLeft() - CPoint( 0, 1 ), r.BottomRight() ), Color );
 }
 
-void CWBDrawAPI::DrawRectRotated( CRect &r, float u1, float v1, float u2, float v2, CColor Color, float rotation )
+void CWBDrawAPI::DrawRectRotated( const CRect &r, float u1, float v1, float u2, float v2, CColor Color, float rotation )
 {
   AddDisplayRectRotated( r, u1, v1, u2, v2, Color, rotation );
 }
 
-void CWBDrawAPI::DrawRect( CRect &r, float u1, float v1, float u2, float v2 )
+void CWBDrawAPI::DrawRect( const CRect &r, float u1, float v1, float u2, float v2 )
 {
   AddDisplayRect( r, u1, v1, u2, v2, 0xffffffff );
 }
 
-void CWBDrawAPI::DrawRect( CRect &r, float u1, float v1, float u2, float v2, CColor Color )
+void CWBDrawAPI::DrawRect( const CRect &r, float u1, float v1, float u2, float v2, CColor Color )
 {
   AddDisplayRect( r, u1, v1, u2, v2, Color );
 }
 
-void CWBDrawAPI::DrawLine( CPoint &p1, CPoint &p2, CColor Color )
+void CWBDrawAPI::DrawLine( const CPoint &p1, const CPoint &p2, CColor Color )
 {
   CPoint white = Atlas->GetWhitePixelUV();
   AddDisplayLine( p1, p2, UVTRANSLATION( white.x, Atlas->GetXRes() ), UVTRANSLATION( white.y, Atlas->GetYRes() ), UVTRANSLATION( white.x, Atlas->GetXRes() ), UVTRANSLATION( white.y, Atlas->GetYRes() ), Color, Color );
 }
 
-void CWBDrawAPI::DrawLine( CPoint &p1, CPoint &p2, CColor Color1, CColor Color2 )
+void CWBDrawAPI::DrawLine( const CPoint &p1, const CPoint &p2, CColor Color1, CColor Color2 )
 {
   CPoint white = Atlas->GetWhitePixelUV();
   AddDisplayLine( p1, p2, UVTRANSLATION( white.x, Atlas->GetXRes() ), UVTRANSLATION( white.y, Atlas->GetYRes() ), UVTRANSLATION( white.x, Atlas->GetXRes() ), UVTRANSLATION( white.y, Atlas->GetYRes() ), Color1, Color2 );

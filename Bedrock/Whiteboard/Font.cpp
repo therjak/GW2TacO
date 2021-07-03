@@ -452,7 +452,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y, 
   return width;
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const TCHAR *String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   _TUCHAR *Text = (_TUCHAR*)String;
   if ( !Text ) return 0;
@@ -485,7 +485,7 @@ int32_t CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, int32_t x, int32_t y
   return xp - x;
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, CString &String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const CString &String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   return Write( DrawApi, String.GetPointer(), x, y, Color, Transform, DoKerning );
 }
@@ -495,12 +495,12 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Colo
   return WriteChar( DrawApi, Char, p.x, p.y, Color );
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, TCHAR *String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const TCHAR *String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   return Write( DrawApi, String, p.x, p.y, Color, Transform, DoKerning );
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, CString &String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const CString &String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
   return Write( DrawApi, String, p.x, p.y, Color, Transform, DoKerning );
 }
@@ -516,7 +516,7 @@ int32_t CWBFont::GetWidth( uint16_t Char, TBOOL Advance )
   return Advance ? Alphabet[ (uint16_t)Char ].Advance : ( Alphabet[ (uint16_t)Char ].OffsetX + Alphabet[ (uint16_t)Char ].calculatedContentRect.x2 );
 }
 
-int32_t CWBFont::GetWidth( TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
+int32_t CWBFont::GetWidth( const TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
 {
   _TUCHAR *Text = (_TUCHAR*)String;
   if ( !Text ) return 0;
@@ -567,7 +567,7 @@ int32_t CWBFont::GetWidth( TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM
   return max( maxXp, xp );
 }
 
-int32_t CWBFont::GetWidth( CString &String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
+int32_t CWBFont::GetWidth( const CString &String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
 {
   return GetWidth( String.GetPointer(), AdvanceLastChar, Transform, DoKerning, firstCharHack );
 }
@@ -667,7 +667,7 @@ int32_t CWBFont::GetOffsetY( TCHAR Char )
   return Alphabet[ (uint16_t)Char ].OffsetY;
 }
 
-int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, TCHAR *Text, WBTEXTTRANSFORM Transform )
+int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, const TCHAR *Text, WBTEXTTRANSFORM Transform )
 {
   //_TUCHAR Char = 0;
   //if (Text && *Text)
@@ -676,7 +676,7 @@ int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, TCHAR *Text, WBTEXTTRAN
   return ( x1 + x2 - GetWidth( Text, false, Transform, true ) ) / 2;// -GetOffsetX(Char);
 }
 
-int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, CString &Text, WBTEXTTRANSFORM Transform )
+int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, const CString &Text, WBTEXTTRANSFORM Transform )
 {
   return GetCenterWidth( x1, x2, Text.GetPointer(), Transform );
 }
@@ -686,12 +686,12 @@ int32_t CWBFont::GetCenterHeight( int32_t y1, int32_t y2 )
   return y1 + ( y2 - y1 ) / 2 - GetMedian();
 }
 
-CPoint CWBFont::GetCenter( TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform )
+CPoint CWBFont::GetCenter( const TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform )
 {
   return CPoint( GetCenterWidth( Rect.x1, Rect.x2, Text, Transform ), GetCenterHeight( Rect.y1, Rect.y2 ) );
 }
 
-CPoint CWBFont::GetCenter( CString &Text, CRect Rect, WBTEXTTRANSFORM Transform )
+CPoint CWBFont::GetCenter( const CString &Text, CRect Rect, WBTEXTTRANSFORM Transform )
 {
   return GetCenter( Text.GetPointer(), Rect, Transform );
 }
