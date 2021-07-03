@@ -2,7 +2,9 @@
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 
-CArray<LocationalTimer> LocationalTimers;
+#include <vector>
+
+std::vector<LocationalTimer> LocationalTimers;
 
 void ImportLocationalTimers()
 {
@@ -16,7 +18,7 @@ void ImportLocationalTimers()
   {
     LocationalTimer t;
     t.ImportData( root.GetChild( "areatriggeredtimer", x ) );
-    LocationalTimers += t;
+    LocationalTimers.push_back(t);
   }
 }
 
@@ -86,7 +88,7 @@ void LocationalTimer::ImportData( CXMLNode &node )
     if ( te.HasAttribute( "timestamp" ) ) te.GetAttributeAsInteger( "timestamp", &tmr.Time );
     if ( te.HasAttribute( "countdown" ) ) te.GetAttributeAsInteger( "countdown", &tmr.CountdownLength );
     if ( te.HasAttribute( "onscreentime" ) ) te.GetAttributeAsInteger( "onscreentime", &tmr.OnScreenLength );
-    Events += tmr;
+    Events.push_back(tmr);
   }
 }
 
@@ -102,19 +104,16 @@ void TimerDisplay::OnDraw( CWBDrawAPI *API )
 
   int32_t ypos = Lerp( GetClientRect().y1, GetClientRect().y2, 0.25f );
 
-  for ( int32_t x = 0; x < LocationalTimers.NumItems(); x++ )
+  for ( auto& t: LocationalTimers )
   {
-    LocationalTimer &t = LocationalTimers[ x ];
-
     t.Update();
     if ( !t.IsRunning )
       continue;
 
-    float timepos = ( tme - LocationalTimers[ x ].StartTime ) / 1000.0f - t.StartDelay;
+    float timepos = ( tme - t.StartTime ) / 1000.0f - t.StartDelay;
 
-    for ( int32_t y = 0; y < t.Events.NumItems(); y++ )
+    for (auto& e :t.Events )
     {
-      auto &e = t.Events[ y ];
       if ( !( timepos > e.Time - e.CountdownLength && timepos < e.Time + e.OnScreenLength ) )
         continue;
 

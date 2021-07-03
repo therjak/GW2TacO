@@ -7,10 +7,12 @@
 #include <time.h>
 #include "Language.h"
 
+#include <vector>
+
 using namespace jsonxx;
 
 bool wvwCanBeRendered = false;
-CArray<WvWObjective> wvwObjectives;
+std::vector<WvWObjective> wvwObjectives;
 CString FetchHTTPS( LPCWSTR url, LPCWSTR path );
 CDictionaryEnumerable<CString, POI> wvwPOIs;
 GW2TacticalCategory *GetCategory( CString s );
@@ -323,10 +325,10 @@ void LoadWvWObjectives()
       poi.position = o.coord;
       poi.mapID = o.mapID;
       poi.icon = DefaultIconHandle;
-      poi.wvwObjectiveID = wvwObjectives.NumItems();
+      poi.wvwObjectiveID = wvwObjectives.size();
       //poi.iconSize = DefaultIconSize;
 
-      wvwObjectives += o;
+      wvwObjectives.push_back(o);
 
       CoCreateGuid( &poi.guid );
 

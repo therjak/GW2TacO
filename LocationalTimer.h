@@ -2,6 +2,8 @@
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 
+#include <vector>
+
 class LocationalTimer
 {
 public:
@@ -12,13 +14,6 @@ public:
     int32_t Time;
     int32_t CountdownLength;
     int32_t OnScreenLength;
-    CArray<CVector3> PolyPoints;
-    CColor PolyColor = CColor( 255, 0, 0, 255 );
-  };
-
-  struct TimerPhase
-  {
-    CArray<TimerEvent> Events;
   };
 
   int32_t MapID = 0;
@@ -28,7 +23,7 @@ public:
   int32_t TimerLength = 0;
   int32_t StartDelay = 0;
 
-  CArray<TimerEvent> Events;
+  std::vector<TimerEvent> Events;
 
   TBOOL IsRunning = false;
   int32_t StartTime = 0;
@@ -55,5 +50,5 @@ public:
   WB_DECLARE_GUIITEM( _T( "TimerDisplay" ), CWBItem );
 };
 
-extern CArray<LocationalTimer> LocationalTimers;
+extern std::vector<LocationalTimer> LocationalTimers;
 void ImportLocationalTimers();

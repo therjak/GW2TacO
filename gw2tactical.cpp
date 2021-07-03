@@ -9,6 +9,7 @@
 #include "Language.h"
 #include "GW2API.h"
 #include "OverlayApplication.h"
+#include <vector>
 
 #include "Bedrock/UtilLib/jsonxx.h"
 using namespace jsonxx;
@@ -673,10 +674,10 @@ void GW2TacticalDisplay::DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& 
   if ( drawWvWNames && poi.typeData.behavior == POIBehavior::WvWObjective )
   {
     CWBFont *f = App->GetDefaultFont();
-    extern CArray<WvWObjective> wvwObjectives;
+    extern std::vector<WvWObjective> wvwObjectives;
     CString wvwObjectiveName;
 
-    if ( poi.wvwObjectiveID < wvwObjectives.NumItems() )
+    if ( poi.wvwObjectiveID < wvwObjectives.size() )
       wvwObjectiveName = DICT( wvwObjectives[ poi.wvwObjectiveID ].nameToken, wvwObjectives[ poi.wvwObjectiveID ].name );
 
     if ( wvwObjectiveName.Length() )
