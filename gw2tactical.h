@@ -2,6 +2,7 @@
 #include "Bedrock/WhiteBoard/whiteboard.h"
 #include <objbase.h>
 #include <thread>
+#include <vector>
 
 enum class POIBehavior : int32_t
 {
@@ -260,8 +261,8 @@ void ExportPOIS();
 void ImportPOIActivationData();
 void ExportPOIActivationData();
 
-void OpenTypeContextMenu( CWBContextMenu *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
-void OpenTypeContextMenu( CWBContextItem *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
+void OpenTypeContextMenu( CWBContextMenu *ctx, std::vector<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
+void OpenTypeContextMenu( CWBContextItem *ctx, std::vector<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
 
 float WorldToGameCoords( float world );
 float GameToWorldCoords( float game );

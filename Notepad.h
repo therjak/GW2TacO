@@ -9,7 +9,6 @@ class GW2Notepad : public CWBItem
   TBOOL Hidden = false;
   GUID CurrentPOI;
 
-  CArray<GW2TacticalCategory*> CategoryList;
   TBOOL ChangeDefault = false;
   bool canSetFocus = false;
 

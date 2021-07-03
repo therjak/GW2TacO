@@ -3,6 +3,7 @@
 #include "gw2tactical.h"
 #include "TS3Connection.h"
 #include <thread>
+#include <vector>
 
 enum class TacOKeyAction : int32_t
 {
@@ -62,8 +63,7 @@ class GW2TacO : public CWBItem
 
   void RebindAction( TacOKeyAction Action );
   void RebindScriptKey( int32_t evendIDX );
-  CArray<GW2TacticalCategory*> CategoryList;
-  //CArray<AngelWrapper*> scriptEngines;
+  std::vector<GW2TacticalCategory*> CategoryList;
 
   void ApiKeyInputAction( APIKeys keyType, int32_t idx );
   CWBTextBox* APIKeyInput = nullptr;

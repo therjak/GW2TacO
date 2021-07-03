@@ -2,6 +2,8 @@
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 #include "gw2tactical.h"
 
+#include <vector>
+
 class GW2MarkerEditor : public CWBItem
 {
   virtual TBOOL MessageProc( CWBMessage &Message );
@@ -9,7 +11,7 @@ class GW2MarkerEditor : public CWBItem
   TBOOL Hidden = false;
   GUID CurrentPOI;
 
-  CArray<GW2TacticalCategory*> CategoryList;
+  std::vector<GW2TacticalCategory*> CategoryList;
   TBOOL ChangeDefault = false;
 
 public:

@@ -170,7 +170,7 @@ TBOOL GW2MarkerEditor::MessageProc( CWBMessage &Message )
   break;
 
   case WBM_CONTEXTMESSAGE:
-    if ( Message.Data >= 0 && Message.Data < CategoryList.NumItems() )
+    if ( Message.Data >= 0 && Message.Data < CategoryList.size() )
     {
       if ( !ChangeDefault )
       {

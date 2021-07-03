@@ -623,7 +623,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       }
     }
 
-    if ( Message.Data >= Menu_MarkerFilter_Base && Message.Data < Menu_MarkerFilter_Base + CategoryList.NumItems() )
+    if ( Message.Data >= Menu_MarkerFilter_Base && Message.Data < Menu_MarkerFilter_Base + CategoryList.size() )
     {
       CWBContextMenu* ctxMenu = (CWBContextMenu*)App->FindItemByGuid( Message.Position[ 1 ] );
       auto itm = ctxMenu->GetItem( Message.Data );
@@ -772,7 +772,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       }
     }
 
-    if ( Message.Data >= Menu_MarkerFilter_Base && Message.Data < Menu_MarkerFilter_Base + CategoryList.NumItems() )
+    if ( Message.Data >= Menu_MarkerFilter_Base && Message.Data < Menu_MarkerFilter_Base + CategoryList.size() )
     {
       TBOOL displayed = !CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->IsDisplayed;
       CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->IsDisplayed = displayed;

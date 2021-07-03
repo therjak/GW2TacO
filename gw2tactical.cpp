@@ -1904,7 +1904,7 @@ void MarkerTypeData::Write( CXMLNode *n )
     n->SetAttributeFromFloat("infoRange", infoRange);
 }
 
-void AddTypeContextMenu( CWBContextItem *ctx, CArray<GW2TacticalCategory*> &CategoryList, GW2TacticalCategory *Parent, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
+void AddTypeContextMenu( CWBContextItem *ctx, std::vector<GW2TacticalCategory*> &CategoryList, GW2TacticalCategory *Parent, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
 {
   for ( int32_t x = 0; x < CategoryMap.NumItems(); x++ )
   {
@@ -1926,21 +1926,21 @@ void AddTypeContextMenu( CWBContextItem *ctx, CArray<GW2TacticalCategory*> &Cate
           txt = dta->displayName;
         else
           txt = dta->name;
-        ctx->AddItem( txt.GetPointer(), CategoryList.NumItems() + BaseID, false, closeOnClick );
-        CategoryList += dta;
+        ctx->AddItem( txt.GetPointer(), CategoryList.size() + BaseID, false, closeOnClick );
+        CategoryList.push_back(dta);
         ctx->AddSeparator();
       }
       else
       {
-        auto n = ctx->AddItem( txt.GetPointer(), CategoryList.NumItems() + BaseID, AddVisibilityMarkers && dta->IsDisplayed, closeOnClick );
-        CategoryList += dta;
+        auto n = ctx->AddItem( txt.GetPointer(), CategoryList.size() + BaseID, AddVisibilityMarkers && dta->IsDisplayed, closeOnClick );
+        CategoryList.push_back(dta);
         AddTypeContextMenu( n, CategoryList, dta, AddVisibilityMarkers, BaseID, closeOnClick );
       }
     }
   }
 }
 
-void AddTypeContextMenu( CWBContextMenu *ctx, CArray<GW2TacticalCategory*> &CategoryList, GW2TacticalCategory *Parent, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
+void AddTypeContextMenu( CWBContextMenu *ctx, std::vector<GW2TacticalCategory*> &CategoryList, GW2TacticalCategory *Parent, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
 {
   for ( int32_t x = 0; x < CategoryMap.NumItems(); x++ )
   {
@@ -1962,29 +1962,29 @@ void AddTypeContextMenu( CWBContextMenu *ctx, CArray<GW2TacticalCategory*> &Cate
           txt = dta->displayName;
         else
           txt = dta->name;
-        ctx->AddItem( txt.GetPointer(), CategoryList.NumItems() + BaseID, false, closeOnClick );
-        CategoryList += dta;
+        ctx->AddItem( txt.GetPointer(), CategoryList.size() + BaseID, false, closeOnClick );
+        CategoryList.push_back(dta);
         ctx->AddSeparator();
       }
       else
       {
-        auto n = ctx->AddItem( txt.GetPointer(), CategoryList.NumItems() + BaseID, AddVisibilityMarkers && dta->IsDisplayed, closeOnClick );
-        CategoryList += dta;
+        auto n = ctx->AddItem( txt.GetPointer(), CategoryList.size() + BaseID, AddVisibilityMarkers && dta->IsDisplayed, closeOnClick );
+        CategoryList.push_back(dta);
         AddTypeContextMenu( n, CategoryList, dta, AddVisibilityMarkers, BaseID, closeOnClick );
       }
     }
   }
 }
 
-void OpenTypeContextMenu( CWBContextItem *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
+void OpenTypeContextMenu( CWBContextItem *ctx, std::vector<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
 {
-  CategoryList.Flush();
+  CategoryList.clear();
   AddTypeContextMenu( ctx, CategoryList, &CategoryRoot, AddVisibilityMarkers, BaseID, closeOnClick );
 }
 
-void OpenTypeContextMenu( CWBContextMenu *ctx, CArray<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
+void OpenTypeContextMenu( CWBContextMenu *ctx, std::vector<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers, int32_t BaseID, TBOOL closeOnClick )
 {
-  CategoryList.Flush();
+  CategoryList.clear();
   AddTypeContextMenu( ctx, CategoryList, &CategoryRoot, AddVisibilityMarkers, BaseID, closeOnClick );
 }
 
