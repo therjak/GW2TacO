@@ -10,9 +10,6 @@ volatile struct LIGHTWEIGHT_CRITICALSECTION
 #define THREAD_UNUSED 0
 
 void InitializeLightweightCS( LIGHTWEIGHT_CRITICALSECTION * cs );
-void EnterLightweightCS( LIGHTWEIGHT_CRITICALSECTION * cs );
-void LeaveLightweightCS( LIGHTWEIGHT_CRITICALSECTION * cs );
-TBOOL IsLightweightCSInUse( LIGHTWEIGHT_CRITICALSECTION * cs );
 
 class CLightweightCriticalSection
 {
