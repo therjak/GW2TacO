@@ -33,4 +33,4 @@ void DeleteScriptKeyBinding( const CString& scriptEvent );
 void LoadMarkerCategoryVisibilityInfo();
 
 void AutoSaveConfig();
-void RemoveConfigEntry(TCHAR* value);
+void RemoveConfigEntry(std::string_view value);

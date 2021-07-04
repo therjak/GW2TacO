@@ -1397,18 +1397,14 @@ void ImportMarkerPack( CWBApplication* App, std::string_view zipFile )
     if ( fileName.Find( ".xml" ) != fileName.Length() - 4 )
       continue;
 
-    uint8_t* data = new uint8_t[ (int32_t)stat.m_uncomp_size ];
+    auto data = std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
 
-    if ( !mz_zip_reader_extract_to_mem( zip, x, data, (int32_t)stat.m_uncomp_size, 0 ) )
-    {
-      delete[] data;
+    if ( !mz_zip_reader_extract_to_mem( zip, x, data.get(), (int32_t)stat.m_uncomp_size, 0 ) ) {
       continue;
     }
 
-    CString doc( (TS8*)data, (uint32_t)stat.m_uncomp_size );
+    CString doc( (TS8*)data.get(), (uint32_t)stat.m_uncomp_size );
     ImportPOIString( App, doc, zipFile.data() );
-
-    delete[] data;
   }
 }
 

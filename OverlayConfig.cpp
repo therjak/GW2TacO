@@ -306,8 +306,7 @@ void AutoSaveConfig()
   }
 }
 
-void RemoveConfigEntry(TCHAR* name)
-{
-  ConfigStrings.Delete(name);
-  ConfigNums.Delete(name);
+void RemoveConfigEntry(std::string_view name) {
+  ConfigStrings.Delete(name.data());
+  ConfigNums.Delete(name.data());
 }

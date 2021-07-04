@@ -18,6 +18,7 @@
 #include "TrailLogger.h"
 #include "Language.h"
 #include "BuildCount.h"
+#include <mutex>
 using namespace jsonxx;
 
 CString UIFileNames[] =
@@ -176,8 +177,8 @@ enum MainMenuItems
   Menu_RaidToggles_End = 0x2000,
   Menu_GW2APIKey_Base = 0x3000,
   Menu_GW2APIKey_End = 0x4000,
-  Menu_DeleteGW2APIKey_Base = 0x3000,
-  Menu_DeleteGW2APIKey_End = 0x4000,
+  Menu_DeleteGW2APIKey_Base = 0x5000,
+  Menu_DeleteGW2APIKey_End = 0x6000,
 
   Menu_ToggleMapTimerMap = 0x30000,
 
@@ -515,15 +516,18 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
       auto currKey = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-      for (int32_t x = 0; x < GW2::apiKeyManager.keys.NumItems(); x++)
-      {
-        auto key = GW2::apiKeyManager.keys[x];
-        auto keyMenu = gw2keys->AddItem((!key->accountName.empty()) ? key->accountName.c_str() : key->apiKey.c_str(), Menu_GW2APIKey_Base + x, key == currKey);
+      for (int32_t x = 0; x < GW2::apiKeyManager.size(); x++) {
+        auto key = GW2::apiKeyManager.GetKey(x);
+        auto keyMenu = gw2keys->AddItem(
+            (!key->accountName.empty()) ? key->accountName.c_str()
+                                        : key->apiKey.c_str(),
+            Menu_GW2APIKey_Base + x, key == currKey);
         keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
       }
 
-      if (GW2::apiKeyManager.keys.NumItems())
+      if (GW2::apiKeyManager.empty()) {
         gw2keys->AddSeparator();
+      }
 
       gw2keys->AddItem(DICT("addgw2apikey"), Menu_AddGW2ApiKey);
 
@@ -665,19 +669,18 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
     break;
 
-  case WBM_CONTEXTMESSAGE:
-
-    if (Message.Data >= Menu_GW2APIKey_Base && Message.Data < Menu_GW2APIKey_End)
-    {
+  case WBM_CONTEXTMESSAGE: 
+    if (Message.Data >= Menu_GW2APIKey_Base &&
+        Message.Data < Menu_GW2APIKey_End) {
       int32_t idx = Message.Data - Menu_GW2APIKey_Base;
       ApiKeyInputAction(APIKeys::GW2APIKey, idx);
       return true;
     }
 
-    if (Message.Data >= Menu_DeleteGW2APIKey_Base && Message.Data < Menu_DeleteGW2APIKey_End)
-    {
+    if (Message.Data >= Menu_DeleteGW2APIKey_Base &&
+        Message.Data < Menu_DeleteGW2APIKey_End) {
       int32_t idx = Message.Data - Menu_DeleteGW2APIKey_Base;
-      GW2::apiKeyManager.keys.FreeByIndex(idx);
+      GW2::apiKeyManager.RemoveKey(idx);
       GW2::apiKeyManager.RebuildConfigValues();
       return true;
     }
@@ -1065,9 +1068,8 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     break;
     case Menu_AddGW2ApiKey:
     {
-      GW2::APIKey* newKey = new GW2::APIKey();
-      GW2::apiKeyManager.keys += newKey;
-      ApiKeyInputAction(APIKeys::GW2APIKey, GW2::apiKeyManager.keys.NumItems() - 1);
+      GW2::apiKeyManager.AddKey(std::make_unique<GW2::APIKey>());
+      ApiKeyInputAction(APIKeys::GW2APIKey, GW2::apiKeyManager.size() - 1);
       return true;
     }
       break;
@@ -1249,7 +1251,8 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         break;
       case APIKeys::GW2APIKey:
       {
-        GW2::apiKeyManager.keys[ApiKeyIndex]->SetKey(APIKeyInput->GetText().GetPointer());
+        auto key = GW2::apiKeyManager.GetKey(ApiKeyIndex);
+        key->SetKey(APIKeyInput->GetText().GetPointer());
         GW2::apiKeyManager.RebuildConfigValues();
       }
         break;
@@ -1881,7 +1884,7 @@ void GW2TacO::ApiKeyInputAction( APIKeys keyType, int32_t idx )
     break;
   case APIKeys::GW2APIKey:
   {
-    auto key = GW2::apiKeyManager.keys[idx];
+    auto key = GW2::apiKeyManager.GetKey(idx);
     APIKeyInput->SetText(key->apiKey.c_str());
   }
     break;

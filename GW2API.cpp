@@ -120,56 +120,62 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
     valid = true;
   }
 
-  APIKey* APIKeyManager::GetIdentifiedAPIKey()
-  {
-    if (mumbleLink.IsValid() || !mumbleLink.charName.Length() || !keys.NumItems())
+  APIKey* APIKeyManager::GetIdentifiedAPIKey() {
+    std::lock_guard<std::mutex> guard(keyMutex);
+    if (mumbleLink.IsValid() || !mumbleLink.charName.Length() || keys.empty())
       return nullptr;
 
-    if (!initialized)
+    if (!initialized) {
       Initialize();
+    }
 
-    for (int x = 0; x < keys.NumItems(); x++)
-    {
-      APIKey* key = keys[x];
-      if (!key->initialized)
+    for (auto& key : keys) {
+      if (!key->initialized) {
         continue;
+      }
 
-      if (key->fetcherThread.joinable())
+      if (key->fetcherThread.joinable()) {
         key->fetcherThread.join();
+      }
 
-      if (key->charNames.Find(mumbleLink.charName) >= 0)
-        return key;
+      if (key->charNames.Find(mumbleLink.charName) >= 0) {
+        return key.get();
+      }
     }
 
     return nullptr;
   }
 
-  APIKeyManager::Status APIKeyManager::GetStatus()
-  {
-    if (!initialized)
+  APIKeyManager::Status APIKeyManager::GetStatus() {
+    if (!initialized) {
       Initialize();
+    }
 
-    if (!keys.NumItems())
-      return Status::KeyNotSet;
+    {
+      std::lock_guard<std::mutex> guard(keyMutex);
+      if (keys.empty()) {
+        return Status::KeyNotSet;
+      }
+    }
 
     APIKey* key = GetIdentifiedAPIKey();
-    if (!key) 
-    {
-      for (int x = 0; x < keys.NumItems(); x++)
-      {
-        if (!keys[x]->initialized)
+    if (!key) {
+      std::lock_guard<std::mutex> guard(keyMutex);
+      for (const auto& key : keys) {
+        if (!key->initialized) {
           return Status::Loading;
+        }
       }
-
-      if (!mumbleLink.charName.Length())
+      if (!mumbleLink.charName.Length()) {
         return Status::WaitingForMumbleCharacterName;
-
+      }
       return Status::CouldNotIdentifyAccount;
     }
 
-    if (!key->initialized) 
+    if (!key->initialized) {
       return Status::Loading;
-      
+    }
+
     return Status::OK;
   }
 
@@ -210,19 +216,21 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
 
     if (HasConfigString("GW2APIKey"))
     {
-      APIKey* key = new APIKey(GetConfigString("GW2APIKey").GetPointer());
+      auto key = std::make_unique<APIKey>(GetConfigString("GW2APIKey").GetPointer());
       RemoveConfigEntry("GW2APIKey");
-      keys += key;
+      std::lock_guard<std::mutex> guard(keyMutex);
+      keys.emplace_back(std::move(key));
     }
 
     int x = 0;
     while (true) 
     {
-      CString cfgName = CString::Format("GW2APIKey%d", x++);
-      if (HasConfigString(cfgName.GetPointer()))
+      std::string cfgName = "GW2APIKey" + std::to_string(x++);
+      if (HasConfigString(cfgName))
       {
-        APIKey* key = new APIKey(GetConfigString(cfgName.GetPointer()).GetPointer());
-        keys += key;
+        auto key = std::make_unique<APIKey>(GetConfigString(cfgName).GetPointer());
+        std::lock_guard<std::mutex> guard(keyMutex);
+        keys.emplace_back(std::move(key));
       }
       else
         break;
@@ -230,31 +238,56 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
 
     RebuildConfigValues();
 
-    for (int x = 0; x < keys.NumItems(); x++)
-      keys[x]->FetchData();
+    std::lock_guard<std::mutex> guard(keyMutex);
+    for (auto& key : keys) {
+      key->FetchData();
+    }
 
     initialized = true;
   }
 
-  void APIKeyManager::RebuildConfigValues()
-  {
+  bool APIKeyManager::empty() {
+    std::lock_guard<std::mutex> guard(keyMutex);
+    return keys.empty();
+  }
+
+  APIKey* APIKeyManager::GetKey(int idx) {
+    std::lock_guard<std::mutex> guard(keyMutex);
+    return keys[idx].get();
+  }
+
+  void APIKeyManager::RemoveKey(int idx) {
+    std::lock_guard<std::mutex> guard(keyMutex);
+    keys.erase(keys.begin() + idx);
+  }
+
+  size_t APIKeyManager::size() { 
+      std::lock_guard<std::mutex> guard(keyMutex);
+    return keys.size();
+  }
+
+  void APIKeyManager::AddKey(std::unique_ptr<APIKey>&& key) {
+    std::lock_guard<std::mutex> guard(keyMutex);
+    keys.emplace_back(std::move(key));
+  }
+
+  void APIKeyManager::RebuildConfigValues() {
     int x = 0;
     while (true)
     {
-      CString cfgName = CString::Format("GW2APIKey%d", x++);
-      if (HasConfigString(cfgName.GetPointer()))
-        RemoveConfigEntry(cfgName.GetPointer());
+      std::string cfgName = "GW2APIKey" + std::to_string(x++);
+      if (HasConfigString(cfgName))
+        RemoveConfigEntry(cfgName.c_str());
       else
         break;
     }
 
-    for (int x = 0; x < keys.NumItems(); x++)
-    {
-      CString cfgName = CString::Format("GW2APIKey%d", x);
-      SetConfigString(cfgName.GetPointer(), keys[x]->apiKey);
+    std::lock_guard<std::mutex> guard(keyMutex);
+    for (int x = 0; x < keys.size(); x++) {
+      std::string cfgName = "GW2APIKey" + std::to_string(x);
+      SetConfigString(cfgName, keys[x]->apiKey);
     }
     
     SaveConfig();
   }
-
 }

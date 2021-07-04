@@ -928,18 +928,17 @@ TBOOL GW2Trail::Import( CString& fileName, const CString& zipFile, TBOOL keepPoi
         mz_zip_archive_file_stat stat;
         if ( mz_zip_reader_file_stat( zip, idx, &stat ) && stat.m_uncomp_size > 0 )
         {
-          uint8_t* data = new uint8_t[ (int32_t)stat.m_uncomp_size ];
+          auto data = std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
 
-          if ( mz_zip_reader_extract_to_mem( zip, idx, data, (int32_t)stat.m_uncomp_size, 0 ) )
+          if ( mz_zip_reader_extract_to_mem( zip, idx, data.get(), (int32_t)stat.m_uncomp_size, 0 ) )
           {
             CStreamReaderMemory f;
-            if ( f.Open( data, int32_t( stat.m_uncomp_size ) ) )
+            if ( f.Open( data.get(), int32_t( stat.m_uncomp_size ) ) )
             {
               if ( Import( f, keepPoints ) )
                 return true;
             }
           }
-          delete[] data;
         }
       }
     }
