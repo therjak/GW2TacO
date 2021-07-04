@@ -18,7 +18,7 @@ CXMLDocument::CXMLDocument(void) {}
 
 CXMLDocument::~CXMLDocument(void) { CoUninitialize(); }
 
-bool CXMLDocument::LoadFromFile(const std::string_view& szFileName) {
+bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
   memString = baselib::ReadFile(szFileName);
   if (memString.empty()) {
     return false;
@@ -50,7 +50,7 @@ bool CXMLDocument::LoadFromFile(const std::string_view& szFileName) {
     if (FAILED(__hr) || !(b)) throw(long) __hr; \
   }
 
-bool CXMLDocument::LoadFromString(const std::string_view& s) {
+bool CXMLDocument::LoadFromString(std::string_view s) {
   memString = s;
 
   try {
@@ -71,7 +71,7 @@ std::string CXMLDocument::SaveToString() {
   return ss.str();
 }
 
-bool CXMLDocument::SaveToFile(const std::string_view& sz) {
+bool CXMLDocument::SaveToFile(std::string_view sz) {
   auto s = SaveToString();
 
   HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS,

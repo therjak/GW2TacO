@@ -3,8 +3,11 @@
 #include "OverlayConfig.h"
 #include "Bedrock/UtilLib/jsonxx.h"
 #include "Language.h"
+#include <string>
+#include <unordered_map>
+#include <cctype>
 
-CDictionary<CString, int32_t> dungeonToAchievementMap;
+std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 
 using namespace jsonxx;
 
@@ -25,8 +28,8 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
         {
           Object json;
 
-          CString globalRaidInfo = CString("{\"dungeons\":") + key->QueryAPI("v2/dungeons") + "}";
-          json.parse(globalRaidInfo.GetPointer());
+          auto globalRaidInfo = "{\"dungeons\":" + key->QueryAPI("v2/dungeons") + "}";
+          json.parse(globalRaidInfo);
 
           if (json.has<Array>("dungeons"))
           {
@@ -38,11 +41,11 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
                 continue;
 
               Dungeon d;
-              d.name = CString(dungeonData[x]->get<String>().data());
+              d.name = dungeonData[x]->get<String>();
 
-              CString raidInfo = key->QueryAPI((CString("v2/dungeons/") + d.name).GetPointer());
+              auto raidInfo = key->QueryAPI("v2/dungeons/" + d.name);
               Object dungeonJson;
-              dungeonJson.parse(raidInfo.GetPointer());
+              dungeonJson.parse(raidInfo);
 
               if (dungeonJson.has<Array>("paths"))
               {
@@ -52,66 +55,61 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
                   auto dungeonPath = wings[y]->get<Object>();
                   DungeonPath p;
                   if (dungeonPath.has<String>("id"))
-                    p.name = CString(dungeonPath.get<String>("id").data());
+                    p.name = dungeonPath.get<String>("id");
 
                   if (dungeonPath.has<String>("type"))
-                    p.type = CString(dungeonPath.get<String>("type").data());
+                    p.type = dungeonPath.get<String>("type");
 
-                  d.paths += p;
+                  d.paths.push_back(p);
                 }
               }
 
-              if (d.name.Length())
-              {
-                d.shortName = CString::Format("%c", toupper(d.name[0]));
+              if (!d.name.empty()) {
+                d.shortName = std::toupper(d.name[0]);
 
-                for (unsigned int y = 0; y < d.name.Length() - 1; y++)
-                {
-                  if (d.name[y] == '_')
-                  {
-                    if (d.name[y + 1] == 'o' && y < d.name.Length() - 2 && d.name[y + 2] == 'f')
+                for (unsigned int y = 0; y + 1 < d.name.size(); y++) {
+                  if (d.name[y] == '_') {
+                    if (d.name[y + 1] == 'o' && y + 2 < d.name.size() &&
+                        d.name[y + 2] == 'f') {
                       d.shortName += "o";
-                    else
-                      if (d.name[y + 1] == 't' && y < d.name.Length() - 3 && d.name[y + 2] == 'h' && d.name[y + 3] == 'e')
-                        d.shortName += "t";
-                      else
-                        if (d.name[y + 1] == 'a' && y < d.name.Length() - 4 && d.name[y + 2] == 'r' && d.name[y + 3] == 'a' && d.name[y + 4] == 'h')
-                          d.shortName = "Arah";
-                        else
-                          d.shortName += CString::Format("%c", (char)toupper(d.name[y + 1]));
+                    } else if (d.name[y + 1] == 't' && y + 3 < d.name.size() &&
+                               d.name[y + 2] == 'h' && d.name[y + 3] == 'e') {
+                      d.shortName += "t";
+                    } else if (d.name[y + 1] == 'a' && y + 4 < d.name.size() &&
+                               d.name[y + 2] == 'r' && d.name[y + 3] == 'a' &&
+                               d.name[y + 4] == 'h') {
+                      d.shortName = "Arah";
+                    } else {
+                      d.shortName += std::toupper(d.name[y + 1]);
+                    }
                   }
                 }
               }
 
-              dungeons += d;
+              dungeons.push_back(d);
             }
           }
 
           hasFullDungeonInfo = true;
         }
 
-        CString lastDungeonStatus = CString("{\"dungeons\":") + key->QueryAPI("v2/account/dungeons") + "}";
-        CString dungeonFrequenterStatus = CString("{\"dungeons\":") + key->QueryAPI("v2/account/achievements?ids=2963") + "}";
+        auto lastDungeonStatus = "{\"dungeons\":" + key->QueryAPI("v2/account/dungeons") + "}";
+        auto dungeonFrequenterStatus = "{\"dungeons\":" + key->QueryAPI("v2/account/achievements?ids=2963") + "}";
         Object json;
         Object json2;
-        json.parse(lastDungeonStatus.GetPointer());
-        json2.parse(dungeonFrequenterStatus.GetPointer());
+        json.parse(lastDungeonStatus);
+        json2.parse(dungeonFrequenterStatus);
 
-        if (json.has<Array>("dungeons"))
-        {
+        if (json.has<Array>("dungeons")) {
           auto dungeonData = json.get<Array>("dungeons").values();
 
-          for (unsigned int x = 0; x < dungeonData.size(); x++)
-          {
-            if (!dungeonData[x]->is<String>())
-              continue;
+          for (unsigned int x = 0; x < dungeonData.size(); x++) {
+            if (!dungeonData[x]->is<String>()) continue;
 
-            CString eventName = CString(dungeonData[x]->get<String>().data());
-            for (int32_t a = 0; a < dungeons.NumItems(); a++)
-              for (int32_t b = 0; b < dungeons[a].paths.NumItems(); b++)
-              {
-                if (dungeons[a].paths[b].name == eventName)
-                  dungeons[a].paths[b].finished = true;
+            auto eventName = dungeonData[x]->get<String>();
+            for (auto &d : dungeons)
+              for (auto &p : d.paths) {
+                if (p.name == eventName) p.finished = true;
               }
           }
         }
@@ -120,11 +118,11 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
         {
           auto dungeonData = json2.get<Array>("dungeons").values();
 
-          for (int32_t a = 0; a < dungeons.NumItems(); a++)
-            for (int32_t b = 0; b < dungeons[a].paths.NumItems(); b++)
-              dungeons[a].paths[b].frequenter = false;
+          for (auto& d:dungeons)
+            for (auto& p:d.paths)
+              p.frequenter = false;
 
-          if (dungeonData.size() >= 1 && dungeonData[0]->is<Object>())
+          if (!dungeonData.empty() && dungeonData[0]->is<Object>())
           {
             Object obj = dungeonData[0]->get<Object>();
             if (obj.has<Array>("bits"))
@@ -136,14 +134,14 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
                 {
                   if (bits[x]->is<Number>())
                   {
-                    int32_t frequentedID = (int32_t)(bits[x]->get<Number>());
-                    for (int32_t a = 0; a < dungeons.NumItems(); a++)
-                      for (int32_t b = 0; b < dungeons[a].paths.NumItems(); b++)
+                    auto frequentedID = static_cast<int32_t>(bits[x]->get<Number>());
+                    for (auto& d:dungeons)
+                      for (auto& p: d.paths)
                       {
-                        if (dungeonToAchievementMap.HasKey(dungeons[a].paths[b].name))
+                        if (dungeonToAchievementMap.find(p.name)!=dungeonToAchievementMap.end())
                         {
-                          if (dungeonToAchievementMap[dungeons[a].paths[b].name] == frequentedID)
-                            dungeons[a].paths[b].frequenter = true;
+                          if (dungeonToAchievementMap[p.name] == frequentedID)
+                            p.frequenter = true;
                         }
                       }
                   }
@@ -168,16 +166,14 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
     int32_t posy = 1;
 
     int32_t textwidth = 0;
-    for ( int x = 0; x < dungeons.NumItems(); x++ )
-      textwidth = max( textwidth, f->GetWidth( dungeons[ x ].shortName, false ) );
+    for ( const auto& d:dungeons )
+      textwidth = max( textwidth, f->GetWidth( d.shortName.c_str(), false ) );
 
-    for ( int x = 0; x < dungeons.NumItems(); x++ )
+    for ( auto& d:dungeons)
     {
-      auto& d = dungeons[ x ];
-
-      f->Write( API, d.shortName + ":", CPoint( 0, posy + 1 ), 0xffffffff );
+      f->Write( API, (d.shortName + ":").c_str(), CPoint( 0, posy + 1 ), 0xffffffff );
       int32_t posx = textwidth + f->GetLineHeight() / 2;
-      for ( int y = 0; y < d.paths.NumItems(); y++ )
+      for ( int y = 0; y < d.paths.size(); y++ )
       {
         auto& p = d.paths[ y ];
 

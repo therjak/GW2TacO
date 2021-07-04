@@ -49,9 +49,9 @@ public:
   void SetText( CString &s );
   void SetInt( int32_t Int );
   void SetFloat( float Float );
-  void SetAttribute( const std::string_view& szAttributeName, const std::string_view& szValue );
-  void SetAttributeFromInteger( const std::string_view& szAttributeName, int32_t nValue );
-  void SetAttributeFromFloat( const std::string_view& szAttributeName, float nValue );
+  void SetAttribute( std::string_view szAttributeName, std::string_view szValue );
+  void SetAttributeFromInteger( std::string_view szAttributeName, int32_t nValue );
+  void SetAttributeFromFloat( std::string_view szAttributeName, float nValue );
 
 
 private:

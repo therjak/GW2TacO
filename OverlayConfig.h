@@ -1,17 +1,20 @@
 #pragma once
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "GW2TacO.h"
+#include <string_view>
+#include <string>
 
 void LoadConfig();
 void SaveConfig();
-void ToggleConfigValue( TCHAR *value );
+void ToggleConfigValue(std::string_view value);
 void ToggleConfigValue( CString &value );
-int32_t GetConfigValue( TCHAR *value );
-void SetConfigValue( TCHAR *value, int32_t val );
-TBOOL HasConfigValue( TCHAR *value );
-TBOOL HasConfigString( TCHAR *value );
-void SetConfigString( TCHAR *value, const CString& val );
-CString GetConfigString( TCHAR *value );
+int32_t GetConfigValue(std::string_view value);
+void SetConfigValue(std::string_view value, int32_t val);
+TBOOL HasConfigValue(std::string_view value);
+TBOOL HasConfigString(std::string_view value);
+void SetConfigString(std::string_view value,
+                     std::string_view val);
+CString GetConfigString(std::string_view value);
 
 TBOOL HasWindowData( TCHAR *windowname );
 TBOOL IsWindowOpen( TCHAR *windowname );

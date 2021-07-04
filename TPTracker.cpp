@@ -32,7 +32,8 @@ void SetGW2ItemData( GW2ItemData& data )
   itemDataCache[ data.itemID ] = data;
 }
 
-CString FetchHTTPS( LPCWSTR url, LPCWSTR path );
+std::string FetchHTTPS(std::string_view url,
+                       std::string_view path);
 
 __inline CString ToGold( int32_t value )
 {
@@ -90,13 +91,13 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
     beingFetched = true;
     fetchThread = std::thread( [ this, key ]()
     {
-      CString qbuys = CString( "{\"buys\":" ) + key->QueryAPI( "v2/commerce/transactions/current/buys" );
-      CString qsells = CString( "{\"sells\":" ) + key->QueryAPI( "v2/commerce/transactions/current/sells" );
+      auto qbuys = "{\"buys\":" + key->QueryAPI( "v2/commerce/transactions/current/buys" );
+      auto qsells = "{\"sells\":" + key->QueryAPI( "v2/commerce/transactions/current/sells" );
 
       Object json;
       Object json2;
-      json.parse( qbuys.GetPointer() );
-      json2.parse( qsells.GetPointer() );
+      json.parse( qbuys );
+      json2.parse( qsells );
 
       std::vector<TransactionItem> incoming;
       std::vector<TransactionItem> outgoing;
@@ -156,18 +157,19 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
         }
       }
 
-      CString itemIds;
+      std::string itemIds;
 
       if ( !unknownItems.empty() )
       {
-        for ( const auto& i:unknownItems)
-          itemIds += CString::Format( "%d,", i );
+        for (const auto& i : unknownItems) {
+          itemIds += std::to_string(i) + ',';
+        }
 
         //https://api.guildwars2.com/v2/items?ids=28445,12452
-        CString items = CString( "{\"items\":" ) + key->QueryAPI( ( CString( "v2/items?ids=" ) + itemIds ).GetPointer() ) + "}";
+        auto items = "{\"items\":"  + key->QueryAPI( "v2/items?ids=" + itemIds  ) + "}";
 
         Object itemjson;
-        itemjson.parse( items.GetPointer() );
+        itemjson.parse( items );
 
         if ( itemjson.has<Array>( "items" ) )
         {
@@ -190,15 +192,12 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
               CString iconFile = CString( item.get<String>( "icon" ).data() );
               if ( iconFile.Find( "https://render.guildwars2.com/" ) == 0 )
               {
-                WCHAR wpath[ 4096 ];
-                memset( wpath, 0, sizeof( wpath ) );
-                iconFile.Substring( 29 ).WriteAsWideChar( wpath, 4096 );
-
-                CString png = FetchHTTPS( L"render.guildwars2.com", wpath );
+                auto png =
+                    FetchHTTPS("render.guildwars2.com", iconFile.Substring(29).GetPointer());
                 
                 uint8_t *imageData = nullptr;
                 int32_t xres, yres;
-                if ( DecompressPNG( (uint8_t*)png.GetPointer(), png.Length(), imageData, xres, yres ) )
+                if ( DecompressPNG( (uint8_t*)png.c_str(), png.size(), imageData, xres, yres ) )
                 {
                   ARGBtoABGR( imageData, xres, yres );
                   CRect area = CRect( 0, 0, xres, yres );
@@ -213,14 +212,15 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
       }
 
       {
-        for ( const auto& i:priceCheckList )
-          itemIds += CString::Format( "%d,", i );
+        for (const auto& i : priceCheckList) {
+          itemIds += std::to_string(i) + ',';
+        }
 
         //https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
-        CString items = CString( "{\"items\":" ) + key->QueryAPI( ( CString( "v2/commerce/prices?ids=" ) + itemIds ).GetPointer() ) + "}";
+        auto items = "{\"items\":" + key->QueryAPI( ( "v2/commerce/prices?ids="  + itemIds ) ) + "}";
         
         Object itemjson;
-        itemjson.parse( items.GetPointer() );
+        itemjson.parse( items );
 
         if ( itemjson.has<Array>( "items" ) )
         {

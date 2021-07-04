@@ -1,29 +1,30 @@
 #pragma once
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 #include <thread>
+#include <string>
 
 class RaidEvent
 {
 public:
-  CString name;
-  CString type;
+  std::string name;
+  std::string type;
   bool finished = false;
 };
 
 class Wing
 {
 public:
-  CString name;
-  CArray<RaidEvent> events;
+  std::string name;
+  std::vector<RaidEvent> events;
 };
 
 class Raid
 {
 public:
-  CString name;
-  CString shortName;
-  CString configName;
-  CArray<Wing> wings;
+  std::string name;
+  std::string shortName;
+  std::string configName;
+  std::vector<Wing> wings;
 };
 
 class RaidProgress : public CWBItem
@@ -38,7 +39,7 @@ class RaidProgress : public CWBItem
 
   std::thread fetchThread;
 
-  CArray<Raid> raids;
+  std::vector<Raid> raids;
 
 public:
 
@@ -49,7 +50,7 @@ public:
   WB_DECLARE_GUIITEM( _T( "raidprogress" ), CWBItem );
 
   virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
-  CArray<Raid>& GetRaids();
+  std::vector<Raid>& GetRaids();
 };
 
 

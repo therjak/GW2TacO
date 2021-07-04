@@ -392,9 +392,9 @@ void GW2TacticalDisplay::FetchAchievements()
     beingFetched = true;
     fetchThread = std::thread( [ this, key ]()
     {
-      CString dungeonFrequenterStatus = CString( "{\"achievements\":" ) + key->QueryAPI( "v2/account/achievements" ) + "}";
+      auto dungeonFrequenterStatus = "{\"achievements\":" + key->QueryAPI( "v2/account/achievements" ) + "}";
       Object json;
-      json.parse( dungeonFrequenterStatus.GetPointer() );
+      json.parse( dungeonFrequenterStatus );
 
       if ( json.has<Array>( "achievements" ) )
       {
@@ -1360,21 +1360,21 @@ void ImportPOIDocument( CWBApplication *App, CXMLDocument& d, TBOOL External, co
   }
 }
 
-void ImportPOIFile( CWBApplication *App, const std::string_view& s, bool External )
+void ImportPOIFile( CWBApplication *App, std::string_view s, bool External )
 {
   CXMLDocument d;
   if ( !d.LoadFromFile( s.data() ) ) return;
   ImportPOIDocument( App, d, External, CString( "" ) );
 }
 
-void ImportPOIString( CWBApplication *App, const CString& data, const CString& zipFile )
+void ImportPOIString( CWBApplication *App, CString data, const CString& zipFile )
 {
   CXMLDocument d;
   if ( !d.LoadFromString( data.GetPointer() ) ) return;
   ImportPOIDocument( App, d, true, zipFile );
 }
 
-void ImportMarkerPack( CWBApplication* App, const std::string_view& zipFile )
+void ImportMarkerPack( CWBApplication* App, std::string_view zipFile )
 {
   mz_zip_archive* zip = OpenZipFile( zipFile.data() );
   if ( !zip )

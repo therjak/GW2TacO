@@ -4,7 +4,7 @@ const bool operator==(const CFileListEntry &f1, const CFileListEntry &f2) {
   return f1.Path == f2.Path && f1.FileName == f2.FileName;
 }
 
-bool exists( const std::string_view& fname )
+bool exists( std::string_view fname )
 {
   FILE *f = NULL;
   if ( fopen_s( &f, fname.data(), "rb" ) )
@@ -14,7 +14,7 @@ bool exists( const std::string_view& fname )
   return true;
 }
 
-CFileList::CFileList( const std::string_view& Mask, const std::string_view& Path/* ="" */, bool Recursive/* =false */ )
+CFileList::CFileList( std::string_view Mask, std::string_view Path/* ="" */, bool Recursive/* =false */ )
 {
   ExpandSearch( Mask, Path, Recursive );
 }
@@ -24,7 +24,7 @@ CFileList::CFileList()
 
 }
 
-void CFileList::ExpandSearch( const std::string_view& Mask, const std::string_view& Path, bool Recursive, bool getDirectories )
+void CFileList::ExpandSearch( std::string_view Mask, std::string_view Path, bool Recursive, bool getDirectories )
 {
   HANDLE hSearch;
   WIN32_FIND_DATA FileData;

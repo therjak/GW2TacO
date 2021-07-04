@@ -3,25 +3,27 @@
 #include "OverlayConfig.h"
 #include "Bedrock/UtilLib/jsonxx.h"
 #include "Language.h"
+#include <cctype>
 
 using namespace jsonxx;
 
-void BeautifyString( CString& str )
-{
-  for ( uint32_t x = 0; x < str.Length(); x++ )
-  {
-    if ( str[ x ] == '_' )
-      str[ x ] = ' ';
+void BeautifyString(std::string& str) {
+  for (uint32_t x = 0; x < str.size(); x++) {
+    if (str[x] == '_') {
+      str[x] = ' ';
+    }
 
-    if ( x == 0 || str[ x - 1 ] == ' ' )
-      str[ x ] = toupper( str[ x ] );
-
-    if ( x > 0 && str[ x - 1 ] == ' ' )
-    {
-      if ( str[ x ] == 'O' && x < str.Length() - 1 && str[ x + 1 ] == 'f' )
-        str[ x ] = 'o';
-      if ( str[ x ] == 'T' && x < str.Length() - 2 && str[ x + 1 ] == 'h'  && str[ x + 2 ] == 'e' )
-        str[ x ] = 't';
+    if (x == 0 || str[x - 1] == ' ') {
+      str[x] = std::toupper(str[x]);
+    }
+    if (x > 0 && str[x - 1] == ' ') {
+      if (str[x] == 'O' && x + 1 < str.size() && str[x + 1] == 'f') {
+        str[x] = 'o';
+      }
+      if (str[x] == 'T' && x + 2 < str.size() && str[x + 1] == 'h' &&
+          str[x + 2] == 'e') {
+        str[x] = 't';
+      }
     }
   }
 }
@@ -48,8 +50,8 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
       {
         Object json;
 
-        CString globalRaidInfo = CString( "{\"raids\":" ) + key->QueryAPI( "v2/raids" ) + "}";
-        json.parse( globalRaidInfo.GetPointer() );
+        auto globalRaidInfo = "{\"raids\":" + key->QueryAPI( "v2/raids" ) + "}";
+        json.parse( globalRaidInfo );
 
         if ( json.has<Array>( "raids" ) )
         {
@@ -61,37 +63,36 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
               continue;
 
             Raid r;
-            r.name = CString( raidData[ x ]->get<String>().data() );
-            if ( r.name.Length() )
-            {
-              r.shortName = CString::Format( "%c", toupper( r.name[ 0 ] ) );
+            r.name = raidData[ x ]->get<String>();
+            if (!r.name.empty()) {
+              r.shortName = std::toupper(r.name[0]);
 
-              for ( unsigned int y = 0; y < r.name.Length() - 1; y++ )
-              {
-                if ( r.name[ y ] == '_' || r.name[ y ] == ' ' )
-                {
-                  if ( r.name[ y + 1 ] == 'o' && y < r.name.Length() - 2 && r.name[ y + 2 ] == 'f' )
-                    r.shortName += "o";
-                  else
-                    if ( r.name[ y + 1 ] == 't' && y < r.name.Length() - 3 && r.name[ y + 2 ] == 'h' && r.name[ y + 3 ] == 'e' )
-                      r.shortName += "t";
-                    else
-                      r.shortName += CString::Format( "%c", (char)toupper( r.name[ y + 1 ] ) );
+              for (unsigned int y = 0; y + 1 < r.name.size(); y++) {
+                if (r.name[y] == '_' || r.name[y] == ' ') {
+                  if (r.name[y + 1] == 'o' && y + 2 < r.name.size() &&
+                      r.name[y + 2] == 'f') {
+                    r.shortName += 'o';
+                  } else if (r.name[y + 1] == 't' && y + 3 < r.name.size() &&
+                             r.name[y + 2] == 'h' && r.name[y + 3] == 'e') {
+                    r.shortName += 't';
+                  } else {
+                    r.shortName += std::toupper(r.name[y + 1]);
+                  }
                 }
               }
               r.shortName += ":";
             }
 
-            r.configName = CString( "showraid_" ) + r.name;
-            for ( uint32_t y = 0; y < r.configName.Length(); y++ )
+            r.configName = "showraid_" + r.name;
+            for ( uint32_t y = 0; y < r.configName.size(); y++ )
               if ( !isalnum( r.configName[ y ] ) )
                 r.configName[ y ] = '_';
               else
-                r.configName[ y ] = tolower( r.configName[ y ] );
+                r.configName[ y ] = std::tolower( r.configName[ y ] );
 
-            CString raidInfo = key->QueryAPI( ( CString( "v2/raids/" ) + r.name ).GetPointer() );
+            auto raidInfo = key->QueryAPI(  "v2/raids/"  + r.name  );
             Object raidJson;
-            raidJson.parse( raidInfo.GetPointer() );
+            raidJson.parse( raidInfo );
 
             if ( raidJson.has<Array>( "wings" ) )
             {
@@ -101,7 +102,7 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
                 auto wing = wings[ y ]->get<Object>();
                 Wing w;
                 if ( wing.has<String>( "id" ) )
-                  w.name = CString( wing.get<String>( "id" ).data() );
+                  w.name = wing.get<String>( "id" );
 
                 if ( wing.has<Array>( "events" ) )
                 {
@@ -111,28 +112,28 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
                     auto _event = events[ z ]->get<Object>();
                     RaidEvent e;
                     if ( _event.has<String>( "id" ) )
-                      e.name = CString( _event.get<String>( "id" ).data() );
+                      e.name = _event.get<String>( "id" );
                     if ( _event.has<String>( "type" ) )
-                      e.type = CString( _event.get<String>( "type" ).data() );
+                      e.type = _event.get<String>( "type" );
 
-                    w.events += e;
+                    w.events.push_back(e);
                   }
                 }
-                r.wings += w;
+                r.wings.push_back(w);
               }
             }
 
             BeautifyString( r.name );
-            raids += r;
+            raids.push_back(r);
           }
         }
 
         hasFullRaidInfo = true;
       }
 
-      CString lastRaidStatus = CString( "{\"raids\":" ) + key->QueryAPI( "v2/account/raids" ) + "}";
+      auto lastRaidStatus = "{\"raids\":" + key->QueryAPI( "v2/account/raids" ) + "}";
       Object json;
-      json.parse( lastRaidStatus.GetPointer() );
+      json.parse( lastRaidStatus );
 
       if ( json.has<Array>( "raids" ) )
       {
@@ -143,13 +144,13 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
           if ( !raidData[ x ]->is<String>() )
             continue;
 
-          CString eventName = CString( raidData[ x ]->get<String>().data() );
-          for ( int32_t a = 0; a < raids.NumItems(); a++ )
-            for ( int32_t b = 0; b < raids[ a ].wings.NumItems(); b++ )
-              for ( int32_t c = 0; c < raids[ a ].wings[ b ].events.NumItems(); c++ )
+          auto eventName = raidData[ x ]->get<String>();
+          for ( auto& r:raids )
+            for ( auto& w:r.wings)
+              for ( auto& e: w.events )
               {
-                if ( raids[ a ].wings[ b ].events[ c ].name == eventName )
-                  raids[ a ].wings[ b ].events[ c ].finished = true;
+                if ( e.name == eventName )
+                  e.finished = true;
               }
         }
 
@@ -171,34 +172,31 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
     int32_t posx = 0;
     if ( compact )
     {
-      for ( int32_t x = 0; x < raids.NumItems(); x++ )
-        posx = max( posx, f->GetWidth( raids[ x ].shortName ) );
+      for ( const auto& r:raids )
+        posx = max( posx, f->GetWidth( r.shortName.c_str() ) );
     }
     posx += 3;
     int32_t oposx = posx;
 
     int32_t posy = 0;
-    for ( int x = 0; x < raids.NumItems(); x++ )
+    for ( auto& r:raids )
     {
-      auto& r = raids[ x ];
-
-      if ( HasConfigValue( r.configName.GetPointer() ) && !GetConfigValue( r.configName.GetPointer() ) )
+      if ( HasConfigValue( r.configName.c_str() ) && !GetConfigValue( r.configName.c_str() ) )
         continue;
 
       if ( !compact )
       {
-        f->Write( API, DICT( r.configName, r.name ), CPoint( 0, posy + 1 ), 0xffffffff );
+        f->Write( API, DICT( r.configName.c_str(), r.name.c_str() ), CPoint( 0, posy + 1 ), 0xffffffff );
         posy += f->GetLineHeight();
       }
       else
       {
-        f->Write( API, r.shortName, CPoint( 0, posy + 1 ), 0xffffffff );
+        f->Write( API, r.shortName.c_str(), CPoint( 0, posy + 1 ), 0xffffffff );
       }
-      for ( int y = 0; y < r.wings.NumItems(); y++ )
-      {
-        auto& w = r.wings[ y ];
+      for (int y = 0; y < r.wings.size(); y++) {
+        auto &w = r.wings[y];
 
-        if ( !compact )
+        if (!compact)
           posx = f->GetLineHeight() * 1;
         else
           posx = oposx;
@@ -211,10 +209,8 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
 
         int cnt = 1;
 
-        for ( int z = 0; z < w.events.NumItems(); z++ )
+        for ( auto& e: w.events )
         {
-          auto& e = w.events[ z ];
-
           CRect r = CRect( posx, posy, posx + f->GetLineHeight() * 2, posy + f->GetLineHeight() - 1 );
           CRect cr = API->GetCropRect();
           API->SetCropRect( ClientToScreen( r ) );
@@ -262,7 +258,7 @@ TBOOL RaidProgress::IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE Mess
   return true;
 }
 
-CArray<Raid>& RaidProgress::GetRaids()
+std::vector<Raid>& RaidProgress::GetRaids()
 {
   return raids;
 }

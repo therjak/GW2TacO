@@ -4,7 +4,7 @@
 #include <vector>
 
 bool FindEnumByName(const std::vector<EnumNamePair>& Pairs,
-                    const std::string_view& Name, int32_t& Result) {
+                    std::string_view Name, int32_t& Result) {
   for (const auto& p : Pairs) {
     if (Name == p.Name) {
       Result = p.Value;

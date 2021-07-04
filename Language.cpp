@@ -83,7 +83,7 @@ void Localization::SetActiveLanguage( const CString& language )
     if ( languages[ x ].name == lang )
     {
       activeLanguageIdx = x;
-      SetConfigString( "language", lang );
+      SetConfigString( "language", lang.GetPointer() );
       LOG_NFO( "[GW2TacO] Setting TacO language to %s", language.GetPointer() );
       return;
     }

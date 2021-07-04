@@ -290,8 +290,8 @@ CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName)
   return *children.back();
 }
 
-void CXMLNode::SetAttribute(const std::string_view& szAttributeName,
-                            const std::string_view& szValue) {
+void CXMLNode::SetAttribute(std::string_view szAttributeName,
+                            std::string_view szValue) {
   if ( !pNode || !pDoc )
     return;
 
@@ -313,7 +313,7 @@ void CXMLNode::SetAttribute(const std::string_view& szAttributeName,
   attr->value( strVal->c_str() );
 }
 
-void CXMLNode::SetAttributeFromInteger(const std::string_view& szAttributeName,
+void CXMLNode::SetAttributeFromInteger(std::string_view szAttributeName,
                                        int32_t nValue) {
 	TCHAR s[64];
   memset( s, 0, sizeof( TCHAR ) * 64 );
@@ -321,7 +321,7 @@ void CXMLNode::SetAttributeFromInteger(const std::string_view& szAttributeName,
 	SetAttribute(szAttributeName, s);
 }
 
-void CXMLNode::SetAttributeFromFloat(const std::string_view& szAttributeName,
+void CXMLNode::SetAttributeFromFloat(std::string_view szAttributeName,
                                      float fValue) {
 	TCHAR s[64];
 	_sntprintf_s(s, 64, _T("%g"), fValue);

@@ -447,27 +447,6 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       ctx->AddItem( (IsWindowOpen( "Notepad" ) ? DICT( "closenotepad" ) : DICT( "opennotepad" )) + GetKeybindString(TacOKeyAction::Toggle_notepad), Menu_ToggleNotepad );
       ctx->AddSeparator();
 
-      //if (teamSpeakConnection.IsConnected() && teamSpeakConnection.handlers.NumItems())
-      //{
-      //	int32_t connectednum = 0;
-      //	for (int32_t x = 0; x < teamSpeakConnection.handlers.NumItems(); x++)
-      //		if (teamSpeakConnection.handlers[x].Connected)
-      //			connectednum++;
-
-      //	if (connectednum)
-      //	{
-      //		auto chn = ctx->AddItem("Switch Teamspeak channel", 0);
-      //		for (int32_t x = 0; x < teamSpeakConnection.handlers.NumItems(); x++)
-      //			if (teamSpeakConnection.handlers[x].Connected)
-      //			{
-      //				auto hndlr = chn->AddItem(teamSpeakConnection.handlers[x].name.GetPointer(), 0);
-      //				BuildChannelTree(teamSpeakConnection.handlers[x], hndlr, 0);
-      //			}
-
-      //		ctx->AddSeparator();
-      //	}
-      //}
-
       auto raid = ctx->AddItem( (IsWindowOpen( "RaidProgress" ) ? DICT( "closeraidprogress" ) : DICT( "openraidprogress" )) + GetKeybindString(TacOKeyAction::Toggle_raid_progress), Menu_ToggleRaidProgress );
 
       if ( IsWindowOpen( "RaidProgress" ) )
@@ -477,11 +456,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         if ( rp )
         {
           auto& raids = rp->GetRaids();
-          if ( raids.NumItems() )
+          if ( !raids.empty() )
             raid->AddSeparator();
-          for ( int32_t x = 0; x < raids.NumItems(); x++ )
+          for ( int32_t x = 0; x < raids.size(); x++ )
           {
-            raid->AddItem( ( ( HasConfigValue( raids[ x ].configName.GetPointer() ) && !GetConfigValue( raids[ x ].configName.GetPointer() ) ) ? "[ ] " : "[x] " ) + DICT( raids[ x ].configName, raids[ x ].name ), Menu_RaidToggles + x, false, false );
+            auto& r = raids[x];
+            raid->AddItem( ( ( HasConfigValue( r.configName ) && !GetConfigValue( r.configName ) ) ? "[ ] " : "[x] " ) + DICT( r.configName.c_str(), r.name.c_str() ), Menu_RaidToggles + x, false, false );
           }
         }
       }
@@ -528,30 +508,8 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
           bind->AddItem( str.GetPointer(), Menu_RebindKey_Base + x );
         cnt++;
       }
-      /*
-      if ( scriptKeyBinds.NumItems() )
-      bind->AddSeparator();
-      for ( int32_t x = 0; x < scriptKeyBinds.NumItems(); x++ )
-      {
-      CString str = scriptKeyBinds[ x ].eventDescription + " [no key bound]";
-      for ( int32_t y = 0; y < ScriptKeyBindings.NumItems(); y++ )
-      if ( ScriptKeyBindings.GetKDPair( y )->Data == scriptKeyBinds[ x ].eventName )
-      {
-      str = scriptKeyBinds[ x ].eventDescription + CString::Format( " [%c]", ScriptKeyBindings.GetKDPair( y )->Key );
-      break;
-      }
-
-      bind->AddItem( str.GetPointer(), Menu_RebindKey_Base + x + cnt );
-      }
-      */
       settings->AddSeparator();
 
-      //auto interfaceSize = ctx->AddItem( "Interface Size", 0 );
-      //interfaceSize->AddItem( "Small", Menu_Interface_Small );
-      //interfaceSize->AddItem( "Normal", Menu_Interface_Normal );
-      //interfaceSize->AddItem( "Large", Menu_Interface_Large );
-      //interfaceSize->AddItem( "Larger", Menu_Interface_Larger );
-      //ctx->AddSeparator();
       auto apiKeys = settings->AddItem( DICT( "apikeys" ), 0 );
       auto gw2keys = apiKeys->AddItem( DICT( "gw2apikey" ), 0 );
 
@@ -560,7 +518,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       for (int32_t x = 0; x < GW2::apiKeyManager.keys.NumItems(); x++)
       {
         auto key = GW2::apiKeyManager.keys[x];
-        auto keyMenu = gw2keys->AddItem(key->accountName.Length() ? key->accountName : key->apiKey, Menu_GW2APIKey_Base + x, key == currKey);
+        auto keyMenu = gw2keys->AddItem((!key->accountName.empty()) ? key->accountName.c_str() : key->apiKey.c_str(), Menu_GW2APIKey_Base + x, key == currKey);
         keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
       }
 
@@ -611,12 +569,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       if ( rp )
       {
         auto& raids = rp->GetRaids();
-        if ( raidToggle < raids.NumItems() )
+        if ( raidToggle < raids.size() )
         {
           CWBContextMenu* ctxMenu = (CWBContextMenu*)App->FindItemByGuid( Message.Position[ 1 ] );
           auto itm = ctxMenu->GetItem( Message.Data );
-
-          itm->SetText( ( ( HasConfigValue( raids[ raidToggle ].configName.GetPointer() ) && !GetConfigValue( raids[ raidToggle ].configName.GetPointer() ) ) ? "[ ] " : "[x] " ) + DICT( raids[ raidToggle ].configName, raids[ raidToggle ].name ) );
+          auto& r = raids[raidToggle];
+          itm->SetText( ( ( HasConfigValue( r.configName ) && !GetConfigValue( r.configName ) ) ? "[ ] " : "[x] " ) + DICT( r.configName.c_str(), r.name.c_str() ) );
         }
       }
     }
@@ -640,9 +598,6 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         itm->SetHighlight( dta->IsDisplayed );
       }
 
-      //TBOOL displayed = !CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->IsDisplayed;
-      //CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->IsDisplayed = displayed;
-      //SetConfigValue( ( CString( "CategoryVisible_" ) + CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->GetFullTypeName() ).GetPointer(), displayed );
       break;
     }
     if ( Message.Data >= Menu_ToggleMapTimerMap )
@@ -735,12 +690,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       if ( rp )
       {
         auto& raids = rp->GetRaids();
-        if ( raidToggle < raids.NumItems() )
+        if ( raidToggle < raids.size() )
         {
-          if ( !HasConfigValue( raids[ raidToggle ].configName.GetPointer() ) )
-            SetConfigValue( raids[ raidToggle ].configName.GetPointer(), 0 );
+          if ( !HasConfigValue( raids[ raidToggle ].configName ) )
+            SetConfigValue( raids[ raidToggle ].configName, 0 );
           else
-            ToggleConfigValue( raids[ raidToggle ].configName.GetPointer() );
+            ToggleConfigValue( raids[ raidToggle ].configName );
         }
       }
       break;
@@ -1290,11 +1245,11 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       case APIKeys::None:
         break;
       case APIKeys::TS3APIKey:
-        SetConfigString( "TS3APIKey", APIKeyInput->GetText() );
+        SetConfigString( "TS3APIKey", APIKeyInput->GetText().GetPointer() );
         break;
       case APIKeys::GW2APIKey:
       {
-        GW2::apiKeyManager.keys[ApiKeyIndex]->SetKey(APIKeyInput->GetText());
+        GW2::apiKeyManager.keys[ApiKeyIndex]->SetKey(APIKeyInput->GetText().GetPointer());
         GW2::apiKeyManager.RebuildConfigValues();
       }
         break;
@@ -1927,7 +1882,7 @@ void GW2TacO::ApiKeyInputAction( APIKeys keyType, int32_t idx )
   case APIKeys::GW2APIKey:
   {
     auto key = GW2::apiKeyManager.keys[idx];
-    APIKeyInput->SetText(key->apiKey);
+    APIKeyInput->SetText(key->apiKey.c_str());
   }
     break;
   default:
@@ -1960,10 +1915,10 @@ void GW2TacO::CheckItemPickup()
     pickupsBeingFetched = true;
     pickupFetcherThread = std::thread( [ this, key ]()
     {
-      CString query = key->QueryAPI( "v2/commerce/delivery" );
+      auto query = key->QueryAPI( "v2/commerce/delivery" );
 
       Object json;
-      json.parse( query.GetPointer() );
+      json.parse( query );
 
       int32_t coins = 0;
       int32_t itemCount = 0;
@@ -1976,10 +1931,10 @@ void GW2TacO::CheckItemPickup()
         {
           itemCount = json.get<Array>( "items" ).size();
 
-          if ( ( !coins && !itemCount ) || !lastItemPickup.Length() )
+          if ( ( !coins && !itemCount ) || lastItemPickup.empty() )
           {
             TurnOffTPLight();
-            if ( !lastItemPickup.Length() )
+            if ( lastItemPickup.empty() )
               lastItemPickup = query;
           }
           else

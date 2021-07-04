@@ -13,7 +13,8 @@ using namespace jsonxx;
 
 bool wvwCanBeRendered = false;
 std::vector<WvWObjective> wvwObjectives;
-CString FetchHTTPS( LPCWSTR url, LPCWSTR path );
+std::string FetchHTTPS(std::string_view url,
+                       std::string_view path);
 CDictionaryEnumerable<CString, POI> wvwPOIs;
 GW2TacticalCategory *GetCategory( CString s );
 CDictionary<int, bool> wvwMapIDs;
@@ -189,12 +190,10 @@ void LoadWvWObjectives()
     CDictionary<int, CVector3> wvwObjectiveCoords;
     CDictionary<int, CRect> wvwContinentRects;
 
-    WCHAR wpath[ 2048 ];
-
-    CString wvwobjectives = FetchHTTPS( L"api.guildwars2.com", L"/v2/wvw/objectives?ids=all" );
+    auto wvwobjectives = FetchHTTPS( "api.guildwars2.com", "/v2/wvw/objectives?ids=all" );
 
     Array wvwobjs;
-    wvwobjs.parse( wvwobjectives.GetPointer() );
+    wvwobjs.parse( wvwobjectives );
     auto objs = wvwobjs.values();
 
     for ( unsigned int x = 0; x < objs.size(); x++ )
@@ -226,12 +225,10 @@ void LoadWvWObjectives()
         if ( !wvwContinentRects.HasKey( mapID ) )
         {
           CString mapPath = CString::Format( "/v2/maps?id=%d", mapID );
-          memset( wpath, 0, sizeof( wpath ) );
-          mapPath.WriteAsWideChar( wpath, 2048 );
-          CString wvwMapData = FetchHTTPS( L"api.guildwars2.com", wpath );
+          auto wvwMapData = FetchHTTPS( "api.guildwars2.com", mapPath.GetPointer() );
 
           Object map;
-          map.parse( wvwMapData.GetPointer() );
+          map.parse( wvwMapData );
           if ( !map.has<Array>( "continent_rect" ) )
             continue;
 
@@ -404,14 +401,10 @@ void UpdateWvWStatus()
     }
 
     CString apiPath = CString::Format( "/v2/wvw/matches?world=%d", key->worldId );
-    WCHAR wpath[ 2048 ];
-    memset( wpath, 0, sizeof( wpath ) );
-    apiPath.WriteAsWideChar( wpath, 2048 );
-
-    CString wvwobjectiveids = FetchHTTPS( L"api.guildwars2.com", wpath );
+    auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath.GetPointer());
 
     Object o;
-    o.parse( wvwobjectiveids.GetPointer() );
+    o.parse( wvwobjectiveids );
     if ( o.has<Array>( "maps" ) )
     {
       auto m = o.get<Array>( "maps" ).values();

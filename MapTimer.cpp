@@ -3,6 +3,8 @@
 #include "OverlayConfig.h"
 #include "Bedrock/UtilLib/jsonxx.h"
 
+#include <string>
+
 using namespace jsonxx;
 
 void GW2MapTimer::OnDraw( CWBDrawAPI *API )
@@ -29,8 +31,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
         {
           Object json;
 
-          CString lastDungeonStatus = CString("{\"worldbosses\":") + key->QueryAPI("v2/account/worldbosses") + "}";
-          json.parse(lastDungeonStatus.GetPointer());
+          auto lastDungeonStatus = "{\"worldbosses\":" + key->QueryAPI("v2/account/worldbosses") + "}";
+          json.parse(lastDungeonStatus);
 
           if (json.has<Array>("worldbosses"))
           {
@@ -50,8 +52,8 @@ void GW2MapTimer::OnDraw( CWBDrawAPI *API )
             }
           }
 
-          lastDungeonStatus = CString("{\"mapchests\":") + key->QueryAPI("v2/account/mapchests") + "}";
-          json.parse(lastDungeonStatus.GetPointer());
+          lastDungeonStatus = "{\"mapchests\":" + key->QueryAPI("v2/account/mapchests") + "}";
+          json.parse(lastDungeonStatus);
 
           if (json.has<Array>("mapchests"))
           {

@@ -2,6 +2,9 @@
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 #include <thread>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
 namespace GW2
 {
@@ -9,21 +12,21 @@ namespace GW2
   {
   public:
 
-    CString apiKey;
-    CDictionary< CString, TBOOL > caps;
-    CString keyName;
-    CString accountName;
+    std::string apiKey;
+    std::unordered_map< std::string, bool > caps;
+    std::string keyName;
+    std::string accountName;
     CStringArray charNames;
     int worldId = 0;
 
     APIKey() = default;
-    APIKey( const CString& key );
+    APIKey( std::string_view key );
     virtual ~APIKey();
 
     void FetchData();
-    TBOOL HasCaps( const CString& cap );
+    bool HasCaps(std::string_view cap);
 
-    CString QueryAPI( char* path );
+    std::string QueryAPI(std::string_view path);
 
     bool initialized = false;
     bool valid = true;
@@ -31,7 +34,7 @@ namespace GW2
 
     std::thread fetcherThread;
 
-    void SetKey( const CString& key );
+    void SetKey(std::string_view key);
   };
 
   class APIKeyManager

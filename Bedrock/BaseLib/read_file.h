@@ -5,7 +5,7 @@
 
 namespace baselib {
 
-std::string ReadFile(const std::string_view& name);
+std::string ReadFile(std::string_view name);
 
 } // namespace baselib
 

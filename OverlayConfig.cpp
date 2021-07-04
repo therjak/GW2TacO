@@ -96,46 +96,41 @@ void ToggleConfigValue( CString &value )
     ConfigNums[ value ] = 0;
 }
 
-void ToggleConfigValue( TCHAR *value )
-{
-  ToggleConfigValue( CString( value ) );
+void ToggleConfigValue(std::string_view value) {
+  ToggleConfigValue( CString( value.data() ) );
 }
 
-int32_t GetConfigValue( TCHAR *value )
+int32_t GetConfigValue( std::string_view value )
 {
-  if ( ConfigNums.HasKey( value ) )
-    return ConfigNums[ value ];
+  if ( ConfigNums.HasKey( value.data() ) )
+    return ConfigNums[ value.data() ];
   return 0;
 }
 
-void SetConfigValue( TCHAR *value, int32_t val )
-{
+void SetConfigValue(std::string_view value, int32_t val) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ value ] = val;
+  ConfigNums[ value.data() ] = val;
 }
 
-TBOOL HasConfigValue( TCHAR *value )
-{
-  return ConfigNums.HasKey( value );
+TBOOL HasConfigValue(std::string_view value) {
+  return ConfigNums.HasKey( value.data() );
 }
 
-TBOOL HasConfigString( TCHAR *value )
-{
-  return ConfigStrings.HasKey( value );
+TBOOL HasConfigString(std::string_view value) {
+  return ConfigStrings.HasKey( value.data() );
 }
 
-void SetConfigString( TCHAR *value, const CString& val )
-{
+void SetConfigString(std::string_view value,
+                     std::string_view val) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigStrings[ value ] = val;
+  ConfigStrings[ CString(value.data()) ] = CString(val.data());
 }
 
-CString GetConfigString( TCHAR *value )
-{
-  if ( ConfigStrings.HasKey( value ) )
-    return ConfigStrings[ value ];
+CString GetConfigString(std::string_view value) {
+  if ( ConfigStrings.HasKey( value.data() ) )
+    return ConfigStrings[ value.data() ];
   return "";
 }
 

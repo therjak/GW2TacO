@@ -23,11 +23,11 @@ class CFileList {
 
   CFileList();
   ~CFileList();
-  CFileList(const std::string_view& Mask, const std::string_view& Path = "",
+  CFileList(std::string_view Mask, std::string_view Path = "",
             bool Recursive = false);
 
-  void ExpandSearch(const std::string_view& Mask, const std::string_view& Path,
+  void ExpandSearch(std::string_view Mask, std::string_view Path,
                     bool Recursive, bool getDirectories = false);
 };
 
-bool exists(const std::string_view& fname);
+bool exists(std::string_view fname);

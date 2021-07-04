@@ -3,46 +3,38 @@
 #include "OverlayConfig.h"
 #include "Language.h"
 
+#include <string>
+#include <algorithm>
+
 #include "Bedrock/UtilLib/jsonxx.h"
 using namespace jsonxx;
 
-CString FetchHTTPS( LPCWSTR url, LPCWSTR path );
+std::string FetchHTTPS(std::string_view url,
+                       std::string_view path);
 
-CString FetchAPIData( char* path, const CString& apiKey )
-{
-  WCHAR wpath[ 4096 ];
+std::string FetchAPIData(std::string_view path,
+                     std::string_view apiKey) {
+  bool hasquestionmark = false;
 
-  TBOOL hasquestionmark = false;
-  char* str = path;
-  while ( *str )
-  {
-    if ( *str == '?' )
-    {
-      hasquestionmark = true;
-      break;
-    }
-    str++;
+  if (std::find(path.begin(), path.end(), '?') != path.end()) {
+    hasquestionmark = true;
   }
 
-  CString wstr = CString( path );
+  std::string ask(path);
   if ( hasquestionmark )
-    wstr += "&access_token=" + apiKey;
+    ask += "&access_token=";
   else
-    wstr += "?access_token=" + apiKey;
+    ask += "?access_token=";
+  ask += apiKey;
 
-  memset( wpath, 0, sizeof( wpath ) );
-  wstr.WriteAsWideChar( wpath, 4096 );
-  return FetchHTTPS( L"api.guildwars2.com", wpath );
+  return FetchHTTPS( "api.guildwars2.com", ask );
 }
 
-namespace GW2
-{
+namespace GW2 {
 
-  APIKeyManager apiKeyManager;
+APIKeyManager apiKeyManager;
 
-  APIKey::APIKey( const CString& key )
-  {
-    apiKey = key;
+APIKey::APIKey(std::string_view key) : apiKey(key) {
   }
 
   APIKey::~APIKey()
@@ -64,13 +56,13 @@ namespace GW2
     {
       valid = true;
 
-      CString keyData = QueryAPI( "/v2/tokeninfo" );
+      auto keyData = QueryAPI( "/v2/tokeninfo" );
 
       Object json;
-      json.parse( keyData.GetPointer() );
+      json.parse( keyData );
 
       if ( json.has<String>( "name" ) )
-        keyName = CString( json.get<String>( "name" ).data() );
+        keyName = json.get<String>( "name" );
       else
         valid = false;
 
@@ -80,7 +72,7 @@ namespace GW2
         for ( auto v : values )
         {
           if ( v->is<String>() )
-            caps[ CString( v->get<String>().data() ) ] = true;
+            caps[ v->get<String>() ] = true;
         }
       }
       else
@@ -88,11 +80,11 @@ namespace GW2
 
       if ( HasCaps( "account" ) )
       {
-        CString accountData = QueryAPI( "/v2/account" );
-        json.parse( accountData.GetPointer() );
+        auto accountData = QueryAPI( "/v2/account" );
+        json.parse( accountData );
 
         if ( json.has<String>( "name" ) )
-          accountName = CString( json.get<String>( "name" ).data() );
+          accountName = json.get<String>( "name" );
 
         if ( json.has<Number>( "world" ) )
           worldId = (int32_t)( json.get<Number>( "world" ) );
@@ -103,27 +95,27 @@ namespace GW2
     } );
   }
 
-  TBOOL APIKey::HasCaps( const CString& cap )
+  bool APIKey::HasCaps(std::string_view cap)
   {
-    if ( caps.HasKey( cap ) )
-      return caps[ cap ];
+    if ( caps.find( std::string(cap) ) != caps.end() )
+      return caps[ cap.data() ];
 
     return false;
   }
 
-  CString APIKey::QueryAPI( char* path )
+  std::string APIKey::QueryAPI(std::string_view path)
   {
     LOG_NFO( "[GW2TacO] Querying the API: %s", path );
 
     return FetchAPIData( path, apiKey );
   }
 
-  void APIKey::SetKey( const CString& key )
+  void APIKey::SetKey(std::string_view key)
   {
     if ( fetcherThread.joinable() )
       fetcherThread.join();
     apiKey = key;
-    caps.Flush();
+    caps.clear();
     initialized = false;
     valid = true;
   }
@@ -218,7 +210,7 @@ namespace GW2
 
     if (HasConfigString("GW2APIKey"))
     {
-      APIKey* key = new APIKey(GetConfigString("GW2APIKey"));
+      APIKey* key = new APIKey(GetConfigString("GW2APIKey").GetPointer());
       RemoveConfigEntry("GW2APIKey");
       keys += key;
     }
@@ -229,7 +221,7 @@ namespace GW2
       CString cfgName = CString::Format("GW2APIKey%d", x++);
       if (HasConfigString(cfgName.GetPointer()))
       {
-        APIKey* key = new APIKey(GetConfigString(cfgName.GetPointer()));
+        APIKey* key = new APIKey(GetConfigString(cfgName.GetPointer()).GetPointer());
         keys += key;
       }
       else

@@ -4,6 +4,7 @@
 #include "TS3Connection.h"
 #include <thread>
 #include <vector>
+#include <string>
 
 enum class TacOKeyAction : int32_t
 {
@@ -76,7 +77,7 @@ class GW2TacO : public CWBItem
 
   void CheckItemPickup();
 
-  CString lastItemPickup;
+  std::string lastItemPickup;
   TBOOL pickupsBeingFetched = false;
   std::thread pickupFetcherThread;
   int32_t lastPickupFetchTime = 0;

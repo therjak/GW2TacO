@@ -1,12 +1,14 @@
 #pragma once
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 #include <thread>
+#include <vector>
+#include <string>
 
 class DungeonPath
 {
 public:
-  CString name;
-  CString type;
+  std::string name;
+  std::string type;
   bool finished = false;
   bool frequenter = false;
 };
@@ -14,9 +16,9 @@ public:
 class Dungeon
 {
 public:
-  CString name;
-  CString shortName;
-  CArray<DungeonPath> paths;
+  std::string name;
+  std::string shortName;
+  std::vector<DungeonPath> paths;
 };
 
 class DungeonProgress : public CWBItem
@@ -31,7 +33,7 @@ class DungeonProgress : public CWBItem
 
   std::thread fetchThread;
 
-  CArray<Dungeon> dungeons;
+  std::vector<Dungeon> dungeons;
 
 public:
 

@@ -22,6 +22,7 @@
 #include "SpecialGUIItems.h"
 #include "Language.h"
 
+#include <string>
 #include <string_view>
 
 #pragma comment(lib,"Dwmapi.lib")
@@ -383,12 +384,18 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
   return CString( (TS8*)data.GetData(), data.GetLength() );
 }
 
-CString FetchHTTPS( LPCWSTR url, LPCWSTR path )
-{
-  CString s1 = CString( url );
-  CString s2 = CString( path );
+std::wstring string2wstring(std::string_view s) {
+  int wchars_num = MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, NULL, 0);
+  std::wstring wstr(wchars_num, 0);
+  MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, wstr.data(), wstr.size());
+  return wstr;
+}
 
-  LOG_NFO( "[GW2TacO] Fetching URL: %s/%s", s1.GetPointer(), s2.GetPointer() );
+std::string FetchHTTPS(std::string_view url, std::string_view path) {
+  auto wurl= string2wstring(url);
+  auto wpath= string2wstring(path);
+
+  LOG_NFO( "[GW2TacO] Fetching URL: %s/%s", url.data(), path.data() );
 
   DWORD dwSize = 0;
   DWORD dwDownloaded = 0;
@@ -400,10 +407,10 @@ CString FetchHTTPS( LPCWSTR url, LPCWSTR path )
   hSession = WinHttpOpen( L"WinHTTPS Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0 );
 
   if ( hSession )
-    hConnect = WinHttpConnect( hSession, url, INTERNET_DEFAULT_PORT, 0 );
+    hConnect = WinHttpConnect( hSession, wurl.c_str(), INTERNET_DEFAULT_PORT, 0 );
 
   if ( hConnect )
-    hRequest = WinHttpOpenRequest( hConnect, L"GET", path, NULL, WINHTTP_NO_REFERER, NULL, WINHTTP_FLAG_SECURE );
+    hRequest = WinHttpOpenRequest( hConnect, L"GET", wpath.c_str(), NULL, WINHTTP_NO_REFERER, NULL, WINHTTP_FLAG_SECURE );
 
   if ( hRequest )
     bResults = WinHttpSendRequest( hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0 );
@@ -439,7 +446,7 @@ CString FetchHTTPS( LPCWSTR url, LPCWSTR path )
   if ( hConnect ) WinHttpCloseHandle( hConnect );
   if ( hSession ) WinHttpCloseHandle( hSession );
 
-  return CString( (TS8*)data.GetData(), data.GetLength() );
+  return std::string( (const char*)data.GetData(), data.GetLength() );
 }
 
 #include <Urlmon.h>   // URLOpenBlockingStreamW()
@@ -671,7 +678,7 @@ void FetchMarkerPackOnline( CString& ourl )
   }, urlPtr, 0, &downloadThreadID );
 }
 
-void ImportMarkerPack( CWBApplication* App, const std::string_view& zipFile );
+void ImportMarkerPack( CWBApplication* App, std::string_view zipFile );
 
 #include <imm.h>
 #pragma comment(lib,"Imm32.lib")

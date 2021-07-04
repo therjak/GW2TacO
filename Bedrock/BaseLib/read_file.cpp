@@ -7,7 +7,7 @@
 
 namespace baselib {
 
-std::string ReadFile(const std::string_view& name) {
+std::string ReadFile(std::string_view name) {
   HANDLE hFile =
       CreateFile(name.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                  NULL, OPEN_EXISTING, NULL, NULL);
