@@ -3,6 +3,7 @@
 #include <objbase.h>
 #include <thread>
 #include <vector>
+#include <memory>
 
 enum class POIBehavior : int32_t
 {
@@ -22,44 +23,44 @@ struct MarkerTypeData
 {
   struct 
   {
-    TBOOL needsExportToUserData : 1;
-    TBOOL iconFileSaved : 1;
-    TBOOL sizeSaved : 1;
-    TBOOL alphaSaved : 1;
-    TBOOL fadeNearSaved : 1;
-    TBOOL fadeFarSaved : 1;
-    TBOOL heightSaved : 1;
-    TBOOL behaviorSaved : 1;
-    TBOOL resetLengthSaved : 1;
-    TBOOL autoTriggerSaved : 1;
-    TBOOL hasCountdownSaved : 1;
-    TBOOL triggerRangeSaved : 1;
-    TBOOL minSizeSaved : 1;
-    TBOOL maxSizeSaved : 1;
-    TBOOL colorSaved : 1;
-    TBOOL trailDataSaved : 1;
-    TBOOL animSpeedSaved : 1;
-    TBOOL textureSaved : 1;
-    TBOOL trailScaleSaved : 1;
-    TBOOL toggleCategorySaved : 1;
-    TBOOL achievementIdSaved : 1;
-    TBOOL achievementBitSaved : 1;
-    TBOOL autoTrigger : 1;
-    TBOOL hasCountdown : 1;
-    TBOOL miniMapVisible : 1;
-    TBOOL bigMapVisible : 1;
-    TBOOL inGameVisible : 1;
-    TBOOL miniMapVisibleSaved : 1;
-    TBOOL bigMapVisibleSaved : 1;
-    TBOOL inGameVisibleSaved : 1;
-    TBOOL scaleWithZoom : 1;
-    TBOOL scaleWithZoomSaved : 1;
-    TBOOL miniMapSizeSaved : 1;
-    TBOOL miniMapFadeOutLevelSaved : 1;
-    TBOOL keepOnMapEdge : 1;
-    TBOOL keepOnMapEdgeSaved : 1;
-    TBOOL infoSaved : 1;
-    TBOOL infoRangeSaved : 1;
+    bool needsExportToUserData : 1;
+    bool iconFileSaved : 1;
+    bool sizeSaved : 1;
+    bool alphaSaved : 1;
+    bool fadeNearSaved : 1;
+    bool fadeFarSaved : 1;
+    bool heightSaved : 1;
+    bool behaviorSaved : 1;
+    bool resetLengthSaved : 1;
+    bool autoTriggerSaved : 1;
+    bool hasCountdownSaved : 1;
+    bool triggerRangeSaved : 1;
+    bool minSizeSaved : 1;
+    bool maxSizeSaved : 1;
+    bool colorSaved : 1;
+    bool trailDataSaved : 1;
+    bool animSpeedSaved : 1;
+    bool textureSaved : 1;
+    bool trailScaleSaved : 1;
+    bool toggleCategorySaved : 1;
+    bool achievementIdSaved : 1;
+    bool achievementBitSaved : 1;
+    bool autoTrigger : 1;
+    bool hasCountdown : 1;
+    bool miniMapVisible : 1;
+    bool bigMapVisible : 1;
+    bool inGameVisible : 1;
+    bool miniMapVisibleSaved : 1;
+    bool bigMapVisibleSaved : 1;
+    bool inGameVisibleSaved : 1;
+    bool scaleWithZoom : 1;
+    bool scaleWithZoomSaved : 1;
+    bool miniMapSizeSaved : 1;
+    bool miniMapFadeOutLevelSaved : 1;
+    bool keepOnMapEdge : 1;
+    bool keepOnMapEdgeSaved : 1;
+    bool infoSaved : 1;
+    bool infoRangeSaved : 1;
   } bits;
 
   MarkerTypeData();
@@ -100,7 +101,7 @@ class GW2TacticalCategory;
 struct Achievement
 {
   bool done = false;
-  CArray<int32_t> bits;
+  std::vector<int32_t> bits;
 };
 
 struct POI
@@ -112,7 +113,7 @@ struct POI
 
   CVector3 position;
   int32_t mapID;
-  uint8_t wvwObjectiveID;
+  size_t wvwObjectiveID;
   CString Type;
 
   time_t lastUpdateTime = 0;
@@ -136,13 +137,6 @@ struct POIActivationDataKey
   int uniqueData = 0;
 
   POIActivationDataKey() = default;
-
-  //POIActivationDataKey( GUID g )
-  //  : guid( g )
-  //  , instanceID( 0 )
-  //{
-
-  //}
 
   POIActivationDataKey( GUID g, int inst )
     : guid( g )
@@ -169,7 +163,7 @@ struct POIRoute
 {
   CString name;
   TBOOL backwards = true;
-  CArray<GUID> route;
+  std::vector<GUID> route;
   TBOOL external = false;
   TBOOL hasResetPos = false;
   CVector3 resetPos;
@@ -184,7 +178,7 @@ uint32_t DictionaryHash( const POIActivationDataKey &i );
 
 extern CDictionaryEnumerable<GUID, POI> POIs;
 extern CDictionaryEnumerable<POIActivationDataKey, POIActivationData> ActivationData;
-extern CArray<POIRoute> Routes;
+extern std::vector<POIRoute> Routes;
 extern CDictionaryEnumerable<CString, POI> wvwPOIs;
 
 class GW2TacticalDisplay : public CWBItem
@@ -201,8 +195,8 @@ class GW2TacticalDisplay : public CWBItem
   void DrawPOIMinimap( CWBDrawAPI *API, const CRect& miniRect, CVector2& pos, const tm& ptm, const time_t& currtime, POI& poi, float alpha, float zoomLevel );
   virtual void OnDraw( CWBDrawAPI *API );
   CVector3 ProjectTacticalPos( CVector3 pos, float fov, float asp );
-  CArray<POI*> mapPOIs;
-  CArray<POI*> minimapPOIs;
+  std::vector<POI*> mapPOIs;
+  std::vector<POI*> minimapPOIs;
   bool drawWvWNames;
 
   bool beingFetched = false;
@@ -240,7 +234,7 @@ public:
   TBOOL KeepSaveState = false;
   TBOOL IsOnlySeparator = false;
   GW2TacticalCategory *Parent = nullptr;
-  CArray<GW2TacticalCategory*> children;
+  std::vector<std::unique_ptr<GW2TacticalCategory>> children;
 
   CString GetFullTypeName();
 
@@ -249,7 +243,6 @@ public:
 
   virtual ~GW2TacticalCategory()
   {
-    children.FreeArray();
   }
 };
 
@@ -259,7 +252,6 @@ void UpdatePOI();
 void ImportPOIS( CWBApplication *App );
 void ExportPOIS();
 void ImportPOIActivationData();
-void ExportPOIActivationData();
 
 void OpenTypeContextMenu( CWBContextMenu *ctx, std::vector<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
 void OpenTypeContextMenu( CWBContextItem *ctx, std::vector<GW2TacticalCategory*> &CategoryList, TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0, TBOOL closeOnClick = false );
@@ -269,5 +261,4 @@ float GameToWorldCoords( float game );
 void FindClosestRouteMarkers( TBOOL force );
 
 int32_t GetTime();
-int32_t AddStringToMap( const CString& string );
 CString& GetStringFromMap( int32_t idx );

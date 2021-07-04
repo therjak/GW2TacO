@@ -118,12 +118,6 @@ LRESULT __stdcall MyKeyboardProc( int ccode, WPARAM wParam, LPARAM lParam )
     }
     else
     {
-      //for ( int x = 0; x < 32; x++ )
-      //  if ( szCharBuf[ x ] )
-      //  {
-          //PostMessage( (HWND)App->GetHandle(), WM_CHAR, szCharBuf[ 0 ], 1 | ( pkbdllhook->scanCode << 16 ) + ( pkbdllhook->flags << 24 ) );
-        //}
-        //else break;
 
       //Do something with szCharBuf here since this will overwrite it...
       //If we have a saved vkCode from last call, it was a dead key we need to place back in the buffer.
@@ -181,12 +175,7 @@ LRESULT __stdcall KeyboardHook( int code, WPARAM wParam, LPARAM lParam )
   KBDLLHOOKSTRUCT *kbdat = (KBDLLHOOKSTRUCT*)lParam;
   UINT mapped = MapVirtualKey( kbdat->vkCode, MAPVK_VK_TO_CHAR );
 
-  //App->InjectMessage( wParam, kbdat->vkCode, 1 | ( kbdat->scanCode << 16 ) + ( kbdat->flags << 24 ) );
-
   bool inFocus = App->GetFocusItem() && App->GetFocusItem()->InstanceOf( "textbox" );
-
-  //if ( !( mapped & ( 1 << 31 ) ) && !inFocus && wParam == WM_KEYDOWN )
-  //  App->InjectMessage( WM_CHAR, mapped, 0 );
 
   if (mapped & (1 << 31) && !inFocus)
     return CallNextHookEx(0, 0, wParam, (LPARAM)lParam);
@@ -195,7 +184,6 @@ LRESULT __stdcall KeyboardHook( int code, WPARAM wParam, LPARAM lParam )
   {
     if (wParam == WM_KEYDOWN)
     {
-      //(*(void(__thiscall**)(_DWORD*, signed int, UINT, _DWORD))(*app + 68))(app, 258, mapped, 0);
       App->InjectMessage(WM_CHAR, mapped, 0);
       return CallNextHookEx(0, 0, WM_KEYDOWN, (LPARAM)lParam);
     }
@@ -205,39 +193,6 @@ LRESULT __stdcall KeyboardHook( int code, WPARAM wParam, LPARAM lParam )
   PostMessage( (HWND)App->GetHandle(), wParam, kbdat->vkCode, 1 | ( kbdat->scanCode << 16 ) + ( kbdat->flags << 24 ) );
   return 1;
 
-  //if ( inFocus )
-  //  return 1;
-
-  //FILE *f = fopen( "keylog.txt", "at" );
-  //fprintf( f, "keyboard hook: %d %x %d %d %d %x\n", wParam, kbdat->flags, kbdat->scanCode, kbdat->time, kbdat->vkCode, kbdat->dwExtraInfo );
-  //fclose( f );
-
- // if (wParam == WM_KEYDOWN /*|| wParam == WM_SYSKEYDOWN*/)
- // {
- // 	if (kbdat->vkCode == VK_SHIFT || kbdat->vkCode == VK_LSHIFT || kbdat->vkCode == VK_RSHIFT)
- // 		ShiftState = true;
- // 	WORD charcode;
- // 	unsigned char state[256];
- // 	GetKeyboardState(state);
- // 	state[0x10] = 0x80 * ShiftState;
- // 	int len = ToAscii(kbdat->vkCode, kbdat->scanCode, state, &charcode, 0);
- // 	if (len > 0)
- // 	{
- // 		PostMessage((HWND)App->GetHandle(), (wParam == WM_KEYDOWN) ? WM_CHAR : WM_SYSCHAR, charcode, 0);
- // 	}
- // }
-
- // if (wParam == WM_KEYUP /*|| wParam == WM_SYSKEYUP*/)
- // {
- // 	if (kbdat->vkCode == VK_SHIFT || kbdat->vkCode == VK_LSHIFT || kbdat->vkCode == VK_RSHIFT)
- // 		ShiftState = false;
- // }
-
- //// if (kbdat->vkCode != VK_MENU && kbdat->vkCode != VK_LMENU && kbdat->vkCode != VK_RMENU)
-    //if ( ( wParam == WM_KEYUP || wParam == WM_KEYDOWN || wParam == WM_CHAR ) && App->GetFocusItem()->InstanceOf( "textbox" ) )
-     // return 1;
-
-  //return CallNextHookEx( 0, code, wParam, lParam );
 }
 
 LRESULT __stdcall MouseHook( int code, WPARAM wParam, LPARAM lParam )
@@ -252,7 +207,6 @@ LRESULT __stdcall MouseHook( int code, WPARAM wParam, LPARAM lParam )
   MSLLHOOKSTRUCT *mousedat = (MSLLHOOKSTRUCT*)lParam;
 
   POINT ap = mousedat->pt;
-  //SetCursorPos(ap.x, ap.y);
   ScreenToClient( (HWND)App->GetHandle(), &ap );
 
   if ( wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN )
@@ -274,7 +228,7 @@ LRESULT __stdcall MouseHook( int code, WPARAM wParam, LPARAM lParam )
 LONG WINAPI CrashOverride( struct _EXCEPTION_POINTERS * excpInfo )
 {
   if ( IsDebuggerPresent() ) return EXCEPTION_CONTINUE_SEARCH;
-  LONG res = baseCrashTracker( excpInfo );// FullDumpCrashTracker( excpInfo );// baseCrashTracker( excpInfo );
+  LONG res = baseCrashTracker( excpInfo );
   return res;
 }
 
@@ -290,7 +244,6 @@ DWORD GetProcessIntegrityLevel( HANDLE hProcess )
   PTOKEN_MANDATORY_LABEL pTIL = NULL;
   DWORD dwIntegrityLevel = 0;
 
-  //hProcess = GetCurrentProcess();
   if ( OpenProcessToken( hProcess, TOKEN_QUERY, &hToken ) )
   {
     // Get the Integrity level.
@@ -309,12 +262,6 @@ DWORD GetProcessIntegrityLevel( HANDLE hProcess )
           {
             dwIntegrityLevel = *GetSidSubAuthority( pTIL->Label.Sid,
               (DWORD)(UCHAR)( *GetSidSubAuthorityCount( pTIL->Label.Sid ) - 1 ) );
-
-            //if (dwIntegrityLevel == SECURITY_MANDATORY_LOW_RID)
-            //else if (dwIntegrityLevel >= SECURITY_MANDATORY_MEDIUM_RID &&
-            //		 dwIntegrityLevel < SECURITY_MANDATORY_HIGH_RID)
-            //else if (dwIntegrityLevel >= SECURITY_MANDATORY_HIGH_RID)
-            //else if (dwIntegrityLevel >= SECURITY_MANDATORY_SYSTEM_RID)
           }
           LocalFree( pTIL );
         }
@@ -508,7 +455,6 @@ int lastMainLoopTime = 0;
 #include <thread>
 
 #include <ShellScalingAPI.h>
-//#pragma comment(lib,"Shcore.lib")
 
 #include "Bedrock/UtilLib/jsonxx.h"
 
@@ -835,33 +781,11 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
       mumbleLink.mumblePath = cmds[1];
   }
 
-  //SetProcessDpiAwareness( PROCESS_PER_MONITOR_DPI_AWARE );
-
-  /*
-    std::thread t([]()
-    {
-      while ( 1 )
-      {
-        lastCnt = mainLoopCounter;
-        Sleep( 2000 );
-        if ( mainLoopCounter > 0 && lastCnt == mainLoopCounter )
-        {
-          int x = GetTime();
-          int y = sin( 0 );
-          mainLoopCounter = x / y;
-        }
-      }
-    } );
-  */
-
   FORCEDOPENDEBUGFILE();
   FORCEDDEBUGLOG( "Winmain started." );
 
   if ( !SetupTacoProtocolHandling() )
     LOG_ERR( "[GW2TacO] Failed to register gw2taco:// protocol with windows." );
-
-
-  //Logger.AddOutput(new CLoggerOutput_StdOut());
 
   typedef HRESULT( WINAPI *SetProcessDpiAwareness )( _In_ PROCESS_DPI_AWARENESS value );
   typedef BOOL( *SetProcessDPIAwareFunc )( );
@@ -988,8 +912,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   SetConfigValue( "LogTrails", 0 );
 
-  //CString apidata = FetchHTTP( L"api.guildwars2.com", L"/v2/continents?ids=all" );
-
   if ( GetConfigValue( _T( "CheckForUpdates" ) ) )
   {
     DWORD UpdateCheckThreadID = 0;
@@ -1025,25 +947,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   }
 
-  //MARGINS marg;
-
-  //marg.cxLeftWidth = 0;
-  //marg.cyTopHeight = 0;
-  //marg.cxRightWidth = width;
-  //marg.cyBottomHeight = height;
-  //DwmExtendFrameIntoClientArea(handle, &marg);
-
-  //RECT WindowRect;
-  //GetWindowRect(handle, &WindowRect);
-  //WindowRect.right = WindowRect.left + width;
-  //WindowRect.bottom = WindowRect.top + height;
-  //AdjustWindowRect(&WindowRect, CS_HREDRAW | CS_VREDRAW, FALSE);
-  //SetWindowPos(handle, 0, WindowRect.top, WindowRect.left, width, height, 0);
-
-  //SetWindowLong(handle, GWL_STYLE, CS_HREDRAW | CS_VREDRAW);
-
-  //SetWindowLong(handle, GWL_EXSTYLE, WS_EX_COMPOSITED);
-  //SetLayeredWindowAttributes(handle, RGB(0, 0, 0), 0, ULW_COLORKEY);
   SetLayeredWindowAttributes( handle, 0, 255, LWA_ALPHA );
 
   ShowWindow( handle, nCmdShow );
@@ -1100,7 +1003,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
       CString file = loadList[ 0 ];
       loadList.DeleteByIndex( 0 );
       ImportMarkerPack( App, file.GetPointer() );
-      //FlushZipDict();
     }
 
     FORCEDDEBUGLOG( "messages handled" );
@@ -1158,17 +1060,8 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
             if ( gw2ProcessIntegrity > currentProcessIntegrity || gw2ProcessIntegrity == -1 )
               MessageBox( NULL, "GW2 seems to have more elevated rights than GW2 TacO.\nThis will probably result in TacO not being interactive when GW2 is in focus.\nIf this is an issue for you, restart TacO in Administrator mode.", "Warning", MB_ICONWARNING );
-
-            //::SetWindowLong( handle, GWL_HWNDPARENT, (LONG)gw2Window );
-            //::SetParent( handle, gw2Window );
           }
           FoundGW2Window = true;
-          //auto style = GetWindowLong( handle, GWL_EXSTYLE );
-          ////login window: 0x94000000
-          ////fullscreen windowed: 0x94000000
-          ////fullscreen: 0x02080020
-
-          //int x = 0;
 
           RECT GW2ClientRect;
           POINT p = { 0, 0 };
@@ -1183,9 +1076,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             pos = CRect( GW2ClientRect.left + p.x, GW2ClientRect.top + p.y, GW2ClientRect.left + p.x + GW2ClientRect.right - GW2ClientRect.left, GW2ClientRect.top + p.y + GW2ClientRect.bottom - GW2ClientRect.top );
 
             ::SetWindowPos( handle, 0, pos.x1, pos.y1, pos.Width(), pos.Height(), SWP_NOREPOSITION );
-            //::SetWindowPos( gw2Window, handle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-            //::SetParent( handle, gw2Window );
-            //::SetWindowLong( handle, GWL_STYLE, WS_CHILD );
 
             if ( NeedsResize )
             {
@@ -1231,23 +1121,12 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         else
           App->GetRoot()->Hide( !shortTick );
 
-        //App->GetRoot()->Hide( GetForegroundWindow() != gw2Window && GetForegroundWindow() != (HWND)App->GetHandle() );
-
-        //HANDLE h = GetForegroundWindow();
-        //if ( h != (HWND)App->GetHandle() && h != gw2Window )
-        //  ::SetWindowPos( (HWND)App->GetHandle(), HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        //else
-        //  ::SetWindowPos( (HWND)App->GetHandle(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-
-        //FORCEDDEBUGLOG( "hid the TacO gui: %d", (int)( GetForegroundWindow() != gw2Window && GetForegroundWindow() != (HWND)App->GetHandle() ) );
-
         taco->TickScriptEngine();
         AutoSaveConfig();
         App->Display();
         frameTriggered = false;
         lastRenderTime = currTime;
       }
-      //DwmFlush();
 
       if ( !HooksInitialized )
       {
@@ -1300,9 +1179,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     mainLoopCounter++;
     lastMainLoopTime = GetTime();
-
-    //if ( GetAsyncKeyState( VK_HOME ) )
-    //  Sleep( 5000 );
   }
 
   FlushZipDict();
@@ -1314,8 +1190,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   ShowWindow( handle, SW_HIDE );
 
-  //ExportPOIS();
-  //ExportPOIActivationData();
   SaveConfig();
   FORCEDDEBUGLOG( "config saved" );
 
@@ -1336,9 +1210,6 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   extern CDictionaryEnumerable<GUID, GW2Trail*> trails;
   for ( int x = 0; x < trails.NumItems(); x++ )
     delete trails.GetByIndex( x );
-
-  //extern CArray<CString> stringArray;
-  //LOG_DBG( "string array count: %d", stringArray.NumItems() );
 
   //cleanup
   SAFEDELETE( App );
