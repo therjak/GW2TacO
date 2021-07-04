@@ -31,7 +31,7 @@ void Localization::ImportLanguage( CXMLDocument& d )
 
   int langIdx = -1;
 
-  for ( int x = 0; x < languages.NumItems(); x++ )
+  for ( int x = 0; x < languages.size(); x++ )
   {
     if ( languages[ x ].name == language )
       langIdx = x;
@@ -41,8 +41,8 @@ void Localization::ImportLanguage( CXMLDocument& d )
   {
     Language lang;
     lang.name = language;
-    langIdx = languages.NumItems();
-    languages += lang;
+    langIdx = languages.size();
+    languages.push_back(lang);
   }
   
   auto& lang = languages[ langIdx ].dict;
@@ -70,7 +70,7 @@ void Localization::ImportLanguage( CXMLDocument& d )
 Localization::Localization()
 {
   for ( int x = 0; x <= 0x460; x++ )
-    usedGlyphs.AddUnique( x );
+    usedGlyphs.push_back( x );
 }
 
 void Localization::SetActiveLanguage( const CString& language )
@@ -78,7 +78,7 @@ void Localization::SetActiveLanguage( const CString& language )
   auto lang = language;
   lang.ToLower();
 
-  for ( int x = 0; x < languages.NumItems(); x++ )
+  for ( size_t x = 0; x < languages.size(); x++ )
   {
     if ( languages[ x ].name == lang )
     {
@@ -96,8 +96,8 @@ CStringArray Localization::GetLanguages()
 {
   CStringArray langs;
 
-  for ( int x = 0; x < languages.NumItems(); x++ )
-    langs += languages[ x ].name;
+  for ( const auto& l: languages )
+    langs += l.name;
 
   for ( int x = 0; x < langs.NumItems(); x++ )
     langs[ x ][ 0 ] = toupper( langs[ x ][ 0 ] );
@@ -142,7 +142,7 @@ CString Localization::Localize( const char* token, const CString& fallback )
   else
     rawToken = CString( "[" ) + tokenString + "]";
 
-  if ( activeLanguageIdx >= languages.NumItems() || activeLanguageIdx < 0 )
+  if ( activeLanguageIdx >= languages.size() )
     return rawToken;
 
   auto& lang = languages[ activeLanguageIdx ].dict;
@@ -173,16 +173,17 @@ int Localization::GetActiveLanguageIndex()
   return activeLanguageIdx;
 }
 
-CArray<int>& Localization::GetUsedGlyphs()
+std::vector<int>& Localization::GetUsedGlyphs()
 {
   return usedGlyphs;
 }
 
-void Localization::ProcessStringForUsedGlyphs( CString& string )
-{
-  string.DecodeUtf8( [ & ]( uint32_t Char )->TBOOL
-  {
-    usedGlyphs.AddUnique( Char );
+void Localization::ProcessStringForUsedGlyphs(CString& string) {
+  string.DecodeUtf8([&](uint32_t Char) -> TBOOL {
+    if (std::find(usedGlyphs.begin(), usedGlyphs.end(), Char) ==
+        usedGlyphs.end()) {
+      usedGlyphs.push_back(Char);
+    }
     return true;
-  } );
+  });
 }

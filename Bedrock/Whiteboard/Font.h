@@ -1,6 +1,8 @@
 #pragma once
 #include "Atlas.h"
 
+#include <vector>
+
 enum WBTEXTALIGNMENTX
 {
   WBTA_CENTERX,
@@ -70,8 +72,8 @@ class CWBFontDescription
   uint8_t *Image;
   int32_t XRes, YRes;
 
-  CArray<WBSYMBOLINPUT> Alphabet;
-  CArray<WBKERNINGDATA> KerningData;
+  std::vector<WBSYMBOLINPUT> Alphabet;
+  std::vector<WBKERNINGDATA> KerningData;
 
   int32_t LineHeight;
   int32_t Base;
@@ -81,8 +83,14 @@ public:
   CWBFontDescription();
   ~CWBFontDescription();
 
-  TBOOL LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize, uint8_t *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
-  TBOOL LoadBMFontText( uint8_t *Binary, int32_t BinarySize, uint8_t *Image, int32_t XRes, int32_t YRes, CArray<int>& enabledGlyphs = CArray<int>() ); //32 bit raw image data
+  TBOOL LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
+                         int32_t XRes, int32_t YRes,
+                         std::vector<int> &enabledGlyphs =
+                             std::vector<int>());  // 32 bit raw image data
+  TBOOL LoadBMFontText(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
+                       int32_t XRes, int32_t YRes,
+                       std::vector<int> &enabledGlyphs =
+                           std::vector<int>());  // 32 bit raw image data
 };
 
 class CWBFont
@@ -101,7 +109,7 @@ class CWBFont
 
   TCHAR MissingChar;
 
-  void AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect );
+  void AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, const CPoint &Offset, int32_t Advance, CRect contentRect );
   void AddKerningPair( uint16_t First, uint16_t Second, int16_t Amount );
 
 public:

@@ -9,6 +9,8 @@
 #include "ContextMenu.h"
 #include "StyleManager.h"
 
+#include <vector>
+
 enum WBMOUSECLICKREPEATMODE
 {
   WB_MCR_OFF = 0,
@@ -151,8 +153,8 @@ public:
   TBOOL GenerateGUI( CWBItem *Root, CString &Layout );
   TBOOL GenerateGUITemplate( CWBItem *Root, CString &Layout, CString &TemplateID );
   TBOOL GenerateGUITemplate( CWBItem *Root, TCHAR *Layout, TCHAR *TemplateID );
-  TBOOL LoadSkin( CString &XML, CArray<int>& enabledGlyphs = CArray<int>() );
-  TBOOL LoadSkinFromFile( CString FileName, CArray<int>& enabledGlyphs = CArray<int>() );
+  TBOOL LoadSkin( CString &XML, std::vector<int>& enabledGlyphs = std::vector<int>() );
+  TBOOL LoadSkinFromFile( CString FileName, std::vector<int>& enabledGlyphs = std::vector<int>() );
 
   CAtlas *GetAtlas();
   CWBSkin *GetSkin();

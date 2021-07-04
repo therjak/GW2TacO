@@ -1,6 +1,8 @@
 #pragma once
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 
+#include <vector>
+
 class Language
 {
 public:
@@ -11,13 +13,13 @@ public:
 
 class Localization
 {
-  int activeLanguageIdx = 0;
-  CArray< Language > languages;
+  size_t activeLanguageIdx = 0;
+  std::vector< Language > languages;
 
   void ImportFile( const CString& file );
   void ImportLanguage( CXMLDocument& d );
 
-  CArray<int> usedGlyphs;
+  std::vector<int> usedGlyphs;
 
 public:
 
@@ -31,7 +33,7 @@ public:
   CString Localize( const CString& token, const CString& fallback = CString( "" ) );
 
   int GetActiveLanguageIndex();
-  CArray<int>& GetUsedGlyphs();
+  std::vector<int>& GetUsedGlyphs();
   void ProcessStringForUsedGlyphs( CString& string );
 };
 

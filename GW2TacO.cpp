@@ -406,7 +406,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         {
           auto itm = ctx->AddItem( DICT( "configmaptimer" ), 0 );
 
-          for ( int32_t x = 0; x < timer->maps.size(); x++ )
+          for ( size_t x = 0; x < timer->maps.size(); x++ )
           {
             TBOOL open = true;
             CString str = CString( "maptimer_mapopen_" ) + timer->maps[ x ].id;

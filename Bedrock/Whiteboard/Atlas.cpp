@@ -69,7 +69,7 @@ CAtlasImage::CAtlasImage()
   Required = false;
 }
 
-CAtlasImage::CAtlasImage( uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source )
+CAtlasImage::CAtlasImage( uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes, const CRect &Source )
 {
   Image = NULL;
   XRes = Source.Width();
@@ -229,7 +229,7 @@ TBOOL CAtlas::InitializeTexture( CCoreDevice *Device )
   return ( Atlas = Device->CreateTexture2D( XRes, YRes, Image ) ) != NULL;
 }
 
-WBATLASHANDLE CAtlas::AddImage( uint8_t *i, int32_t xs, int32_t ys, CRect &a )
+WBATLASHANDLE CAtlas::AddImage( uint8_t *i, int32_t xs, int32_t ys, const CRect &a )
 {
   if ( a.Width() == 0 || a.Height() == 0 ) return 0;
 

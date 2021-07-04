@@ -783,7 +783,7 @@ CWBSkin * CWBApplication::GetSkin()
   return Skin;
 }
 
-TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
+TBOOL CWBApplication::LoadSkin( CString &XML, std::vector<int>& enabledGlyphs )
 {
   CXMLDocument doc;
   if ( !doc.LoadFromString( XML.GetPointer() ) ) return false;
@@ -887,7 +887,7 @@ TBOOL CWBApplication::LoadSkin( CString &XML, CArray<int>& enabledGlyphs )
   return true;
 }
 
-TBOOL CWBApplication::LoadSkinFromFile( CString FileName, CArray<int>& enabledGlyphs )
+TBOOL CWBApplication::LoadSkinFromFile( CString FileName, std::vector<int>& enabledGlyphs )
 {
   CStreamReaderMemory f;
   if ( !f.Open( FileName.GetPointer() ) )

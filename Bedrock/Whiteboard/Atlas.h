@@ -36,7 +36,7 @@ class CAtlasImage //stores image data not currently in the atlas
 public:
 
   CAtlasImage();
-  CAtlasImage( uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes, CRect &Source );
+  CAtlasImage( uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes, const CRect &Source );
   virtual ~CAtlasImage();
 
   WBATLASHANDLE GetHandle();
@@ -88,7 +88,7 @@ public:
   TBOOL UpdateTexture();
   CCoreTexture2D *GetTexture();
 
-  WBATLASHANDLE AddImage( uint8_t *Image, int32_t XRes, int32_t YRes, CRect &SourceArea );
+  WBATLASHANDLE AddImage( uint8_t *Image, int32_t XRes, int32_t YRes, const CRect &SourceArea );
   void DeleteImage( WBATLASHANDLE h ); //doesn't immediately remove image from atlas
 
   TBOOL Optimize( TBOOL DebugMode = false );

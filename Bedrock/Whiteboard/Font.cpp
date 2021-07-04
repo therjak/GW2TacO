@@ -2,6 +2,9 @@
 #include "Font.h"
 #include "DrawAPI.h"
 
+#include <vector>
+#include <algorithm>
+
 INLINE uint32_t DictionaryHash( const CWBKerningPair &i )
 {
   return i.First + ( i.Second << 16 );
@@ -33,7 +36,7 @@ CWBFontDescription::~CWBFontDescription()
   SAFEDELETE( Image );
 }
 
-TBOOL CWBFontDescription::LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize, uint8_t *img, int32_t xr, int32_t yr, CArray<int>& enabledGlyphs )
+TBOOL CWBFontDescription::LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize, uint8_t *img, int32_t xr, int32_t yr, std::vector<int>& enabledGlyphs )
 {
   if ( !img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0 ) return false;
 
@@ -137,7 +140,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize,
 
       for ( uint32_t x = 0; x < BlockSize / sizeof( BMCHAR ); x++ )
       {
-        if ( !enabledGlyphs.NumItems() || enabledGlyphs.Find( c[ x ].id ) >= 0 )
+        if ( enabledGlyphs.empty() || std::find(enabledGlyphs.begin(), enabledGlyphs.end(),  c[ x ].id ) != enabledGlyphs.end() )
         {
           WBSYMBOLINPUT s;
           s.Char = c[ x ].id;
@@ -146,7 +149,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize,
           s.UV = CRect( c[ x ].x, c[ x ].y, c[ x ].x + c[ x ].width, c[ x ].y + c[ x ].height );
 
           if ( c[ x ].id >= 0 && c[ x ].id <= 0xffff )
-            Alphabet += s;
+            Alphabet.push_back(s);
         }
       }
     }
@@ -167,7 +170,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize,
         d.First = k[ x ].first;
         d.Second = k[ x ].second;
         d.Amount = k[ x ].amount;
-        KerningData += d;
+        KerningData.push_back(d);
       }
     }
     break;
@@ -192,7 +195,7 @@ bool ReadInt( const CString& s, const CString& val, int32_t& result )
   return s.Substring( p ).Scan( ( val + "=%d" ).GetPointer(), &result ) == 1;
 }
 
-TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, uint8_t *img, int32_t xr, int32_t yr, CArray<int>& enabledGlyphs )
+TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, uint8_t *img, int32_t xr, int32_t yr, std::vector<int>& enabledGlyphs )
 {
   if ( !img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0 ) return false;
 
@@ -269,10 +272,12 @@ TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, u
 
       r.UV = CRect( x, y, x + width, y + height );
 
-      if ( !enabledGlyphs.NumItems() || enabledGlyphs.Find( r.Char ) >= 0 )
-      {
-        if ( r.Char >= 0 && r.Char <= 0xffff )
-          Alphabet += r;
+      if (enabledGlyphs.empty() ||
+          std::find(enabledGlyphs.begin(), enabledGlyphs.end(), r.Char) !=
+              enabledGlyphs.end()) {
+        if (r.Char >= 0 && r.Char <= 0xffff) {
+          Alphabet.push_back(r);
+        }
       }
 
       continue;
@@ -298,7 +303,7 @@ TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, u
         return false;
       d.Amount = v;
 
-      KerningData += d;
+      KerningData.push_back(d);
       continue;
     }
 
@@ -323,7 +328,7 @@ CWBFont::~CWBFont()
   SAFEDELETEA( Alphabet );
 }
 
-void CWBFont::AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, CPoint &Offset, int32_t Advance, CRect contentRect )
+void CWBFont::AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, const CPoint &Offset, int32_t Advance, CRect contentRect )
 {
   if ( Char >= AlphabetSize )
     return;
@@ -585,18 +590,18 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
   if ( !Description->Image ) return false;
 
   AlphabetSize = 0;
-  for ( int x = 0; x < Description->Alphabet.NumItems(); x++ )
-    AlphabetSize = max( AlphabetSize, Description->Alphabet[ x ].Char ) + 1;
+  for ( const auto& abc:Description->Alphabet )
+    AlphabetSize = max( AlphabetSize, abc.Char ) + 1;
 
   Alphabet = new WBSYMBOL[ AlphabetSize ];
   memset( Alphabet, 0, AlphabetSize * sizeof( WBSYMBOL ) );
   for ( int32_t x = 0; x < AlphabetSize; x++ )
     Alphabet[ x ].Char = (int16_t)( x - 1 );
 
-  for ( int32_t x = 0; x < Description->Alphabet.NumItems(); x++ )
-    if ( Description->Alphabet[ x ].UV.Area() > 0 )
+  for ( const auto& abc: Description->Alphabet )
+    if ( abc.UV.Area() > 0 )
     {
-      WBATLASHANDLE h = Atlas->AddImage( Description->Image, Description->XRes, Description->YRes, Description->Alphabet[ x ].UV );
+      WBATLASHANDLE h = Atlas->AddImage( Description->Image, Description->XRes, Description->YRes, abc.UV );
 
       if ( !h )
       {
@@ -604,11 +609,11 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
         return false;
       };
 
-      CRect content = CRect( Description->Alphabet[ x ].UV.x2, Description->Alphabet[ x ].UV.y2, Description->Alphabet[ x ].UV.x1, Description->Alphabet[ x ].UV.y1 );
+      CRect content = CRect( abc.UV.x2, abc.UV.y2, abc.UV.x1, abc.UV.y1 );
       bool hadContent = false;
 
-      for ( int j = Description->Alphabet[ x ].UV.y1; j < Description->Alphabet[ x ].UV.y2; j++ )
-        for ( int i = Description->Alphabet[ x ].UV.x1; i < Description->Alphabet[ x ].UV.x2; i++ )
+      for ( int j = abc.UV.y1; j < abc.UV.y2; j++ )
+        for ( int i = abc.UV.x1; i < abc.UV.x2; i++ )
         {
           uint8_t* c = Description->Image + ( j*Description->XRes + i ) * 4;
 
@@ -623,16 +628,16 @@ TBOOL CWBFont::Initialize( CWBFontDescription *Description, TCHAR mc )
         }
 
       if ( hadContent )
-        content -= Description->Alphabet[ x ].UV.TopLeft();
+        content -= abc.UV.TopLeft();
       else
-        content = CRect( 0, 0, Description->Alphabet[ x ].UV.Width(), Description->Alphabet[ x ].UV.Height() );
+        content = CRect( 0, 0, abc.UV.Width(), abc.UV.Height() );
 
-      AddSymbol( Description->Alphabet[ x ].Char, h, Description->Alphabet[ x ].UV.Size(), Description->Alphabet[ x ].Offset, Description->Alphabet[ x ].Advance, content );
+      AddSymbol( abc.Char, h, abc.UV.Size(), abc.Offset, abc.Advance, content );
     }
 
-  for ( int32_t x = 0; x < Description->KerningData.NumItems(); x++ )
+  for ( const auto& kd:Description->KerningData )
   {
-    AddKerningPair( Description->KerningData[ x ].First, Description->KerningData[ x ].Second, Description->KerningData[ x ].Amount );
+    AddKerningPair( kd.First, kd.Second, kd.Amount );
   }
 
   LineHeight = Description->LineHeight;
