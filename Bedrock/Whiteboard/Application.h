@@ -9,6 +9,7 @@
 #include "ContextMenu.h"
 #include "StyleManager.h"
 
+#include <unordered_map>
 #include <vector>
 
 enum WBMOUSECLICKREPEATMODE
@@ -29,7 +30,7 @@ class CWBApplication : public CCoreWindowHandlerWin
   CRingBuffer<int32_t> *FrameTimes;
   int32_t LastFrameTime;
 
-  CDictionary<WBGUID, CWBItem*> Items;
+  std::unordered_map<WBGUID, CWBItem*> Items;
   CArrayThreadSafe<CWBMessage> MessageBuffer;
   CArrayThreadSafe<CWBItem*> Trash;
 
@@ -37,14 +38,14 @@ class CWBApplication : public CCoreWindowHandlerWin
   CWBItem *MouseItem;
 
   CWBSkin *Skin;
-  CDictionaryEnumerable<CString, CWBFont*> Fonts;
+  std::unordered_map<std::string, std::unique_ptr<CWBFont> > Fonts;
   CWBFont *DefaultFont;
 
   TBOOL Alt, Ctrl, Shift, Left, Middle, Right;
 
   TBOOL Vsync;
 
-  CString ScreenShotName;
+  std::string ScreenShotName;
 
   TBOOL SendMessageToItem( CWBMessage &Message, CWBItem *Target );
   void ProcessMessage( CWBMessage &Message );
@@ -61,17 +62,18 @@ class CWBApplication : public CCoreWindowHandlerWin
   //////////////////////////////////////////////////////////////////////////
   // gui layout and style
 
-  CDictionary<CString, CXMLDocument*> LayoutRepository;
+  std::unordered_map<std::string, std::unique_ptr<CXMLDocument> > LayoutRepository;
   CStyleManager StyleManager;
 
   //////////////////////////////////////////////////////////////////////////
   // ui generator
 
-  CDictionary<CString, WBFACTORYCALLBACK> FactoryCallbacks;
+  std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
 
   TBOOL ProcessGUIXML( CWBItem *Root, CXMLNode & node );
   TBOOL GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, CRect &Pos );
-  TBOOL GenerateGUITemplateFromXML( CWBItem *Root, CXMLDocument *doc, CString &TemplateID );
+  TBOOL GenerateGUITemplateFromXML(CWBItem *Root, CXMLDocument *doc,
+                                   std::string_view TemplateID);
   CWBItem *GenerateUIItem( CWBItem *Root, CXMLNode &node, CRect &Pos );
 
   CColor ClearColor = CColor( 0, 0, 0, 255 );
@@ -132,10 +134,10 @@ public:
   CWBItem *GetMouseItem();
   CWBItem *GetMouseCaptureItem();
 
-  TBOOL CreateFont( CString FontName, CWBFontDescription *Font );
-  CWBFont *GetFont( CString FontName );
+  TBOOL CreateFont(std::string_view FontName, CWBFontDescription *Font);
+  CWBFont *GetFont(std::string_view FontName);
   CWBFont *GetDefaultFont();
-  TBOOL SetDefaultFont( CString FontName );
+  TBOOL SetDefaultFont(std::string_view FontName);
   void AddToTrash( CWBItem *item );
 
   TBOOL GetCtrlState() { return Ctrl; }
@@ -145,16 +147,19 @@ public:
   TBOOL GetRightButtonState() { return Right; }
   TBOOL GetMiddleButtonState() { return Middle; }
 
-  TBOOL LoadXMLLayout( CString & XML );
-  TBOOL LoadXMLLayoutFromFile( CString FileName );
-  TBOOL LoadCSS( CString & CSS, TBOOL ResetStyleManager = true );
-  TBOOL LoadCSSFromFile( CString FileName, TBOOL ResetStyleManager = true );
-  TBOOL GenerateGUI( CWBItem *Root, const TCHAR *layout );
-  TBOOL GenerateGUI( CWBItem *Root, CString &Layout );
-  TBOOL GenerateGUITemplate( CWBItem *Root, CString &Layout, CString &TemplateID );
-  TBOOL GenerateGUITemplate( CWBItem *Root, TCHAR *Layout, TCHAR *TemplateID );
-  TBOOL LoadSkin( CString &XML, std::vector<int>& enabledGlyphs = std::vector<int>() );
-  TBOOL LoadSkinFromFile( CString FileName, std::vector<int>& enabledGlyphs = std::vector<int>() );
+  TBOOL LoadXMLLayout(std::string_view XML);
+  TBOOL LoadXMLLayoutFromFile(std::string_view FileName);
+  TBOOL LoadCSS(std::string_view CSS, TBOOL ResetStyleManager = true);
+  TBOOL LoadCSSFromFile(std::string_view FileName, TBOOL ResetStyleManager = true);
+  // TBOOL GenerateGUI( CWBItem *Root, const TCHAR *layout );
+  TBOOL GenerateGUI(CWBItem *Root, std::string_view Layout);
+  TBOOL GenerateGUITemplate(CWBItem *Root, std::string_view Layout,
+                            std::string_view TemplateID);
+  // TBOOL GenerateGUITemplate( CWBItem *Root, TCHAR *Layout, TCHAR *TemplateID );
+  TBOOL LoadSkin(std::string_view XML,
+                 std::vector<int> &enabledGlyphs = std::vector<int>());
+  TBOOL LoadSkinFromFile(std::string_view FileName,
+                         std::vector<int> &enabledGlyphs = std::vector<int>());
 
   CAtlas *GetAtlas();
   CWBSkin *GetSkin();
@@ -162,11 +167,12 @@ public:
   void ApplyStyle( CWBItem *Target );
   void ReApplyStyle();
 
-  void RegisterUIFactoryCallback( TCHAR *ElementName, WBFACTORYCALLBACK FactoryCallback );
-  void RegisterUIFactoryCallback( CString &ElementName, WBFACTORYCALLBACK FactoryCallback );
+  // void RegisterUIFactoryCallback( TCHAR *ElementName, WBFACTORYCALLBACK FactoryCallback );
+  void RegisterUIFactoryCallback(std::string_view ElementName,
+                                 WBFACTORYCALLBACK FactoryCallback);
 
   virtual void TakeScreenshot();
-  void SetScreenshotName( CString s ) { ScreenShotName = s; }
+  void SetScreenshotName(std::string_view s) { ScreenShotName = s; }
 
   void SetVSync( TBOOL vs ) { Vsync = vs; }
   void SetClearColor( CColor color ) { ClearColor = color; }

@@ -63,12 +63,12 @@ void GW2MarkerEditor::OnDraw( CWBDrawAPI *API )
         CWBLabel *type = (CWBLabel*)FindChildByID( "markertype", "label" );
         if ( type )
         {
-          CString typeName;
+          std::string typeName;
           if ( cpoi.category )
             typeName = cpoi.category->GetFullTypeName();
 
           type->SetText( "Type: " + typeName );
-          if ( !typeName.Length() )
+          if ( typeName.empty() )
             type->SetText( "Type: undefined" );
         }
       }
@@ -182,7 +182,7 @@ TBOOL GW2MarkerEditor::MessageProc( CWBMessage &Message )
       }
       else
       {
-        extern CString DefaultMarkerCategory;
+        extern std::string DefaultMarkerCategory;
         DefaultMarkerCategory = CategoryList[ Message.Data ]->GetFullTypeName();
         CWBLabel *type = (CWBLabel*)FindChildByID( "defaultmarkertype", "label" );
         if ( type )

@@ -35,7 +35,7 @@ class CWBWindow : public CWBItem
 
   CSize MinSize;
 
-  CString WindowTitle;
+  std::string WindowTitle;
 
   CDictionary<WBWINDOWELEMENT, CWBCSSPropertyBatch> Elements;
 
@@ -54,10 +54,11 @@ public:
   virtual ~CWBWindow();
 
   virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position, const TCHAR *txt = _T( "" ), uint32_t style = WB_WINDOW_DEFAULT );
-  virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray &pseudo );
+  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                           const std::vector<std::string> &pseudo);
 
-  CString GetTitle() const { return WindowTitle; }
-  void SetTitle( CString val ) { WindowTitle = val; }
+  std::string GetTitle() const { return WindowTitle; }
+  void SetTitle( std::string_view val ) { WindowTitle = val; }
 
   uint32_t GetDragMode();
   static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );

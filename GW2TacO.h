@@ -5,6 +5,7 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 enum class TacOKeyAction : int32_t
 {
@@ -42,11 +43,11 @@ enum class APIKeys
   GW2APIKey,
 };
 
-extern CString ActionNames[];
+extern std::vector<std::string_view> ActionNames;
 
 class GW2TacO : public CWBItem
 {
-  CString lastInfoLine;
+  std::string lastInfoLine;
   TBOOL RebindMode = false;
   TBOOL ScriptRebindMode = false;
   TacOKeyAction ActionToRebind = TacOKeyAction::NoAction;
@@ -59,8 +60,8 @@ class GW2TacO : public CWBItem
   void OpenAboutWindow();
   void BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *parentitm, int32_t ParentID );
 
-  CDictionary<int32_t, TacOKeyAction> KeyBindings;
-  CDictionary<int32_t, CString> ScriptKeyBindings;
+  std::unordered_map<int32_t, TacOKeyAction> KeyBindings;
+  std::unordered_map<int32_t, std::string> ScriptKeyBindings;
 
   void RebindAction( TacOKeyAction Action );
   void RebindScriptKey( int32_t evendIDX );
@@ -87,8 +88,8 @@ class GW2TacO : public CWBItem
   void StoreIconSizes();
   void AdjustMenuForWindowTooSmallScale(float scale);
 
-  CString mouseToolTip;
-  CString GetKeybindString(TacOKeyAction action);
+  std::string mouseToolTip;
+  std::string GetKeybindString(TacOKeyAction action);
 
 public:
   virtual void OnDraw( CWBDrawAPI *API );
@@ -100,19 +101,19 @@ public:
 
   static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
   WB_DECLARE_GUIITEM( _T( "GW2TacO" ), CWBItem );
-  void OpenWindow( CString s );
+  void OpenWindow(std::string_view s);
 
   virtual TBOOL MessageProc( CWBMessage &Message ); //return true if this item handled the message
 
-  void SetInfoLine( const CString& string );
-  void SetMouseToolTip(const CString& toolTip);
+  void SetInfoLine( std::string_view string );
+  void SetMouseToolTip(std::string_view toolTip);
 
   void InitScriptEngines();
   void TickScriptEngine();
   void TriggerScriptEngineAction( GUID& guid );
-  void TriggerScriptEngineKeyEvent( const CString& eventID );
+  void TriggerScriptEngineKeyEvent( std::string_view eventID );
 };
 
-extern CString UIFileNames[];
+extern std::string_view UIFileNames[];
 
-void SetMouseToolTip(const CString& toolTip);
+void SetMouseToolTip(std::string_view toolTip);

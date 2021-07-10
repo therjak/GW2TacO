@@ -1,8 +1,10 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
+// #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "BaseLib.h"
+
 WSADATA wsaData;
 #include <memory>
 #include <MMSystem.h>
+#include <Ws2tcpip.h>
 
 CSocket::CSocket() : CStreamReader(), CStreamWriter()
 {
@@ -10,9 +12,10 @@ CSocket::CSocket() : CStreamReader(), CStreamWriter()
   LastActivity = GetTickCount64();
 }
 
-CSocket::~CSocket()
-{
-  //don't close the socket here as any copy of the class will invalidate the socket on destruction
+CSocket::~CSocket() {
+  if (Socket != INVALID_SOCKET) {
+    closesocket(Socket);
+  }
 }
 
 int32_t CSocket::ReadStream( void *lpBuf, uint32_t nCount )
@@ -23,19 +26,16 @@ int32_t CSocket::ReadStream( void *lpBuf, uint32_t nCount )
   return r;
 }
 
-int32_t CSocket::WriteStream( void* lpBuf, uint32_t nCount )
+int32_t CSocket::WriteStream( std::string_view data )
 {
-  int32_t res = send( Socket, (TS8*)lpBuf, nCount, NULL );
+  int32_t res = send( Socket, data.data(), data.size(), NULL );
   if ( res == SOCKET_ERROR ) return 0;
   return res;
 }
 
-int32_t CSocket::Connect( const CString &Server, const uint32_t Port )
+int32_t CSocket::Connect( std::string_view Server, const uint32_t Port )
 {
-  TS8 Address[ 256 ];
-  Server.WriteAsMultiByte( Address, 256 );
-
-  int32_t addr = Resolve( Address );
+  int32_t addr = Resolve( Server );
   if ( addr == INADDR_NONE )
     return 0;
 
@@ -67,13 +67,17 @@ int32_t CSocket::Close()
   return 1;
 }
 
-uint32_t CSocket::Resolve( const TS8 *Address )
+uint32_t CSocket::Resolve( std::string_view a )
 {
-  uint32_t addr = inet_addr( Address );
+  std::string Address(a); 
+  uint32_t addr = INADDR_NONE;
+  if (inet_pton(AF_INET, Address.c_str(), &addr) != 0) {
+    addr = INADDR_NONE;
+  }
 
   if ( addr == INADDR_NONE )
   {
-    hostent * hostEntry = gethostbyname( Address );
+    hostent * hostEntry = gethostbyname( Address.c_str() );
     if ( hostEntry )
     {
       LPIN_ADDR pa = (LPIN_ADDR)( hostEntry->h_addr );
@@ -154,9 +158,9 @@ const bool CSocket::operator==( const CSocket &b )
   return Socket == b.Socket;
 }
 
-CString CSocket::ReadLine()
+std::string CSocket::ReadLine()
 {
-  CString result;
+  std::string result;
 
   while ( 1 )
   {
@@ -172,32 +176,18 @@ CString CSocket::ReadLine()
           if ( dat[ x ] == '\n' )
           {
             ReadFull( dat.get(), x + 1 );
-            result += CString( dat.get()  , x );
+            result += std::string( dat.get()  , x );
             return result;
           }
       }
 
       ReadFull( dat.get(), len );
-      result += CString( dat.get(), len );
+      result += std::string( dat.get(), len );
     }
 
     if ( !Peek( &len, 1 ) )
       return result;
   }
-
-  //TS8 s[2];
-  //s[0] = s[1] = 0;
-
-  //do
-  //{
-  //	s[0] = ReadByte();
-
-  //	if (s[0] != '\n' && s[0] != '\r')
-  //		result += s;
-
-  //} while (s[0] && s[0] != '\n');
-
-  //return result;
 }
 
 int32_t InitWinsock()
@@ -208,109 +198,5 @@ int32_t InitWinsock()
 void DeinitWinsock()
 {
   WSACleanup();
-}
-
-//////////////////////////////////////////////////////////////////////////
-// helper functions
-
-uint8_t *FetchHTTP( CString host, CString path, int32_t &ContentSize )
-{
-  CSocket sock;
-
-  std::unique_ptr<uint8_t[]> result;
-  ContentSize = 0;
-
-  if ( sock.Connect( host, 80 ) )
-  {
-
-    CString datastr = _T( "GET " ) + path + _T( " HTTP/1.1\r\nHost: " ) + host + _T( "\r\nConnection: close\r\n\r\n" );
-    sock.Write( datastr.GetPointer(), datastr.Length() );
-
-    int64_t time = globalTimer.GetTime();
-
-    while ( !sock.GetLength() )
-      if ( globalTimer.GetTime() - time > 1000 ) break;
-
-    int32_t len = (int32_t)sock.GetLength();
-
-    if ( len )
-    {
-      auto headerdata = std::make_unique<uint8_t[]>( len + 1 );
-      memset( headerdata.get(), 0, len + 1 );
-      sock.ReadFull( headerdata.get()  , len );
-
-      //check http header
-
-      CString head = CString( (TS8*)headerdata.get() );
-      int32_t contentlength = -1;
-      int32_t contentpos = head.Find( _T( "Content-Length: " ) );
-
-      if ( contentpos >= 0 )
-      {
-        CString ctlen = CString( (TS8*)headerdata.get() + contentpos );
-        if ( ctlen.Scan( "Content-Length: %d", &contentlength ) != 1 )
-        {
-          return NULL;
-        }
-      }
-
-      int32_t contentstart = head.Find( _T( "\r\n\r\n" ) );
-      if ( contentstart < 0 )
-      {
-        return NULL;
-      }
-
-      contentstart += 4;
-
-      int32_t byteslefttoread = contentlength - len;
-
-      if ( byteslefttoread <= 0 && contentlength != -1 )
-      {
-        return NULL;
-      }
-
-      int32_t currentdatasize = len - contentstart;
-
-      if ( currentdatasize > 0 )
-      {
-        result = std::make_unique<uint8_t[]>( currentdatasize );
-        memcpy( result.get(), headerdata.get() + contentstart, currentdatasize );
-      }
-
-      while ( byteslefttoread > 0 || contentlength == -1 )
-      {
-        int32_t dlen = (int32_t)sock.GetLength();
-        if ( dlen )
-        {
-          auto newdata = std::make_unique<uint8_t[]>( currentdatasize + dlen );
-          if ( result )
-            memcpy( newdata.get(), result.get(), currentdatasize );
-          int32_t numread = sock.ReadFull( newdata.get() + currentdatasize, dlen );
-          if ( numread == dlen )
-          {
-            currentdatasize += numread;
-            byteslefttoread -= numread;
-          }
-          else
-          {
-            return NULL;
-          }
-
-          result.swap(newdata);
-        }
-
-        int32_t len;
-        if ( !sock.Peek( &len, 1 ) )
-          break;
-      }
-
-      ContentSize = currentdatasize;
-
-    }
-
-    sock.Close();
-  }
-
-  return result.release();
 }
 

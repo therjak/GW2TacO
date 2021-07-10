@@ -1,23 +1,26 @@
 #pragma once
 #include "Bedrock/BaseLib/BaseLib.h"
 
+#include <string>
+#include <string_view>
+
 class TS3Connection
 {
   CSocket connection;
 
   struct CommandResponse
   {
-    CStringArray Lines;
+    std::vector<std::string> Lines;
     int32_t ErrorCode = -1;
-    CString Message;
+    std::string Message;
   };
 
   int32_t currentHandlerID = 1;
 
-  void ProcessNotification( CString &s );
-  void ProcessChannelList( CString &channeldata, int32_t handler );
-  void ProcessClientList( CString &clientdata, int32_t handler );
-  CString ReadLine();
+  void ProcessNotification( std::string_view s );
+  void ProcessChannelList( std::string_view channeldata, int32_t handler );
+  void ProcessClientList( std::string_view clientdata, int32_t handler );
+  std::string ReadLine();
 
   int32_t LastPingTime = 0;
 
@@ -28,7 +31,7 @@ public:
   public:
     int32_t clientid = 0;
     int32_t channelid = 0;
-    CString name;
+    std::string name;
     int32_t talkStatus = 0;
     int32_t inputmuted = 0;
     int32_t outputmuted = 0;
@@ -42,7 +45,7 @@ public:
     int32_t id = 0;
     int32_t parentid = 0;
     int32_t order = 0;
-    CString name;
+    std::string name;
   };
 
   class TS3Schandler
@@ -54,7 +57,7 @@ public:
     TBOOL clientIDInvalid = true;
     CDictionaryEnumerable<int32_t, TS3Channel> Channels;
     CDictionaryEnumerable<int32_t, TS3Client> Clients;
-    CString name;
+    std::string name;
   };
 
   CDictionary<int32_t, TS3Schandler> handlers;
@@ -68,8 +71,7 @@ public:
   void Tick();
   void InitConnection();
 
-  CommandResponse SendCommand( CString &message );
-  CommandResponse SendCommand( TCHAR *message );
+  CommandResponse SendCommand( std::string_view message );
 
   void ProcessNotifications();
 
@@ -77,7 +79,7 @@ public:
 
   TBOOL IsConnected();
 
-  CString unescape( CString string );
+  std::string unescape( std::string_view string );
 
   bool authenticated = true;
 

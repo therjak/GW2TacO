@@ -8,6 +8,8 @@
 #include "Language.h"
 
 #include <vector>
+#include <string_view>
+#include <unordered_map>
 
 using namespace jsonxx;
 
@@ -15,8 +17,8 @@ bool wvwCanBeRendered = false;
 std::vector<WvWObjective> wvwObjectives;
 std::string FetchHTTPS(std::string_view url,
                        std::string_view path);
-CDictionaryEnumerable<CString, POI> wvwPOIs;
-GW2TacticalCategory *GetCategory( CString s );
+std::unordered_map<std::string, POI> wvwPOIs;
+GW2TacticalCategory *GetCategory( std::string_view s );
 CDictionary<int, bool> wvwMapIDs;
 
 std::thread wvwPollThread;
@@ -206,10 +208,10 @@ void LoadWvWObjectives()
       if ( !obj.has<String>( "id" ) )
         continue;
 
-      CString objid = CString( obj.get<String>( "id" ).data() );
+      auto objid = obj.get<String>( "id" );
 
       int mapID, objident;
-      if ( objid.Scan( "%d-%d", &mapID, &objident ) != 2 )
+      if ( std::sscanf(objid.c_str(), "%d-%d", &mapID, &objident ) != 2 )
         continue;
 
       if ( !obj.has<Number>( "map_id" ) )
@@ -304,12 +306,12 @@ void LoadWvWObjectives()
       o.coord = wvwObjectiveCoords[ objident ];
 
       if ( obj.has<String>( "type" ) )
-        o.type = CString( obj.get<String>( "type" ).data() );
+        o.type = obj.get<String>( "type" );
 
       if ( obj.has<String>( "name" ) )
-        o.nameToken = o.name = CString( obj.get<String>( "name" ).data() );
+        o.nameToken = o.name = obj.get<String>( "name" );
 
-      for ( uint32_t n = 0; n < o.nameToken.Length(); n++ )
+      for ( uint32_t n = 0; n < o.nameToken.size(); n++ )
         if ( !isalnum( o.nameToken[ n ] ) )
           o.nameToken[ n ] = '_';
         else
@@ -329,7 +331,7 @@ void LoadWvWObjectives()
 
       CoCreateGuid( &poi.guid );
 
-      auto cat = GetCategory( CString( "Tactical.WvW." ) + o.type );
+      auto cat = GetCategory( "Tactical.WvW." + o.type );
 
       extern CWBApplication *App;
 
@@ -425,13 +427,13 @@ void UpdateWvWStatus()
             continue;
           auto objective = objs[ y ]->get<Object>();
 
-          CString id;
+          std::string id;
           if ( objective.has<String>( "id" ) )
-            id = CString( objective.get<String>( "id" ).data() );
+            id = objective.get<String>( "id" );
           else
             continue;
 
-          if ( !wvwPOIs.HasKey( id ) )
+          if ( wvwPOIs.find( id ) == wvwPOIs.end() )
             continue;
 
           auto& poi = wvwPOIs[ id ];

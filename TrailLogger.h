@@ -3,7 +3,11 @@
 #include "MumbleLink.h"
 #include "gw2tactical.h"
 
+#include <memory>
 #include <vector>
+#include <unordered_map>
+#include <string_view>
+#include <string>
 
 void GlobalDoTrailLogging( int32_t mapID, CVector3 charPos );
 
@@ -23,16 +27,16 @@ class GW2Trail
 
   void Reset( int32_t _mapID = 0 );
 
-  TBOOL SaveToFile( const CString& fname );
+  TBOOL SaveToFile( std::string_view fname );
 
 public:
 
   virtual ~GW2Trail();
 
   int32_t length = 0;
-  CCoreVertexBuffer* trailMesh = nullptr;
+  std::unique_ptr<CCoreVertexBuffer> trailMesh;
   CCoreDevice* dev = nullptr;
-  CCoreIndexBuffer* idxBuf = nullptr;
+  std::unique_ptr<CCoreIndexBuffer> idxBuf;
 
   int32_t map = 0;
 
@@ -42,16 +46,16 @@ public:
   void SetupAndDraw( CCoreConstantBuffer* constBuffer, CCoreTexture* texture, CMatrix4x4& cam, CMatrix4x4& persp, float& one, bool scaleData, int32_t fadeoutBubble, float* data, float fadeAlpha, float width, float uvScale, float width2d );
 
   MarkerTypeData typeData;
-  CString Type;
+  std::string Type;
   GUID guid;
   TBOOL External = false;
-  CString zipFile;
+  std::string zipFile;
 
   GW2TacticalCategory *category = nullptr;
   void SetCategory( CWBApplication *App, GW2TacticalCategory *t );
 
-  TBOOL Import( CStreamReaderMemory& file, TBOOL keepPoints = false );
-  TBOOL Import( CString& fileName, const CString& zipFile, TBOOL keepPoints = false );
+  TBOOL Import( CStreamReaderMemory& file, bool keepPoints = false );
+  TBOOL Import( std::string_view fileName, std::string_view zipFile, bool keepPoints = false );
 };
 
 class GW2TrailDisplay : public CWBItem
@@ -63,17 +67,16 @@ class GW2TrailDisplay : public CWBItem
 
   virtual void OnDraw( CWBDrawAPI *API );
 
-  CCoreVertexFormat *vertexFormat = nullptr;
-
-  CCoreVertexShader* vxShader = nullptr;
-  CCorePixelShader* pxShader = nullptr;
-  CCoreConstantBuffer* constBuffer = nullptr;
-  CCoreTexture2D* trailTexture = nullptr;
-  CCoreSamplerState* trailSampler = nullptr;
-  CCoreRasterizerState* trailRasterizer1 = nullptr;
-  CCoreRasterizerState* trailRasterizer2 = nullptr;
-  CCoreRasterizerState* trailRasterizer3 = nullptr;
-  CCoreDepthStencilState* trailDepthStencil = nullptr;
+  std::unique_ptr<CCoreVertexFormat> vertexFormat;
+  std::unique_ptr<CCoreVertexShader> vxShader;
+  std::unique_ptr<CCorePixelShader> pxShader;
+  std::unique_ptr<CCoreConstantBuffer> constBuffer;
+  std::unique_ptr<CCoreTexture2D> trailTexture;
+  std::unique_ptr<CCoreSamplerState> trailSampler;
+  std::unique_ptr<CCoreRasterizerState> trailRasterizer1;
+  std::unique_ptr<CCoreRasterizerState> trailRasterizer2;
+  std::unique_ptr<CCoreRasterizerState> trailRasterizer3;
+  std::unique_ptr<CCoreDepthStencilState> trailDepthStencil;
 
   GW2Trail* editedTrail = nullptr;
 
@@ -83,9 +86,9 @@ class GW2TrailDisplay : public CWBItem
 
   LIGHTWEIGHT_CRITICALSECTION critsec;
 
-  CCoreTexture2D* GetTexture( const CString& fname, const CString& zipFile, const CString& categoryZip);
+  CCoreTexture2D* GetTexture( std::string_view fname, std::string_view zipFile, std::string_view categoryZip);
 
-  CDictionary<CString, CCoreTexture2D*> textureCache;
+  std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 
 public:
 

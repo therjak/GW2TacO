@@ -1,6 +1,7 @@
 #include "TrailLogger.h"
 #include "OverlayConfig.h"
 #include <commdlg.h>
+#include <string>
 
 #define TRAILFILEVERSION 0
 
@@ -41,9 +42,9 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
 
   API->FlushDrawBuffer();
 
-  App->GetDevice()->SetVertexShader( vxShader );
-  App->GetDevice()->SetPixelShader( pxShader );
-  App->GetDevice()->SetVertexFormat( vertexFormat );
+  App->GetDevice()->SetVertexShader( vxShader.get() );
+  App->GetDevice()->SetPixelShader( pxShader.get() );
+  App->GetDevice()->SetVertexFormat( vertexFormat.get() );
   trailSampler->Apply( CORESMP_PS0 );
   trailDepthStencil->Apply();
 
@@ -81,14 +82,14 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
       auto& str = GetStringFromMap( trail.typeData.texture );
       CCoreTexture* texture = nullptr;
 
-      if ( str.Length() )
+      if ( !str.empty() )
         texture = GetTexture( str, trail.zipFile, trail.category ? GetStringFromMap(trail.category->zipFile) : "");
       else
-        texture = trailTexture;
+        texture = trailTexture.get();
 
       float width = GameToWorldCoords( 20 );
 
-      trail.SetupAndDraw( constBuffer, texture, cam, persp, one, x == 0, fadeoutBubble, data, GetMapFade() * globalOpacity, width, width, 1.0f );
+      trail.SetupAndDraw( constBuffer.get(), texture, cam, persp, one, x == 0, fadeoutBubble, data, GetMapFade() * globalOpacity, width, width, 1.0f );
     }
 
     if ( editedTrail )
@@ -96,7 +97,7 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
       {
         data[ 0 ] = GetTime() / 1000.0f;
 
-        App->GetDevice()->SetTexture( CORESMP_PS0, trailTexture );
+        App->GetDevice()->SetTexture( CORESMP_PS0, trailTexture.get() );
 
         constBuffer->Reset();
         constBuffer->AddData( cam, 16 * 4 );
@@ -128,7 +129,7 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
         constBuffer->AddData( data, 32 );
 
         constBuffer->Upload();
-        App->GetDevice()->SetShaderConstants( 0, 1, &constBuffer );
+        App->GetDevice()->SetShaderConstants( constBuffer.get() );
 
         editedTrail->Draw();
       }
@@ -171,14 +172,14 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
         auto& str = GetStringFromMap( trail.typeData.texture );
         CCoreTexture* texture = nullptr;
 
-        if ( str.Length() )
+        if ( !str.empty() )
           texture = GetTexture( str, trail.zipFile, trail.category ? GetStringFromMap(trail.category->zipFile) : "");
         else
-          texture = trailTexture;
+          texture = trailTexture.get();
 
         float alpha = 1.0f - max( 0.0f, min( 1.0f, ( mumbleLink.miniMap.mapScale - trail.typeData.miniMapFadeOutLevel ) / 2.0f ) );
 
-        trail.SetupAndDraw( constBuffer, texture, camera, perspective, one, false, 0, data, mapFade * alpha * minimapOpacity, 1.0f, GameToWorldCoords( 20 ) * 0.1f, trailWidth );
+        trail.SetupAndDraw( constBuffer.get(), texture, camera, perspective, one, false, 0, data, mapFade * alpha * minimapOpacity, 1.0f, GameToWorldCoords( 20 ) * 0.1f, trailWidth );
       }
     }
 
@@ -208,13 +209,13 @@ void GW2TrailDisplay::DrawProxy( CWBDrawAPI *API, bool miniMaprender )
         auto& str = GetStringFromMap( trail.typeData.texture );
         CCoreTexture* texture = nullptr;
 
-        if ( str.Length() )
+        if ( !str.empty() )
           texture = GetTexture( str, trail.zipFile, trail.category ? GetStringFromMap(trail.category->zipFile) : "");
         else
-          texture = trailTexture;
+          texture = trailTexture.get();
 
         float alpha = 1.0f - max( 0.0f, min( 1.0f, ( mumbleLink.bigMap.mapScale - trail.typeData.miniMapFadeOutLevel ) / 2.0f ) );
-        trail.SetupAndDraw( constBuffer, texture, camera, perspective, one, false, 0, data, ( 1.0f - mapFade ) * alpha * minimapOpacity, 1.0f, GameToWorldCoords( 20 ) * 0.1f, trailWidth );
+        trail.SetupAndDraw( constBuffer.get(), texture, camera, perspective, one, false, 0, data, ( 1.0f - mapFade ) * alpha * minimapOpacity, 1.0f, GameToWorldCoords( 20 ) * 0.1f, trailWidth );
       }
     }
 
@@ -251,7 +252,7 @@ void GW2TrailDisplay::OnDraw( CWBDrawAPI *API )
     CWBFont *f = GetFont( GetState() );
     int32_t ypos = Lerp( GetClientRect().y1, GetClientRect().y2, 0.25f );
 
-    CString s = "TacO is logging your trail.";
+    std::string_view s = "TacO is logging your trail.";
 
     CPoint pos = f->GetTextPosition( s, CRect( GetClientRect().x1, ypos, GetClientRect().x2, ypos ), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
     ypos += f->GetLineHeight();
@@ -297,117 +298,116 @@ void GW2TrailDisplay::ClearEditedTrail()
 #define MINIZ_HEADER_FILE_ONLY
 #include "Bedrock/UtilLib/miniz.c"
 
-mz_zip_archive* OpenZipFile( const CString& zipFile );
+mz_zip_archive* OpenZipFile( std::string_view zipFile );
 
-CCoreTexture2D* GW2TrailDisplay::GetTexture( const CString& fname, const CString& zipFile, const CString& categoryZip )
-{
-  CString s = ( zipFile.Length() ? ( zipFile + "\\" ) : "" ) + fname;
-  s.ToLower();
+CCoreTexture2D* GW2TrailDisplay::GetTexture(std::string_view fname,
+                                            std::string_view zipFile,
+                                            std::string_view categoryZip) {
+  std::string s = ( zipFile.empty() ? ( std::string(zipFile) + "\\" ) : std::string("") ) + std::string(fname);
+  std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
 
-  if ( textureCache.HasKey( s ) )
+  if (textureCache.find(s) != textureCache.end())
   {
-    if ( textureCache[ s ] )
-      return textureCache[ s ];
-    return trailTexture;
+    const auto& tc = textureCache[s];
+    if ( tc )
+      return tc.get();
+    return trailTexture.get();
   }
 
-  if (zipFile.Length() || categoryZip.Length())
+  if (!zipFile.empty() || !categoryZip.empty())
   {
     // we didn't find an entry from within the zip file, try to load it
 
     for (int x = 0; x < 2; x++)
     {
-      if (!zipFile.Length() && x == 0)
+      if (zipFile.empty() && x == 0)
         continue;
 
-      if (!categoryZip.Length() && x == 1)
+      if (categoryZip.empty() && x == 1)
         continue;
 
       mz_zip_archive* zip = x == 0 ? OpenZipFile(zipFile) : OpenZipFile(categoryZip);
 
       if (zip)
       {
-        int idx = mz_zip_reader_locate_file(zip, fname.GetPointer(), nullptr, 0);
+        int idx = mz_zip_reader_locate_file(zip, s.c_str(), nullptr, 0);
         if (idx >= 0 && !mz_zip_reader_is_file_a_directory(zip, idx))
         {
           mz_zip_archive_file_stat stat;
           if (mz_zip_reader_file_stat(zip, idx, &stat) && stat.m_uncomp_size > 0)
           {
-            uint8_t* data = new uint8_t[(int32_t)stat.m_uncomp_size];
+            auto data = std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
 
-            if (mz_zip_reader_extract_to_mem(zip, idx, data, (int32_t)stat.m_uncomp_size, 0))
+            if (mz_zip_reader_extract_to_mem(zip, idx, data.get(), (int32_t)stat.m_uncomp_size, 0))
             {
-              CCoreTexture2D* tex = App->GetDevice()->CreateTexture2D(data, (int32_t)stat.m_uncomp_size);
+              auto tex = App->GetDevice()->CreateTexture2D(data.get(), (int32_t)stat.m_uncomp_size);
               if (tex)
               {
-                textureCache[s] = tex;
-                delete[] data;
-                return tex;
+                auto t = tex.get();
+                textureCache[s] = std::move(tex);
+                return t;
               }
               else
-                LOG_ERR("[GW2TacO] Failed to decompress image %s from archive %s", fname.GetPointer(), x == 0 ? zipFile.GetPointer() : categoryZip.GetPointer());
+                LOG_ERR("[GW2TacO] Failed to decompress image %s from archive %s", std::string(fname).c_str(), x == 0 ? std::string(zipFile).c_str() : std::string(categoryZip).c_str());
             }
-            delete[] data;
           }
         }
       }
     }
 
     // zipfile load failed, fall back to regular load and add it as an alias
-    auto texture = GetTexture( fname, "", "" );
-    textureCache[ s ] = texture;
-    return texture;
+    return GetTexture( s, "", "" );
   }
 
   CStreamReaderMemory f;
-  if ( !f.Open( s.GetPointer() ) && !f.Open( ( CString( "POIs\\" ) + s ).GetPointer() ) )
+  if ( !f.Open( s ) && !f.Open( "POIs\\" + s ) ) 
   {
     textureCache[ s ] = nullptr;
-    LOG_ERR("[GW2TacO] Failed to open image %s", s.GetPointer());
-    return trailTexture;
+    LOG_ERR("[GW2TacO] Failed to open image %s", s.c_str());
+    return trailTexture.get();
   }
 
   auto texture = App->GetDevice()->CreateTexture2D(f.GetData(), int32_t(f.GetLength()));
-  textureCache[s] = texture;
   if (!texture)
-    LOG_ERR("[GW2TacO] Failed to decompress image %s", s.GetPointer());
-  return textureCache[ s ];
+    LOG_ERR("[GW2TacO] Failed to decompress image %s", s.c_str());
+  textureCache[s] = std::move(texture);
+  return textureCache[s].get();
 }
 
 GW2TrailDisplay::GW2TrailDisplay( CWBItem *Parent, CRect Position ) : CWBItem( Parent, Position )
 {
-  constBuffer = App->GetDevice()->CreateConstantBuffer();
+  constBuffer.swap(App->GetDevice()->CreateConstantBuffer());
 
   CStreamReaderMemory tex;
   if ( tex.Open( "Data\\trail.png" ) )
   {
-    trailTexture = App->GetDevice()->CreateTexture2D( tex.GetData(), int32_t( tex.GetLength() ) );
+    trailTexture.swap(App->GetDevice()->CreateTexture2D( tex.GetData(), int32_t( tex.GetLength() ) ));
     if (!trailTexture)
       LOG_ERR("[GW2TacO] Failed to decompress trail texture image!");
   }
   else
     LOG_ERR( "[GW2TacO] Failed to open trail texture!" );
   
-  App->GetDevice()->SetShaderConstants( 0, 1, &constBuffer );
-  trailSampler = App->GetDevice()->CreateSamplerState();
+  App->GetDevice()->SetShaderConstants( constBuffer.get() );
+  trailSampler.swap(App->GetDevice()->CreateSamplerState());
   trailSampler->SetAddressU( CORETEXADDRESS_WRAP );
   trailSampler->SetAddressV( CORETEXADDRESS_WRAP );
   trailSampler->SetFilter( COREFILTER_ANISOTROPIC );
   trailSampler->Update();
 
-  trailRasterizer1 = App->GetDevice()->CreateRasterizerState();
+  trailRasterizer1.swap(App->GetDevice()->CreateRasterizerState());
   trailRasterizer1->SetCullMode( CORECULL_CCW );
   trailRasterizer1->Update();
 
-  trailRasterizer2 = App->GetDevice()->CreateRasterizerState();
+  trailRasterizer2.swap(App->GetDevice()->CreateRasterizerState());
   trailRasterizer2->SetCullMode( CORECULL_CW );
   trailRasterizer2->Update();
 
-  trailRasterizer3 = App->GetDevice()->CreateRasterizerState();
+  trailRasterizer3.swap(App->GetDevice()->CreateRasterizerState());
   trailRasterizer3->SetCullMode( CORECULL_NONE );
   trailRasterizer3->Update();
 
-  trailDepthStencil = App->GetDevice()->CreateDepthStencilState();
+  trailDepthStencil.swap(App->GetDevice()->CreateDepthStencilState());
   trailDepthStencil->SetDepthEnable( false );
   trailDepthStencil->Update();
 
@@ -445,8 +445,8 @@ GW2TrailDisplay::GW2TrailDisplay( CWBItem *Parent, CRect Position ) : CWBItem( P
     "VSOUT vsmain(VSIN x) { VSOUT k; k.p=k.Position=mul(camera,(x.Position-x.Pos2)*width+x.Pos2); k.p/=k.p.w; float4 p2 = mul(camera,x.Pos2); p2/=p2.w; k.Position=mul(persp,(k.Position-p2)*width2d+p2); k.UV=float2(x.UV.x,x.UV.y*uvScale); k.Color=x.Color; k.p/=k.p.w; return k; }"
     "float4 psmain(VSOUT x) : SV_TARGET0 {  float farFade = saturate(1.0-(x.p.z-nearFarFades.x)/(nearFarFades.y-nearFarFades.x)); float a=rayspheredepth(0,normalize(x.p.xyz)); a*=farFade; return x.Color*GuiTexture.Sample(Sampler,x.UV + float2(0,data.x))*color*float4(1,1,1,a); }";
 
-  vxShader = App->GetDevice()->CreateVertexShader( code, (int32_t)strlen( code ), "vsmain", "vs_4_0" );
-  pxShader = App->GetDevice()->CreatePixelShader( code, (int32_t)strlen( code ), "psmain", "ps_4_0" );
+  vxShader.swap(App->GetDevice()->CreateVertexShader( code, (int32_t)strlen( code ), "vsmain", "vs_4_0" ));
+  pxShader.swap(App->GetDevice()->CreatePixelShader( code, (int32_t)strlen( code ), "psmain", "ps_4_0" ));
 
   COREVERTEXATTRIBUTE TrailVertexFormat[] =
   {
@@ -462,7 +462,7 @@ GW2TrailDisplay::GW2TrailDisplay( CWBItem *Parent, CRect Position ) : CWBItem( P
   CArray<COREVERTEXATTRIBUTE> Att;
   while ( *vx != COREVXATTR_STOP ) Att += *vx++;
     
-  vertexFormat = App->GetDevice()->CreateVertexFormat( Att, vxShader );
+  vertexFormat.swap(App->GetDevice()->CreateVertexFormat( Att, vxShader.get() ));
   if ( !vertexFormat )
   {
     LOG( LOG_ERROR, _T( "[GW2TacO]  Error creating Trail Vertex Format" ) );
@@ -476,18 +476,11 @@ GW2TrailDisplay::GW2TrailDisplay( CWBItem *Parent, CRect Position ) : CWBItem( P
 }
 GW2TrailDisplay::~GW2TrailDisplay()
 {
-  textureCache.FreeAllA();
+  textureCache.clear();
 
+  App->GetDevice()->DestroyVertexFormat(vertexFormat.get());
   //SAFEDELETE( vertexFormat ); // this crashes too...
-  SAFEDELETE( pxShader );
-  SAFEDELETE( vxShader );
-  SAFEDELETE( constBuffer );
-  SAFEDELETE( trailTexture );
   //SAFEDELETE( trailSampler ); // this crashed every time for some guy...
-  SAFEDELETE( trailRasterizer1 );
-  SAFEDELETE( trailRasterizer2 );
-  SAFEDELETE( trailRasterizer3 );
-  SAFEDELETE( trailDepthStencil );
 }
 
 CWBItem *GW2TrailDisplay::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
@@ -587,7 +580,7 @@ void GW2TrailDisplay::ExportTrail()
 
   if ( GetSaveFileName( &opf ) )
   {
-    editedTrail->SaveToFile( CString( opf.lpstrFile ) );
+    editedTrail->SaveToFile( opf.lpstrFile );
   }
   else
   {
@@ -672,27 +665,25 @@ void GW2Trail::Reset( int32_t _mapID /*= 0 */ )
   positions.clear();
 }
 
-TBOOL GW2Trail::SaveToFile( const CString& fname )
+TBOOL GW2Trail::SaveToFile( std::string_view fname )
 {
   if ( positions.empty() )
     return false;
 
   CStreamWriterFile TrailLog;
-  if ( !TrailLog.Open( fname.GetPointer() ) )
+  if ( !TrailLog.Open( fname ) )
     return false;
 
   TrailLog.WriteDWord( TRAILFILEVERSION );
 
   TrailLog.WriteDWord( map );
-  TrailLog.Write( &positions[0], sizeof( CVector3 )*positions.size() );
+  TrailLog.Write( std::string_view(reinterpret_cast<const char*>(&positions[0]), sizeof( CVector3 )*positions.size()) );
 
   return true;
 }
 
 GW2Trail::~GW2Trail()
 {
-  SAFEDELETE( trailMesh );
-  SAFEDELETE( idxBuf );
 }
 
 void GW2Trail::Build( CCoreDevice* d, int32_t mapID, float* points, int pointCount )
@@ -700,8 +691,8 @@ void GW2Trail::Build( CCoreDevice* d, int32_t mapID, float* points, int pointCou
   dev = d;
   map = mapID;
 
-  SAFEDELETE( trailMesh );
-  SAFEDELETE( idxBuf );
+  trailMesh.reset();
+  idxBuf.reset();
 
   if ( pointCount <= 1 )
     return;
@@ -830,8 +821,8 @@ void GW2Trail::Draw()
   if ( !trailMesh || !idxBuf )
     return;
 
-  dev->SetVertexBuffer( trailMesh, 0 );
-  dev->SetIndexBuffer( idxBuf );
+  dev->SetVertexBuffer( trailMesh.get(), 0 );
+  dev->SetIndexBuffer( idxBuf.get() );
   dev->DrawIndexedTriangles( length - 2, length );
 }
 
@@ -889,7 +880,7 @@ void GW2Trail::SetupAndDraw( CCoreConstantBuffer* constBuffer, CCoreTexture* tex
   constBuffer->AddData( data, 32 );
 
   constBuffer->Upload();
-  App->GetDevice()->SetShaderConstants( 0, 1, &constBuffer );
+  App->GetDevice()->SetShaderConstants( constBuffer );
 
   Draw();
 }
@@ -901,7 +892,7 @@ void GW2Trail::SetCategory( CWBApplication *App, GW2TacticalCategory *t )
   Type = t->GetFullTypeName();
 }
 
-TBOOL GW2Trail::Import( CStreamReaderMemory& f, TBOOL keepPoints )
+TBOOL GW2Trail::Import( CStreamReaderMemory& f, bool keepPoints )
 {
   if ( keepPoints )
   {
@@ -914,15 +905,15 @@ TBOOL GW2Trail::Import( CStreamReaderMemory& f, TBOOL keepPoints )
   return true;
 }
 
-TBOOL GW2Trail::Import( CString& fileName, const CString& zipFile, TBOOL keepPoints /*= false */ )
+TBOOL GW2Trail::Import( std::string_view fileName, std::string_view zipFile, bool keepPoints /*= false */ )
 {
-  if ( zipFile.Length() )
+  if ( !zipFile.empty() )
   {
     mz_zip_archive* zip = OpenZipFile( zipFile );
 
     if ( zip )
     {
-      int idx = mz_zip_reader_locate_file( zip, fileName.GetPointer(), nullptr, 0 );
+      int idx = mz_zip_reader_locate_file( zip, fileName.data(), nullptr, 0 );
       if ( idx >= 0 && !mz_zip_reader_is_file_a_directory( zip, idx ) )
       {
         mz_zip_archive_file_stat stat;
@@ -945,9 +936,9 @@ TBOOL GW2Trail::Import( CString& fileName, const CString& zipFile, TBOOL keepPoi
   }
 
   CStreamReaderMemory f;
-  if ( !f.Open( fileName.GetPointer() ) && !f.Open( ( CString( "POIs\\" ) + fileName ).GetPointer() ) )
+  if ( !f.Open( fileName ) && !f.Open( "POIs\\" + std::string(fileName) ) )
   {
-    LOG_ERR( "[GW2TacO] Failed to open trail data file %s", fileName.GetPointer() );
+    LOG_ERR( "[GW2TacO] Failed to open trail data file %s", std::string(fileName).c_str() );
     return false;
   }
 

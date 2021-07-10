@@ -1,150 +1,142 @@
 #include "LocationalTimer.h"
-#include "MumbleLink.h"
-#include "OverlayConfig.h"
 
 #include <vector>
 
+#include "Bedrock/BaseLib/string_format.h"
+#include "MumbleLink.h"
+#include "OverlayConfig.h"
+
 std::vector<LocationalTimer> LocationalTimers;
 
-void ImportLocationalTimers()
-{
+void ImportLocationalTimers() {
   CXMLDocument d;
-  if ( !d.LoadFromFile( "locationaltimers.xml" ) ) return;
+  if (!d.LoadFromFile("locationaltimers.xml")) return;
 
-  if ( !d.GetDocumentNode().GetChildCount( "timers" ) ) return;
-  CXMLNode root = d.GetDocumentNode().GetChild( "timers" );
+  if (!d.GetDocumentNode().GetChildCount("timers")) return;
+  CXMLNode root = d.GetDocumentNode().GetChild("timers");
 
-  for ( int32_t x = 0; x < root.GetChildCount( "areatriggeredtimer" ); x++ )
-  {
+  for (int32_t x = 0; x < root.GetChildCount("areatriggeredtimer"); x++) {
     LocationalTimer t;
-    t.ImportData( root.GetChild( "areatriggeredtimer", x ) );
+    t.ImportData(root.GetChild("areatriggeredtimer", x));
     LocationalTimers.push_back(t);
   }
 }
 
-LocationalTimer::LocationalTimer()
-{
+LocationalTimer::LocationalTimer() {}
 
-}
+LocationalTimer::~LocationalTimer() {}
 
-LocationalTimer::~LocationalTimer()
-{
-
-}
-
-void LocationalTimer::Update()
-{
-  if ( mumbleLink.mapID != MapID )
-  {
+void LocationalTimer::Update() {
+  if (mumbleLink.mapID != MapID) {
     IsRunning = false;
     return;
   }
 
-  if ( !IsRunning )
-  {
-    if ( EnterSphere.Contains( mumbleLink.charPosition ) )
-    {
+  if (!IsRunning) {
+    if (EnterSphere.Contains(mumbleLink.charPosition)) {
       IsRunning = true;
       StartTime = GetTime();
     }
   }
 
-  if ( IsRunning )
-  {
-    if ( ( GetTime() - StartTime ) / 1000.0f > TimerLength )
-      IsRunning = false;
-    if ( !ExitSphere.Contains( mumbleLink.charPosition ) )
-      IsRunning = false;
-    if ( ( ResetPoint - mumbleLink.charPosition ).Length() < 0.1 )
+  if (IsRunning) {
+    if ((GetTime() - StartTime) / 1000.0f > TimerLength) IsRunning = false;
+    if (!ExitSphere.Contains(mumbleLink.charPosition)) IsRunning = false;
+    if ((ResetPoint - mumbleLink.charPosition).Length() < 0.1)
       IsRunning = false;
   }
 }
 
-void LocationalTimer::ImportData( CXMLNode &node )
-{
-  if ( node.HasAttribute( "mapid" ) ) node.GetAttributeAsInteger( "mapid", &MapID );
-  if ( node.HasAttribute( "length" ) ) node.GetAttributeAsInteger( "length", &TimerLength );
-  if ( node.HasAttribute( "startdelay" ) ) node.GetAttributeAsInteger( "startdelay", &StartDelay );
+void LocationalTimer::ImportData(CXMLNode &node) {
+  if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &MapID);
+  if (node.HasAttribute("length"))
+    node.GetAttributeAsInteger("length", &TimerLength);
+  if (node.HasAttribute("startdelay"))
+    node.GetAttributeAsInteger("startdelay", &StartDelay);
 
-  if ( node.HasAttribute( "enterspherex" ) ) node.GetAttributeAsFloat( "enterspherex", &EnterSphere.Position.x );
-  if ( node.HasAttribute( "enterspherey" ) ) node.GetAttributeAsFloat( "enterspherey", &EnterSphere.Position.y );
-  if ( node.HasAttribute( "enterspherez" ) ) node.GetAttributeAsFloat( "enterspherez", &EnterSphere.Position.z );
-  if ( node.HasAttribute( "entersphererad" ) ) node.GetAttributeAsFloat( "entersphererad", &EnterSphere.Radius );
+  if (node.HasAttribute("enterspherex"))
+    node.GetAttributeAsFloat("enterspherex", &EnterSphere.Position.x);
+  if (node.HasAttribute("enterspherey"))
+    node.GetAttributeAsFloat("enterspherey", &EnterSphere.Position.y);
+  if (node.HasAttribute("enterspherez"))
+    node.GetAttributeAsFloat("enterspherez", &EnterSphere.Position.z);
+  if (node.HasAttribute("entersphererad"))
+    node.GetAttributeAsFloat("entersphererad", &EnterSphere.Radius);
 
-  if ( node.HasAttribute( "exitspherex" ) ) node.GetAttributeAsFloat( "exitspherex", &ExitSphere.Position.x );
-  if ( node.HasAttribute( "exitspherey" ) ) node.GetAttributeAsFloat( "exitspherey", &ExitSphere.Position.y );
-  if ( node.HasAttribute( "exitspherez" ) ) node.GetAttributeAsFloat( "exitspherez", &ExitSphere.Position.z );
-  if ( node.HasAttribute( "exitsphererad" ) ) node.GetAttributeAsFloat( "exitsphererad", &ExitSphere.Radius );
+  if (node.HasAttribute("exitspherex"))
+    node.GetAttributeAsFloat("exitspherex", &ExitSphere.Position.x);
+  if (node.HasAttribute("exitspherey"))
+    node.GetAttributeAsFloat("exitspherey", &ExitSphere.Position.y);
+  if (node.HasAttribute("exitspherez"))
+    node.GetAttributeAsFloat("exitspherez", &ExitSphere.Position.z);
+  if (node.HasAttribute("exitsphererad"))
+    node.GetAttributeAsFloat("exitsphererad", &ExitSphere.Radius);
 
-  if ( node.HasAttribute( "resetpointx" ) ) node.GetAttributeAsFloat( "resetpointx", &ResetPoint.x );
-  if ( node.HasAttribute( "resetpointy" ) ) node.GetAttributeAsFloat( "resetpointy", &ResetPoint.y );
-  if ( node.HasAttribute( "resetpointz" ) ) node.GetAttributeAsFloat( "resetpointz", &ResetPoint.z );
+  if (node.HasAttribute("resetpointx"))
+    node.GetAttributeAsFloat("resetpointx", &ResetPoint.x);
+  if (node.HasAttribute("resetpointy"))
+    node.GetAttributeAsFloat("resetpointy", &ResetPoint.y);
+  if (node.HasAttribute("resetpointz"))
+    node.GetAttributeAsFloat("resetpointz", &ResetPoint.z);
 
-  for ( int32_t x = 0; x < node.GetChildCount( "timeevent" ); x++ )
-  {
-    CXMLNode te = node.GetChild( "timeevent", x );
+  for (int32_t x = 0; x < node.GetChildCount("timeevent"); x++) {
+    CXMLNode te = node.GetChild("timeevent", x);
     TimerEvent tmr;
-    if ( te.HasAttribute( "text" ) ) tmr.Text = te.GetAttributeAsString( "text" );
-    if ( te.HasAttribute( "timestamp" ) ) te.GetAttributeAsInteger( "timestamp", &tmr.Time );
-    if ( te.HasAttribute( "countdown" ) ) te.GetAttributeAsInteger( "countdown", &tmr.CountdownLength );
-    if ( te.HasAttribute( "onscreentime" ) ) te.GetAttributeAsInteger( "onscreentime", &tmr.OnScreenLength );
+    if (te.HasAttribute("text")) tmr.Text = te.GetAttributeAsString("text");
+    if (te.HasAttribute("timestamp"))
+      te.GetAttributeAsInteger("timestamp", &tmr.Time);
+    if (te.HasAttribute("countdown"))
+      te.GetAttributeAsInteger("countdown", &tmr.CountdownLength);
+    if (te.HasAttribute("onscreentime"))
+      te.GetAttributeAsInteger("onscreentime", &tmr.OnScreenLength);
     Events.push_back(tmr);
   }
 }
 
-void TimerDisplay::OnDraw( CWBDrawAPI *API )
-{
-  if ( !HasConfigValue( "LocationalTimersVisible" ) )
-    SetConfigValue( "LocationalTimersVisible", 1 );
-  if ( !GetConfigValue( "LocationalTimersVisible" ) )
-    return;
+void TimerDisplay::OnDraw(CWBDrawAPI *API) {
+  if (!HasConfigValue("LocationalTimersVisible"))
+    SetConfigValue("LocationalTimersVisible", 1);
+  if (!GetConfigValue("LocationalTimersVisible")) return;
 
   int32_t tme = GetTime();
-  CWBFont *f = GetFont( GetState() );
+  CWBFont *f = GetFont(GetState());
 
-  int32_t ypos = Lerp( GetClientRect().y1, GetClientRect().y2, 0.25f );
+  int32_t ypos = Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
 
-  for ( auto& t: LocationalTimers )
-  {
+  for (auto &t : LocationalTimers) {
     t.Update();
-    if ( !t.IsRunning )
-      continue;
+    if (!t.IsRunning) continue;
 
-    float timepos = ( tme - t.StartTime ) / 1000.0f - t.StartDelay;
+    float timepos = (tme - t.StartTime) / 1000.0f - t.StartDelay;
 
-    for (auto& e :t.Events )
-    {
-      if ( !( timepos > e.Time - e.CountdownLength && timepos < e.Time + e.OnScreenLength ) )
+    for (auto &e : t.Events) {
+      if (!(timepos > e.Time - e.CountdownLength &&
+            timepos < e.Time + e.OnScreenLength))
         continue;
 
-      CString s = e.Text;
-      if ( timepos<e.Time && timepos>e.Time - e.CountdownLength )
-        s += CString::Format( " in %d", (int32_t)( e.Time - timepos ) );
+      auto s = e.Text;
+      if (timepos < e.Time && timepos > e.Time - e.CountdownLength)
+        s += FormatString(" in %d", (int32_t)(e.Time - timepos));
 
-      CPoint pos = f->GetTextPosition( s, CRect( GetClientRect().x1, ypos, GetClientRect().x2, ypos ), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
+      CPoint pos = f->GetTextPosition(
+          s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
+          WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true);
       ypos += f->GetLineHeight();
-      f->Write( API, s, pos );
+      f->Write(API, s, pos);
     }
-
   }
 }
 
-TBOOL TimerDisplay::IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType )
-{
+TBOOL TimerDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,
+                                       WBMESSAGE MessageType) {
   return true;
 }
 
-TimerDisplay::TimerDisplay( CWBItem *Parent, CRect Position ) : CWBItem( Parent, Position )
-{
+TimerDisplay::TimerDisplay(CWBItem *Parent, CRect Position)
+    : CWBItem(Parent, Position) {}
 
-}
+TimerDisplay::~TimerDisplay() {}
 
-TimerDisplay::~TimerDisplay()
-{
-
-}
-
-CWBItem * TimerDisplay::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
-{
-  return new TimerDisplay( Root, Pos );
+CWBItem *TimerDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+  return new TimerDisplay(Root, Pos);
 }

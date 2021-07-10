@@ -1,5 +1,7 @@
 #include "PNGDecompressor.h"
 
+#include <string_view>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -51,74 +53,68 @@ void ClearZeroAlpha( uint8_t *Image, int32_t XRes, int32_t YRes )
   }
 }
 
-bool ExportPNG( uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha, CString OutFile )
+bool ExportPNG( uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha, std::string_view OutFile )
 {
-  uint8_t *Data = new uint8_t[ XRes*YRes * 4 ];
-  memcpy( Data, Image, XRes*YRes * 4 );
+  auto Data = std::make_unique<uint8_t[]>( XRes*YRes * 4 );
+  memcpy( Data.get(), Image, XRes*YRes * 4 );
 
   if ( ClearAlpha )
     for ( int32_t x = 0; x < XRes*YRes; x++ )
       Image[ x * 4 + 3 ] = 255;
 
-  TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
-  OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
+  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1 );
+  _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());
 
-  bool result = stbi_write_png( FileName, XRes, YRes, 4, Image, XRes * 4 );
+  bool result = stbi_write_png( FileName.get(), XRes, YRes, 4, Image, XRes * 4 );
 
   if ( !result )
-    LOG_ERR( "[png] PNG export error ('%s')", OutFile.GetPointer() );
-
-  SAFEDELETEA( Data );
-  SAFEDELETEA( FileName );
+    LOG_ERR( "[png] PNG export error ('%s')", std::string(OutFile).c_str() );
 
   return result;
 }
 
-bool ExportTga( uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha, CString OutFile )
+bool ExportTga( uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha, std::string_view OutFile )
 {
   if ( ClearAlpha )
     for ( int32_t x = 0; x < XRes*YRes; x++ )
       Image[ x * 4 + 3 ] = 255;
 
-  TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
-  OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
+  auto FileName = std::make_unique<TS8[]>( OutFile.size() + 1 );
+  _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(),
+             OutFile.size());
 
-  bool result = stbi_write_tga( FileName, XRes, YRes, 4, Image );
+  bool result = stbi_write_tga( FileName.get(), XRes, YRes, 4, Image );
 
   if ( !result )
-    LOG_ERR( "[png] TGA export error ('%s')", OutFile.GetPointer() );
-
-  SAFEDELETEA( FileName );
+    LOG_ERR( "[png] TGA export error ('%s')", std::string(OutFile).c_str() );
 
   return result;
 }
 
-bool ExportBmp( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
+bool ExportBmp( uint8_t *Image, int32_t XRes, int32_t YRes, std::string_view OutFile )
 {
-  TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
-  OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
+  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1);
+  _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(),
+             OutFile.size());
 
-  bool result = stbi_write_bmp( FileName, XRes, YRes, 4, Image );
+  bool result = stbi_write_bmp( FileName.get(), XRes, YRes, 4, Image );
 
   if ( !result )
-    LOG_ERR( "[png] BMP export error ('%s')", OutFile.GetPointer() );
-
-  SAFEDELETEA( FileName );
+    LOG_ERR( "[png] BMP export error ('%s')", std::string(OutFile).c_str() );
 
   return result;
 }
 
-bool ExportRaw( uint8_t *Image, int32_t XRes, int32_t YRes, CString OutFile )
+bool ExportRaw( uint8_t *Image, int32_t XRes, int32_t YRes, std::string_view OutFile )
 {
-  TS8 *FileName = new TS8[ OutFile.Length() + 1 ];
-  OutFile.WriteAsMultiByte( FileName, OutFile.Length() + 1 );
+  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1);
+  _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(),
+             OutFile.size());
 
-  bool result = stbi_write_bmp( FileName, XRes, YRes, 4, Image );
+  bool result = stbi_write_bmp( FileName.get(), XRes, YRes, 4, Image );
 
   if ( !result )
-    LOG_ERR( "[png] BMP export error ('%s')", OutFile.GetPointer() );
-
-  SAFEDELETEA( FileName );
+    LOG_ERR( "[png] BMP export error ('%s')", std::string(OutFile).c_str() );
 
   return result;
 }

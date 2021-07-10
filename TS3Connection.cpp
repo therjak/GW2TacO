@@ -1,6 +1,9 @@
 #include "TS3Connection.h"
 #include "OverlayConfig.h"
 
+#include "Bedrock/BaseLib/string_format.h"
+
+
 //currentschandlerid
 //serverconnectionhandlerlist
 //clientnotifyregister
@@ -43,10 +46,10 @@ void TS3Connection::TryValidateClientID()
     if ( handlers[ x ].Connected && handlers[ x ].clientIDInvalid )
     {
       currentHandlerID = handlers[ x ].id;
-      CommandResponse use = SendCommand( CString::Format( "use %d", currentHandlerID ) );
+      CommandResponse use = SendCommand( FormatString( "use %d", currentHandlerID ) );
       if ( use.ErrorCode )
         continue;
-      CommandResponse whoami = SendCommand( CString::Format( "whoami" ) );
+      CommandResponse whoami = SendCommand( "whoami" );
       handlers[ currentHandlerID ].Connected = whoami.ErrorCode != 1794;
 
       if ( whoami.ErrorCode == 512 )
@@ -57,15 +60,15 @@ void TS3Connection::TryValidateClientID()
         handlers[ currentHandlerID ].clientIDInvalid = false;
         currentHandlerID = currentHandlerID;
         int32_t clid = 0, cid = 0;
-        whoami.Lines[ 0 ].Scan( "clid=%d cid=%d", &clid, &cid );
+        std::sscanf(whoami.Lines[ 0 ].c_str(), "clid=%d cid=%d", &clid, &cid );
         handlers[ currentHandlerID ].Clients[ clid ].clientid = clid;
         handlers[ currentHandlerID ].Clients[ clid ].channelid = cid;
         handlers[ currentHandlerID ].myclientid = clid;
 
         CommandResponse serverName = SendCommand( "servervariable virtualserver_name" );
         if ( !serverName.ErrorCode )
-          if ( serverName.Lines[ 0 ].Find( "virtualserver_name=" ) == 0 )
-            handlers[ currentHandlerID ].name = unescape( serverName.Lines[ 0 ].Substring( 19 ) );
+          if ( serverName.Lines[ 0 ].find( "virtualserver_name=" ) == 0 )
+            handlers[ currentHandlerID ].name = unescape( serverName.Lines[ 0 ].substr( 19 ) );
 
         CommandResponse channelList = SendCommand( "channellist" );
         if ( !channelList.ErrorCode )
@@ -121,8 +124,8 @@ void TS3Connection::InitConnection()
 {
   if ( HasConfigString( "TS3APIKey" ) )
   {
-    CString apiKey = GetConfigString( "TS3APIKey" );
-    auto response = SendCommand( CString::Format( "auth apikey=" ) + apiKey ); // 3P9O-GWJ8-1TKI-OY1F-AX0T-BPQK
+    std::string apiKey = GetConfigString( "TS3APIKey" );
+    auto response = SendCommand( "auth apikey=" + apiKey ); // 3P9O-GWJ8-1TKI-OY1F-AX0T-BPQK
     if ( response.ErrorCode )
       authenticated = false;
     else
@@ -132,24 +135,24 @@ void TS3Connection::InitConnection()
   if ( !authenticated )
     return;
 
-  SendCommand( CString::Format( "clientnotifyregister schandlerid=0 event=any" ) );
+  SendCommand( "clientnotifyregister schandlerid=0 event=any" );
 
   currentHandlerID = 1;
 
   CommandResponse response = SendCommand( "serverconnectionhandlerlist" );
-  if ( !response.ErrorCode && response.Lines.NumItems() )
+  if ( !response.ErrorCode && !response.Lines.empty() )
   {
-    CStringArray schandlers = response.Lines[ 0 ].Explode( "|" );
-    for ( int32_t x = 0; x < schandlers.NumItems(); x++ )
-      if ( schandlers[ x ].Find( "schandlerid=" ) == 0 )
+    auto schandlers = Split(response.Lines[ 0 ], "|" );
+    for ( int32_t x = 0; x < schandlers.size(); x++ )
+      if ( schandlers[ x ].find( "schandlerid=" ) == 0 )
       {
         TS3Schandler handler;
-        schandlers[ x ].Scan( "schandlerid=%d", &handler.id );
+        std::sscanf(schandlers[ x ].c_str(), "schandlerid=%d", &handler.id );
         handlers[ handler.id ] = handler;
-        CommandResponse use = SendCommand( CString::Format( "use %d", handler.id ) );
+        CommandResponse use = SendCommand( FormatString( "use %d", handler.id ) );
         if ( use.ErrorCode )
           continue;
-        CommandResponse whoami = SendCommand( CString::Format( "whoami" ) );
+        CommandResponse whoami = SendCommand( FormatString( "whoami" ) );
         handlers[ handler.id ].Connected = whoami.ErrorCode != 1794;
 
         if ( whoami.ErrorCode == 512 )
@@ -160,15 +163,15 @@ void TS3Connection::InitConnection()
           handlers[ handler.id ].clientIDInvalid = false;
           currentHandlerID = handler.id;
           int32_t clid = 0, cid = 0;
-          whoami.Lines[ 0 ].Scan( "clid=%d cid=%d", &clid, &cid );
+          std::sscanf(whoami.Lines[ 0 ].c_str(), "clid=%d cid=%d", &clid, &cid );
           handlers[ handler.id ].Clients[ clid ].clientid = clid;
           handlers[ handler.id ].Clients[ clid ].channelid = cid;
           handlers[ handler.id ].myclientid = clid;
 
           CommandResponse serverName = SendCommand( "servervariable virtualserver_name" );
           if ( !serverName.ErrorCode )
-            if ( serverName.Lines[ 0 ].Find( "virtualserver_name=" ) == 0 )
-              handlers[ handler.id ].name = unescape( serverName.Lines[ 0 ].Substring( 19 ) );
+            if ( serverName.Lines[ 0 ].find( "virtualserver_name=" ) == 0 )
+              handlers[ handler.id ].name = unescape( serverName.Lines[ 0 ].substr( 19 ) );
 
           CommandResponse channelList = SendCommand( "channellist" );
           if ( !channelList.ErrorCode )
@@ -181,10 +184,10 @@ void TS3Connection::InitConnection()
       }
   }
 
-  SendCommand( CString::Format( "use %d", currentHandlerID ) );
+  SendCommand( FormatString( "use %d", currentHandlerID ) );
 }
 
-TS3Connection::CommandResponse TS3Connection::SendCommand( CString &message )
+TS3Connection::CommandResponse TS3Connection::SendCommand( std::string_view message )
 {
   CommandResponse response;
 
@@ -193,8 +196,8 @@ TS3Connection::CommandResponse TS3Connection::SendCommand( CString &message )
 
   ProcessNotifications();
 
-  connection.Write( message.GetPointer(), message.Length() );
-  connection.Write( "\n", 1 );
+  connection.Write( message );
+  connection.Write( std::string_view("\n") );
 
   while ( 1 )
   {
@@ -205,32 +208,27 @@ TS3Connection::CommandResponse TS3Connection::SendCommand( CString &message )
       return response;
     }
 
-    CString nextline = ReadLine();
-    response.Lines += nextline;
-    if ( nextline.Find( "error" ) == 0 )
+    auto nextline = ReadLine();
+    response.Lines.push_back(nextline);
+    if ( nextline.find( "error" ) == 0 )
     {
-      CStringArray msg = nextline.ExplodeByWhiteSpace();
-      if ( msg.NumItems() >= 2 )
-        msg[ 1 ].Scan( "id=%d", &response.ErrorCode );
+      auto msg = SplitByWhitespace(nextline);
+      if ( msg.size() >= 2 )
+        std::sscanf(msg[ 1 ].c_str(), "id=%d", &response.ErrorCode );
 
       if ( response.ErrorCode == 1796 )
         authenticated = false;
 
-      if ( msg.NumItems() >= 3 )
-        response.Message = msg[ 2 ].Substring( 4 );
+      if ( msg.size() >= 3 )
+        response.Message = msg[ 2 ].substr( 4 );
 
       if ( response.ErrorCode )
-        LOG_DBG( "[GW2TacO] command %s response: %d %s", message.GetPointer(), response.ErrorCode, response.Message.GetPointer() );
+        LOG_DBG( "[GW2TacO] command %s response: %d %s", std::string(message).c_str(), response.ErrorCode, response.Message.c_str() );
       break;
     }
   }
 
   return response;
-}
-
-TS3Connection::CommandResponse TS3Connection::SendCommand( TCHAR *message )
-{
-  return SendCommand( CString( message ) );
 }
 
 void TS3Connection::ProcessNotifications()
@@ -244,25 +242,25 @@ int ClientTalkTimeSorter( const TS3Connection::TS3Client& a, const TS3Connection
   return (int)( b.lastTalkTime - a.lastTalkTime );
 }
 
-void TS3Connection::ProcessNotification( CString &s )
+void TS3Connection::ProcessNotification( std::string_view s )
 {
-  CStringArray cmd = s.ExplodeByWhiteSpace();
+  auto cmd = SplitByWhitespace(s);
 
   int32_t schandlerid = 0;
-  for ( int32_t x = 1; x < cmd.NumItems(); x++ )
-    if ( cmd[ x ].Find( "schandlerid=" ) == 0 )
-      cmd[ x ].Scan( "schandlerid=%d", &schandlerid );
+  for ( size_t x = 1; x < cmd.size(); x++ )
+    if ( cmd[ x ].find( "schandlerid=" ) == 0 )
+      std::sscanf(cmd[ x ].c_str(), "schandlerid=%d", &schandlerid );
 
   if ( cmd[ 0 ] == "notifytalkstatuschange" )
   {
     int32_t clientid = -1;
     int32_t status = -1;
-    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
+    for ( int32_t x = 1; x < cmd.size(); x++ )
     {
-      if ( cmd[ x ].Find( "status=" ) == 0 )
-        cmd[ x ].Scan( "status=%d", &status );
-      if ( cmd[ x ].Find( "clid=" ) == 0 )
-        cmd[ x ].Scan( "clid=%d", &clientid );
+      if ( cmd[ x ].find( "status=" ) == 0 )
+        std::sscanf(cmd[ x ].c_str(), "status=%d", &status );
+      if ( cmd[ x ].find( "clid=" ) == 0 )
+        std::sscanf(cmd[ x ].c_str(), "clid=%d", &clientid );
     }
 
     if ( clientid >= 0 && status >= 0 )
@@ -280,7 +278,6 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifyclientids" )
   {
-    //LOG_DBG("client ids");
     return;
   }
 
@@ -288,12 +285,12 @@ void TS3Connection::ProcessNotification( CString &s )
   {
     int32_t clientid = -1;
     int32_t channelid = -1;
-    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
+    for ( int32_t x = 1; x < cmd.size(); x++ )
     {
-      if ( cmd[ x ].Find( "ctid=" ) == 0 )
-        cmd[ x ].Scan( "ctid=%d", &channelid );
-      if ( cmd[ x ].Find( "clid=" ) == 0 )
-        cmd[ x ].Scan( "clid=%d", &clientid );
+      if ( cmd[ x ].find( "ctid=" ) == 0 )
+        std::sscanf(cmd[ x ].c_str(), "ctid=%d", &channelid );
+      if ( cmd[ x ].find( "clid=" ) == 0 )
+        std::sscanf(cmd[ x ].c_str(), "clid=%d", &clientid );
     }
 
     if ( clientid >= 0 && channelid >= 0 )
@@ -316,26 +313,26 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifyconnectstatuschange" )
   {
-    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
+    for ( int32_t x = 1; x < cmd.size(); x++ )
     {
-      if ( cmd[ x ].Find( "status=disconnected" ) == 0 )
+      if ( cmd[ x ].find( "status=disconnected" ) == 0 )
       {
         handlers[ schandlerid ].Connected = false;
         handlers[ schandlerid ].Channels.Flush();
         handlers[ schandlerid ].Clients.Flush();
       }
 
-      if ( cmd[ x ].Find( "status=connecting" ) == 0 )
+      if ( cmd[ x ].find( "status=connecting" ) == 0 )
       {
         handlers[ schandlerid ].Connected = false;
         handlers[ schandlerid ].Channels.Flush();
         handlers[ schandlerid ].Clients.Flush();
       }
 
-      if ( cmd[ x ].Find( "status=connected" ) == 0 )
+      if ( cmd[ x ].find( "status=connected" ) == 0 )
       {
         handlers[ schandlerid ].Connected = true;
-        CommandResponse use = SendCommand( CString::Format( "use %d", schandlerid ) );
+        CommandResponse use = SendCommand( FormatString( "use %d", schandlerid ) );
         if ( !use.ErrorCode )
         {
           currentHandlerID = schandlerid;
@@ -343,15 +340,15 @@ void TS3Connection::ProcessNotification( CString &s )
           if ( !whoami.ErrorCode )
           {
             int32_t clid = 0, cid = 0;
-            whoami.Lines[ 0 ].Scan( "clid=%d cid=%d", &clid, &cid );
+            std::sscanf(whoami.Lines[ 0 ].c_str(), "clid=%d cid=%d", &clid, &cid );
             handlers[ schandlerid ].Clients[ clid ].clientid = clid;
             handlers[ schandlerid ].Clients[ clid ].channelid = cid;
             handlers[ schandlerid ].myclientid = clid;
           }
           CommandResponse serverName = SendCommand( "servervariable virtualserver_name" );
           if ( !serverName.ErrorCode )
-            if ( serverName.Lines[ 0 ].Find( "virtualserver_name=" ) == 0 )
-              handlers[ schandlerid ].name = unescape( serverName.Lines[ 0 ].Substring( 19 ) );
+            if ( serverName.Lines[ 0 ].find( "virtualserver_name=" ) == 0 )
+              handlers[ schandlerid ].name = unescape( serverName.Lines[ 0 ].substr( 19 ) );
         }
       }
     }
@@ -366,24 +363,22 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "channellistfinished" )
   {
-    //LOG_DBG("channellist notifications over");
     return;
   }
 
   if ( cmd[ 0 ] == "notifycliententerview" )
   {
     ProcessClientList( s, schandlerid );
-    //LOG_DBG("client entered view");
     return;
   }
 
   if ( cmd[ 0 ] == "notifyclientleftview" )
   {
     int32_t clientid = -1;
-    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
+    for ( int32_t x = 1; x < cmd.size(); x++ )
     {
-      if ( cmd[ x ].Find( "clid=" ) == 0 )
-        cmd[ x ].Scan( "clid=%d", &clientid );
+      if ( cmd[ x ].find( "clid=" ) == 0 )
+        std::sscanf(cmd[ x ].c_str(), "clid=%d", &clientid );
     }
     if ( clientid >= 0 )
       handlers[ schandlerid ].Clients.Delete( clientid );
@@ -392,39 +387,36 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifychannelgrouplist" )
   {
-    //LOG_DBG("channel group list");
     return;
   }
 
   if ( cmd[ 0 ] == "notifyservergrouplist" )
   {
-    //LOG_DBG("server group list");
     return;
   }
 
   if ( cmd[ 0 ] == "notifyclientneededpermissions" )
   {
-    //LOG_DBG("client needed permissions");
     return;
   }
 
   if ( cmd[ 0 ] == "notifyclientupdated" )
   {
     int32_t clientid = -1;
-    for ( int32_t x = 1; x < cmd.NumItems(); x++ )
+    for ( int32_t x = 1; x < cmd.size(); x++ )
     {
-      if ( cmd[ x ].Find( "clid=" ) == 0 )
-        cmd[ x ].Scan( "clid=%d", &clientid );
+      if ( cmd[ x ].find( "clid=" ) == 0 )
+        std::sscanf(cmd[ x ].c_str(), "clid=%d", &clientid );
     }
 
     if ( clientid >= 0 )
     {
-      for ( int32_t x = 1; x < cmd.NumItems(); x++ )
+      for ( int32_t x = 1; x < cmd.size(); x++ )
       {
-        if ( cmd[ x ].Find( "client_input_muted=" ) == 0 )
-          cmd[ x ].Scan( "client_input_muted=%d", &handlers[ schandlerid ].Clients[ clientid ].inputmuted );
-        if ( cmd[ x ].Find( "client_output_muted=" ) == 0 )
-          cmd[ x ].Scan( "client_output_muted=%d", &handlers[ schandlerid ].Clients[ clientid ].outputmuted );
+        if ( cmd[ x ].find( "client_input_muted=" ) == 0 )
+          std::sscanf(cmd[ x ].c_str(), "client_input_muted=%d", &handlers[ schandlerid ].Clients[ clientid ].inputmuted );
+        if ( cmd[ x ].find( "client_output_muted=" ) == 0 )
+          std::sscanf(cmd[ x ].c_str(), "client_output_muted=%d", &handlers[ schandlerid ].Clients[ clientid ].outputmuted );
       }
     }
     return;
@@ -432,32 +424,27 @@ void TS3Connection::ProcessNotification( CString &s )
 
   if ( cmd[ 0 ] == "notifychannelsubscribed" )
   {
-    //LOG_DBG("channel subscribed");
     return;
   }
 
   if ( cmd[ 0 ] == "notifychanneledited" )
   {
-    //LOG_DBG("channel edited");
     return;
   }
 
   if ( cmd[ 0 ] == "notifyclientchannelgroupchanged" )
   {
-    //LOG_DBG("client channel group changed");
     return;
   }
 
-  //LOG_DBG("unhandled notification %s", cmd[0].GetPointer());
-
 }
 
-CString TS3Connection::ReadLine()
+std::string TS3Connection::ReadLine()
 {
   if ( !connection.IsConnected() )
     return "";
 
-  CString lne = connection.ReadLine();
+  std::string lne = connection.ReadLine();
   if ( connection.GetLength() )
   {
     char c;
@@ -468,38 +455,38 @@ CString TS3Connection::ReadLine()
   return lne;
 }
 
-void TS3Connection::ProcessChannelList( CString &channeldata, int32_t handler )
+void TS3Connection::ProcessChannelList( std::string_view channeldata, int32_t handler )
 {
-  CStringArray channels = channeldata.Explode( "|" );
-  for ( int32_t x = 0; x < channels.NumItems(); x++ )
+  auto channels = Split(channeldata, "|" );
+  for ( int32_t x = 0; x < channels.size(); x++ )
   {
-    CStringArray channelData = channels[ x ].ExplodeByWhiteSpace();
+    auto channelData = SplitByWhitespace(channels[x]);
     TS3Channel channel;
-    for ( int32_t y = 0; y < channelData.NumItems(); y++ )
+    for ( const auto& cd : channelData )
     {
-      if ( channelData[ y ].Find( "cid=" ) == 0 )
+      if ( cd.find( "cid=" ) == 0 )
       {
-        channelData[ y ].Scan( "cid=%d", &channel.id );
+        std::sscanf(cd.c_str(), "cid=%d", &channel.id );
         continue;
       }
-      if ( channelData[ y ].Find( "pid=" ) == 0 )
+      if ( cd.find( "pid=" ) == 0 )
       {
-        channelData[ y ].Scan( "pid=%d", &channel.parentid );
+        std::sscanf(cd.c_str(), "pid=%d", &channel.parentid);
         continue;
       }
-      if ( channelData[ y ].Find( "cpid=" ) == 0 )
+      if ( cd.find( "cpid=" ) == 0 )
       {
-        channelData[ y ].Scan( "cpid=%d", &channel.parentid );
+        std::sscanf(cd.c_str(), "cpid=%d", &channel.parentid);
         continue;
       }
-      if ( channelData[ y ].Find( "channel_order=" ) == 0 )
+      if ( cd.find( "channel_order=" ) == 0 )
       {
-        channelData[ y ].Scan( "channel_order=%d", &channel.order );
+        std::sscanf(cd.c_str(), "channel_order=%d", &channel.order);
         continue;
       }
-      if ( channelData[ y ].Find( "channel_name=" ) == 0 )
+      if ( cd.find( "channel_name=" ) == 0 )
       {
-        channel.name = unescape( channelData[ y ].Substring( 13 ) );
+        channel.name = unescape( cd.substr( 13 ) );
         continue;
       }
     }
@@ -507,51 +494,51 @@ void TS3Connection::ProcessChannelList( CString &channeldata, int32_t handler )
   }
 }
 
-void TS3Connection::ProcessClientList( CString &clientdata, int32_t handler )
+void TS3Connection::ProcessClientList( std::string_view clientdata, int32_t handler )
 {
   bool needsSort = false;
 
-  CStringArray channels = clientdata.Explode( "|" );
-  for ( int32_t x = 0; x < channels.NumItems(); x++ )
+  auto channels = Split(clientdata, "|" );
+  for ( int32_t x = 0; x < channels.size(); x++ )
   {
-    CStringArray clientData = channels[ x ].ExplodeByWhiteSpace();
+    auto clientData = SplitByWhitespace(channels[x]);
     TS3Client client;
-    for ( int32_t y = 0; y < clientData.NumItems(); y++ )
+    for ( const auto& cd: clientData )
     {
-      if ( clientData[ y ].Find( "cid=" ) == 0 )
+      if ( cd.find( "cid=" ) == 0 )
       {
-        clientData[ y ].Scan( "cid=%d", &client.channelid );
+        std::sscanf(cd.c_str(), "cid=%d", &client.channelid);
         continue;
       }
-      if ( clientData[ y ].Find( "ctid=" ) == 0 )
+      if ( cd.find( "ctid=" ) == 0 )
       {
-        clientData[ y ].Scan( "ctid=%d", &client.channelid );
+        std::sscanf(cd.c_str(), "ctid=%d", &client.channelid);
         continue;
       }
-      if ( clientData[ y ].Find( "client_channel_group_inherited_channel_id=" ) == 0 )
+      if (cd.find("client_channel_group_inherited_channel_id=") == 0)
       {
-        clientData[ y ].Scan( "client_channel_group_inherited_channel_id=%d", &client.channelid );
+        std::sscanf(cd.c_str(), "client_channel_group_inherited_channel_id=%d",
+                    &client.channelid);
         continue;
       }
-      if ( clientData[ y ].Find( "clid=" ) == 0 )
+      if (cd.find("clid=") == 0)
       {
-        clientData[ y ].Scan( "clid=%d", &client.clientid );
+        std::sscanf(cd.c_str(), "clid=%d", &client.clientid);
         continue;
       }
-      if ( clientData[ y ].Find( "client_input_muted=" ) == 0 )
+      if (cd.find("client_input_muted=") == 0)
       {
-        clientData[ y ].Scan( "client_input_muted=%d", &client.inputmuted );
+        std::sscanf(cd.c_str(), "client_input_muted=%d", &client.inputmuted);
         continue;
       }
-      if ( clientData[ y ].Find( "client_output_muted=" ) == 0 )
+      if (cd.find("client_output_muted=") == 0)
       {
-        clientData[ y ].Scan( "client_output_muted=%d", &client.outputmuted );
+        std::sscanf(cd.c_str(), "client_output_muted=%d", &client.outputmuted);
         continue;
       }
-      if ( clientData[ y ].Find( "client_nickname=" ) == 0 )
+      if (cd.find("client_nickname=") == 0)
       {
-        client.name = unescape( clientData[ y ].Substring( 16 ) );
-        //LOG_DBG("New cliend: %s (%d) in channel %d", client.name.GetPointer(), client.clientid, client.channelid);
+        client.name = unescape( cd.substr( 16 ) );
         continue;
       }
     }
@@ -565,18 +552,18 @@ void TS3Connection::ProcessClientList( CString &clientdata, int32_t handler )
     handlers[ handler ].Clients.SortByValue( ClientTalkTimeSorter );
 }
 
-CString TS3Connection::unescape( CString string )
+std::string TS3Connection::unescape( std::string_view string )
 {
-  CString result;
-  for ( uint32_t x = 0; x < string.Length(); x++ )
+  std::string result;
+  for ( uint32_t x = 0; x < string.size(); x++ )
   {
     if ( string[ x ] == '\\' )
     {
-      if ( x == string.Length() - 1 )
+      if ( x == string.size() - 1 )
         break;
 
       if ( x )
-        result += CString( string, x );
+        result += string.substr(0, x );
 
       switch ( string[ x + 1 ] )
       {
@@ -615,35 +602,15 @@ CString TS3Connection::unescape( CString string )
         break;
       }
 
-      string = string.Substring( x + 2 );
+      string = string.substr( x + 2 );
       x = -1;
     }
   }
 
-  return result + string;
+  return result + std::string(string);
 }
 
 TBOOL TS3Connection::IsConnected()
 {
   return connection.IsConnected();
 }
-
-//CString TS3Connection::GetIncoming()
-//{
-//	int32_t dataLength = (int32_t)connection.GetLength();
-//
-//	if (!dataLength)
-//		return "";
-//
-//	uint8_t *data = new uint8_t[dataLength];
-//	if (connection.Read(data, dataLength) != dataLength)
-//	{
-//		SAFEDELETE(data);
-//		return "";
-//	}
-//
-//	CString dataString((TCHAR*)data, dataLength);
-//	SAFEDELETE(data);
-//
-//	return dataString;
-//}

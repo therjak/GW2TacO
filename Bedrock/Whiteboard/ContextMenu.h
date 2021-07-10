@@ -1,4 +1,8 @@
 #pragma once
+
+#include <string_view>
+#include <string>
+
 #include "GuiItem.h"
 
 #define WB_CONTEXT_SEPARATOR ((void*)(INT_MIN))
@@ -7,7 +11,7 @@ class CWBContextItem
 {
   friend class CWBContextMenu;
 
-  CString Text;
+  std::string Text;
   int32_t ReturnID;
   TBOOL Separator;
   TBOOL Highlighted;
@@ -22,10 +26,11 @@ public:
 
   CWBContextItem();
   virtual ~CWBContextItem();
-  virtual CWBContextItem *AddItem( const TCHAR *Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
-  virtual CWBContextItem *AddItem( const CString& Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
+  virtual CWBContextItem *AddItem(std::string_view Text, int32_t ID,
+                                  TBOOL Highlighted = false,
+                                  TBOOL closesContext = true);
   virtual void AddSeparator();
-  virtual void SetText( const CString& text );
+  virtual void SetText(std::string_view text);
   virtual void SetHighlight( TBOOL highlighted );
 };
 
@@ -61,10 +66,12 @@ public:
 
   WB_DECLARE_GUIITEM( _T( "contextmenu" ), CWBItem );
 
-  virtual CWBContextItem *AddItem( const TCHAR *Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
-  virtual CWBContextItem *AddItem( const CString &Text, int32_t ID, TBOOL Highlighted = false, TBOOL closesContext = true );
+  virtual CWBContextItem *AddItem(std::string_view Text, int32_t ID,
+                                  TBOOL Highlighted = false,
+                                  TBOOL closesContext = true);
   virtual void AddSeparator();
 
-  virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray &pseudo );
+  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                           const std::vector<std::string> &pseudo);
   virtual CWBContextItem *GetItem( int32_t ID );
 };

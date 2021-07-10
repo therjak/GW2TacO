@@ -24,6 +24,7 @@
 
 #include <string>
 #include <string_view>
+#include "Bedrock/BaseLib/string_format.h"
 
 #pragma comment(lib,"Dwmapi.lib")
 
@@ -319,7 +320,6 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
 {
   DWORD dwSize = 0;
   DWORD dwDownloaded = 0;
-  LPSTR pszOutBuffer;
 
   BOOL  bResults = FALSE;
   HINTERNET  hSession = NULL, hConnect = NULL, hRequest = NULL;
@@ -346,7 +346,7 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
     return "";
   }
 
-  pszOutBuffer = nullptr;
+  
 
   CStreamWriterMemory data;
 
@@ -361,9 +361,9 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
       return "";
     }
 
-    pszOutBuffer = new char[ dwSize + 1 ];
+    auto pszOutBuffer = std::make_unique<char[]>( dwSize + 1 );
 
-    if ( !WinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded ) )
+    if ( !WinHttpReadData( hRequest, (LPVOID)pszOutBuffer.get(), dwSize, &dwDownloaded ) )
     {
       if ( hRequest ) WinHttpCloseHandle( hRequest );
       if ( hConnect ) WinHttpCloseHandle( hConnect );
@@ -371,9 +371,8 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
       return "";
     }
 
-    data.Write( pszOutBuffer, dwSize );
+    data.Write( std::string_view(pszOutBuffer.get(), dwSize ));
 
-    SAFEDELETEA( pszOutBuffer );
   } while ( dwSize > 0 );
 
 
@@ -384,22 +383,14 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
   return CString( (TS8*)data.GetData(), data.GetLength() );
 }
 
-std::wstring string2wstring(std::string_view s) {
-  int wchars_num = MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, NULL, 0);
-  std::wstring wstr(wchars_num, 0);
-  MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, wstr.data(), wstr.size());
-  return wstr;
-}
-
 std::string FetchHTTPS(std::string_view url, std::string_view path) {
   auto wurl= string2wstring(url);
   auto wpath= string2wstring(path);
 
-  LOG_NFO( "[GW2TacO] Fetching URL: %s/%s", url.data(), path.data() );
+  LOG_NFO( "[GW2TacO] Fetching URL: %s/%s", std::string(url).c_str(), std::string(path).c_str() );
 
   DWORD dwSize = 0;
   DWORD dwDownloaded = 0;
-  LPSTR pszOutBuffer;
 
   BOOL  bResults = FALSE;
   HINTERNET  hSession = NULL, hConnect = NULL, hRequest = NULL;
@@ -421,7 +412,6 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
   if ( !bResults )
     return "";
 
-  pszOutBuffer = nullptr;
 
   CStreamWriterMemory data;
 
@@ -431,14 +421,13 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
     if ( !WinHttpQueryDataAvailable( hRequest, &dwSize ) )
       return "";
 
-    pszOutBuffer = new char[ dwSize + 1 ];
+    auto pszOutBuffer = std::make_unique<char[]>( dwSize + 1 );
 
-    if ( !WinHttpReadData( hRequest, (LPVOID)pszOutBuffer, dwSize, &dwDownloaded ) )
+    if ( !WinHttpReadData( hRequest, (LPVOID)pszOutBuffer.get(), dwSize, &dwDownloaded ) )
       return "";
 
-    data.Write( pszOutBuffer, dwSize );
+    data.Write( std::string_view(pszOutBuffer.get(), dwSize) );
 
-    SAFEDELETEA( pszOutBuffer );
   } while ( dwSize > 0 );
 
 
@@ -578,7 +567,7 @@ bool DownloadFile( const CString& url, CStreamWriterMemory& mem )
   {
     DWORD bytesRead = 0;
     hr = stream->Read( buffer, sizeof( buffer ), &bytesRead );
-    mem.Write( buffer, bytesRead );
+    mem.Write( std::string_view(buffer, bytesRead) );
   } while ( SUCCEEDED( hr ) && hr != S_FALSE );
 
   stream->Release();
@@ -594,21 +583,21 @@ bool DownloadFile( const CString& url, CStreamWriterMemory& mem )
 
 CArrayThreadSafe< CString > loadList;
 
-void FetchMarkerPackOnline( CString& ourl )
+void FetchMarkerPackOnline( std::string_view ourl )
 {
-  int32_t pos = ourl.Find( "gw2taco://markerpack/" );
-  if ( pos < 0 )
+  int32_t pos = ourl.find( "gw2taco://markerpack/" );
+  if ( pos == ourl.npos )
   {
-    LOG_ERR( "[GW2TacO] Trying to access malformed package url %s", ourl.GetPointer() );
+    LOG_ERR( "[GW2TacO] Trying to access malformed package url %s", std::string(ourl).c_str() );
     return;
   }
 
-  LOG_NFO( "[GW2TacO] Trying to fetch marker pack %s", ourl.Substring( pos ).GetPointer() );
+  LOG_NFO( "[GW2TacO] Trying to fetch marker pack %s", std::string(ourl.substr( pos )).c_str() );
 
-  CString url = ourl.Substring( pos + 21 );
-  uint8_t* urlPtr = new uint8_t[ url.Length() + 1 ];
-  memset( urlPtr, 0, url.Length() + 1 );
-  memcpy( urlPtr, url.GetPointer(), url.Length() );
+  auto url = ourl.substr( pos + 21 );
+  uint8_t* urlPtr = new uint8_t[ url.size() + 1 ];
+  memset( urlPtr, 0, url.size() + 1 );
+  memcpy( urlPtr, url.data(), url.size() );
 
   DWORD downloadThreadID = 0;
 
@@ -665,7 +654,7 @@ void FetchMarkerPackOnline( CString& ourl )
       return (DWORD)0;
     }
 
-    if ( !out.Write( mem.GetData(), mem.GetLength() ) )
+    if ( !out.Write( uint8_view(mem.GetData(), mem.GetLength()) ) )
     {
       LOG_ERR( "[GW2TacO] Failed to write out data to file: %s", fileName.GetPointer() );
       remove( fileName.GetPointer() );
@@ -727,8 +716,8 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   ImmDisableIME( -1 );
   lastSlowEventTime = globalTimer.GetTime();
 
-  extern CString TacOBuild;
-  InitializeCrashTracker( CString( "GW2 TacO " ) + TacOBuild, CrashOverride );
+  extern std::string TacOBuild;
+  InitializeCrashTracker( "GW2 TacO " + TacOBuild, CrashOverride );
   FORCEDDEBUGLOG( "Crash tracker initialized." );
 
   Logger.AddOutput(std::make_unique<CLoggerOutput_File>(_T("GW2TacO.log")));
@@ -737,10 +726,10 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   Logger.Log(LOG_INFO, false, false, "");
   Logger.Log(LOG_INFO, false, false, "----------------------------------------------");
-  CString cmdLine( GetCommandLineA() );
-  LOG_NFO( "[GW2TacO] CommandLine: %s", cmdLine.GetPointer() );
+  std::string cmdLine( GetCommandLineA() );
+  LOG_NFO( "[GW2TacO] CommandLine: %s", cmdLine.c_str() );
 
-  if ( cmdLine.Find( "-fromurl" ) >= 0 )
+  if ( cmdLine.find( "-fromurl" ) != cmdLine.npos )
   {
     TCHAR szFileName[ MAX_PATH + 1 ];
     GetModuleFileName( NULL, szFileName, MAX_PATH + 1 );
@@ -759,8 +748,8 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     {
       COPYDATASTRUCT MyCDS;
       MyCDS.dwData = 0;
-      MyCDS.cbData = cmdLine.Length();
-      MyCDS.lpData = cmdLine.GetPointer();
+      MyCDS.cbData = cmdLine.size();
+      MyCDS.lpData = (PVOID)cmdLine.c_str();
 
       SendMessage( TacoWindow,
                    WM_COPYDATA,
@@ -774,17 +763,17 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     FetchMarkerPackOnline( cmdLine );
   }
   
-  if ( cmdLine.Find( "-forcenewinstance" ) < 0 )
+  if ( cmdLine.find( "-forcenewinstance" ) == cmdLine.npos )
   {
     if ( AppIsAllreadyRunning() )
       return 0;
   }
 
-  auto mumblePos = cmdLine.Find("-mumble");
-  if (mumblePos >= 0)
+  auto mumblePos = cmdLine.find("-mumble");
+  if (mumblePos != cmdLine.npos)
   {
-      auto sub = cmdLine.Substring(mumblePos + 8);
-      auto cmds = sub.ExplodeByWhiteSpace();
+      auto sub = cmdLine.substr(mumblePos + 8);
+      auto cmds = SplitByWhitespace(sub);
       mumbleLink.mumblePath = cmds[1];
   }
 
@@ -799,7 +788,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   LoadConfig();
 
-  if ( cmdLine.Find( "-forcedpiaware" ) >= 0 || ( HasConfigValue( "ForceDPIAware" ) && GetConfigValue( "ForceDPIAware" ) ) )
+  if ( cmdLine.find( "-forcedpiaware" ) != cmdLine.npos || ( HasConfigValue( "ForceDPIAware" ) && GetConfigValue( "ForceDPIAware" ) ) )
   {
     bool dpiSet = false;
 
@@ -838,7 +827,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   localization = new Localization();
   localization->Import();
 
-  LOG_NFO( "[GW2TacO] build ID: %s", ( CString( "GW2 TacO " ) + TacOBuild ).GetPointer() );
+  LOG_NFO( "[GW2TacO] build ID: %s", ("GW2 TacO " + TacOBuild).c_str() );
 
   bool hasDComp = 0;
   HMODULE dComp = LoadLibraryA("dcomp.dll");
@@ -891,7 +880,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   extern WBATLASHANDLE DefaultIconHandle;
   if (DefaultIconHandle == -1)
   {
-      auto skinItem = App->GetSkin()->GetElementID(CString("defaulticon"));
+      auto skinItem = App->GetSkin()->GetElementID("defaulticon");
       DefaultIconHandle = App->GetSkin()->GetElement(skinItem)->GetHandle();
   }
 
@@ -1025,7 +1014,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
       {
         if (!mumbleLink.IsValid() && GetTime() > 60000)
         {
-          LOG_ERR("[GW2TacO] Closing TacO because GW2 with mumble link %s was not found in under a minute");
+          LOG_ERR("[GW2TacO] Closing TacO because GW2 with mumble link was not found in under a minute");
           App->SetDone(true);
         }
       }

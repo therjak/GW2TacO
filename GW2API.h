@@ -19,7 +19,7 @@ namespace GW2
     std::unordered_map< std::string, bool > caps;
     std::string keyName;
     std::string accountName;
-    CStringArray charNames;
+    std::vector<std::string> charNames;
     int worldId = 0;
 
     APIKey() = default;

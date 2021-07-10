@@ -2,31 +2,36 @@
 
 #include "../BaseLib/BaseLib.h"
 
+#include <string_view>
+#include <string>
+
 class IWBCSS
 {
-  CStringArray aClasses;
-  CString sID;
-public:
+  std::vector<std::string> aClasses;
+  std::string sID;
+
+ public:
 
   IWBCSS();
   virtual ~IWBCSS();
 
-  void SetID( const CString& s );
-  CString& GetID();
-  void AddClass( const CString& s );
-  void RemoveClass( const CString& s );
-  void ToggleClass( const CString& s );
-  bool HasClass( const CString& s );
-  bool IsFitForSelector( const CString& selector );
+  void SetID(std::string_view s);
+  std::string& GetID();
+  void AddClass(std::string_view s);
+  void RemoveClass(std::string_view s);
+  void ToggleClass(std::string_view s);
+  bool HasClass(std::string_view s);
+  bool IsFitForSelector(std::string_view selector);
 
-  virtual const CString &GetType() const = 0;
-  static const CString &GetClassName()
+  virtual const std::string &GetType() const = 0;
+  static const std::string &GetClassName()
   {
-    static const CString type = _T( "IWBCSS" );
+    static const std::string type = _T( "IWBCSS" );
     return type;
   }
-  virtual TBOOL InstanceOf( const CString &name ) const = 0;
+  virtual TBOOL InstanceOf(std::string_view name) const = 0;
 
-  virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray &Pseudo );
-  CString GetClassString();
+  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                           const std::vector<std::string> &Pseudo);
+  std::string GetClassString();
 };

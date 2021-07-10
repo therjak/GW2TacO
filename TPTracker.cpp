@@ -1,10 +1,13 @@
 #include "TPTracker.h"
-#include "GW2API.h"
-#include "OverlayConfig.h"
-#include "Language.h"
-#include "Bedrock/UtilLib/PNGDecompressor.h"
+
 #include <algorithm>
 #include <vector>
+
+#include "Bedrock/BaseLib/string_format.h"
+#include "Bedrock/UtilLib/PNGDecompressor.h"
+#include "GW2API.h"
+#include "Language.h"
+#include "OverlayConfig.h"
 
 using namespace jsonxx;
 
@@ -12,92 +15,83 @@ LIGHTWEIGHT_CRITICALSECTION itemCacheCritSec;
 
 CDictionary<int32_t, GW2ItemData> itemDataCache;
 
-TBOOL HasGW2ItemData( int32_t itemID )
-{
-  CLightweightCriticalSection cs( &itemCacheCritSec );
-  return itemDataCache.HasKey( itemID );
+TBOOL HasGW2ItemData(int32_t itemID) {
+  CLightweightCriticalSection cs(&itemCacheCritSec);
+  return itemDataCache.HasKey(itemID);
 }
 
-GW2ItemData GetGW2ItemData( int32_t itemID )
-{
-  CLightweightCriticalSection cs( &itemCacheCritSec );
-  if ( itemDataCache.HasKey( itemID ) )
-    return itemDataCache[ itemID ];
+GW2ItemData GetGW2ItemData(int32_t itemID) {
+  CLightweightCriticalSection cs(&itemCacheCritSec);
+  if (itemDataCache.HasKey(itemID)) return itemDataCache[itemID];
   return GW2ItemData();
 }
 
-void SetGW2ItemData( GW2ItemData& data )
-{
-  CLightweightCriticalSection cs( &itemCacheCritSec );
-  itemDataCache[ data.itemID ] = data;
+void SetGW2ItemData(GW2ItemData& data) {
+  CLightweightCriticalSection cs(&itemCacheCritSec);
+  itemDataCache[data.itemID] = data;
 }
 
-std::string FetchHTTPS(std::string_view url,
-                       std::string_view path);
+std::string FetchHTTPS(std::string_view url, std::string_view path);
 
-__inline CString ToGold( int32_t value )
-{
+__inline std::string ToGold(int32_t value) {
   int32_t copper = value % 100;
   value /= 100;
   int32_t silver = value % 100;
   value /= 100;
 
-  CString result;
-  if ( value )
-  {
-    result += CString::Format( "%d", value ) + DICT( "gold" ) + " ";
-    result += CString::Format( "%.2d", silver ) + DICT( "silver" ) + " ";
-    result += CString::Format( "%.2d", copper ) + DICT( "copper" );
-  }
-  else
-  {
-    if ( silver )
-    {
-      result += CString::Format( "%d", silver ) + DICT( "silver" ) + " ";
-      result += CString::Format( "%.2d", copper ) + DICT( "copper" );
-    }
-    else
-      result = CString::Format( "%d", copper ) + DICT( "copper" );
+  std::string result;
+  if (value) {
+    result += FormatString("%d", value) + DICT("gold") + " ";
+    result += FormatString("%.2d", silver) + DICT("silver") + " ";
+    result += FormatString("%.2d", copper) + DICT("copper");
+  } else {
+    if (silver) {
+      result += FormatString("%d", silver) + DICT("silver") + " ";
+      result += FormatString("%.2d", copper) + DICT("copper");
+    } else
+      result = FormatString("%d", copper) + DICT("copper");
   }
 
   return result;
 }
 
-void TPTracker::OnDraw( CWBDrawAPI *API )
-{
-  CWBFont *f = GetFont( GetState() );
+void TPTracker::OnDraw(CWBDrawAPI* API) {
+  CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
-  if ( !HasConfigValue( "TPTrackerOnlyShowOutbid" ) )
-    SetConfigValue( "TPTrackerOnlyShowOutbid", 0 );
+  if (!HasConfigValue("TPTrackerOnlyShowOutbid"))
+    SetConfigValue("TPTrackerOnlyShowOutbid", 0);
 
-  if ( !HasConfigValue( "TPTrackerShowBuys" ) )
-    SetConfigValue( "TPTrackerShowBuys", 1 );
+  if (!HasConfigValue("TPTrackerShowBuys"))
+    SetConfigValue("TPTrackerShowBuys", 1);
 
-  if ( !HasConfigValue( "TPTrackerShowSells" ) )
-    SetConfigValue( "TPTrackerShowSells", 1 );
+  if (!HasConfigValue("TPTrackerShowSells"))
+    SetConfigValue("TPTrackerShowSells", 1);
 
-  if ( !HasConfigValue( "TPTrackerNextSellOnly" ) )
-    SetConfigValue( "TPTrackerNextSellOnly", 0 );
+  if (!HasConfigValue("TPTrackerNextSellOnly"))
+    SetConfigValue("TPTrackerNextSellOnly", 0);
 
-  int32_t onlyShowOutbid = GetConfigValue( "TPTrackerOnlyShowOutbid" );
-  int32_t nextSellOnly = GetConfigValue( "TPTrackerNextSellOnly" );
+  int32_t onlyShowOutbid = GetConfigValue("TPTrackerOnlyShowOutbid");
+  int32_t nextSellOnly = GetConfigValue("TPTrackerNextSellOnly");
 
-  GW2::APIKeyManager::Status status = GW2::apiKeyManager.DisplayStatusText(API, f);
+  GW2::APIKeyManager::Status status =
+      GW2::apiKeyManager.DisplayStatusText(API, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if ( key && key->valid && ( GetTime() - lastFetchTime > 150000 || !lastFetchTime ) && !beingFetched && !fetchThread.joinable() )
-  {
+  if (key && key->valid &&
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
+      !fetchThread.joinable()) {
     beingFetched = true;
-    fetchThread = std::thread( [ this, key ]()
-    {
-      auto qbuys = "{\"buys\":" + key->QueryAPI( "v2/commerce/transactions/current/buys" );
-      auto qsells = "{\"sells\":" + key->QueryAPI( "v2/commerce/transactions/current/sells" );
+    fetchThread = std::thread([this, key]() {
+      auto qbuys =
+          "{\"buys\":" + key->QueryAPI("v2/commerce/transactions/current/buys");
+      auto qsells = "{\"sells\":" +
+                    key->QueryAPI("v2/commerce/transactions/current/sells");
 
       Object json;
       Object json2;
-      json.parse( qbuys );
-      json2.parse( qsells );
+      json.parse(qbuys);
+      json2.parse(qsells);
 
       std::vector<TransactionItem> incoming;
       std::vector<TransactionItem> outgoing;
@@ -105,23 +99,19 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
       std::vector<int32_t> unknownItems;
       std::vector<int32_t> priceCheckList;
 
-      if ( json.has<Array>( "buys" ) )
-      {
-        auto buyData = json.get<Array>( "buys" ).values();
+      if (json.has<Array>("buys")) {
+        auto buyData = json.get<Array>("buys").values();
 
-        for ( unsigned int x = 0; x < buyData.size(); x++ )
-        {
-          if ( !buyData[ x ]->is<Object>() )
-            continue;
+        for (unsigned int x = 0; x < buyData.size(); x++) {
+          if (!buyData[x]->is<Object>()) continue;
 
-          Object& item = buyData[ x ]->get<Object>();
+          Object& item = buyData[x]->get<Object>();
 
           TransactionItem itemData;
-          if ( !TPTracker::ParseTransaction( item, itemData ) )
-            continue;
+          if (!TPTracker::ParseTransaction(item, itemData)) continue;
           incoming.push_back(itemData);
 
-          if ( !itemDataCache.HasKey( itemData.itemID ) )
+          if (!itemDataCache.HasKey(itemData.itemID))
             unknownItems.push_back(itemData.itemID);
 
           if (std::find(priceCheckList.begin(), priceCheckList.end(),
@@ -131,23 +121,19 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
         }
       }
 
-      if ( json2.has<Array>( "sells" ) )
-      {
-        auto buyData = json2.get<Array>( "sells" ).values();
+      if (json2.has<Array>("sells")) {
+        auto buyData = json2.get<Array>("sells").values();
 
-        for ( unsigned int x = 0; x < buyData.size(); x++ )
-        {
-          if ( !buyData[ x ]->is<Object>() )
-            continue;
+        for (unsigned int x = 0; x < buyData.size(); x++) {
+          if (!buyData[x]->is<Object>()) continue;
 
-          Object& item = buyData[ x ]->get<Object>();
+          Object& item = buyData[x]->get<Object>();
 
           TransactionItem itemData;
-          if ( !TPTracker::ParseTransaction( item, itemData ) )
-            continue;
+          if (!TPTracker::ParseTransaction(item, itemData)) continue;
           outgoing.push_back(itemData);
 
-          if ( !itemDataCache.HasKey( itemData.itemID ) )
+          if (!itemDataCache.HasKey(itemData.itemID))
             unknownItems.push_back(itemData.itemID);
 
           if (std::find(priceCheckList.begin(), priceCheckList.end(),
@@ -159,54 +145,49 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
       std::string itemIds;
 
-      if ( !unknownItems.empty() )
-      {
+      if (!unknownItems.empty()) {
         for (const auto& i : unknownItems) {
           itemIds += std::to_string(i) + ',';
         }
 
-        //https://api.guildwars2.com/v2/items?ids=28445,12452
-        auto items = "{\"items\":"  + key->QueryAPI( "v2/items?ids=" + itemIds  ) + "}";
+        // https://api.guildwars2.com/v2/items?ids=28445,12452
+        auto items =
+            "{\"items\":" + key->QueryAPI("v2/items?ids=" + itemIds) + "}";
 
         Object itemjson;
-        itemjson.parse( items );
+        itemjson.parse(items);
 
-        if ( itemjson.has<Array>( "items" ) )
-        {
-          auto items = itemjson.get<Array>( "items" ).values();
+        if (itemjson.has<Array>("items")) {
+          auto items = itemjson.get<Array>("items").values();
 
-          for ( unsigned int x = 0; x < items.size(); x++ )
-          {
-            if ( !items[ x ]->is<Object>() )
-              continue;
+          for (unsigned int x = 0; x < items.size(); x++) {
+            if (!items[x]->is<Object>()) continue;
 
-            Object& item = items[ x ]->get<Object>();
+            Object& item = items[x]->get<Object>();
 
             GW2ItemData itemData;
-            if ( !item.has<String>( "name" ) || !item.has<Number>( "id" ) )
-              continue;
-            itemData.name = CString( item.get<String>( "name" ).data() );
-            itemData.itemID = int32_t( item.get<Number>( "id" ) );
-            if ( item.has<String>( "icon" ) )
-            {
-              CString iconFile = CString( item.get<String>( "icon" ).data() );
-              if ( iconFile.Find( "https://render.guildwars2.com/" ) == 0 )
-              {
+            if (!item.has<String>("name") || !item.has<Number>("id")) continue;
+            itemData.name = item.get<String>("name");
+            itemData.itemID = int32_t(item.get<Number>("id"));
+            if (item.has<String>("icon")) {
+              auto iconFile = item.get<String>("icon");
+              if (iconFile.find("https://render.guildwars2.com/") == 0) {
                 auto png =
-                    FetchHTTPS("render.guildwars2.com", iconFile.Substring(29).GetPointer());
-                
-                uint8_t *imageData = nullptr;
+                    FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
+
+                uint8_t* imageData = nullptr;
                 int32_t xres, yres;
-                if ( DecompressPNG( (uint8_t*)png.c_str(), png.size(), imageData, xres, yres ) )
-                {
-                  ARGBtoABGR( imageData, xres, yres );
-                  CRect area = CRect( 0, 0, xres, yres );
-                  itemData.icon = GetApplication()->GetAtlas()->AddImage( imageData, xres, yres, area );
+                if (DecompressPNG((uint8_t*)png.c_str(), png.size(), imageData,
+                                  xres, yres)) {
+                  ARGBtoABGR(imageData, xres, yres);
+                  CRect area = CRect(0, 0, xres, yres);
+                  itemData.icon = GetApplication()->GetAtlas()->AddImage(
+                      imageData, xres, yres, area);
                 }
               }
             }
 
-            SetGW2ItemData( itemData );
+            SetGW2ItemData(itemData);
           }
         }
       }
@@ -216,67 +197,64 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           itemIds += std::to_string(i) + ',';
         }
 
-        //https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
-        auto items = "{\"items\":" + key->QueryAPI( ( "v2/commerce/prices?ids="  + itemIds ) ) + "}";
-        
+        // https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
+        auto items = "{\"items\":" +
+                     key->QueryAPI(("v2/commerce/prices?ids=" + itemIds)) + "}";
+
         Object itemjson;
-        itemjson.parse( items );
+        itemjson.parse(items);
 
-        if ( itemjson.has<Array>( "items" ) )
-        {
-          auto items = itemjson.get<Array>( "items" ).values();
+        if (itemjson.has<Array>("items")) {
+          auto items = itemjson.get<Array>("items").values();
 
-          for ( unsigned int x = 0; x < items.size(); x++ )
-          {
-            if ( !items[ x ]->is<Object>() )
+          for (unsigned int x = 0; x < items.size(); x++) {
+            if (!items[x]->is<Object>()) continue;
+
+            Object& item = items[x]->get<Object>();
+
+            if (!item.has<Number>("id") || !item.has<Object>("buys") ||
+                !item.has<Object>("sells"))
               continue;
 
-            Object& item = items[ x ]->get<Object>();
+            int32_t id = int32_t(item.get<Number>("id"));
+            if (!HasGW2ItemData(id)) continue;
 
-            if ( !item.has<Number>( "id" ) || !item.has<Object>( "buys" ) || !item.has<Object>( "sells" ) )
+            Object buys = item.get<Object>("buys");
+            Object sells = item.get<Object>("sells");
+            if (!buys.has<Number>("unit_price") ||
+                !sells.has<Number>("unit_price"))
               continue;
 
-            int32_t id = int32_t( item.get<Number>( "id" ) );
-            if ( !HasGW2ItemData( id ) )
-              continue;
-            
-            Object buys = item.get<Object>( "buys" );
-            Object sells = item.get<Object>( "sells" );
-            if ( !buys.has<Number>( "unit_price" ) || !sells.has<Number>( "unit_price" ) )
-              continue;
-
-            GW2ItemData itemData = GetGW2ItemData( id );
-            itemData.buyPrice = int32_t( buys.get<Number>( "unit_price" ) );
-            itemData.sellPrice = int32_t( sells.get<Number>( "unit_price" ) );
-            SetGW2ItemData( itemData );
+            GW2ItemData itemData = GetGW2ItemData(id);
+            itemData.buyPrice = int32_t(buys.get<Number>("unit_price"));
+            itemData.sellPrice = int32_t(sells.get<Number>("unit_price"));
+            SetGW2ItemData(itemData);
           }
         }
       }
 
       {
-        CLightweightCriticalSection cs( &itemCacheCritSec );
+        CLightweightCriticalSection cs(&itemCacheCritSec);
         buys = incoming;
         sells = outgoing;
       }
 
       beingFetched = false;
-    } );
+    });
   }
 
-  if ( !beingFetched && fetchThread.joinable() )
-  {
+  if (!beingFetched && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
   }
 
   {
-    CLightweightCriticalSection cs( &itemCacheCritSec );
+    CLightweightCriticalSection cs(&itemCacheCritSec);
 
     int32_t posy = 0;
     int32_t lh = f->GetLineHeight();
 
-    if ( !buys.empty() && GetConfigValue( "TPTrackerShowBuys" ) )
-    {
+    if (!buys.empty() && GetConfigValue("TPTrackerShowBuys")) {
       std::vector<int32_t> showedAlready;
 
       int32_t textPosy = posy;
@@ -284,13 +262,11 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
       posy += lh + 2;
 
-      for ( size_t x = 0; x < buys.size(); x++ )
-      {
-        if ( !HasGW2ItemData( buys[ x ].itemID ) )
-          continue;
+      for (size_t x = 0; x < buys.size(); x++) {
+        if (!HasGW2ItemData(buys[x].itemID)) continue;
 
-        auto& itemData = GetGW2ItemData( buys[ x ].itemID );
-        TBOOL outbid = buys[ x ].price < itemData.buyPrice;
+        auto& itemData = GetGW2ItemData(buys[x].itemID);
+        TBOOL outbid = buys[x].price < itemData.buyPrice;
 
         if (nextSellOnly &&
             std::find(showedAlready.begin(), showedAlready.end(),
@@ -298,22 +274,23 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           continue;
         }
 
-        if ( !onlyShowOutbid || outbid )
-        {
-          int32_t price = buys[ x ].price;
-          if ( nextSellOnly )
-          {
-            for ( size_t y = x; y < buys.size(); y++ )
-              if ( buys[ y ].itemID == buys[ x ].itemID )
-                price = max( buys[ y ].price, buys[ x ].price );
+        if (!onlyShowOutbid || outbid) {
+          int32_t price = buys[x].price;
+          if (nextSellOnly) {
+            for (size_t y = x; y < buys.size(); y++)
+              if (buys[y].itemID == buys[x].itemID)
+                price = max(buys[y].price, buys[x].price);
           }
 
-          if ( itemData.icon )
-            API->DrawAtlasElement( itemData.icon, CRect( lh, posy, lh * 2 + 5, posy + lh + 5 ), false, false, true, true, 0xffffffff );
-          CString text = itemData.name + " " + ToGold( price );
-          if ( buys[ x ].quantity > 1 )
-            text = CString::Format( "%d ", buys[ x ].quantity ) + text;
-          f->Write( API, text, CPoint( int( lh * 2.5 + 3 ), posy + 3 ), !outbid ? 0xffffffff : 0xffee6655 );
+          if (itemData.icon)
+            API->DrawAtlasElement(itemData.icon,
+                                  CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
+                                  false, false, true, true, 0xffffffff);
+          auto text = itemData.name + " " + ToGold(price);
+          if (buys[x].quantity > 1)
+            text = FormatString("%d ", buys[x].quantity) + text;
+          f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
+                   !outbid ? 0xffffffff : 0xffee6655);
           writtenCount++;
           posy += lh + 6;
           if (nextSellOnly) {
@@ -326,14 +303,14 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
       }
       posy += 2;
 
-      if ( writtenCount )
-        f->Write( API, DICT( onlyShowOutbid ? "outbidbuys" : "buylist" ), CPoint( 0, textPosy ), 0xffffffff );
+      if (writtenCount)
+        f->Write(API, DICT(onlyShowOutbid ? "outbidbuys" : "buylist"),
+                 CPoint(0, textPosy), 0xffffffff);
       else
         posy -= lh + 4;
     }
 
-    if ( !sells.empty() && GetConfigValue( "TPTrackerShowSells" ) )
-    {
+    if (!sells.empty() && GetConfigValue("TPTrackerShowSells")) {
       std::vector<int32_t> showedAlready;
 
       int32_t textPosy = posy;
@@ -341,12 +318,10 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
 
       posy += lh + 2;
 
-      for ( size_t x = 0; x < sells.size(); x++ )
-      {
-        if ( !HasGW2ItemData( sells[ x ].itemID ) )
-          continue;
-        auto& itemData = GetGW2ItemData( sells[ x ].itemID );
-        TBOOL outbid = sells[ x ].price > itemData.sellPrice;
+      for (size_t x = 0; x < sells.size(); x++) {
+        if (!HasGW2ItemData(sells[x].itemID)) continue;
+        auto& itemData = GetGW2ItemData(sells[x].itemID);
+        TBOOL outbid = sells[x].price > itemData.sellPrice;
 
         if (nextSellOnly &&
             std::find(showedAlready.begin(), showedAlready.end(),
@@ -354,22 +329,23 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
           continue;
         }
 
-        if ( !onlyShowOutbid || outbid )
-        {
-          int32_t price = sells[ x ].price;
-          if ( nextSellOnly )
-          {
-            for ( size_t y = x; y < sells.size(); y++ )
-              if ( sells[ y ].itemID == sells[ x ].itemID )
-                price = min( sells[ y ].price, sells[ x ].price );
+        if (!onlyShowOutbid || outbid) {
+          int32_t price = sells[x].price;
+          if (nextSellOnly) {
+            for (size_t y = x; y < sells.size(); y++)
+              if (sells[y].itemID == sells[x].itemID)
+                price = min(sells[y].price, sells[x].price);
           }
 
-          if ( itemData.icon )
-            API->DrawAtlasElement( itemData.icon, CRect( lh, posy, lh * 2 + 5, posy + lh + 5 ), false, false, true, true, 0xffffffff );
-          CString text = itemData.name + " " + ToGold( price );
-          if ( sells[ x ].quantity > 1 )
-            text = CString::Format( "%d ", sells[ x ].quantity ) + text;
-          f->Write( API, text, CPoint( int( lh * 2.5 + 3 ), posy + 3 ), !outbid ? 0xffffffff : 0xffee6655 );
+          if (itemData.icon)
+            API->DrawAtlasElement(itemData.icon,
+                                  CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
+                                  false, false, true, true, 0xffffffff);
+          auto text = itemData.name + " " + ToGold(price);
+          if (sells[x].quantity > 1)
+            text = FormatString("%d ", sells[x].quantity) + text;
+          f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
+                   !outbid ? 0xffffffff : 0xffee6655);
           writtenCount++;
           posy += lh + 6;
           if (nextSellOnly) {
@@ -381,43 +357,38 @@ void TPTracker::OnDraw( CWBDrawAPI *API )
         }
       }
 
-      if ( writtenCount )
-        f->Write( API, DICT( onlyShowOutbid ? "outbidsells" : "selllist" ), CPoint( 0, textPosy ), 0xffffffff );
-
+      if (writtenCount)
+        f->Write(API, DICT(onlyShowOutbid ? "outbidsells" : "selllist"),
+                 CPoint(0, textPosy), 0xffffffff);
     }
   }
 
-  DrawBorder( API );
+  DrawBorder(API);
 }
 
-TBOOL TPTracker::ParseTransaction( Object& object, TransactionItem& output )
-{
-  if ( !object.has<Number>( "id" ) || !object.has<Number>( "item_id" ) || !object.has<Number>( "price" ) || !object.has<Number>( "quantity" ) )
+TBOOL TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
+  if (!object.has<Number>("id") || !object.has<Number>("item_id") ||
+      !object.has<Number>("price") || !object.has<Number>("quantity"))
     return false;
-  output.transactionID = int32_t( object.get<Number>( "id" ) );
-  output.itemID = int32_t( object.get<Number>( "item_id" ) );
-  output.price = int32_t( object.get<Number>( "price" ) );
-  output.quantity = int32_t( object.get<Number>( "quantity" ) );
+  output.transactionID = int32_t(object.get<Number>("id"));
+  output.itemID = int32_t(object.get<Number>("item_id"));
+  output.price = int32_t(object.get<Number>("price"));
+  output.quantity = int32_t(object.get<Number>("quantity"));
   return true;
 }
 
-TPTracker::TPTracker( CWBItem *Parent, CRect Position ) : CWBItem( Parent, Position )
-{
+TPTracker::TPTracker(CWBItem* Parent, CRect Position)
+    : CWBItem(Parent, Position) {}
+
+TPTracker::~TPTracker() {
+  if (fetchThread.joinable()) fetchThread.join();
 }
 
-TPTracker::~TPTracker()
-{
-  if ( fetchThread.joinable() )
-    fetchThread.join();
+CWBItem* TPTracker::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+  return new TPTracker(Root, Pos);
 }
 
-CWBItem * TPTracker::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
-{
-  return new TPTracker( Root, Pos );
-}
-
-TBOOL TPTracker::IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType )
-{
+TBOOL TPTracker::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                    WBMESSAGE MessageType) {
   return true;
 }
-

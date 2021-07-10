@@ -15,7 +15,7 @@ struct TransactionItem
 struct GW2ItemData
 {
   int32_t itemID = 0;
-  CString name;
+  std::string name;
   WBATLASHANDLE icon = 0;
   int32_t buyPrice = 0;
   int32_t sellPrice = 0;

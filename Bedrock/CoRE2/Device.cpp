@@ -28,15 +28,12 @@ CCoreDevice::CCoreDevice()
 	CurrentVertexBuffer = RequestedVertexBuffer = NULL;
 	CurrentVertexBufferOffset = RequestedVertexBufferOffset = 0;
 	CurrentVertexFormatSize = 0;
-	DefaultBlendState = NULL;
-	DefaultDepthStencilState = NULL;
-	DefaultRasterizerState = NULL;
 }
 
 CCoreDevice::~CCoreDevice() {
-  SAFEDELETE(DefaultRasterizerState);
-  SAFEDELETE(DefaultBlendState);
-  SAFEDELETE(DefaultDepthStencilState);
+  DefaultRasterizerState.reset();
+  DefaultBlendState.reset();
+  DefaultDepthStencilState.reset();
 
 #ifdef ENABLE_STACKTRACKER_CLASS
   if (!Resources.empty()) {
@@ -304,22 +301,19 @@ TBOOL CCoreDevice::CreateDefaultRenderStates()
 {
 	TBOOL Success = true;
 
-	SAFEDELETE(DefaultBlendState);
-	DefaultBlendState = CreateBlendState();
+	DefaultBlendState.swap(CreateBlendState());
 	DefaultBlendState->SetBlendEnable(0, true);
 	DefaultBlendState->SetSrcBlend(0, COREBLEND_SRCALPHA);
 	DefaultBlendState->SetDestBlend(0, COREBLEND_INVSRCALPHA);
 	Success |= DefaultBlendState->Apply();
 
-	SAFEDELETE(DefaultDepthStencilState);
-	DefaultDepthStencilState = CreateDepthStencilState();
+	DefaultDepthStencilState.swap(CreateDepthStencilState());
 	DefaultDepthStencilState->SetDepthEnable(true);
 	DefaultDepthStencilState->SetZWriteEnable(true);
 	DefaultDepthStencilState->SetDepthFunc(CORECMP_LEQUAL);
 	Success |= DefaultDepthStencilState->Apply();
 
-	SAFEDELETE(DefaultRasterizerState);
-	DefaultRasterizerState = CreateRasterizerState();
+	DefaultRasterizerState.swap(CreateRasterizerState());
 	Success |= DefaultRasterizerState->Apply();
 
 	return Success;

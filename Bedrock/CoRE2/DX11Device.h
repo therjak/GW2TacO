@@ -57,50 +57,67 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// texture functions
 
-	virtual CCoreTexture2D *CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
-	virtual CCoreTexture2D *CreateTexture2D(const uint8_t *Data, const int32_t Size);
+	virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
+	virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t *Data, const int32_t Size);
 	virtual CCoreTexture2D *CopyTexture(CCoreTexture2D *Texture);
 
 	//////////////////////////////////////////////////////////////////////////
 	// vertexbuffer functions
 
-	virtual CCoreVertexBuffer *CreateVertexBuffer(const uint8_t *Data, const int32_t Size);
-	virtual CCoreVertexBuffer *CreateVertexBufferDynamic(const int32_t Size);
+	virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(const uint8_t *Data, const int32_t Size);
+	virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(const int32_t Size);
 
 	//////////////////////////////////////////////////////////////////////////
 	// indexbuffer functions
 
-	virtual CCoreIndexBuffer *CreateIndexBuffer(const int32_t IndexCount, const int32_t IndexSize = 2);
+	virtual std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(const int32_t IndexCount, const int32_t IndexSize = 2);
 
 	//////////////////////////////////////////////////////////////////////////
 	// vertexformat functions
 
-	virtual CCoreVertexFormat *CreateVertexFormat(const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *vs = NULL);
+	virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *vs = NULL);
 
 	//////////////////////////////////////////////////////////////////////////
 	// shader functions
 
-	virtual CCoreVertexShader *CreateVertexShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
-	virtual CCorePixelShader *CreatePixelShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
-  virtual CCoreVertexShader *CreateVertexShaderFromBlob( uint8_t *Code, int32_t CodeSize );
-  virtual CCorePixelShader *CreatePixelShaderFromBlob( uint8_t *Code, int32_t CodeSize );
-  virtual CCoreGeometryShader *CreateGeometryShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL );
-	virtual CCoreDomainShader *CreateDomainShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
-	virtual CCoreHullShader *CreateHullShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
-	virtual CCoreComputeShader *CreateComputeShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString *Err = NULL);
+	virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
+            LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+            LPCSTR ShaderVersion, std::string *Err = NULL);
+        virtual std::unique_ptr<CCorePixelShader> CreatePixelShader(
+            LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+            LPCSTR ShaderVersion, std::string *Err = NULL);
+  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob( uint8_t *Code, int32_t CodeSize );
+  virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob( uint8_t *Code, int32_t CodeSize );
+  virtual CCoreGeometryShader *CreateGeometryShader(LPCSTR Code,
+                                                    int32_t CodeSize,
+                                                    LPCSTR EntryFunction,
+                                                    LPCSTR ShaderVersion,
+                                                    std::string *Err = NULL);
+  virtual CCoreDomainShader *CreateDomainShader(LPCSTR Code, int32_t CodeSize,
+                                                LPCSTR EntryFunction,
+                                                LPCSTR ShaderVersion,
+                                                std::string *Err = NULL);
+  virtual CCoreHullShader *CreateHullShader(LPCSTR Code, int32_t CodeSize,
+                                            LPCSTR EntryFunction,
+                                            LPCSTR ShaderVersion,
+                                            std::string *Err = NULL);
+  virtual CCoreComputeShader *CreateComputeShader(LPCSTR Code, int32_t CodeSize,
+                                                  LPCSTR EntryFunction,
+                                                  LPCSTR ShaderVersion,
+                                                  std::string *Err = NULL);
 	virtual CCoreVertexShader *CreateVertexShader();
 	virtual CCorePixelShader *CreatePixelShader();
 	virtual CCoreGeometryShader *CreateGeometryShader();
 	virtual CCoreDomainShader *CreateDomainShader();
 	virtual CCoreHullShader *CreateHullShader();
 	virtual CCoreComputeShader *CreateComputeShader();
-	virtual void SetShaderConstants(int32_t Slot, int32_t Count, CCoreConstantBuffer **Buffers);
-	virtual CCoreConstantBuffer *CreateConstantBuffer();
+	virtual void SetShaderConstants(const CCoreConstantBuffer* Buffers);
+	virtual std::unique_ptr<CCoreConstantBuffer> CreateConstantBuffer();
 
-	virtual CCoreBlendState *CreateBlendState();
-	virtual CCoreDepthStencilState *CreateDepthStencilState();
-	virtual CCoreRasterizerState *CreateRasterizerState();
-	virtual CCoreSamplerState *CreateSamplerState();
+	virtual std::unique_ptr<CCoreBlendState> CreateBlendState();
+	virtual std::unique_ptr<CCoreDepthStencilState> CreateDepthStencilState();
+	virtual std::unique_ptr<CCoreRasterizerState> CreateRasterizerState();
+	virtual std::unique_ptr<CCoreSamplerState> CreateSamplerState();
 
 	virtual TBOOL SetRenderTarget(CCoreTexture2D *RT);
 
@@ -129,7 +146,7 @@ public:
 
 	virtual void ForceStateReset();
 
-	virtual void TakeScreenShot(CString Filename);
+	virtual void TakeScreenShot(std::string_view Filename);
 
 	virtual void InitializeDebugAPI();
 	virtual void CaptureCurrentFrame();

@@ -31,21 +31,21 @@ class CLoggerOutput {
  public:
   CLoggerOutput();
   virtual ~CLoggerOutput();
-  virtual void Process(LOGVERBOSITY v, std::string_view String);
+  virtual void Process(LOGVERBOSITY v, const std::string& String);
 };
 
 class CLoggerOutput_DebugOutput : public CLoggerOutput {
  public:
   CLoggerOutput_DebugOutput();
   virtual ~CLoggerOutput_DebugOutput();
-  virtual void Process(LOGVERBOSITY v, std::string_view String);
+  virtual void Process(LOGVERBOSITY v, const std::string& String);
 };
 
 class CLoggerOutput_StdOut : public CLoggerOutput {
  public:
   CLoggerOutput_StdOut();
   virtual ~CLoggerOutput_StdOut();
-  virtual void Process(LOGVERBOSITY v, std::string_view String);
+  virtual void Process(LOGVERBOSITY v, const std::string& String);
 };
 
 class CLoggerOutput_File : public CLoggerOutput {
@@ -58,7 +58,7 @@ class CLoggerOutput_File : public CLoggerOutput {
   CLoggerOutput_File(std::string_view Filename, bool append = true);
   virtual ~CLoggerOutput_File();
   bool OpenLogFile(std::string_view Filename, bool Append = true);
-  virtual void Process(LOGVERBOSITY v, std::string_view String);
+  virtual void Process(LOGVERBOSITY v, const std::string& String);
 };
 
 class CLoggerOutput_RingBuffer : public CLoggerOutput {
@@ -67,7 +67,7 @@ class CLoggerOutput_RingBuffer : public CLoggerOutput {
  public:
   CLoggerOutput_RingBuffer();
   virtual ~CLoggerOutput_RingBuffer();
-  virtual void Process(LOGVERBOSITY v, std::string_view String);
+  virtual void Process(LOGVERBOSITY v, const std::string& String);
   void Dump(std::string_view fname);
 };
 
@@ -106,10 +106,10 @@ extern CLogger Logger;
   } while (0)
 #endif
 
-#define LOG_WARN(s, ...) LOG(LOG_WARNING, _T(s), __VA_ARGS__)
-#define LOG_ERR(s, ...) LOG(LOG_ERROR, _T(s), __VA_ARGS__)
-#define LOG_DBG(s, ...) LOG(LOG_DEBUG, _T(s), __VA_ARGS__)
-#define LOG_NFO(s, ...) LOG(LOG_INFO, _T(s), __VA_ARGS__)
+#define LOG_WARN(s, ...) LOG(LOG_WARNING, s, __VA_ARGS__)
+#define LOG_ERR(s, ...) LOG(LOG_ERROR, s, __VA_ARGS__)
+#define LOG_DBG(s, ...) LOG(LOG_DEBUG, s, __VA_ARGS__)
+#define LOG_NFO(s, ...) LOG(LOG_INFO, s, __VA_ARGS__)
 
 #define LOG_SETVERBOSITY(v) Logger.SetVerbosity(v)
 #define LOG_ADDOUTPUT(v) Logger.AddOutput(v)

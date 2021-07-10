@@ -492,7 +492,6 @@ void CCoreWindowHandlerWin::FinalizeMouseCursor()
 		SetCursor(MouseCursors[CurrentMouseCursor]);
 }
 
-void CCoreWindowHandlerWin::SetWindowTitle(CString &Title)
-{
-	SetWindowText(hWnd, Title.GetPointer());
+void CCoreWindowHandlerWin::SetWindowTitle(std::string_view Title) {
+	SetWindowText(hWnd, Title.data());
 }

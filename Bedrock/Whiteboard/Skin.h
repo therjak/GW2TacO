@@ -90,7 +90,7 @@ enum WBRECTSIDE
 
 class CWBSkinElement
 {
-  CString Name;
+  std::string Name;
   WBATLASHANDLE Handle;
   WBSKINELEMENTBEHAVIOR DefaultBehavior[ 2 ]; //x-y stretching behaviors
 
@@ -103,9 +103,9 @@ public:
   void SetHandle( WBATLASHANDLE h );
   void SetBehavior( int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior );
   WBSKINELEMENTBEHAVIOR GetBehavior( int32_t Axis );
-  void SetName( CString Name );
+  void SetName(std::string_view Name);
   WBATLASHANDLE GetHandle();
-  CString &GetName();
+  std::string &GetName();
 
   FORCEINLINE void Render( CWBDrawAPI *API, CRect &Pos );
   CSize GetElementSize( CWBDrawAPI *API );
@@ -133,7 +133,7 @@ public:
 
 class CWBMosaic
 {
-  CString Name;
+  std::string Name;
   CArray<CWBMosaicImage> Images;
   int32_t Overshoot[ 4 ];
 
@@ -143,8 +143,8 @@ public:
   CWBMosaic( const CWBMosaic &Copy );
   CWBMosaic &operator=( const CWBMosaic &Copy );
 
-  void SetName( CString Name );
-  CString &GetName();
+  void SetName(std::string_view Name);
+  std::string &GetName();
   void AddImage( CWBMosaicImage &Image );
   void Flush();
   void Render( CWBDrawAPI *API, CRect &Position );
@@ -158,17 +158,20 @@ class CWBSkin
   CArray<CWBSkinElement> SkinItems;
   CArray<CWBMosaic> Mosaics;
 
-  CWBSkinElement *GetElement( CString &Name );
+  CWBSkinElement *GetElement(std::string_view Name);
 
 public:
 
-  void AddElement( const CString &Name, WBATLASHANDLE Handle, WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav );
-  CWBMosaic *AddMosaic( const CString &Name, CString &Description, int32_t OverShootLeft = 0, int32_t OverShootTop = 0, int32_t OverShootRight = 0, int32_t OverShootBottom = 0 );
+  void AddElement(std::string_view Name, WBATLASHANDLE Handle,
+                 WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav);
+ CWBMosaic *AddMosaic(std::string_view Name, std::string_view Description,
+                      int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
+                      int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
 
   void RenderElement( CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos );
-  void RenderElement( CWBDrawAPI *API, CString &Name, CRect &Pos );
-  void RenderElement( CWBDrawAPI *API, TCHAR *Name, CRect &Pos );
-  WBSKINELEMENTID GetElementID( CString &Name );
+  void RenderElement(CWBDrawAPI *API, std::string_view Name, CRect &Pos);
+  // void RenderElement( CWBDrawAPI *API, TCHAR *Name, CRect &Pos );
+  WBSKINELEMENTID GetElementID(std::string_view Name);
   CWBSkinElement *GetElement( WBSKINELEMENTID id );
   CSize GetElementSize( CWBDrawAPI *API, WBSKINELEMENTID id );
 };

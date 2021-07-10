@@ -3,6 +3,7 @@
 #include "OverlayConfig.h"
 #include "Language.h"
 
+#include "Bedrock/BaseLib/string_format.h"
 
 void TS3Control::OnDraw( CWBDrawAPI *API )
 {
@@ -26,10 +27,10 @@ void TS3Control::OnDraw( CWBDrawAPI *API )
     }
   }
 
-  WBSKINELEMENTID playeroff = App->GetSkin()->GetElementID( CString( "ts3playeroff" ) );
-  WBSKINELEMENTID playeron = App->GetSkin()->GetElementID( CString( "ts3playeron" ) );
-  WBSKINELEMENTID outputoff = App->GetSkin()->GetElementID( CString( "ts3outputmuted" ) );
-  WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID( CString( "ts3inputmuted" ) );
+  WBSKINELEMENTID playeroff = App->GetSkin()->GetElementID(  "ts3playeroff"  );
+  WBSKINELEMENTID playeron = App->GetSkin()->GetElementID(  "ts3playeron"  );
+  WBSKINELEMENTID outputoff = App->GetSkin()->GetElementID( "ts3outputmuted"  );
+  WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID(  "ts3inputmuted"  );
 
   TBOOL LeftAlign = true;
   CRect r = ClientToScreen( GetClientRect() );
@@ -62,7 +63,7 @@ void TS3Control::OnDraw( CWBDrawAPI *API )
               participants++;
           }
 
-          CString channelText = CString::Format( "%s (%d)", handler.Channels[ mychannelid ].name.GetPointer(), participants );
+          auto channelText = FormatString( "%s (%d)", handler.Channels[ mychannelid ].name.c_str(), participants );
 
           CPoint p = f->GetTextPosition( channelText, GetClientRect() - CRect( size / 2, ypos, 0, 0 ), LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true );
           if ( cnt )

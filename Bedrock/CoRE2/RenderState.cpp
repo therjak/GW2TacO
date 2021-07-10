@@ -78,7 +78,7 @@ void CCoreBlendState::SetAlphaToCoverage(TBOOL e) {
 }
 
 TBOOL CCoreBlendState::Import(CXMLNode *n) {
-  CString s;
+  std::string s;
 
   if (n->HasAttribute(_T("AlphaToCoverage"))) {
     n->GetChild(_T("AlphaToCoverage")).GetValue(AlphaToCoverage);
@@ -98,33 +98,33 @@ TBOOL CCoreBlendState::Import(CXMLNode *n) {
     }
     if (c.GetChildCount(_T("SrcBlend"))) {
       s = c.GetChild(_T("SrcBlend")).GetText();
-      FindEnumByName(BlendFactorNames, s.GetPointer(),
+      FindEnumByName(BlendFactorNames, s,
                      (int32_t &)RenderTargetBlendStates[id].SrcBlend);
     }
     if (c.GetChildCount(_T("DestBlend"))) {
       s = c.GetChild(_T("DestBlend")).GetText();
-      FindEnumByName(BlendFactorNames, s.GetPointer(),
+      FindEnumByName(BlendFactorNames, s,
                      (int32_t &)RenderTargetBlendStates[id].DestBlend);
     }
     if (c.GetChildCount(_T("BlendOp"))) {
       s = c.GetChild(_T("BlendOp")).GetText();
-      FindEnumByName(BlendOpNames, s.GetPointer(),
+      FindEnumByName(BlendOpNames, s,
                      (int32_t &)RenderTargetBlendStates[id].BlendOp);
     }
 
     if (c.GetChildCount(_T("SrcBlendAlpha"))) {
       s = c.GetChild(_T("SrcBlendAlpha")).GetText();
-      FindEnumByName(BlendFactorNames, s.GetPointer(),
+      FindEnumByName(BlendFactorNames, s,
                      (int32_t &)RenderTargetBlendStates[id].SrcBlendAlpha);
     }
     if (c.GetChildCount(_T("DestBlendAlpha"))) {
       s = c.GetChild(_T("DestBlendAlpha")).GetText();
-      FindEnumByName(BlendFactorNames, s.GetPointer(),
+      FindEnumByName(BlendFactorNames, s,
                      (int32_t &)RenderTargetBlendStates[id].DestBlendAlpha);
     }
     if (c.GetChildCount(_T("BlendOpAlpha"))) {
       s = c.GetChild(_T("BlendOpAlpha")).GetText();
-      FindEnumByName(BlendOpNames, s.GetPointer(),
+      FindEnumByName(BlendOpNames, s,
                      (int32_t &)RenderTargetBlendStates[id].BlendOpAlpha);
     }
 
@@ -211,8 +211,8 @@ TBOOL CCoreDepthStencilState::Import(CXMLNode *n) {
     n->GetChild(_T("ZWriteEnable")).GetValue(ZWriteEnable);
   }
   if (n->GetChildCount(_T("DepthFunc"))) {
-    CString s = n->GetChild(_T("DepthFunc")).GetText();
-    FindEnumByName(ComparisonFunctionNames, s.GetPointer(),
+    auto s = n->GetChild(_T("DepthFunc")).GetText();
+    FindEnumByName(ComparisonFunctionNames, s,
                    (int32_t &)DepthFunc);
   }
 
@@ -295,12 +295,12 @@ void CCoreRasterizerState::SetFillMode(COREFILLMODE e) {
 
 TBOOL CCoreRasterizerState::Import(CXMLNode *n) {
   if (n->GetChildCount(_T("FillMode"))) {
-    CString s = n->GetChild(_T("FillMode")).GetText();
-    FindEnumByName(FillModeNames, s.GetPointer(), (int32_t &)FillMode);
+    auto s = n->GetChild(_T("FillMode")).GetText();
+    FindEnumByName(FillModeNames, s, (int32_t &)FillMode);
   }
   if (n->GetChildCount(_T("CullMode"))) {
-    CString s = n->GetChild(_T("CullMode")).GetText();
-    FindEnumByName(CullModeNames, s.GetPointer(), (int32_t &)CullMode);
+    auto s = n->GetChild(_T("CullMode")).GetText();
+    FindEnumByName(CullModeNames, s, (int32_t &)CullMode);
   }
 
   if (n->GetChildCount(_T("DepthBias"))) {
@@ -422,25 +422,25 @@ void CCoreSamplerState::SetFilter(COREFILTER e) {
 
 TBOOL CCoreSamplerState::Import(CXMLNode *n) {
   if (n->GetChildCount(_T("Filter"))) {
-    CString s = n->GetChild(_T("Filter")).GetText();
-    FindEnumByName(FilterNames, s.GetPointer(), (int32_t &)Filter);
+    auto s = n->GetChild(_T("Filter")).GetText();
+    FindEnumByName(FilterNames, s, (int32_t &)Filter);
   }
   if (n->GetChildCount(_T("AddressU"))) {
-    CString s = n->GetChild(_T("AddressU")).GetText();
-    FindEnumByName(AddressModeNames, s.GetPointer(), (int32_t &)AddressU);
+    auto s = n->GetChild(_T("AddressU")).GetText();
+    FindEnumByName(AddressModeNames, s, (int32_t &)AddressU);
   }
   if (n->GetChildCount(_T("AddressV"))) {
-    CString s = n->GetChild(_T("AddressV")).GetText();
-    FindEnumByName(AddressModeNames, s.GetPointer(), (int32_t &)AddressV);
+    auto s = n->GetChild(_T("AddressV")).GetText();
+    FindEnumByName(AddressModeNames, s, (int32_t &)AddressV);
   }
   if (n->GetChildCount(_T("AddressW"))) {
-    CString s = n->GetChild(_T("AddressW")).GetText();
-    FindEnumByName(AddressModeNames, s.GetPointer(), (int32_t &)AddressW);
+    auto s = n->GetChild(_T("AddressW")).GetText();
+    FindEnumByName(AddressModeNames, s, (int32_t &)AddressW);
   }
 
   if (n->GetChildCount(_T("ComparisonFunc"))) {
-    CString s = n->GetChild(_T("ComparisonFunc")).GetText();
-    FindEnumByName(ComparisonFunctionNames, s.GetPointer(),
+    auto s = n->GetChild(_T("ComparisonFunc")).GetText();
+    FindEnumByName(ComparisonFunctionNames, s,
                    (int32_t &)ComparisonFunc);
   }
 

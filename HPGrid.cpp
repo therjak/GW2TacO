@@ -82,9 +82,9 @@ void GW2HPGrid::LoadGrids()
         perc.GetAttributeAsFloat( "value", &line.percentage );
       if ( perc.HasAttribute( "color" ) )
       {
-        CString colhex = perc.GetAttributeAsString( "color" );
+        auto colhex = perc.GetAttributeAsString( "color" );
         unsigned int val = 0;
-        colhex.Scan( "%x", &val );
+        std::sscanf(colhex.c_str(), "%x", &val );
         line.color = CColor( val );
       }
       d.displayedPercentages += line;

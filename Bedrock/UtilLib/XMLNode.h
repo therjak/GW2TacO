@@ -6,6 +6,7 @@
 #include <string_view>
 #include <memory>
 #include <cstdint>
+#include <unordered_map>
 
 class CXMLDocument;
 
@@ -29,24 +30,23 @@ public:
 
   int32_t IsValid();
 
-  CString GetNodeName();
+  std::string GetNodeName();
 
   void GetText( TCHAR*, int32_t );
-  CString GetText();
+  std::string GetText();
   bool GetValue( int32_t &Int );
   bool GetValue( TBOOL &Int );
   bool GetValue( float &Float );
 
   bool GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize );
-  CString GetAttribute( TCHAR * szAttribute );
+  std::string GetAttribute( std::string_view szAttribute );
   void GetAttributeAsInteger( TCHAR * szAttribute, int32_t * nValue );
   void GetAttributeAsFloat( TCHAR * szAttribute, float * fValue );
-  CString GetAttributeAsString( TCHAR * szAttribute );
-  bool HasAttribute( TCHAR * szAttribute );
+  std::string GetAttributeAsString( std::string_view szAttribute );
+  bool HasAttribute( std::string_view szAttribute );
 
-  CXMLNode& AddChild( TCHAR*);
-  void SetText( const TCHAR* );
-  void SetText( CString &s );
+  CXMLNode& AddChild( std::string_view);
+  void SetText( std::string_view s );
   void SetInt( int32_t Int );
   void SetFloat( float Float );
   void SetAttribute( std::string_view szAttributeName, std::string_view szValue );
@@ -57,7 +57,7 @@ public:
 private:
 
   int32_t childCount = -1;
-  CDictionary< int32_t, int32_t > childCounts;
+  std::unordered_map< int32_t, int32_t > childCounts;
   std::vector<std::unique_ptr<std::string>> stringStore;
   std::vector<std::unique_ptr<CXMLNode>> children;
 

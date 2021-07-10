@@ -182,7 +182,6 @@ CAtlas::~CAtlas()
   }
   SAFEDELETE( Root );
   SAFEDELETEA( Image );
-  SAFEDELETE( Atlas );
 }
 
 TBOOL CAtlas::PackImage( CAtlasImage *img )
@@ -225,8 +224,8 @@ TBOOL CAtlas::PackImage( CAtlasImage *img )
 TBOOL CAtlas::InitializeTexture( CCoreDevice *Device )
 {
   if ( !Device ) return false;
-  if ( Atlas ) SAFEDELETE( Atlas );
-  return ( Atlas = Device->CreateTexture2D( XRes, YRes, Image ) ) != NULL;
+  Atlas.swap(Device->CreateTexture2D(XRes, YRes, Image));
+  return Atlas.operator bool();
 }
 
 WBATLASHANDLE CAtlas::AddImage( uint8_t *i, int32_t xs, int32_t ys, const CRect &a )
@@ -346,7 +345,7 @@ void CAtlas::DeleteImage( const WBATLASHANDLE h )
 
 CCoreTexture2D *CAtlas::GetTexture()
 {
-  return Atlas;
+  return Atlas.get();
 }
 
 CSize CAtlas::GetSize( WBATLASHANDLE h )
@@ -456,7 +455,7 @@ TBOOL CAtlas::Resize( CCoreDevice *Device, int32_t XSize, int32_t YSize )
 {
   SAFEDELETE( Root );
   SAFEDELETEA( Image );
-  SAFEDELETE( Atlas );
+  Atlas.reset();
 
   FlushCache();
   XRes = XSize;

@@ -43,7 +43,7 @@ public:
   ID3D11DeviceContext *GetDeviceContext() { return DeviceContext; }
 
 	virtual CCoreTexture2D *Copy();
-	virtual void ExportToImage(CString &Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma);
+	virtual void ExportToImage(std::string_view Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma);
 };
 
 class CCoreDX11Texture3D : public CCoreTexture3D

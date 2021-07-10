@@ -1,31 +1,113 @@
 #include "string_format.h"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdarg>
+#include <string>
+#include <string_view>
+#include <vector>
+#include <Windows.h>
 
-std::string FormatString(std::string_view format, ...) {
-  if (format.empty()) {
-    return std::string();
+std::string_view whitespaces(" \t\f\v\n\r");
+
+std::vector<std::string> Split(std::string_view input, std::string_view delim) {
+  size_t start;
+  size_t end = 0;
+  std::vector<std::string> out;
+
+  while ((start = input.find_first_not_of(delim, end)) !=
+         std::string_view::npos) {
+    end = input.find(delim, start);
+    out.emplace_back(input.substr(start, end - start));
   }
-
-  va_list args;
-  va_start(args, format);
-  std::string ret = FormatString(format, args);
-  va_end(args);
-
-  return ret;
+  return out;
 }
 
-std::string FormatString(std::string_view format, va_list args) {
-  if (format.empty()) {
-    return std::string();
+std::vector<std::string> SplitByWhitespace(std::string_view input) {
+  return Split(input, whitespaces);
+}
+
+
+std::string_view Trim(std::string_view s) {
+  {
+    auto it = std::find_if_not(s.begin(), s.end(), std::isspace);
+    s = s.substr(it - s.begin());
   }
+  auto it = std::find_if_not(s.rbegin(), s.rend(), std::isspace);
+  return s.substr(0, s.rend() - it);
+}
 
-  va_list args_copy;
-  va_copy(args_copy, args);
-  int n = std::vsnprintf(nullptr, 0, format.data(), args_copy);
-  va_end(args_copy);
-  std::string ret(n + 1, 0);
-  std::vsnprintf(ret.data(), ret.size(), format.data(), args);
 
-  return ret;
+static const char* B64chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+static const int B64index[256] = {
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  0,  0,  0,  62, 63, 62, 62, 63, 52, 53, 54, 55, 56, 57,
+    58, 59, 60, 61, 0,  0,  0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6,
+    7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+    25, 0,  0,  0,  0,  63, 0,  26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36,
+    37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
+
+const std::string B64Decode(const void* data, const size_t& len) {
+  if (len == 0) return "";
+
+  unsigned char* p = (unsigned char*)data;
+  size_t j = 0, pad1 = len % 4 || p[len - 1] == '=',
+         pad2 = pad1 && (len % 4 > 2 || p[len - 2] != '=');
+  const size_t last = (len - pad1) / 4 << 2;
+  std::string result(last / 4 * 3 + pad1 + pad2, '\0');
+  unsigned char* str = (unsigned char*)&result[0];
+
+  for (size_t i = 0; i < last; i += 4) {
+    int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 |
+            B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
+    str[j++] = n >> 16;
+    str[j++] = n >> 8 & 0xFF;
+    str[j++] = n & 0xFF;
+  }
+  if (pad1) {
+    int n = B64index[p[last]] << 18 | B64index[p[last + 1]] << 12;
+    str[j++] = n >> 16;
+    if (pad2) {
+      n |= B64index[p[last + 2]] << 6;
+      str[j++] = n >> 8 & 0xFF;
+    }
+  }
+  return result;
+}
+
+std::string B64Decode(const std::string& str64) {
+  return B64Decode(str64.c_str(), str64.size());
+}
+
+std::wstring string2wstring(std::string_view s) {
+  if (s.empty()) return {};
+  int wchars_num = MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, NULL, 0);
+  std::wstring wstr(wchars_num, 0);
+  MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, wstr.data(), wstr.size());
+  return wstr;
+}
+
+std::string wstring2string(std::wstring_view s) {
+  if (s.empty()) return {};
+  int chars_num =
+      WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), NULL, 0, NULL, NULL);
+  std::string str(chars_num, 0);
+  WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), str.data(), chars_num,
+                      NULL, NULL);
+  return str;
+}
+
+uint32_t CalculateHash(std::string_view s) {
+  uint32_t Hash = 5381;
+
+  if (s.empty()) return Hash;
+
+  // djb2 hash
+  for (const auto& c : s) {
+    Hash = ((Hash << 5) + Hash) + c;
+  }
+  return Hash;
 }

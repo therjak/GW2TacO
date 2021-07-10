@@ -102,7 +102,7 @@ public:
 
 	INLINE CCoreDevice *GetDevice() { return Device; }
 
-	virtual void SetWindowTitle(CString &Title) = 0;
+	virtual void SetWindowTitle(std::string_view Title) = 0;
 	virtual void SetInactiveFrameLimiter(TBOOL set);
 
 	TBOOL IsMinimized() { return Minimized; }
@@ -144,5 +144,5 @@ public:
 	uint32_t GetHandle();
 
 	virtual void FinalizeMouseCursor();
-	virtual void SetWindowTitle(CString &Title);
+        virtual void SetWindowTitle(std::string_view Title);
 };

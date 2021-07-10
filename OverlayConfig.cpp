@@ -1,8 +1,16 @@
 #include "OverlayConfig.h"
 #include "Bedrock/UtilLib/XMLDocument.h"
 
-CDictionaryEnumerable<CString, int32_t> ConfigNums;
-CDictionaryEnumerable<CString, CString> ConfigStrings;
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <map>
+
+#include "Bedrock/BaseLib/string_format.h"
+
+// These maps must be sorted. So no unordered_map.
+std::map<std::string, int32_t> ConfigNums;
+std::map<std::string, std::string> ConfigStrings;
 bool configChanged = false;
 auto lastConfigChangeTime = globalTimer.GetTime();
 
@@ -20,8 +28,8 @@ void LoadConfig()
     SetWindowPosition( "MapTimer", CRect( 6, 97, 491, 813 ) );
     return;
   }
-  ConfigNums.Flush();
-  ConfigStrings.Flush();
+  ConfigNums.clear();
+  ConfigStrings.clear();
   FORCEDDEBUGLOG( "Config flushed." );
 
   if ( !d.GetDocumentNode().GetChildCount( "TacOConfig" ) ) return;
@@ -50,60 +58,40 @@ void LoadConfig()
   configChanged = false;
 }
 
-int StringSorter( const CString& a, const CString& b )
-{
-  int len = min( a.Length(), b.Length() );
-
-  for ( int x = 0; x < len; x++ )
-  {
-    int dif = a[ x ] - b[ x ];
-    if ( dif != 0 )
-      return dif;
-  }
-  return 0;
-}
-
 void SaveConfig()
 {
   CXMLDocument doc;
   CXMLNode& root = doc.GetDocumentNode();
   root = root.AddChild( "TacOConfig" );
-  ConfigNums.SortByKey( StringSorter );
-  ConfigStrings.SortByKey( StringSorter );
-  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( const auto& kdp: ConfigNums )
   {
-    auto kdp = ConfigNums.GetKDPairByIndex( x );
-    root.AddChild( kdp->Key.GetPointer() ).SetAttributeFromInteger( "Data", kdp->Data );
+    root.AddChild( kdp.first ).SetAttributeFromInteger( "Data", kdp.second );
   }
-  for ( int32_t x = 0; x < ConfigStrings.NumItems(); x++ )
+  for ( const auto& kdp: ConfigStrings )
   {
-    auto kdp = ConfigStrings.GetKDPairByIndex( x );
-    root.AddChild( kdp->Key.GetPointer() ).SetAttribute( "String", kdp->Data.GetPointer() );
+    root.AddChild( kdp.first ).SetAttribute( "String", kdp.second );
   }
   doc.SaveToFile( "TacOConfig.xml" );
 }
 
-void ToggleConfigValue( CString &value )
-{
+void ToggleConfigValue(std::string_view key) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  if ( ConfigNums.HasKey( value ) )
+  std::string k(key);
+  if ( ConfigNums.find( k ) != ConfigNums.end() )
   {
-    int32_t v = ConfigNums[ value ];
-    ConfigNums[ value ] = !v;
+    int32_t v = ConfigNums[ k ];
+    ConfigNums[ k ] = !v;
   }
   else
-    ConfigNums[ value ] = 0;
+    ConfigNums[ k ] = 0;
 }
 
-void ToggleConfigValue(std::string_view value) {
-  ToggleConfigValue( CString( value.data() ) );
-}
-
-int32_t GetConfigValue( std::string_view value )
-{
-  if ( ConfigNums.HasKey( value.data() ) )
-    return ConfigNums[ value.data() ];
+int32_t GetConfigValue(std::string_view value) {
+  std::string v(value);
+  if (ConfigNums.find(v) != ConfigNums.end()) {
+    return ConfigNums[v];
+  }
   return 0;
 }
 
@@ -114,86 +102,82 @@ void SetConfigValue(std::string_view value, int32_t val) {
 }
 
 TBOOL HasConfigValue(std::string_view value) {
-  return ConfigNums.HasKey( value.data() );
+  return ConfigNums.find(std::string(value)) != ConfigNums.end();
 }
 
 TBOOL HasConfigString(std::string_view value) {
-  return ConfigStrings.HasKey( value.data() );
+  return ConfigStrings.find(std::string(value)) != ConfigStrings.end();
 }
 
 void SetConfigString(std::string_view value,
                      std::string_view val) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigStrings[ CString(value.data()) ] = CString(val.data());
+  ConfigStrings[ std::string(value) ] = val;
 }
 
-CString GetConfigString(std::string_view value) {
-  if ( ConfigStrings.HasKey( value.data() ) )
-    return ConfigStrings[ value.data() ];
+std::string GetConfigString(std::string_view value) {
+  std::string v(value);
+  auto f = ConfigStrings.find(v);
+  if ( f != ConfigStrings.end() )
+    return f->second;
   return "";
 }
 
-TBOOL IsWindowOpen( TCHAR *windowname )
-{
-  CString s( windowname );
-  return GetConfigValue( ( s + L"_open" ).GetPointer() );
+TBOOL IsWindowOpen(std::string_view windowname) {
+  std::string s( windowname );
+  return GetConfigValue( ( s + "_open" ) );
 }
 
-void SetWindowOpenState( TCHAR *windowname, TBOOL Open )
-{
-  CString s( windowname );
-  SetConfigValue( ( s + L"_open" ).GetPointer(), (int)Open );
+void SetWindowOpenState(std::string_view windowname, TBOOL Open) {
+  std::string s(windowname);
+  SetConfigValue((s + "_open"), (int)Open);
 }
 
-CRect GetWindowPosition( TCHAR *windowname )
-{
+CRect GetWindowPosition(std::string_view windowname) {
   CRect r;
-  CString s( windowname );
-  r.x1 = GetConfigValue( ( s + L"_x1" ).GetPointer() );
-  r.y1 = GetConfigValue( ( s + L"_y1" ).GetPointer() );
-  r.x2 = GetConfigValue( ( s + L"_x2" ).GetPointer() );
-  r.y2 = GetConfigValue( ( s + L"_y2" ).GetPointer() );
+  std::string s(windowname);
+  r.x1 = GetConfigValue( ( s + "_x1" ) );
+  r.y1 = GetConfigValue( ( s + "_y1" ) );
+  r.x2 = GetConfigValue( ( s + "_x2" ) );
+  r.y2 = GetConfigValue( ( s + "_y2" ) );
   return r;
 }
 
-void SetWindowPosition( TCHAR *windowname, CRect Pos )
-{
-  CString s( windowname );
-  SetConfigValue( ( s + L"_x1" ).GetPointer(), Pos.x1 );
-  SetConfigValue( ( s + L"_y1" ).GetPointer(), Pos.y1 );
-  SetConfigValue( ( s + L"_x2" ).GetPointer(), Pos.x2 );
-  SetConfigValue( ( s + L"_y2" ).GetPointer(), Pos.y2 );
+void SetWindowPosition(std::string_view windowname, CRect Pos) {
+  std::string s(windowname);
+  SetConfigValue( ( s + "_x1" ), Pos.x1 );
+  SetConfigValue( ( s + "_y1" ), Pos.y1 );
+  SetConfigValue( ( s + "_x2" ), Pos.x2 );
+  SetConfigValue( ( s + "_y2" ), Pos.y2 );
 }
 
-TBOOL HasWindowData( TCHAR *windowname )
-{
-  CString s( windowname );
-  return HasConfigValue( ( s + L"_open" ).GetPointer() ) &&
-    HasConfigValue( ( s + L"_x1" ).GetPointer() ) &&
-    HasConfigValue( ( s + L"_y1" ).GetPointer() ) &&
-    HasConfigValue( ( s + L"_x2" ).GetPointer() ) &&
-    HasConfigValue( ( s + L"_y2" ).GetPointer() );
+TBOOL HasWindowData(std::string_view windowname) {
+  std::string s(windowname);
+  return HasConfigValue( ( s + "_open" ) ) &&
+    HasConfigValue( ( s + "_x1" ) ) &&
+    HasConfigValue( ( s + "_y1" ) ) &&
+    HasConfigValue( ( s + "_x2" ) ) &&
+    HasConfigValue( ( s + "_y2" ) );
 }
 
-void GetKeyBindings( CDictionary<int32_t, TacOKeyAction> &KeyBindings )
+void GetKeyBindings( std::unordered_map<int32_t, TacOKeyAction> &KeyBindings )
 {
-  KeyBindings.Flush();
+  KeyBindings.clear();
 
-  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( const auto& kdp: ConfigNums )
   {
-    auto kdp = ConfigNums.GetKDPair( x );
-    if ( kdp->Key.Find( "KeyboardKey_" ) != 0 )
+    if ( kdp.first.find( "KeyboardKey_" ) != 0 )
       continue;
     int32_t key;
-    if ( kdp->Key.Scan( "KeyboardKey_%d", &key ) != 1 )
+    if ( std::sscanf(kdp.first.c_str(), "KeyboardKey_%d", &key ) != 1 )
       continue;
-    if ( kdp->Data == (int32_t)TacOKeyAction::NoAction )
+    if ( kdp.second == (int32_t)TacOKeyAction::NoAction )
       continue;
-    KeyBindings[ key ] = (TacOKeyAction)kdp->Data;
+    KeyBindings[ key ] = (TacOKeyAction)kdp.second;
   }
 
-  if ( !KeyBindings.NumItems() )
+  if ( KeyBindings.empty() )
   {
     SetKeyBinding( TacOKeyAction::AddPOI, '+' );
     SetKeyBinding( TacOKeyAction::RemovePOI, '-' );
@@ -213,84 +197,83 @@ void SetKeyBinding( TacOKeyAction action, int32_t key )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ CString::Format( "KeyboardKey_%d", key ) ] = (int32_t)action;
+  ConfigNums[ FormatString( "KeyboardKey_%d", key ) ] = (int32_t)action;
 }
 
 void DeleteKeyBinding( int32_t keyToDelete )
 {
-  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
+  auto elm = ConfigNums.begin();
+  while ( elm != ConfigNums.end() )
   {
-    auto kdp = ConfigNums.GetKDPair( x );
-    if ( kdp->Key.Find( "KeyboardKey_" ) != 0 )
+    if (elm->first.find("KeyboardKey_") != 0) {
+      ++elm;
       continue;
+    }
     int32_t key;
-    if ( kdp->Key.Scan( "KeyboardKey_%d", &key ) != 1 )
+    if (std::sscanf(elm->first.c_str(), "KeyboardKey_%d", &key) != 1) {
+      ++elm;
       continue;
+    }
 
-    if ( key == keyToDelete )
-    {
-      ConfigNums.Delete( kdp->Key );
-      x--;
+    if ( key == keyToDelete ) {
+      elm = ConfigNums.erase( elm );
+    } else {
+      ++elm;
     }
   }
 }
 
-void GetScriptKeyBindings( CDictionary<int32_t, CString> &ScriptKeyBindings )
+void GetScriptKeyBindings( std::unordered_map<int32_t, std::string> &ScriptKeyBindings )
 {
-  ScriptKeyBindings.Flush();
+  ScriptKeyBindings.clear();
 
-  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( const auto& kdp: ConfigNums )
   {
-    auto kdp = ConfigNums.GetKDPair( x );
-    if ( kdp->Key.Find( "ScriptKey_" ) != 0 )
+    if ( kdp.first.find( "ScriptKey_" ) != 0 )
       continue;
-    CString key = kdp->Key.Substring( 10 );
-    if ( key.Length() <= 0 )
+    auto key = kdp.first.substr( 10 );
+    if ( key.empty() )
       continue;
-    ScriptKeyBindings[ kdp->Data ] = key;
+    ScriptKeyBindings[ kdp.second ] = key;
   }
 }
 
-void SetScriptKeyBinding( const CString& scriptEvent, int32_t key )
+void SetScriptKeyBinding( std::string_view scriptEvent, int32_t key )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ CString::Format( "ScriptKey_%s", scriptEvent.GetPointer() ) ] = (int32_t)key;
+  ConfigNums[ FormatString( "ScriptKey_%s", std::string(scriptEvent).c_str()) ] = (int32_t)key;
 }
 
-void DeleteScriptKeyBinding( const CString& scriptEvent )
-{
-  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
-  {
-    auto kdp = ConfigNums.GetKDPair( x );
-    if ( kdp->Key.Find( "ScriptKey_" ) != 0 )
+void DeleteScriptKeyBinding(std::string_view scriptEvent) {
+  auto it = ConfigNums.begin();
+  while (it != ConfigNums.end()) {
+    if (it->first.find("ScriptKey_") != 0) {
+      ++it;
       continue;
-    CString key = kdp->Key.Substring( 10 );
-    if ( key != scriptEvent )
-      continue;
-
-    if ( key == scriptEvent )
-    {
-      ConfigNums.DeleteByIndex( x );
-      x--;
     }
+    auto key = it->first.substr(10);
+    if (key != scriptEvent) {
+      ++it;
+      continue;
+    }
+    it = ConfigNums.erase(it);
   }
 }
 
-GW2TacticalCategory *GetCategory( CString s );
+GW2TacticalCategory *GetCategory( std::string_view s );
 
 void LoadMarkerCategoryVisibilityInfo()
 {
-  for ( int32_t x = 0; x < ConfigNums.NumItems(); x++ )
+  for ( auto& kdp: ConfigNums )
   {
-    auto kdp = ConfigNums.GetKDPair( x );
-    if ( kdp->Key.Find( "CategoryVisible_" ) != 0 )
+    if ( kdp.first.find( "CategoryVisible_" ) != 0 )
       continue;
 
-    CString str = kdp->Key.Substring( 16 );
+    auto str = kdp.first.substr( 16 );
     auto cat = GetCategory( str );
     if ( cat )
-      cat->IsDisplayed = kdp->Data;
+      cat->IsDisplayed = kdp.second != 0;
   }
 }
 
@@ -307,6 +290,6 @@ void AutoSaveConfig()
 }
 
 void RemoveConfigEntry(std::string_view name) {
-  ConfigStrings.Delete(name.data());
-  ConfigNums.Delete(name.data());
+  ConfigStrings.erase(std::string(name));
+  ConfigNums.erase(std::string(name));
 }

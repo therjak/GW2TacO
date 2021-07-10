@@ -1,34 +1,32 @@
 #pragma once
+
+#include <string_view>
+
 #include "Application.h"
 
-enum WBBOXAXIS
-{
+enum WBBOXAXIS {
   WB_HORIZONTAL = 0,
   WB_VERTICAL,
 };
 
-enum WBBOXARRANGEMENT
-{
+enum WBBOXARRANGEMENT {
   WB_ARRANGE_NONE = 0,
   WB_ARRANGE_HORIZONTAL,
   WB_ARRANGE_VERTICAL
 };
 
-enum WBBOXSIZING
-{
+enum WBBOXSIZING {
   WB_SIZING_KEEP = 0,
   WB_SIZING_FILL,
 };
 
-class CWBBox : public CWBItem
-{
-protected:
-
-  virtual void AddChild( CWBItem *Item );
-  virtual TBOOL MessageProc( CWBMessage &Message );
+class CWBBox : public CWBItem {
+ protected:
+  virtual void AddChild(CWBItem *Item);
+  virtual TBOOL MessageProc(CWBMessage &Message);
   virtual void RearrangeChildren();
 
-  virtual void OnDraw( CWBDrawAPI *API );
+  virtual void OnDraw(CWBDrawAPI *API);
   void RearrangeHorizontal();
   void RearrangeVertical();
   void UpdateScrollbarData();
@@ -39,23 +37,23 @@ protected:
   WBBOXSIZING SizingX, SizingY;
   bool ClickThrough = false;
 
-public:
-
+ public:
   CWBBox();
-  CWBBox( CWBItem *Parent, const CRect &Pos );
+  CWBBox(CWBItem *Parent, const CRect &Pos);
   virtual ~CWBBox();
 
-  virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position );
+  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position);
 
-  static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
-  WB_DECLARE_GUIITEM( _T( "box" ), CWBItem );
+  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  WB_DECLARE_GUIITEM(_T( "box" ), CWBItem);
 
-  virtual void SetArrangement( WBBOXARRANGEMENT a );
+  virtual void SetArrangement(WBBOXARRANGEMENT a);
   WBBOXARRANGEMENT GetArrangement();
-  virtual void SetSpacing( int32_t s );
-  virtual void SetAlignment( WBBOXAXIS axis, WBALIGNMENT align );
-  virtual void SetSizing( WBBOXAXIS axis, WBBOXSIZING siz );
-  virtual TBOOL ApplyStyle( CString & prop, CString & value, CStringArray & pseudo );
-  virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
-
+  virtual void SetSpacing(int32_t s);
+  virtual void SetAlignment(WBBOXAXIS axis, WBALIGNMENT align);
+  virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
+  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                           const std::vector<std::string>& pseudo);
+  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                                   WBMESSAGE MessageType);
 };

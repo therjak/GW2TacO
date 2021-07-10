@@ -13,15 +13,15 @@
 
 CLogger Logger;
 
-void CLoggerOutput::Process(LOGVERBOSITY v, std::string_view String) {}
+void CLoggerOutput::Process(LOGVERBOSITY v, const std::string& String) {}
 
 CLoggerOutput::~CLoggerOutput() {}
 
 CLoggerOutput::CLoggerOutput() {}
 
 void CLoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
-                                        std::string_view String) {
-  OutputDebugString(String.data());
+                                        const std::string& String) {
+  OutputDebugString(String.c_str());
   OutputDebugString(_T( "\n" ));
 }
 
@@ -29,23 +29,23 @@ CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() {}
 
 CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput() {}
 
-void CLoggerOutput_StdOut::Process(LOGVERBOSITY v, std::string_view String) {
-  _tprintf(_T( "%s\n" ), String.data());
+void CLoggerOutput_StdOut::Process(LOGVERBOSITY v, const std::string& String) {
+  _tprintf(_T( "%s\n" ), String.c_str());
 }
 
 CLoggerOutput_StdOut::~CLoggerOutput_StdOut() {}
 
 CLoggerOutput_StdOut::CLoggerOutput_StdOut() {}
 
-void CLoggerOutput_File::Process(LOGVERBOSITY v, std::string_view String) {
+void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
   if (!f) {
     if (!OpenLogFile(fname, Append)) return;
     if (!f) return;
   }
 #ifndef UNICODE
-  fprintf(f, "%s\n", String.data());
+  fprintf(f, "%s\n", String.c_str());
 #else
-  fwprintf(f, _T( "%s\n" ), String.data());
+  fwprintf(f, _T( "%s\n" ), String.c_str());
 #endif
 }
 
@@ -94,6 +94,21 @@ void CLogger::AddOutput(std::unique_ptr<CLoggerOutput>&& Output) {
 }
 
 void CLogger::SetVerbosity(LOGVERBOSITY v) { Verbosity = v; }
+
+std::string FormatString(std::string_view format, va_list args) {
+  if (format.empty()) {
+    return std::string();
+  }
+
+  va_list args_copy;
+  va_copy(args_copy, args);
+  int n = std::vsnprintf(nullptr, 0, format.data(), args_copy);
+  va_end(args_copy);
+  std::string ret(n + 1, 0);
+  std::vsnprintf(ret.data(), ret.size(), format.data(), args);
+
+  return ret;
+}
 
 void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
                   std::string_view String, ...) {
@@ -149,8 +164,8 @@ CLoggerOutput_RingBuffer::CLoggerOutput_RingBuffer() {}
 CLoggerOutput_RingBuffer::~CLoggerOutput_RingBuffer() {}
 
 void CLoggerOutput_RingBuffer::Process(LOGVERBOSITY v,
-                                       std::string_view String) {
-  Buffer.Add(std::string(String));
+                                       const std::string& String) {
+  Buffer.Add(String);
 }
 
 void CLoggerOutput_RingBuffer::Dump(std::string_view fname) {

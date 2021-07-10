@@ -114,8 +114,8 @@ public:
   INLINE WBGUID GetTarget() const { return Target; }
   INLINE CPoint GetPosition() const { return CPoint( Position[ 0 ], Position[ 1 ] ); }
 
-  TBOOL IsTargetID( const CString& Name );
-  CString GetTargetID();
+  TBOOL IsTargetID(std::string_view Name);
+  std::string GetTargetID();
 
   TBOOL IsMouseMessage();
 

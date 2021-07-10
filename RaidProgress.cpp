@@ -5,6 +5,8 @@
 #include "Language.h"
 #include <cctype>
 
+#include "Bedrock/BaseLib/string_format.h"
+
 using namespace jsonxx;
 
 void BeautifyString(std::string& str) {
@@ -202,7 +204,7 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
           posx = oposx;
 
         if ( !compact )
-          f->Write( API, DICT( "raid_wing" ) + CString::Format( "%d:", y + 1 ), CPoint( posx, posy + 1 ), 0xffffffff );
+          f->Write( API, DICT( "raid_wing" ) + FormatString( "%d:", y + 1 ), CPoint( posx, posy + 1 ), 0xffffffff );
 
         if ( !compact )
           posx = f->GetLineHeight() * 3;
@@ -216,7 +218,7 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
           API->SetCropRect( ClientToScreen( r ) );
           posx += f->GetLineHeight() * 2 + 1;
           API->DrawRect( r, e.finished ? 0x8033cc11 : 0x80cc3322 );
-          CString s = e.type[ 0 ] == 'B' ? ( DICT( "raid_boss" ) + CString::Format( "%d", cnt ) ) : DICT( "raid_event" );
+          auto s = e.type[ 0 ] == 'B' ? ( DICT( "raid_boss" ) + FormatString( "%d", cnt ) ) : DICT( "raid_event" );
 
           if ( e.type[ 0 ] == 'B' )
             cnt++;

@@ -4,6 +4,7 @@
 #include "../UtilLib/PNGDecompressor.h"
 #include "WhiteBoard.h"
 #include "../BaseLib/read_file.h"
+#include "../BaseLib/string_format.h"
 
 #include <cstdio>
 
@@ -32,13 +33,13 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin()
 
 CWBApplication::~CWBApplication()
 {
-  Fonts.FreeAll();
+  Fonts.clear();
   SAFEDELETE( Skin );
   SAFEDELETE( Atlas );
   SAFEDELETE( DrawAPI );
   SAFEDELETE( Root );
   SAFEDELETE( FrameTimes );
-  LayoutRepository.FreeAll();
+  LayoutRepository.clear();
 }
 
 TBOOL CWBApplication::SendMessageToItem( CWBMessage &Message, CWBItem *Target )
@@ -438,7 +439,7 @@ void CWBApplication::UnRegisterItem( CWBItem *Item )
   Trash.Delete( Item );
 
   if ( MouseCaptureItem == Item ) ReleaseCapture();
-  Items.Delete( Item->GetGuid() );
+  Items.erase( Item->GetGuid() );
 
   if ( Item->GetScreenRect().Contains( MousePos ) )
     UpdateMouseItem();
@@ -492,7 +493,7 @@ void CWBApplication::Display( CWBDrawAPI *API )
 
 CWBItem *CWBApplication::FindItemByGuid( WBGUID Guid, const TCHAR *type )
 {
-  if ( !Items.HasKey( Guid ) ) return NULL;
+  if ( Items.find( Guid ) == Items.end() ) return NULL;
   CWBItem *i = Items[ Guid ];
 
   if ( type )
@@ -570,36 +571,32 @@ CWBItem *CWBApplication::GetMouseCaptureItem()
   return MouseCaptureItem;
 }
 
-TBOOL CWBApplication::CreateFont( CString FontName, CWBFontDescription *Font )
+TBOOL CWBApplication::CreateFont( std::string_view FontName, CWBFontDescription *Font )
 {
   if ( !Font ) return false;
 
-  CWBFont *f = new CWBFont( Atlas );
+  auto f = std::make_unique<CWBFont>( Atlas );
 
   if ( !f->Initialize( Font ) )
   {
-    SAFEDELETE( f );
     return false;
   }
 
-  if ( Fonts.HasKey( FontName ) )
-  {
-    SAFEDELETE( Fonts[ FontName ] );
-  }
+  if ( Fonts.empty() )
+    DefaultFont = f.get();
 
-  if ( !Fonts.NumItems() )
-    DefaultFont = f;
-
-  Fonts[ FontName ] = f;
+  Fonts[ std::string(FontName) ] = std::move(f);
 
   return true;
 }
 
-CWBFont *CWBApplication::GetFont( CString FontName )
-{
-  CWBFont *Font = Fonts.GetExisting( FontName );
-  if ( Font ) return Font;
-  LOG_WARN( "[gui] Font %s not found, falling back to default font", FontName.GetPointer() );
+CWBFont *CWBApplication::GetFont(std::string_view FontName) {
+
+  auto f = Fonts.find(std::string(FontName));
+  if (f != Fonts.end()) {
+    return f->second.get();
+  }
+  LOG_WARN( "[gui] Font %s not found, falling back to default font", std::string(FontName).c_str() );
   return DefaultFont;
 }
 
@@ -608,8 +605,7 @@ CWBFont *CWBApplication::GetDefaultFont()
   return DefaultFont;
 }
 
-TBOOL CWBApplication::SetDefaultFont( CString FontName )
-{
+TBOOL CWBApplication::SetDefaultFont(std::string_view FontName) {
   CWBFont *f = GetFont( FontName );
   if ( !f ) return false;
   DefaultFont = f;
@@ -621,13 +617,11 @@ void CWBApplication::AddToTrash( CWBItem *item )
   Trash.AddUnique( item );
 }
 
-TBOOL CWBApplication::LoadXMLLayout( CString & XML )
-{
-  CXMLDocument *doc = new CXMLDocument();
-  if ( !doc->LoadFromString( XML.GetPointer() ) )
+TBOOL CWBApplication::LoadXMLLayout(std::string_view XML) {
+  auto doc = std::make_unique<CXMLDocument>();
+  if ( !doc->LoadFromString( XML ) )
   {
     LOG_ERR( "[gui] Error loading XML Layout: parsing failed" );
-    delete doc;
     return false;
   }
 
@@ -636,7 +630,6 @@ TBOOL CWBApplication::LoadXMLLayout( CString & XML )
   if ( !root.GetChildCount( _T( "guidescriptor" ) ) )
   {
     LOG_ERR( "[gui] Error loading XML Layout: 'guidescriptor' member missing" );
-    delete doc;
     return false;
   }
 
@@ -645,7 +638,6 @@ TBOOL CWBApplication::LoadXMLLayout( CString & XML )
   if ( !root.GetChildCount( _T( "gui" ) ) )
   {
     LOG_ERR( "[gui] Error loading XML Layout: 'gui' member missing" );
-    delete doc;
     return false;
   }
 
@@ -653,42 +645,37 @@ TBOOL CWBApplication::LoadXMLLayout( CString & XML )
   if ( !gui.HasAttribute( _T( "id" ) ) )
   {
     LOG_ERR( "[gui] Error loading XML Layout: 'id' member missing from 'gui'" );
-    delete doc;
     return false;
   }
 
-  CString id = gui.GetAttribute( _T( "id" ) );
+  auto id = gui.GetAttribute( _T( "id" ) );
 
-  LayoutRepository.Free( id );
-  LayoutRepository[ id ] = doc;
-
-  //LOG_NFO("[gui] Successfully loaded XML layout '%s'",id.GetPointer());
+  LayoutRepository[ id ] = std::move(doc);
 
   return true;
 }
 
-TBOOL CWBApplication::LoadXMLLayoutFromFile( CString FileName )
-{
+TBOOL CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
   CStreamReaderMemory f;
-  if ( !f.Open( FileName.GetPointer() ) )
+  if ( !f.Open( FileName ) )
   {
-    LOG_ERR( "[gui] Error loading XML Layout: file '%s' not found", FileName.GetPointer() );
+    LOG_ERR( "[gui] Error loading XML Layout: file '%s' not found", std::string(FileName).c_str() );
     return false;
   }
 
-  CString s( (char*)f.GetData(), (int32_t)f.GetLength() );
+  std::string_view s( (char*)f.GetData(), (int32_t)f.GetLength() );
   return LoadXMLLayout( s );
 }
 
-TBOOL CWBApplication::GenerateGUI( CWBItem *Root, CString &Layout )
-{
-  if ( !LayoutRepository.HasKey( Layout ) )
+TBOOL CWBApplication::GenerateGUI(CWBItem *Root, std::string_view Layout) {
+  std::string l(Layout);
+  if ( LayoutRepository.find( l ) == LayoutRepository.end())
   {
-    LOG_ERR( "[gui] Error generating UI: layout '%s' not loaded", Layout.GetPointer() );
+    LOG_ERR( "[gui] Error generating UI: layout '%s' not loaded", l.c_str() );
     return false;
   }
 
-  TBOOL b = GenerateGUIFromXML( Root, LayoutRepository[ Layout ] );
+  TBOOL b = GenerateGUIFromXML( Root, LayoutRepository[ l ].get() );
   if ( !b ) return false;
 
   StyleManager.ApplyStyles( Root );
@@ -699,15 +686,17 @@ TBOOL CWBApplication::GenerateGUI( CWBItem *Root, CString &Layout )
   return true;
 }
 
-TBOOL CWBApplication::GenerateGUITemplate( CWBItem *Root, CString &Layout, CString &TemplateID )
-{
-  if ( !LayoutRepository.HasKey( Layout ) )
+TBOOL CWBApplication::GenerateGUITemplate(CWBItem *Root,
+                                          std::string_view Layout,
+                                          std::string_view TemplateID) {
+  std::string l(Layout);
+  if ( LayoutRepository.find( l ) == LayoutRepository.end())
   {
-    LOG_ERR( "[gui] Error generating UI template: layout '%s' not loaded", Layout.GetPointer() );
+    LOG_ERR( "[gui] Error generating UI template: layout '%s' not loaded", l.c_str() );
     return false;
   }
 
-  TBOOL b = GenerateGUITemplateFromXML( Root, LayoutRepository[ Layout ], TemplateID );
+  TBOOL b = GenerateGUITemplateFromXML( Root, LayoutRepository[ l ].get(), TemplateID );
   if ( !b ) return false;
 
   StyleManager.ApplyStyles( Root );
@@ -717,11 +706,6 @@ TBOOL CWBApplication::GenerateGUITemplate( CWBItem *Root, CString &Layout, CStri
   Root->MessageProc( m );
 
   return true;
-}
-
-TBOOL CWBApplication::GenerateGUITemplate( CWBItem *Root, TCHAR *Layout, TCHAR *TemplateID )
-{
-  return GenerateGUITemplate( Root, CString( Layout ), CString( TemplateID ) );
 }
 
 void CWBApplication::ApplyStyle( CWBItem *Target )
@@ -742,30 +726,29 @@ void CWBApplication::ReApplyStyle()
   m.Resized = true;
   Root->MessageProc( m );
 }
-
+/*
 TBOOL CWBApplication::GenerateGUI( CWBItem *Root, const TCHAR *layout )
 {
   //LOG_NFO("[gui] Generating UI Layout '%s'",layout);
   return GenerateGUI( Root, CString( layout ) );
-}
+}*/
 
-TBOOL CWBApplication::LoadCSS( CString & CSS, TBOOL ResetStyleManager )
-{
+TBOOL CWBApplication::LoadCSS(std::string_view CSS, TBOOL ResetStyleManager) {
   if ( ResetStyleManager )
     StyleManager.Reset();
   return StyleManager.ParseStyleData( CSS );
 }
 
-TBOOL CWBApplication::LoadCSSFromFile( CString FileName, TBOOL ResetStyleManager )
-{
+TBOOL CWBApplication::LoadCSSFromFile(std::string_view FileName,
+                                      TBOOL ResetStyleManager) {
   CStreamReaderMemory f;
-  if ( !f.Open( FileName.GetPointer() ) )
+  if ( !f.Open( FileName ) )
   {
-    LOG_ERR( "[gui] Error loading CSS: file '%s' not found", FileName.GetPointer() );
+    LOG_ERR( "[gui] Error loading CSS: file '%s' not found", std::string(FileName).c_str() );
     return false;
   }
 
-  CString s( (char*)f.GetData(), (int32_t)f.GetLength() );
+  std::string_view s( (char*)f.GetData(), (int32_t)f.GetLength() );
   TBOOL b = LoadCSS( s, ResetStyleManager );
   //if (b)
   //	LOG_NFO("[gui] Successfully loaded CSS '%s'",FileName.GetPointer());
@@ -783,10 +766,10 @@ CWBSkin * CWBApplication::GetSkin()
   return Skin;
 }
 
-TBOOL CWBApplication::LoadSkin( CString &XML, std::vector<int>& enabledGlyphs )
-{
+TBOOL CWBApplication::LoadSkin(std::string_view XML,
+                               std::vector<int> &enabledGlyphs) {
   CXMLDocument doc;
-  if ( !doc.LoadFromString( XML.GetPointer() ) ) return false;
+  if ( !doc.LoadFromString( XML ) ) return false;
   if ( !doc.GetDocumentNode().GetChildCount( _T( "whiteboardskin" ) ) ) return false;
 
   CXMLNode r = doc.GetDocumentNode().GetChild( _T( "whiteboardskin" ) );
@@ -794,15 +777,14 @@ TBOOL CWBApplication::LoadSkin( CString &XML, std::vector<int>& enabledGlyphs )
   for ( int32_t x = 0; x < r.GetChildCount( _T( "image" ) ); x++ )
   {
     CXMLNode n = r.GetChild( _T( "image" ), x );
-    CString img = n.GetAttributeAsString( _T( "image" ) );
+    auto img = n.GetAttributeAsString( _T( "image" ) );
 
-    uint8_t *Data = NULL;
-    int32_t Size = 0;
-    img.DecodeBase64( Data, Size );
+    auto data = B64Decode(img);
 
-    uint8_t *Image;
+    uint8_t *Image = nullptr;
     int32_t XRes, YRes;
-    if ( DecompressPNG( Data, Size, Image, XRes, YRes ) )
+    if (DecompressPNG((unsigned char *)data.c_str(), data.size(), Image, XRes,
+                      YRes))
     {
       ARGBtoABGR( Image, XRes, YRes );
       ClearZeroAlpha( Image, XRes, YRes );
@@ -824,11 +806,8 @@ TBOOL CWBApplication::LoadSkin( CString &XML, std::vector<int>& enabledGlyphs )
         WBATLASHANDLE h = Atlas->AddImage( Image, XRes, YRes, r2 );
         Skin->AddElement( e.GetAttributeAsString( _T( "name" ) ), h, (WBSKINELEMENTBEHAVIOR)b.x, (WBSKINELEMENTBEHAVIOR)b.y );
       }
-
       SAFEDELETEA( Image );
     }
-
-    SAFEDELETEA( Data );
   }
 
   for ( int32_t x = 0; x < r.GetChildCount( _T( "mosaic" ) ); x++ )
@@ -848,30 +827,33 @@ TBOOL CWBApplication::LoadSkin( CString &XML, std::vector<int>& enabledGlyphs )
   {
     CXMLNode n = r.GetChild( _T( "font" ), x );
 
-    CString Name = n.GetAttributeAsString( _T( "name" ) );
+    auto Name = n.GetAttributeAsString( _T( "name" ) );
 
-    CString img = n.GetAttributeAsString( _T( "image" ) );
-    CString bin = n.GetAttributeAsString( _T( "binary" ) );
+    auto img = n.GetAttributeAsString( _T( "image" ) );
+    auto bin = n.GetAttributeAsString( _T( "binary" ) );
 
     uint8_t *Dataimg = NULL;
     uint8_t *Databin = NULL;
     int32_t Sizeimg = 0;
     int32_t Sizebin = 0;
-    img.DecodeBase64( Dataimg, Sizeimg );
-    bin.DecodeBase64( Databin, Sizebin );
+    auto dataimg = B64Decode(img);
+    auto databin = B64Decode(bin);
 
     int32_t XRes, YRes;
     uint8_t *Image;
-    if ( DecompressPNG( Dataimg, Sizeimg, Image, XRes, YRes ) )
+    if (DecompressPNG((unsigned char *)dataimg.c_str(), dataimg.size(), Image,
+                      XRes, YRes))
     {
       ARGBtoABGR( Image, XRes, YRes );
       CWBFontDescription *fd = new CWBFontDescription();
-      if ( fd->LoadBMFontBinary( Databin, Sizebin, Image, XRes, YRes, enabledGlyphs ) )
+      if (fd->LoadBMFontBinary((unsigned char *)databin.c_str(), databin.size(),
+                               Image, XRes, YRes, enabledGlyphs))
       {
         TBOOL f = CreateFont( Name, fd );
       }
-      else
-        if ( fd->LoadBMFontText( Databin, Sizebin, Image, XRes, YRes, enabledGlyphs ) )
+      else if (fd->LoadBMFontText((unsigned char *)databin.c_str(),
+                                    databin.size(), Image, XRes, YRes,
+                                    enabledGlyphs))
         {
           TBOOL f = CreateFont( Name, fd );
         }
@@ -879,27 +861,24 @@ TBOOL CWBApplication::LoadSkin( CString &XML, std::vector<int>& enabledGlyphs )
       SAFEDELETE( fd );
       SAFEDELETE( Image );
     }
-
-    SAFEDELETE( Dataimg );
-    SAFEDELETE( Databin );
   }
 
   return true;
 }
 
-TBOOL CWBApplication::LoadSkinFromFile( CString FileName, std::vector<int>& enabledGlyphs )
+TBOOL CWBApplication::LoadSkinFromFile( std::string_view FileName, std::vector<int>& enabledGlyphs )
 {
   CStreamReaderMemory f;
-  if ( !f.Open( FileName.GetPointer() ) )
+  if ( !f.Open( FileName ) )
   {
-    LOG_ERR( "[gui] Error loading Skin: file '%s' not found", FileName.GetPointer() );
+    LOG_ERR( "[gui] Error loading Skin: file '%s' not found", std::string(FileName).c_str() );
     return false;
   }
 
-  CString s( (char*)f.GetData(), (int32_t)f.GetLength() );
+  std::string_view s( (char*)f.GetData(), (int32_t)f.GetLength() );
   TBOOL b = LoadSkin( s, enabledGlyphs );
   if ( b )
-    LOG_NFO( "[gui] Successfully loaded Skin '%s'", FileName.GetPointer() );
+    LOG_NFO( "[gui] Successfully loaded Skin '%s'", std::string(FileName).c_str() );
 
   return b;
 }
@@ -921,8 +900,9 @@ TBOOL CWBApplication::GenerateGUIFromXML( CWBItem *Root, CXMLDocument *doc )
   return ProcessGUIXML( Root, gui );
 }
 
-TBOOL CWBApplication::GenerateGUITemplateFromXML( CWBItem *Root, CXMLDocument *doc, CString &TemplateID )
-{
+TBOOL CWBApplication::GenerateGUITemplateFromXML(CWBItem *Root,
+                                                 CXMLDocument *doc,
+                                                 std::string_view TemplateID) {
   CXMLNode root = doc->GetDocumentNode();
 
   if ( !root.GetChildCount( _T( "guidescriptor" ) ) )
@@ -939,10 +919,10 @@ TBOOL CWBApplication::GenerateGUITemplateFromXML( CWBItem *Root, CXMLDocument *d
       {
         if ( t.HasAttribute( _T( "class" ) ) )
         {
-          CStringArray a = t.GetAttribute( _T( "class" ) ).Explode( _T( " " ) );
-          for ( int i = 0; i < a.NumItems(); i++ )
-            if ( a[ i ].Length() > 1 )
-              Root->AddClass( a[ i ] );
+          auto a = Split(t.GetAttribute( _T( "class" ) ), _T( " " ) );
+          for ( const auto& s: a )
+            if ( s.size() > 1 )
+              Root->AddClass( s );
         }
 
         return ProcessGUIXML( Root, t );
@@ -973,14 +953,15 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, C
 
   if ( node.HasAttribute( _T( "pos" ) ) )
   {
-    if ( node.GetAttribute( _T( "pos" ) ).GetSubstringCount( _T( "," ) ) == 3 )
+    const auto &pos = node.GetAttribute(_T( "pos" ));
+    if (std::count(pos.begin(), pos.end(), ',' ) == 3)
     {
-      node.GetAttribute( _T( "pos" ) ).Scan( _T( "%d,%d,%d,%d" ), &Pos.x1, &Pos.y1, &Pos.x2, &Pos.y2 );
+      std::sscanf(node.GetAttribute( _T( "pos" ) ).c_str(), _T( "%d,%d,%d,%d" ), &Pos.x1, &Pos.y1, &Pos.x2, &Pos.y2 );
     }
     else
     {
       uint32_t x = 0, y = 0;
-      node.GetAttribute( _T( "pos" ) ).Scan( _T( "%d,%d" ), &x, &y );
+      std::sscanf(node.GetAttribute( _T( "pos" ) ).c_str(), _T( "%d,%d" ), &x, &y );
       Pos.MoveTo( x, y );
     }
     NewItem->SetPosition( Pos );
@@ -989,7 +970,7 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, C
   if ( node.HasAttribute( _T( "size" ) ) )
   {
     uint32_t x = 0, y = 0;
-    node.GetAttribute( _T( "size" ) ).Scan( _T( "%d,%d" ), &x, &y );
+    std::sscanf(node.GetAttribute( _T( "size" ) ).c_str(), _T( "%d,%d" ), &x, &y );
     Pos.SetSize( x, y );
     NewItem->SetPosition( Pos );
   }
@@ -999,10 +980,10 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, C
 
   if ( node.HasAttribute( _T( "class" ) ) )
   {
-    CStringArray a = node.GetAttribute( _T( "class" ) ).Explode( _T( " " ) );
-    for ( int i = 0; i < a.NumItems(); i++ )
-      if ( a[ i ].Length() > 1 )
-        NewItem->AddClass( a[ i ] );
+    auto a = Split(node.GetAttribute( _T( "class" ) ), _T( " " ) );
+    for ( const auto& s: a )
+      if ( s.size() > 1 )
+        NewItem->AddClass( s );
   }
 
   return ProcessGUIXML( NewItem, node );
@@ -1010,23 +991,18 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode( CWBItem * Root, CXMLNode & node, C
 
 CWBItem * CWBApplication::GenerateUIItem( CWBItem *Root, CXMLNode &node, CRect &Pos )
 {
-  if ( FactoryCallbacks.HasKey( node.GetNodeName() ) )
+  if (FactoryCallbacks.find(node.GetNodeName()) != FactoryCallbacks.end())
   {
     return FactoryCallbacks[ node.GetNodeName() ]( Root, node, Pos );
   }
 
-  LOG( LOG_ERROR, _T( "[xml2gui] Unknown tag: '%s'" ), node.GetNodeName().GetPointer() );
+  LOG( LOG_ERROR, _T( "[xml2gui] Unknown tag: '%s'" ), node.GetNodeName().c_str() );
   return NULL;
 }
 
-void CWBApplication::RegisterUIFactoryCallback( CString &ElementName, WBFACTORYCALLBACK FactoryCallback )
-{
-  FactoryCallbacks[ ElementName ] = FactoryCallback;
-}
-
-void CWBApplication::RegisterUIFactoryCallback( TCHAR *ElementName, WBFACTORYCALLBACK FactoryCallback )
-{
-  RegisterUIFactoryCallback( CString( ElementName ), FactoryCallback );
+void CWBApplication::RegisterUIFactoryCallback(
+    std::string_view ElementName, WBFACTORYCALLBACK FactoryCallback) {
+  FactoryCallbacks[ std::string(ElementName) ] = FactoryCallback;
 }
 
 void CWBApplication::TakeScreenshot()
@@ -1035,17 +1011,17 @@ void CWBApplication::TakeScreenshot()
 
   int32_t maxcnt = 0;
   {
-    CString s = ScreenShotName + _T( "_*.png" );
-    CFileList fl( s.GetPointer(), _T( "Screenshots" ) );
+    auto s = ScreenShotName + _T( "_*.png" );
+    CFileList fl( s, _T( "Screenshots" ) );
 
     for ( uint32_t x = 0; x < fl.Files.size(); x++ )
     {
-      if ( fl.Files[ x ].FileName.find( ScreenShotName.GetPointer() ) == std::string::npos )
+      if ( fl.Files[ x ].FileName.find( ScreenShotName ) == std::string::npos )
       {
-        CString s2 = ScreenShotName + _T( "_%d" );
+        auto s2 = ScreenShotName + _T( "_%d" );
 
         int32_t no = -1;
-        int32_t i = sscanf(fl.Files[ x ].FileName.c_str(), s2.GetPointer(), &no );
+        int32_t i = sscanf(fl.Files[ x ].FileName.c_str(), s2.c_str(), &no );
         maxcnt = max( maxcnt, no );
       }
     }
@@ -1053,24 +1029,23 @@ void CWBApplication::TakeScreenshot()
 
   DrawAPI->FlushDrawBuffer();
 
-  CCoreBlendState *b = DrawAPI->GetDevice()->CreateBlendState();
+  auto b = DrawAPI->GetDevice()->CreateBlendState();
   b->SetBlendEnable( 0, true );
   b->SetIndependentBlend( true );
   b->SetSrcBlend( 0, COREBLEND_ZERO );
   b->SetDestBlend( 0, COREBLEND_ONE );
   b->SetSrcBlendAlpha( 0, COREBLEND_ONE );
   b->SetDestBlendAlpha( 0, COREBLEND_ZERO );
-  DrawAPI->GetDevice()->SetRenderState( b );
+  DrawAPI->GetDevice()->SetRenderState( b.get() );
 
   DrawAPI->SetCropRect( CRect( 0, 0, XRes, YRes ) );
   DrawAPI->DrawRect( CRect( 0, 0, XRes, YRes ), 0xff000000 );
   DrawAPI->FlushDrawBuffer();
 
-  CString fname = CString::Format( _T( "Screenshots\\%s_%04d.png" ), ScreenShotName.GetPointer(), maxcnt + 1 );
+  auto fname = FormatString( _T( "Screenshots\\%s_%04d.png" ), ScreenShotName.c_str(), maxcnt + 1 );
   DrawAPI->GetDevice()->TakeScreenShot( fname );
 
   DrawAPI->SetUIRenderState();
-  delete b;
 }
 
 float CWBApplication::GetFrameRate()

@@ -58,7 +58,7 @@ class CAtlas
   friend class CWBDrawAPI;
   int32_t XRes, YRes;
   uint8_t *Image;
-  CCoreTexture2D *Atlas;
+  std::unique_ptr<CCoreTexture2D> Atlas;
 
   TBOOL TextureUpdateNeeded;
 

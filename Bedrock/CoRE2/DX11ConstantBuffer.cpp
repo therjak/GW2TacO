@@ -16,7 +16,7 @@ CCoreDX11ConstantBuffer::~CCoreDX11ConstantBuffer()
 	if (Buffer) Buffer->Release();
 }
 
-void * CCoreDX11ConstantBuffer::GetBufferPointer()
+void * CCoreDX11ConstantBuffer::GetBufferPointer() const
 {
 	return Buffer;
 }

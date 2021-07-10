@@ -42,7 +42,7 @@ TBOOL CWBMessage::IsMouseMessage()
   return Message >= WBM_MOUSEMOVE && Message <= WBM_MOUSEWHEEL;
 }
 
-TBOOL CWBMessage::IsTargetID( const CString& Name )
+TBOOL CWBMessage::IsTargetID( std::string_view Name )
 {
   if ( !App ) return false;
   CWBItem *i = App->FindItemByGuid( Target );
@@ -50,7 +50,7 @@ TBOOL CWBMessage::IsTargetID( const CString& Name )
   return i->GetID() == Name;
 }
 
-CString CWBMessage::GetTargetID()
+std::string CWBMessage::GetTargetID()
 {
   if ( !App ) return _T( "" );
   CWBItem *i = App->FindItemByGuid( Target );

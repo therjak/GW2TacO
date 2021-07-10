@@ -14,7 +14,7 @@ OverlayWindow::OverlayWindow( CWBItem *Parent, CRect Position ) : CWBWindow( Par
 
 OverlayWindow::~OverlayWindow()
 {
-  SetWindowPosition( GetID().GetPointer(), GetPosition() );
+  SetWindowPosition( GetID(), GetPosition() );
 }
 
 CWBItem * OverlayWindow::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
@@ -64,10 +64,10 @@ TBOOL OverlayWindow::MessageProc( CWBMessage &Message )
     }
     break;
   case WBM_REPOSITION:
-    SetWindowPosition( GetID().GetPointer(), GetPosition() );
+    SetWindowPosition( GetID(), GetPosition() );
     break;
   case WBM_CLOSE:
-    SetWindowOpenState( GetID().GetPointer(), false );
+    SetWindowOpenState( GetID(), false );
     break;
   }
 

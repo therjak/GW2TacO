@@ -90,7 +90,7 @@ int32_t CXMLNode::GetChildCount( TCHAR * szNodeName )
 {
   int32_t hash = GetStringHash( szNodeName );
 
-  if ( childCounts.HasKey( hash ) )
+  if ( childCounts.find( hash ) != childCounts.end() )
     return childCounts[ hash ];
 
   auto node = pNode->first_node( szNodeName );
@@ -110,11 +110,10 @@ int32_t CXMLNode::GetChildCount( TCHAR * szNodeName )
   return count;
 }
 
-CString CXMLNode::GetNodeName()
+std::string CXMLNode::GetNodeName()
 {
-  if ( !pNode )
-    return CString();
-  return CString( pNode->name() );
+  if ( !pNode ) return {};
+  return ( pNode->name() );
 }
 
 CXMLNode CXMLNode::GetChild(int32_t n)
@@ -194,10 +193,8 @@ void CXMLNode::GetText(TCHAR * szBuffer, int32_t nBufferSize)
 {
   int x = 0;
 }
-CString CXMLNode::GetText()
-{
-  return CString();
-}
+
+std::string CXMLNode::GetText() { return {}; }
 
 bool CXMLNode::GetAttribute(TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize)
 {
@@ -213,30 +210,28 @@ bool CXMLNode::GetAttribute(TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBuff
 }
 
 
-CString CXMLNode::GetAttribute(TCHAR * szAttribute)
+std::string CXMLNode::GetAttribute(std::string_view szAttribute)
 {
-  if ( !pNode )
-    return CString();
+  if ( !pNode ) return {};
 
-  auto attr = pNode->first_attribute( szAttribute );
-  if ( !attr )
-    return CString();
+  auto attr = pNode->first_attribute( szAttribute.data() );
+  if ( !attr ) return {};
 
-  return CString( attr->value(), attr->value_size() );
+  return std::string( attr->value(), attr->value_size() );
 }
 
 
-CString CXMLNode::GetAttributeAsString(TCHAR * szAttribute)
+std::string CXMLNode::GetAttributeAsString(std::string_view szAttribute)
 {
   return GetAttribute( szAttribute );
 }
 
-bool CXMLNode::HasAttribute(TCHAR * szAttribute)
+bool CXMLNode::HasAttribute(std::string_view szAttribute)
 {
   if ( !pNode )
     return false;
 
-  auto attr = pNode->first_attribute( szAttribute );
+  auto attr = pNode->first_attribute( std::string(szAttribute).c_str() );
   return attr != nullptr;
 }
 
@@ -261,20 +256,10 @@ void CXMLNode::GetAttributeAsFloat(TCHAR * szAttribute, float * pfValue)
 	_stscanf_s(s, _T("%g"), pfValue);
 }
 
-CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName)
+CXMLNode& CXMLNode::AddChild(std::string_view szNodeName)
 {
-  TCHAR *tc = szNodeName;
-  if ( szNodeName )
-  {
-    while ( *tc )
-    {
-      if ( *tc == ' ' )
-      {
-        *tc = '_';
-      }
-      tc++;
-    };
-  }
+  std::string tc(szNodeName);
+  std::replace(tc.begin(), tc.end(), ' ', '_');
 
   if ( !pNode || !pDoc )
   {
@@ -282,7 +267,7 @@ CXMLNode& CXMLNode::AddChild(TCHAR * szNodeName)
     return *children.back();
   }
 
-  auto node = pNode->document()->allocate_node( node_type::node_element, szNodeName );
+  auto node = pNode->document()->allocate_node( node_type::node_element, tc.c_str() );
 
   pNode->append_node( node );
 
@@ -328,19 +313,13 @@ void CXMLNode::SetAttributeFromFloat(std::string_view szAttributeName,
 	SetAttribute(szAttributeName, s);
 }
 
-void CXMLNode::SetText(const TCHAR * sz)
+void CXMLNode::SetText(std::string_view s)
 {
-  if ( !pNode )
-    return;
+  if (!pNode) return;
 
-  value = std::string( sz );
+  value = std::string(s);
 
-  pNode->value( value.c_str() );
-}
-
-void CXMLNode::SetText(CString &s)
-{
-	SetText(s.GetPointer());
+  pNode->value(value.c_str());
 }
 
 void CXMLNode::SetInt(int32_t Int)

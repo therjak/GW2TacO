@@ -20,7 +20,7 @@ public:
 	virtual ~CCoreDX11VertexShader();
 
 	virtual TBOOL Create(void *Binary, int32_t Length);
-	virtual TBOOL CompileAndCreate(CString *Err);
+	virtual TBOOL CompileAndCreate(std::string* Err);
   virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize );
   //virtual int32_t GetConstantBufferIndex(TS8 *Name);
 	virtual void *GetHandle() { return VertexShaderHandle; }
@@ -42,7 +42,7 @@ public:
 	virtual ~CCoreDX11PixelShader();
 
 	virtual TBOOL Create(void *Binary, int32_t Length);
-	virtual TBOOL CompileAndCreate(CString *Err);
+	virtual TBOOL CompileAndCreate(std::string* Err);
   virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize );
   //virtual int32_t GetConstantBufferIndex(TS8 *Name);
 	virtual void *GetHandle() { return PixelShaderHandle; }
@@ -64,7 +64,7 @@ public:
 	virtual ~CCoreDX11GeometryShader();
 
 	virtual TBOOL Create(void *Binary, int32_t Length);
-	virtual TBOOL CompileAndCreate(CString *Err);
+        virtual TBOOL CompileAndCreate(std::string* Err);
   virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize );
   //virtual int32_t GetConstantBufferIndex(TS8 *Name);
 	virtual void *GetHandle() { return GeometryShaderHandle; }
@@ -86,7 +86,7 @@ public:
 	virtual ~CCoreDX11HullShader();
 
 	virtual TBOOL Create(void *Binary, int32_t Length);
-	virtual TBOOL CompileAndCreate(CString *Err);
+        virtual TBOOL CompileAndCreate(std::string* Err);
   virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize );
   //virtual int32_t GetConstantBufferIndex(TS8 *Name);
 	virtual void *GetHandle() { return HullShaderHandle; }
@@ -108,7 +108,7 @@ public:
 	virtual ~CCoreDX11DomainShader();
 
 	virtual TBOOL Create(void *Binary, int32_t Length);
-	virtual TBOOL CompileAndCreate(CString *Err);
+        virtual TBOOL CompileAndCreate(std::string* Err);
   virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize );
   //virtual int32_t GetConstantBufferIndex(TS8 *Name);
 	virtual void *GetHandle() { return DomainShaderHandle; }
@@ -130,7 +130,7 @@ public:
 	virtual ~CCoreDX11ComputeShader();
 
 	virtual TBOOL Create(void *Binary, int32_t Length);
-	virtual TBOOL CompileAndCreate(CString *Err);
+        virtual TBOOL CompileAndCreate(std::string* Err);
   virtual TBOOL CreateFromBlob( void *Code, int32_t CodeSize );
   //virtual int32_t GetConstantBufferIndex(TS8 *Name);
 	virtual void *GetHandle() { return ComputeShaderHandle; }

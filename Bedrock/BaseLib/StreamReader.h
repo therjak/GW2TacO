@@ -42,7 +42,7 @@ class CStreamReaderMemory : public CStreamReader
 
   int32_t Open( uint8_t *data, uint32_t size );
   int32_t Open(std::string_view filename);
-  CString ReadLine();
+  std::string ReadLine();
 
   uint8_t *GetData() const;
   virtual int64_t GetLength() const;

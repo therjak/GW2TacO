@@ -2,13 +2,14 @@
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 
 #include <vector>
+#include <unordered_map>
 
 class Language
 {
 public:
 
-  CString name;
-  CDictionary<CString, CString> dict;
+  std::string name;
+  std::unordered_map<std::string, std::string> dict;
 };
 
 class Localization
@@ -16,7 +17,7 @@ class Localization
   size_t activeLanguageIdx = 0;
   std::vector< Language > languages;
 
-  void ImportFile( const CString& file );
+  void ImportFile( std::string_view file );
   void ImportLanguage( CXMLDocument& d );
 
   std::vector<int> usedGlyphs;
@@ -25,16 +26,15 @@ public:
 
   Localization();
 
-  void SetActiveLanguage( const CString& language );
-  CStringArray GetLanguages();
+  void SetActiveLanguage( std::string_view language );
+  std::vector<std::string> GetLanguages();
 
   void Import();
-  CString Localize( const char* token, const CString& fallback = CString( "" ) );
-  CString Localize( const CString& token, const CString& fallback = CString( "" ) );
+  std::string Localize( std::string_view token, std::string_view fallback = ( "" ) );
 
   int GetActiveLanguageIndex();
   std::vector<int>& GetUsedGlyphs();
-  void ProcessStringForUsedGlyphs( CString& string );
+  void ProcessStringForUsedGlyphs( std::string_view string );
 };
 
 extern Localization* localization;

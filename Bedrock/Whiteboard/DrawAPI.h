@@ -4,13 +4,6 @@
 #include "Atlas.h"
 #include "Font.h"
 
-//struct WBDISPLAYRECT
-//{
-//	CRect Pos;
-//	float u1,v1,u2,v2;
-//	//CColor a,b,c,d;
-//};
-
 struct WBDISPLAYLINE
 {
   CPoint p1, p2;
@@ -73,19 +66,19 @@ class CWBDrawAPI
 
   CRect ParentCropRect;
 
-  CCoreIndexBuffer *rectIndexBuffer;
-  CCoreVertexBuffer *VertexBuffer;
-  CCoreVertexFormat *VertexFormat;
+  std::unique_ptr<CCoreIndexBuffer> rectIndexBuffer;
+  std::unique_ptr<CCoreVertexBuffer> VertexBuffer;
+  std::unique_ptr<CCoreVertexFormat> VertexFormat;
 
-  CCoreVertexShader *VxShader;
-  CCorePixelShader *PxShader;
+  std::unique_ptr<CCoreVertexShader> VxShader;
+  std::unique_ptr<CCorePixelShader> PxShader;
 
-  CCoreSamplerState *GuiSampler;
-  CCoreBlendState *GuiBlendState;
-  CCoreRasterizerState *GuiRasterState;
-  CCoreDepthStencilState *GuiZState;
+  std::unique_ptr<CCoreSamplerState> GuiSampler;
+  std::unique_ptr<CCoreBlendState> GuiBlendState;
+  std::unique_ptr<CCoreRasterizerState> GuiRasterState;
+  std::unique_ptr<CCoreDepthStencilState> GuiZState;
 
-  CCoreConstantBuffer *ResolutionData;
+  std::unique_ptr<CCoreConstantBuffer> ResolutionData;
 
   void AddDisplayRect( const CRect &r, const float u1, const float v1, const float u2, const float v3, const CColor a );
   void AddDisplayRectRotated( const CRect &r, const float u1, const float v1, const float u2, const float v3, const CColor a, float rotation );
@@ -126,8 +119,8 @@ public:
   INLINE CPoint &GetOffset() { return Offset; }
 
   void SetUIRenderState();
-  void SetUIBlendState( CCoreBlendState *BlendState );
-  void SetUISamplerState( CCoreSamplerState *SamplerState );
+  void SetUIBlendState( std::unique_ptr<CCoreBlendState>&& BlendState );
+  void SetUISamplerState( std::unique_ptr<CCoreSamplerState>&& SamplerState );
 
   CSize GetAtlasElementSize( WBATLASHANDLE h );
   void DrawAtlasElement( WBATLASHANDLE h, int32_t x, int32_t y, CColor Color = 0xffffffff );
@@ -142,7 +135,7 @@ public:
   void SetOpacity( uint8_t o );
   void SetRenderView( CRect r );
 
-  void SetPixelShader( CCorePixelShader *shader );
+  void SetPixelShader( std::unique_ptr<CCorePixelShader>&& shader );
 };
 
 //helper functions for common use cases

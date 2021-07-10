@@ -7,9 +7,9 @@ class GW2MapTimer : public CWBItem
 {
   struct Event
   {
-    CString name;
-    CString waypoint;
-    CString worldBossId;
+    std::string name;
+    std::string waypoint;
+    std::string worldBossId;
     int length;
     int start;
     CColor color;
@@ -17,11 +17,11 @@ class GW2MapTimer : public CWBItem
 
   struct Map
   {
-    CString name;
-    CString chestId;
+    std::string name;
+    std::string chestId;
     int Length;
     int Start;
-    CString id;
+    std::string id;
     TBOOL display = true;
     std::vector<Event> events;
   };
@@ -37,8 +37,8 @@ class GW2MapTimer : public CWBItem
 
   std::thread fetchThread;
 
-  std::vector<CString> worldBosses;
-  std::vector<CString> mapchests;
+  std::vector<std::string> worldBosses;
+  std::vector<std::string> mapchests;
 
   LIGHTWEIGHT_CRITICALSECTION critSec;
 

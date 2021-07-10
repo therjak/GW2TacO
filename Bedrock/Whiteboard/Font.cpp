@@ -187,12 +187,12 @@ TBOOL CWBFontDescription::LoadBMFontBinary( uint8_t *Binary, int32_t BinarySize,
   return true;
 }
 
-bool ReadInt( const CString& s, const CString& val, int32_t& result )
+bool ReadInt( const std::string& s, std::string val, int32_t& result )
 {
-  int p = s.Find( val + "=" );
-  if ( p < 0 )
+  int p = s.find( val + "=" );
+  if ( p == s.npos )
     return false;
-  return s.Substring( p ).Scan( ( val + "=%d" ).GetPointer(), &result ) == 1;
+  return std::sscanf(s.substr( p ).c_str(), ( val + "=%d" ).c_str(), &result ) == 1;
 }
 
 TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, uint8_t *img, int32_t xr, int32_t yr, std::vector<int>& enabledGlyphs )
@@ -213,15 +213,15 @@ TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, u
     return false;
   }
 
-  CString s;
+  std::string s;
   do
   {
     s = m.ReadLine();
 
-    if ( s.Find( "info" ) == 0 )
+    if ( s.find( "info" ) == 0 )
       continue;
 
-    if ( s.Find( "common" ) == 0 )
+    if ( s.find( "common" ) == 0 )
     {
       if ( !ReadInt( s, "lineHeight", LineHeight ) )
         return false;
@@ -230,14 +230,14 @@ TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, u
       continue;
     }
 
-    if ( s.Find( "page" ) == 0 )
+    if ( s.find( "page" ) == 0 )
     {
       continue;
     }
 
-    if ( s.Find( "char" ) == 0 )
+    if ( s.find( "char" ) == 0 )
     {
-      if ( s.Find( "chars" ) == 0 )
+      if ( s.find( "chars" ) == 0 )
         continue;
 
       WBSYMBOLINPUT r;
@@ -283,9 +283,9 @@ TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, u
       continue;
     }
 
-    if ( s.Find( "kerning" ) == 0 )
+    if ( s.find( "kerning" ) == 0 )
     {
-      if ( s.Find( "kernings" ) == 0 )
+      if ( s.find( "kernings" ) == 0 )
         continue;
 
       WBKERNINGDATA d;
@@ -307,7 +307,7 @@ TBOOL CWBFontDescription::LoadBMFontText( uint8_t *Binary, int32_t BinarySize, u
       continue;
     }
 
-  } while ( s.Length() > 0 );
+  } while ( s.size() > 0 );
 
   return true;
 }
@@ -353,8 +353,7 @@ void CWBFont::AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, const
   }
 }
 
-uint32_t ReadUTF8Char( _TUCHAR* &Text )
-{
+uint32_t ReadUTF8Char(char const *&Text) {
   uint32_t Char = *Text;
   Text++;
 
@@ -457,16 +456,18 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y, 
   return width;
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const TCHAR *String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
+int32_t CWBFont::Write( CWBDrawAPI *DrawApi, std::string_view String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
 {
-  _TUCHAR *Text = (_TUCHAR*)String;
-  if ( !Text ) return 0;
+  if ( String.empty() ) return 0;
+  std::string t(String); // make sure we have a \0 at the correct place.
+  auto Text = t.c_str();
   int32_t xp = x;
   int32_t yp = y;
 
   while ( *Text )
   {
-    uint16_t Char = ApplyTextTransformUtf8( (_TUCHAR*)String, Text, Transform );
+    // Increments Text
+    uint16_t Char = ApplyTextTransformUtf8( t.c_str(), Text, Transform );
 
     if ( Char == '\n' )
     {
@@ -479,8 +480,8 @@ int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const TCHAR *String, int32_t x, int
 
     if ( DoKerning && *Text && Kerning.NumItems() )
     {
-      _TUCHAR* next = Text;
-      uint16_t NextChar = ApplyTextTransformUtf8( (_TUCHAR*)String, next, Transform );
+      auto next = Text;
+      uint16_t NextChar = ApplyTextTransformUtf8( t.c_str(), next, Transform );
       CWBKerningPair k = CWBKerningPair( Char, NextChar );
       if ( Kerning.HasKey( k ) )
         xp += Kerning[ k ];
@@ -490,23 +491,14 @@ int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const TCHAR *String, int32_t x, int
   return xp - x;
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const CString &String, int32_t x, int32_t y, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
-{
-  return Write( DrawApi, String.GetPointer(), x, y, Color, Transform, DoKerning );
-}
-
 int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color)
 {
   return WriteChar( DrawApi, Char, p.x, p.y, Color );
 }
 
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const TCHAR *String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
-{
-  return Write( DrawApi, String, p.x, p.y, Color, Transform, DoKerning );
-}
-
-int32_t CWBFont::Write( CWBDrawAPI *DrawApi, const CString &String, CPoint &p, CColor Color, WBTEXTTRANSFORM Transform, TBOOL DoKerning )
-{
+int32_t CWBFont::Write(CWBDrawAPI *DrawApi, std::string_view String, CPoint &p,
+                       CColor Color, WBTEXTTRANSFORM Transform,
+                       TBOOL DoKerning) {
   return Write( DrawApi, String, p.x, p.y, Color, Transform, DoKerning );
 }
 
@@ -521,10 +513,12 @@ int32_t CWBFont::GetWidth( uint16_t Char, TBOOL Advance )
   return Advance ? Alphabet[ (uint16_t)Char ].Advance : ( Alphabet[ (uint16_t)Char ].OffsetX + Alphabet[ (uint16_t)Char ].calculatedContentRect.x2 );
 }
 
-int32_t CWBFont::GetWidth( const TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
-{
-  _TUCHAR *Text = (_TUCHAR*)String;
-  if ( !Text ) return 0;
+int32_t CWBFont::GetWidth(std::string_view String, TBOOL AdvanceLastChar,
+                          WBTEXTTRANSFORM Transform, TBOOL DoKerning,
+                          TBOOL firstCharHack) {
+  if (String.empty()) return 0;
+  std::string t(String);  // make sure we have a \0 at the correct place.
+  auto Text = t.c_str();
   int32_t xp = 0;
   int32_t maxXp = 0;
 
@@ -532,7 +526,7 @@ int32_t CWBFont::GetWidth( const TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRA
 
   while ( *Text )
   {
-    uint16_t Char = ApplyTextTransformUtf8( (_TUCHAR*)String, Text, Transform );
+    uint16_t Char = ApplyTextTransformUtf8( t.c_str(), Text, Transform );
 
     if ( Char == '\n' )
     {
@@ -561,8 +555,8 @@ int32_t CWBFont::GetWidth( const TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRA
 
     if ( DoKerning && *Text && Kerning.NumItems() )
     {
-      _TUCHAR* next = Text;
-      uint16_t NextChar = ApplyTextTransformUtf8( (_TUCHAR*)String, next, Transform );
+      auto next = Text;
+      uint16_t NextChar = ApplyTextTransformUtf8( t.c_str(), next, Transform );
       CWBKerningPair k = CWBKerningPair( Char, NextChar );
       if ( Kerning.HasKey( k ) )
         xp += Kerning[ k ];
@@ -570,11 +564,6 @@ int32_t CWBFont::GetWidth( const TCHAR *String, TBOOL AdvanceLastChar, WBTEXTTRA
   }
 
   return max( maxXp, xp );
-}
-
-int32_t CWBFont::GetWidth( const CString &String, TBOOL AdvanceLastChar, WBTEXTTRANSFORM Transform, TBOOL DoKerning, TBOOL firstCharHack )
-{
-  return GetWidth( String.GetPointer(), AdvanceLastChar, Transform, DoKerning, firstCharHack );
 }
 
 void CWBFont::AddKerningPair( uint16_t First, uint16_t Second, int16_t Amount )
@@ -672,18 +661,9 @@ int32_t CWBFont::GetOffsetY( TCHAR Char )
   return Alphabet[ (uint16_t)Char ].OffsetY;
 }
 
-int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, const TCHAR *Text, WBTEXTTRANSFORM Transform )
-{
-  //_TUCHAR Char = 0;
-  //if (Text && *Text)
-  //  Char = ApplyTextTransform((_TUCHAR*)Text, (_TUCHAR*)Text, Transform);
-
+int32_t CWBFont::GetCenterWidth(int32_t x1, int32_t x2, std::string_view Text,
+                                WBTEXTTRANSFORM Transform) {
   return ( x1 + x2 - GetWidth( Text, false, Transform, true ) ) / 2;// -GetOffsetX(Char);
-}
-
-int32_t CWBFont::GetCenterWidth( int32_t x1, int32_t x2, const CString &Text, WBTEXTTRANSFORM Transform )
-{
-  return GetCenterWidth( x1, x2, Text.GetPointer(), Transform );
 }
 
 int32_t CWBFont::GetCenterHeight( int32_t y1, int32_t y2 )
@@ -691,19 +671,14 @@ int32_t CWBFont::GetCenterHeight( int32_t y1, int32_t y2 )
   return y1 + ( y2 - y1 ) / 2 - GetMedian();
 }
 
-CPoint CWBFont::GetCenter( const TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform )
-{
+CPoint CWBFont::GetCenter(std::string_view Text, CRect Rect,
+                          WBTEXTTRANSFORM Transform) {
   return CPoint( GetCenterWidth( Rect.x1, Rect.x2, Text, Transform ), GetCenterHeight( Rect.y1, Rect.y2 ) );
-}
-
-CPoint CWBFont::GetCenter( const CString &Text, CRect Rect, WBTEXTTRANSFORM Transform )
-{
-  return GetCenter( Text.GetPointer(), Rect, Transform );
 }
 
 int32_t CWBFont::GetMedian()
 {
-  return Offset_X_Char + Height_X_Char / 2;// (Base - Offset_X_Char) / 2;// +1;// Height_X_Char / 2;
+  return Offset_X_Char + Height_X_Char / 2;
 }
 
 void CWBFont::ConvertToUppercase()
@@ -730,7 +705,7 @@ void CWBFont::ConvertToUppercase()
     }
 }
 
-INLINE _TUCHAR CWBFont::ApplyTextTransform( _TUCHAR *Text, _TUCHAR *CurrPos, WBTEXTTRANSFORM Transform )
+INLINE char CWBFont::ApplyTextTransform( const char *Text, const char *CurrPos, WBTEXTTRANSFORM Transform )
 {
   if ( Transform <= 0 ) return *CurrPos;
   switch ( Transform )
@@ -754,8 +729,10 @@ INLINE _TUCHAR CWBFont::ApplyTextTransform( _TUCHAR *Text, _TUCHAR *CurrPos, WBT
   return 0;
 }
 
-INLINE uint16_t CWBFont::ApplyTextTransformUtf8( _TUCHAR *Text, _TUCHAR *&CurrPos, WBTEXTTRANSFORM Transform )
-{
+// Also increments CurrPos.
+INLINE uint16_t CWBFont::ApplyTextTransformUtf8(const char *Text,
+                                                char const *&CurrPos,
+                                                WBTEXTTRANSFORM Transform) {
   uint32_t decoded = ReadUTF8Char( CurrPos );
 
   if ( Transform <= 0 ) 
@@ -787,26 +764,21 @@ int32_t CWBFont::GetHeight( uint16_t Char )
   return GetLineHeight();
 }
 
-int32_t CWBFont::GetHeight( TCHAR* String )
-{
+int32_t CWBFont::GetHeight(std::string_view String) {
   int32_t lineCount = 1;
-  while ( *String )
-  {
-    if ( *String == '\n' )
+  for (const auto& c: String ) {
+    if ( c == '\n' )
       lineCount++;
-    String++;
   }
 
   return LineHeight * lineCount;
 }
 
-int32_t CWBFont::GetHeight( CString& String )
-{
-  return GetHeight( String.GetPointer() );
-}
-
-CPoint CWBFont::GetTextPosition( CString &String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform /*= WBTT_NONE*/, TBOOL DoKerning /*= true*/ )
-{
+CPoint CWBFont::GetTextPosition(std::string_view String, CRect &Container,
+                                WBTEXTALIGNMENTX XAlign,
+                                WBTEXTALIGNMENTY YAlign,
+                                WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,
+                                TBOOL DoKerning /*= true*/) {
   CPoint p = Container.TopLeft();
 
   int32_t Width = GetWidth( String, false, Transform, DoKerning );
@@ -818,10 +790,5 @@ CPoint CWBFont::GetTextPosition( CString &String, CRect &Container, WBTEXTALIGNM
   if ( YAlign == WBTA_BOTTOM ) p.y = Container.y2 - Height;
 
   return p;
-}
-
-CPoint CWBFont::GetTextPosition( TCHAR *String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform /*= WBTT_NONE*/, TBOOL DoKerning /*= true*/ )
-{
-  return GetTextPosition( CString( String ), Container, XAlign, YAlign, Transform, DoKerning );
 }
 

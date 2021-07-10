@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "GuiItem.h"
 
+#include "../BaseLib/string_format.h"
+
 static WBGUID WB_GUID_COUNTER = 1337;
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,8 +121,9 @@ CWBFont * CWBCSSPropertyBatch::GetFont( CWBApplication *App, WBITEMSTATE State )
   return App->GetDefaultFont();
 }
 
-TBOOL CWBCSSPropertyBatch::ApplyStyle( CWBItem *Owner, CString & prop, CString & value, CStringArray &pseudo )
-{
+TBOOL CWBCSSPropertyBatch::ApplyStyle(CWBItem *Owner, std::string_view prop,
+                                      std::string_view value,
+                                      const std::vector<std::string>& pseudo) {
   if ( Owner->InterpretPositionString( *this, prop, value, pseudo ) ) return true;
   if ( Owner->InterpretDisplayString( *this, prop, value, pseudo ) ) return true;
   return false;
@@ -1252,12 +1255,6 @@ void CWBItem::AdjustClientAreaToFitScrollbars()
   //y axis
   ScrollbarHelperFunct( HScrollbar, crect.y2, ScrollbarRequired( HScrollbar ) );
 
-  //if (ClientRect != crect)
-  //{
-  //	if (GetType() != _T("console"))
-  //	LOG_DBG("Scrollbar added/removed (HScroll: %d VScroll: %d) from clientarea of %d (%s #%s - .%s)", (int32_t)ScrollbarRequired(HScrollbar), (int32_t)ScrollbarRequired(VScrollbar), GetGuid(), GetType().GetPointer(), GetID().GetPointer(), GetClassString().GetPointer());
-  //}
-
   if ( App && crect != ClientRect )
     App->SendMessage( CWBMessage( App, WBM_CLIENTAREACHANGED, GetGuid() ) );
 
@@ -1352,12 +1349,14 @@ void CWBItem::ApplyRelativePosition()
     SetPosition( CSSProperties.PositionDescriptor.GetPosition( Parent->GetClientRect().Size(), StoredContentSize, GetPosition() ) );
 }
 
-void CWBItem::VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOMPONENT TargetComponent, int32_t Value, CStringArray &pseudo )
-{
+void CWBItem::VisualStyleApplicator(CWBDisplayProperties &desc,
+                                    WBITEMVISUALCOMPONENT TargetComponent,
+                                    int32_t Value,
+                                    const std::vector<std::string> &pseudo) {
   int32_t StateCount = 0;
-  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
+  for ( size_t x = 1; x < pseudo.size(); x++ )
   {
-    CString p = pseudo[ x ].Trimmed();
+    auto p = Trim(pseudo[ x ]);
     if ( p == _T( "active" ) || p == _T( "hover" ) || p == _T( "disabled" ) || p == _T( "disabled-active" ) || p == _T( "normal" ) ) StateCount++;
   }
 
@@ -1371,9 +1370,9 @@ void CWBItem::VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOM
   }
   else
   {
-    for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
+    for ( size_t x = 1; x < pseudo.size(); x++ )
     {
-      CString p = pseudo[ x ].Trimmed();
+      auto p = Trim(pseudo[ x ]);
       if ( p == _T( "active" ) )
       {
         desc.SetValue( WB_STATE_ACTIVE, TargetComponent, Value );
@@ -1403,8 +1402,10 @@ void CWBItem::VisualStyleApplicator( CWBDisplayProperties &desc, WBITEMVISUALCOM
   }
 }
 
-TBOOL CWBItem::InterpretPositionString( CWBCSSPropertyBatch &props, CString & prop, CString & value, CStringArray &pseudo )
-{
+TBOOL CWBItem::InterpretPositionString(CWBCSSPropertyBatch &props,
+                                       std::string_view prop,
+                                       std::string_view value,
+    const std::vector<std::string> &pseudo) {
   if ( prop == _T( "left" ) )
   {
     PositionApplicator( props.PositionDescriptor, WB_MARGIN_LEFT, value );
@@ -1519,9 +1520,9 @@ TBOOL CWBItem::InterpretPositionString( CWBCSSPropertyBatch &props, CString & pr
   return false;
 }
 
-CStringArray CWBItem::ExplodeValueWithoutSplittingParameters( CString String )
-{
-  CStringArray aOut;
+std::vector<std::string> CWBItem::ExplodeValueWithoutSplittingParameters(
+    std::string_view String) {
+  std::vector<std::string> aOut;
   int nPrevious = 0;
   int nNext = 0;
 
@@ -1536,63 +1537,84 @@ CStringArray CWBItem::ExplodeValueWithoutSplittingParameters( CString String )
   unsigned int x = 0;
   int32_t bracketcnt = 0;
 
-  while ( x < String.Length() )
+  while ( x < String.size() )
   {
-    while ( x < String.Length() && SPACE( (SPACETYPE)String[ x ] ) ) x++;
+    while ( x < String.size() && SPACE( (SPACETYPE)String[ x ] ) ) x++;
 
     if ( String[ x ] == _T( '(' ) ) bracketcnt++;
     if ( String[ x ] == _T( ')' ) && bracketcnt ) bracketcnt--;
 
     nPrevious = x;
-    while ( x < String.Length() && ( bracketcnt || ( !SPACE( (SPACETYPE)String[ x ] ) ) ) )
+    while ( x < String.size() && ( bracketcnt || ( !SPACE( (SPACETYPE)String[ x ] ) ) ) )
     {
       if ( String[ x ] == _T( '(' ) ) bracketcnt++;
       if ( String[ x ] == _T( ')' ) && bracketcnt ) bracketcnt--;
       x++;
     }
 
-    aOut.Add( String.Substring( nPrevious, x - nPrevious ) );
+    aOut.emplace_back( String.substr( nPrevious, x - nPrevious ) );
   }
 
   return aOut;
 }
 
-TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & prop, CString & value, CStringArray &pseudo )
-{
+TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
+                                      std::string_view prop,
+                                      std::string_view value,
+                                      const std::vector<std::string> &pseudo) {
   if ( prop == _T( "background" ) )
   {
-    CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
+    auto Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
+    for ( const auto& attrib: Attribs )
     {
       uint32_t dw = 0;
-      if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
-      if ( Attribs[ x ] == ( _T( "none" ) ) )
+      if ( std::sscanf(attrib.c_str(), _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
+      if (attrib == (_T( "none" )))
       {
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, 0, pseudo );
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE, 0xffffffff, pseudo );
       }
 
-      if ( Attribs[ x ] == ( _T( "left" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT, pseudo );
-      if ( Attribs[ x ] == ( _T( "center" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER, pseudo );
-      if ( Attribs[ x ] == ( _T( "right" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT, pseudo );
-      if ( Attribs[ x ] == ( _T( "top" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP, pseudo );
-      if ( Attribs[ x ] == ( _T( "middle" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE, pseudo );
-      if ( Attribs[ x ] == ( _T( "bottom" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM, pseudo );
+      if (attrib == (_T( "left" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
+                              pseudo);
+      if (attrib == (_T( "center" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER,
+                              pseudo);
+      if (attrib == (_T( "right" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT,
+                              pseudo);
+      if (attrib == (_T( "top" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP,
+                              pseudo);
+      if (attrib == (_T( "middle" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE,
+                              pseudo);
+      if (attrib == (_T( "bottom" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM,
+                              pseudo);
 
-      if ( Attribs[ x ].Find( _T( "rgba(" ) ) == 0 )
+      if (attrib.find(_T( "rgba(" )) == 0)
       {
         CColor col;
-        if ( !ParseRGBA( Attribs[ x ], col ) )
+        if (!ParseRGBA(attrib, col))
         {
-          LOG_WARN( "[gui] CSS rgba() description invalid, skipping: %s", Attribs[ x ].GetPointer() );
+          LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
+                   attrib.c_str());
           continue;
         }
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, col, pseudo );
       }
 
       WBSKINELEMENTID id;
-      if ( ScanSkinValue( Attribs[ x ], id, prop ) )
+      if (ScanSkinValue(attrib, id, prop))
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE, id, pseudo );
     }
 
@@ -1601,20 +1623,25 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
   if ( prop == _T( "background-color" ) )
   {
-    CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
+    auto Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
+    for ( const auto& attrib: Attribs )
     {
       uint32_t dw = 0;
-      if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
-      if ( Attribs[ x ] == ( _T( "none" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, 0, pseudo );
+      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
+        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
+                              CColor::FromARGB(dw | 0xff000000), pseudo);
+      if (attrib == (_T( "none" )))
+        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
+                              0, pseudo);
 
-      if ( Attribs[ x ].Find( _T( "rgba(" ) ) == 0 )
+      if (attrib.find(_T( "rgba(" )) == 0)
       {
         CColor col;
-        if ( !ParseRGBA( Attribs[ x ], col ) )
+        if (!ParseRGBA(attrib, col))
         {
-          LOG_WARN( "[gui] CSS rgba() description invalid, skipping: %s", Attribs[ x ].GetPointer() );
+          LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
+                   attrib.c_str());
           continue;
         }
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR, col, pseudo );
@@ -1626,20 +1653,25 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
   if ( prop == _T( "foreground-color" ) )
   {
-    CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
+    auto Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
+    for ( const auto& attrib: Attribs )
     {
       uint32_t dw = 0;
-      if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )	VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
-      if ( Attribs[ x ] == ( _T( "none" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR, 0, pseudo );
+      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
+        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
+                              CColor::FromARGB(dw | 0xff000000), pseudo);
+      if (attrib == (_T( "none" )))
+        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
+                              0, pseudo);
 
-      if ( Attribs[ x ].Find( _T( "rgba(" ) ) == 0 )
+      if (attrib.find(_T( "rgba(" )) == 0)
       {
         CColor col;
-        if ( !ParseRGBA( Attribs[ x ], col ) )
+        if (!ParseRGBA(attrib, col))
         {
-          LOG_WARN( "[gui] CSS rgba() description invalid, skipping: %s", Attribs[ x ].GetPointer() );
+          LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
+                   attrib.c_str());
           continue;
         }
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR, col, pseudo );
@@ -1651,18 +1683,36 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
   if ( prop == _T( "background-position" ) )
   {
-    CStringArray Attribs = value.ExplodeByWhiteSpace();
+    auto Attribs = SplitByWhitespace(value);
 
-    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
+    for (const auto &attrib: Attribs)
     {
       uint32_t dw = 0;
 
-      if ( Attribs[ x ] == ( _T( "left" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT, pseudo );
-      if ( Attribs[ x ] == ( _T( "center" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER, pseudo );
-      if ( Attribs[ x ] == ( _T( "right" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT, pseudo );
-      if ( Attribs[ x ] == ( _T( "top" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP, pseudo );
-      if ( Attribs[ x ] == ( _T( "middle" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE, pseudo );
-      if ( Attribs[ x ] == ( _T( "bottom" ) ) )			VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM, pseudo );
+      if (attrib == (_T( "left" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
+                              pseudo);
+      if (attrib == (_T( "center" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER,
+                              pseudo);
+      if (attrib == (_T( "right" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT,
+                              pseudo);
+      if (attrib == (_T( "top" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP,
+                              pseudo);
+      if (attrib == (_T( "middle" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE,
+                              pseudo);
+      if (attrib == (_T( "bottom" )))
+        VisualStyleApplicator(props.DisplayDescriptor,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM,
+                              pseudo);
     }
 
     return true;
@@ -1670,16 +1720,18 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 
   if ( prop == _T( "background-image" ) )
   {
-    CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
+    auto Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
+    for (const auto &attrib: Attribs)
     {
       uint32_t dw = 0;
 
-      if ( Attribs[ x ] == ( _T( "none" ) ) )				VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE, 0xffffffff, pseudo );
+      if (attrib == (_T( "none" )))
+        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
+                              0xffffffff, pseudo);
 
       WBSKINELEMENTID id;
-      if ( ScanSkinValue( Attribs[ x ], id, prop ) )
+      if (ScanSkinValue(attrib, id, prop))
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE, id, pseudo );
     }
 
@@ -1689,7 +1741,8 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   if ( prop == _T( "border-color" ) )
   {
     uint32_t dw = 0;
-    value.Scan( _T( "#%x" ), &dw );
+    std::string v(value);
+    std::sscanf(v.c_str(), _T( "#%x" ), &dw );
     VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_BORDERCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
     return true;
   }
@@ -1697,7 +1750,8 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
   if ( prop == _T( "opacity" ) )
   {
     float dw = 0;
-    value.Scan( _T( "%f" ), &dw );
+    std::string v(value);
+    std::sscanf(v.c_str(),_T( "%f" ), &dw);
 
     int32_t o = (int32_t)max( 0, min( 255, dw * 255 ) );
 
@@ -1757,13 +1811,15 @@ TBOOL CWBItem::InterpretDisplayString( CWBCSSPropertyBatch &props, CString & pro
 }
 
 
-TBOOL CWBItem::InterpretFontString( CWBCSSPropertyBatch &props, CString & prop, CString & value, CStringArray &pseudo )
-{
+TBOOL CWBItem::InterpretFontString(CWBCSSPropertyBatch &props,
+                                   std::string_view prop, std::string_view value,
+                                   const std::vector<std::string> &pseudo) {
 
   if ( prop == _T( "font-color" ) )
   {
     uint32_t dw = 0;
-    if ( value.Scan( _T( "#%x" ), &dw ) == 1 )
+    std::string v(value);
+    if ( std::sscanf(v.c_str(), _T( "#%x" ), &dw ) == 1 )
     {
       VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FONTCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
       return true;
@@ -1788,27 +1844,27 @@ TBOOL CWBItem::InterpretFontString( CWBCSSPropertyBatch &props, CString & prop, 
 
   if ( prop == _T( "font" ) )
   {
-    CStringArray Attribs = ExplodeValueWithoutSplittingParameters( value );
+    auto Attribs = ExplodeValueWithoutSplittingParameters( value );
 
-    for ( int32_t x = 0; x < Attribs.NumItems(); x++ )
+    for (const auto &attrib: Attribs)
     {
       //try to apply as color
       uint32_t dw = 0;
-      if ( Attribs[ x ].Scan( _T( "#%x" ), &dw ) == 1 )
+      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
       {
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FONTCOLOR, CColor::FromARGB( dw | 0xff000000 ), pseudo );
         continue;
       }
 
       CColor col;
-      if ( ParseRGBA( Attribs[ x ], col ) )
+      if (ParseRGBA(attrib, col))
       {
         VisualStyleApplicator( props.DisplayDescriptor, WB_ITEM_FONTCOLOR, col, pseudo );
         continue;
       }
 
       //if failed apply as font
-      FontStyleApplicator( props, pseudo, Attribs[ x ] );
+      FontStyleApplicator(props, pseudo, attrib);
     }
 
     return true;
@@ -1839,8 +1895,8 @@ TBOOL CWBItem::InterpretFontString( CWBCSSPropertyBatch &props, CString & prop, 
   return false;
 }
 
-TBOOL CWBItem::ApplyStyle( CString & prop, CString & value, CStringArray &pseudo )
-{
+TBOOL CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
+                          const std::vector<std::string> &pseudo) {
   if ( InterpretPositionString( CSSProperties, prop, value, pseudo ) )
   {
     ContentChanged();
@@ -1864,7 +1920,7 @@ TBOOL CWBItem::ApplyStyle( CString & prop, CString & value, CStringArray &pseudo
       Hidden = false;
       return true;
     }
-    LOG_WARN( "[guiitem] Item style error: invalid visibility value '%s'", value.GetPointer() );
+    LOG_WARN( "[guiitem] Item style error: invalid visibility value '%s'", std::string(value).c_str() );
     return true;
   }
 
@@ -1961,8 +2017,8 @@ TBOOL CWBItem::ApplyStyle( CString & prop, CString & value, CStringArray &pseudo
   return false;
 }
 
-void CWBItem::PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Type, CString &value )
-{
+void CWBItem::PositionApplicator(CWBPositionDescriptor &pos,
+                                 WBPOSITIONTYPE Type, std::string_view value) {
   if ( Type == WB_WIDTH || Type == WB_HEIGHT )
   {
     if ( value == _T( "none" ) )
@@ -1985,23 +2041,24 @@ void CWBItem::PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Typ
       return;
     }
 
-  TBOOL px = value.Find( _T( "px" ) ) >= 0;
-  TBOOL pc = value.Find( _T( "%" ) ) >= 0;
+  bool px = value.find(_T( "px" )) != std::string_view::npos;
+  bool pc = value.find(_T( "%" )) != std::string_view::npos;
 
   float pxv = 0;
   float pcv = 0;
 
   if ( !pc && !px )
   {
-    LOG_WARN( "[guiitem] Item style error: missing 'px' or '%%' in '%s' value", value.GetPointer() );
+    LOG_WARN( "[guiitem] Item style error: missing 'px' or '%%' in '%s' value", std::string(value).c_str() );
     return;
   }
 
-  if ( px && !pc )
+  std::string v(value);
+  if (px && !pc)
   {
-    if ( value.Scan( _T( "%fpx" ), &pxv ) != 1 )
+    if ( std::sscanf(v.c_str(), _T( "%fpx" ), &pxv ) != 1 )
     {
-      LOG_WARN( "[guiitem] Item style error: invalid value '%s' (px)", value.GetPointer() );
+      LOG_WARN( "[guiitem] Item style error: invalid value '%s' (px)", v.c_str() );
       return;
     }
     pos.ClearMetrics( Type );
@@ -2011,9 +2068,9 @@ void CWBItem::PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Typ
 
   if ( pc && !px )
   {
-    if ( value.Scan( _T( "%f%%" ), &pcv ) != 1 )
+    if (std::sscanf(v.c_str(),_T( "%f%%" ), &pcv) != 1)
     {
-      LOG_WARN( "[guiitem] Item style error: invalid value '%s' (%%)", value.GetPointer() );
+      LOG_WARN( "[guiitem] Item style error: invalid value '%s' (%%)", v.c_str() );
       return;
     }
     pos.ClearMetrics( Type );
@@ -2021,10 +2078,10 @@ void CWBItem::PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Typ
     return;
   }
 
-  if ( value.Scan( _T( "%fpx%f%%" ), &pxv, &pcv ) != 2 )
-    if ( value.Scan( _T( "%f%%%fpx" ), &pcv, &pxv ) != 2 )
+  if ( std::sscanf(v.c_str(), _T( "%fpx%f%%" ), &pxv, &pcv ) != 2 )
+    if ( std::sscanf(v.c_str(), _T( "%f%%%fpx" ), &pcv, &pxv ) != 2 )
     {
-      LOG_WARN( "[guiitem] Item style error: invalid value '%s' (px, %%)", value.GetPointer() );
+      LOG_WARN( "[guiitem] Item style error: invalid value '%s' (px, %%)", v.c_str() );
       return;
     }
 
@@ -2033,8 +2090,7 @@ void CWBItem::PositionApplicator( CWBPositionDescriptor &pos, WBPOSITIONTYPE Typ
   pos.SetMetric( Type, WB_RELATIVE, pcv / 100.0f );
 }
 
-CWBItem * CWBItem::FindChildByID( CString &value, CString &type )
-{
+CWBItem *CWBItem::FindChildByID(std::string_view value, std::string_view type) {
   CWBItem *i = ChildSearcherFunct( value, type );
   //if ( !i )
   //{
@@ -2045,7 +2101,7 @@ CWBItem * CWBItem::FindChildByID( CString &value, CString &type )
   //}
   return i;
 }
-
+/*
 CWBItem * CWBItem::FindChildByID( TCHAR *value, const TCHAR *type )
 {
   return FindChildByID( CString( value ), CString( type ) );
@@ -2054,16 +2110,15 @@ CWBItem * CWBItem::FindChildByID( TCHAR *value, const TCHAR *type )
 CWBItem * CWBItem::FindChildByID( CString &value, const TCHAR *type )
 {
   return FindChildByID( value, CString( type ) );
-}
+}*/
 
-CWBItem * CWBItem::FindParentByID( CString &value, CString &type )
-{
+CWBItem *CWBItem::FindParentByID(std::string_view value, std::string_view type) {
   CWBItem *i = GetParent();
   while ( i )
   {
     if ( i->GetID() == value )
     {
-      if ( !type.Length() ) return i;
+      if ( type.empty() ) return i;
       if ( i->InstanceOf( type ) ) return i;
       //if (type == i->GetType()) return i;
       //LOG_WARN( "[gui] Found UI item '%s' of wrong type '%s'. Type should be '%s'", value.GetPointer(), GetType().GetPointer(), type.GetPointer() );
@@ -2072,7 +2127,7 @@ CWBItem * CWBItem::FindParentByID( CString &value, CString &type )
   }
   return NULL;
 }
-
+/*
 CWBItem * CWBItem::FindParentByID( TCHAR *value, TCHAR *type )
 {
   return FindParentByID( CString( value ), CString( type ) );
@@ -2081,13 +2136,13 @@ CWBItem * CWBItem::FindParentByID( TCHAR *value, TCHAR *type )
 CWBItem * CWBItem::FindParentByID( CString &value, TCHAR *type )
 {
   return FindParentByID( value, CString( type ) );
-}
+}*/
 
-CWBItem * CWBItem::ChildSearcherFunct( CString &value, CString &type )
-{
+CWBItem *CWBItem::ChildSearcherFunct(std::string_view value,
+                                     std::string_view type) {
   if ( GetID() == value )
   {
-    if ( type.Length() == 0 ) return this;
+    if ( type.empty() ) return this;
     if ( InstanceOf( type ) ) return this;
 
     //LOG_WARN( "[gui] Found UI item '%s' of wrong type '%s'. Type should be '%s'", value.GetPointer(), GetType().GetPointer(), type.GetPointer() );
@@ -2107,8 +2162,7 @@ void CWBItem::DeleteChildren()
   Children.FreeArray();
 }
 
-void CWBItem::ApplyStyleDeclarations( const CString &String )
-{
+void CWBItem::ApplyStyleDeclarations(std::string_view String) {
   if ( !App ) return;
   App->StyleManager.ApplyStylesFromDeclarations( this, String );
 }
@@ -2183,23 +2237,22 @@ void CWBItem::SetChildInFocus( CWBItem *i )
   if ( i->Parent == this ) ChildInFocus = i;
 }
 
-TBOOL CWBItem::ParseRGBA( CString description, CColor &output )
-{
-  CStringArray Params = description.Explode( _T( "," ) );
-  if ( Params.NumItems() < 3 || Params.NumItems() > 4 ) return false;
+TBOOL CWBItem::ParseRGBA(std::string_view description, CColor &output) {
+  auto Params = Split(description, _T( "," ) );
+  if ( Params.size() < 3 || Params.size() > 4 ) return false;
 
   int32_t result = 0;
   int32_t c[ 3 ];
-  result += Params[ 0 ].Scan( _T( "rgba(%d" ), &c[ 0 ] );
-  result += Params[ 1 ].Scan( _T( "%d" ), &c[ 1 ] );
-  result += Params[ 2 ].Scan( _T( "%d" ), &c[ 2 ] );
+  result += std::sscanf(Params[ 0 ].c_str(), _T( "rgba(%d" ), &c[ 0 ] );
+  result += std::sscanf(Params[ 1 ].c_str(),  _T( "%d" ), &c[ 1 ] );
+  result += std::sscanf(Params[ 2 ].c_str(), _T( "%d" ), &c[ 2 ] );
 
   if ( result < 3 )	return false;
 
   float a = 1;
 
-  if ( Params.NumItems() == 4 )
-    if ( Params[ 3 ].Scan( _T( "%f" ), &a ) != 1 ) return false;
+  if ( Params.size() == 4 )
+    if ( std::sscanf(Params[ 3 ].c_str(), _T( "%f" ), &a ) != 1 ) return false;
 
   int32_t Colors[ 3 ];
   for ( int32_t y = 0; y < 3; y++ )
@@ -2210,18 +2263,19 @@ TBOOL CWBItem::ParseRGBA( CString description, CColor &output )
   return true;
 }
 
-void CWBItem::FontStyleApplicator( CWBCSSPropertyBatch &desc, CStringArray &pseudo, CString &name )
-{
-  if ( pseudo.NumItems() <= 1 )
+void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch &desc,
+                                  const std::vector<std::string> &pseudo,
+                                  std::string_view name) {
+  if ( pseudo.size() <= 1 )
   {
     desc.Fonts.Flush();
     desc.Fonts[ WB_STATE_NORMAL ] = name;
   }
   else
   {
-    for ( int32_t y = 1; y < pseudo.NumItems(); y++ )
+    for ( size_t y = 1; y < pseudo.size(); y++ )
     {
-      CString p = pseudo[ y ].Trimmed();
+      auto p = Trim(pseudo[ y ]);
       if ( p == _T( "active" ) )
       {
         desc.Fonts[ WB_STATE_ACTIVE ] = name;
@@ -2251,29 +2305,30 @@ void CWBItem::FontStyleApplicator( CWBCSSPropertyBatch &desc, CStringArray &pseu
   }
 }
 
-TBOOL CWBItem::ScanPXValue( CString &Value, int32_t &Result, CString &PropName )
-{
+TBOOL CWBItem::ScanPXValue(std::string_view Value, int32_t &Result,
+                           std::string_view PropName) {
   Result = 0;
-  if ( Value.Scan( _T( "%dpx" ), &Result ) != 1 )
+  std::string v(Value);
+  if ( std::sscanf(v.c_str(), _T( "%dpx" ), &Result ) != 1 )
   {
-    LOG_WARN( "[guiitem] Item style error: invalid %s value '%s' (px)", PropName.GetPointer(), Value.GetPointer() );
+    LOG_WARN( "[guiitem] Item style error: invalid %s value '%s' (px)", std::string(PropName).c_str(), std::string(Value).c_str() );
     return false;
   }
   return true;
 }
 
-TBOOL CWBItem::ScanSkinValue( CString &Value, WBSKINELEMENTID &Result, CString &PropName )
-{
-  if ( Value.Find( _T( "skin(" ) ) == 0 )
+TBOOL CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID &Result,
+                             std::string_view PropName) {
+  if ( Value.find( _T( "skin(" ) ) == 0 )
   {
-    int32_t i = Value.Find( _T( ")" ) );
-    if ( i > 0 )
+    int32_t i = Value.find( _T( ")" ) );
+    if ( i != std::string_view::npos )
     {
-      Value.GetPointer()[ i ] = 0;
-      Result = App->GetSkin()->GetElementID( CString( Value.GetPointer() + 5 ) );
+      // Value.GetPointer()[ i ] = 0;
+      Result = App->GetSkin()->GetElementID( Value.substr(5, i - 5) );
       if ( Result == 0xffffffff )
       {
-        LOG_WARN( "[gui] Skin element not found: %s", Value.GetPointer() + 5 );
+        LOG_WARN( "[gui] Skin element not found: %s", std::string(Value.substr(5, i - 5)).c_str() );
         return false;
       }
 
@@ -2283,8 +2338,7 @@ TBOOL CWBItem::ScanSkinValue( CString &Value, WBSKINELEMENTID &Result, CString &
   return false;
 }
 
-void CWBItem::SetFont( WBITEMSTATE State, CString &Font )
-{
+void CWBItem::SetFont(WBITEMSTATE State, std::string_view Font) {
   CSSProperties.Fonts[ State ] = Font;
 }
 

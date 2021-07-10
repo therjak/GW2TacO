@@ -5,7 +5,7 @@ typedef int32_t SELECTABLEID;
 
 class CWBSelectableItem
 {
-  CString Text;
+  std::string Text;
   TBOOL Selected;
   SELECTABLEID ID;
   TBOOL ColorSet = false;
@@ -14,13 +14,13 @@ class CWBSelectableItem
 public:
 
   CWBSelectableItem();
-  CWBSelectableItem( const CString &Text, SELECTABLEID ID, TBOOL Selected = false );
+ CWBSelectableItem(std::string_view Text, SELECTABLEID ID, TBOOL Selected = false);
 
-  virtual void SetText( CString &Text );
+  virtual void SetText(std::string_view Text);
   virtual void SetID( SELECTABLEID ID );
   virtual void Select( TBOOL Selected );
 
-  virtual CString &GetText();
+  virtual std::string &GetText();
   virtual SELECTABLEID GetID();
   virtual TBOOL IsSelected();
   virtual TBOOL IsColorSet();
@@ -50,11 +50,9 @@ public:
 
   WB_DECLARE_GUIITEM( _T( "itemselector" ), CWBItem );
 
-  virtual SELECTABLEID AddItem( const CString &Text );
-  virtual SELECTABLEID AddItem( const TCHAR *Text );
+  virtual SELECTABLEID AddItem(std::string_view Text);
 
-  virtual SELECTABLEID AddItem( const CString &Text, SELECTABLEID ID );
-  virtual SELECTABLEID AddItem( const TCHAR *Text, SELECTABLEID ID );
+  virtual SELECTABLEID AddItem(std::string_view Text, SELECTABLEID ID);
 
   virtual TBOOL DeleteItem( SELECTABLEID ID );
 

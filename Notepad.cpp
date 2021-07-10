@@ -23,7 +23,7 @@ GW2Notepad::GW2Notepad( CWBItem *Parent, CRect Position ) : CWBItem( Parent, Pos
     return;
 
   tb->SetForcedMouseTransparency( true );
-  tb->SetText( CString( (TS8*)nptext.GetData(), (int32_t)( nptext.GetLength() ) ) );
+  tb->SetText( std::string_view( (TS8*)nptext.GetData(), (int32_t)( nptext.GetLength() ) ) );
   tb->SetCursorPos( 0, false );
 }
 
@@ -37,7 +37,7 @@ GW2Notepad::~GW2Notepad()
   if ( !nptext.Open( "notepad.txt" ) )
     return;
 
-  nptext.Write( tb->GetText().GetPointer(), tb->GetText().Length() );
+  nptext.Write( tb->GetText() );
 }
 
 CWBItem * GW2Notepad::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
@@ -53,7 +53,7 @@ void GW2Notepad::StartEdit()
 
   canSetFocus = true;
   tb->SetFocus();
-  tb->SetCursorPos( tb->GetText().Length(), false );
+  tb->SetCursorPos( tb->GetText().size(), false );
 }
 
 void GW2Notepad::OnDraw( CWBDrawAPI *API )

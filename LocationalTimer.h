@@ -10,7 +10,7 @@ public:
 
   struct TimerEvent
   {
-    CString Text;
+    std::string Text;
     int32_t Time;
     int32_t CountdownLength;
     int32_t OnScreenLength;

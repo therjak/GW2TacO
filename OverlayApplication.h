@@ -18,6 +18,6 @@ public:
 
   virtual void TakeScreenshot();
 
-  CCoreBlendState *holePunchBlendState = nullptr;
+  std::unique_ptr<CCoreBlendState> holePunchBlendState;
 
 };

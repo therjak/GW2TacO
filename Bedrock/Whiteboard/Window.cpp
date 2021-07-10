@@ -262,11 +262,11 @@ uint32_t CWBWindow::GetDragMode()
   return DragMode;
 }
 
-TBOOL CWBWindow::ApplyStyle( CString & prop, CString & value, CStringArray &pseudo )
-{
+TBOOL CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
+                            const std::vector<std::string> &pseudo) {
   TBOOL ElementTarget = false;
 
-  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
+  for ( size_t x = 1; x < pseudo.size(); x++ )
   {
     if ( pseudo[ x ] == _T( "title" ) ||
          pseudo[ x ] == _T( "close" ) ||
@@ -284,7 +284,7 @@ TBOOL CWBWindow::ApplyStyle( CString & prop, CString & value, CStringArray &pseu
 
   TBOOL Handled = false;
 
-  for ( int32_t x = 1; x < pseudo.NumItems(); x++ )
+  for ( size_t x = 1; x < pseudo.size(); x++ )
   {
     if ( pseudo[ x ] == _T( "title" ) )
     {

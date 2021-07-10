@@ -102,7 +102,7 @@ public:
 
   int32_t uiSize = 1;
 
-  CString charName;
+  std::string charName;
 
   CVector4 averagedCharPosition;
 
@@ -125,7 +125,7 @@ public:
   TBOOL camDirChanged = false;
   TBOOL camUpChanged = false;
 
-  CString mumblePath = L"MumbleLink";
+  std::string mumblePath = "MumbleLink";
   uint32_t pID;
 };
 

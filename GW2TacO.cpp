@@ -19,9 +19,12 @@
 #include "Language.h"
 #include "BuildCount.h"
 #include <mutex>
+
+#include "Bedrock/BaseLib/string_format.h"
+
 using namespace jsonxx;
 
-CString UIFileNames[] =
+std::string_view UIFileNames[] =
 {
   "UI_small.css",
   "UI_normal.css",
@@ -29,7 +32,7 @@ CString UIFileNames[] =
   "UI_larger.css",
 };
 
-CString ActionNames[] =
+std::vector<std::string_view> ActionNames =
 {
   "no_action",//"No Action",
   "add_marker",//"Add New Marker",
@@ -56,7 +59,7 @@ CString ActionNames[] =
   "toggle_window_edit_mode",
 };
 
-CString APIKeyNames[] =
+std::string_view APIKeyNames[] =
 {
   "no_action",//"No Action",
   "ts3_clientquery_plugin",//"TS3 ClientQuery Plugin",
@@ -243,14 +246,14 @@ void ChangeUIScale( int size )
   iconSizesStored = false;
 }
 
-CString buildText2( "WW91IGNhbiBzdXBwb3J0IGRldmVsb3BtZW50IGJ5IGRvbmF0aW5nIGluLWdhbWUgdG8gQm95Qy4yNjUzIDop" ); // You can support development by donating in-game to BoyC.2653 :)
+std::string_view buildText2( "WW91IGNhbiBzdXBwb3J0IGRldmVsb3BtZW50IGJ5IGRvbmF0aW5nIGluLWdhbWUgdG8gQm95Qy4yNjUzIDop" ); // You can support development by donating in-game to BoyC.2653 :)
 
-CString GW2TacO::GetKeybindString(TacOKeyAction action)
+std::string GW2TacO::GetKeybindString(TacOKeyAction action)
 {
-  for (int32_t x = 0; x < KeyBindings.NumItems(); x++)
-    if (KeyBindings.GetByIndex(x) == action)
+  for (auto& kb:KeyBindings)
+    if (kb.second == action)
     {
-      return CString::Format(" [%c]", KeyBindings.GetKDPair(x)->Key);
+      return FormatString(" [%c]", kb.first);
       break;
     }
   return "";
@@ -379,18 +382,18 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         ctx->AddItem( DICT( "togglemouseoutline" ) + ( GetConfigValue( "MouseHighlightOutline" ) ? " [x]" : " [ ]" ), Menu_ToggleMouseHighlightOutline );
         auto cols = ctx->AddItem( DICT( "mousecolor" ), 0 );
 
-        extern CString CGAPaletteNames[];
+        extern std::vector<std::string_view> CGAPaletteNames;
 
         int mouseColor = 0;
         if ( HasConfigValue( "MouseHighlightColor" ) )
           mouseColor = GetConfigValue( "MouseHighlightColor" );
 
-        for ( int x = 0; x < 16; x++ )
+        for (int x = 0; x < CGAPaletteNames.size(); x++)
         {
           if ( mouseColor == x )
-            cols->AddItem( ( CString( "[x] " ) + DICT( CGAPaletteNames[ x ] ) ).GetPointer(), Menu_MouseHighlightColor0 + x, true );
+            cols->AddItem( (  "[x] "  + DICT( CGAPaletteNames[ x ] ) ), Menu_MouseHighlightColor0 + x, true );
           else
-            cols->AddItem( ( CString( "[ ] " ) + DICT( CGAPaletteNames[ x ] ) ).GetPointer(), Menu_MouseHighlightColor0 + x, false );
+            cols->AddItem( (  "[ ] "  + DICT( CGAPaletteNames[ x ] ) ), Menu_MouseHighlightColor0 + x, false );
         }
 
       }
@@ -410,12 +413,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
           for ( size_t x = 0; x < timer->maps.size(); x++ )
           {
             TBOOL open = true;
-            CString str = CString( "maptimer_mapopen_" ) + timer->maps[ x ].id;
+            auto str = "maptimer_mapopen_" + timer->maps[ x ].id;
 
-            if ( HasConfigValue( str.GetPointer() ) )
-              open = GetConfigValue( str.GetPointer() );
+            if ( HasConfigValue( str ) )
+              open = GetConfigValue( str );
 
-            itm->AddItem( open ? ( timer->maps[ x ].name + " [x]" ).GetPointer() : ( timer->maps[ x ].name + " [ ]" ).GetPointer(), Menu_ToggleMapTimerMap + x, open, false );
+            itm->AddItem( open ? ( timer->maps[ x ].name + " [x]" ) : ( timer->maps[ x ].name + " [ ]" ), Menu_ToggleMapTimerMap + x, open, false );
           }
         }
 
@@ -428,18 +431,18 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         markerEditor->AddItem( DICT( "autohidemarkereditor" ) + ( GetConfigValue( "AutoHideMarkerEditor" ) ? " [x]" : " [ ]" ), Menu_ToggleAutoHideMarkerEditor );
         markerEditor->AddSeparator();
         int cnt = 1;
-        for ( int32_t x = 1; x < sizeof( ActionNames ) / sizeof( CString ); x++ )
+        for ( int32_t x = 1; x < ActionNames.size(); x++ )
         {
-          CString str = DICT( ActionNames[ x ] ) + " " + DICT( "action_no_key_bound" );
-          for ( int32_t y = 0; y < KeyBindings.NumItems(); y++ )
-            if ( (int32_t)KeyBindings.GetByIndex( y ) == x )
+          auto str = DICT( ActionNames[ x ] ) + " " + DICT( "action_no_key_bound" );
+          for ( auto& kb : KeyBindings )
+            if ( (int32_t)kb.second == x )
             {
-              str = DICT( ActionNames[ x ] ) + CString::Format( " [%c]", KeyBindings.GetKDPair( y )->Key );
+              str = DICT( ActionNames[ x ] ) + FormatString( " [%c]", kb.first );
               break;
             }
 
           if ( ActionNames[ x ][ 0 ] == '*' )
-            markerEditor->AddItem( str.GetPointer(), Menu_RebindKey_Base + x );
+            markerEditor->AddItem( str, Menu_RebindKey_Base + x );
           cnt++;
         }
 
@@ -453,7 +456,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       if ( IsWindowOpen( "RaidProgress" ) )
       {
         raid->AddItem( DICT( "raidwindow_compact" ) + ( GetConfigValue( "CompactRaidWindow" ) ? " [x]" : " [ ]" ), Menu_ToggleCompactRaids );        
-        auto* rp = FindChildByID<RaidProgress>( "RaidProgressView" );
+        auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
         if ( rp )
         {
           auto& raids = rp->GetRaids();
@@ -497,16 +500,16 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       int cnt = 1;
       for ( int32_t x = 1; x < sizeof( ActionNames ) / sizeof( CString ); x++ )
       {
-        CString str = DICT( ActionNames[ x ] ) + " " + DICT( "action_no_key_bound" );
-        for ( int32_t y = 0; y < KeyBindings.NumItems(); y++ )
-          if ( (int32_t)KeyBindings.GetByIndex( y ) == x )
+        auto str = DICT( ActionNames[ x ] ) + " " + DICT( "action_no_key_bound" );
+        for ( auto& kb: KeyBindings )
+          if ( (int32_t)kb.second == x )
           {
-            str = DICT( ActionNames[ x ] ) + CString::Format( " [%c]", KeyBindings.GetKDPair( y )->Key );
+            str = DICT( ActionNames[ x ] ) + FormatString( " [%c]", kb.first );
             break;
           }
 
         if ( ActionNames[ x ][ 0 ] != '*' )
-          bind->AddItem( str.GetPointer(), Menu_RebindKey_Base + x );
+          bind->AddItem( str, Menu_RebindKey_Base + x );
         cnt++;
       }
       settings->AddSeparator();
@@ -537,8 +540,8 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
       auto languages = localization->GetLanguages();
       auto langs = settings->AddItem( DICT( "language" ), Menu_Language );
-      for ( int x = 0; x < languages.NumItems(); x++ )
-        langs->AddItem( ( x == localization->GetActiveLanguageIndex() ? CString( "[x] " ) : CString( "[ ] " ) ) + languages[ x ], Menu_Language_Base + x, x == localization->GetActiveLanguageIndex() );
+      for ( int x = 0; x < languages.size(); x++ )
+        langs->AddItem( ( x == localization->GetActiveLanguageIndex() ?  "[x] "  :  "[ ] "  ) + languages[ x ], Menu_Language_Base + x, x == localization->GetActiveLanguageIndex() );
 
 
       ctx->AddSeparator();
@@ -592,8 +595,8 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
 
       if ( !dta->IsOnlySeparator )
       {
-        CString txt = "[" + CString( dta->IsDisplayed ? "x" : " " ) + "] ";
-        if ( dta->displayName.Length() )
+        auto txt = "[" + std::string( dta->IsDisplayed ? "x" : " " ) + "] ";
+        if ( !dta->displayName.empty() )
           txt += dta->displayName;
         else
           txt += dta->name;
@@ -615,12 +618,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         break;
 
       TBOOL open = true;
-      CString str = CString( "maptimer_mapopen_" ) + timer->maps[ mapIdx ].id;
+      auto str = "maptimer_mapopen_" + timer->maps[ mapIdx ].id;
 
-      if ( HasConfigValue( str.GetPointer() ) )
-        open = GetConfigValue( str.GetPointer() );
+      if ( HasConfigValue( str ) )
+        open = GetConfigValue( str );
 
-      itm->SetText( open ? ( timer->maps[ mapIdx ].name + " [x]" ).GetPointer() : ( timer->maps[ mapIdx ].name + " [ ]" ).GetPointer() );
+      itm->SetText( open ? ( timer->maps[ mapIdx ].name + " [x]" ) : ( timer->maps[ mapIdx ].name + " [ ]" ) );
       itm->SetHighlight( open );
       break;
     }
@@ -721,7 +724,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     {
       auto languages = localization->GetLanguages();
 
-      if ( Message.Data >= Menu_Language_Base && Message.Data < Menu_Language_Base + languages.NumItems() )
+      if ( Message.Data >= Menu_Language_Base && Message.Data < Menu_Language_Base + languages.size() )
       {
         localization->SetActiveLanguage( languages[ Message.Data - Menu_Language_Base ] );
         break;
@@ -732,7 +735,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     {
       TBOOL displayed = !CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->IsDisplayed;
       CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->IsDisplayed = displayed;
-      SetConfigValue( ( CString( "CategoryVisible_" ) + CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->GetFullTypeName() ).GetPointer(), displayed );
+      SetConfigValue( ( "CategoryVisible_" + CategoryList[ Message.Data - Menu_MarkerFilter_Base ]->GetFullTypeName() ), displayed );
       break;
     }
 
@@ -745,9 +748,9 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
         if ( Message.Data < Menu_ToggleMapTimerMap + timer->maps.size() )
         {
           int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
-          CString str = CString( "maptimer_mapopen_" ) + timer->maps[ mapIdx ].id;
+          auto str = "maptimer_mapopen_" + timer->maps[ mapIdx ].id;
           timer->maps[ mapIdx ].display = !timer->maps[ mapIdx ].display;
-          SetConfigValue( str.GetPointer(), timer->maps[ mapIdx ].display );
+          SetConfigValue( str, timer->maps[ mapIdx ].display );
           break;
         }
       }
@@ -1082,13 +1085,15 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
     {
       if ( !ScriptRebindMode )
       {
-        for ( int32_t x = 0; x < KeyBindings.NumItems(); x++ )
+        auto it = KeyBindings.begin();
+        while ( it != KeyBindings.end() )
         {
-          if ( KeyBindings.GetByIndex( x ) == ActionToRebind )
+          if ( it->second == ActionToRebind )
           {
-            DeleteKeyBinding( KeyBindings.GetKDPair( x )->Key );
-            KeyBindings.DeleteByIndex( x );
-            x--;
+            DeleteKeyBinding( it->first );
+            it = KeyBindings.erase( it );
+          } else {
+            ++it;
           }
         }
 
@@ -1098,30 +1103,13 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
           SetKeyBinding(ActionToRebind, Message.Key);
         }
       }
-      else
-      {
-        /*
-                for ( int32_t x = 0; x < ScriptKeyBindings.NumItems(); x++ )
-                {
-                  if ( ScriptKeyBindings.GetByIndex( x ) == scriptKeyBinds[ ScriptActionToRebind ].eventName )
-                  {
-                    DeleteScriptKeyBinding( scriptKeyBinds[ ScriptActionToRebind ].eventName );
-                    ScriptKeyBindings.DeleteByIndex( x );
-                    x--;
-                  }
-                }
-
-                ScriptKeyBindings[ Message.Key ] = scriptKeyBinds[ ScriptActionToRebind ].eventName;
-                SetScriptKeyBinding( scriptKeyBinds[ ScriptActionToRebind ].eventName, Message.Key );
-        */
-      }
 
       RebindMode = false;
       ScriptRebindMode = false;
       return true;
     }
 
-    if ( GetConfigValue("KeybindsEnabled") && KeyBindings.HasKey( Message.Key ) )
+    if ( GetConfigValue("KeybindsEnabled") && KeyBindings.find( Message.Key ) != KeyBindings.end() )
     {
       switch ( KeyBindings[ Message.Key ] )
       {
@@ -1229,7 +1217,7 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       }
     }
 
-    if ( ScriptKeyBindings.HasKey( Message.Key ) )
+    if ( ScriptKeyBindings.find( Message.Key ) != ScriptKeyBindings.end() )
       TriggerScriptEngineKeyEvent( ScriptKeyBindings[ Message.Key ] );
 
     break;
@@ -1247,12 +1235,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
       case APIKeys::None:
         break;
       case APIKeys::TS3APIKey:
-        SetConfigString( "TS3APIKey", APIKeyInput->GetText().GetPointer() );
+        SetConfigString( "TS3APIKey", APIKeyInput->GetText() );
         break;
       case APIKeys::GW2APIKey:
       {
         auto key = GW2::apiKeyManager.GetKey(ApiKeyIndex);
-        key->SetKey(APIKeyInput->GetText().GetPointer());
+        key->SetKey(APIKeyInput->GetText());
         GW2::apiKeyManager.RebuildConfigValues();
       }
         break;
@@ -1270,13 +1258,12 @@ TBOOL GW2TacO::MessageProc( CWBMessage &Message )
   return CWBItem::MessageProc( Message );
 }
 
-void GW2TacO::SetInfoLine( const CString& string )
+void GW2TacO::SetInfoLine( std::string_view string )
 {
   lastInfoLine = string;
 }
 
-void GW2TacO::SetMouseToolTip(const CString& toolTip)
-{
+void GW2TacO::SetMouseToolTip(std::string_view toolTip) {
   mouseToolTip = toolTip;
 }
 
@@ -1310,8 +1297,7 @@ void GW2TacO::TriggerScriptEngineAction( GUID& guid )
   */
 }
 
-void GW2TacO::TriggerScriptEngineKeyEvent( const CString& eventID )
-{
+void GW2TacO::TriggerScriptEngineKeyEvent(std::string_view eventID) {
   /*
     for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
       scriptEngines[ x ]->TriggerKeyPress( eventID );
@@ -1333,7 +1319,7 @@ void GW2TacO::OpenAboutWindow()
   CWBLabel *l1 = new CWBLabel( w, w->GetClientRect() + CPoint( 0, 2 ), "GW2 TacO - The Guild Wars 2 Tactical Overlay" );
   l1->ApplyStyleDeclarations( "font-family:ProFont;text-align:center;vertical-align:top;" );
   extern CString tacoBuild;
-  l1 = new CWBLabel( w, w->GetClientRect() + CPoint( 0, 16 ), CString( "Build " + TacOBuild + " built on " + buildDateTime ).GetPointer() );
+  l1 = new CWBLabel( w, w->GetClientRect() + CPoint( 0, 16 ), "Build " + TacOBuild + " built on " + buildDateTime );
   l1->ApplyStyleDeclarations( "font-family:ProFont;text-align:center;vertical-align:top;" );
   l1 = new CWBLabel( w, w->GetClientRect() + CPoint( 0, 32 ), "(c) BoyC / Conspiracy" );
   l1->ApplyStyleDeclarations( "font-family:ProFont;text-align:center;vertical-align:top;" );
@@ -1490,11 +1476,11 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     auto font = App->GetFont( "ProFont" );
     if ( !font ) return;
 
-    CString infoline = lastInfoLine;
+    auto infoline = lastInfoLine;
 
-    if ( !lastInfoLine.Length() )
+    if ( lastInfoLine.empty() )
     {
-      infoline = CString::Format( "map: %d world: %d shard: %d position: %f %f %f campos: %.2f %.2f %.2f game fps: %.2f overlay fps: %.2f map:%d compPos:%d compRot:%d cW:%d cH:%d cR:%f pX:%f pY:%f mcX:%f mcY:%f mS:%f",
+      infoline = FormatString( "map: %d world: %d shard: %d position: %f %f %f campos: %.2f %.2f %.2f game fps: %.2f overlay fps: %.2f map:%d compPos:%d compRot:%d cW:%d cH:%d cR:%f pX:%f pY:%f mcX:%f mcY:%f mS:%f",
                                   mumbleLink.mapID, mumbleLink.worldID, mumbleLink.mapInstance, mumbleLink.charPosition.x, mumbleLink.charPosition.y, mumbleLink.charPosition.z, mumbleLink.camDir.x, mumbleLink.camDir.y, mumbleLink.camDir.z,
                                   mumbleLink.GetFrameRate(), App->GetFrameRate(), int( mumbleLink.isMapOpen ), int( mumbleLink.isMinimapTopRight ), int( mumbleLink.isMinimapRotating ), int( mumbleLink.miniMap.compassWidth ), int( mumbleLink.miniMap.compassHeight ), mumbleLink.miniMap.compassRotation, mumbleLink.miniMap.playerX, mumbleLink.miniMap.playerY,
                                   mumbleLink.miniMap.mapCenterX, mumbleLink.miniMap.mapCenterY, mumbleLink.miniMap.mapScale );
@@ -1550,7 +1536,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
         maxdistance2d = /*WorldToGameCoords*/( maxdistance2d );
         maxdistance3d = /*WorldToGameCoords*/( maxdistance3d );
 
-        infoline = CString::Format( "map: %d markercenter: %.2f %.2f %.2f maxdist2d: %.2f maxdist3d: %.2f playerdist: %.2f", mumbleLink.mapID, center.x, center.y, center.z, maxdistance2d, maxdistance3d, playerdist );
+        infoline = FormatString( "map: %d markercenter: %.2f %.2f %.2f maxdist2d: %.2f maxdist3d: %.2f playerdist: %.2f", mumbleLink.mapID, center.x, center.y, center.z, maxdistance2d, maxdistance3d, playerdist );
       }
     }
 
@@ -1571,7 +1557,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     auto font = App->GetFont( "UniFont" );
     if ( !font ) return;
 
-    CString infoline = DICT( "new_build_txt1" ) + CString::Format( " %d ", NewTacOVersion - RELEASECOUNT ) + DICT( "new_build_txt2" );
+    auto infoline = DICT( "new_build_txt1" ) + FormatString( " %d ", NewTacOVersion - RELEASECOUNT ) + DICT( "new_build_txt2" );
 
     CPoint startpos = font->GetTextPosition( infoline, GetClientRect(), WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE );
     if ( GetConfigValue( "InfoLineVisible" ) )
@@ -1584,12 +1570,8 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     font->Write( API, infoline, startpos, 0xffffffff, WBTT_UPPERCASE, true );
     ypos += font->GetLineHeight();
 
-    uint8_t *data2 = nullptr;
-    int32_t size = 0;
-    buildText2.DecodeBase64( data2, size );
-    CString build( (TS8*)data2, size );
-    SAFEDELETEA( data2 );
-
+    auto build = B64Decode(std::string(buildText2));
+   
     CPoint spos2 = font->GetTextPosition( build, GetClientRect(), WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE );
 
     for ( int x = 0; x < 3; x++ )
@@ -1606,7 +1588,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     auto font = App->GetFont( "UniFont" );
     if ( !font ) return;
 
-    CString infoline = DICT( "multiclientwarning" );
+    auto infoline = DICT( "multiclientwarning" );
     CPoint spos2 = font->GetTextPosition( infoline, GetClientRect(), WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE );
 
     for ( int x = 0; x < 3; x++ )
@@ -1622,15 +1604,15 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     API->DrawRect( GetClientRect(), 0x60000000 );
     CWBFont *f = GetFont( GetState() );
 
-    CString line1;
+    std::string line1;
 
     if ( !ScriptRebindMode )
     {
       int32_t key = -1;
-      for ( int32_t x = 0; x < KeyBindings.NumItems(); x++ )
-        if ( KeyBindings.GetByIndex( x ) == ActionToRebind )
+      for ( const auto& kb: KeyBindings )
+        if ( kb.second == ActionToRebind )
         {
-          key = KeyBindings.GetKDPair( x )->Key;
+          key = kb.first;
           break;
         }
 
@@ -1640,7 +1622,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
       }
       else
       {
-        line1 = DICT("action") + " '" + DICT(ActionNames[(int32_t)ActionToRebind]) + "' " + DICT("currently_bound") + CString::Format(" '%c'", key);
+        line1 = DICT("action") + " '" + DICT(ActionNames[(int32_t)ActionToRebind]) + "' " + DICT("currently_bound") + FormatString(" '%c'", key);
       }
     }
     else
@@ -1664,8 +1646,8 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
         */
       }
     }
-    CString line2 = DICT( "press_to_bind" );
-    CString line3 = DICT("escape_to_unbind");
+    auto line2 = DICT( "press_to_bind" );
+    auto line3 = DICT("escape_to_unbind");
     CPoint line1p = f->GetTextPosition( line1, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
     CPoint line2p = f->GetTextPosition( line2, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
     CPoint line3p = f->GetTextPosition(line3, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true);
@@ -1679,13 +1661,13 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
     API->DrawRect( GetClientRect(), 0x60000000 );
     CWBFont *f = GetFont( GetState() );
 
-    CString line1 = DICT( "enter_api" ) + " " + DICT( APIKeyNames[ (int32_t)ApiKeyToSet ] ) + " " + DICT( "below_and_press" );
+    auto line1 = DICT( "enter_api" ) + " " + DICT( APIKeyNames[ (int32_t)ApiKeyToSet ] ) + " " + DICT( "below_and_press" );
     CPoint line1p = f->GetTextPosition( line1, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
 
     if ( ApiKeyToSet == APIKeys::TS3APIKey )
     {
-      CString line2 = DICT( "ts3_help_1" );
-      CString line3 = DICT( "ts3_help_2" );
+      auto line2 = DICT( "ts3_help_1" );
+      auto line3 = DICT( "ts3_help_2" );
       CPoint line2p = f->GetTextPosition( line2, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
       CPoint line3p = f->GetTextPosition( line3, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
 
@@ -1695,8 +1677,8 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
 
     if ( ApiKeyToSet == APIKeys::GW2APIKey )
     {
-      CString line2 = DICT( "gw2_api_help_1" );
-      CString line3 = CString( "https://account.arena.net/applications" );
+      auto line2 = DICT( "gw2_api_help_1" );
+      std::string_view line3( "https://account.arena.net/applications" );
       CPoint line2p = f->GetTextPosition( line2, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
       CPoint line3p = f->GetTextPosition( line3, GetClientRect(), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true );
 
@@ -1708,8 +1690,7 @@ void GW2TacO::OnDraw( CWBDrawAPI *API )
   }
 }
 
-void SetMouseToolTip(const CString& toolTip)
-{
+void SetMouseToolTip(std::string_view toolTip) {
   extern CWBApplication* App;
 
   if (!App)
@@ -1729,7 +1710,7 @@ void GW2TacO::OnPostDraw(CWBDrawAPI* API)
   if (!font)
     return;
 
-  if (!mouseToolTip.Length())
+  if (mouseToolTip.empty())
     return;
 
   int32_t width = font->GetWidth(mouseToolTip);
@@ -1742,14 +1723,13 @@ void GW2TacO::OnPostDraw(CWBDrawAPI* API)
   font->Write(API, mouseToolTip, pos);
 }
 
-void GW2TacO::OpenWindow( CString s )
-{
+void GW2TacO::OpenWindow(std::string_view s) {
   CRect pos;
-  if ( !HasWindowData( s.GetPointer() ) )
+  if ( !HasWindowData( s ) )
     pos = CRect( -150, -150, 150, 150 ) + GetClientRect().Center();
-  else pos = GetWindowPosition( s.GetPointer() );
+  else pos = GetWindowPosition( s );
 
-  auto itm = FindChildByID( s.GetPointer() );
+  auto itm = FindChildByID( s );
   if ( itm )
   {
     bool openState = false;
@@ -1760,7 +1740,7 @@ void GW2TacO::OpenWindow( CString s )
     itm->Hide(openState);
 
     //delete itm;
-    SetWindowOpenState( s.GetPointer(), openState );
+    SetWindowOpenState( s, openState );
     return;
   }
 
@@ -1768,7 +1748,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     GW2MapTimer *mt = new GW2MapTimer( w, w->GetClientRect() );
     w->ReapplyStyles();
   }
@@ -1777,7 +1757,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     TS3Control *mt = new TS3Control( w, w->GetClientRect() );
     w->ReapplyStyles();
   }
@@ -1786,7 +1766,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     GW2MarkerEditor *mt = new GW2MarkerEditor( w, w->GetClientRect() );
     w->ReapplyStyles();
   }
@@ -1795,7 +1775,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     GW2Notepad *mt = new GW2Notepad( w, w->GetClientRect() );
     w->ReapplyStyles();
   }
@@ -1804,7 +1784,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     RaidProgress *mt = new RaidProgress( w, w->GetClientRect() );
     mt->SetID( "RaidProgressView" );
     w->ReapplyStyles();
@@ -1814,7 +1794,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     DungeonProgress *mt = new DungeonProgress( w, w->GetClientRect() );
     w->ReapplyStyles();
   }
@@ -1823,7 +1803,7 @@ void GW2TacO::OpenWindow( CString s )
   {
     OverlayWindow *w = new OverlayWindow( this, pos );
     w->SetID( s );
-    SetWindowOpenState( s.GetPointer(), true );
+    SetWindowOpenState( s, true );
     TPTracker *mt = new TPTracker( w, w->GetClientRect() );
     w->ReapplyStyles();
   }
@@ -1836,7 +1816,7 @@ void GW2TacO::BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *
     TS3Connection::TS3Channel &chn = h.Channels[ x ];
     if ( chn.parentid == ParentID )
     {
-      auto newitm = parentitm->AddItem( chn.name.GetPointer(), 0 );
+      auto newitm = parentitm->AddItem( chn.name, 0 );
       if ( chn.id != chn.parentid )
         BuildChannelTree( h, newitm, chn.id );
     }
@@ -2001,28 +1981,27 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale)
   CWBItem* v3 = App->GetRoot()->FindChildByID("TPButton");
   CWBItem* v4 = App->GetRoot()->FindChildByID("RedCircle");
 
-  CString str;
   if (v1)
   {
-    str = CString::Format("#MenuButton{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; background:skin(taco_stretch_dark) top left; } #MenuButton:hover{background:skin(taco_stretch_light) top left;} #MenuButton:active{background:skin(taco_stretch_light) top left;}", int(tacoIconRect.x1 * scale), int(tacoIconRect.y1 * scale), int(tacoIconRect.Width() * scale), int(tacoIconRect.Height() * scale));
+    auto str = FormatString("#MenuButton{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; background:skin(taco_stretch_dark) top left; } #MenuButton:hover{background:skin(taco_stretch_light) top left;} #MenuButton:active{background:skin(taco_stretch_light) top left;}", int(tacoIconRect.x1 * scale), int(tacoIconRect.y1 * scale), int(tacoIconRect.Width() * scale), int(tacoIconRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
   if (v2)
   {
-    str = CString::Format("#MenuHoverBox{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; }", int(menuHoverRect.x1 * scale), int(menuHoverRect.y1 * scale), int(menuHoverRect.Width() * scale), int(menuHoverRect.Height() * scale));
+    auto str = FormatString("#MenuHoverBox{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; }", int(menuHoverRect.x1 * scale), int(menuHoverRect.y1 * scale), int(menuHoverRect.Width() * scale), int(menuHoverRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
   if (v3)
   {
-    str = CString::Format("#TPButton{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; }", int(tpButtonRect.x1 * scale), int(tpButtonRect.y1 * scale), int(tpButtonRect.Width() * scale), int(tpButtonRect.Height() * scale));
+    auto str = FormatString("#TPButton{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; }", int(tpButtonRect.x1 * scale), int(tpButtonRect.y1 * scale), int(tpButtonRect.Width() * scale), int(tpButtonRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
   if (v4)
   {
-    str = CString::Format("#RedCircle{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; background:skin(redcircle_stretch) top left; }", int(tpHighlightRect.x1 * scale), int(tpHighlightRect.y1 * scale), int(tpHighlightRect.Width() * scale), int(tpHighlightRect.Height() * scale));
+    auto str = FormatString("#RedCircle{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; background:skin(redcircle_stretch) top left; }", int(tpHighlightRect.x1 * scale), int(tpHighlightRect.y1 * scale), int(tpHighlightRect.Width() * scale), int(tpHighlightRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 

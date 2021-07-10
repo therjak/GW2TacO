@@ -67,8 +67,8 @@ uint32_t CStreamReader::ReadBits( uint32_t BitCount )
   return result;
 }
 
-CString CStreamReaderMemory::ReadLine() {
-  CString result;
+std::string CStreamReaderMemory::ReadLine() {
+  std::string result;
 
   TS8 s[ 2 ];
   s[ 0 ] = s[ 1 ] = 0;

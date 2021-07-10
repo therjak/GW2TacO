@@ -305,7 +305,7 @@ uint16_t degammaint16( uint16_t f )
   return (uint16_t)( degammafloat( tf ) * 65535 );
 }
 
-void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma )
+void CCoreDX11Texture2D::ExportToImage( std::string_view Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma )
 {
   if ( !TextureHandle ) return;
 
@@ -317,7 +317,7 @@ void CCoreDX11Texture2D::ExportToImage( CString &Filename, TBOOL ClearAlpha, EXP
   if ( res != S_OK )
   {
     _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] Failed to export texture to '%s' (%x: %s)" ), Filename.GetPointer(), res, err.ErrorMessage() );
+    LOG( LOG_ERROR, _T( "[core] Failed to export texture to '%s' (%x: %s)" ), std::string(Filename).c_str(), res, err.ErrorMessage() );
     return;
   }
 
@@ -1262,10 +1262,9 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   }
 
   // Setup pixels
-  uint8_t *pixels = new uint8_t[ slicePitch ];// (new (std::nothrow) uint8_t[slicePitch]);
+  auto pixels = std::make_unique<uint8_t[]>( slicePitch );
   if ( !pixels )
   {
-    SAFEDELETEA( pixels );
     if ( pStaging ) pStaging->Release();
     return E_OUTOFMEMORY;
   }
@@ -1274,7 +1273,6 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   hr = pContext->Map( pStaging, 0, D3D11_MAP_READ, 0, &mapped );
   if ( FAILED( hr ) )
   {
-    SAFEDELETEA( pixels );
     if ( pStaging ) pStaging->Release();
     return hr;
   }
@@ -1283,12 +1281,11 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   if ( !sptr )
   {
     pContext->Unmap( pStaging, 0 );
-    SAFEDELETEA( pixels );
     if ( pStaging ) pStaging->Release();
     return E_POINTER;
   }
 
-  uint8_t* dptr = pixels;
+  uint8_t* dptr = pixels.get();
 
   size_t msize = min( rowPitch, mapped.RowPitch );
   for ( size_t h = 0; h < rowCount; ++h )
@@ -1302,20 +1299,17 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
 
   // Write header & pixels
 
-  if ( !Writer.Write( &fileHeader, (DWORD)( headerSize ) ) )
+  if ( !Writer.Write( uint8_view(&fileHeader[0], (DWORD)( headerSize ) )) )
   {
-    SAFEDELETEA( pixels );
     if ( pStaging ) pStaging->Release();
     return E_FAIL;
   }
-  if ( !Writer.Write( pixels, (DWORD)( slicePitch ) ) )
+  if ( !Writer.Write( uint8_view(pixels.get(), (DWORD)( slicePitch ) ) ) )
   {
-    SAFEDELETEA( pixels );
     if ( pStaging ) pStaging->Release();
     return E_FAIL;
 }
 
-  SAFEDELETEA( pixels );
   if ( pStaging ) pStaging->Release();
   return S_OK;
 }

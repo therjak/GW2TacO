@@ -1,13 +1,15 @@
 #include "BuildInfo.h"
 #include "BuildCount.h"
 
+#include "Bedrock/BaseLib/string_format.h"
+
 #ifdef _DEBUG
-CString TacOBuild = CString::Format( "%.3d.%dd", RELEASECOUNT, BUILDCOUNT );
+std::string TacOBuild = FormatString( "%.3d.%dd", RELEASECOUNT, BUILDCOUNT );
 #else
-CString TacOBuild = CString::Format( "%.3d.%dr", RELEASECOUNT, BUILDCOUNT );
+std::string TacOBuild = FormatString("%.3d.%dr", RELEASECOUNT, BUILDCOUNT);
 #endif
 
-CString buildDateTime = CString::Format( __DATE__ " " __TIME__ );
+std::string buildDateTime( __DATE__ " " __TIME__ );
 
 int32_t TacORelease = RELEASECOUNT;
 int32_t TacOBuildCount = BUILDCOUNT;

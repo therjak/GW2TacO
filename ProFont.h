@@ -1,5 +1,5 @@
 #pragma once
 #include "Bedrock/WhiteBoard/Application.h"
 
-TBOOL CreateProFont( CWBApplication *App, CString FontName );
-TBOOL CreateUniFont( CWBApplication *App, CString FontName );
+TBOOL CreateProFont( CWBApplication *App, std::string_view FontName );
+TBOOL CreateUniFont( CWBApplication *App, std::string_view FontName );

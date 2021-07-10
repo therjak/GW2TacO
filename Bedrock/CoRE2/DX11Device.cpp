@@ -537,60 +537,60 @@ TBOOL CCoreDX11Device::DeviceOk()
 //////////////////////////////////////////////////////////////////////////
 // texture functions
 
-CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int32_t YRes, const uint8_t* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
+std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int32_t YRes, const uint8_t* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
 {
-  CCoreTexture2D* Result = new CCoreDX11Texture2D( this );
+  auto Result = std::make_unique<CCoreDX11Texture2D>( this );
   if ( !Result->Create( XRes, YRes, Data, BytesPerPixel, Format, RenderTarget ) )
-    SAFEDELETE( Result );
+    Result.reset();
   return Result;
 }
 
-CCoreTexture2D* CCoreDX11Device::CreateTexture2D( const uint8_t* Data, const int32_t Size )
+std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D( const uint8_t* Data, const int32_t Size )
 {
-  CCoreTexture2D* Result = new CCoreDX11Texture2D( this );
+  auto Result = std::make_unique<CCoreDX11Texture2D>( this );
   if ( !Result->Create( Data, Size ) )
-    SAFEDELETE( Result );
+    Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // vertexbuffer functions
 
-CCoreVertexBuffer* CCoreDX11Device::CreateVertexBuffer( const uint8_t* Data, const int32_t Size )
-{
-  CCoreDX11VertexBuffer* Result = new CCoreDX11VertexBuffer( this );
+std::unique_ptr <    CCoreVertexBuffer> CCoreDX11Device::CreateVertexBuffer(const uint8_t* Data,
+                                                           const int32_t Size) {
+  auto Result = std::make_unique<CCoreDX11VertexBuffer>( this );
   if ( !Result->Create( Data, Size ) )
-    SAFEDELETE( Result );
+    Result.reset();
   return Result;
 }
 
-CCoreVertexBuffer* CCoreDX11Device::CreateVertexBufferDynamic( const int32_t Size )
+std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBufferDynamic( const int32_t Size )
 {
-  CCoreDX11VertexBuffer* Result = new CCoreDX11VertexBuffer( this );
+  auto Result = std::make_unique<CCoreDX11VertexBuffer>( this );
   if ( !Result->CreateDynamic( Size ) )
-    SAFEDELETE( Result );
+    Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // indexbuffer functions
 
-CCoreIndexBuffer* CCoreDX11Device::CreateIndexBuffer( const int32_t IndexCount, const int32_t IndexSize )
+std::unique_ptr<CCoreIndexBuffer> CCoreDX11Device::CreateIndexBuffer( const int32_t IndexCount, const int32_t IndexSize )
 {
-  CCoreDX11IndexBuffer* Result = new CCoreDX11IndexBuffer( this );
+  auto Result = std::make_unique<CCoreDX11IndexBuffer>( this );
   if ( !Result->Create( IndexCount, IndexSize ) )
-    SAFEDELETE( Result );
+    Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // vertexformat functions
 
-CCoreVertexFormat* CCoreDX11Device::CreateVertexFormat( const CArray<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs )
+std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat( const CArray<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs )
 {
-  CCoreDX11VertexFormat* Result = new CCoreDX11VertexFormat( this );
+  auto Result = std::make_unique<CCoreDX11VertexFormat>( this );
   if ( !Result->Create( Attributes, vs ) )
-    SAFEDELETE( Result );
+    Result.reset();
   return Result;
 }
 
@@ -602,71 +602,71 @@ CCoreVertexFormat* CCoreDX11Device::CreateVertexFormat( const CArray<COREVERTEXA
 //#pragma comment(lib,"d3dcompiler.lib")
 //#endif
 
-CCoreVertexShader* CCoreDX11Device::CreateVertexShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
-{
+std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
   if ( Err ) *Err = _T( "" );
-  if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return {};
 
-  CCoreDX11VertexShader* s = new CCoreDX11VertexShader( this );
-  s->SetCode( CString( Code ), CString( EntryFunction ), CString( ShaderVersion ) );
+  auto s = std::make_unique<CCoreDX11VertexShader>( this );
+  s->SetCode( Code, EntryFunction ,  ShaderVersion  );
+
+  if ( !s->CompileAndCreate( Err ) ) {
+    s.reset();
+  }
+
+  return s;
+}
+
+std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
+  if ( Err ) *Err = _T( "" );
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return {};
+
+  auto s = std::make_unique<CCoreDX11PixelShader>( this );
+  s->SetCode( Code, EntryFunction , ShaderVersion );
 
   if ( !s->CompileAndCreate( Err ) )
   {
-    SAFEDELETE( s );
-    return NULL;
+    s.reset();
   }
 
   return s;
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
+std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShaderFromBlob( uint8_t* Code, int32_t CodeSize )
 {
-  if ( Err ) *Err = _T( "" );
-  if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
-
-  CCoreDX11PixelShader* s = new CCoreDX11PixelShader( this );
-  s->SetCode( CString( Code ), CString( EntryFunction ), CString( ShaderVersion ) );
-
-  if ( !s->CompileAndCreate( Err ) )
-  {
-    SAFEDELETE( s );
-    return NULL;
-  }
-
-  return s;
-}
-
-CCoreVertexShader* CCoreDX11Device::CreateVertexShaderFromBlob( uint8_t* Code, int32_t CodeSize )
-{
-  CCoreDX11VertexShader* s = new CCoreDX11VertexShader( this );
+  auto s = std::make_unique<CCoreDX11VertexShader>( this );
   if ( !s->CreateFromBlob( Code, CodeSize ) )
   {
-    SAFEDELETE( s );
-    return NULL;
+    s.reset();
   }
 
   return s;
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShaderFromBlob( uint8_t* Code, int32_t CodeSize )
+std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShaderFromBlob( uint8_t* Code, int32_t CodeSize )
 {
-  CCoreDX11PixelShader* s = new CCoreDX11PixelShader( this );
+  auto s = std::make_unique<CCoreDX11PixelShader>( this );
   if ( !s->CreateFromBlob( Code, CodeSize ) )
   {
-    SAFEDELETE( s );
-    return NULL;
+    s.reset();
   }
 
   return s;
 }
 
-CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
-{
+CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
+                                                           int32_t CodeSize,
+                                                           LPCSTR EntryFunction,
+                                                           LPCSTR ShaderVersion,
+                                                           std::string* Err) {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
 
   CCoreDX11GeometryShader* s = new CCoreDX11GeometryShader( this );
-  s->SetCode( CString( Code ), CString( EntryFunction ), CString( ShaderVersion ) );
+  s->SetCode( Code, EntryFunction, ShaderVersion );
 
   if ( !s->CompileAndCreate( Err ) )
   {
@@ -677,13 +677,16 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader( LPCSTR Code, int32_t
   return s;
 }
 
-CCoreDomainShader* CCoreDX11Device::CreateDomainShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
-{
+CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
+                                                       int32_t CodeSize,
+                                                       LPCSTR EntryFunction,
+                                                       LPCSTR ShaderVersion,
+                                                       std::string* Err) {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
 
   CCoreDX11DomainShader* s = new CCoreDX11DomainShader( this );
-  s->SetCode( CString( Code ), CString( EntryFunction ), CString( ShaderVersion ) );
+  s->SetCode( Code , EntryFunction, ShaderVersion );
 
   if ( !s->CompileAndCreate( Err ) )
   {
@@ -694,13 +697,16 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader( LPCSTR Code, int32_t Cod
   return s;
 }
 
-CCoreHullShader* CCoreDX11Device::CreateHullShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
-{
+CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
+                                                   int32_t CodeSize,
+                                                   LPCSTR EntryFunction,
+                                                   LPCSTR ShaderVersion,
+                                                   std::string* Err) {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
 
   CCoreDX11HullShader* s = new CCoreDX11HullShader( this );
-  s->SetCode( CString( Code ), CString( EntryFunction ), CString( ShaderVersion ) );
+  s->SetCode( Code, EntryFunction, ShaderVersion );
 
   if ( !s->CompileAndCreate( Err ) )
   {
@@ -711,13 +717,16 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader( LPCSTR Code, int32_t CodeSiz
   return s;
 }
 
-CCoreComputeShader* CCoreDX11Device::CreateComputeShader( LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion, CString* Err )
-{
+CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
+                                                         int32_t CodeSize,
+                                                         LPCSTR EntryFunction,
+                                                         LPCSTR ShaderVersion,
+                                                         std::string* Err) {
   if ( Err ) *Err = _T( "" );
   if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
 
   CCoreDX11ComputeShader* s = new CCoreDX11ComputeShader( this );
-  s->SetCode( CString( Code ), CString( EntryFunction ), CString( ShaderVersion ) );
+  s->SetCode( Code, EntryFunction, ShaderVersion );
 
   if ( !s->CompileAndCreate( Err ) )
   {
@@ -1028,48 +1037,47 @@ TBOOL CCoreDX11Device::SetViewport( CRect Viewport )
   return true;
 }
 
-void CCoreDX11Device::SetShaderConstants( int32_t Slot, int32_t Count, CCoreConstantBuffer** Buffers )
+void CCoreDX11Device::SetShaderConstants( const CCoreConstantBuffer* Buffers )
 {
   void* buffers[ 16 ];
 
   if ( Buffers )
   {
-    for ( int32_t x = 0; x < Count; x++ )
-      buffers[ x ] = Buffers[ x ] ? Buffers[ x ]->GetBufferPointer() : NULL;
+      buffers[ 0 ] = Buffers->GetBufferPointer();
   }
   else
   {
     memset( buffers, 0, 16 * sizeof( void* ) );
   }
 
-  DeviceContext->VSSetConstantBuffers( Slot, Count, (ID3D11Buffer**)buffers );
-  DeviceContext->GSSetConstantBuffers( Slot, Count, (ID3D11Buffer**)buffers );
-  DeviceContext->PSSetConstantBuffers( Slot, Count, (ID3D11Buffer**)buffers );
+  DeviceContext->VSSetConstantBuffers( 0, 1, (ID3D11Buffer**)buffers );
+  DeviceContext->GSSetConstantBuffers( 0, 1, (ID3D11Buffer**)buffers );
+  DeviceContext->PSSetConstantBuffers( 0, 1, (ID3D11Buffer**)buffers );
 }
 
-CCoreConstantBuffer* CCoreDX11Device::CreateConstantBuffer()
+std::unique_ptr<CCoreConstantBuffer> CCoreDX11Device::CreateConstantBuffer()
 {
-  return new CCoreDX11ConstantBuffer( this );
+  return std::make_unique<CCoreDX11ConstantBuffer>( this );
 }
 
-CCoreBlendState* CCoreDX11Device::CreateBlendState()
+std::unique_ptr<CCoreBlendState> CCoreDX11Device::CreateBlendState()
 {
-  return new CCoreDX11BlendState( this );
+  return std::make_unique<CCoreDX11BlendState>( this );
 }
 
-CCoreDepthStencilState* CCoreDX11Device::CreateDepthStencilState()
+std::unique_ptr<CCoreDepthStencilState> CCoreDX11Device::CreateDepthStencilState()
 {
-  return new CCoreDX11DepthStencilState( this );
+  return std::make_unique<CCoreDX11DepthStencilState>( this );
 }
 
-CCoreRasterizerState* CCoreDX11Device::CreateRasterizerState()
+std::unique_ptr<CCoreRasterizerState> CCoreDX11Device::CreateRasterizerState()
 {
-  return new CCoreDX11RasterizerState( this );
+  return std::make_unique<CCoreDX11RasterizerState>( this );
 }
 
-CCoreSamplerState* CCoreDX11Device::CreateSamplerState()
+std::unique_ptr<CCoreSamplerState> CCoreDX11Device::CreateSamplerState()
 {
-  return new CCoreDX11SamplerState( this );
+  return std::make_unique<CCoreDX11SamplerState>( this );
 }
 
 void CCoreDX11Device::SetCurrentDepthStencilState( ID3D11DepthStencilState* bs )
@@ -1128,7 +1136,7 @@ CCoreTexture2D* CCoreDX11Device::CopyTexture( CCoreTexture2D* Texture )
   return Texture->Copy();
 }
 
-void CCoreDX11Device::TakeScreenShot( CString Filename )
+void CCoreDX11Device::TakeScreenShot( std::string_view Filename )
 {
   ID3D11Texture2D* bb;
 
@@ -1159,7 +1167,7 @@ void CCoreDX11Device::TakeScreenShot( CString Filename )
 
   bb->Release();
 
-  LOG_NFO( "[core] Screenshot %s saved", Filename.GetPointer() );
+  LOG_NFO( "[core] Screenshot %s saved", Filename );
 }
 
 #ifdef ENABLE_PIX_API

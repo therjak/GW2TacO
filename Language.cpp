@@ -2,13 +2,73 @@
 #include "OverlayConfig.h"
 
 #include <algorithm>
+#include <string_view>
+#include <string>
+#include <functional>
+#include <vector>
+
+typedef std::function<bool(uint32_t)> UTF8CHARCALLBACK;
+void DecodeUtf8(std::string_view Input, UTF8CHARCALLBACK callback) {
+  auto it = Input.begin();
+  while (it != Input.end()) {
+    int Char = *it;
+    if ((Char & 0x80))  // decode utf-8
+    {
+      if ((Char & 0xe0) == 0xc0) {
+        Char = Char & ((1 << 5) - 1);
+        for (int z = 0; z < 1; z++) {
+          if ((it + 1) != Input.end()) {
+            Char = (Char << 6) + ((*(it + 1)) & 0x3f);
+            ++it;
+          }
+        }
+      } else if ((Char & 0xf0) == 0xe0) {
+        Char = Char & ((1 << 4) - 1);
+        for (int z = 0; z < 2; z++) {
+          if ((it + 1) != Input.end()) {
+            Char = (Char << 6) + ((*(it + 1)) & 0x3f);
+            ++it;
+          }
+        }
+      } else if ((Char & 0xf8) == 0xf0) {
+        Char = Char & ((1 << 3) - 1);
+        for (int z = 0; z < 3; z++) {
+          if ((it + 1) != Input.end()) {
+            Char = (Char << 6) + ((*(it + 1)) & 0x3f);
+            ++it;
+          }
+        }
+      } else if ((Char & 0xfc) == 0xf8) {
+        Char = Char & ((1 << 2) - 1);
+        for (int z = 0; z < 4; z++) {
+          if ((it + 1) != Input.end()) {
+            Char = (Char << 6) + ((*(it + 1)) & 0x3f);
+            ++it;
+          }
+        }
+      } else if ((Char & 0xfe) == 0xfc) {
+        Char = Char & ((1 << 1) - 1);
+        for (int z = 0; z < 5; z++) {
+          if ((it + 1) != Input.end()) {
+            Char = (Char << 6) + ((*(it + 1)) & 0x3f);
+            ++it;
+          }
+        }
+      }
+    }
+
+    if (!callback(Char)) return;
+    ++it;
+  }
+}
+
 
 Localization* localization = nullptr;
 
-void Localization::ImportFile( const CString& s )
+void Localization::ImportFile( std::string_view s )
 {
   CXMLDocument d;
-  if ( !d.LoadFromFile( s.GetPointer() ) ) return;
+  if ( !d.LoadFromFile( s ) ) return;
   ImportLanguage( d );
 }
 
@@ -17,7 +77,7 @@ void Localization::ImportLanguage( CXMLDocument& d )
   if ( !d.GetDocumentNode().GetChildCount( "TacOLanguageData" ) ) return;
   CXMLNode root = d.GetDocumentNode().GetChild( "TacOLanguageData" );
 
-  CString language;
+  std::string language;
 
   if ( root.HasAttribute( "language" ) ) 
     language = root.GetAttributeAsString( "language" );
@@ -27,9 +87,11 @@ void Localization::ImportLanguage( CXMLDocument& d )
     return;
   }
 
-  language.ToLower();
+  std::transform(language.begin(), language.end(), language.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+  
 
-  int langIdx = -1;
+  int langIdx = - 1;
 
   for ( int x = 0; x < languages.size(); x++ )
   {
@@ -55,9 +117,11 @@ void Localization::ImportLanguage( CXMLDocument& d )
     if ( !token.HasAttribute( "key" ) || !token.HasAttribute( "value" ) )
       continue;
 
-    CString key = token.GetAttributeAsString( "key" );
-    key.ToLower();
-    CString value = token.GetAttributeAsString( "value" );     
+    std::string key = token.GetAttributeAsString( "key" );
+    std::transform(key.begin(), key.end(), key.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    std::string value = token.GetAttributeAsString( "value" );     
 
     lang[ key ] = value;
 
@@ -73,18 +137,19 @@ Localization::Localization()
     usedGlyphs.push_back( x );
 }
 
-void Localization::SetActiveLanguage( const CString& language )
+void Localization::SetActiveLanguage( std::string_view language )
 {
-  auto lang = language;
-  lang.ToLower();
+  std::string lang(language);
+  std::transform(lang.begin(), lang.end(), lang.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
 
   for ( size_t x = 0; x < languages.size(); x++ )
   {
     if ( languages[ x ].name == lang )
     {
       activeLanguageIdx = x;
-      SetConfigString( "language", lang.GetPointer() );
-      LOG_NFO( "[GW2TacO] Setting TacO language to %s", language.GetPointer() );
+      SetConfigString( "language", lang );
+      LOG_NFO( "[GW2TacO] Setting TacO language to %s", std::string(language).c_str() );
       return;
     }
   }
@@ -92,15 +157,14 @@ void Localization::SetActiveLanguage( const CString& language )
   activeLanguageIdx = 0;
 }
 
-CStringArray Localization::GetLanguages()
-{
-  CStringArray langs;
+std::vector<std::string> Localization::GetLanguages() {
+  std::vector<std::string> langs;
 
   for ( const auto& l: languages )
-    langs += l.name;
+    langs.push_back(l.name);
 
-  for ( int x = 0; x < langs.NumItems(); x++ )
-    langs[ x ][ 0 ] = toupper( langs[ x ][ 0 ] );
+  for ( auto& l: langs )
+    l[ 0 ] = std::toupper( l[ 0 ] );
 
   return langs;
 }
@@ -132,40 +196,37 @@ void Localization::Import()
   }
 }
 
-CString Localization::Localize( const char* token, const CString& fallback )
-{
-  CString tokenString( token );
-  tokenString.ToLower();
-  CString rawToken;
-  if ( fallback.Length() )
+std::string Localization::Localize(std::string_view token,
+                                   std::string_view fallback) {
+  std::string tokenString( token );
+  std::transform(tokenString.begin(), tokenString.end(), tokenString.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+
+  std::string rawToken;
+  if ( !fallback.empty() )
     rawToken = fallback;
   else
-    rawToken = CString( "[" ) + tokenString + "]";
+    rawToken = "[" + tokenString + "]";
 
   if ( activeLanguageIdx >= languages.size() )
     return rawToken;
 
   auto& lang = languages[ activeLanguageIdx ].dict;
 
-  if ( !lang.HasKey( tokenString ) )
+  if ( lang.find( tokenString ) == lang.end() )
   {
-    static CArray<CString> dumpedStrings;
+    static std::vector<std::string> dumpedStrings;
 
-    if ( dumpedStrings.Find( tokenString ) < 0 )
+    if ( std::find(dumpedStrings.begin(), dumpedStrings.end(), tokenString ) == dumpedStrings.end() )
     {
-      LOG_WARN( "[GW2TacO] Translation for token '%s' is not available in the %s language.", tokenString.GetPointer(), languages[ activeLanguageIdx ].name.GetPointer() );
-      dumpedStrings += tokenString;
+      LOG_WARN( "[GW2TacO] Translation for token '%s' is not available in the %s language.", tokenString.c_str(), languages[ activeLanguageIdx ].name.c_str() );
+      dumpedStrings.push_back(tokenString);
     }
 
     return rawToken;
   }
 
   return lang[ tokenString ];
-}
-
-CString Localization::Localize( const CString& token, const CString& fallback )
-{
-  return Localize( token.GetPointer(), fallback );
 }
 
 int Localization::GetActiveLanguageIndex()
@@ -178,8 +239,8 @@ std::vector<int>& Localization::GetUsedGlyphs()
   return usedGlyphs;
 }
 
-void Localization::ProcessStringForUsedGlyphs(CString& string) {
-  string.DecodeUtf8([&](uint32_t Char) -> TBOOL {
+void Localization::ProcessStringForUsedGlyphs(std::string_view string) {
+  DecodeUtf8(string, [&](uint32_t Char) -> bool {
     if (std::find(usedGlyphs.begin(), usedGlyphs.end(), Char) ==
         usedGlyphs.end()) {
       usedGlyphs.push_back(Char);

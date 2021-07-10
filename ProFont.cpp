@@ -920,7 +920,7 @@ TBOOL LoadBMFontBinaryMonochrome( CWBFontDescription *fd, uint8_t *Binary, int32
   return res;
 }
 
-TBOOL CreateProFont( CWBApplication *App, CString FontName )
+TBOOL CreateProFont( CWBApplication *App, std::string_view FontName )
 {
   CWBFontDescription *fd = new CWBFontDescription();
   if ( !LoadBMFontBinaryMonochrome( fd, raw_profont_bin, raw_profont_bin_size, raw_profontgifsmall, raw_profontgifsmall_size ) )
@@ -933,7 +933,7 @@ TBOOL CreateProFont( CWBApplication *App, CString FontName )
   return f;
 }
 
-TBOOL CreateUniFont( CWBApplication *App, CString FontName )
+TBOOL CreateUniFont( CWBApplication *App, std::string_view FontName )
 {
   CWBFontDescription *fd = new CWBFontDescription();
   if ( !LoadBMFontBinaryMonochrome( fd, raw_uni_fnt, raw_uni_fnt_size, raw_uni_png, raw_uni_png_size ) )

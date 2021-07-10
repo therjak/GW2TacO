@@ -1,6 +1,7 @@
 #pragma once
 #include "Atlas.h"
 
+#include <string_view>
 #include <vector>
 
 enum WBTEXTALIGNMENTX
@@ -96,7 +97,6 @@ public:
 class CWBFont
 {
   CAtlas *Atlas;
-  //CDictionary<uint16_t,WBSYMBOL> Alphabet;
   int32_t AlphabetSize = 0;
   WBSYMBOL *Alphabet;
   CDictionary<CWBKerningPair, int16_t> Kerning;
@@ -111,8 +111,10 @@ class CWBFont
 
   void AddSymbol( uint16_t Char, WBATLASHANDLE Handle, CSize &Size, const CPoint &Offset, int32_t Advance, CRect contentRect );
   void AddKerningPair( uint16_t First, uint16_t Second, int16_t Amount );
+  INLINE uint16_t ApplyTextTransformUtf8( const char *Text, char const *& CurrPos,
+                                         WBTEXTTRANSFORM Transform);
 
-public:
+ public:
 
   CWBFont( CAtlas *Atlas );
   virtual ~CWBFont();
@@ -122,32 +124,33 @@ public:
   int32_t GetBase();
   int32_t GetOffsetX( TCHAR Char );
   int32_t GetOffsetY( TCHAR Char );
-  int32_t GetCenterWidth( int32_t x1, int32_t x2, const TCHAR *Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  int32_t GetCenterWidth( int32_t x1, int32_t x2, const CString &Text, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  int32_t GetCenterWidth(int32_t x1, int32_t x2, std::string_view Text,
+                         WBTEXTTRANSFORM Transform = WBTT_NONE);
   int32_t GetCenterHeight( int32_t y1, int32_t y2 );
-  CPoint GetCenter( const TCHAR *Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
-  CPoint GetCenter( const CString &Text, CRect Rect, WBTEXTTRANSFORM Transform = WBTT_NONE );
+  CPoint GetCenter(std::string_view Text, CRect Rect,
+                   WBTEXTTRANSFORM Transform = WBTT_NONE);
   int32_t GetMedian();
 
 	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y, CColor Color = 0xffffffff);
-  int32_t Write( CWBDrawAPI *DrawApi, const TCHAR *String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  int32_t Write( CWBDrawAPI *DrawApi, const CString &String, int32_t x, int32_t y, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+        int32_t Write(CWBDrawAPI *DrawApi, std::string_view String, int32_t x,
+                      int32_t y, CColor Color = 0xffffffff,
+                      WBTEXTTRANSFORM Transform = WBTT_NONE,
+                      TBOOL DoKerning = true);
 	int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p, CColor Color = 0xffffffff);
-  int32_t Write( CWBDrawAPI *DrawApi, const TCHAR *String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
-  int32_t Write( CWBDrawAPI *DrawApi, const CString &String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
+  int32_t Write( CWBDrawAPI *DrawApi, std::string_view String, CPoint &p, CColor Color = 0xffffffff, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true );
   int32_t GetWidth( uint16_t Char, TBOOL Advance = true ); //if Advance is set to false this returns the width of the image in pixels
-  int32_t GetWidth( const TCHAR *String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
-  int32_t GetWidth( const CString &String, TBOOL AdvanceLastChar = true, WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true, TBOOL firstCharHack = false );
+  int32_t GetWidth(std::string_view String, TBOOL AdvanceLastChar = true,
+                   WBTEXTTRANSFORM Transform = WBTT_NONE,
+                   TBOOL DoKerning = true, TBOOL firstCharHack = false);
 
   int32_t GetHeight( uint16_t Char );
-  int32_t GetHeight( TCHAR* String );
-  int32_t GetHeight( CString& String );
+  int32_t GetHeight(std::string_view String);
 
-  CPoint GetTextPosition( CString &String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform, TBOOL DoKerning = true );
-  CPoint GetTextPosition( TCHAR *String, CRect &Container, WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign, WBTEXTTRANSFORM Transform, TBOOL DoKerning = true );
+  CPoint GetTextPosition(std::string_view String, CRect &Container,
+                         WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
+                         WBTEXTTRANSFORM Transform, TBOOL DoKerning = true);
 
-  INLINE uint16_t ApplyTextTransformUtf8( _TUCHAR *Text, _TUCHAR *&CurrPos, WBTEXTTRANSFORM Transform );
-  INLINE _TUCHAR ApplyTextTransform( _TUCHAR *Text, _TUCHAR *CurrPos, WBTEXTTRANSFORM Transform );
+  INLINE char ApplyTextTransform( const char *Text, const char *CurrPos, WBTEXTTRANSFORM Transform );
 
   void ConvertToUppercase();
 

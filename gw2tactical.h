@@ -4,6 +4,8 @@
 #include <thread>
 #include <vector>
 #include <memory>
+#include <string>
+#include <unordered_map>
 
 enum class POIBehavior : int32_t
 {
@@ -114,7 +116,7 @@ struct POI
   CVector3 position;
   int32_t mapID;
   size_t wvwObjectiveID;
-  CString Type;
+  std::string Type;
 
   time_t lastUpdateTime = 0;
   TBOOL External = false;
@@ -161,7 +163,7 @@ struct POIActivationData
 
 struct POIRoute
 {
-  CString name;
+  std::string name;
   TBOOL backwards = true;
   std::vector<GUID> route;
   TBOOL external = false;
@@ -179,7 +181,7 @@ uint32_t DictionaryHash( const POIActivationDataKey &i );
 extern CDictionaryEnumerable<GUID, POI> POIs;
 extern CDictionaryEnumerable<POIActivationDataKey, POIActivationData> ActivationData;
 extern std::vector<POIRoute> Routes;
-extern CDictionaryEnumerable<CString, POI> wvwPOIs;
+extern std::unordered_map<std::string, POI> wvwPOIs;
 
 class GW2TacticalDisplay : public CWBItem
 {
@@ -191,7 +193,7 @@ class GW2TacticalDisplay : public CWBItem
 
   void FetchAchievements();
   void InsertPOI( POI& poi );
-  void DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& currtime, POI& poi, bool drawDistance, CString& infoText );
+  void DrawPOI( CWBDrawAPI *API, const tm& ptm, const time_t& currtime, POI& poi, bool drawDistance, std::string& infoText );
   void DrawPOIMinimap( CWBDrawAPI *API, const CRect& miniRect, CVector2& pos, const tm& ptm, const time_t& currtime, POI& poi, float alpha, float zoomLevel );
   virtual void OnDraw( CWBDrawAPI *API );
   CVector3 ProjectTacticalPos( CVector3 pos, float fov, float asp );
@@ -222,11 +224,11 @@ public:
 
 class GW2TacticalCategory
 {
-  CString cachedTypeName;
+  std::string cachedTypeName;
 
 public:
-  CString name;
-  CString displayName;
+  std::string name;
+  std::string displayName;
 
   int16_t zipFile;
 
@@ -236,10 +238,10 @@ public:
   GW2TacticalCategory *Parent = nullptr;
   std::vector<std::unique_ptr<GW2TacticalCategory>> children;
 
-  CString GetFullTypeName();
+  std::string GetFullTypeName();
 
-  TBOOL IsDisplayed = true;
-  TBOOL IsVisible();
+  bool IsDisplayed = true;
+  bool IsVisible();
 
   virtual ~GW2TacticalCategory()
   {
@@ -261,4 +263,4 @@ float GameToWorldCoords( float game );
 void FindClosestRouteMarkers( TBOOL force );
 
 int32_t GetTime();
-CString& GetStringFromMap( int32_t idx );
+std::string& GetStringFromMap( int32_t idx );

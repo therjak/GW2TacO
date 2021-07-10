@@ -105,7 +105,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
 
   std::string APIKey::QueryAPI(std::string_view path)
   {
-    LOG_NFO( "[GW2TacO] Querying the API: %s", path );
+    LOG_NFO( "[GW2TacO] Querying the API: %s", std::string(path).c_str() );
 
     return FetchAPIData( path, apiKey );
   }
@@ -122,7 +122,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
 
   APIKey* APIKeyManager::GetIdentifiedAPIKey() {
     std::lock_guard<std::mutex> guard(keyMutex);
-    if (mumbleLink.IsValid() || !mumbleLink.charName.Length() || keys.empty())
+    if (mumbleLink.IsValid() || mumbleLink.charName.empty() || keys.empty())
       return nullptr;
 
     if (!initialized) {
@@ -138,7 +138,8 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
         key->fetcherThread.join();
       }
 
-      if (key->charNames.Find(mumbleLink.charName) >= 0) {
+      auto& cn = key->charNames;
+      if (std::find(cn.begin(), cn.end(), mumbleLink.charName) != cn.end()) {
         return key.get();
       }
     }
@@ -166,7 +167,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
           return Status::Loading;
         }
       }
-      if (!mumbleLink.charName.Length()) {
+      if (mumbleLink.charName.empty()) {
         return Status::WaitingForMumbleCharacterName;
       }
       return Status::CouldNotIdentifyAccount;
@@ -216,7 +217,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
 
     if (HasConfigString("GW2APIKey"))
     {
-      auto key = std::make_unique<APIKey>(GetConfigString("GW2APIKey").GetPointer());
+      auto key = std::make_unique<APIKey>(GetConfigString("GW2APIKey"));
       RemoveConfigEntry("GW2APIKey");
       std::lock_guard<std::mutex> guard(keyMutex);
       keys.emplace_back(std::move(key));
@@ -228,7 +229,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
       std::string cfgName = "GW2APIKey" + std::to_string(x++);
       if (HasConfigString(cfgName))
       {
-        auto key = std::make_unique<APIKey>(GetConfigString(cfgName).GetPointer());
+        auto key = std::make_unique<APIKey>(GetConfigString(cfgName));
         std::lock_guard<std::mutex> guard(keyMutex);
         keys.emplace_back(std::move(key));
       }
@@ -283,7 +284,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
     }
 
     std::lock_guard<std::mutex> guard(keyMutex);
-    for (int x = 0; x < keys.size(); x++) {
+    for (size_t x = 0; x < keys.size(); x++) {
       std::string cfgName = "GW2APIKey" + std::to_string(x);
       SetConfigString(cfgName, keys[x]->apiKey);
     }

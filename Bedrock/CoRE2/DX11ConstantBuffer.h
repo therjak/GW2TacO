@@ -16,7 +16,7 @@ public:
 	virtual ~CCoreDX11ConstantBuffer();
 
 	virtual void Upload();
-	virtual void *GetBufferPointer();
+	virtual void *GetBufferPointer() const;
 
 };
 #endif

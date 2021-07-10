@@ -2,6 +2,8 @@
 #include "OverlayConfig.h"
 #include "TrailLogger.h"
 
+#include "Bedrock/BaseLib/string_format.h"
+
 CMumbleLink mumbleLink;
 bool frameTriggered = false;
 extern CWBApplication *App;
@@ -63,7 +65,7 @@ void CMumbleLink::Update()
   FORCEDDEBUGLOG( "updating mumblelink" );
   if ( !lm )
   {
-    HANDLE hMapObject = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof( LinkedMem ), mumblePath.GetPointer() );
+    HANDLE hMapObject = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof( LinkedMem ), mumblePath.c_str() );
 
     if ( hMapObject == NULL )
     {
@@ -127,20 +129,20 @@ void CMumbleLink::Update()
   int32_t oldMapID = mapID;
   mapID = -1;
 
-  CString ident = CString( lm->identity, 255 );
-  int id = ident.Find( "\"map_id\":" );
-  if ( id >= 0 )
+  std::wstring ident( lm->identity, 255 );
+  auto id = ident.find( L"\"map_id\":" );
+  if ( id != ident.npos )
   {
-    ident.Substring( id ).Scan( "\"map_id\":%d", &mapID );
+    std::swscanf(ident.substr( id ).c_str(), L"\"map_id\":%d", &mapID );
     if ( oldMapID != mapID )
       FindClosestRouteMarkers( true );
   }
   else
   {
-    id = ident.Find( "\"map_id\": " );
-    if ( id >= 0 )
+    id = ident.find( L"\"map_id\": " );
+    if ( id != ident.npos )
     {
-      ident.Substring( id ).Scan( "\"map_id\": %d", &mapID );
+      std::swscanf(ident.substr( id ).c_str(), L"\"map_id\": %d", &mapID );
       if ( oldMapID != mapID )
         FindClosestRouteMarkers( true );
     }
@@ -150,32 +152,32 @@ void CMumbleLink::Update()
 
   int32_t oldUISize = uiSize;
 
-  id = ident.Find( "\"uisz\":" );
-  if ( id >= 0 )
+  id = ident.find( L"\"uisz\":" );
+  if ( id != ident.npos )
   {
-    ident.Substring( id ).Scan( "\"uisz\":%d", &uiSize );
+    std::swscanf(ident.substr( id ).c_str(), L"\"uisz\":%d", &uiSize );
     if ( oldUISize != uiSize )
       ChangeUIScale( uiSize );
   }
   else
   {
-    id = ident.Find( "\"uisz\": " );
-    if ( id >= 0 )
+    id = ident.find( L"\"uisz\": " );
+    if ( id != ident.npos )
     {
-      ident.Substring( id ).Scan( "\"uisz\": %d", &uiSize );
+      std::swscanf(ident.substr( id ).c_str(), L"\"uisz\": %d", &uiSize );
       if ( oldUISize != uiSize )
         ChangeUIScale( uiSize );
     }
   }
 
-  id = ident.Find( "\"world_id\":" );
-  if ( id >= 0 )
-    ident.Substring( id ).Scan( "\"world_id\":%d", &worldID );
+  id = ident.find( L"\"world_id\":" );
+  if ( id != ident.npos )
+    std::swscanf(ident.substr( id ).c_str(), L"\"world_id\":%d", &worldID );
   else
   {
-    id = ident.Find( "\"world_id\": " );
-    if ( id >= 0 )
-      ident.Substring( id ).Scan( "\"world_id\": %d", &worldID );
+    id = ident.find( L"\"world_id\": " );
+    if ( id != ident.npos )
+      std::swscanf(ident.substr( id ).c_str(), L"\"world_id\": %d", &worldID );
   }
 
   MumbleContext* ctx = (MumbleContext*)lastData.context;
@@ -222,14 +224,14 @@ void CMumbleLink::Update()
     bigMap.mapScale = ctx->mapScale;
   }
 
-  id = ident.Find( "\"name\":" );
-  if ( id >= 0 )
+  id = ident.find( L"\"name\":" );
+  if ( id != ident.npos )
   {
-    int end = ident.Substring( id + 8 ).Find( "\"" );
-    if ( end >= 0 )
+    int end = ident.substr( id + 8 ).find( L"\"" );
+    if ( end != ident.npos )
     {
-      charName = ident.Substring( id + 8, end );
-      charIDHash = charName.GetHash();
+      charName = wstring2string(ident.substr(id + 8, end));
+      charIDHash = CalculateHash(charName);
     }
     else
     {
@@ -239,14 +241,14 @@ void CMumbleLink::Update()
   }
   else
   {
-    id = ident.Find( "\"name\": " );
+    id = ident.find( L"\"name\": " );
     if ( id >= 0 )
     {
-      int end = ident.Substring( id + 9 ).Find( "\"" );
-      if ( end >= 0 )
+      int end = ident.substr( id + 9 ).find( L"\"" );
+      if ( end != ident.npos )
       {
-        charName = ident.Substring( id + 9, end );
-        charIDHash = charName.GetHash();
+        charName = wstring2string(ident.substr( id + 9, end ));
+        charIDHash = CalculateHash(charName);
       }
       else
       {
@@ -263,14 +265,14 @@ void CMumbleLink::Update()
 
   fov = 0;
 
-  id = ident.Find( "\"fov\":" );
-  if ( id >= 0 )
-    ident.Substring( id ).Scan( "\"fov\":%f", &fov );
+  id = ident.find( L"\"fov\":" );
+  if ( id != ident.npos )
+    std::swscanf(ident.substr( id ).c_str(), L"\"fov\":%f", &fov );
   else
   {
-    id = ident.Find( "\"fov\": " );
-    if ( id >= 0 )
-      ident.Substring( id ).Scan( "\"fov\": %f", &fov );
+    id = ident.find( L"\"fov\": " );
+    if ( id != ident.npos )
+      std::swscanf(ident.substr( id ).c_str(), L"\"fov\": %f", &fov );
   }
 
   CMatrix4x4 cam;

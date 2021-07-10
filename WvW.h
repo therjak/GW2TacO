@@ -1,20 +1,22 @@
 #pragma once
 #include "Bedrock/BaseLib/BaseLib.h"
 
+#include <string>
+
 class WvWObjective
 {
 public:
-  CString id;
-  CString type;
-  CString mapType;
+  std::string id;
+  std::string type;
+  std::string mapType;
   int mapID;
   int objectiveID;
   CVector3 coord;
-  CString marker;
-  CString chatLink;
+  std::string marker;
+  std::string chatLink;
 
-  CString name;
-  CString nameToken;
+  std::string name;
+  std::string nameToken;
 };
 
 void LoadWvWObjectives();

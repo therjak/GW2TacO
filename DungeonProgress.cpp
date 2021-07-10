@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <cctype>
 
+#include "Bedrock/BaseLib/string_format.h"
+
 std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 
 using namespace jsonxx;
@@ -184,7 +186,7 @@ void DungeonProgress::OnDraw( CWBDrawAPI *API )
         if ( y == 0 )
           posx += f->GetLineHeight() / 2;
         API->DrawRect( r, p.finished ? 0x8033cc11 : 0x80cc3322 );
-        CString s = y == 0 ? "S" : CString::Format( "P%d", y );
+        std::string s = y == 0 ? "S" : FormatString( "P%d", y );
 
         if ( d.shortName == "TA" )
         {
