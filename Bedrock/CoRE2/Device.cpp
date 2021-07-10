@@ -273,30 +273,6 @@ CCoreTexture *CCoreDevice::GetTexture(CORESAMPLER Sampler)
 	return NULL;
 }
 
-TBOOL CCoreDevice::DestroyTexture(CCoreTexture *Texture) const
-{
-	SAFEDELETE(Texture);
-	return true;
-}
-
-TBOOL CCoreDevice::DestroyVertexBuffer(CCoreVertexBuffer *VertexBuffer) const
-{
-	SAFEDELETE(VertexBuffer);
-	return true;
-}
-
-TBOOL CCoreDevice::DestroyIndexBuffer(CCoreIndexBuffer *IndexBuffer) const
-{
-	SAFEDELETE(IndexBuffer);
-	return true;
-}
-
-TBOOL CCoreDevice::DestroyVertexFormat(CCoreVertexFormat *VertexFormat) const
-{
-	SAFEDELETE(VertexFormat);
-	return true;
-}
-
 TBOOL CCoreDevice::CreateDefaultRenderStates()
 {
 	TBOOL Success = true;

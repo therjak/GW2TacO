@@ -67,8 +67,8 @@ class GW2TrailDisplay : public CWBItem
 
   virtual void OnDraw( CWBDrawAPI *API );
 
-  std::unique_ptr<CCoreVertexFormat> vertexFormat;
   std::unique_ptr<CCoreVertexShader> vxShader;
+  std::unique_ptr<CCoreVertexFormat> vertexFormat;
   std::unique_ptr<CCorePixelShader> pxShader;
   std::unique_ptr<CCoreConstantBuffer> constBuffer;
   std::unique_ptr<CCoreTexture2D> trailTexture;

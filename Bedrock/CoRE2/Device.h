@@ -86,7 +86,6 @@ public:
 
 	virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false) = 0;
 	virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t *Data, const int32_t Size) = 0;
-	virtual TBOOL DestroyTexture(CCoreTexture *Texture) const;
 	virtual CCoreTexture2D *CopyTexture(CCoreTexture2D *Texture) = 0;
 
 	//////////////////////////////////////////////////////////////////////////
@@ -94,19 +93,16 @@ public:
 
 	virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(const uint8_t *Data, const int32_t Size) = 0;
 	virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(const int32_t Size) = 0;
-	virtual TBOOL DestroyVertexBuffer(CCoreVertexBuffer *VertexBuffer) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// indexbuffer functions
 
 	virtual std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(const int32_t IndexCount, const int32_t IndexSize = 2) = 0;
-	virtual TBOOL DestroyIndexBuffer(CCoreIndexBuffer *IndexBuffer) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// vertexformat functions
 
 	virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *vs = NULL) = 0;
-	virtual TBOOL DestroyVertexFormat(CCoreVertexFormat *VertexFormat) const;
 
 	//////////////////////////////////////////////////////////////////////////
 	// renderstate functions

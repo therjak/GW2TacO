@@ -478,9 +478,6 @@ GW2TrailDisplay::~GW2TrailDisplay()
 {
   textureCache.clear();
 
-  App->GetDevice()->DestroyVertexFormat(vertexFormat.get());
-  //SAFEDELETE( vertexFormat ); // this crashes too...
-  //SAFEDELETE( trailSampler ); // this crashed every time for some guy...
 }
 
 CWBItem *GW2TrailDisplay::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
