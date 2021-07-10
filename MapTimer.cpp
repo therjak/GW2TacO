@@ -10,11 +10,17 @@
 using namespace jsonxx;
 
 void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
-  if (!HasConfigValue("MapTimerVisible")) SetConfigValue("MapTimerVisible", 1);
+  if (!HasConfigValue("MapTimerVisible")) {
+    SetConfigValue("MapTimerVisible", 1);
+  }
 
-  if (!HasConfigValue("MapTimerCompact")) SetConfigValue("MapTimerCompact", 1);
+  if (!HasConfigValue("MapTimerCompact")) {
+    SetConfigValue("MapTimerCompact", 1);
+  }
 
-  if (!GetConfigValue("MapTimerVisible")) return;
+  if (!GetConfigValue("MapTimerVisible")) {
+    return;
+  }
 
   std::string mouseToolTip;
 

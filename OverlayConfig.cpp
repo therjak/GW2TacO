@@ -98,7 +98,7 @@ int32_t GetConfigValue(std::string_view value) {
 void SetConfigValue(std::string_view value, int32_t val) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ value.data() ] = val;
+  ConfigNums[ std::string(value) ] = val;
 }
 
 TBOOL HasConfigValue(std::string_view value) {
