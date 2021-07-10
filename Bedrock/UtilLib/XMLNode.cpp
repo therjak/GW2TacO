@@ -266,8 +266,9 @@ CXMLNode& CXMLNode::AddChild(std::string_view szNodeName)
     children.emplace_back( std::make_unique<CXMLNode>() );
     return *children.back();
   }
-
-  auto node = pNode->document()->allocate_node( node_type::node_element, tc.c_str() );
+  stringStore.emplace_back(std::make_unique<std::string>(tc));
+  auto node = pNode->document()->allocate_node(
+      node_type::node_element, stringStore.back()->c_str());
 
   pNode->append_node( node );
 
@@ -317,9 +318,10 @@ void CXMLNode::SetText(std::string_view s)
 {
   if (!pNode) return;
 
-  value = std::string(s);
+  stringStore.emplace_back(std::make_unique<std::string>(s));
+  std::string* str = stringStore.back().get();
 
-  pNode->value(value.c_str());
+  pNode->value(str->c_str());
 }
 
 void CXMLNode::SetInt(int32_t Int)
