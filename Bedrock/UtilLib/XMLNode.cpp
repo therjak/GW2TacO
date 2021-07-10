@@ -214,7 +214,7 @@ std::string CXMLNode::GetAttribute(std::string_view szAttribute)
 {
   if ( !pNode ) return {};
 
-  auto attr = pNode->first_attribute( szAttribute.data() );
+  auto attr = pNode->first_attribute( szAttribute.data(), szAttribute.size() );
   if ( !attr ) return {};
 
   return std::string( attr->value(), attr->value_size() );
@@ -231,7 +231,7 @@ bool CXMLNode::HasAttribute(std::string_view szAttribute)
   if ( !pNode )
     return false;
 
-  auto attr = pNode->first_attribute( std::string(szAttribute).c_str() );
+  auto attr = pNode->first_attribute( szAttribute.data(), szAttribute.size() );
   return attr != nullptr;
 }
 
