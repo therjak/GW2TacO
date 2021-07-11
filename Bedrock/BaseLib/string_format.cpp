@@ -17,7 +17,7 @@ std::vector<std::string> Split(std::string_view input, std::string_view delim) {
 
   while ((start = input.find_first_not_of(delim, end)) !=
          std::string_view::npos) {
-    end = input.find(delim, start);
+    end = input.find_first_of(delim, start);
     out.emplace_back(input.substr(start, end - start));
   }
   return out;
