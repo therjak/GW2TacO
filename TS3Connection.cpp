@@ -197,7 +197,7 @@ TS3Connection::CommandResponse TS3Connection::SendCommand( std::string_view mess
   ProcessNotifications();
 
   connection.Write( message );
-  connection.Write( std::string_view("\n") );
+  connection.Write( "\n" );
 
   while ( 1 )
   {

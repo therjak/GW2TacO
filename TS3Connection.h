@@ -81,7 +81,7 @@ public:
 
   std::string unescape( std::string_view string );
 
-  bool authenticated = true;
+  bool authenticated = false;
 
 };
 
