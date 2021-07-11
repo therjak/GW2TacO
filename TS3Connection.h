@@ -65,7 +65,7 @@ public:
   TS3Connection();
   virtual ~TS3Connection();
 
-  TBOOL TryConnect();
+  bool TryConnect();
   void TryValidateClientID();
 
   void Tick();
@@ -75,9 +75,7 @@ public:
 
   void ProcessNotifications();
 
-  void WaitForResponse();
-
-  TBOOL IsConnected();
+  bool IsConnected();
 
   std::string unescape( std::string_view string );
 
@@ -86,3 +84,4 @@ public:
 };
 
 extern TS3Connection teamSpeakConnection;
+
