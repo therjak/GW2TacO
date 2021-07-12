@@ -1,6 +1,8 @@
 #pragma once
 #include "DrawAPI.h"
 
+#include <vector>
+
 enum WBMETRICTYPE
 {
   WB_UNDEFINED = 0,
@@ -14,7 +16,7 @@ class CWBMetricValue
 {
   float Metrics[ WB_METRIC_COUNT ];
   TBOOL MetricsUsed[ WB_METRIC_COUNT ];
-  TBOOL AutoSize;
+  bool AutoSize = false;
 
 public:
 
@@ -50,8 +52,8 @@ public:
   void SetMetric( WBPOSITIONTYPE p, WBMETRICTYPE m, float Value );
   void SetAutoSize( WBPOSITIONTYPE p );
   void ClearMetrics( WBPOSITIONTYPE p );
-  CRect GetPosition( CSize ParentSize, CSize ContentSize, CRect &Original );
-  CRect GetPadding( CSize ParentSize, CRect &BorderSize );
+  CRect GetPosition( CSize ParentSize, CSize ContentSize, const CRect &Original );
+  CRect GetPadding( CSize ParentSize, const CRect &BorderSize );
 
   TBOOL IsWidthSet();
   TBOOL IsHeightSet();
@@ -134,7 +136,7 @@ public:
 class CWBMosaic
 {
   std::string Name;
-  CArray<CWBMosaicImage> Images;
+  std::vector<CWBMosaicImage> Images;
   int32_t Overshoot[ 4 ];
 
 public:
@@ -145,9 +147,9 @@ public:
 
   void SetName(std::string_view Name);
   std::string &GetName();
-  void AddImage( CWBMosaicImage &Image );
+  void AddImage( const CWBMosaicImage &Image );
   void Flush();
-  void Render( CWBDrawAPI *API, CRect &Position );
+  void Render( CWBDrawAPI *API, const CRect &Position );
   void SetOverShoot( WBRECTSIDE side, int32_t val );
 };
 
@@ -155,8 +157,8 @@ typedef uint32_t WBSKINELEMENTID;
 
 class CWBSkin
 {
-  CArray<CWBSkinElement> SkinItems;
-  CArray<CWBMosaic> Mosaics;
+  std::vector<CWBSkinElement> SkinItems;
+  std::vector<CWBMosaic> Mosaics;
 
   CWBSkinElement *GetElement(std::string_view Name);
 
@@ -175,3 +177,4 @@ public:
   CWBSkinElement *GetElement( WBSKINELEMENTID id );
   CSize GetElementSize( CWBDrawAPI *API, WBSKINELEMENTID id );
 };
+

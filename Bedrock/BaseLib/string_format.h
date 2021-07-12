@@ -24,4 +24,3 @@ std::wstring string2wstring(std::string_view s);
 std::string wstring2string(std::wstring_view s);
 
 uint32_t CalculateHash(std::string_view s);
-
