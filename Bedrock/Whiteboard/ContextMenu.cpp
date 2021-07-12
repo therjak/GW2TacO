@@ -4,36 +4,36 @@
 #include "Button.h"
 
 void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
-  WBITEMSTATE i = GetState();
+  const WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  const WBTEXTTRANSFORM TextTransform =
+      static_cast<WBTEXTTRANSFORM>(CSSProperties.DisplayDescriptor.GetValue(
+          i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API, WB_STATE_NORMAL);
 
-  CRect Client = GetClientRect();
-  CRect padding = CSSProperties.PositionDescriptor.GetPadding(
+  const CRect Client = GetClientRect();
+  const CRect padding = CSSProperties.PositionDescriptor.GetPadding(
       Client.Size(), CRect(0, 0, 0, 0));
 
   CPoint Offset = CPoint(padding.x1, padding.y1);
 
-  for (int32_t x = 0; x < Items.NumItems(); x++) {
+  for (int32_t x = 0; x < Items.size(); x++) {
     if (Items[x]->Separator) {
-      int arbitraryValue = 200;
+      constexpr int arbitraryValue = 200;
 
-      CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
+      const CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
           CSize(GetWindowRect().Width(), arbitraryValue), CRect(0, 0, 0, 0));
       Offset.y += padding.y1;
 
-      int height = SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0),
+      const int height = SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0),
                                                                   CSize(0, 0));
 
       CRect separatorRect =
           CRect(GetWindowRect().x1 + padding.x1, Offset.y,
                 GetWindowRect().x1 + padding.x2, Offset.y + height);
 
-      WBSKINELEMENTID id = SeparatorElements.DisplayDescriptor.GetSkin(
+      const WBSKINELEMENTID id = SeparatorElements.DisplayDescriptor.GetSkin(
           WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
 
       // draw separator
@@ -68,15 +68,15 @@ void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
                                                              WB_ITEM_FONTCOLOR);
       }
 
-      int32_t width =
+      const int32_t width =
           Font->Write(API, Items[x]->Text, Offset, textColor, TextTransform);
 
-      if (Items[x]->Children.NumItems())  // draw sub arrow
+      if (!Items[x]->Children.empty())  // draw sub arrow
       {
         if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
             0xffffffff) {
         } else {
-          int32_t wi = Font->GetWidth(_T( ">" ));
+          const int32_t wi = Font->GetWidth(_T( ">" ));
           Font->Write(
               API, _T( ">" ),
               CPoint(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
@@ -94,8 +94,6 @@ void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
 }
 
 CWBContextMenu::CWBContextMenu() : CWBItem() {
-  Target = NULL;
-  Pushed = false;
 }
 
 CWBContextMenu::CWBContextMenu(CWBItem *Parent, const CRect &Pos, WBGUID trg)
@@ -104,44 +102,46 @@ CWBContextMenu::CWBContextMenu(CWBItem *Parent, const CRect &Pos, WBGUID trg)
 }
 
 CWBContextMenu::~CWBContextMenu() {
-  if (ParentMenu) ParentMenu->SubMenu = NULL;
-  Items.FreeArray();
-  SAFEDELETE(SubMenu);
+  if (ParentMenu) {
+    ParentMenu->SubMenu = NULL;
+  }
 }
 
 void CWBContextMenu::ResizeToContentSize() {
-  WBITEMSTATE i = GetState();
+  const WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform =
+  const WBTEXTTRANSFORM TextTransform =
       (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
           i, WB_ITEM_TEXTTRANSFORM);
 
   CSize ContentSize = CSize(0, 0);
 
   TBOOL NeedsSubArrow = false;
-  for (int32_t x = 0; x < Items.NumItems(); x++)
-    if (Items[x]->Children.NumItems()) NeedsSubArrow = true;
-
-  int arbitraryValue = 0;
+  for (const auto &item : Items) {
+    if (!item->Children.empty()) {
+      NeedsSubArrow = true;
+    }
+  }
+  constexpr int arbitraryValue = 0;
   CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
       CSize(0, arbitraryValue), CRect(0, 0, 0, 0));
-  int height =
+  const int height =
       SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0), CSize(0, 0));
-  int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
+  const int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
 
-  CRect Client = GetClientRect();
+  const CRect Client = GetClientRect();
   padding = CSSProperties.PositionDescriptor.GetPadding(Client.Size(),
                                                         CRect(0, 0, 0, 0));
 
   ContentSize.y = padding.y1;
 
-  for (int32_t x = 0; x < Items.NumItems(); x++) {
-    if (Items[x]->Separator) {
+  for (const auto &item : Items) {
+    if (item->Separator) {
       ContentSize.y += separatorHeight;
     } else if (Font) {
       int32_t arrowPadding = 0;
 
-      if (Items[x]->Children.NumItems())  // account for sub arrow
+      if (!item->Children.empty())  // account for sub arrow
       {
         if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
             0xffffffff) {
@@ -150,18 +150,17 @@ void CWBContextMenu::ResizeToContentSize() {
         }
       }
 
-      ContentSize.x =
-          max(ContentSize.x,
-              padding.x1 + Client.x2 - padding.x2 + arrowPadding +
-                  Font->GetWidth(Items[x]->Text, true, TextTransform));
+      ContentSize.x = max(ContentSize.x,
+                          padding.x1 + Client.x2 - padding.x2 + arrowPadding +
+                              Font->GetWidth(item->Text, true, TextTransform));
       ContentSize.y += Font->GetLineHeight();
     }
   }
 
   ContentSize.y += Client.Size().y - padding.y2;
 
-  CRect r = GetPosition();
-  CSize Size = ContentSize + GetClientWindowSizeDifference();
+  const CRect r = GetPosition();
+  const CSize Size = ContentSize + GetClientWindowSizeDifference();
   SetPosition(CRect(r.TopLeft(), r.TopLeft() + Size));
 }
 
@@ -192,20 +191,20 @@ TBOOL CWBContextMenu::Initialize(CWBItem *Parent, const CRect &Position,
 CWBContextItem *CWBContextMenu::AddItem(std::string_view Text, int32_t ID,
                                         TBOOL Highlighted,
                                         TBOOL closesContext) {
-  CWBContextItem *Item = new CWBContextItem();
-  Item->Text = Text;
-  Item->ReturnID = ID;
-  Item->Highlighted = Highlighted;
-  Item->closesContext = closesContext;
-  Items += Item;
+  Items.emplace_back(std::make_unique<CWBContextItem>());
+  auto &item = Items.back();
+  item->Text = Text;
+  item->ReturnID = ID;
+  item->Highlighted = Highlighted;
+  item->closesContext = closesContext;
   ResizeToContentSize();
 
-  return Item;
+  return item.get();
 }
 
 void CWBContextMenu::AddSeparator() {
-  Items += new CWBContextItem();
-  Items.Last()->Separator = true;
+  Items.emplace_back(std::make_unique<CWBContextItem>());
+  Items.back()->Separator = true;
 }
 
 TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
@@ -214,7 +213,7 @@ TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
       if (Message.GetTarget() == GetGuid()) {
         // push position inside of parent
         CRect p = Message.Rectangle;
-        CRect r = GetParent()->GetClientRect();
+        const CRect r = GetParent()->GetClientRect();
         if (p.x1 < 0) p += CPoint(-p.x1, 0);
         if (p.y1 < 0) p += CPoint(0, -p.y1);
         if (p.x2 > r.x2) p -= CPoint(p.x2 - r.x2, 0);
@@ -224,9 +223,9 @@ TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
       break;
     case WBM_MOUSEMOVE:
       if (MouseOver()) {
-        for (int32_t x = 0; x < Items.NumItems(); x++)
+        for (int32_t x = 0; x < Items.size(); x++)
           if (!Items[x]->Separator) {
-            CRect EntryPos = GetItemRect(x);
+            const CRect EntryPos = GetItemRect(x);
             if (EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
               SpawnSubMenu(x);
               return true;
@@ -263,9 +262,9 @@ TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
       if (!Pushed) return true;  // original click doesn't count
 
       // check if any of the items are clicked on
-      for (int32_t x = 0; x < Items.NumItems(); x++)
+      for (int32_t x = 0; x < Items.size(); x++)
         if (!Items[x]->Separator) {
-          CRect EntryPos = GetItemRect(x);
+          const CRect EntryPos = GetItemRect(x);
           if (MouseOver() &&
               EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
             App->SendMessage(CWBMessage(App, WBM_CONTEXTMESSAGE, Target,
@@ -299,23 +298,23 @@ TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
 }
 
 void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
-  if (itemidx < 0 || itemidx >= Items.NumItems()) return;
-  SAFEDELETE(SubMenu);
-  if (Items[itemidx]->Children.NumItems() <= 0) return;
+  if (itemidx < 0 || itemidx >= Items.size()) return;
+  SubMenu.reset();
+  if (Items[itemidx]->Children.size() <= 0) return;
 
-  CRect p = GetItemRect(itemidx) + GetPosition().TopLeft();
-  CRect w = GetPosition();
+  const CRect p = GetItemRect(itemidx) + GetPosition().TopLeft();
+  const CRect w = GetPosition();
 
   CRect newpos = CRect(w.x2 - 1, p.y1, w.x2 + 10, p.y1 + 10);
 
-  SubMenu = new CWBContextMenu(GetParent(), newpos, Target);
-  App->ApplyStyle(SubMenu);
+  SubMenu.swap(std::make_unique<CWBContextMenu>(GetParent(), newpos, Target));
+  App->ApplyStyle(SubMenu.get());
   SubMenu->ParentMenu = this;
   App->SetCapture(
       GetContextRoot());  // message control must stay with the root item
 
-  for (int32_t x = 0; x < Items[itemidx]->Children.NumItems(); x++) {
-    CWBContextItem *olditm = Items[itemidx]->Children[x];
+  for (auto &child : Items[itemidx]->Children) {
+    CWBContextItem *olditm = child.get();
     CWBContextItem *newitm = SubMenu->AddItem(olditm->Text, olditm->ReturnID);
     newitm->CopyOf = olditm;
     newitm->Separator = olditm->Separator;
@@ -330,25 +329,25 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
 CRect CWBContextMenu::GetItemRect(int32_t idx) {
   CPoint Offset = CPoint(0, 0);
 
-  int arbitraryValue = 0;
+  constexpr int arbitraryValue = 0;
   CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
       CSize(0, arbitraryValue), CRect(0, 0, 0, 0));
-  int height =
+  const int height =
       SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0), CSize(0, 0));
-  int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
+  const int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
 
-  CRect Client = GetClientRect();
+  const CRect Client = GetClientRect();
   padding = CSSProperties.PositionDescriptor.GetPadding(Client.Size(),
                                                         CRect(0, 0, 0, 0));
 
   Offset.y = padding.y1;
 
   CWBFont *Font = GetFont(WB_STATE_HOVER);
-  for (int32_t x = 0; x < Items.NumItems(); x++) {
+  for (int32_t x = 0; x < Items.size(); x++) {
     if (Items[x]->Separator) {
       Offset.y += separatorHeight;
     } else if (Font) {
-      CRect EntryPos = CRect(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
+      const CRect EntryPos = CRect(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
                              Offset.y + Font->GetLineHeight());
       if (x == idx) return EntryPos;
       Offset.y += Font->GetLineHeight();
@@ -381,11 +380,11 @@ CWBContextItem::CWBContextItem() {
   Separator = false;
 }
 
-CWBContextItem::~CWBContextItem() { Children.FreeArray(); }
+CWBContextItem::~CWBContextItem() {}
 
 void CWBContextItem::CopyChildrenFrom(CWBContextItem *itm) {
-  for (int32_t x = 0; x < itm->Children.NumItems(); x++) {
-    CWBContextItem *olditm = itm->Children[x];
+  for (auto &child : itm->Children) {
+    CWBContextItem *olditm = child.get();
     CWBContextItem *newitm = AddItem(olditm->Text, olditm->ReturnID);
     newitm->Separator = olditm->Separator;
     newitm->Highlighted = olditm->Highlighted;
@@ -398,19 +397,18 @@ void CWBContextItem::CopyChildrenFrom(CWBContextItem *itm) {
 CWBContextItem *CWBContextItem::AddItem(std::string_view Text, int32_t ID,
                                         TBOOL Highlighted,
                                         TBOOL closesContext) {
-  CWBContextItem *Item = new CWBContextItem();
-  Item->Text = Text;
-  Item->ReturnID = ID;
-  Item->Highlighted = Highlighted;
-  Item->closesContext = closesContext;
-  Children += Item;
-  return Item;
+  Children.emplace_back(std::make_unique<CWBContextItem>());
+  auto &item = Children.back();
+  item->Text = Text;
+  item->ReturnID = ID;
+  item->Highlighted = Highlighted;
+  item->closesContext = closesContext;
+  return item.get();
 }
 
 void CWBContextItem::AddSeparator() {
-  CWBContextItem *Item = new CWBContextItem();
-  Children += Item;
-  Children.Last()->Separator = true;
+  Children.emplace_back(std::make_unique<CWBContextItem>());
+  Children.back()->Separator = true;
 }
 
 void CWBContextItem::SetText(std::string_view text) {
@@ -451,7 +449,8 @@ TBOOL CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
 }
 
 CWBContextItem *CWBContextMenu::GetItem(int32_t ID) {
-  for (int32_t x = 0; x < Items.NumItems(); x++)
-    if (Items[x]->ReturnID == ID) return Items[x];
+  for (const auto &item : Items)
+    if (item->ReturnID == ID) return item.get();
   return nullptr;
 }
+

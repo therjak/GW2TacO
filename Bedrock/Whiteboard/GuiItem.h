@@ -520,7 +520,7 @@ class CWBItem : public IWBCSS {
 
 #define WB_DECLARE_GUIITEM_3PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2,          \
                                     PARENTCLASS3)                              \
-  virtual const std::string &GetType() const {                                 \
+  virtual const std::string &GetType() const override {                                 \
     static const std::string type = TYPE;                                      \
     return type;                                                               \
   }                                                                            \
@@ -546,3 +546,4 @@ class CWBItem : public IWBCSS {
   EXPAND(EXPAND(WB_DECLARE_MACRO_SELECTOR(                                   \
       __VA_ARGS__, WB_DECLARE_GUIITEM_3PARENTS, WB_DECLARE_GUIITEM_2PARENTS, \
       WB_DECLARE_GUIITEM_1PARENTS))(TYPE, __VA_ARGS__))
+

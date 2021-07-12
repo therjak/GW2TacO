@@ -2,6 +2,8 @@
 
 #include <string_view>
 #include <string>
+#include <vector>
+#include <memory>
 
 #include "GuiItem.h"
 
@@ -17,7 +19,7 @@ class CWBContextItem
   TBOOL Highlighted;
   TBOOL closesContext;
 
-  CArray<CWBContextItem*> Children;
+  std::vector<std::unique_ptr<CWBContextItem>> Children;
   CWBContextItem* CopyOf = nullptr;
 
   void CopyChildrenFrom( CWBContextItem *itm );
@@ -36,16 +38,16 @@ public:
 
 class CWBContextMenu : public CWBItem
 {
-  TBOOL Pushed; //used to ignore mouse clicks originating from the opening item
-  WBGUID Target;
+  bool Pushed = false; //used to ignore mouse clicks originating from the opening item
+  WBGUID Target = 0;
 
-  CWBContextMenu *SubMenu;
-  CWBContextMenu *ParentMenu;
-  CArray<CWBContextItem*> Items;
+  std::unique_ptr<CWBContextMenu> SubMenu;
+  CWBContextMenu *ParentMenu = nullptr;
+  std::vector<std::unique_ptr<CWBContextItem>> Items;
 
   TBOOL MessageProc( CWBMessage &Message );
   virtual void ResizeToContentSize();
-  virtual void OnDraw( CWBDrawAPI *API );
+  virtual void OnDraw( CWBDrawAPI *API ) override;
   void SpawnSubMenu( int32_t itemidx );
   CRect GetItemRect( int32_t idx );
   void MarkParentForDeletion();
@@ -72,6 +74,7 @@ public:
   virtual void AddSeparator();
 
   virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string> &pseudo);
+                           const std::vector<std::string> &pseudo) override;
   virtual CWBContextItem *GetItem( int32_t ID );
 };
+
