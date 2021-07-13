@@ -3,6 +3,7 @@
 
 #include <string_view>
 #include <vector>
+#include <unordered_map>
 
 enum WBTEXTALIGNMENTX
 {
@@ -57,12 +58,21 @@ public:
 
   uint32_t First, Second;
 
-  INLINE TBOOL operator==( const CWBKerningPair &k );
   CWBKerningPair();
   CWBKerningPair( uint16_t a, uint16_t b );
 };
 
+inline bool operator==(const CWBKerningPair& lhs, const CWBKerningPair& rhs) {
+  return lhs.First == rhs.First && lhs.Second == rhs.Second;
+}
+
 INLINE uint32_t DictionaryHash( const CWBKerningPair &i );
+
+struct DHash {
+  std::size_t operator()(const CWBKerningPair &i) const {
+    return DictionaryHash(i);
+  }
+};
 
 class CWBDrawAPI;
 
@@ -99,7 +109,7 @@ class CWBFont
   CAtlas *Atlas;
   int32_t AlphabetSize = 0;
   WBSYMBOL *Alphabet;
-  CDictionary<CWBKerningPair, int16_t> Kerning;
+  std::unordered_map<CWBKerningPair, int16_t, DHash> Kerning;
 
   int32_t LineHeight;
   int32_t Base;
@@ -155,3 +165,4 @@ class CWBFont
   void ConvertToUppercase();
 
 };
+

@@ -7,6 +7,7 @@
 #include "CSSItem.h"
 #include "Skin.h"
 
+#include <unordered_map>
 
 typedef uint32_t WBGUID;
 class CWBDrawAPI;
@@ -134,7 +135,7 @@ class CWBCSSPropertyBatch {
   WBTEXTALIGNMENTY TextAlignY;
   CWBDisplayProperties DisplayDescriptor;
   CWBPositionDescriptor PositionDescriptor;
-  CDictionary<WBITEMSTATE, std::string> Fonts;
+  std::unordered_map<WBITEMSTATE, std::string> Fonts;
 
   CWBCSSPropertyBatch();
   virtual CWBFont *GetFont(CWBApplication *App, WBITEMSTATE State);
@@ -546,4 +547,5 @@ class CWBItem : public IWBCSS {
   EXPAND(EXPAND(WB_DECLARE_MACRO_SELECTOR(                                   \
       __VA_ARGS__, WB_DECLARE_GUIITEM_3PARENTS, WB_DECLARE_GUIITEM_2PARENTS, \
       WB_DECLARE_GUIITEM_1PARENTS))(TYPE, __VA_ARGS__))
+
 

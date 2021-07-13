@@ -26,7 +26,7 @@ CColor CWBDisplayState::GetColor( WBITEMVISUALCOMPONENT v )
 
 TBOOL CWBDisplayState::IsSet( WBITEMVISUALCOMPONENT v )
 {
-  return VisualSet[ v ];//.HasKey(v);
+  return VisualSet[ v ];
 }
 
 void CWBDisplayState::SetValue( WBITEMVISUALCOMPONENT v, int32_t value )
@@ -114,10 +114,13 @@ CWBCSSPropertyBatch::CWBCSSPropertyBatch()
   TextAlignY = WBTA_CENTERY;
 }
 
-CWBFont * CWBCSSPropertyBatch::GetFont( CWBApplication *App, WBITEMSTATE State )
-{
-  if ( Fonts.HasKey( State ) ) return App->GetFont( Fonts[ State ] );
-  if ( Fonts.HasKey( WB_STATE_NORMAL ) ) return App->GetFont( Fonts[ WB_STATE_NORMAL ] );
+CWBFont *CWBCSSPropertyBatch::GetFont(CWBApplication *App, WBITEMSTATE State) {
+  if (Fonts.find(State) != Fonts.end()) {
+    return App->GetFont(Fonts[State]);
+  }
+  if (Fonts.find(WB_STATE_NORMAL) != Fonts.end()) {
+    return App->GetFont(Fonts[WB_STATE_NORMAL]);
+  }
   return App->GetDefaultFont();
 }
 
@@ -2268,7 +2271,7 @@ void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch &desc,
                                   std::string_view name) {
   if ( pseudo.size() <= 1 )
   {
-    desc.Fonts.Flush();
+    desc.Fonts.clear();
     desc.Fonts[ WB_STATE_NORMAL ] = name;
   }
   else
@@ -2410,3 +2413,4 @@ TBOOL CWBItem::MarkedForDeletion()
 {
   return App->Trash.Find( this ) >= 0;
 }
+

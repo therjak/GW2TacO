@@ -10,11 +10,6 @@ INLINE uint32_t DictionaryHash( const CWBKerningPair &i )
   return i.First + ( i.Second << 16 );
 }
 
-INLINE TBOOL CWBKerningPair::operator==( const CWBKerningPair &k )
-{
-  return First == k.First && Second == k.Second;
-}
-
 CWBKerningPair::CWBKerningPair()
 {
   First = Second = 0;
@@ -478,12 +473,12 @@ int32_t CWBFont::Write( CWBDrawAPI *DrawApi, std::string_view String, int32_t x,
 
     xp += WriteChar( DrawApi, Char, xp, yp, Color );
 
-    if ( DoKerning && *Text && Kerning.NumItems() )
+    if ( DoKerning && *Text && !Kerning.empty() )
     {
       auto next = Text;
       uint16_t NextChar = ApplyTextTransformUtf8( t.c_str(), next, Transform );
       CWBKerningPair k = CWBKerningPair( Char, NextChar );
-      if ( Kerning.HasKey( k ) )
+       if (Kerning.find(k) != Kerning.end())
         xp += Kerning[ k ];
     }
   }
@@ -553,12 +548,12 @@ int32_t CWBFont::GetWidth(std::string_view String, TBOOL AdvanceLastChar,
         xp += GetWidth( Char, false );
     }
 
-    if ( DoKerning && *Text && Kerning.NumItems() )
+    if ( DoKerning && *Text && !Kerning.empty() )
     {
       auto next = Text;
       uint16_t NextChar = ApplyTextTransformUtf8( t.c_str(), next, Transform );
       CWBKerningPair k = CWBKerningPair( Char, NextChar );
-      if ( Kerning.HasKey( k ) )
+      if (Kerning.find(k) != Kerning.end())
         xp += Kerning[ k ];
     }
   }
@@ -791,4 +786,5 @@ CPoint CWBFont::GetTextPosition(std::string_view String, CRect &Container,
 
   return p;
 }
+
 
