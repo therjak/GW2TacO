@@ -25,7 +25,6 @@ typedef CWBItem* ( __cdecl *WBFACTORYCALLBACK )( CWBItem *Root, CXMLNode &node, 
 class CWBApplication : public CCoreWindowHandlerWin
 {
   friend class CWBItem;
-  CArray<CWBItem*> MessagePath;
 
   CRingBuffer<int32_t> *FrameTimes;
   int32_t LastFrameTime;

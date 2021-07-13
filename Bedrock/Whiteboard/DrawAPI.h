@@ -3,6 +3,7 @@
 #include "../CoRE2/Core2.h"
 #include "Atlas.h"
 #include "Font.h"
+#include <vector>
 
 struct WBDISPLAYLINE
 {
@@ -17,27 +18,14 @@ struct WBGUIVERTEX
   CVector2 UV;
   CColor Color;
 
-  WBGUIVERTEX()
-  {
+  WBGUIVERTEX() {}
 
-  }
+  WBGUIVERTEX(const float x, const float y, const float u, const float v,
+              const CColor &color)
+      : Pos(x, y, 0, 1), UV(u, v), Color(color) {}
 
-  WBGUIVERTEX( const CVector2 &pos, const CVector2 &uv, const CColor &color )
-  {
-    Initialize( pos.x, pos.y, uv.x, uv.y, color );
-  }
-
-  INLINE void Initialize( const float x, const float y, const float u, const float v, const CColor &color )
-  {
-    Pos.x = x;
-    Pos.y = y;
-    Pos.z = 0;
-    Pos.w = 1;
-    UV.x = u;
-    UV.y = v;
-    Color = color;
-  }
-
+  WBGUIVERTEX(const CVector2 &pos, const CVector2 &uv, const CColor &color)
+      : Pos(pos.x, pos.y, 0, 1), UV(uv.x, uv.y), Color(color) {}
 };
 
 enum WBDRAWMODE
@@ -58,7 +46,7 @@ class CWBDrawAPI
   uint8_t Opacity;
   CWBApplication *App;
 
-  CArray<WBGUIVERTEX> DisplayList;
+  std::vector<WBGUIVERTEX> DisplayList;
   CAtlas *Atlas;
   CCoreDevice *Device;
 
@@ -106,13 +94,13 @@ public:
   void DrawLine( const CPoint &p1, const CPoint &p2, CColor Color );
   void DrawLine( const CPoint &p1, const CPoint &p2, CColor Color1, CColor Color2 );
 
-  void DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, CColor Color );
-  void DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, CColor a, CColor b, CColor c );
-  void DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, float u1, float v1, float u2, float v2, float u3, float v3, CColor a, CColor b, CColor c );
-  void DrawTriangle( CPoint &p1, CPoint &p2, CPoint &p3, float u1, float v1, float u2, float v2, float u3, float v3 );
+  void DrawTriangle( const CPoint &p1, const CPoint &p2, const CPoint &p3, CColor Color );
+  void DrawTriangle( const CPoint &p1, const CPoint &p2, const CPoint &p3, CColor a, CColor b, CColor c );
+  void DrawTriangle( const CPoint &p1, const CPoint &p2, const CPoint &p3, float u1, float v1, float u2, float v2, float u3, float v3, CColor a, CColor b, CColor c );
+  void DrawTriangle( const CPoint &p1, const CPoint &p2, const CPoint &p3, float u1, float v1, float u2, float v2, float u3, float v3 );
 
-  void SetOffset( CPoint &p );
-  void SetCropRect( CRect &r );
+  void SetOffset( const CPoint &p );
+  void SetCropRect( const CRect &r );
   void SetParentCropRect( CRect &r ) { ParentCropRect = r; };
   INLINE CRect &GetCropRect() { return CropRect; }
   INLINE CRect &GetParentCropRect() { return ParentCropRect; }
@@ -125,8 +113,8 @@ public:
   CSize GetAtlasElementSize( WBATLASHANDLE h );
   void DrawAtlasElement( WBATLASHANDLE h, int32_t x, int32_t y, CColor Color = 0xffffffff );
   void DrawAtlasElement( WBATLASHANDLE h, CRect &Position, TBOOL TileX, TBOOL TileY, TBOOL StretchX, TBOOL StretchY, CColor Color = 0xffffffff );
-  void DrawAtlasElementRotated( WBATLASHANDLE h, CRect& Position, CColor Color, float rotation );
-  void SetCropToClient( CWBItem *i );
+  void DrawAtlasElementRotated( WBATLASHANDLE h, const CRect& Position, CColor Color, float rotation );
+  void SetCropToClient( const CWBItem *i );
 
   void FlushDrawBuffer();
   CCoreDevice *GetDevice();
@@ -141,3 +129,4 @@ public:
 //helper functions for common use cases
 void ZoomToMouseCenter( CPoint &Offset, int32_t &Zoom, int32_t NewZoom, CPoint ZoomCenter );
 void ZoomToMouseCenter( CPoint &Offset, float &Zoom, float NewZoom, CPoint Pos );
+

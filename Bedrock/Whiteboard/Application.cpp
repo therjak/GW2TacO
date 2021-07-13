@@ -52,15 +52,14 @@ TBOOL CWBApplication::SendMessageToItem( CWBMessage &Message, CWBItem *Target )
     return false;
   }
 
-  MessagePath.FlushFast();
-
+  std::vector<CWBItem *> MessagePath;
   while ( Target )
   {
-    MessagePath += Target;
+    MessagePath.push_back(Target);
     Target = Target->GetParent();
   }
 
-  for ( int32_t x = MessagePath.NumItems() - 1; x >= 0; x-- )
+  for ( int32_t x = MessagePath.size() - 1; x >= 0; x-- )
     if ( MessagePath[ x ]->MessageProc( Message ) ) return true;
 
   return false;
@@ -121,16 +120,16 @@ void CWBApplication::ProcessMessage( CWBMessage &Message )
   //}
 
   //bottom to top version:
-  MessagePath.FlushFast();
+  std::vector<CWBItem *> MessagePath;
 
   CWBItem *Target = GetRoot();
   while ( Target )
   {
-    MessagePath += Target;
+    MessagePath.push_back(Target);
     Target = Target->GetChildInFocus();
   }
 
-  for ( int32_t x = MessagePath.NumItems() - 1; x >= 0; x-- )
+  for ( int32_t x = MessagePath.size() - 1; x >= 0; x-- )
     if ( MessagePath[ x ]->MessageProc( Message ) ) return;
 
 }
