@@ -3,57 +3,37 @@
 //////////////////////////////////////////////////////////////////////////
 // base shader class
 
-CCoreShader::~CCoreShader()
-{
-	SAFEDELETEA(Binary);
-	BinaryLength = 0;
+CCoreShader::~CCoreShader() {
+  SAFEDELETEA(Binary);
+  BinaryLength = 0;
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // base pixelshader class
 
-CCorePixelShader::~CCorePixelShader()
-{
-
-}
+CCorePixelShader::~CCorePixelShader() {}
 
 //////////////////////////////////////////////////////////////////////////
 // base geometryshader class
 
-CCoreGeometryShader::~CCoreGeometryShader()
-{
-
-}
+CCoreGeometryShader::~CCoreGeometryShader() {}
 
 //////////////////////////////////////////////////////////////////////////
 // base vertexshader class
 
-CCoreVertexShader::~CCoreVertexShader()
-{
-
-}
+CCoreVertexShader::~CCoreVertexShader() {}
 
 //////////////////////////////////////////////////////////////////////////
 // base Hullshader class
 
-CCoreHullShader::~CCoreHullShader()
-{
-
-}
+CCoreHullShader::~CCoreHullShader() {}
 
 //////////////////////////////////////////////////////////////////////////
 // base Domainshader class
 
-CCoreDomainShader::~CCoreDomainShader()
-{
-
-}
+CCoreDomainShader::~CCoreDomainShader() {}
 
 //////////////////////////////////////////////////////////////////////////
 // base Computeshader class
 
-CCoreComputeShader::~CCoreComputeShader()
-{
-
-}
+CCoreComputeShader::~CCoreComputeShader() {}

@@ -1,4 +1,5 @@
 #include "RenderState.h"
+
 #include "../UtilLib/XMLDocument.h"
 
 CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice *Device)
@@ -212,8 +213,7 @@ TBOOL CCoreDepthStencilState::Import(CXMLNode *n) {
   }
   if (n->GetChildCount(_T("DepthFunc"))) {
     auto s = n->GetChild(_T("DepthFunc")).GetText();
-    FindEnumByName(ComparisonFunctionNames, s,
-                   (int32_t &)DepthFunc);
+    FindEnumByName(ComparisonFunctionNames, s, (int32_t &)DepthFunc);
   }
 
   Dirty = true;
@@ -440,8 +440,7 @@ TBOOL CCoreSamplerState::Import(CXMLNode *n) {
 
   if (n->GetChildCount(_T("ComparisonFunc"))) {
     auto s = n->GetChild(_T("ComparisonFunc")).GetText();
-    FindEnumByName(ComparisonFunctionNames, s,
-                   (int32_t &)ComparisonFunc);
+    FindEnumByName(ComparisonFunctionNames, s, (int32_t &)ComparisonFunc);
   }
 
   if (n->GetChildCount(_T("MipLODBias"))) {
@@ -463,8 +462,7 @@ TBOOL CCoreSamplerState::Import(CXMLNode *n) {
 }
 
 void CCoreSamplerState::Export(CXMLNode *n) {
-  n->AddChild(_T("Filter"))
-      .SetText(FindNameByEnum(FilterNames, Filter).data());
+  n->AddChild(_T("Filter")).SetText(FindNameByEnum(FilterNames, Filter).data());
   n->AddChild(_T("AddressU"))
       .SetText(FindNameByEnum(AddressModeNames, AddressU).data());
   n->AddChild(_T("AddressV"))

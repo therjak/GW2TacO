@@ -1,11 +1,10 @@
 #include "ConstantBuffer.h"
 
-#include <memory>
 #include <cstring>
+#include <memory>
 
 CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice *Device)
-    : CCoreResource(Device) {
-}
+    : CCoreResource(Device) {}
 
 CCoreConstantBuffer::~CCoreConstantBuffer() {}
 

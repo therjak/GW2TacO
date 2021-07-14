@@ -1,28 +1,18 @@
 #include "Resource.h"
+
 #include "Device.h"
 
-CCoreResource::CCoreResource()
-{
-	Device = NULL;
+CCoreResource::CCoreResource() { Device = NULL; }
+
+CCoreResource::CCoreResource(CCoreDevice *h) {
+  Device = h;
+  Device->AddResource(this);
 }
 
-CCoreResource::CCoreResource(CCoreDevice *h)
-{
-	Device = h;
-	Device->AddResource(this);
+CCoreResource::~CCoreResource() {
+  if (Device) Device->RemoveResource(this);
 }
 
-CCoreResource::~CCoreResource()
-{
-	if (Device) Device->RemoveResource(this);
-}
+void CCoreResource::OnDeviceLost() {}
 
-void CCoreResource::OnDeviceLost()
-{
-
-}
-
-void CCoreResource::OnDeviceReset()
-{
-
-}
+void CCoreResource::OnDeviceReset() {}
