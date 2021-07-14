@@ -1,17 +1,17 @@
 #include "XMLDocument.h"
 
+#include <Objbase.h>
+#include <combaseapi.h>
+
 #include <cstdio>
 #include <sstream>
 #include <string>
 #include <string_view>
 
-#include <combaseapi.h>
-#include <Objbase.h>
-
+#include "../BaseLib/Logger.h"
 #include "../BaseLib/read_file.h"
 #include "../UtilLib/RapidXML/rapidxml.hpp"
 #include "../UtilLib/RapidXML/rapidxml_print.hpp"
-#include "../BaseLib/Logger.h"
 #include "XMLNode.h"
 
 CXMLDocument::CXMLDocument(void) {}
