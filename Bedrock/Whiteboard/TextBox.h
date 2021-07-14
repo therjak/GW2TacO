@@ -1,7 +1,9 @@
 #pragma once
 
-#include <string_view>
+#include <memory>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "Application.h"
 
@@ -26,8 +28,8 @@ class CWBTextBoxHistoryEntry {
 };
 
 class CWBTextBox : public CWBItem {
-  CArray<CWBTextBoxHistoryEntry *> History;
-  int32_t HistoryPosition;
+  std::vector<std::unique_ptr<CWBTextBoxHistoryEntry>> History;
+  uint32_t HistoryPosition;
 
   int32_t HiglightStartTime;
   int32_t CursorBlinkStartTime;

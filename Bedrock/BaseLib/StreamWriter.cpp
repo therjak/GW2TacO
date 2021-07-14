@@ -1,4 +1,3 @@
-// #include "BaseLib.h"
 #include "StreamWriter.h"
 
 #include "Assert.h"
@@ -18,7 +17,8 @@ bool CStreamWriter::Write(uint8_view data) {
 }
 
 bool CStreamWriter::Write(void* lpBuf, uint32_t nCount) {
-  return WriteStream(std::string_view(reinterpret_cast<char*>(lpBuf), nCount)) == nCount;
+  return WriteStream(std::string_view(reinterpret_cast<char*>(lpBuf),
+                                      nCount)) == nCount;
 }
 
 bool CStreamWriter::WriteByte(uint8_t data) { return Write(&data, 1); }
@@ -96,7 +96,8 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&pMsgBuf,
                   0, NULL);
 
-    LOG_ERR("[writer] Error opening file '%s': %s", std::string(Filename).c_str(), pMsgBuf);
+    LOG_ERR("[writer] Error opening file '%s': %s",
+            std::string(Filename).c_str(), pMsgBuf);
     LocalFree(pMsgBuf);
     return 0;
   }

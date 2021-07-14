@@ -1,12 +1,13 @@
 #include "string_format.h"
 
+#include <Windows.h>
+
 #include <algorithm>
 #include <cctype>
 #include <cstdarg>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <Windows.h>
 
 std::string_view whitespaces(" \t\f\v\n\r");
 
@@ -27,7 +28,6 @@ std::vector<std::string> SplitByWhitespace(std::string_view input) {
   return Split(input, whitespaces);
 }
 
-
 std::string_view Trim(std::string_view s) {
   {
     auto it = std::find_if_not(s.begin(), s.end(), std::isspace);
@@ -36,7 +36,6 @@ std::string_view Trim(std::string_view s) {
   auto it = std::find_if_not(s.rbegin(), s.rend(), std::isspace);
   return s.substr(0, s.rend() - it);
 }
-
 
 static const char* B64chars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

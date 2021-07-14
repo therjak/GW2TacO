@@ -1,9 +1,10 @@
 #include "read_file.h"
 
-#include <string>
-#include <string_view>
 #include <Windows.h>
 #include <fileapi.h>
+
+#include <string>
+#include <string_view>
 
 namespace baselib {
 

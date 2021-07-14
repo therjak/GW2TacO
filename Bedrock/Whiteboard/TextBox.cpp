@@ -47,10 +47,9 @@ void CWBTextBox::OnDraw(CWBDrawAPI *API) {
           x, Color);  // color coding, to be implemented in child classes
 
     auto Char = Flags & WB_TEXTBOX_PASSWORD
-                     ? PasswordStar
-                     : Font->ApplyTextTransform(
-                           Text.c_str(),
-                           Text.c_str() + x, TextTransform);
+                    ? PasswordStar
+                    : Font->ApplyTextTransform(Text.c_str(), Text.c_str() + x,
+                                               TextTransform);
     int32_t Width = Font->GetWidth(Char);
 
     if (Char == '\t')
@@ -121,7 +120,7 @@ CWBTextBox::CWBTextBox(CWBItem *Parent, const CRect &Pos, int32_t flags,
   Initialize(Parent, Pos, flags, Txt);
 }
 
-CWBTextBox::~CWBTextBox() { History.FreeArray(); }
+CWBTextBox::~CWBTextBox() {}
 
 TBOOL CWBTextBox::Initialize(CWBItem *Parent, const CRect &Position,
                              int32_t flags, std::string_view Txt) {
@@ -198,8 +197,7 @@ void CWBTextBox::SetCursorPos(int32_t pos, TBOOL Selecting) {
   }
 
   int32_t CurrCharWidth = Font->GetWidth(_T(' '));
-  if (CursorPos != Text.size())
-    CurrCharWidth = Font->GetWidth(Text[CursorPos]);
+  if (CursorPos != Text.size()) CurrCharWidth = Font->GetWidth(Text[CursorPos]);
 
   OnCursorPosChange(CursorPos);
 
@@ -255,10 +253,9 @@ void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, TBOOL Selecting) {
     }
 
     auto Char = Flags & WB_TEXTBOX_PASSWORD
-                     ? PasswordStar
-                     : Font->ApplyTextTransform(
-                           Text.c_str(),
-                           Text.c_str() + p, TextTransform);
+                    ? PasswordStar
+                    : Font->ApplyTextTransform(Text.c_str(), Text.c_str() + p,
+                                               TextTransform);
     int32_t Width = Font->GetWidth(Char);
 
     if (Char == '\t')
@@ -380,29 +377,32 @@ void CWBTextBox::Paste() {
 CWBTextBoxHistoryEntry *CWBTextBox::CreateNewHistoryEntry(bool Remove,
                                                           int Start,
                                                           int Length) {
-  for (int32_t x = History.NumItems() - 1; x >= HistoryPosition; x--)
-    History.FreeByIndex(x);
+  for (; History.size() > HistoryPosition;) {
+    History.pop_back();
+  }
 
-  CWBTextBoxHistoryEntry *entry = new CWBTextBoxHistoryEntry();
+  auto entry = std::make_unique<CWBTextBoxHistoryEntry>();
   entry->Remove = Remove;
   entry->StartPosition = Start;
   entry->Data = Text.substr(Start, Length);
-  History += entry;
+  History.emplace_back(std::move(entry));
 
-  HistoryPosition = History.NumItems();
+  HistoryPosition = History.size();
 
-  return entry;
+  return History.back().get();
 }
 
 void CWBTextBox::Undo() {
-  if (!HistoryPosition) return;
+  if (HistoryPosition == 0) {
+    return;
+  }
   HistoryPosition--;
 
-  CWBTextBoxHistoryEntry *e = History[HistoryPosition];
+  auto& e = History[HistoryPosition];
 
   if (e->Remove)
-    InsertText(e->StartPosition, e->Data, e->Data.size(),
-               e->CursorPos_Before, false);
+    InsertText(e->StartPosition, e->Data, e->Data.size(), e->CursorPos_Before,
+               false);
   else
     RemoveText(e->StartPosition, e->Data.size(), e->CursorPos_Before, false);
 
@@ -413,9 +413,11 @@ void CWBTextBox::Undo() {
 }
 
 void CWBTextBox::Redo() {
-  if (HistoryPosition >= History.NumItems()) return;
+  if (HistoryPosition >= History.size()) {
+    return;
+  }
 
-  CWBTextBoxHistoryEntry *e = History[HistoryPosition++];
+  auto& e = History[HistoryPosition++];
 
   if (e->Remove)
     RemoveText(e->StartPosition, e->Data.size(), e->StartPosition, false);
@@ -457,10 +459,9 @@ int32_t CWBTextBox::GetCursorXinPixels() {
   int32_t Pixels = 0;
   for (int32_t x = CursorPos - c; x < CursorPos; x++) {
     auto Char = Flags & WB_TEXTBOX_PASSWORD
-                     ? PasswordStar
-                     : Font->ApplyTextTransform(
-                           Text.c_str(),
-                           Text.c_str() + x, TextTransform);
+                    ? PasswordStar
+                    : Font->ApplyTextTransform(Text.c_str(), Text.c_str() + x,
+                                               TextTransform);
     int32_t Width = Font->GetWidth(Char);
 
     if (Char == '\t')
@@ -532,10 +533,9 @@ int32_t CWBTextBox::GetCursorPosMouse() {
          Pos.y + Offset.y < cr.Height()) ||
         Flags & WB_TEXTBOX_SINGLELINE) {
       auto Char = Flags & WB_TEXTBOX_PASSWORD
-                       ? PasswordStar
-                       : Font->ApplyTextTransform(
-                             Text.c_str(),
-                             Text.c_str() + x, TextTransform);
+                      ? PasswordStar
+                      : Font->ApplyTextTransform(Text.c_str(), Text.c_str() + x,
+                                                 TextTransform);
       int32_t Width = Font->GetWidth(Char);
 
       if (Char == '\t')
@@ -710,8 +710,7 @@ TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
 
         case VK_END:
           if (Message.KeyboardState & WB_KBSTATE_CTRL) {
-            SetCursorPos(Text.size(),
-                         Message.KeyboardState & WB_KBSTATE_SHIFT);
+            SetCursorPos(Text.size(), Message.KeyboardState & WB_KBSTATE_SHIFT);
             DesiredCursorPosXinPixels = GetCursorXinPixels();
             return true;
           }
@@ -860,7 +859,7 @@ void CWBTextBox::SetTextInternal(std::string_view val, TBOOL EnableUndo,
   if (!EnableUndo) {
     OriginalText = Text = val;
     Text.erase(std::remove(Text.begin(), Text.end(), '\r'));
-    History.FreeArray();
+    History.clear();
     HistoryPosition = 0;
   } else {
     SelectionStart = 0;
@@ -893,10 +892,9 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
 
   for (int32_t x = 0; x < (int32_t)Text.size(); x++) {
     auto Char = Flags & WB_TEXTBOX_PASSWORD
-                     ? PasswordStar
-                     : Font->ApplyTextTransform(
-                           Text.c_str(),
-                           Text.c_str() + x, TextTransform);
+                    ? PasswordStar
+                    : Font->ApplyTextTransform(Text.c_str(), Text.c_str() + x,
+                                               TextTransform);
     int32_t Width = Font->GetWidth(Char);
 
     if (Char == '\t')
@@ -921,8 +919,8 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
 }
 
 void CWBTextBox::InsertText(int32_t Position, std::string_view txt,
-                            int32_t Length,
-                            int32_t CursorPosAfter, TBOOL ChangeHistory) {
+                            int32_t Length, int32_t CursorPosAfter,
+                            TBOOL ChangeHistory) {
   if (ChangeHistory) {
     CWBTextBoxHistoryEntry *e = CreateNewHistoryEntry(false, Position, Length);
     e->CursorPos_Before = CursorPos;

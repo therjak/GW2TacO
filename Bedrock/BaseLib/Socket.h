@@ -1,5 +1,7 @@
 #pragma once
 
+#include <WinSock2.h>
+
 #include <string_view>
 
 #include "StreamReader.h"
@@ -31,7 +33,7 @@ class CSocket : public CStreamReader, public CStreamWriter {
   // streamreader functions
 
   // returns the currently available bytes in the socket
-  virtual int64_t GetLength() const;  
+  virtual int64_t GetLength() const;
   virtual int64_t GetOffset() const;  // is always 0
 
   std::string ReadLine();
