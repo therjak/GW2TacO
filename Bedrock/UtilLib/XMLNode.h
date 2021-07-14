@@ -1,12 +1,12 @@
 #pragma once
 #include "../UtilLib/RapidXML/rapidxml.hpp"
 
-#include "../BaseLib/BaseLib.h"
-
 #include <string_view>
 #include <memory>
 #include <cstdint>
 #include <unordered_map>
+
+#include "../BaseLib/Types.h"
 
 class CXMLDocument;
 
@@ -21,27 +21,27 @@ public:
   CXMLNode operator=( const CXMLNode Original );
 
   int32_t GetChildCount();
-  int32_t GetChildCount( TCHAR * );
+  int32_t GetChildCount( char * );
   CXMLNode GetChild( int32_t );
-  CXMLNode GetChild( TCHAR * );
-  CXMLNode GetChild( TCHAR *, int32_t );
+  CXMLNode GetChild( char * );
+  CXMLNode GetChild( char *, int32_t );
 
-  bool Next( CXMLNode& out, TCHAR* );
+  bool Next( CXMLNode& out, char* );
 
   int32_t IsValid();
 
   std::string GetNodeName();
 
-  void GetText( TCHAR*, int32_t );
+  void GetText( char*, int32_t );
   std::string GetText();
   bool GetValue( int32_t &Int );
   bool GetValue( TBOOL &Int );
   bool GetValue( float &Float );
 
-  bool GetAttribute( TCHAR * szAttribute, TCHAR * szBuffer, int32_t nBufferSize );
+  bool GetAttribute( char * szAttribute, char * szBuffer, int32_t nBufferSize );
   std::string GetAttribute( std::string_view szAttribute );
-  void GetAttributeAsInteger( TCHAR * szAttribute, int32_t * nValue );
-  void GetAttributeAsFloat( TCHAR * szAttribute, float * fValue );
+  void GetAttributeAsInteger( char * szAttribute, int32_t * nValue );
+  void GetAttributeAsFloat( char * szAttribute, float * fValue );
   std::string GetAttributeAsString( std::string_view szAttribute );
   bool HasAttribute( std::string_view szAttribute );
 

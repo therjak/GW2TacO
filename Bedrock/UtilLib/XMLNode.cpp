@@ -3,18 +3,20 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <algorithm>
 
 #include "../UtilLib/RapidXML/rapidxml.hpp"
 #include "XMLDocument.h"
+#include <tchar.h>
 
 using rapidxml::node_type;
 using rapidxml::xml_node;
 
-int32_t GetStringHash(TCHAR* string) {
+int32_t GetStringHash(char* string) {
   if (!string) return 0;
 
   int32_t c;
-  TCHAR* str = string;
+  char* str = string;
 
   int32_t Hash = 5381;
   while (c = *str++) Hash = ((Hash << 5) + Hash) + c;  // hash * 33 + c
@@ -71,7 +73,7 @@ int32_t CXMLNode::GetChildCount() {
   return count;
 }
 
-int32_t CXMLNode::GetChildCount(TCHAR* szNodeName) {
+int32_t CXMLNode::GetChildCount(char* szNodeName) {
   int32_t hash = GetStringHash(szNodeName);
 
   if (childCounts.find(hash) != childCounts.end()) return childCounts[hash];
@@ -114,7 +116,7 @@ CXMLNode CXMLNode::GetChild(int32_t n) {
   return CXMLNode();
 }
 
-CXMLNode CXMLNode::GetChild(TCHAR* szNodeName) {
+CXMLNode CXMLNode::GetChild(char* szNodeName) {
   if (!pNode) return CXMLNode();
 
   auto node = pNode->first_node(szNodeName);
@@ -123,7 +125,7 @@ CXMLNode CXMLNode::GetChild(TCHAR* szNodeName) {
   return CXMLNode(node, pDoc, nLevel + 1);
 }
 
-CXMLNode CXMLNode::GetChild(TCHAR* szNodeName, int32_t n) {
+CXMLNode CXMLNode::GetChild(char* szNodeName, int32_t n) {
   if (!pNode) return CXMLNode();
 
   auto node = pNode->first_node(szNodeName);
@@ -141,7 +143,7 @@ CXMLNode CXMLNode::GetChild(TCHAR* szNodeName, int32_t n) {
   return CXMLNode();
 }
 
-bool CXMLNode::Next(CXMLNode& out, TCHAR* szNodeName) {
+bool CXMLNode::Next(CXMLNode& out, char* szNodeName) {
   if (!pNode) return false;
 
   auto node = pNode->next_sibling(szNodeName);
@@ -151,11 +153,11 @@ bool CXMLNode::Next(CXMLNode& out, TCHAR* szNodeName) {
   return true;
 }
 
-void CXMLNode::GetText(TCHAR* szBuffer, int32_t nBufferSize) { int x = 0; }
+void CXMLNode::GetText(char* szBuffer, int32_t nBufferSize) { int x = 0; }
 
 std::string CXMLNode::GetText() { return {}; }
 
-bool CXMLNode::GetAttribute(TCHAR* szAttribute, TCHAR* szBuffer,
+bool CXMLNode::GetAttribute(char* szAttribute, char* szBuffer,
                             int32_t nBufferSize) {
   if (!pNode) return false;
 
@@ -188,16 +190,14 @@ bool CXMLNode::HasAttribute(std::string_view szAttribute) {
 
 int32_t CXMLNode::IsValid() { return pNode != NULL; }
 
-void CXMLNode::GetAttributeAsInteger(TCHAR* szAttribute, int32_t* pnValue) {
-  TCHAR s[20];
-  ZeroMemory(s, 20);
+void CXMLNode::GetAttributeAsInteger(char* szAttribute, int32_t* pnValue) {
+  char s[20] = {0};
   GetAttribute(szAttribute, s, 20);
   _stscanf_s(s, _T("%d"), pnValue);
 }
 
-void CXMLNode::GetAttributeAsFloat(TCHAR* szAttribute, float* pfValue) {
-  TCHAR s[20];
-  ZeroMemory(s, 20);
+void CXMLNode::GetAttributeAsFloat(char* szAttribute, float* pfValue) {
+  char s[20] = {0};
   GetAttribute(szAttribute, s, 20);
   _stscanf_s(s, _T("%g"), pfValue);
 }
@@ -244,15 +244,15 @@ void CXMLNode::SetAttribute(std::string_view szAttributeName,
 
 void CXMLNode::SetAttributeFromInteger(std::string_view szAttributeName,
                                        int32_t nValue) {
-  TCHAR s[64];
-  memset(s, 0, sizeof(TCHAR) * 64);
+  char s[64];
+  memset(s, 0, sizeof(char) * 64);
   _sntprintf_s(s, 64, _T("%d"), nValue);
   SetAttribute(szAttributeName, s);
 }
 
 void CXMLNode::SetAttributeFromFloat(std::string_view szAttributeName,
                                      float fValue) {
-  TCHAR s[64];
+  char s[64];
   _sntprintf_s(s, 64, _T("%g"), fValue);
   SetAttribute(szAttributeName, s);
 }
@@ -267,27 +267,25 @@ void CXMLNode::SetText(std::string_view s) {
 }
 
 void CXMLNode::SetInt(int32_t Int) {
-  TCHAR s[64];
+  char s[64];
   _sntprintf_s(s, 64, _T("%d"), Int);
   SetText(s);
 }
 
 void CXMLNode::SetFloat(float Float) {
-  TCHAR s[64];
+  char s[64];
   _sntprintf_s(s, 64, _T("%g"), Float);
   SetText(s);
 }
 
 bool CXMLNode::GetValue(int32_t& Int) {
-  TCHAR s[20];
-  ZeroMemory(s, 20);
+  char s[20] = {0};
   GetText(s, 20);
   return _stscanf_s(s, _T("%d"), &Int) == 1;
 }
 
 bool CXMLNode::GetValue(TBOOL& Int) {
-  TCHAR s[20];
-  ZeroMemory(s, 20);
+  char s[20] = {0};
   GetText(s, 20);
   int32_t x = 0;
   int32_t r = _stscanf_s(s, _T("%d"), &x);
@@ -296,8 +294,7 @@ bool CXMLNode::GetValue(TBOOL& Int) {
 }
 
 bool CXMLNode::GetValue(float& Float) {
-  TCHAR s[20];
-  ZeroMemory(s, 20);
+  char s[20] = {0};
   GetText(s, 20);
   return _stscanf_s(s, _T("%g"), &Float) == 1;
 }
