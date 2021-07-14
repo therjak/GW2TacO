@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Message.h"
 #include "Application.h"
 

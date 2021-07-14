@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "TextBox.h"
 
 #include <algorithm>

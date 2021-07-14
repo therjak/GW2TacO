@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Atlas.h"
 
 static WBATLASHANDLE AtlasHandle = 1;

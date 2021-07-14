@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Window.h"
 
 uint32_t CWBWindow::GetBorderSelectionArea( CPoint &mousepos )

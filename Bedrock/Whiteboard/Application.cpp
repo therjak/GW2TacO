@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Application.h"
 #include <locale.h>
 #include "../UtilLib/PNGDecompressor.h"

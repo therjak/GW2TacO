@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "StyleManager.h"
 
 #include "../BaseLib/string_format.h"

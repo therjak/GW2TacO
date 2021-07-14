@@ -67,9 +67,6 @@
     <ClInclude Include="Skin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BasePCH.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextBox.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
@@ -124,9 +121,6 @@
       <Filter>Source Files\GuiItems</Filter>
     </ClCompile>
     <ClCompile Include="Skin.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BasePCH.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextBox.cpp">

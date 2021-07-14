@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Skin.h"
 
 #include <string>

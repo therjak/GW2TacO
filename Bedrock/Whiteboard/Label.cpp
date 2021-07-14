@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Label.h"
 
 void CWBLabel::OnDraw(CWBDrawAPI *API) {

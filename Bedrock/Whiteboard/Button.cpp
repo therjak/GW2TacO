@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Button.h"
 
 WBITEMSTATE CWBButton::GetState() {

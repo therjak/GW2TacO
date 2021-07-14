@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "DrawAPI.h"
 
 #include "Application.h"

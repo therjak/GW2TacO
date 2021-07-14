@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "ItemSelector.h"
 
 // globally unique item IDs for automatically generated item IDs

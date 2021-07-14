@@ -1,4 +1,3 @@
-#include "BasePCH.h"
 #include "Box.h"
 
 void CWBBox::AddChild(CWBItem *Item) {
