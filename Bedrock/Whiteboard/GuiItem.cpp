@@ -2094,25 +2094,8 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor &pos,
 
 CWBItem *CWBItem::FindChildByID(std::string_view value, std::string_view type) {
   CWBItem *i = ChildSearcherFunct( value, type );
-  //if ( !i )
-  //{
-  //  if ( !type.Length() )
-  //    LOG_WARN( "[gui] UI item '%s' not found!", value.GetPointer() );
-  //  else
-  //    LOG_WARN( "[gui] UI item '%s' of type '%s' not found!", value.GetPointer(), type.GetPointer() );
-  //}
   return i;
 }
-/*
-CWBItem * CWBItem::FindChildByID( TCHAR *value, const TCHAR *type )
-{
-  return FindChildByID( CString( value ), CString( type ) );
-}
-
-CWBItem * CWBItem::FindChildByID( CString &value, const TCHAR *type )
-{
-  return FindChildByID( value, CString( type ) );
-}*/
 
 CWBItem *CWBItem::FindParentByID(std::string_view value, std::string_view type) {
   CWBItem *i = GetParent();
@@ -2122,23 +2105,11 @@ CWBItem *CWBItem::FindParentByID(std::string_view value, std::string_view type) 
     {
       if ( type.empty() ) return i;
       if ( i->InstanceOf( type ) ) return i;
-      //if (type == i->GetType()) return i;
-      //LOG_WARN( "[gui] Found UI item '%s' of wrong type '%s'. Type should be '%s'", value.GetPointer(), GetType().GetPointer(), type.GetPointer() );
     }
     i = i->GetParent();
   }
   return NULL;
 }
-/*
-CWBItem * CWBItem::FindParentByID( TCHAR *value, TCHAR *type )
-{
-  return FindParentByID( CString( value ), CString( type ) );
-}
-
-CWBItem * CWBItem::FindParentByID( CString &value, TCHAR *type )
-{
-  return FindParentByID( value, CString( type ) );
-}*/
 
 CWBItem *CWBItem::ChildSearcherFunct(std::string_view value,
                                      std::string_view type) {
@@ -2146,8 +2117,6 @@ CWBItem *CWBItem::ChildSearcherFunct(std::string_view value,
   {
     if ( type.empty() ) return this;
     if ( InstanceOf( type ) ) return this;
-
-    //LOG_WARN( "[gui] Found UI item '%s' of wrong type '%s'. Type should be '%s'", value.GetPointer(), GetType().GetPointer(), type.GetPointer() );
   }
 
   for ( int32_t x = 0; x < Children.NumItems(); x++ )

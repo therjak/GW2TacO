@@ -340,25 +340,25 @@ void CWBTextBox::Paste() {
 
     WCHAR *buffer = (WCHAR *)GlobalLock(Handle);
     if (buffer) {
-      CString s;
+      std::string s;
 #ifndef UNICODE
       int32_t len = wcslen(buffer);
-      TCHAR *b2 = new TCHAR[len + 1];
-      memset(b2, 0, sizeof(TCHAR) * (len + 1));
+      auto b2 = std::make_unique<char[]>(len + 1);
+      memset(b2.get(), 0, sizeof(TCHAR) * (len + 1));
       for (int32_t x = 0; x < len; x++) {
         if (buffer[x] >= 0 && buffer[x] <= 255)
           b2[x] = (TCHAR)buffer[x];
         else
           b2[x] = _T('?');
       }
-      s = CString(b2);
-      SAFEDELETEA(b2);
+      s = std::string(b2.get());
 #else
       s = CString(buffer);
 #endif
-      s.ToUnixNewline();
+      s.erase(std::remove(s.begin(), s.end(), '\r'));
+
       RemoveSelectedText();
-      InsertText(CursorPos, s.GetPointer(), s.Length(), CursorPos + s.Length());
+      InsertText(CursorPos, s.c_str(), s.size(), CursorPos + s.size());
       GlobalUnlock(Handle);
       DesiredCursorPosXinPixels = GetCursorXinPixels();
     } else {
@@ -368,7 +368,6 @@ void CWBTextBox::Paste() {
 
     CloseClipboard();
     OnTextChange();
-    // LOG(LOG_INFO,_T("[gui] Text Size: %d"),Text.Length());
   } else
     LOG(LOG_WARNING, _T( "[gui] Failed to open clipboard" ));
 }

@@ -724,12 +724,6 @@ void CWBApplication::ReApplyStyle()
   m.Resized = true;
   Root->MessageProc( m );
 }
-/*
-TBOOL CWBApplication::GenerateGUI( CWBItem *Root, const TCHAR *layout )
-{
-  //LOG_NFO("[gui] Generating UI Layout '%s'",layout);
-  return GenerateGUI( Root, CString( layout ) );
-}*/
 
 TBOOL CWBApplication::LoadCSS(std::string_view CSS, TBOOL ResetStyleManager) {
   if ( ResetStyleManager )
@@ -748,8 +742,6 @@ TBOOL CWBApplication::LoadCSSFromFile(std::string_view FileName,
 
   std::string_view s( (char*)f.GetData(), (int32_t)f.GetLength() );
   TBOOL b = LoadCSS( s, ResetStyleManager );
-  //if (b)
-  //	LOG_NFO("[gui] Successfully loaded CSS '%s'",FileName.GetPointer());
 
   return b;
 }

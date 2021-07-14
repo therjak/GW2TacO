@@ -111,8 +111,8 @@ struct POI {
   CVector4 cameraSpacePosition;
 
   CVector3 position;
-  int32_t mapID;
-  size_t wvwObjectiveID;
+  int32_t mapID = 0;
+  size_t wvwObjectiveID = 0;
   std::string Type;
 
   time_t lastUpdateTime = 0;
@@ -120,7 +120,7 @@ struct POI {
   TBOOL routeMember = false;
 
   int16_t zipFile = 0;
-  int16_t iconFile;
+  int16_t iconFile = 0;
 
   GUID guid;
 

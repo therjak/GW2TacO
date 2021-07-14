@@ -177,8 +177,6 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
 
                 auto handle = App->GetAtlas()->AddImage(
                     imageData, xres, yres, CRect(0, 0, xres, yres));
-                // ExportPNG( imageData, xres, yres, false, CString::Format(
-                // "debugexport\\%d.png", cntr++ ) );
 
                 SAFEDELETEA(imageData);
                 MapIcons[s] = handle;
@@ -1303,9 +1301,11 @@ void ImportMarkerPack(CWBApplication *App, std::string_view zipFile) {
 
     if (stat.m_uncomp_size <= 0) continue;
 
-    CString fileName(stat.m_filename);
-    fileName.ToLower();
-    if (fileName.Find(".xml") != fileName.Length() - 4) continue;
+    std::string fileName(stat.m_filename);
+    std::transform(fileName.begin(), fileName.end(), fileName.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    if (fileName.find(".xml") != fileName.size() - 4) continue;
 
     auto data = std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
 
@@ -1698,7 +1698,7 @@ void MarkerTypeData::Write(CXMLNode *n) {
   if (bits.minSizeSaved) n->SetAttributeFromInteger("minSize", minSize);
   if (bits.maxSizeSaved) n->SetAttributeFromInteger("maxSize", maxSize);
   if (bits.colorSaved)
-    n->SetAttribute("color", CString::Format("%x", color.argb()).GetPointer());
+    n->SetAttribute("color", FormatString("%x", color.argb()));
   if (bits.trailDataSaved)
     n->SetAttribute("trailData", GetStringFromMap(trailData));
   if (bits.animSpeedSaved) n->SetAttributeFromFloat("animSpeed", animSpeed);

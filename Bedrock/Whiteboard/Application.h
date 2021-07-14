@@ -156,9 +156,17 @@ public:
                             std::string_view TemplateID);
   // TBOOL GenerateGUITemplate( CWBItem *Root, TCHAR *Layout, TCHAR *TemplateID );
   TBOOL LoadSkin(std::string_view XML,
-                 std::vector<int> &enabledGlyphs = std::vector<int>());
+                 std::vector<int> &enabledGlyphs);
+  TBOOL LoadSkin(std::string_view XML) {
+    std::vector<int> eg;
+    return LoadSkin(XML, eg);
+  }
   TBOOL LoadSkinFromFile(std::string_view FileName,
-                         std::vector<int> &enabledGlyphs = std::vector<int>());
+                         std::vector<int> &enabledGlyphs);
+  TBOOL LoadSkinFromFile(std::string_view FileName) {
+    std::vector<int> eg;
+    return LoadSkinFromFile(FileName, eg);
+  }
 
   CAtlas *GetAtlas();
   CWBSkin *GetSkin();

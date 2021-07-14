@@ -10,6 +10,7 @@
 #include <vector>
 #include <string_view>
 #include <unordered_map>
+#include "Bedrock/BaseLib/string_format.h"
 
 using namespace jsonxx;
 
@@ -31,8 +32,8 @@ std::thread wvwPollThread;
 #define MSFLAG     0x000011
 #define SECFLAG    0x000001
 
-void parseISO8601( char *text, time_t& isotime, char& flag ) {
-  char *c;
+void parseISO8601( const char *text, time_t& isotime, char& flag ) {
+  const char *c;
   int num;
 
   struct tm  tmstruct;
@@ -226,8 +227,8 @@ void LoadWvWObjectives()
       {
         if ( !wvwContinentRects.HasKey( mapID ) )
         {
-          CString mapPath = CString::Format( "/v2/maps?id=%d", mapID );
-          auto wvwMapData = FetchHTTPS( "api.guildwars2.com", mapPath.GetPointer() );
+          auto mapPath = FormatString( "/v2/maps?id=%d", mapID );
+          auto wvwMapData = FetchHTTPS( "api.guildwars2.com", mapPath );
 
           Object map;
           map.parse( wvwMapData );
@@ -402,8 +403,8 @@ void UpdateWvWStatus()
       return;
     }
 
-    CString apiPath = CString::Format( "/v2/wvw/matches?world=%d", key->worldId );
-    auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath.GetPointer());
+    auto apiPath = FormatString( "/v2/wvw/matches?world=%d", key->worldId );
+    auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath);
 
     Object o;
     o.parse( wvwobjectiveids );
@@ -439,9 +440,9 @@ void UpdateWvWStatus()
           auto& poi = wvwPOIs[ id ];
           poi.typeData.color = 0xffffffff;
 
-          CString owner;
+          std::string owner;
           if ( objective.has<String>( "owner" ) )
-            owner = CString( objective.get<String>( "owner" ).data() );
+            owner = objective.get<String>( "owner" );
 
           if ( owner == "Red" )
             poi.typeData.color = 0xffe53b3b;
@@ -452,13 +453,13 @@ void UpdateWvWStatus()
           if ( owner == "Blue" )
             poi.typeData.color = 0xff3aa2fa;
 
-          CString lastFlipped;
+          std::string lastFlipped;
           if ( objective.has<String>( "last_flipped" ) )
-            lastFlipped = CString( objective.get<String>( "last_flipped" ).data() );
+            lastFlipped = objective.get<String>( "last_flipped" );
 
           time_t flipTime;
           char flags;
-          parseISO8601( lastFlipped.GetPointer(), flipTime, flags );
+          parseISO8601( lastFlipped.c_str(), flipTime, flags );
           poi.lastUpdateTime = flipTime;
 
         }

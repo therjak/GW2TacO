@@ -96,12 +96,20 @@ public:
 
   TBOOL LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
                          int32_t XRes, int32_t YRes,
-                         std::vector<int> &enabledGlyphs =
-                             std::vector<int>());  // 32 bit raw image data
+                         std::vector<int> &enabledGlyphs);  // 32 bit raw image data
+  TBOOL LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize, uint8_t* Image,
+    int32_t XRes, int32_t YRes) {
+    std::vector<int> eg;
+    return LoadBMFontBinary(Binary, BinarySize, Image, XRes, YRes, eg);
+  }
   TBOOL LoadBMFontText(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
                        int32_t XRes, int32_t YRes,
-                       std::vector<int> &enabledGlyphs =
-                           std::vector<int>());  // 32 bit raw image data
+                       std::vector<int> &enabledGlyphs);  // 32 bit raw image data
+  TBOOL LoadBMFontText(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
+                       int32_t XRes, int32_t YRes) {
+    std::vector<int> eg;
+    return LoadBMFontText(Binary, BinarySize, Image, XRes, YRes, eg);
+  }
 };
 
 class CWBFont

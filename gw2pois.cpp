@@ -316,8 +316,10 @@ bool IsProcessRunning( DWORD pid )
 #include <winhttp.h>
 #pragma comment(lib,"winhttp.lib")
 
-CString FetchHTTP( LPCWSTR url, LPCWSTR path )
-{
+std::string FetchHTTP(std::string_view url, std::string_view path) {
+  auto wurl = string2wstring(url);
+  auto wpath = string2wstring(path);
+
   DWORD dwSize = 0;
   DWORD dwDownloaded = 0;
 
@@ -327,10 +329,10 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
   hSession = WinHttpOpen( L"WinHTTP Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0 );
 
   if ( hSession )
-    hConnect = WinHttpConnect( hSession, url, INTERNET_DEFAULT_HTTP_PORT, 0 );
+    hConnect = WinHttpConnect( hSession, wurl.c_str(), INTERNET_DEFAULT_HTTP_PORT, 0 );
 
   if ( hConnect )
-    hRequest = WinHttpOpenRequest( hConnect, L"GET", path, NULL, WINHTTP_NO_REFERER, NULL, NULL );
+    hRequest = WinHttpOpenRequest( hConnect, L"GET", wpath.c_str(), NULL, WINHTTP_NO_REFERER, NULL, NULL );
 
   if ( hRequest )
     bResults = WinHttpSendRequest( hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0 );
@@ -380,7 +382,7 @@ CString FetchHTTP( LPCWSTR url, LPCWSTR path )
   if ( hConnect ) WinHttpCloseHandle( hConnect );
   if ( hSession ) WinHttpCloseHandle( hSession );
 
-  return CString( (TS8*)data.GetData(), data.GetLength() );
+  return std::string( (char*)data.GetData(), data.GetLength() );
 }
 
 std::string FetchHTTPS(std::string_view url, std::string_view path) {
@@ -542,22 +544,22 @@ bool SetupTacoProtocolHandling()
   if ( RegSetKeyValue( key, "DefaultIcon", nullptr, REG_SZ, szFileName, strlen( szFileName ) ) != ERROR_SUCCESS )
     return false;
 
-  CString openMask = CString( "\"" ) + CString( szFileName ) + CString( "\" -fromurl %1" );
+  auto openMask = std::string( "\"" ) +  szFileName  +  "\" -fromurl %1" ;
 
-  if ( RegSetKeyValue( key, "shell\\open\\command", nullptr, REG_SZ, openMask.GetPointer(), openMask.Length() ) != ERROR_SUCCESS )
+  if ( RegSetKeyValue( key, "shell\\open\\command", nullptr, REG_SZ, openMask.c_str(), openMask.size() ) != ERROR_SUCCESS )
     return false;
 
   RegCloseKey( key );
   return true;
 }
 
-bool DownloadFile( const CString& url, CStreamWriterMemory& mem )
+bool DownloadFile( std::string_view url, CStreamWriterMemory& mem )
 {
   LPSTREAM stream;
 
-  HRESULT hr = URLOpenBlockingStream( nullptr, ( CString( "https://" ) + url ).GetPointer(), &stream, 0, nullptr );
+  HRESULT hr = URLOpenBlockingStream( nullptr, (  "https://"  + std::string(url) ).c_str(), &stream, 0, nullptr );
   if ( FAILED( hr ) )
-    hr = URLOpenBlockingStream( nullptr, ( CString( "http://" ) + url ).GetPointer(), &stream, 0, nullptr );
+    hr = URLOpenBlockingStream( nullptr, ( "http://" + std::string(url) ).c_str(), &stream, 0, nullptr );
 
   if ( FAILED( hr ) )
     return false;
@@ -581,7 +583,7 @@ bool DownloadFile( const CString& url, CStreamWriterMemory& mem )
 #define MINIZ_HEADER_FILE_ONLY
 #include "Bedrock/UtilLib/miniz.c"
 
-CArrayThreadSafe< CString > loadList;
+CArrayThreadSafe< std::string > loadList;
 
 void FetchMarkerPackOnline( std::string_view ourl )
 {
@@ -603,13 +605,13 @@ void FetchMarkerPackOnline( std::string_view ourl )
 
   auto downloadThread = CreateThread( NULL, 0, []( LPVOID data )
   {
-    CString url( (TS8*)data );
+    std::string url( (TS8*)data );
     delete[] data;
 
     CStreamWriterMemory mem;
     if ( !DownloadFile( url, mem ) )
     {
-      LOG_ERR( "[GW2TacO] Failed to download package %s", url.GetPointer() );
+      LOG_ERR( "[GW2TacO] Failed to download package %s", url.c_str() );
       return (DWORD)0;
     }
 
@@ -617,47 +619,47 @@ void FetchMarkerPackOnline( std::string_view ourl )
     memset( &zip, 0, sizeof( zip ) );
     if ( !mz_zip_reader_init_mem( &zip, mem.GetData(), mem.GetLength(), 0 ) )
     {
-      LOG_ERR( "[GW2TacO] Package %s doesn't seem to be a well formed zip file", url.GetPointer() );
+      LOG_ERR( "[GW2TacO] Package %s doesn't seem to be a well formed zip file", url.c_str() );
       return (DWORD)0;
     }
 
     mz_zip_reader_end( &zip );
 
     int32_t cnt = 0;
-    for ( uint32_t x = 0; x < url.Length(); x++ )
+    for ( uint32_t x = 0; x < url.size(); x++ )
       if ( url[ x ] == '\\' || url[ x ] == '/' )
         cnt = x;
 
-    CString fileName = url.Substring( cnt + 1 );
-    if ( !fileName.Length() )
+    auto fileName = url.substr( cnt + 1 );
+    if ( fileName.empty() )
     {
-      LOG_ERR( "[GW2TacO] Package %s has a malformed name", url.GetPointer() );
+      LOG_ERR( "[GW2TacO] Package %s has a malformed name", url.c_str() );
       return (DWORD)0;
     }
 
-    if ( fileName.Find( ".zip" ) == fileName.Length() - 4 )
-      fileName = fileName.Substring( 0, fileName.Length() - 4 );
+    if ( fileName.find( ".zip" ) == fileName.size() - 4 )
+      fileName = fileName.substr( 0, fileName.size() - 4 );
 
-    if ( fileName.Find( ".taco" ) == fileName.Length() - 5 )
-      fileName = fileName.Substring( 0, fileName.Length() - 5 );
+    if ( fileName.find( ".taco" ) == fileName.size() - 5 )
+      fileName = fileName.substr( 0, fileName.size() - 5 );
 
-    for ( uint32_t x = 0; x < fileName.Length(); x++ )
+    for ( uint32_t x = 0; x < fileName.size(); x++ )
       if ( !isalnum( fileName[ x ] ) )
         fileName[ x ] = '_';
 
-    fileName = CString( "POIs/" ) + fileName + ".taco";
+    fileName = "POIs/" + fileName + ".taco";
 
     CStreamWriterFile out;
-    if ( !out.Open( fileName.GetPointer() ) )
+    if ( !out.Open( fileName ) )
     {
-      LOG_ERR( "[GW2TacO] Failed to open file for writing: %s", fileName.GetPointer() );
+      LOG_ERR( "[GW2TacO] Failed to open file for writing: %s", fileName.c_str() );
       return (DWORD)0;
     }
 
     if ( !out.Write( uint8_view(mem.GetData(), mem.GetLength()) ) )
     {
-      LOG_ERR( "[GW2TacO] Failed to write out data to file: %s", fileName.GetPointer() );
-      remove( fileName.GetPointer() );
+      LOG_ERR( "[GW2TacO] Failed to write out data to file: %s", fileName.c_str() );
+      remove( fileName.c_str() );
       return (DWORD)0;
     }
 
@@ -733,14 +735,14 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   {
     TCHAR szFileName[ MAX_PATH + 1 ];
     GetModuleFileName( NULL, szFileName, MAX_PATH + 1 );
-    CString s( szFileName );
-    for ( int32_t x = s.Length() - 1; x >= 0; x-- )
+    std::string s( szFileName );
+    for ( int32_t x = s.size() - 1; x >= 0; x-- )
       if ( s[ x ] == '\\' || s[ x ] == '/' )
       {
         s[ x ] = 0;
         break;
       }
-    SetCurrentDirectory( s.GetPointer() );
+    SetCurrentDirectory( s.c_str() );
 
     auto TacoWindow = FindWindow( "CoRE2", "Guild Wars 2 Tactical Overlay" );
     LOG_NFO( "[GW2TacO] TacO window id: %d", TacoWindow );
@@ -916,14 +918,14 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
       0,                      // use default stack size  
       []( LPVOID data )
     {
-      CString s = FetchHTTP( L"www.gw2taco.com", L"/2000/01/buildid.html" );
-      int32_t idpos = s.Find( "[buildid:" );
-      if ( idpos >= 0 )
+      auto s = FetchHTTP( "www.gw2taco.com", "/2000/01/buildid.html" );
+      int32_t idpos = s.find( "[buildid:" );
+      if ( idpos != s.npos )
       {
-        CString sub = s.Substring( idpos );
+        auto sub = s.substr( idpos );
         int32_t release = 0;
         int32_t build = 0;
-        if ( sub.Scan( "[buildid:%d.%dr]", &release, &build ) == 2 )
+        if ( std::sscanf(sub.c_str(), "[buildid:%d.%dr]", &release, &build ) == 2 )
         {
           extern int32_t TacORelease;
           extern int32_t TacOBuildCount;
@@ -996,9 +998,9 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     if ( loadList.NumItems() )
     {
-      CString file = loadList[ 0 ];
+      auto file = loadList[ 0 ];
       loadList.DeleteByIndex( 0 );
-      ImportMarkerPack( App, file.GetPointer() );
+      ImportMarkerPack( App, file );
     }
 
     FORCEDDEBUGLOG( "messages handled" );

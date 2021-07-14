@@ -9,8 +9,8 @@ public:
   std::string id;
   std::string type;
   std::string mapType;
-  int mapID;
-  int objectiveID;
+  int mapID = 0;
+  int objectiveID = 0;
   CVector3 coord;
   std::string marker;
   std::string chatLink;

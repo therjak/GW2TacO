@@ -74,7 +74,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
     }
   }
 
-  LOG(LOG_ERROR, CString(CrashString).GetPointer());
+  LOG(LOG_ERROR, std::string(CrashString).c_str());
   Stack.DumpToDebugOutput();
 
   Logger.Close();
@@ -105,13 +105,13 @@ LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
 
   int32_t filename[1024];
   ZeroMemory(filename, 1024);
-  CString fname = CString::Format(
+  auto fname = FormatString(
       _T( "Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp" ),
       BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour,
       st.wMinute, st.wSecond);
 
   HANDLE hFile =
-      CreateFile(fname.GetPointer(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
+      CreateFile(fname.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
                  FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, NULL);
   if (hFile == INVALID_HANDLE_VALUE) return EXCEPTION_EXECUTE_HANDLER;
 

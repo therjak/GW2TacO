@@ -213,8 +213,6 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
     if (initialized)
       return;
 
-    CString oldApiKey;
-
     if (HasConfigString("GW2APIKey"))
     {
       auto key = std::make_unique<APIKey>(GetConfigString("GW2APIKey"));

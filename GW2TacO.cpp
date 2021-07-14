@@ -94,7 +94,6 @@ enum MainMenuItems {
   Menu_Interface_Larger,
   Menu_ToggleVersionCheck,
   Menu_DownloadNewBuild,
-  Menu_SupportTacO,
   Menu_ToggleRangeCircles,
   Menu_RangeCircleTransparency40,
   Menu_RangeCircleTransparency60,
@@ -696,7 +695,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
             Menu_KeyBindsEnabled);
         auto bind = settings->AddItem(DICT("rebindkeys"), 0);
         int cnt = 1;
-        for (int32_t x = 1; x < sizeof(ActionNames) / sizeof(CString); x++) {
+        for (int32_t x = 1; x < ActionNames.size(); x++) {
           auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
           for (auto& kb : KeyBindings)
             if ((int32_t)kb.second == x) {
@@ -747,8 +746,6 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
         ctx->AddItem(DICT("abouttaco"), Menu_About);
         if (!IsTacOUptoDate)
           ctx->AddItem(DICT("getnewbuild"), Menu_DownloadNewBuild);
-        ctx->AddItem(DICT("supporttaco"), Menu_SupportTacO, true);
-        ctx->AddSeparator();
         ctx->AddSeparator();
         ctx->AddItem(DICT("exittaco"), Menu_Exit);
         return true;
@@ -930,20 +927,10 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
 
       if (Message.Data >= Menu_RebindKey_Base &&
           Message.Data <
-              Menu_RebindKey_Base + sizeof(ActionNames) / sizeof(CString)) {
+              Menu_RebindKey_Base + ActionNames.size()) {
         RebindAction((TacOKeyAction)(Message.Data - Menu_RebindKey_Base));
         break;
       }
-
-      /*
-          if ( Message.Data >= Menu_RebindKey_Base + sizeof( ActionNames ) /
-         sizeof( CString ) && uint32_t( Message.Data ) < Menu_RebindKey_Base +
-         sizeof( ActionNames ) / sizeof( CString ) + scriptKeyBinds.NumItems() )
-          {
-            RebindScriptKey( Message.Data - Menu_RebindKey_Base - sizeof(
-         ActionNames ) / sizeof( CString ) ); break;
-          }
-      */
 
       {
         auto languages = localization->GetLanguages();
@@ -1283,25 +1270,6 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
           ToggleConfigValue("KeybindsEnabled");
           return true;
 
-        case Menu_SupportTacO: {
-          CString string(
-              "aHR0cHM6Ly93d3cucGF5cGFsLmNvbS9jZ2ktYmluL3dlYnNjcj9jbWQ9X2RvbmF0"
-              "aW9ucyZidXNpbmVzcz1ib3ljQHNjZW5l"
-              "Lmh1JmxjPVVTJml0ZW1fbmFtZT1HVzIrVGFjTytEZXZlbG9wbWVudCtTdXBwb3J0"
-              "Jm5vX25vdGU9MCZjbj0mY3VycmVuY3lf"
-              "Y29kZT1VU0QmYm49UFAtRG9uYXRpb25zQkY6YnRuX2RvbmF0ZUNDX0xHLmdpZjpO"
-              "b25Ib3N0ZWQ=");
-
-          uint8_t* data = nullptr;
-          int32_t dataLength = 0;
-
-          string.DecodeBase64(data, dataLength);
-          if (data) {
-            ShellExecuteA((HWND)App->GetHandle(), "open", (LPCTSTR)data, 0, 0,
-                          5);
-            delete[] data;
-          }
-        } break;
         case Menu_AddGW2ApiKey: {
           GW2::apiKeyManager.AddKey(std::make_unique<GW2::APIKey>());
           ApiKeyInputAction(APIKeys::GW2APIKey, GW2::apiKeyManager.size() - 1);
@@ -1539,7 +1507,6 @@ void GW2TacO::OpenAboutWindow() {
                               "GW2 TacO - The Guild Wars 2 Tactical Overlay");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  extern CString tacoBuild;
   l1 = new CWBLabel(w, w->GetClientRect() + CPoint(0, 16),
                     "Build " + TacOBuild + " built on " + buildDateTime);
   l1->ApplyStyleDeclarations(
@@ -1661,8 +1628,6 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       if (hover) col = 0.5f + delta * 0.5f;
 
       int32_t o = (int32_t)max(0, min(255, col * 255));
-
-      // taco->ApplyStyleDeclarations( CString::Format( "opacity:%f", col ) );
 
       taco->SetDisplayProperty(WB_STATE_NORMAL, WB_ITEM_OPACITY,
                                CColor::FromARGB(o * 0x01010101));
@@ -1872,19 +1837,6 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
         RebindMode = false;
         ScriptRebindMode = false;
       } else {
-        /*
-                int32_t key = 0;
-                for ( int32_t x = 0; x < ScriptKeyBindings.NumItems(); x++ )
-                  if ( ScriptKeyBindings.GetKDPair( x )->Data == scriptKeyBinds[
-           ScriptActionToRebind ].eventName )
-                  {
-                    key = ScriptKeyBindings.GetKDPair( x )->Key;
-                    break;
-                  }
-                line1 = CString( "Action '" ) + scriptKeyBinds[
-           ScriptActionToRebind ].eventDescription + CString::Format( "'
-           currently bound to key '%c'", key );
-        */
       }
     }
     auto line2 = DICT("press_to_bind");
