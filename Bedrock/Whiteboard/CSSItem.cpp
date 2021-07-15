@@ -11,7 +11,8 @@ void IWBCSS::AddClass(std::string_view s) {
 }
 
 void IWBCSS::RemoveClass(std::string_view s) {
-  aClasses.erase(std::remove(aClasses.begin(), aClasses.end(), s));
+  aClasses.erase(std::remove(aClasses.begin(), aClasses.end(), s),
+                 aClasses.end());
 }
 
 void IWBCSS::ToggleClass(std::string_view s) {

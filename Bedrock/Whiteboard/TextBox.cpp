@@ -1,6 +1,7 @@
 #include "TextBox.h"
 
 #include <algorithm>
+#include <regex>
 
 INLINE void CWBTextBox::DrawCursor(CWBDrawAPI *API, CPoint &p) {
   WBITEMSTATE s = GetState();
@@ -301,21 +302,21 @@ void CWBTextBox::Copy() {
   if (OpenClipboard((HWND)App->GetHandle())) {
     EmptyClipboard();
 
-    TCHAR *winnewline = new TCHAR[end - strt + 1];
-    memcpy(winnewline, Text.c_str() + strt, sizeof(TCHAR) * (end - strt));
+    auto winnewline = std::make_unique<char[]>(end - strt + 1);
+    memcpy(winnewline.get(), Text.c_str() + strt, (end - strt));
     winnewline[end - strt] = 0;
-    CString out = CString(winnewline);
-    out.ToWindowsNewline();
-    delete[] winnewline;
+    std::string out(winnewline.get());
+    out.erase(std::remove(out.begin(), out.end(), '\r'), out.end());
+    out = std::regex_replace(out, std::regex("\n"), std::string{'\n', '\r'});
+    winnewline.reset();
 
-    HGLOBAL clipbuffer =
-        GlobalAlloc(GMEM_DDESHARE | GHND, (out.Length() + 1) * sizeof(TCHAR));
+    HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE | GHND, (out.size() + 1));
 
     if (clipbuffer) {
-      TCHAR *buffer = (TCHAR *)GlobalLock(clipbuffer);
+      auto buffer = (char *)GlobalLock(clipbuffer);
       if (buffer) {
-        memcpy(buffer, out.GetPointer(), sizeof(TCHAR) * out.Length());
-        buffer[out.Length()] = 0;
+        memcpy(buffer, out.c_str(), out.size());
+        buffer[out.size()] = 0;
       }
 
       GlobalUnlock(clipbuffer);
@@ -338,24 +339,23 @@ void CWBTextBox::Paste() {
   if (OpenClipboard((HWND)App->GetHandle())) {
     HANDLE Handle = GetClipboardData(CF_UNICODETEXT);
 
-    WCHAR *buffer = (WCHAR *)GlobalLock(Handle);
+    auto buffer = (wchar_t *)GlobalLock(Handle);
     if (buffer) {
-      std::string s;
 #ifndef UNICODE
       int32_t len = wcslen(buffer);
       auto b2 = std::make_unique<char[]>(len + 1);
-      memset(b2.get(), 0, sizeof(TCHAR) * (len + 1));
+      memset(b2.get(), 0, len + 1);
       for (int32_t x = 0; x < len; x++) {
         if (buffer[x] >= 0 && buffer[x] <= 255)
-          b2[x] = (TCHAR)buffer[x];
+          b2[x] = static_cast<char>(buffer[x]);
         else
-          b2[x] = _T('?');
+          b2[x] = '?';
       }
-      s = std::string(b2.get());
+      std::string s(b2.get());
 #else
       s = CString(buffer);
 #endif
-      s.erase(std::remove(s.begin(), s.end(), '\r'));
+      s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
 
       RemoveSelectedText();
       InsertText(CursorPos, s.c_str(), s.size(), CursorPos + s.size());
@@ -396,7 +396,7 @@ void CWBTextBox::Undo() {
   }
   HistoryPosition--;
 
-  auto& e = History[HistoryPosition];
+  auto &e = History[HistoryPosition];
 
   if (e->Remove)
     InsertText(e->StartPosition, e->Data, e->Data.size(), e->CursorPos_Before,
@@ -415,7 +415,7 @@ void CWBTextBox::Redo() {
     return;
   }
 
-  auto& e = History[HistoryPosition++];
+  auto &e = History[HistoryPosition++];
 
   if (e->Remove)
     RemoveText(e->StartPosition, e->Data.size(), e->StartPosition, false);
@@ -856,7 +856,7 @@ void CWBTextBox::SetTextInternal(std::string_view val, TBOOL EnableUndo,
                                  TBOOL nonHumanInteraction) {
   if (!EnableUndo) {
     OriginalText = Text = val;
-    Text.erase(std::remove(Text.begin(), Text.end(), '\r'));
+    Text.erase(std::remove(Text.begin(), Text.end(), '\r'), Text.end());
     History.clear();
     HistoryPosition = 0;
   } else {
@@ -864,7 +864,7 @@ void CWBTextBox::SetTextInternal(std::string_view val, TBOOL EnableUndo,
     SelectionEnd = Text.size();
     RemoveSelectedText();
     std::string s(val);
-    s.erase(std::remove(s.begin(), s.end(), '\r'));
+    s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
     InsertText(0, s, s.size(), s.size());
   }
 

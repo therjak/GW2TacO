@@ -18,7 +18,8 @@ void CCoreDevice::AddResource(CCoreResource *Resource) {
 }
 
 void CCoreDevice::RemoveResource(CCoreResource *Resource) {
-  Resources.erase(std::remove(Resources.begin(), Resources.end(), Resource));
+  Resources.erase(std::remove(Resources.begin(), Resources.end(), Resource),
+                  Resources.end());
 }
 
 CCoreDevice::CCoreDevice() {

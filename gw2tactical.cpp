@@ -1018,18 +1018,18 @@ void ExportPOI(CXMLNode *n, POI &p) {
   t->SetAttributeFromFloat("ypos", p.position.y);
   t->SetAttributeFromFloat("zpos", p.position.z);
   if (!p.Type.empty()) t->SetAttribute("type", p.Type);
-  t->SetAttribute(
-      "GUID",
-      CString::EncodeToBase64((uint8_t *)&(p.guid), sizeof(GUID)).GetPointer());
+  t->SetAttribute("GUID",
+                  B64Encode(std::string_view(
+                      reinterpret_cast<const char *>(&p.guid), sizeof(GUID))));
   p.typeData.Write(t);
 }
 
 void ExportTrail(CXMLNode *n, GW2Trail &p) {
   CXMLNode *t = &n->AddChild(_T( "Trail" ));
   if (!p.Type.empty()) t->SetAttribute("type", p.Type);
-  t->SetAttribute(
-      "GUID",
-      CString::EncodeToBase64((uint8_t *)&(p.guid), sizeof(GUID)).GetPointer());
+  t->SetAttribute("GUID",
+                  B64Encode(std::string_view(
+                      reinterpret_cast<const char *>(&p.guid), sizeof(GUID))));
   p.typeData.Write(t);
 }
 
@@ -1406,9 +1406,9 @@ void ExportPOIActivationData() {
     t->SetAttributeFromInteger("lut1", ((int32_t *)&dat.lastUpdateTime)[0]);
     t->SetAttributeFromInteger("lut2", ((int32_t *)&dat.lastUpdateTime)[1]);
     if (dat.uniqueData) t->SetAttributeFromInteger("instance", dat.uniqueData);
-    t->SetAttribute(
-        "GUID", CString::EncodeToBase64((uint8_t *)&(dat.poiguid), sizeof(GUID))
-                    .GetPointer());
+    t->SetAttribute("GUID", B64Encode(std::string_view(
+                                reinterpret_cast<const char *>(&dat.poiguid),
+                                sizeof(GUID))));
   }
 
   d.SaveToFile("activationdata.xml");
@@ -1934,4 +1934,3 @@ bool POI::IsVisible(const tm &ptm, const time_t &currtime,
 
   return true;
 }
-
