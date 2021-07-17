@@ -17,9 +17,9 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI *API, float range,
                   mumbleLink.camPosition + mumbleLink.camDir,
                   CVector3(0, 1, 0));
   CMatrix4x4 persp;
-  persp.SetPerspectiveFovLH(mumbleLink.fov,
-                            drawrect.Width() / (float)drawrect.Height(), 0.01f,
-                            1000.0f);
+  persp.SetPerspectiveFovLH(
+      mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
+      0.01f, 1000.0f);
 
   int32_t resolution = 60;
 
@@ -54,8 +54,8 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI *API, float range,
   for (int x = 0; x < resolution; x++) {
     float a1 = 1.0f;
     float a2 = 1.0f;
-    float f1 = x / (float)resolution * PI * 2;
-    float f2 = (x + 1) / (float)resolution * PI * 2;
+    float f1 = x / static_cast<float>(resolution) * PI * 2;
+    float f2 = (x + 1) / static_cast<float>(resolution) * PI * 2;
     CVector4 p1 = CVector4(rworld * sinf(f1), 0, rworld * cosf(f1), 0.0f);
     CVector4 p2 = CVector4(rworld * sinf(f2), 0, rworld * cosf(f2), 0.0f);
 
@@ -98,16 +98,16 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI *API, float range,
     p1 = p1 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
     p2 = p2 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
 
-    CPoint pa = CPoint((int)(p1.x * drawrect.Width()),
-                       (int)((1 - p1.y) * drawrect.Height()));
-    CPoint pb = CPoint((int)(p2.x * drawrect.Width()),
-                       (int)((1 - p2.y) * drawrect.Height()));
+    CPoint pa = CPoint(static_cast<int>(p1.x * drawrect.Width()),
+                       static_cast<int>((1 - p1.y) * drawrect.Height()));
+    CPoint pb = CPoint(static_cast<int>(p2.x * drawrect.Width()),
+                       static_cast<int>((1 - p2.y) * drawrect.Height()));
 
     a1 = max(0, min(1, a1)) * alpha * 255;
     a2 = max(0, min(1, a2)) * alpha * 255;
 
-    API->DrawLine(pa, pb, CColor(228, 210, 157, (uint8_t)a1),
-                  CColor(228, 210, 157, (uint8_t)a2));
+    API->DrawLine(pa, pb, CColor(228, 210, 157, static_cast<uint8_t>(a1)),
+                  CColor(228, 210, 157, static_cast<uint8_t>(a2)));
   }
 }
 
@@ -160,7 +160,7 @@ void GW2RangeDisplay::OnDraw(CWBDrawAPI *API) {
 
 GW2RangeDisplay::GW2RangeDisplay(CWBItem *Parent, CRect Position)
     : CWBItem(Parent, Position) {}
-GW2RangeDisplay::~GW2RangeDisplay() {}
+GW2RangeDisplay::~GW2RangeDisplay() = default;
 
 CWBItem *GW2RangeDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
   return GW2RangeDisplay::Create(Root, Pos).get();

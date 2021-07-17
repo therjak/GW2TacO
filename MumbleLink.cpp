@@ -65,20 +65,21 @@ void CMumbleLink::Update()
   FORCEDDEBUGLOG( "updating mumblelink" );
   if ( !lm )
   {
-    HANDLE hMapObject = CreateFileMappingA( INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, sizeof( LinkedMem ), mumblePath.c_str() );
+    HANDLE hMapObject =
+        CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0,
+                           sizeof(LinkedMem), mumblePath.c_str());
 
-    if ( hMapObject == NULL )
-    {
+    if (hMapObject == nullptr) {
       FORCEDDEBUGLOG( "failed to create mumble link file" );
       return;
     }
 
-    lm = (LinkedMem *)MapViewOfFile( hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof( LinkedMem ) );
-    if ( lm == NULL )
-    {
+    lm = static_cast<LinkedMem*>(MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS,
+                                               0, 0, sizeof(LinkedMem)));
+    if (lm == nullptr) {
       FORCEDDEBUGLOG( "mumble link file closed" );
       CloseHandle( hMapObject );
-      hMapObject = NULL;
+      hMapObject = nullptr;
       return;
     }
   }
@@ -180,7 +181,7 @@ void CMumbleLink::Update()
       std::swscanf(ident.substr( id ).c_str(), L"\"world_id\": %d", &worldID );
   }
 
-  MumbleContext* ctx = (MumbleContext*)lastData.context;
+  MumbleContext* ctx = reinterpret_cast<MumbleContext*>(lastData.context);
 
   mapType = ctx->mapType;
   mapInstance = ctx->shardId;
@@ -286,10 +287,9 @@ void CMumbleLink::Update()
 
   CVector4 avgCamCharDist( 0, 0, 0, 0 );
 
-  for ( int x = 0; x < AVGCAMCOUNTER; x++ )
-    avgCamCharDist += camchardist[ x ];
+  for (const auto& x : camchardist) avgCamCharDist += x;
 
-  avgCamCharDist /= (float)( AVGCAMCOUNTER );
+  avgCamCharDist /= static_cast<float>(AVGCAMCOUNTER);
   averagedCharPosition = avgCamCharDist*cami;
   averagedCharPosition /= averagedCharPosition.w;
 
@@ -310,7 +310,7 @@ float CMumbleLink::GetFrameRate()
 
   if ( !FrameCount ) return 0;
   if ( !FrameTimeAcc ) return 9999;
-  return 1000.0f / ( FrameTimeAcc / (float)FrameCount );
+  return 1000.0f / (FrameTimeAcc / static_cast<float>(FrameCount));
 }
 
 CMumbleLink::CMumbleLink()
@@ -324,10 +324,7 @@ CMumbleLink::~CMumbleLink()
   SAFEDELETE( FrameTimes );
 }
 
-TBOOL CMumbleLink::IsValid()
-{
-  return lm != 0;
-}
+TBOOL CMumbleLink::IsValid() { return lm != nullptr; }
 
 CMatrix4x4 CompassData::BuildTransformationMatrix( const CRect& miniRect, bool ignoreRotation )
 {

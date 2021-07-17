@@ -22,9 +22,9 @@ void ImportLocationalTimers() {
   }
 }
 
-LocationalTimer::LocationalTimer() {}
+LocationalTimer::LocationalTimer() = default;
 
-LocationalTimer::~LocationalTimer() {}
+LocationalTimer::~LocationalTimer() = default;
 
 void LocationalTimer::Update() {
   if (mumbleLink.mapID != MapID) {
@@ -116,7 +116,7 @@ void TimerDisplay::OnDraw(CWBDrawAPI *API) {
 
       auto s = e.Text;
       if (timepos < e.Time && timepos > e.Time - e.CountdownLength)
-        s += FormatString(" in %d", (int32_t)(e.Time - timepos));
+        s += FormatString(" in %d", static_cast<int32_t>(e.Time - timepos));
 
       CPoint pos = f->GetTextPosition(
           s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
@@ -135,7 +135,7 @@ TBOOL TimerDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,
 TimerDisplay::TimerDisplay(CWBItem *Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
-TimerDisplay::~TimerDisplay() {}
+TimerDisplay::~TimerDisplay() = default;
 
 CWBItem *TimerDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
   return TimerDisplay::Create(Root, Pos).get();

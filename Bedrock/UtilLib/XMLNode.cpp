@@ -25,8 +25,8 @@ int32_t GetStringHash(char* string) {
 }
 
 CXMLNode::CXMLNode() {
-  pNode = NULL;
-  pDoc = NULL;
+  pNode = nullptr;
+  pDoc = nullptr;
   nLevel = 0;
 }
 
@@ -51,7 +51,7 @@ CXMLNode CXMLNode::operator=(const CXMLNode Original) {
   return *this;
 }
 
-CXMLNode::~CXMLNode() {}
+CXMLNode::~CXMLNode() = default;
 
 int32_t CXMLNode::GetChildCount() {
   if (!pNode) return 0;
@@ -188,7 +188,7 @@ bool CXMLNode::HasAttribute(std::string_view szAttribute) {
   return attr != nullptr;
 }
 
-int32_t CXMLNode::IsValid() { return pNode != NULL; }
+int32_t CXMLNode::IsValid() { return pNode != nullptr; }
 
 void CXMLNode::GetAttributeAsInteger(char* szAttribute, int32_t* pnValue) {
   char s[20] = {0};

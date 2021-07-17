@@ -88,7 +88,7 @@ const bool CRect::Contains(const int32_t x, const int32_t y) const {
   return x >= x1 && x < x2 && y >= y1 && y < y2;
 }
 
-CRect::CRect(const CRect &r) : x1(r.x1), y1(r.y1), x2(r.x2), y2(r.y2) {}
+CRect::CRect(const CRect &r) = default;
 
 CRect::CRect(const CPoint p1, const CPoint p2)
     : x1(p1.x), y1(p1.y), x2(p2.x), y2(p2.y) {}
@@ -96,7 +96,7 @@ CRect::CRect(const CPoint p1, const CPoint p2)
 CRect::CRect(const int32_t a, const int32_t b, const int32_t c, const int32_t d)
     : x1(a), y1(b), x2(c), y2(d) {}
 
-CRect::CRect() {}
+CRect::CRect() = default;
 
 CRect CRect::operator+(const CRect &a) const {
   return CRect(x1 - a.x1, y1 - a.y1, x2 + a.x2, y2 + a.y2);

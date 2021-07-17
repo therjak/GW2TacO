@@ -26,7 +26,7 @@ CWBRoot::CWBRoot(CWBItem *Parent, const CRect &Pos) : CWBItem() {
   Initialize(Parent, Pos);
 }
 
-CWBRoot::~CWBRoot() {}
+CWBRoot::~CWBRoot() = default;
 
 void CWBRoot::SetApplication(CWBApplication *Application) { App = Application; }
 

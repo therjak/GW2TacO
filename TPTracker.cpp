@@ -102,10 +102,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       if (json.has<Array>("buys")) {
         auto buyData = json.get<Array>("buys").values();
 
-        for (unsigned int x = 0; x < buyData.size(); x++) {
-          if (!buyData[x]->is<Object>()) continue;
+        for (auto& x : buyData) {
+          if (!x->is<Object>()) continue;
 
-          Object& item = buyData[x]->get<Object>();
+          Object& item = x->get<Object>();
 
           TransactionItem itemData;
           if (!TPTracker::ParseTransaction(item, itemData)) continue;
@@ -124,10 +124,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       if (json2.has<Array>("sells")) {
         auto buyData = json2.get<Array>("sells").values();
 
-        for (unsigned int x = 0; x < buyData.size(); x++) {
-          if (!buyData[x]->is<Object>()) continue;
+        for (auto& x : buyData) {
+          if (!x->is<Object>()) continue;
 
-          Object& item = buyData[x]->get<Object>();
+          Object& item = x->get<Object>();
 
           TransactionItem itemData;
           if (!TPTracker::ParseTransaction(item, itemData)) continue;
@@ -160,10 +160,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         if (itemjson.has<Array>("items")) {
           auto items = itemjson.get<Array>("items").values();
 
-          for (unsigned int x = 0; x < items.size(); x++) {
-            if (!items[x]->is<Object>()) continue;
+          for (auto& x : items) {
+            if (!x->is<Object>()) continue;
 
-            Object& item = items[x]->get<Object>();
+            Object& item = x->get<Object>();
 
             GW2ItemData itemData;
             if (!item.has<String>("name") || !item.has<Number>("id")) continue;
@@ -207,10 +207,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         if (itemjson.has<Array>("items")) {
           auto items = itemjson.get<Array>("items").values();
 
-          for (unsigned int x = 0; x < items.size(); x++) {
-            if (!items[x]->is<Object>()) continue;
+          for (auto& x : items) {
+            if (!x->is<Object>()) continue;
 
-            Object& item = items[x]->get<Object>();
+            Object& item = x->get<Object>();
 
             if (!item.has<Number>("id") || !item.has<Object>("buys") ||
                 !item.has<Object>("sells"))

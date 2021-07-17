@@ -8,11 +8,11 @@ CCoreDX11Texture2D::CCoreDX11Texture2D( CCoreDX11Device *dev ) : CCoreTexture2D(
 {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
-  TextureHandle = NULL;
+  TextureHandle = nullptr;
   RenderTarget = false;
-  View = NULL;
-  RTView = NULL;
-  DepthView = NULL;
+  View = nullptr;
+  RTView = nullptr;
+  DepthView = nullptr;
 };
 
 CCoreDX11Texture2D::~CCoreDX11Texture2D()
@@ -23,13 +23,13 @@ CCoreDX11Texture2D::~CCoreDX11Texture2D()
 void CCoreDX11Texture2D::Release()
 {
   if ( TextureHandle ) TextureHandle->Release();
-  TextureHandle = NULL;
+  TextureHandle = nullptr;
   if ( View ) View->Release();
   if ( DepthView ) DepthView->Release();
   if ( RTView ) RTView->Release();
-  View = NULL;
-  RTView = NULL;
-  DepthView = NULL;
+  View = nullptr;
+  RTView = nullptr;
+  DepthView = nullptr;
 }
 
 TBOOL CCoreDX11Texture2D::SetToSampler( const CORESAMPLER smp )
@@ -69,7 +69,8 @@ TBOOL CCoreDX11Texture2D::Create( const int32_t xres, const int32_t yres, const 
   data.SysMemPitch = xres*BytesPerPixel;
   data.SysMemSlicePitch = 0;
 
-  HRESULT res = Dev->CreateTexture2D( &tex, Data ? &data : NULL, &TextureHandle );
+  HRESULT res =
+      Dev->CreateTexture2D(&tex, Data ? &data : nullptr, &TextureHandle);
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -77,7 +78,7 @@ TBOOL CCoreDX11Texture2D::Create( const int32_t xres, const int32_t yres, const 
     return false;
   }
 
-  res = Dev->CreateShaderResourceView( TextureHandle, NULL, &View );
+  res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -132,15 +133,16 @@ TBOOL CCoreDX11Texture2D::Create( const uint8_t *Data, const int32_t Size )
   {
     if ( !DecompressPNG( Data, Size, Img, xr, yr ) )
     {
-      if ( !CreateDDSTextureFromMemory( Dev, Data, Size, (ID3D11Resource**)&TextureHandle, &View ) )
-      {
+      if (!CreateDDSTextureFromMemory(
+              Dev, Data, Size,
+              reinterpret_cast<ID3D11Resource **>(&TextureHandle), &View)) {
 
 #ifdef CORE_VERBOSE_LOG
         LOG( LOG_ERROR, _T( "Texture Creation From Image failed: d3dx not linked" ) );
 #endif			
         return false;
-      }
-      else ViewCreated = true;
+      } else
+        ViewCreated = true;
     }
     else
     {
@@ -159,7 +161,7 @@ TBOOL CCoreDX11Texture2D::Create( const uint8_t *Data, const int32_t Size )
 
   if ( !ViewCreated )
   {
-    HRESULT res = Dev->CreateShaderResourceView( TextureHandle, NULL, &View );
+    HRESULT res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
     if ( res != S_OK )
     {
       _com_error err( res );
@@ -209,7 +211,7 @@ void CCoreDX11Texture2D::OnDeviceLost()
 void CCoreDX11Texture2D::OnDeviceReset()
 {
   if ( RenderTarget && XRes > 0 && YRes > 0 && Format != COREFMT_UNKNOWN )
-    BASEASSERT( Create( XRes, YRes, NULL, 4, Format, RenderTarget ) );
+    BASEASSERT(Create(XRes, YRes, nullptr, 4, Format, RenderTarget));
 }
 
 TBOOL CCoreDX11Texture2D::Update( const uint8_t *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel )
@@ -217,15 +219,16 @@ TBOOL CCoreDX11Texture2D::Update( const uint8_t *Data, const int32_t XRes, const
   if ( !TextureHandle ) return false;
   if ( !View ) return false;
 
-  DeviceContext->UpdateSubresource( TextureHandle, 0, NULL, Data, XRes*BytesPerPixel, 0 );
+  DeviceContext->UpdateSubresource(TextureHandle, 0, nullptr, Data,
+                                   XRes * BytesPerPixel, 0);
 
   return true;
 }
 
 CCoreTexture2D * CCoreDX11Texture2D::Copy()
 {
-  if ( !TextureHandle ) return NULL;
-  if ( !View ) return NULL;
+  if (!TextureHandle) return nullptr;
+  if (!View) return nullptr;
 
   D3D11_TEXTURE2D_DESC desc;
   TextureHandle->GetDesc( &desc );
@@ -239,7 +242,7 @@ CCoreTexture2D * CCoreDX11Texture2D::Copy()
   ID3D11Texture2D *d2;
 
   HRESULT res;
-  res = Dev->CreateTexture2D( &desc, NULL, &d2 );
+  res = Dev->CreateTexture2D(&desc, nullptr, &d2);
 
   //delete[] data.pSysMem;
 
@@ -247,22 +250,23 @@ CCoreTexture2D * CCoreDX11Texture2D::Copy()
   {
     _com_error err( res );
     LOG( LOG_ERROR, _T( "[core] Failed to create copy of texture 2d (%s)" ), err.ErrorMessage() );
-    return NULL;
+    return nullptr;
   }
 
   ID3D11ShaderResourceView *v2;
 
-  res = Dev->CreateShaderResourceView( d2, NULL, &v2 );
+  res = Dev->CreateShaderResourceView(d2, nullptr, &v2);
   if ( res != S_OK )
   {
     _com_error err( res );
     LOG( LOG_ERROR, _T( "[core] CreateShaderResourceView failed (%s)" ), err.ErrorMessage() );
-    return false;
+    return nullptr;
   }
 
   DeviceContext->CopyResource( d2, TextureHandle );
 
-  CCoreDX11Texture2D *nt = new CCoreDX11Texture2D( (CCoreDX11Device*)Device );
+  CCoreDX11Texture2D *nt =
+      new CCoreDX11Texture2D(dynamic_cast<CCoreDX11Device *>(Device));
   nt->SetTextureHandle( d2 );
   nt->SetView( v2 );
   return nt;
@@ -302,7 +306,7 @@ uint16_t degammaint16( uint16_t f )
 {
   float tf = f / 65535.0f;
 
-  return (uint16_t)( degammafloat( tf ) * 65535 );
+  return static_cast<uint16_t>(degammafloat(tf) * 65535);
 }
 
 void CCoreDX11Texture2D::ExportToImage( std::string_view Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma )
@@ -358,7 +362,7 @@ void CCoreDX11Texture2D::ExportToImage( std::string_view Filename, TBOOL ClearAl
     UINT                     miscFlags2;
   };
 
-  uint8_t *Data = (uint8_t*)Writer.GetData();
+  uint8_t *Data = Writer.GetData();
   DDSHEAD head;
   memcpy( &head, Data, sizeof( DDSHEAD ) );
   Data += head.dwSize + 4;
@@ -393,7 +397,7 @@ void CCoreDX11Texture2D::ExportToImage( std::string_view Filename, TBOOL ClearAl
     break;
   case 36:
   {
-    uint16_t *inimg = (uint16_t*)Data;
+    uint16_t *inimg = reinterpret_cast<uint16_t *>(Data);
     for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
       image[ x ] = ( !degamma ? inimg[ x ] : degammaint16( inimg[ x ] ) ) / 256;
   }
@@ -402,22 +406,25 @@ void CCoreDX11Texture2D::ExportToImage( std::string_view Filename, TBOOL ClearAl
   {
     //D3DXFloat16To32Array()
     float *img2 = new float[ head.dwWidth*head.dwHeight * 4 ];
-    DirectX::PackedVector::XMConvertHalfToFloatStream( img2, 4, ( const DirectX::PackedVector::HALF* )Data, 2, head.dwWidth*head.dwHeight * 4 );
+    DirectX::PackedVector::XMConvertHalfToFloatStream(
+        img2, 4, reinterpret_cast<const DirectX::PackedVector::HALF *>(Data), 2,
+        head.dwWidth * head.dwHeight * 4);
 
     if ( !degamma )
     {
       for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; x++ )
-        image[ x ] = (uint8_t)max( 0, min( 255, img2[ x ] * 255 ) );
+        image[x] = static_cast<uint8_t> max(0, min(255, img2[x] * 255));
     }
     else
     {
       for ( int32_t x = 0; x < head.dwWidth*head.dwHeight * 4; )
       {
         for ( int y = 0; y < 3; y++, x++ )
-          image[ x ] = (uint8_t)max( 0, min( 255, degammafloat( img2[ x ] ) * 255 ) );
+          image[x] = static_cast<uint8_t> max(
+              0, min(255, degammafloat(img2[x]) * 255));
 
         x++;
-        image[ x ] = (uint8_t)max( 0, min( 255, img2[ x ] * 255 ) );
+        image[x] = static_cast<uint8_t> max(0, min(255, img2[x] * 255));
       }
     }
 
@@ -426,7 +433,7 @@ void CCoreDX11Texture2D::ExportToImage( std::string_view Filename, TBOOL ClearAl
   break;
   case '01XD': // DX10
   {
-    DDS_HEADER_DXT10 *Head = (DDS_HEADER_DXT10*)Data;
+    DDS_HEADER_DXT10 *Head = reinterpret_cast<DDS_HEADER_DXT10 *>(Data);
     Data += sizeof( DDS_HEADER_DXT10 );
     switch ( Head->dxgiFormat )
     {
@@ -488,7 +495,7 @@ TBOOL CCoreDX11Texture2D::CreateDepthBuffer( const int32_t xres, const int32_t y
   tex.SampleDesc.Quality = MSCount > 1 ? D3D10_STANDARD_MULTISAMPLE_PATTERN : 0;
   tex.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
-  HRESULT res = Dev->CreateTexture2D( &tex, NULL, &TextureHandle );
+  HRESULT res = Dev->CreateTexture2D(&tex, nullptr, &TextureHandle);
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -915,7 +922,8 @@ static HRESULT CaptureTexture( ID3D11Device *d3dDevice, _In_ ID3D11DeviceContext
     return HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED );
 
   ID3D11Texture2D *pTexture;
-  HRESULT hr = pSource->QueryInterface( __uuidof( ID3D11Texture2D ), (void**)&pTexture );
+  HRESULT hr = pSource->QueryInterface(__uuidof(ID3D11Texture2D),
+                                       reinterpret_cast<void **>(&pTexture));
   if ( FAILED( hr ) )
     return hr;
 
@@ -930,7 +938,7 @@ static HRESULT CaptureTexture( ID3D11Device *d3dDevice, _In_ ID3D11DeviceContext
     desc.SampleDesc.Quality = 0;
 
     ID3D11Texture2D* pTemp;
-    hr = d3dDevice->CreateTexture2D( &desc, 0, &pTemp );
+    hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pTemp);
     if ( FAILED( hr ) )
     {
       if ( pTexture ) pTexture->Release();
@@ -972,7 +980,7 @@ static HRESULT CaptureTexture( ID3D11Device *d3dDevice, _In_ ID3D11DeviceContext
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     desc.Usage = D3D11_USAGE_STAGING;
 
-    hr = d3dDevice->CreateTexture2D( &desc, 0, &pStaging );
+    hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pStaging);
     if ( FAILED( hr ) )
     {
       if ( pTemp ) pTemp->Release();
@@ -1000,7 +1008,7 @@ static HRESULT CaptureTexture( ID3D11Device *d3dDevice, _In_ ID3D11DeviceContext
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     desc.Usage = D3D11_USAGE_STAGING;
 
-    hr = d3dDevice->CreateTexture2D( &desc, 0, &pStaging );
+    hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pStaging);
     if ( FAILED( hr ) )
     {
       if ( pTexture ) pTexture->Release();
@@ -1151,7 +1159,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   const DDS_PIXELFORMAT DDSPF_DX10 = { sizeof( DDS_PIXELFORMAT ), DDS_FOURCC, MAKEFOURCC( 'D', 'X', '1', '0' ), 0, 0, 0, 0, 0 };
 
   D3D11_TEXTURE2D_DESC desc = { 0 };
-  ID3D11Texture2D *pStaging = NULL;
+  ID3D11Texture2D *pStaging = nullptr;
 
   ID3D11Device *d3dDevice;
   pContext->GetDevice( &d3dDevice );
@@ -1178,9 +1186,10 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   const size_t MAX_HEADER_SIZE = sizeof( uint32_t ) + sizeof( DDS_HEADER ) + sizeof( DDS_HEADER_DXT10 );
   uint8_t fileHeader[ MAX_HEADER_SIZE ];
 
-  *( (uint32_t*)( &fileHeader[ 0 ] ) ) = DDS_MAGIC;
+  *(reinterpret_cast<uint32_t *>(&fileHeader[0])) = DDS_MAGIC;
 
-  auto header = (DDS_HEADER*)( &fileHeader[ 0 ] + sizeof( uint32_t ) );
+  auto header =
+      reinterpret_cast<DDS_HEADER *>(&fileHeader[0] + sizeof(uint32_t));
   size_t headerSize = sizeof( uint32_t ) + sizeof( DDS_HEADER );
   memset( header, 0, sizeof( DDS_HEADER ) );
   header->size = sizeof( DDS_HEADER );
@@ -1239,7 +1248,8 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
     memcpy_s( &header->ddspf, sizeof( header->ddspf ), &DDSPF_DX10, sizeof( DDS_PIXELFORMAT ) );
 
     headerSize += sizeof( DDS_HEADER_DXT10 );
-    extHeader = (DDS_HEADER_DXT10*)( (uint8_t*)( &fileHeader[ 0 ] ) + sizeof( uint32_t ) + sizeof( DDS_HEADER ) );
+    extHeader = reinterpret_cast<DDS_HEADER_DXT10 *>(
+        (&fileHeader[0]) + sizeof(uint32_t) + sizeof(DDS_HEADER));
     memset( extHeader, 0, sizeof( DDS_HEADER_DXT10 ) );
     extHeader->dxgiFormat = desc.Format;
     extHeader->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
@@ -1253,12 +1263,12 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
   if ( IsCompressed( desc.Format ) )
   {
     header->flags |= DDS_HEADER_FLAGS_LINEARSIZE;
-    header->pitchOrLinearSize = (uint32_t)( slicePitch );
+    header->pitchOrLinearSize = static_cast<uint32_t>(slicePitch);
   }
   else
   {
     header->flags |= DDS_HEADER_FLAGS_PITCH;
-    header->pitchOrLinearSize = (uint32_t)( rowPitch );
+    header->pitchOrLinearSize = static_cast<uint32_t>(rowPitch);
   }
 
   // Setup pixels
@@ -1277,7 +1287,7 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
     return hr;
   }
 
-  auto sptr = (uint8_t*)( mapped.pData );
+  auto sptr = static_cast<uint8_t *>(mapped.pData);
   if ( !sptr )
   {
     pContext->Unmap( pStaging, 0 );
@@ -1299,16 +1309,15 @@ HRESULT SaveDDSTexture( _In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource*
 
   // Write header & pixels
 
-  if ( !Writer.Write( uint8_view(&fileHeader[0], (DWORD)( headerSize ) )) )
-  {
+  if (!Writer.Write(
+          uint8_view(&fileHeader[0], static_cast<DWORD>(headerSize)))) {
     if ( pStaging ) pStaging->Release();
     return E_FAIL;
   }
-  if ( !Writer.Write( uint8_view(pixels.get(), (DWORD)( slicePitch ) ) ) )
-  {
+  if (!Writer.Write(uint8_view(pixels.get(), static_cast<DWORD>(slicePitch)))) {
     if ( pStaging ) pStaging->Release();
     return E_FAIL;
-}
+  }
 
   if ( pStaging ) pStaging->Release();
   return S_OK;

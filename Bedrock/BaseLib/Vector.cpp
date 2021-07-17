@@ -7,7 +7,7 @@
 #include "SpecMath.h"
 
 const int32_t Lerp(const int32_t v1, const int32_t v2, const float t) {
-  return (int32_t)((v2 - v1) * t + v1);
+  return static_cast<int32_t>((v2 - v1) * t + v1);
 }
 
 const float Lerp(const float v1, const float v2, const float t) {
@@ -15,11 +15,11 @@ const float Lerp(const float v1, const float v2, const float t) {
 }
 
 const uint32_t Lerp(const uint32_t v1, const uint32_t v2, const float t) {
-  return (uint32_t)((v2 - v1) * t + v1);
+  return static_cast<uint32_t>((v2 - v1) * t + v1);
 }
 
 const int64_t Lerp(const int64_t v1, const int64_t v2, const float t) {
-  return (int64_t)((v2 - v1) * t + v1);
+  return static_cast<int64_t>((v2 - v1) * t + v1);
 }
 
 const double Lerp(const double v1, const double v2, const float t) {
@@ -27,7 +27,7 @@ const double Lerp(const double v1, const double v2, const float t) {
 }
 
 const uint64_t Lerp(const uint64_t v1, const uint64_t v2, const float t) {
-  return (uint64_t)((v2 - v1) * t + v1);
+  return static_cast<uint64_t>((v2 - v1) * t + v1);
 }
 
 const CVector2 Lerp(const CVector2 &v1, const CVector2 &v2, const float t) {
@@ -46,14 +46,14 @@ const CVector4 Lerp(const CVector4 &v1, const CVector4 &v2, const float t) {
   return (v2 - v1) * t + v1;
 }
 
-float mod(float v, float m) { return m * (int32_t)floor(v / m); }
+float mod(float v, float m) { return m * static_cast<int32_t>(floor(v / m)); }
 
 int32_t Mod(int32_t a, int32_t b) { return ((a % b) + b) % b; }
 
 float Mod(float a, float b) { return fmodf(((fmodf(a, b)) + b), b); }
 
 float Mod(float a, int32_t b) {
-  return fmodf(((fmodf(a, (float)b)) + b), (float)b);
+  return fmodf(((fmodf(a, static_cast<float>(b))) + b), static_cast<float>(b));
 }
 
 CVector4 CVector3::operator*(const CMatrix4x4 &q) const {
@@ -95,7 +95,7 @@ float CVector4::LengthSquared() const { return x * x + y * y + z * z + w * w; }
 
 float CVector4::Length() const { return sqrtf(LengthSquared()); }
 
-CVector4::CVector4(const CVector4 &v) : x(v.x), y(v.y), z(v.z), w(v.w) {}
+CVector4::CVector4(const CVector4 &v) = default;
 
 CVector4::CVector4(const float *v) : x(v[0]), y(v[1]), z(v[2]), w(v[3]) {}
 
@@ -103,7 +103,7 @@ CVector4::CVector4(const float _x, const float _y, const float _z,
                    const float _w)
     : x(_x), y(_y), z(_z), w(_w) {}
 
-CVector4::CVector4() {}
+CVector4::CVector4() = default;
 
 CVector3 CVector3::Cross(const CVector3 &v1, const CVector3 &v2) {
   return v1 % v2;
@@ -121,14 +121,14 @@ float CVector3::LengthSquared() const { return x * x + y * y + z * z; }
 
 float CVector3::Length() const { return sqrtf(LengthSquared()); }
 
-CVector3::CVector3(const CVector3 &v) : x(v.x), y(v.y), z(v.z) {}
+CVector3::CVector3(const CVector3 &v) = default;
 
 CVector3::CVector3(const float *v) : x(v[0]), y(v[1]), z(v[2]) {}
 
 CVector3::CVector3(const float _x, const float _y, const float _z)
     : x(_x), y(_y), z(_z) {}
 
-CVector3::CVector3() {}
+CVector3::CVector3() = default;
 
 float CVector2::Dot(const CVector2 &v1, const CVector2 &v2) { return v1 * v2; }
 
@@ -142,23 +142,25 @@ float CVector2::LengthSquared() const { return x * x + y * y; }
 
 float CVector2::Length() const { return sqrtf(LengthSquared()); }
 
-CVector2::CVector2(const CVector2 &v) : x(v.x), y(v.y) {}
+CVector2::CVector2(const CVector2 &v) = default;
 
 CVector2::CVector2(const float *v) : x(v[0]), y(v[1]) {}
 
 CVector2::CVector2(const float _x, const float _y) : x(_x), y(_y) {}
 
-CVector2::CVector2() {}
+CVector2::CVector2() = default;
 
 float const CVector2::operator[](int32_t idx) const {
-  return ((const float *)this)[idx];
+  return (reinterpret_cast<const float *>(this))[idx];
 }
 
-float &CVector2::operator[](int32_t idx) { return ((float *)this)[idx]; }
+float &CVector2::operator[](int32_t idx) {
+  return (reinterpret_cast<float *>(this))[idx];
+}
 
-CVector2::operator float *() { return (float *)&x; }
+CVector2::operator float *() { return &x; }
 
-CVector2::operator const float *() const { return (const float *)&x; }
+CVector2::operator const float *() const { return &x; }
 
 CVector2 &CVector2::operator+=(const CVector2 &v) {
   x += v.x;
@@ -236,27 +238,31 @@ CVector2I CVector2I::Normalized() const {
   return *this * InvSqrt(LengthSquared());
 }
 
-float CVector2I::LengthSquared() const { return (float)(x * x + y * y); }
+float CVector2I::LengthSquared() const {
+  return static_cast<float>(x * x + y * y);
+}
 
 float CVector2I::Length() const { return sqrtf(LengthSquared()); }
 
-CVector2I::CVector2I(const CVector2I &v) : x(v.x), y(v.y) {}
+CVector2I::CVector2I(const CVector2I &v) = default;
 
 CVector2I::CVector2I(const int32_t *v) : x(v[0]), y(v[1]) {}
 
 CVector2I::CVector2I(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
 
-CVector2I::CVector2I() {}
+CVector2I::CVector2I() = default;
 
 int32_t const CVector2I::operator[](int32_t idx) const {
-  return ((const int32_t *)this)[idx];
+  return (reinterpret_cast<const int32_t *>(this))[idx];
 }
 
-int32_t &CVector2I::operator[](int32_t idx) { return ((int32_t *)this)[idx]; }
+int32_t &CVector2I::operator[](int32_t idx) {
+  return (reinterpret_cast<int32_t *>(this))[idx];
+}
 
-CVector2I::operator int32_t *() { return (int32_t *)&x; }
+CVector2I::operator int32_t *() { return &x; }
 
-CVector2I::operator const int32_t *() const { return (const int32_t *)&x; }
+CVector2I::operator const int32_t *() const { return &x; }
 
 CVector2I &CVector2I::operator+=(const CVector2I &v) {
   x += v.x;
@@ -271,15 +277,15 @@ CVector2I &CVector2I::operator-=(const CVector2I &v) {
 }
 
 CVector2I &CVector2I::operator*=(const float f) {
-  x = (int32_t)(x * f);
-  y = (int32_t)(y * f);
+  x = static_cast<int32_t>(x * f);
+  y = static_cast<int32_t>(y * f);
   return *this;
 }
 
 CVector2I &CVector2I::operator/=(const float f) {
   float fi = 1 / f;
-  x = (int32_t)(x * fi);
-  y = (int32_t)(y * fi);
+  x = static_cast<int32_t>(x * fi);
+  y = static_cast<int32_t>(y * fi);
   return *this;
 }
 
@@ -302,12 +308,12 @@ CVector2I CVector2I::operator-(const CVector2I &v) const {
 }
 
 CVector2I CVector2I::operator*(const float f) const {
-  return CVector2I((int32_t)(x * f), (int32_t)(y * f));
+  return CVector2I(static_cast<int32_t>(x * f), static_cast<int32_t>(y * f));
 }
 
 CVector2I CVector2I::operator/(const float f) const {
   float fi = 1 / f;
-  return CVector2I((int32_t)(x * fi), (int32_t)(y * fi));
+  return CVector2I(static_cast<int32_t>(x * fi), static_cast<int32_t>(y * fi));
 }
 
 CVector2I CVector2I::operator/(const int32_t f) const {
@@ -328,14 +334,16 @@ int32_t CVector2I::operator*(const CVector2I &v) const  // dot product
 }
 
 float const CVector3::operator[](int32_t idx) const {
-  return ((const float *)this)[idx];
+  return (reinterpret_cast<const float *>(this))[idx];
 }
 
-float &CVector3::operator[](int32_t idx) { return ((float *)this)[idx]; }
+float &CVector3::operator[](int32_t idx) {
+  return (reinterpret_cast<float *>(this))[idx];
+}
 
-CVector3::operator float *() { return (float *)&x; }
+CVector3::operator float *() { return &x; }
 
-CVector3::operator const float *() const { return (const float *)&x; }
+CVector3::operator const float *() const { return &x; }
 
 CVector3 &CVector3::operator+=(const CVector3 &v) {
   x += v.x;
@@ -406,14 +414,16 @@ CVector3 CVector3::operator%(const CVector3 &v) const  // cross product
 }
 
 float const CVector4::operator[](int32_t idx) const {
-  return ((const float *)this)[idx];
+  return (reinterpret_cast<const float *>(this))[idx];
 }
 
-float &CVector4::operator[](int32_t idx) { return ((float *)this)[idx]; }
+float &CVector4::operator[](int32_t idx) {
+  return (reinterpret_cast<float *>(this))[idx];
+}
 
-CVector4::operator float *() { return (float *)&x; }
+CVector4::operator float *() { return &x; }
 
-CVector4::operator const float *() const { return (const float *)&x; }
+CVector4::operator const float *() const { return &x; }
 
 CVector4::operator CVector3() { return CVector3(x, y, z); }
 

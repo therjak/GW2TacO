@@ -76,8 +76,8 @@ class CVector2I {
   static int32_t Dot(const CVector2I &v1, const CVector2I &v2);
 };
 
-typedef CVector2I CPoint;
-typedef CVector2I CSize;
+using CPoint = CVector2I;
+using CSize = CVector2I;
 class CVector4;
 
 class CVector3 {

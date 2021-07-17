@@ -97,36 +97,35 @@ class CCoreDX11Device : public CCoreDevice
 
   std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
       const CArray<COREVERTEXATTRIBUTE> &Attributes,
-      CCoreVertexShader *vs = NULL) override;
+      CCoreVertexShader *vs = nullptr) override;
 
   //////////////////////////////////////////////////////////////////////////
   // shader functions
 
   std::unique_ptr<CCoreVertexShader> CreateVertexShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string *Err = NULL) override;
+      std::string *Err = nullptr) override;
   std::unique_ptr<CCorePixelShader> CreatePixelShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string *Err = NULL) override;
+      std::string *Err = nullptr) override;
   std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
       uint8_t *Code, int32_t CodeSize) override;
   std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
       uint8_t *Code, int32_t CodeSize) override;
-  CCoreGeometryShader *CreateGeometryShader(LPCSTR Code, int32_t CodeSize,
-                                            LPCSTR EntryFunction,
-                                            LPCSTR ShaderVersion,
-                                            std::string *Err = NULL) override;
+  CCoreGeometryShader *CreateGeometryShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string *Err = nullptr) override;
   CCoreDomainShader *CreateDomainShader(LPCSTR Code, int32_t CodeSize,
                                         LPCSTR EntryFunction,
                                         LPCSTR ShaderVersion,
-                                        std::string *Err = NULL) override;
+                                        std::string *Err = nullptr) override;
   CCoreHullShader *CreateHullShader(LPCSTR Code, int32_t CodeSize,
                                     LPCSTR EntryFunction, LPCSTR ShaderVersion,
-                                    std::string *Err = NULL) override;
+                                    std::string *Err = nullptr) override;
   CCoreComputeShader *CreateComputeShader(LPCSTR Code, int32_t CodeSize,
                                           LPCSTR EntryFunction,
                                           LPCSTR ShaderVersion,
-                                          std::string *Err = NULL) override;
+                                          std::string *Err = nullptr) override;
   CCoreVertexShader *CreateVertexShader() override;
   CCorePixelShader *CreatePixelShader() override;
   CCoreGeometryShader *CreateGeometryShader() override;
@@ -149,8 +148,8 @@ class CCoreDX11Device : public CCoreDevice
   TBOOL BeginScene() override;
   TBOOL EndScene() override;
   TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true,
-              const CColor &Color = CColor((uint32_t)0), const float Depth = 1,
-              const int32_t Stencil = 0) override;
+              const CColor &Color = CColor(static_cast<uint32_t>(0)),
+              const float Depth = 1, const int32_t Stencil = 0) override;
   TBOOL Flip(TBOOL Vsync = true) override;
   TBOOL DrawIndexedTriangles(int32_t Count, int32_t NumVertices) override;
   TBOOL DrawTriangles(int32_t Count) override;

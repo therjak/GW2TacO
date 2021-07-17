@@ -3,10 +3,10 @@
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() {
-  Children[0] = NULL;
-  Children[1] = NULL;
+  Children[0] = nullptr;
+  Children[1] = nullptr;
   Occupied = false;
-  Image = NULL;
+  Image = nullptr;
 }
 
 CAtlasNode::~CAtlasNode() {
@@ -23,7 +23,8 @@ CAtlasNode *CAtlasNode::AddNode(int32_t width, int32_t height) {
     return NewNode ? NewNode : Children[1]->AddNode(width, height);
   }
 
-  if (Occupied || Area.Width() < width || Area.Height() < height) return 0;
+  if (Occupied || Area.Width() < width || Area.Height() < height)
+    return nullptr;
 
   if (Area.Width() == width && Area.Height() == height) {
     Occupied = true;
@@ -47,7 +48,7 @@ CAtlasNode *CAtlasNode::AddNode(int32_t width, int32_t height) {
 CAtlasImage *CAtlasNode::GetImage() { return Image; }
 
 CAtlasImage::CAtlasImage() {
-  Image = NULL;
+  Image = nullptr;
   XRes = YRes = 0;
   Handle = AtlasHandle++;
   Required = false;
@@ -55,7 +56,7 @@ CAtlasImage::CAtlasImage() {
 
 CAtlasImage::CAtlasImage(uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes,
                          const CRect &Source) {
-  Image = NULL;
+  Image = nullptr;
   XRes = Source.Width();
   YRes = Source.Height();
   Handle = AtlasHandle++;
@@ -115,7 +116,7 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
   Root = new CAtlasNode();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
-  Atlas = NULL;
+  Atlas = nullptr;
   TextureUpdateNeeded = false;
 
   int32_t White[4];
@@ -123,8 +124,8 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
 
   {
     CLightweightCriticalSection cs(&critsec);
-    CAtlasImage *img =
-        new CAtlasImage((uint8_t *)&White, 2, 2, CRect(0, 0, 2, 2));
+    CAtlasImage *img = new CAtlasImage(reinterpret_cast<uint8_t *>(&White), 2,
+                                       2, CRect(0, 0, 2, 2));
     WhitePixel = ImageStorage[img->GetHandle()] = img;
   }
 
@@ -281,7 +282,7 @@ void CAtlas::DeleteImage(const WBATLASHANDLE h) {
 
   CAtlasNode *n = GetNodeCached(h);
   if (!n) return;
-  n->Image = NULL;
+  n->Image = nullptr;
   Dictionary.erase(h);
   FlushCache();
   return;

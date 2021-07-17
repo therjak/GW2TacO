@@ -12,6 +12,7 @@ class CCoreVertexFormat : public CCoreResource
 public:
 	CCoreVertexFormat(CCoreDevice *Device) : CCoreResource(Device) {}
 
-	virtual TBOOL Create(const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *VxShader = NULL) = 0;
-	virtual int32_t GetSize() = 0;
+        virtual TBOOL Create(const CArray<COREVERTEXATTRIBUTE> &Attributes,
+                             CCoreVertexShader *VxShader = nullptr) = 0;
+        virtual int32_t GetSize() = 0;
 };

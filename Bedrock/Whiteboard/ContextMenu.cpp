@@ -121,9 +121,8 @@ CWBContextMenu::~CWBContextMenu() {
 void CWBContextMenu::ResizeToContentSize() {
   const WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   CSize ContentSize = CSize(0, 0);
 
@@ -177,8 +176,8 @@ void CWBContextMenu::ResizeToContentSize() {
 
 TBOOL CWBContextMenu::Initialize(CWBItem *Parent, const CRect &Position,
                                  WBGUID trg) {
-  ParentMenu = NULL;
-  SubMenu = NULL;
+  ParentMenu = nullptr;
+  SubMenu = nullptr;
   Pushed = false;
   Target = trg;
   if (!CWBItem::Initialize(Parent, Position)) return false;
@@ -410,7 +409,7 @@ CWBContextItem::CWBContextItem() {
   Separator = false;
 }
 
-CWBContextItem::~CWBContextItem() {}
+CWBContextItem::~CWBContextItem() = default;
 
 void CWBContextItem::CopyChildrenFrom(CWBContextItem *itm) {
   for (auto &child : itm->Children) {

@@ -7,13 +7,13 @@ typedef CCoreDX11Device CCore;
 // window init parameter structure
 
 CCoreWindowParameters::CCoreWindowParameters() {
-  Device = NULL;
-  hInstance = 0;
+  Device = nullptr;
+  hInstance = nullptr;
   FullScreen = false;
   XRes = 800;
   YRes = 600;
-  WindowTitle = NULL;
-  Icon = 0;
+  WindowTitle = nullptr;
+  Icon = nullptr;
   Maximized = false;
   ResizeDisabled = false;
 }
@@ -44,7 +44,7 @@ void CCoreWindowParameters::Initialize(CCoreDevice *device, HINSTANCE hinst,
 // windowhandler baseclass
 
 CCoreWindowHandler::CCoreWindowHandler() {
-  Device = NULL;
+  Device = nullptr;
   Done = false;
   XRes = YRes = 0;
   CurrentMouseCursor = CM_ARROW;
@@ -89,7 +89,7 @@ void CCoreWindowHandler::SetInactiveFrameLimiter(TBOOL set) {
 // windows windowhandler
 
 CCoreWindowHandlerWin::CCoreWindowHandlerWin() : CCoreWindowHandler() {
-  hWnd = NULL;
+  hWnd = nullptr;
   WindowPlacement.length = sizeof(WINDOWPLACEMENT);
   dwStyle = 0;
   FullScreenX = FullScreenY = 0;
@@ -144,16 +144,17 @@ TBOOL CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters &wp) {
     FORCEDDEBUGLOG("Windowrect adjusted (non override)");
     hWnd = CreateWindow(_T( "CoRE2" ), wp.WindowTitle, dwStyle, CW_USEDEFAULT,
                         CW_USEDEFAULT, WindowRect.right - WindowRect.left,
-                        WindowRect.bottom - WindowRect.top, NULL, NULL,
+                        WindowRect.bottom - WindowRect.top, nullptr, nullptr,
                         wp.hInstance, this);
   } else {
     dwStyle = wp.OverrideWindowStyle;
     AdjustWindowRect(&WindowRect, dwStyle, FALSE);
     FORCEDDEBUGLOG("Windowrect adjusted (override)");
-    hWnd = CreateWindowEx(
-        wp.OverrideWindowStyleEx, _T( "CoRE2" ), wp.WindowTitle, dwStyle,
-        CW_USEDEFAULT, CW_USEDEFAULT, WindowRect.right - WindowRect.left,
-        WindowRect.bottom - WindowRect.top, NULL, NULL, wp.hInstance, this);
+    hWnd = CreateWindowEx(wp.OverrideWindowStyleEx, _T( "CoRE2" ),
+                          wp.WindowTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+                          WindowRect.right - WindowRect.left,
+                          WindowRect.bottom - WindowRect.top, nullptr, nullptr,
+                          wp.hInstance, this);
   }
 
   FORCEDDEBUGLOG("Window created");
@@ -178,14 +179,14 @@ TBOOL CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters &wp) {
 
   FORCEDDEBUGLOG("window set to foreground etc");
 
-  MouseCursors.push_back(LoadCursor(NULL, IDC_ARROW));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_CROSS));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZEWE));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZENS));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZENESW));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_SIZENWSE));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_IBEAM));
-  MouseCursors.push_back(LoadCursor(NULL, IDC_WAIT));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_ARROW));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_CROSS));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZEWE));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZENS));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZENESW));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZENWSE));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_IBEAM));
+  MouseCursors.push_back(LoadCursor(nullptr, IDC_WAIT));
 
   FORCEDDEBUGLOG("mouse cursors loaded");
 
@@ -214,7 +215,7 @@ TBOOL CCoreWindowHandlerWin::HandleMessages() { return HandleOSMessages(); }
 
 TBOOL CCoreWindowHandlerWin::HandleOSMessages() {
   MSG msg;
-  while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) != 0) {
+  while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != 0) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
@@ -241,7 +242,7 @@ void CCoreWindowHandlerWin::Destroy() {
   Done = true;
   if (hWnd) {
     DestroyWindow(hWnd);
-    hWnd = NULL;
+    hWnd = nullptr;
   }
 }
 
@@ -287,10 +288,11 @@ void CCoreWindowHandlerWin::HandleAltEnter() {
 LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
                                                      WPARAM wParam,
                                                      LPARAM lParam) {
-  CCoreWindowHandlerWin *wnd = NULL;
+  CCoreWindowHandlerWin *wnd = nullptr;
 
   if (uMsg == WM_NCCREATE) {
-    wnd = (CCoreWindowHandlerWin *)((LPCREATESTRUCT)lParam)->lpCreateParams;
+    wnd = static_cast<CCoreWindowHandlerWin *>(
+        ((LPCREATESTRUCT)lParam)->lpCreateParams);
     SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)wnd);
     wnd->hWnd = hWnd;
   } else

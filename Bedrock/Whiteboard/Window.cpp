@@ -50,9 +50,8 @@ CRect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
 
 void CWBWindow::OnDraw(CWBDrawAPI *API) {
   WBITEMSTATE i = GetState();
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API);
 
@@ -72,8 +71,8 @@ void CWBWindow::OnDraw(CWBDrawAPI *API) {
 
       CPoint TitlePos = Font->GetTextPosition(
           WindowTitle, titlepos, TitleProps.TextAlignX, TitleProps.TextAlignY,
-          (WBTEXTTRANSFORM)TitleProps.DisplayDescriptor.GetValue(
-              i, WB_ITEM_TEXTTRANSFORM));
+          static_cast<WBTEXTTRANSFORM>(
+              TitleProps.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM)));
       Font->Write(API, WindowTitle, TitlePos,
                   TitleProps.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR),
                   TextTransform);
@@ -146,7 +145,7 @@ CWBWindow::CWBWindow(CWBItem *Parent, const CRect &Pos, const TCHAR *txt,
   Initialize(Parent, Pos, txt, style);
 }
 
-CWBWindow::~CWBWindow() {}
+CWBWindow::~CWBWindow() = default;
 
 TBOOL CWBWindow::Initialize(CWBItem *Parent, const CRect &Position,
                             const TCHAR *txt, uint32_t style) {

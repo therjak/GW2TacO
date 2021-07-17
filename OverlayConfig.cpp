@@ -131,7 +131,7 @@ TBOOL IsWindowOpen(std::string_view windowname) {
 
 void SetWindowOpenState(std::string_view windowname, TBOOL Open) {
   std::string s(windowname);
-  SetConfigValue((s + "_open"), (int)Open);
+  SetConfigValue((s + "_open"), static_cast<int>(Open));
 }
 
 CRect GetWindowPosition(std::string_view windowname) {
@@ -172,9 +172,8 @@ void GetKeyBindings( std::unordered_map<int32_t, TacOKeyAction> &KeyBindings )
     int32_t key;
     if ( std::sscanf(kdp.first.c_str(), "KeyboardKey_%d", &key ) != 1 )
       continue;
-    if ( kdp.second == (int32_t)TacOKeyAction::NoAction )
-      continue;
-    KeyBindings[ key ] = (TacOKeyAction)kdp.second;
+    if (kdp.second == static_cast<int32_t>(TacOKeyAction::NoAction)) continue;
+    KeyBindings[key] = static_cast<TacOKeyAction>(kdp.second);
   }
 
   if ( KeyBindings.empty() )
@@ -197,7 +196,8 @@ void SetKeyBinding( TacOKeyAction action, int32_t key )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ FormatString( "KeyboardKey_%d", key ) ] = (int32_t)action;
+  ConfigNums[FormatString("KeyboardKey_%d", key)] =
+      static_cast<int32_t>(action);
 }
 
 void DeleteKeyBinding( int32_t keyToDelete )
@@ -242,7 +242,8 @@ void SetScriptKeyBinding( std::string_view scriptEvent, int32_t key )
 {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ FormatString( "ScriptKey_%s", std::string(scriptEvent).c_str()) ] = (int32_t)key;
+  ConfigNums[FormatString("ScriptKey_%s", std::string(scriptEvent).c_str())] =
+      key;
 }
 
 void DeleteScriptKeyBinding(std::string_view scriptEvent) {

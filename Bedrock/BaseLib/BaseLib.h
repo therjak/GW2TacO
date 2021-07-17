@@ -12,44 +12,37 @@
 #include <WinSock2.h>
 #include <Windows.h>
 #include <comdef.h>
-
 #include <tchar.h>
-#include <float.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "SpecMath.h"
 
-#include "Assert.h"
-#include "Constants.h"
-#include "CriticalSection.h"
-#include "Color.h"
-#include "Random.h"
-#include "Timer.h"
+#include <cfloat>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 
 #include "Array.h"
+#include "Assert.h"
+#include "Color.h"
+#include "Constants.h"
+#include "CrashTracker.h"
+#include "CriticalSection.h"
 #include "Dictionary.h"
-#include "RingBuffer.h"
-#include "String.h"
+#include "EnumHelpers.h"
+#include "FileList.h"
+#include "ImageDecompressor.h"
 #include "Logger.h"
+#include "Matrix.h"
+#include "Plane.h"
+#include "Quaternion.h"
+#include "Random.h"
+#include "Rectangle.h"
+#include "RingBuffer.h"
+#include "Socket.h"
+#include "SpecMath.h"
+#include "Sphere.h"
 #include "StreamReader.h"
 #include "StreamWriter.h"
-#include "Socket.h"
-#include "Logger.h"
-
+#include "String.h"
+#include "Timer.h"
 #include "Vector.h"
-#include "Plane.h"
-#include "Sphere.h"
-#include "Matrix.h"
-#include "Quaternion.h"
-#include "Rectangle.h"
-
-#include "FileList.h"
-
-#include "ImageDecompressor.h"
-
-#include "EnumHelpers.h"
-
-#include "CrashTracker.h"
 
 #define NoEmptyFile()   namespace { char NoEmptyFileDummy##__LINE__; }

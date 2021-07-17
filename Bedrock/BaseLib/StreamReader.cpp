@@ -15,14 +15,15 @@ CStreamReader::CStreamReader() {
   readerLastChar = 0;
 }
 
-CStreamReader::~CStreamReader() {}
+CStreamReader::~CStreamReader() = default;
 
 int32_t CStreamReader::Read(void *lpBuf, uint32_t nCount) {
   if (readerBitOffset == 0)  // non bitstream mode
     return ReadStream(lpBuf, nCount);
 
   // bitstream mode
-  for (uint32_t x = 0; x < nCount; x++) ((uint8_t *)lpBuf)[x] = ReadBits(8);
+  for (uint32_t x = 0; x < nCount; x++)
+    (static_cast<uint8_t *>(lpBuf))[x] = ReadBits(8);
 
   return nCount;
 }
@@ -85,7 +86,7 @@ bool CStreamReader::eof() { return GetOffset() >= GetLength(); }
 // streamreader memory
 
 CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {
-  Data = NULL;
+  Data = nullptr;
   DataSize = 0;
   Offset = 0;
 }
@@ -94,9 +95,9 @@ CStreamReaderMemory::~CStreamReaderMemory() { SAFEDELETEA(Data); }
 
 int32_t CStreamReaderMemory::ReadStream(void *lpBuf, uint32_t nCount) {
   int64_t bytestoread = max(0, min(nCount, DataSize - Offset));
-  memcpy(lpBuf, Data + Offset, (size_t)bytestoread);
+  memcpy(lpBuf, Data + Offset, static_cast<size_t>(bytestoread));
   Offset += bytestoread;
-  return (int32_t)bytestoread;
+  return static_cast<int32_t>(bytestoread);
 }
 
 int32_t CStreamReaderMemory::Open(uint8_t *data, uint32_t size) {
@@ -114,15 +115,15 @@ int32_t CStreamReaderMemory::Open(uint8_t *data, uint32_t size) {
 
 int32_t CStreamReaderMemory::Open(std::string_view Filename) {
   HANDLE hFile = CreateFile(Filename.data(), GENERIC_READ,
-                            FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
-                            OPEN_EXISTING, NULL, NULL);
+                            FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                            OPEN_EXISTING, NULL, nullptr);
   if (hFile == INVALID_HANDLE_VALUE) return 0;
 
-  int32_t tDataSize = GetFileSize(hFile, NULL);
+  int32_t tDataSize = GetFileSize(hFile, nullptr);
 
   uint8_t *tData = new uint8_t[tDataSize];
   DWORD nRead = 0;
-  BOOL b = ReadFile(hFile, tData, tDataSize, &nRead, NULL);
+  BOOL b = ReadFile(hFile, tData, tDataSize, &nRead, nullptr);
 
   if (b && nRead == tDataSize)  // all ok
   {

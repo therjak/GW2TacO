@@ -6,8 +6,8 @@ CCoreDX11VertexBuffer::CCoreDX11VertexBuffer(CCoreDX11Device *dev) : CCoreVertex
 {
 	Dev = dev->GetDevice();
 	DeviceContext = dev->GetDeviceContext();
-	VertexBufferHandle = NULL;
-	Size = 0;
+        VertexBufferHandle = nullptr;
+        Size = 0;
 	Dynamic = false;
 }
 
@@ -20,7 +20,7 @@ CCoreDX11VertexBuffer::~CCoreDX11VertexBuffer()
 void CCoreDX11VertexBuffer::Release()
 {
 	if (VertexBufferHandle) VertexBufferHandle->Release();
-	VertexBufferHandle = NULL;
+        VertexBufferHandle = nullptr;
 }
 
 TBOOL CCoreDX11VertexBuffer::Apply(const uint32_t Offset)
@@ -74,8 +74,8 @@ TBOOL CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size)
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	HRESULT res = Dev->CreateBuffer(&bd, NULL, &VertexBufferHandle);
-	if (res != S_OK)
+        HRESULT res = Dev->CreateBuffer(&bd, nullptr, &VertexBufferHandle);
+        if (res != S_OK)
 	{
 		_com_error err(res);
 		LOG(LOG_ERROR, _T("[core] CreateBuffer for vertexbuffer failed (%s)"), err.ErrorMessage());

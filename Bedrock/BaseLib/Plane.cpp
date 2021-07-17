@@ -29,7 +29,7 @@ CPlane::CPlane(const CVector3 &Point, const CVector3 &n) {
   Normalize();
 }
 
-CPlane::CPlane() {}
+CPlane::CPlane() = default;
 
 void CPlane::Normalize() {
   float l = Normal.Length();

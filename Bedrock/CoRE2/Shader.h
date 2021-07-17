@@ -31,7 +31,7 @@ class CCoreShader : public CCoreResource {
 
  public:
   INLINE CCoreShader(CCoreDevice *Device) : CCoreResource(Device) {
-    Binary = NULL;
+    Binary = nullptr;
     BinaryLength = 0;
   };
   ~CCoreShader() override;

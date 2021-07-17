@@ -59,7 +59,7 @@ void GW2MouseHighlight::OnDraw(CWBDrawAPI *API) {
 GW2MouseHighlight::GW2MouseHighlight(CWBItem *Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
-GW2MouseHighlight::~GW2MouseHighlight() {}
+GW2MouseHighlight::~GW2MouseHighlight() = default;
 
 CWBItem *GW2MouseHighlight::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
   return GW2MouseHighlight::Create(Root, Pos).get();

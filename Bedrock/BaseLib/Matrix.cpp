@@ -229,7 +229,7 @@ CMatrix4x4::CMatrix4x4(const float *f) {
   memcpy(&_11, f, 16 * sizeof(float));
 }
 
-CMatrix4x4::CMatrix4x4() {}
+CMatrix4x4::CMatrix4x4() = default;
 
 float &CMatrix4x4::operator()(uint32_t Row, uint32_t Col) {
   BASEASSERTR(Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[0][0]);
@@ -243,7 +243,7 @@ float CMatrix4x4::operator()(uint32_t Row, uint32_t Col) const {
 
 CMatrix4x4::operator float *() { return &_11; }
 
-CMatrix4x4::operator const float *() const { return (const float *)&_11; }
+CMatrix4x4::operator const float *() const { return &_11; }
 
 CVector4 CMatrix4x4::Row(int32_t x) const {
   BASEASSERTR(x >= 0 && x < 4, m[0]);

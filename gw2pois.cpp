@@ -28,7 +28,7 @@
 
 #pragma comment(lib,"Dwmapi.lib")
 
-CWBApplication *App = NULL;
+CWBApplication *App = nullptr;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 
@@ -64,7 +64,8 @@ TBOOL InitGUI( CWBApplication *App )
 void OpenWindows( CWBApplication *App )
 {
   auto root = App->GetRoot();
-  GW2TacO *taco = (GW2TacO*)root->FindChildByID( "tacoroot", "GW2TacO" );
+  GW2TacO *taco =
+      dynamic_cast<GW2TacO *>(root->FindChildByID("tacoroot", "GW2TacO"));
   if ( !taco )
     return;
 
@@ -94,85 +95,83 @@ bool ShiftState = false;
 
 LRESULT __stdcall MyKeyboardProc( int ccode, WPARAM wParam, LPARAM lParam )
 {
-  if ( disableHooks )
-    return CallNextHookEx( 0, ccode, wParam, lParam );
+  if (disableHooks) return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   if ( ccode == HC_ACTION )
   {
     KBDLLHOOKSTRUCT *pkbdllhook = (KBDLLHOOKSTRUCT *)lParam;
-    HKL dwhkl = 0;
+    HKL dwhkl = nullptr;
     BYTE dbKbdState[ 256 ];
     TCHAR szCharBuf[ 32 ];
     static KBDLLHOOKSTRUCT lastState = { 0 };
 
     GetKeyboardState( dbKbdState );
-    dwhkl = GetKeyboardLayout( GetWindowThreadProcessId( GetForegroundWindow(), NULL ) );
+    dwhkl = GetKeyboardLayout(
+        GetWindowThreadProcessId(GetForegroundWindow(), nullptr));
 
-    if ( ToAsciiEx( pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState, (LPWORD)szCharBuf, 0, dwhkl ) == -1 )
-    {
+    if (ToAsciiEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
+                  reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) == -1) {
       //PostMessage( (HWND)App->GetHandle(), WM_DEADCHAR, pkbdllhook->vkCode, 1 | ( pkbdllhook->scanCode << 16 ) + ( pkbdllhook->flags << 24 ) );
 
       //Save the current keyboard state.
       lastState = *pkbdllhook;
       //You might also need to hang onto the dbKbdState array... I'm thinking not.
       //Clear out the buffer to return to the previous state - wait for ToAsciiEx to return a value other than -1 by passing the same key again. It should happen after 1 call.
-      while ( ToAsciiEx( pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState, (LPWORD)szCharBuf, 0, dwhkl ) < 0 );
-    }
-    else
-    {
-
+      while (ToAsciiEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
+                       reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) < 0)
+        ;
+    } else {
       //Do something with szCharBuf here since this will overwrite it...
       //If we have a saved vkCode from last call, it was a dead key we need to place back in the buffer.
       if ( lastState.vkCode != 0 )
       {
         //Safest to just clear this.
         memset( dbKbdState, 0, 256 );
-        //Put the old vkCode back into the locale's buffer. 
-        ToAsciiEx( lastState.vkCode, lastState.scanCode, dbKbdState, (LPWORD)szCharBuf, 0, dwhkl );
+        //Put the old vkCode back into the locale's buffer.
+        ToAsciiEx(lastState.vkCode, lastState.scanCode, dbKbdState,
+                  reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl);
         //Set vkCode to 0, we can use this as a flag as a vkCode of 0 is invalid.
         lastState.vkCode = 0;
       }
     }
   }
 
-  if ( ccode < 0 )
-    return CallNextHookEx( 0, ccode, wParam, lParam );
+  if (ccode < 0) return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   if ( wParam != WM_KEYDOWN && wParam != WM_KEYUP && wParam != WM_CHAR && wParam != WM_DEADCHAR && wParam != WM_UNICHAR )
-    return CallNextHookEx( 0, ccode, wParam, lParam );
+    return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   auto wnd = GetForegroundWindow();
   if ( ccode != HC_ACTION || !lParam || ( wnd != gw2Window && App && wnd != (HWND)App->GetHandle() ) )
-    return CallNextHookEx( 0, ccode, wParam, lParam );
+    return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   if ( App && wnd == (HWND)App->GetHandle() )
-    return CallNextHookEx( 0, ccode, wParam, lParam );
+    return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   KBDLLHOOKSTRUCT *kbdat = (KBDLLHOOKSTRUCT*)lParam;
   PostMessage( (HWND)App->GetHandle(), wParam, kbdat->vkCode, 1 | ( kbdat->scanCode << 16 ) + ( kbdat->flags << 24 ) );
 
-  return ( CallNextHookEx( 0, ccode, wParam, lParam ) );
+  return (CallNextHookEx(nullptr, ccode, wParam, lParam));
 }
 
 LRESULT __stdcall KeyboardHook( int code, WPARAM wParam, LPARAM lParam )
 {
   if ( disableHooks || mumbleLink.textboxHasFocus )
-    return CallNextHookEx( 0, code, wParam, lParam );
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   // !!!!!!!!!!!!! https://stackoverflow.com/questions/3548932/keyboard-hook-changes-the-behavior-of-keys
 
-  if ( code < 0 )
-    return CallNextHookEx( 0, code, wParam, lParam );
+  if (code < 0) return CallNextHookEx(nullptr, code, wParam, lParam);
 
   if ( wParam != WM_KEYDOWN && wParam != WM_KEYUP && wParam != WM_CHAR && wParam != WM_DEADCHAR && wParam != WM_UNICHAR )
-    return CallNextHookEx( 0, code, wParam, lParam );
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   auto wnd = GetForegroundWindow();
   if ( code != HC_ACTION || !lParam || ( wnd != gw2Window && App && wnd != (HWND)App->GetHandle() ) )
-    return CallNextHookEx( 0, code, wParam, lParam );
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   if ( App && wnd == (HWND)App->GetHandle() )
-    return CallNextHookEx( 0, code, wParam, lParam );
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   KBDLLHOOKSTRUCT *kbdat = (KBDLLHOOKSTRUCT*)lParam;
   UINT mapped = MapVirtualKey( kbdat->vkCode, MAPVK_VK_TO_CHAR );
@@ -180,16 +179,16 @@ LRESULT __stdcall KeyboardHook( int code, WPARAM wParam, LPARAM lParam )
   bool inFocus = App->GetFocusItem() && App->GetFocusItem()->InstanceOf( "textbox" );
 
   if (mapped & (1 << 31) && !inFocus)
-    return CallNextHookEx(0, 0, wParam, (LPARAM)lParam);
+    return CallNextHookEx(nullptr, 0, wParam, lParam);
 
   if (!inFocus)
   {
     if (wParam == WM_KEYDOWN)
     {
       App->InjectMessage(WM_CHAR, mapped, 0);
-      return CallNextHookEx(0, 0, WM_KEYDOWN, (LPARAM)lParam);
+      return CallNextHookEx(nullptr, 0, WM_KEYDOWN, lParam);
     }
-    return CallNextHookEx(0, 0, wParam, (LPARAM)lParam);
+    return CallNextHookEx(nullptr, 0, wParam, lParam);
   }
 
   PostMessage( (HWND)App->GetHandle(), wParam, kbdat->vkCode, 1 | ( kbdat->scanCode << 16 ) + ( kbdat->flags << 24 ) );
@@ -199,12 +198,11 @@ LRESULT __stdcall KeyboardHook( int code, WPARAM wParam, LPARAM lParam )
 
 LRESULT __stdcall MouseHook( int code, WPARAM wParam, LPARAM lParam )
 {
-  if ( disableHooks )
-    return CallNextHookEx( 0, code, wParam, lParam );
+  if (disableHooks) return CallNextHookEx(nullptr, code, wParam, lParam);
 
   auto wnd = GetForegroundWindow();
   if ( code < 0 || !lParam || ( wnd != gw2Window && App && wnd != (HWND)App->GetHandle() ) )
-    return CallNextHookEx( 0, code, wParam, lParam );
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   MSLLHOOKSTRUCT *mousedat = (MSLLHOOKSTRUCT*)lParam;
 
@@ -221,10 +219,12 @@ LRESULT __stdcall MouseHook( int code, WPARAM wParam, LPARAM lParam )
   if ( wParam == WM_LBUTTONUP || wParam == WM_RBUTTONUP || wParam == WM_MOUSEMOVE )
   {
     PostMessage( (HWND)App->GetHandle(), wParam, 0, ap.x + ( ap.y << 16 ) );
-    return CallNextHookEx( 0, code, wParam, lParam ); //let these through so we don't mess up dragging etc
+    return CallNextHookEx(
+        nullptr, code, wParam,
+        lParam);  // let these through so we don't mess up dragging etc
   }
 
-  return CallNextHookEx( 0, code, wParam, lParam );
+  return CallNextHookEx(nullptr, code, wParam, lParam);
 }
 
 LONG WINAPI CrashOverride( struct _EXCEPTION_POINTERS * excpInfo )
@@ -243,33 +243,32 @@ DWORD GetProcessIntegrityLevel( HANDLE hProcess )
   DWORD dwLengthNeeded;
   DWORD dwError = ERROR_SUCCESS;
 
-  PTOKEN_MANDATORY_LABEL pTIL = NULL;
+  PTOKEN_MANDATORY_LABEL pTIL = nullptr;
   DWORD dwIntegrityLevel = 0;
 
   if ( OpenProcessToken( hProcess, TOKEN_QUERY, &hToken ) )
   {
     // Get the Integrity level.
-    if ( !GetTokenInformation( hToken, TokenIntegrityLevel,
-                               NULL, 0, &dwLengthNeeded ) )
-    {
+    if (!GetTokenInformation(hToken, TokenIntegrityLevel, nullptr, 0,
+                             &dwLengthNeeded)) {
       dwError = GetLastError();
       if ( dwError == ERROR_INSUFFICIENT_BUFFER )
       {
-        pTIL = (PTOKEN_MANDATORY_LABEL)LocalAlloc( 0,
-                                                   dwLengthNeeded );
-        if ( pTIL != NULL )
-        {
+        pTIL =
+            static_cast<PTOKEN_MANDATORY_LABEL>(LocalAlloc(0, dwLengthNeeded));
+        if (pTIL != nullptr) {
           if ( GetTokenInformation( hToken, TokenIntegrityLevel,
                                     pTIL, dwLengthNeeded, &dwLengthNeeded ) )
           {
-            dwIntegrityLevel = *GetSidSubAuthority( pTIL->Label.Sid,
-              (DWORD)(UCHAR)( *GetSidSubAuthorityCount( pTIL->Label.Sid ) - 1 ) );
+            dwIntegrityLevel = *GetSidSubAuthority(
+                pTIL->Label.Sid,
+                static_cast<DWORD>(static_cast<UCHAR>(
+                    *GetSidSubAuthorityCount(pTIL->Label.Sid) - 1)));
           }
           LocalFree( pTIL );
         }
       }
-    }
-    else
+    } else
       return -1;
     CloseHandle( hToken );
   }
@@ -324,7 +323,7 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
   DWORD dwDownloaded = 0;
 
   BOOL  bResults = FALSE;
-  HINTERNET  hSession = NULL, hConnect = NULL, hRequest = NULL;
+  HINTERNET hSession = nullptr, hConnect = nullptr, hRequest = nullptr;
 
   hSession = WinHttpOpen( L"WinHTTP Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0 );
 
@@ -332,13 +331,13 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
     hConnect = WinHttpConnect( hSession, wurl.c_str(), INTERNET_DEFAULT_HTTP_PORT, 0 );
 
   if ( hConnect )
-    hRequest = WinHttpOpenRequest( hConnect, L"GET", wpath.c_str(), NULL, WINHTTP_NO_REFERER, NULL, NULL );
+    hRequest = WinHttpOpenRequest(hConnect, L"GET", wpath.c_str(), nullptr,
+                                  WINHTTP_NO_REFERER, nullptr, NULL);
 
   if ( hRequest )
     bResults = WinHttpSendRequest( hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0 );
 
-  if ( bResults )
-    bResults = WinHttpReceiveResponse( hRequest, NULL );
+  if (bResults) bResults = WinHttpReceiveResponse(hRequest, nullptr);
 
   if ( !bResults )
   {
@@ -382,7 +381,8 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
   if ( hConnect ) WinHttpCloseHandle( hConnect );
   if ( hSession ) WinHttpCloseHandle( hSession );
 
-  return std::string( (char*)data.GetData(), data.GetLength() );
+  return std::string(reinterpret_cast<char *>(data.GetData()),
+                     data.GetLength());
 }
 
 std::string FetchHTTPS(std::string_view url, std::string_view path) {
@@ -395,7 +395,7 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
   DWORD dwDownloaded = 0;
 
   BOOL  bResults = FALSE;
-  HINTERNET  hSession = NULL, hConnect = NULL, hRequest = NULL;
+  HINTERNET hSession = nullptr, hConnect = nullptr, hRequest = nullptr;
 
   hSession = WinHttpOpen( L"WinHTTPS Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0 );
 
@@ -403,13 +403,14 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
     hConnect = WinHttpConnect( hSession, wurl.c_str(), INTERNET_DEFAULT_PORT, 0 );
 
   if ( hConnect )
-    hRequest = WinHttpOpenRequest( hConnect, L"GET", wpath.c_str(), NULL, WINHTTP_NO_REFERER, NULL, WINHTTP_FLAG_SECURE );
+    hRequest =
+        WinHttpOpenRequest(hConnect, L"GET", wpath.c_str(), nullptr,
+                           WINHTTP_NO_REFERER, nullptr, WINHTTP_FLAG_SECURE);
 
   if ( hRequest )
     bResults = WinHttpSendRequest( hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0 );
 
-  if ( bResults )
-    bResults = WinHttpReceiveResponse( hRequest, NULL );
+  if (bResults) bResults = WinHttpReceiveResponse(hRequest, nullptr);
 
   if ( !bResults )
     return "";
@@ -437,7 +438,8 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
   if ( hConnect ) WinHttpCloseHandle( hConnect );
   if ( hSession ) WinHttpCloseHandle( hSession );
 
-  return std::string( (const char*)data.GetData(), data.GetLength() );
+  return std::string(reinterpret_cast<const char *>(data.GetData()),
+                     data.GetLength());
 }
 
 #include <Urlmon.h>   // URLOpenBlockingStreamW()
@@ -517,7 +519,7 @@ TBOOL mouseHookActive = false;
 bool SetupTacoProtocolHandling()
 {
   TCHAR szFileName[ MAX_PATH + 1 ];
-  GetModuleFileName( NULL, szFileName, MAX_PATH + 1 );
+  GetModuleFileName(nullptr, szFileName, MAX_PATH + 1);
 
   HKEY key;
 
@@ -603,70 +605,69 @@ void FetchMarkerPackOnline( std::string_view ourl )
 
   DWORD downloadThreadID = 0;
 
-  auto downloadThread = CreateThread( NULL, 0, []( LPVOID data )
-  {
-    std::string url( (TS8*)data );
-    delete[] data;
+  auto downloadThread = CreateThread(
+      nullptr, 0,
+      [](LPVOID data) {
+        std::string url(static_cast<TS8 *>(data));
+        delete[] data;
 
-    CStreamWriterMemory mem;
-    if ( !DownloadFile( url, mem ) )
-    {
-      LOG_ERR( "[GW2TacO] Failed to download package %s", url.c_str() );
-      return (DWORD)0;
-    }
+        CStreamWriterMemory mem;
+        if (!DownloadFile(url, mem)) {
+          LOG_ERR("[GW2TacO] Failed to download package %s", url.c_str());
+          return static_cast<DWORD>(0);
+        }
 
-    mz_zip_archive zip;
-    memset( &zip, 0, sizeof( zip ) );
-    if ( !mz_zip_reader_init_mem( &zip, mem.GetData(), mem.GetLength(), 0 ) )
-    {
-      LOG_ERR( "[GW2TacO] Package %s doesn't seem to be a well formed zip file", url.c_str() );
-      return (DWORD)0;
-    }
+        mz_zip_archive zip;
+        memset(&zip, 0, sizeof(zip));
+        if (!mz_zip_reader_init_mem(&zip, mem.GetData(), mem.GetLength(), 0)) {
+          LOG_ERR(
+              "[GW2TacO] Package %s doesn't seem to be a well formed zip file",
+              url.c_str());
+          return static_cast<DWORD>(0);
+        }
 
-    mz_zip_reader_end( &zip );
+        mz_zip_reader_end(&zip);
 
-    int32_t cnt = 0;
-    for ( uint32_t x = 0; x < url.size(); x++ )
-      if ( url[ x ] == '\\' || url[ x ] == '/' )
-        cnt = x;
+        int32_t cnt = 0;
+        for (uint32_t x = 0; x < url.size(); x++)
+          if (url[x] == '\\' || url[x] == '/') cnt = x;
 
-    auto fileName = url.substr( cnt + 1 );
-    if ( fileName.empty() )
-    {
-      LOG_ERR( "[GW2TacO] Package %s has a malformed name", url.c_str() );
-      return (DWORD)0;
-    }
+        auto fileName = url.substr(cnt + 1);
+        if (fileName.empty()) {
+          LOG_ERR("[GW2TacO] Package %s has a malformed name", url.c_str());
+          return static_cast<DWORD>(0);
+        }
 
-    if ( fileName.find( ".zip" ) == fileName.size() - 4 )
-      fileName = fileName.substr( 0, fileName.size() - 4 );
+        if (fileName.find(".zip") == fileName.size() - 4)
+          fileName = fileName.substr(0, fileName.size() - 4);
 
-    if ( fileName.find( ".taco" ) == fileName.size() - 5 )
-      fileName = fileName.substr( 0, fileName.size() - 5 );
+        if (fileName.find(".taco") == fileName.size() - 5)
+          fileName = fileName.substr(0, fileName.size() - 5);
 
-    for ( uint32_t x = 0; x < fileName.size(); x++ )
-      if ( !isalnum( fileName[ x ] ) )
-        fileName[ x ] = '_';
+        for (char &x : fileName)
+          if (!isalnum(x)) x = '_';
 
-    fileName = "POIs/" + fileName + ".taco";
+        fileName = "POIs/" + fileName + ".taco";
 
-    CStreamWriterFile out;
-    if ( !out.Open( fileName ) )
-    {
-      LOG_ERR( "[GW2TacO] Failed to open file for writing: %s", fileName.c_str() );
-      return (DWORD)0;
-    }
+        CStreamWriterFile out;
+        if (!out.Open(fileName)) {
+          LOG_ERR("[GW2TacO] Failed to open file for writing: %s",
+                  fileName.c_str());
+          return static_cast<DWORD>(0);
+        }
 
-    if ( !out.Write( uint8_view(mem.GetData(), mem.GetLength()) ) )
-    {
-      LOG_ERR( "[GW2TacO] Failed to write out data to file: %s", fileName.c_str() );
-      remove( fileName.c_str() );
-      return (DWORD)0;
-    }
+        if (!out.Write(uint8_view(mem.GetData(), mem.GetLength()))) {
+          LOG_ERR("[GW2TacO] Failed to write out data to file: %s",
+                  fileName.c_str());
+          remove(fileName.c_str());
+          return static_cast<DWORD>(0);
+        }
 
-    loadList.Add( fileName );
+        loadList.Add(fileName);
 
-    return (DWORD)0;
-  }, urlPtr, 0, &downloadThreadID );
+        return static_cast<DWORD>(0);
+      },
+      urlPtr, 0, &downloadThreadID);
 }
 
 void ImportMarkerPack( CWBApplication* App, std::string_view zipFile );
@@ -734,7 +735,7 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   if ( cmdLine.find( "-fromurl" ) != cmdLine.npos )
   {
     TCHAR szFileName[ MAX_PATH + 1 ];
-    GetModuleFileName( NULL, szFileName, MAX_PATH + 1 );
+    GetModuleFileName(nullptr, szFileName, MAX_PATH + 1);
     std::string s( szFileName );
     for ( int32_t x = s.size() - 1; x >= 0; x-- )
       if ( s[ x ] == '\\' || s[ x ] == '/' )
@@ -797,7 +798,9 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     HMODULE hShCore = LoadLibrary( _T( "Shcore.dll" ) );
     if ( hShCore )
     {
-      SetProcessDpiAwareness setDPIAwareness = (SetProcessDpiAwareness)GetProcAddress( hShCore, "SetProcessDpiAwareness" );
+      SetProcessDpiAwareness setDPIAwareness =
+          reinterpret_cast<SetProcessDpiAwareness>(
+              GetProcAddress(hShCore, "SetProcessDpiAwareness"));
       if ( setDPIAwareness )
       {
         setDPIAwareness( PROCESS_PER_MONITOR_DPI_AWARE );
@@ -810,7 +813,9 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     if ( !dpiSet )
     {
       HMODULE hUser32 = LoadLibrary( _T( "user32.dll" ) );
-      SetProcessDPIAwareFunc setDPIAware = (SetProcessDPIAwareFunc)GetProcAddress( hUser32, "SetProcessDPIAware" );
+      SetProcessDPIAwareFunc setDPIAware =
+          reinterpret_cast<SetProcessDPIAwareFunc>(
+              GetProcAddress(hUser32, "SetProcessDPIAware"));
       if ( setDPIAware )
       {
         setDPIAware();
@@ -831,12 +836,12 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   LOG_NFO( "[GW2TacO] build ID: %s", ("GW2 TacO " + TacOBuild).c_str() );
 
-  bool hasDComp = 0;
+  bool hasDComp = false;
   HMODULE dComp = LoadLibraryA("dcomp.dll");
   if (dComp)
   {
-      hasDComp = 1;
-      FreeLibrary(dComp);
+    hasDComp = true;
+    FreeLibrary(dComp);
   }
 
   App = new COverlayApp();
@@ -846,7 +851,10 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   int width = 1;
   int height = 1;
 
-  CCoreWindowParameters p = CCoreWindowParameters( GetModuleHandle( NULL ), false, width, height, _T( "Guild Wars 2 Tactical Overlay" ), LoadIcon( hInstance, MAKEINTRESOURCE( IDI_ICON2 ) ) );
+  CCoreWindowParameters p =
+      CCoreWindowParameters(GetModuleHandle(nullptr), false, width, height,
+                            _T( "Guild Wars 2 Tactical Overlay" ),
+                            LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
   p.OverrideWindowStyle = WS_POPUP;
   p.OverrideWindowStyleEx = WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW;// | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
   if (dComp)
@@ -855,12 +863,17 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   FORCEDDEBUGLOG( "About to initialize the app." );
   if ( !App->Initialize( p ) )
   {
-    MessageBox( NULL, "Failed to initialize GW2 TacO!\nIf you want this error fixed,\nplease send the generated GW2TacO.log and a dxdiag log to boyc@scene.hu", "Fail.", MB_ICONERROR );
+    MessageBox(
+        nullptr,
+        "Failed to initialize GW2 TacO!\nIf you want this error fixed,\nplease "
+        "send the generated GW2TacO.log and a dxdiag log to boyc@scene.hu",
+        "Fail.", MB_ICONERROR);
     SAFEDELETE( App );
     return false;
   }
 
-  if ( !ChangeWindowMessageFilterEx( (HWND)App->GetHandle(), WM_COPYDATA, MSGFLT_ALLOW, NULL ) )
+  if (!ChangeWindowMessageFilterEx((HWND)App->GetHandle(), WM_COPYDATA,
+                                   MSGFLT_ALLOW, nullptr))
     LOG_ERR( "[GW2TacO] Failed to change message filters for WM_COPYDATA - gw2taco:// protocol messages will NOT be processed!" );
 
   FORCEDDEBUGLOG( "App initialized." );
@@ -914,35 +927,31 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
   {
     DWORD UpdateCheckThreadID = 0;
     auto hookThread = CreateThread(
-      NULL,                   // default security attributes
-      0,                      // use default stack size  
-      []( LPVOID data )
-    {
-      auto s = FetchHTTP( "www.gw2taco.com", "/2000/01/buildid.html" );
-      int32_t idpos = s.find( "[buildid:" );
-      if ( idpos != s.npos )
-      {
-        auto sub = s.substr( idpos );
-        int32_t release = 0;
-        int32_t build = 0;
-        if ( std::sscanf(sub.c_str(), "[buildid:%d.%dr]", &release, &build ) == 2 )
-        {
-          extern int32_t TacORelease;
-          extern int32_t TacOBuildCount;
-          if ( release > TacORelease || build > TacOBuildCount )
-          {
-            NewTacOVersion = release;
-            IsTacOUptoDate = false;
+        nullptr,  // default security attributes
+        0,        // use default stack size
+        [](LPVOID data) {
+          auto s = FetchHTTP("www.gw2taco.com", "/2000/01/buildid.html");
+          int32_t idpos = s.find("[buildid:");
+          if (idpos != s.npos) {
+            auto sub = s.substr(idpos);
+            int32_t release = 0;
+            int32_t build = 0;
+            if (std::sscanf(sub.c_str(), "[buildid:%d.%dr]", &release,
+                            &build) == 2) {
+              extern int32_t TacORelease;
+              extern int32_t TacOBuildCount;
+              if (release > TacORelease || build > TacOBuildCount) {
+                NewTacOVersion = release;
+                IsTacOUptoDate = false;
+              }
+            }
           }
-        }
-      }
 
-      return (DWORD)0;
-    },
-      0,          // argument to thread function 
-      0,                      // use default creation flags 
-      &UpdateCheckThreadID );
-
+          return static_cast<DWORD>(0);
+        },
+        nullptr,  // argument to thread function
+        0,        // use default creation flags
+        &UpdateCheckThreadID);
   }
 
   SetLayeredWindowAttributes( handle, 0, 255, LWA_ALPHA );
@@ -966,7 +975,8 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
   FORCEDDEBUGLOG( "starting main loop" );
 
-  GW2TacO *taco = (GW2TacO*)App->GetRoot()->FindChildByID( "tacoroot", "GW2TacO" );
+  GW2TacO *taco = dynamic_cast<GW2TacO *>(
+      App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
 
   if ( !taco )
     return 0;
@@ -1057,7 +1067,12 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             LOG_DBG( "[GW2TacO] Taco integrity: %x, GW2 integrity: %x", currentProcessIntegrity, gw2ProcessIntegrity );
 
             if ( gw2ProcessIntegrity > currentProcessIntegrity || gw2ProcessIntegrity == -1 )
-              MessageBox( NULL, "GW2 seems to have more elevated rights than GW2 TacO.\nThis will probably result in TacO not being interactive when GW2 is in focus.\nIf this is an issue for you, restart TacO in Administrator mode.", "Warning", MB_ICONWARNING );
+              MessageBox(nullptr,
+                         "GW2 seems to have more elevated rights than GW2 "
+                         "TacO.\nThis will probably result in TacO not being "
+                         "interactive when GW2 is in focus.\nIf this is an "
+                         "issue for you, restart TacO in Administrator mode.",
+                         "Warning", MB_ICONWARNING);
           }
           FoundGW2Window = true;
 
@@ -1073,7 +1088,8 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             bool NeedsResize = GW2ClientRect.right - GW2ClientRect.left != pos.Width() || GW2ClientRect.bottom - GW2ClientRect.top != pos.Height();
             pos = CRect( GW2ClientRect.left + p.x, GW2ClientRect.top + p.y, GW2ClientRect.left + p.x + GW2ClientRect.right - GW2ClientRect.left, GW2ClientRect.top + p.y + GW2ClientRect.bottom - GW2ClientRect.top );
 
-            ::SetWindowPos( handle, 0, pos.x1, pos.y1, pos.Width(), pos.Height(), SWP_NOREPOSITION );
+            ::SetWindowPos(handle, nullptr, pos.x1, pos.y1, pos.Width(),
+                           pos.Height(), SWP_NOREPOSITION);
 
             if ( NeedsResize )
             {
@@ -1135,40 +1151,38 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
           FORCEDDEBUGLOG( "creating thread" );
           auto hookThread = CreateThread(
-            NULL,                   // default security attributes
-            0,                      // use default stack size  
-            []( LPVOID data )
-          {
-            auto keyboardHook = SetWindowsHookEx( WH_KEYBOARD_LL, KeyboardHook, NULL, 0 );
-            auto mouseHook = SetWindowsHookEx( WH_MOUSE_LL, MouseHook, NULL, 0 );
-            MSG msg;
+              nullptr,  // default security attributes
+              0,        // use default stack size
+              [](LPVOID data) {
+                auto keyboardHook =
+                    SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHook, nullptr, 0);
+                auto mouseHook =
+                    SetWindowsHookEx(WH_MOUSE_LL, MouseHook, nullptr, 0);
+                MSG msg;
 
-            if ( !keyboardHook || !mouseHook )
-            {
-              FORCEDDEBUGLOG( "failed to set mouse or keyboard hook" );
-            }
-            keyboardHookActive = true;
-            mouseHookActive = true;
+                if (!keyboardHook || !mouseHook) {
+                  FORCEDDEBUGLOG("failed to set mouse or keyboard hook");
+                }
+                keyboardHookActive = true;
+                mouseHookActive = true;
 
-            while ( GetMessage( &msg, 0, 0, 0 ) > 0 )
-            {
-              if ( msg.message == WM_QUIT )
-                break;
-              TranslateMessage( &msg );
-            }
-            DispatchMessage( &msg );
+                while (GetMessage(&msg, nullptr, 0, 0) > 0) {
+                  if (msg.message == WM_QUIT) break;
+                  TranslateMessage(&msg);
+                }
+                DispatchMessage(&msg);
 
-            UnhookWindowsHookEx( keyboardHook );
-            UnhookWindowsHookEx( mouseHook );
+                UnhookWindowsHookEx(keyboardHook);
+                UnhookWindowsHookEx(mouseHook);
 
-            keyboardHookActive = false;
-            mouseHookActive = false;
+                keyboardHookActive = false;
+                mouseHookActive = false;
 
-            return (DWORD)0;
-          },
-            0,          // argument to thread function 
-            0,                      // use default creation flags 
-            &hookThreadID );
+                return static_cast<DWORD>(0);
+              },
+              nullptr,  // argument to thread function
+              0,        // use default creation flags
+              &hookThreadID);
         }
         HooksInitialized = true;
       }

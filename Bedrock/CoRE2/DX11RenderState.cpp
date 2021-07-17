@@ -7,7 +7,7 @@ CCoreDX11BlendState::CCoreDX11BlendState(CCoreDX11Device *d) : CCoreBlendState(d
 	Device = d;
 	Dev = Device->GetDevice();
 	Context = Device->GetDeviceContext();
-	State = NULL;
+        State = nullptr;
 }
 
 CCoreDX11BlendState::~CCoreDX11BlendState()
@@ -19,9 +19,9 @@ TBOOL CCoreDX11BlendState::Update()
 {
 	if (!Dirty) return true;
 	if (State) State->Release();
-	State = NULL;
+        State = nullptr;
 
-	D3D11_BLEND_DESC desc;
+        D3D11_BLEND_DESC desc;
 	desc.AlphaToCoverageEnable = AlphaToCoverage;
 	desc.IndependentBlendEnable = IndependentBlend;
 	for (int32_t x = 0; x < 8; x++)
@@ -54,8 +54,8 @@ TBOOL CCoreDX11BlendState::Apply()
 	Update();
 	if (Device->GetCurrentBlendState() != State)
 	{
-		Context->OMSetBlendState(State, NULL, 0xffffffff);
-		Device->SetCurrentBlendState(State);
+          Context->OMSetBlendState(State, nullptr, 0xffffffff);
+          Device->SetCurrentBlendState(State);
 	}
 	return true;
 }
@@ -65,7 +65,7 @@ CCoreDX11DepthStencilState::CCoreDX11DepthStencilState(CCoreDX11Device *d) : CCo
 	Device = d;
 	Dev = Device->GetDevice();
 	Context = Device->GetDeviceContext();
-	State = NULL;
+        State = nullptr;
 }
 
 CCoreDX11DepthStencilState::~CCoreDX11DepthStencilState()
@@ -77,9 +77,9 @@ TBOOL CCoreDX11DepthStencilState::Update()
 {
 	if (!Dirty) return true;
 	if (State) State->Release();
-	State = NULL;
+        State = nullptr;
 
-	D3D11_DEPTH_STENCIL_DESC desc;
+        D3D11_DEPTH_STENCIL_DESC desc;
 	memset(&desc, 0, sizeof(D3D11_DEPTH_STENCIL_DESC));
 
 	desc.DepthEnable = DepthEnable;
@@ -116,7 +116,7 @@ CCoreDX11RasterizerState::CCoreDX11RasterizerState(CCoreDX11Device *d) : CCoreRa
 	Device = d;
 	Dev = Device->GetDevice();
 	Context = Device->GetDeviceContext();
-	State = NULL;
+        State = nullptr;
 }
 
 CCoreDX11RasterizerState::~CCoreDX11RasterizerState()
@@ -128,9 +128,9 @@ TBOOL CCoreDX11RasterizerState::Update()
 {
 	if (!Dirty) return true;
 	if (State) State->Release();
-	State = NULL;
+        State = nullptr;
 
-	D3D11_RASTERIZER_DESC desc;
+        D3D11_RASTERIZER_DESC desc;
 	desc.AntialiasedLineEnable = AntialiasedLineEnable;
 	desc.CullMode = DX11CullModes[CullMode];
 	desc.DepthBias = DepthBias;
@@ -170,7 +170,7 @@ CCoreDX11SamplerState::CCoreDX11SamplerState(CCoreDX11Device *d) : CCoreSamplerS
 	Device = d;
 	Dev = Device->GetDevice();
 	Context = Device->GetDeviceContext();
-	State = NULL;
+        State = nullptr;
 }
 
 CCoreDX11SamplerState::~CCoreDX11SamplerState()
@@ -182,9 +182,9 @@ TBOOL CCoreDX11SamplerState::Update()
 {
 	if (!Dirty) return true;
 	if (State) State->Release();
-	State = NULL;
+        State = nullptr;
 
-	D3D11_SAMPLER_DESC desc;
+        D3D11_SAMPLER_DESC desc;
 
 	desc.AddressU = DX11TextureAddressModes[AddressU];
 	desc.AddressV = DX11TextureAddressModes[AddressV];

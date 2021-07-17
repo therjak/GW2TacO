@@ -7,7 +7,7 @@
 //////////////////////////////////////////////////////////////////////////
 // metrics
 
-CWBMetricValue::CWBMetricValue() : Metrics{0}, MetricsUsed{0} {}
+CWBMetricValue::CWBMetricValue() = default;
 
 void CWBMetricValue::SetMetric(WBMETRICTYPE w, float Value) {
   Metrics[w] = Value;
@@ -111,17 +111,20 @@ CRect CWBPositionDescriptor::GetPadding(CSize ParentSize,
                                         const CRect &BorderSizes) {
   CRect r(0, 0, 0, 0);
 
-  r.x1 = (int32_t)Positions[WB_PADDING_LEFT].GetValue((float)ParentSize.x, 0) +
+  r.x1 = static_cast<int32_t>(Positions[WB_PADDING_LEFT].GetValue(
+             static_cast<float>(ParentSize.x), 0)) +
          BorderSizes.x1;
-  r.y1 = (int32_t)Positions[WB_PADDING_TOP].GetValue((float)ParentSize.y, 0) +
+  r.y1 = static_cast<int32_t>(Positions[WB_PADDING_TOP].GetValue(
+             static_cast<float>(ParentSize.y), 0)) +
          BorderSizes.y1;
   r.x2 = ParentSize.x -
-         (int32_t)Positions[WB_PADDING_RIGHT].GetValue((float)ParentSize.x, 0) -
+         static_cast<int32_t>(Positions[WB_PADDING_RIGHT].GetValue(
+             static_cast<float>(ParentSize.x), 0)) -
          BorderSizes.x2;
-  r.y2 =
-      ParentSize.y -
-      (int32_t)Positions[WB_PADDING_BOTTOM].GetValue((float)ParentSize.y, 0) -
-      BorderSizes.y2;
+  r.y2 = ParentSize.y -
+         static_cast<int32_t>(Positions[WB_PADDING_BOTTOM].GetValue(
+             static_cast<float>(ParentSize.y), 0)) -
+         BorderSizes.y2;
 
   return r;
 }
@@ -149,16 +152,16 @@ TBOOL CWBPositionDescriptor::IsHeightSet() {
 int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize, CSize ContentSize) {
   const bool WidthSet = Positions.HasKey(WB_WIDTH);
   if (WidthSet)
-    return (int32_t)Positions[WB_WIDTH].GetValue((float)ParentSize.x,
-                                                 ContentSize.x);
+    return static_cast<int32_t>(Positions[WB_WIDTH].GetValue(
+        static_cast<float>(ParentSize.x), ContentSize.x));
   return 0;
 }
 
 int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
   const bool HeightSet = Positions.HasKey(WB_HEIGHT);
   if (HeightSet)
-    return (int32_t)Positions[WB_HEIGHT].GetValue((float)ParentSize.y,
-                                                  ContentSize.y);
+    return static_cast<int32_t>(Positions[WB_HEIGHT].GetValue(
+        static_cast<float>(ParentSize.y), ContentSize.y));
   return 0;
 }
 
@@ -187,7 +190,7 @@ CWBPositionDescriptorPixels::CWBPositionDescriptorPixels() {
 }
 
 void CWBPositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
-  if ((int32_t)p < 0 || p > WB_HEIGHT) return;
+  if (static_cast<int32_t>(p) < 0 || p > WB_HEIGHT) return;
   Positions[p] = Pixels;
   Set[p] = true;
 }
@@ -276,7 +279,7 @@ CWBMosaic::CWBMosaic(const CWBMosaic &Copy) {
 }
 
 CWBMosaic::CWBMosaic() {
-  for (int32_t x = 0; x < 4; x++) Overshoot[x] = 0;
+  for (int &x : Overshoot) x = 0;
 }
 
 CWBMosaic &CWBMosaic::operator=(const CWBMosaic &Copy) {
@@ -478,14 +481,14 @@ CWBSkinElement *CWBSkin::GetElement(std::string_view Name) {
       return &skin;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 CWBSkinElement *CWBSkin::GetElement(WBSKINELEMENTID id) {
-  if (id == 0xffffffff) return NULL;
-  if (!(id & 0x80000000)) return NULL;  // mosaic
+  if (id == 0xffffffff) return nullptr;
+  if (!(id & 0x80000000)) return nullptr;  // mosaic
   const uint32_t idx = id & 0x7fffffff;
-  if (idx >= SkinItems.size()) return NULL;
+  if (idx >= SkinItems.size()) return nullptr;
   return &SkinItems[idx];
 }
 

@@ -68,7 +68,7 @@ void TS3Connection::TryValidateClientID() {
 
 void TS3Connection::Tick() {
   if (!connection.IsConnected()) {
-    if (FindWindow(NULL, "TeamSpeak 3")) {
+    if (FindWindow(nullptr, "TeamSpeak 3")) {
       if (!TryConnect()) return;
     } else
       return;
@@ -114,10 +114,10 @@ void TS3Connection::InitConnection() {
   CommandResponse response = SendCommand("serverconnectionhandlerlist");
   if (!response.ErrorCode && !response.Lines.empty()) {
     auto schandlers = Split(response.Lines[0], "|");
-    for (int32_t x = 0; x < schandlers.size(); x++)
-      if (schandlers[x].find("schandlerid=") == 0) {
+    for (auto& schandler : schandlers)
+      if (schandler.find("schandlerid=") == 0) {
         TS3Schandler handler;
-        std::sscanf(schandlers[x].c_str(), "schandlerid=%d", &handler.id);
+        std::sscanf(schandler.c_str(), "schandlerid=%d", &handler.id);
         handlers[handler.id] = handler;
         CommandResponse use = SendCommand(FormatString("use %d", handler.id));
         if (use.ErrorCode) continue;
@@ -168,7 +168,7 @@ TS3Connection::CommandResponse TS3Connection::SendCommand(
   connection.Write(message);
   connection.Write("\n");
 
-  while (1) {
+  while (true) {
     if (!connection.IsConnected()) {
       response.ErrorCode = -1;
       response.Message = "Disconnected";
@@ -203,7 +203,7 @@ void TS3Connection::ProcessNotifications() {
 
 int ClientTalkTimeSorter(const TS3Connection::TS3Client& a,
                          const TS3Connection::TS3Client& b) {
-  return (int)(b.lastTalkTime - a.lastTalkTime);
+  return static_cast<int>(b.lastTalkTime - a.lastTalkTime);
 }
 
 void TS3Connection::ProcessNotification(std::string_view s) {
@@ -390,8 +390,8 @@ std::string TS3Connection::ReadLine() {
 void TS3Connection::ProcessChannelList(std::string_view channeldata,
                                        int32_t handler) {
   auto channels = Split(channeldata, "|");
-  for (int32_t x = 0; x < channels.size(); x++) {
-    auto channelData = SplitByWhitespace(channels[x]);
+  for (auto& x : channels) {
+    auto channelData = SplitByWhitespace(x);
     TS3Channel channel;
     for (const auto& cd : channelData) {
       if (cd.find("cid=") == 0) {
@@ -424,8 +424,8 @@ void TS3Connection::ProcessClientList(std::string_view clientdata,
   bool needsSort = false;
 
   auto channels = Split(clientdata, "|");
-  for (int32_t x = 0; x < channels.size(); x++) {
-    auto clientData = SplitByWhitespace(channels[x]);
+  for (auto& channel : channels) {
+    auto clientData = SplitByWhitespace(channel);
     TS3Client client;
     for (const auto& cd : clientData) {
       if (cd.find("cid=") == 0) {

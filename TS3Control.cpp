@@ -106,7 +106,7 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
 TS3Control::TS3Control(CWBItem *Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
-TS3Control::~TS3Control() {}
+TS3Control::~TS3Control() = default;
 
 CWBItem *TS3Control::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
   return TS3Control::Create(Root, Pos).get();

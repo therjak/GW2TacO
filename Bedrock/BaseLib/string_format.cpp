@@ -111,7 +111,7 @@ std::string B64Decode(std::string_view str64) {
 
 std::wstring string2wstring(std::string_view s) {
   if (s.empty()) return {};
-  int wchars_num = MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, NULL, 0);
+  int wchars_num = MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, nullptr, 0);
   std::wstring wstr(wchars_num, 0);
   MultiByteToWideChar(CP_UTF8, 0, s.data(), -1, wstr.data(), wstr.size());
   return wstr;
@@ -119,11 +119,11 @@ std::wstring string2wstring(std::string_view s) {
 
 std::string wstring2string(std::wstring_view s) {
   if (s.empty()) return {};
-  int chars_num =
-      WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), NULL, 0, NULL, NULL);
+  int chars_num = WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), nullptr,
+                                      0, nullptr, nullptr);
   std::string str(chars_num, 0);
   WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), str.data(), chars_num,
-                      NULL, NULL);
+                      nullptr, nullptr);
   return str;
 }
 

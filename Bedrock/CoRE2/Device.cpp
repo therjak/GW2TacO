@@ -9,8 +9,8 @@ INLINE const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
 
 INLINE void RenderStateFromID(const CORERENDERSTATEID ID,
                               CORERENDERSTATE &State, CORESAMPLER &Sampler) {
-  State = (CORERENDERSTATE)(ID >> 16);
-  Sampler = (CORESAMPLER)(ID & 0xffff);
+  State = static_cast<CORERENDERSTATE>(ID >> 16);
+  Sampler = static_cast<CORESAMPLER>(ID & 0xffff);
 }
 
 void CCoreDevice::AddResource(CCoreResource *Resource) {
@@ -23,8 +23,8 @@ void CCoreDevice::RemoveResource(CCoreResource *Resource) {
 }
 
 CCoreDevice::CCoreDevice() {
-  Window = NULL;
-  CurrentVertexBuffer = RequestedVertexBuffer = NULL;
+  Window = nullptr;
+  CurrentVertexBuffer = RequestedVertexBuffer = nullptr;
   CurrentVertexBufferOffset = RequestedVertexBufferOffset = 0;
   CurrentVertexFormatSize = 0;
 }
@@ -96,7 +96,7 @@ TBOOL CCoreDevice::ApplyRequestedRenderState() {
       CurrentVertexBufferOffset != RequestedVertexBufferOffset) {
     if (!RequestedVertexBuffer) {
       if (!SetNoVertexBuffer()) return false;
-      RequestedVertexBuffer = NULL;
+      RequestedVertexBuffer = nullptr;
       RequestedVertexBufferOffset = 0;
     } else {
       if (!ApplyVertexBuffer(RequestedVertexBuffer,
@@ -173,20 +173,21 @@ TBOOL CCoreDevice::SetSamplerState(CORESAMPLER Sampler,
 
 TBOOL CCoreDevice::SetRenderState(CCoreRasterizerState *RasterizerState) {
   RequestedRenderState[IDFromRenderState(CORERS_RASTERIZERSTATE,
-                                         (CORESAMPLER)0)]
+                                         static_cast<CORESAMPLER>(0))]
       .RasterizerState = RasterizerState;
   return true;
 }
 
 TBOOL CCoreDevice::SetRenderState(CCoreBlendState *BlendState) {
-  RequestedRenderState[IDFromRenderState(CORERS_BLENDSTATE, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_BLENDSTATE,
+                                         static_cast<CORESAMPLER>(0))]
       .BlendState = BlendState;
   return true;
 }
 
 TBOOL CCoreDevice::SetRenderState(CCoreDepthStencilState *DepthStencilState) {
   RequestedRenderState[IDFromRenderState(CORERS_DEPTHSTENCILSTATE,
-                                         (CORESAMPLER)0)]
+                                         static_cast<CORESAMPLER>(0))]
       .DepthStencilState = DepthStencilState;
   return true;
 }
@@ -198,31 +199,36 @@ TBOOL CCoreDevice::SetTexture(CORESAMPLER Sampler, CCoreTexture *Texture) {
 }
 
 TBOOL CCoreDevice::SetVertexShader(CCoreVertexShader *Shader) {
-  RequestedRenderState[IDFromRenderState(CORERS_VERTEXSHADER, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_VERTEXSHADER,
+                                         static_cast<CORESAMPLER>(0))]
       .VertexShader = Shader;
   return true;
 }
 
 TBOOL CCoreDevice::SetPixelShader(CCorePixelShader *Shader) {
-  RequestedRenderState[IDFromRenderState(CORERS_PIXELSHADER, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_PIXELSHADER,
+                                         static_cast<CORESAMPLER>(0))]
       .PixelShader = Shader;
   return true;
 }
 
 TBOOL CCoreDevice::SetGeometryShader(CCoreGeometryShader *Shader) {
-  RequestedRenderState[IDFromRenderState(CORERS_GEOMETRYSHADER, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_GEOMETRYSHADER,
+                                         static_cast<CORESAMPLER>(0))]
       .GeometryShader = Shader;
   return true;
 }
 
 TBOOL CCoreDevice::SetHullShader(CCoreHullShader *Shader) {
-  RequestedRenderState[IDFromRenderState(CORERS_HULLSHADER, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_HULLSHADER,
+                                         static_cast<CORESAMPLER>(0))]
       .HullShader = Shader;
   return true;
 }
 
 TBOOL CCoreDevice::SetDomainShader(CCoreDomainShader *Shader) {
-  RequestedRenderState[IDFromRenderState(CORERS_DOMAINSHADER, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_DOMAINSHADER,
+                                         static_cast<CORESAMPLER>(0))]
       .DomainShader = Shader;
   return true;
 }
@@ -235,13 +241,15 @@ TBOOL CCoreDevice::SetVertexBuffer(CCoreVertexBuffer *VertexBuffer,
 }
 
 TBOOL CCoreDevice::SetIndexBuffer(CCoreIndexBuffer *IndexBuffer) {
-  RequestedRenderState[IDFromRenderState(CORERS_INDEXBUFFER, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_INDEXBUFFER,
+                                         static_cast<CORESAMPLER>(0))]
       .IndexBuffer = IndexBuffer;
   return true;
 }
 
 TBOOL CCoreDevice::SetVertexFormat(CCoreVertexFormat *VertexFormat) {
-  RequestedRenderState[IDFromRenderState(CORERS_VERTEXFORMAT, (CORESAMPLER)0)]
+  RequestedRenderState[IDFromRenderState(CORERS_VERTEXFORMAT,
+                                         static_cast<CORESAMPLER>(0))]
       .VertexFormat = VertexFormat;
   return true;
 }
@@ -255,7 +263,7 @@ CCoreTexture *CCoreDevice::GetTexture(CORESAMPLER Sampler) {
   if (CurrentRenderState.HasKey(IDFromRenderState(CORERS_TEXTURE, Sampler)))
     return CurrentRenderState[IDFromRenderState(CORERS_TEXTURE, Sampler)]
         .Texture;
-  return NULL;
+  return nullptr;
 }
 
 TBOOL CCoreDevice::CreateDefaultRenderStates() {

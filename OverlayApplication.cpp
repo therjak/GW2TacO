@@ -1,6 +1,6 @@
 ﻿#include "OverlayApplication.h"
 
-COverlayApp::COverlayApp() {}
+COverlayApp::COverlayApp() = default;
 
 TBOOL COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
   FORCEDDEBUGLOG("COverlayApp::Initialize()");
@@ -38,7 +38,7 @@ TBOOL COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
   return true;
 }
 
-COverlayApp::~COverlayApp() {}
+COverlayApp::~COverlayApp() = default;
 
 void COverlayApp::TakeScreenshot() {}
 
@@ -54,7 +54,8 @@ LRESULT COverlayApp::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_COPYDATA:
       PCOPYDATASTRUCT pcpy = (PCOPYDATASTRUCT)lParam;
       if (pcpy) {
-        std::string_view incoming((TS8*)(pcpy->lpData), pcpy->cbData);
+        std::string_view incoming(static_cast<TS8*>(pcpy->lpData),
+                                  pcpy->cbData);
         FetchMarkerPackOnline(incoming);
       }
       break;

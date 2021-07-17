@@ -14,8 +14,8 @@ enum WBMETRICTYPE
 
 class CWBMetricValue
 {
-  float Metrics[ WB_METRIC_COUNT ];
-  TBOOL MetricsUsed[ WB_METRIC_COUNT ];
+  float Metrics[WB_METRIC_COUNT]{0};
+  TBOOL MetricsUsed[WB_METRIC_COUNT]{0};
   bool AutoSize = false;
 
 public:

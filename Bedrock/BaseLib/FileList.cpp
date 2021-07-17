@@ -2,12 +2,14 @@
 
 #include <Windows.h>
 
+#include <utility>
+
 const bool operator==(const CFileListEntry &f1, const CFileListEntry &f2) {
   return f1.Path == f2.Path && f1.FileName == f2.FileName;
 }
 
 bool exists(std::string_view fname) {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   if (fopen_s(&f, fname.data(), "rb")) return false;
   if (!f) return false;
   fclose(f);
@@ -19,7 +21,7 @@ CFileList::CFileList(std::string_view Mask, std::string_view Path /* ="" */,
   ExpandSearch(Mask, Path, Recursive);
 }
 
-CFileList::CFileList() {}
+CFileList::CFileList() = default;
 
 void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
                              bool Recursive, bool getDirectories) {
@@ -75,7 +77,7 @@ void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
   }
 }
 
-CFileList::~CFileList() {}
+CFileList::~CFileList() = default;
 
 CFileListEntry::CFileListEntry(std::string &&pth, std::string &&fn)
     :
@@ -83,7 +85,7 @@ CFileListEntry::CFileListEntry(std::string &&pth, std::string &&fn)
       Path(std::move(pth)),
       FileName(std::move(fn)) {}
 
-CFileListEntry::CFileListEntry(const std::string &pth, const std::string &fn)
-    : Path(pth), FileName(fn) {}
+CFileListEntry::CFileListEntry(std::string pth, std::string fn)
+    : Path(std::move(pth)), FileName(std::move(fn)) {}
 
-CFileListEntry::CFileListEntry() {}
+CFileListEntry::CFileListEntry() = default;

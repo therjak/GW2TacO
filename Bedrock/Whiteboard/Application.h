@@ -106,7 +106,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   void RegisterItem(CWBItem *Item);
   void UnRegisterItem(CWBItem *Item);
-  CWBItem *FindItemByGuid(WBGUID Guid, const TCHAR *type = NULL);
+  CWBItem *FindItemByGuid(WBGUID Guid, const TCHAR *type = nullptr);
 
   template <typename... Args>
   CWBItem *FindItemByGuids(WBGUID Guid, Args... args) {

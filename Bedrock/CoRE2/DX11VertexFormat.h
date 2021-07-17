@@ -18,7 +18,7 @@ class CCoreDX11VertexFormat : public CCoreVertexFormat {
   ~CCoreDX11VertexFormat() override;
 
   TBOOL Create(const CArray<COREVERTEXATTRIBUTE> &Attributes,
-               CCoreVertexShader *vs = NULL) override;
+               CCoreVertexShader *vs = nullptr) override;
   int32_t GetSize() override;
 };
 

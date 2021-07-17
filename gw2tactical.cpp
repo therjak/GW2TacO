@@ -41,7 +41,7 @@ int32_t AddStringToMap(std::string_view string) {
   if (pos != stringArray.end()) {
     return std::distance(stringArray.begin(), pos);
   }
-  stringArray.push_back(std::string(string));
+  stringArray.emplace_back(string);
   return stringArray.size() - 1;
 }
 
@@ -123,8 +123,8 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
                          std::string_view zipFile,
                          std::string_view categoryZip) {
   std::string filename(fname);
-  for (uint32_t x = 0; x < filename.size(); x++)
-    if (filename[x] == '\\') filename[x] = '/';
+  for (char &x : filename)
+    if (x == '\\') x = '/';
 
   auto s = (zipFile.size() ? (std::string(zipFile) + "\\") : "") + filename;
   std::transform(s.begin(), s.end(), s.begin(),
@@ -164,14 +164,16 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
           mz_zip_archive_file_stat stat;
           if (mz_zip_reader_file_stat(zip, idx, &stat) &&
               stat.m_uncomp_size > 0) {
-            auto data =
-                std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
+            auto data = std::make_unique<uint8_t[]>(
+                static_cast<int32_t>(stat.m_uncomp_size));
 
-            if (mz_zip_reader_extract_to_mem(zip, idx, data.get(),
-                                             (int32_t)stat.m_uncomp_size, 0)) {
+            if (mz_zip_reader_extract_to_mem(
+                    zip, idx, data.get(),
+                    static_cast<int32_t>(stat.m_uncomp_size), 0)) {
               uint8_t *imageData = nullptr;
               int32_t xres, yres;
-              if (DecompressPNG(data.get(), (int32_t)stat.m_uncomp_size,
+              if (DecompressPNG(data.get(),
+                                static_cast<int32_t>(stat.m_uncomp_size),
                                 imageData, xres, yres)) {
                 ARGBtoABGR(imageData, xres, yres);
 
@@ -208,8 +210,8 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
 
   uint8_t *imageData = nullptr;
   int32_t xres, yres;
-  if (!DecompressPNG(f.GetData(), (int32_t)f.GetLength(), imageData, xres,
-                     yres)) {
+  if (!DecompressPNG(f.GetData(), static_cast<int32_t>(f.GetLength()),
+                     imageData, xres, yres)) {
     LOG_ERR("[GWTacO] Failed to decompress png %s", s.c_str());
     return DefaultIconHandle;
   }
@@ -376,9 +378,9 @@ void GW2TacticalDisplay::FetchAchievements() {
 
         std::unordered_map<int32_t, Achievement> incoming;
 
-        for (unsigned int x = 0; x < achiData.size(); x++) {
-          if (!achiData[x]->is<Object>()) continue;
-          auto &data = achiData[x]->get<Object>();
+        for (auto &x : achiData) {
+          if (!x->is<Object>()) continue;
+          auto &data = x->get<Object>();
 
           if (!data.has<Boolean>("done")) continue;
 
@@ -392,9 +394,9 @@ void GW2TacticalDisplay::FetchAchievements() {
           if (!done && data.has<Array>("bits")) {
             auto &bitArray = incoming[achiId].bits;
             auto bits = data.get<Array>("bits").values();
-            for (unsigned int y = 0; y < bits.size(); y++) {
-              if (!bits[y]->is<Number>()) continue;
-              bitArray.push_back(int32_t(bits[y]->get<Number>()));
+            for (auto &bit : bits) {
+              if (!bit->is<Number>()) continue;
+              bitArray.push_back(int32_t(bit->get<Number>()));
             }
           } else if (done)
             incoming[achiId].bits.clear();
@@ -464,7 +466,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
   if (poi.typeData.behavior == POIBehavior::WvWObjective) {
     time_t elapsedtime = currtime - poi.lastUpdateTime;
     if (elapsedtime < 300) {
-      timeLeft = (int32_t)(300 - elapsedtime);
+      timeLeft = static_cast<int32_t>(300 - elapsedtime);
       drawCountdown = true;
     }
   }
@@ -473,7 +475,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
     time_t elapsedtime = currtime - poi.lastUpdateTime;
     if (elapsedtime < poi.typeData.resetLength) {
       if (poi.typeData.bits.hasCountdown) {
-        timeLeft = (int32_t)(poi.typeData.resetLength - elapsedtime);
+        timeLeft = static_cast<int32_t>(poi.typeData.resetLength - elapsedtime);
         drawCountdown = true;
       } else
         return;
@@ -579,9 +581,10 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
   camspacex = camspacex * persp;
   camspacex /= camspacex.w;
 
-  int s = (int)min(poi.typeData.maxSize,
-                   max(poi.typeData.minSize,
-                       abs((camspacex - camspace).x) * drawrect.Width()));
+  int s = static_cast<int> min(
+      poi.typeData.maxSize,
+      max(poi.typeData.minSize,
+          abs((camspacex - camspace).x) * drawrect.Width()));
 
   if (poi.typeData.behavior == POIBehavior::WvWObjective) {
     alphaMultiplier =
@@ -590,8 +593,8 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
 
   screenpos = screenpos * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
 
-  CPoint p = CPoint((int)(screenpos.x * drawrect.Width()),
-                    (int)((1 - screenpos.y) * drawrect.Height()));
+  CPoint p = CPoint(static_cast<int>(screenpos.x * drawrect.Width()),
+                    static_cast<int>((1 - screenpos.y) * drawrect.Height()));
 
   CRect rect = CRect(p - CPoint(s, s), p + CPoint(s, s));
 
@@ -715,7 +718,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
       std::string txt;
 
       if (!useMetricDisplay)
-        txt = FormatString("%d", (int32_t)charDist);
+        txt = FormatString("%d", static_cast<int32_t>(charDist));
       else {
         charDist *= 0.0254f;
         txt = FormatString("%.1fm", charDist);
@@ -863,11 +866,11 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
   cam.SetLookAtLH(mumbleLink.camPosition,
                   mumbleLink.camPosition + mumbleLink.camDir,
                   CVector3(0, 1, 0));
-  persp.SetPerspectiveFovLH(mumbleLink.fov,
-                            drawrect.Width() / (float)drawrect.Height(), 0.01f,
-                            1000.0f);
+  persp.SetPerspectiveFovLH(
+      mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
+      0.01f, 1000.0f);
 
-  asp = drawrect.Width() / (float)drawrect.Height();
+  asp = drawrect.Width() / static_cast<float>(drawrect.Height());
 
   for (int x = 0; x < POIs.NumItems(); x++) {
     auto &poi = POIs.GetByIndex(x);
@@ -909,7 +912,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
 
   API->FlushDrawBuffer();
   API->GetDevice()->SetRenderState(
-      ((COverlayApp *)App)->holePunchBlendState.get());
+      (dynamic_cast<COverlayApp *>(App))->holePunchBlendState.get());
 
   API->DrawRect(miniRect, CColor(0, 0, 0, 0));
 
@@ -918,8 +921,8 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
 
   // draw minimap trails
 
-  GW2TrailDisplay *trails = (GW2TrailDisplay *)App->GetRoot()->FindChildByID(
-      _T( "trail" ), _T( "gw2Trails" ));
+  GW2TrailDisplay *trails = dynamic_cast<GW2TrailDisplay *>(
+      App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
   if (trails) trails->DrawProxy(API, true);
 
   // draw minimap
@@ -970,7 +973,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
 GW2TacticalDisplay::GW2TacticalDisplay(CWBItem *Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
-GW2TacticalDisplay::~GW2TacticalDisplay() {}
+GW2TacticalDisplay::~GW2TacticalDisplay() = default;
 
 CWBItem *GW2TacticalDisplay::Factory(CWBItem *Root, CXMLNode &node,
                                      CRect &Pos) {
@@ -1058,7 +1061,8 @@ void ExportPOIS() {
 
     CXMLNode *t = &n->AddChild(_T( "Route" ));
     t->SetAttribute("Name", r.name);
-    t->SetAttributeFromInteger("BackwardDirection", (int32_t)r.backwards);
+    t->SetAttributeFromInteger("BackwardDirection",
+                               static_cast<int32_t>(r.backwards));
 
     for (const auto &ar : r.route) {
       if (POIs.HasKey(ar)) ExportPOI(t, POIs[ar]);
@@ -1307,14 +1311,16 @@ void ImportMarkerPack(CWBApplication *App, std::string_view zipFile) {
 
     if (fileName.find(".xml") != fileName.size() - 4) continue;
 
-    auto data = std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
+    auto data =
+        std::make_unique<uint8_t[]>(static_cast<int32_t>(stat.m_uncomp_size));
 
-    if (!mz_zip_reader_extract_to_mem(zip, x, data.get(),
-                                      (int32_t)stat.m_uncomp_size, 0)) {
+    if (!mz_zip_reader_extract_to_mem(
+            zip, x, data.get(), static_cast<int32_t>(stat.m_uncomp_size), 0)) {
       continue;
     }
 
-    std::string_view doc((TS8 *)data.get(), (uint32_t)stat.m_uncomp_size);
+    std::string_view doc(reinterpret_cast<TS8 *>(data.get()),
+                         static_cast<uint32_t>(stat.m_uncomp_size));
     ImportPOIString(App, doc, zipFile);
   }
 }
@@ -1329,22 +1335,22 @@ void ImportPOIS(CWBApplication *App) {
   {
     CFileList list;
     list.ExpandSearch("*.xml", "POIs", false);
-    for (uint32_t x = 0; x < list.Files.size(); x++)
-      ImportPOIFile(App, list.Files[x].Path + list.Files[x].FileName, true);
+    for (auto &File : list.Files)
+      ImportPOIFile(App, File.Path + File.FileName, true);
   }
 
   {
     CFileList list;
     list.ExpandSearch("*.zip", "POIs", false);
-    for (uint32_t x = 0; x < list.Files.size(); x++)
-      ImportMarkerPack(App, list.Files[x].Path + list.Files[x].FileName);
+    for (auto &File : list.Files)
+      ImportMarkerPack(App, File.Path + File.FileName);
   }
 
   {
     CFileList list;
     list.ExpandSearch("*.taco", "POIs", false);
-    for (uint32_t x = 0; x < list.Files.size(); x++)
-      ImportMarkerPack(App, list.Files[x].Path + list.Files[x].FileName);
+    for (auto &File : list.Files)
+      ImportMarkerPack(App, File.Path + File.FileName);
   }
 
   ImportPOIFile(App, "poidata.xml", false);
@@ -1370,9 +1376,11 @@ void ImportPOIActivationData() {
       POIActivationData p;
 
       if (t.HasAttribute("lut1"))
-        t.GetAttributeAsInteger("lut1", &((int32_t *)&p.lastUpdateTime)[0]);
+        t.GetAttributeAsInteger(
+            "lut1", &(reinterpret_cast<int32_t *>(&p.lastUpdateTime))[0]);
       if (t.HasAttribute("lut2"))
-        t.GetAttributeAsInteger("lut2", &((int32_t *)&p.lastUpdateTime)[1]);
+        t.GetAttributeAsInteger(
+            "lut2", &(reinterpret_cast<int32_t *>(&p.lastUpdateTime))[1]);
 
       p.poiguid = LoadGUID(t);
 
@@ -1403,8 +1411,10 @@ void ExportPOIActivationData() {
     }
 
     CXMLNode *t = &n->AddChild(_T( "POIActivation" ));
-    t->SetAttributeFromInteger("lut1", ((int32_t *)&dat.lastUpdateTime)[0]);
-    t->SetAttributeFromInteger("lut2", ((int32_t *)&dat.lastUpdateTime)[1]);
+    t->SetAttributeFromInteger(
+        "lut1", (reinterpret_cast<int32_t *>(&dat.lastUpdateTime))[0]);
+    t->SetAttributeFromInteger(
+        "lut2", (reinterpret_cast<int32_t *>(&dat.lastUpdateTime))[1]);
     if (dat.uniqueData) t->SetAttributeFromInteger("instance", dat.uniqueData);
     t->SetAttribute("GUID", B64Encode(std::string_view(
                                 reinterpret_cast<const char *>(&dat.poiguid),
@@ -1590,7 +1600,7 @@ void MarkerTypeData::Read(CXMLNode &n, TBOOL StoreSaveState) {
   if (_behaviorSaved) {
     int32_t x;
     n.GetAttributeAsInteger("behavior", &x);
-    behavior = (POIBehavior)x;
+    behavior = static_cast<POIBehavior>(x);
   }
   if (_resetLengthSaved) {
     int32_t val;
@@ -1686,7 +1696,7 @@ void MarkerTypeData::Write(CXMLNode *n) {
   if (bits.fadeFarSaved) n->SetAttributeFromFloat("fadeFar", fadeFar);
   if (bits.heightSaved) n->SetAttributeFromFloat("heightOffset", height);
   if (bits.behaviorSaved)
-    n->SetAttributeFromInteger("behavior", (int32_t)behavior);
+    n->SetAttributeFromInteger("behavior", static_cast<int32_t>(behavior));
   if (bits.resetLengthSaved)
     n->SetAttributeFromInteger("resetLength", resetLength);
   if (bits.autoTriggerSaved)

@@ -1,8 +1,8 @@
 #include "CSSItem.h"
 
-IWBCSS::IWBCSS() {}
+IWBCSS::IWBCSS() = default;
 
-IWBCSS::~IWBCSS() {}
+IWBCSS::~IWBCSS() = default;
 
 void IWBCSS::AddClass(std::string_view s) {
   if (!HasClass(s)) {

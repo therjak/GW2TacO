@@ -18,7 +18,7 @@ struct WBGUIVERTEX
   CVector2 UV;
   CColor Color;
 
-  WBGUIVERTEX() {}
+  WBGUIVERTEX() = default;
 
   WBGUIVERTEX(const float x, const float y, const float u, const float v,
               const CColor &color)

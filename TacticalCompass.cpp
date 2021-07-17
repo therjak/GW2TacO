@@ -14,9 +14,9 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {
                   mumbleLink.camPosition + mumbleLink.camDir,
                   CVector3(0, 1, 0));
   CMatrix4x4 persp;
-  persp.SetPerspectiveFovLH(mumbleLink.fov,
-                            drawrect.Width() / (float)drawrect.Height(), 0.01f,
-                            1000.0f);
+  persp.SetPerspectiveFovLH(
+      mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
+      0.01f, 1000.0f);
 
   int32_t resolution = 60;
 
@@ -55,7 +55,7 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {
 
   for (int x = 0; x < 4; x++) {
     float a1 = 1.0f;
-    float f1 = x / (float)4 * PI * 2;
+    float f1 = x / static_cast<float>(4) * PI * 2;
     CVector4 p1 = CVector4(rworld * sinf(f1), 1.0f, rworld * cosf(f1), 0.0f);
 
     CVector3 toPoint = CVector3(p1 - campos);
@@ -80,15 +80,15 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {
 
     p1 = p1 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
 
-    CPoint pa = CPoint((int)(p1.x * drawrect.Width()),
-                       (int)((1 - p1.y) * drawrect.Height()));
+    CPoint pa = CPoint(static_cast<int>(p1.x * drawrect.Width()),
+                       static_cast<int>((1 - p1.y) * drawrect.Height()));
 
     a1 = max(0, min(1, a1)) * 255;
 
     CRect cent = CRect(pa, pa);
     CPoint p = f->GetCenter(txt[x], cent);
     f->Write(API, txt[x], p,
-             CColor(228, 210, 157, (uint8_t)(a1 * GetMapFade())));
+             CColor(228, 210, 157, static_cast<uint8_t>(a1 * GetMapFade())));
   }
 }
 
@@ -103,7 +103,7 @@ void GW2TacticalCompass::OnDraw(CWBDrawAPI *API) {
 
 GW2TacticalCompass::GW2TacticalCompass(CWBItem *Parent, CRect Position)
     : CWBItem(Parent, Position) {}
-GW2TacticalCompass::~GW2TacticalCompass() {}
+GW2TacticalCompass::~GW2TacticalCompass() = default;
 
 CWBItem *GW2TacticalCompass::Factory(CWBItem *Root, CXMLNode &node,
                                      CRect &Pos) {

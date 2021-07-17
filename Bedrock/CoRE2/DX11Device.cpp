@@ -21,15 +21,15 @@ DCompositionCreateDeviceCallback DCompositionCreateDeviceFunc = nullptr;
 
 CCoreDX11Device::CCoreDX11Device()
 {
-  Device = NULL;
-  DeviceContext = NULL;
-  SwapChain = NULL;
-  BackBufferView = NULL;
-  DepthBufferView = NULL;
-  DepthBuffer = NULL;
-  CurrentBlendState = NULL;
-  CurrentDepthStencilState = NULL;
-  CurrentRasterizerState = NULL;
+  Device = nullptr;
+  DeviceContext = nullptr;
+  SwapChain = nullptr;
+  BackBufferView = nullptr;
+  DepthBufferView = nullptr;
+  DepthBuffer = nullptr;
+  CurrentBlendState = nullptr;
+  CurrentDepthStencilState = nullptr;
+  CurrentRasterizerState = nullptr;
 }
 
 CCoreDX11Device::~CCoreDX11Device()
@@ -41,7 +41,7 @@ CCoreDX11Device::~CCoreDX11Device()
   if ( DepthBuffer ) DepthBuffer->Release();
   if ( SwapChain )
   {
-    SwapChain->SetFullscreenState( false, NULL );
+    SwapChain->SetFullscreenState(false, nullptr);
     SwapChain->Release();
   }
 
@@ -54,7 +54,7 @@ CCoreDX11Device::~CCoreDX11Device()
 
   if ( Device )
   {
-    ID3D11Debug* dbg = NULL;
+    ID3D11Debug* dbg = nullptr;
     Device->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast<void**>( &dbg ) );
     if ( dbg )
     {
@@ -88,7 +88,8 @@ TBOOL CCoreDX11Device::CreateBackBuffer( int32_t XRes, int32_t YRes )
   HRESULT res = S_OK;
   ID3D11Texture2D* bb;
 
-  res = SwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&bb );
+  res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                             reinterpret_cast<LPVOID*>(&bb));
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -98,7 +99,7 @@ TBOOL CCoreDX11Device::CreateBackBuffer( int32_t XRes, int32_t YRes )
 
   FORCEDDEBUGLOG( "getbuffer called" );
 
-  res = Device->CreateRenderTargetView( bb, NULL, &BackBufferView );
+  res = Device->CreateRenderTargetView(bb, nullptr, &BackBufferView);
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -147,7 +148,7 @@ TBOOL CCoreDX11Device::CreateDepthBuffer( int32_t XRes, int32_t YRes )
   depthBufferDesc.CPUAccessFlags = 0;
   depthBufferDesc.MiscFlags = 0;
 
-  res = Device->CreateTexture2D( &depthBufferDesc, NULL, &DepthBuffer );
+  res = Device->CreateTexture2D(&depthBufferDesc, nullptr, &DepthBuffer);
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -197,14 +198,21 @@ TBOOL CCoreDX11Device::CreateClassicSwapChain( const uint32_t hWnd, const TBOOL 
 
 
 #ifdef ENABLE_CORE_DEBUG_MODE
-  res = D3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, NULL, NULL, D3D11_SDK_VERSION, &scd, (IDXGISwapChain**)&SwapChain, &Device, NULL, &DeviceContext );
+  res = D3D11CreateDeviceAndSwapChain(
+      nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG,
+      nullptr, NULL, D3D11_SDK_VERSION, &scd,
+      reinterpret_cast<IDXGISwapChain**>(&SwapChain), &Device, nullptr,
+      &DeviceContext);
   if ( res != S_OK )
   {
     _com_error err( res );
     LOG( LOG_WARNING, _T( "[core] DirectX11 debug mode device creation failed. (%s) Trying without debug mode..." ), err.ErrorMessage() );
 #endif
     FORCEDDEBUGLOG( "About to create d3d device" );
-    res = D3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, NULL, D3D11_SDK_VERSION, &scd, (IDXGISwapChain**)&SwapChain, &Device, NULL, &DeviceContext );
+    res = D3D11CreateDeviceAndSwapChain(
+        nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, NULL,
+        D3D11_SDK_VERSION, &scd, reinterpret_cast<IDXGISwapChain**>(&SwapChain),
+        &Device, nullptr, &DeviceContext);
     if ( res != S_OK )
     {
       _com_error error( res );
@@ -252,7 +260,8 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
 
   IDXGIFactory2* dxgiFactory;
 #ifdef _DEBUG
-  res = CreateDXGIFactory2( DXGI_CREATE_FACTORY_DEBUG, __uuidof( IDXGIFactory2 ), (void**)&dxgiFactory );
+  res = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(IDXGIFactory2),
+                           reinterpret_cast<void**>(&dxgiFactory));
 #else
   res = CreateDXGIFactory1( __uuidof( IDXGIFactory2 ), (void**)&dxgiFactory );
 #endif
@@ -282,7 +291,9 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
   */
 
 #ifdef ENABLE_CORE_DEBUG_MODE
-  res = D3D11CreateDevice( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, NULL, NULL, D3D11_SDK_VERSION, &Device, NULL, &DeviceContext );
+  res = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
+                          D3D11_CREATE_DEVICE_DEBUG, nullptr, NULL,
+                          D3D11_SDK_VERSION, &Device, nullptr, &DeviceContext);
   //res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, NULL, NULL, D3D11_SDK_VERSION, &scd, &SwapChain, &Device, NULL, &DeviceContext);
   if ( res != S_OK )
   {
@@ -290,7 +301,9 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
     LOG( LOG_WARNING, _T( "[core] DirectX11 debug mode device creation failed. (%s) Trying without debug mode..." ), err.ErrorMessage() );
 #endif
     FORCEDDEBUGLOG( "About to create d3d device" );
-    res = D3D11CreateDevice( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, NULL, D3D11_SDK_VERSION, &Device, NULL, &DeviceContext );
+    res = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
+                            nullptr, NULL, D3D11_SDK_VERSION, &Device, nullptr,
+                            &DeviceContext);
     //res = D3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, NULL, D3D11_SDK_VERSION, &scd, &SwapChain, &Device, NULL, &DeviceContext );
     if ( res != S_OK )
     {
@@ -304,7 +317,17 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
 #endif
 
   unsigned int backBufferCount = 2;
-  DXGI_SWAP_CHAIN_DESC1 swapChainDesc{ (UINT)XRes, (UINT)YRes, DXGI_FORMAT_R8G8B8A8_UNORM, false, {1, 0}, DXGI_USAGE_RENDER_TARGET_OUTPUT, backBufferCount, DXGI_SCALING_STRETCH, DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL, DXGI_ALPHA_MODE_PREMULTIPLIED, 0 };
+  DXGI_SWAP_CHAIN_DESC1 swapChainDesc{static_cast<UINT>(XRes),
+                                      static_cast<UINT>(YRes),
+                                      DXGI_FORMAT_R8G8B8A8_UNORM,
+                                      false,
+                                      {1, 0},
+                                      DXGI_USAGE_RENDER_TARGET_OUTPUT,
+                                      backBufferCount,
+                                      DXGI_SCALING_STRETCH,
+                                      DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL,
+                                      DXGI_ALPHA_MODE_PREMULTIPLIED,
+                                      0};
   res = dxgiFactory->CreateSwapChainForComposition( Device, &swapChainDesc, nullptr, &SwapChain );
   //res = dxgiFactory->CreateSwapChainForHwnd( Device, (HWND)hWnd, &swapChainDesc, nullptr, nullptr, &SwapChain );
 
@@ -318,7 +341,9 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
 
   IDCompositionDevice* dcompDevice = nullptr;
 
-  res = DCompositionCreateDeviceFunc( (IDXGIDevice*)Device, __uuidof( IDCompositionDevice ), (void**)&dcompDevice );
+  res = DCompositionCreateDeviceFunc(reinterpret_cast<IDXGIDevice*>(Device),
+                                     __uuidof(IDCompositionDevice),
+                                     reinterpret_cast<void**>(&dcompDevice));
 
   if ( res != S_OK )
   {
@@ -453,7 +478,7 @@ TBOOL CCoreDX11Device::Initialize( CCoreWindowHandler* window, const int32_t AAL
 TBOOL CCoreDX11Device::IsWindowed()
 {
   BOOL fs = false;
-  IDXGIOutput* i = NULL;
+  IDXGIOutput* i = nullptr;
 
   if ( SwapChain->GetFullscreenState( &fs, &i ) != S_OK )
   {
@@ -489,9 +514,9 @@ void CCoreDX11Device::Resize( const int32_t xr, const int32_t yr )
   if ( BackBufferView ) BackBufferView->Release();
   if ( DepthBufferView ) DepthBufferView->Release();
   if ( DepthBuffer ) DepthBuffer->Release();
-  BackBufferView = NULL;
-  DepthBufferView = NULL;
-  DepthBuffer = NULL;
+  BackBufferView = nullptr;
+  DepthBufferView = nullptr;
+  DepthBuffer = nullptr;
 
   res = SwapChain->ResizeBuffers( desc.BufferCount, xr, yr, DXGI_FORMAT_UNKNOWN, desc.Flags );
   if ( res != S_OK )
@@ -520,7 +545,7 @@ void CCoreDX11Device::SetFullScreenMode( const TBOOL FullScreen, const int32_t x
 
   LOG( LOG_INFO, _T( "[core] Switching fullscreen mode to %d" ), FullScreen );
 
-  HRESULT res = SwapChain->SetFullscreenState( FullScreen, NULL );
+  HRESULT res = SwapChain->SetFullscreenState(FullScreen, nullptr);
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -663,7 +688,7 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
                                                            LPCSTR ShaderVersion,
                                                            std::string* Err) {
   if ( Err ) *Err = _T( "" );
-  if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
   CCoreDX11GeometryShader* s = new CCoreDX11GeometryShader( this );
   s->SetCode( Code, EntryFunction, ShaderVersion );
@@ -671,7 +696,7 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
   if ( !s->CompileAndCreate( Err ) )
   {
     SAFEDELETE( s );
-    return NULL;
+    return nullptr;
   }
 
   return s;
@@ -683,7 +708,7 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
                                                        LPCSTR ShaderVersion,
                                                        std::string* Err) {
   if ( Err ) *Err = _T( "" );
-  if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
   CCoreDX11DomainShader* s = new CCoreDX11DomainShader( this );
   s->SetCode( Code , EntryFunction, ShaderVersion );
@@ -691,7 +716,7 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
   if ( !s->CompileAndCreate( Err ) )
   {
     SAFEDELETE( s );
-    return NULL;
+    return nullptr;
   }
 
   return s;
@@ -703,7 +728,7 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
                                                    LPCSTR ShaderVersion,
                                                    std::string* Err) {
   if ( Err ) *Err = _T( "" );
-  if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
   CCoreDX11HullShader* s = new CCoreDX11HullShader( this );
   s->SetCode( Code, EntryFunction, ShaderVersion );
@@ -711,7 +736,7 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
   if ( !s->CompileAndCreate( Err ) )
   {
     SAFEDELETE( s );
-    return NULL;
+    return nullptr;
   }
 
   return s;
@@ -723,7 +748,7 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
                                                          LPCSTR ShaderVersion,
                                                          std::string* Err) {
   if ( Err ) *Err = _T( "" );
-  if ( !Code || !CodeSize || !EntryFunction || !ShaderVersion ) return NULL;
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
   CCoreDX11ComputeShader* s = new CCoreDX11ComputeShader( this );
   s->SetCode( Code, EntryFunction, ShaderVersion );
@@ -731,7 +756,7 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
   if ( !s->CompileAndCreate( Err ) )
   {
     SAFEDELETE( s );
-    return NULL;
+    return nullptr;
   }
 
   return s;
@@ -778,8 +803,8 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.BlendState )
     {
-      DeviceContext->OMSetBlendState( NULL, NULL, 0xffffffff );
-      CurrentBlendState = NULL;
+      DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+      CurrentBlendState = nullptr;
       return true;
     }
     return Value.BlendState->Apply();
@@ -789,8 +814,8 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.RasterizerState )
     {
-      DeviceContext->RSSetState( NULL );
-      CurrentRasterizerState = NULL;
+      DeviceContext->RSSetState(nullptr);
+      CurrentRasterizerState = nullptr;
       return true;
     }
     return Value.RasterizerState->Apply();
@@ -800,8 +825,8 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.DepthStencilState )
     {
-      DeviceContext->OMSetDepthStencilState( NULL, 0 );
-      CurrentDepthStencilState = NULL;
+      DeviceContext->OMSetDepthStencilState(nullptr, 0);
+      CurrentDepthStencilState = nullptr;
       return true;
     }
     return Value.DepthStencilState->Apply();
@@ -818,7 +843,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
     if ( !Value.Texture )
     {
       ID3D11ShaderResourceView* null[ 1 ];
-      null[ 0 ] = NULL;
+      null[0] = nullptr;
 
       if ( Sampler >= CORESMP_PS0 && Sampler <= CORESMP_PS15 )
         DeviceContext->PSSetShaderResources( Sampler, 1, null );
@@ -836,7 +861,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
     if ( !Value.VertexFormat )
     {
       CurrentVertexFormatSize = 0;
-      DeviceContext->IASetInputLayout( NULL );
+      DeviceContext->IASetInputLayout(nullptr);
       return true;
     }
 
@@ -848,7 +873,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.IndexBuffer )
     {
-      DeviceContext->IASetIndexBuffer( NULL, DXGI_FORMAT_R16_UINT, 0 );
+      DeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
       return true;
     }
     return ApplyIndexBuffer( Value.IndexBuffer );
@@ -858,7 +883,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.VertexShader )
     {
-      DeviceContext->VSSetShader( NULL, NULL, 0 );
+      DeviceContext->VSSetShader(nullptr, nullptr, 0);
       return true;
     }
     return ApplyVertexShader( Value.VertexShader );
@@ -868,7 +893,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.GeometryShader )
     {
-      DeviceContext->GSSetShader( NULL, NULL, 0 );
+      DeviceContext->GSSetShader(nullptr, nullptr, 0);
       return true;
     }
     return ApplyGeometryShader( Value.GeometryShader );
@@ -878,7 +903,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.GeometryShader )
     {
-      DeviceContext->HSSetShader( NULL, NULL, 0 );
+      DeviceContext->HSSetShader(nullptr, nullptr, 0);
       return true;
     }
     return ApplyHullShader( Value.HullShader );
@@ -888,7 +913,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.DomainShader )
     {
-      DeviceContext->DSSetShader( NULL, NULL, 0 );
+      DeviceContext->DSSetShader(nullptr, nullptr, 0);
       return true;
     }
     return ApplyDomainShader( Value.DomainShader );
@@ -898,7 +923,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.ComputeShader )
     {
-      DeviceContext->DSSetShader( NULL, NULL, 0 );
+      DeviceContext->DSSetShader(nullptr, nullptr, 0);
       return true;
     }
     return ApplyComputeShader( Value.ComputeShader );
@@ -908,7 +933,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
   {
     if ( !Value.PixelShader )
     {
-      DeviceContext->PSSetShader( NULL, NULL, 0 );
+      DeviceContext->PSSetShader(nullptr, nullptr, 0);
       return true;
     }
     return ApplyPixelShader( Value.PixelShader );
@@ -920,7 +945,7 @@ TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERE
 
 TBOOL CCoreDX11Device::SetNoVertexBuffer()
 {
-  DeviceContext->IASetVertexBuffers( 0, 1, NULL, 0, NULL );
+  DeviceContext->IASetVertexBuffers(0, 1, nullptr, nullptr, nullptr);
   return true;
 }
 
@@ -1026,8 +1051,8 @@ TBOOL CCoreDX11Device::SetViewport( CRect Viewport )
   D3D11_VIEWPORT viewport;
   memset( &viewport, 0, sizeof( D3D11_VIEWPORT ) );
 
-  viewport.TopLeftX = (float)Viewport.x1;
-  viewport.TopLeftY = (float)Viewport.y1;
+  viewport.TopLeftX = static_cast<float>(Viewport.x1);
+  viewport.TopLeftY = static_cast<float>(Viewport.y1);
   viewport.Width = max( 0, (float)Viewport.Width() );
   viewport.Height = max( 0, (float)Viewport.Height() );
   viewport.MinDepth = 0;
@@ -1050,9 +1075,12 @@ void CCoreDX11Device::SetShaderConstants( const CCoreConstantBuffer* Buffers )
     memset( buffers, 0, 16 * sizeof( void* ) );
   }
 
-  DeviceContext->VSSetConstantBuffers( 0, 1, (ID3D11Buffer**)buffers );
-  DeviceContext->GSSetConstantBuffers( 0, 1, (ID3D11Buffer**)buffers );
-  DeviceContext->PSSetConstantBuffers( 0, 1, (ID3D11Buffer**)buffers );
+  DeviceContext->VSSetConstantBuffers(
+      0, 1, reinterpret_cast<ID3D11Buffer**>(buffers));
+  DeviceContext->GSSetConstantBuffers(
+      0, 1, reinterpret_cast<ID3D11Buffer**>(buffers));
+  DeviceContext->PSSetConstantBuffers(
+      0, 1, reinterpret_cast<ID3D11Buffer**>(buffers));
 }
 
 std::unique_ptr<CCoreConstantBuffer> CCoreDX11Device::CreateConstantBuffer()
@@ -1124,11 +1152,11 @@ TBOOL CCoreDX11Device::SetRenderTarget( CCoreTexture2D* RT )
 
 void CCoreDX11Device::ForceStateReset()
 {
-  CurrentVertexBuffer = NULL;
+  CurrentVertexBuffer = nullptr;
   CurrentRenderState.Flush();
-  CurrentBlendState = NULL;
-  CurrentDepthStencilState = NULL;
-  CurrentRasterizerState = NULL;
+  CurrentBlendState = nullptr;
+  CurrentDepthStencilState = nullptr;
+  CurrentRasterizerState = nullptr;
 }
 
 CCoreTexture2D* CCoreDX11Device::CopyTexture( CCoreTexture2D* Texture )
@@ -1140,7 +1168,8 @@ void CCoreDX11Device::TakeScreenShot( std::string_view Filename )
 {
   ID3D11Texture2D* bb;
 
-  HRESULT res = SwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&bb );
+  HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                     reinterpret_cast<LPVOID*>(&bb));
   if ( res != S_OK )
   {
     _com_error err( res );
@@ -1160,8 +1189,8 @@ void CCoreDX11Device::TakeScreenShot( std::string_view Filename )
 
   dummy->ExportToImage( Filename, true, CORE_PNG, false );
 
-  dummy->SetTextureHandle( NULL );
-  dummy->SetView( NULL );
+  dummy->SetTextureHandle(nullptr);
+  dummy->SetView(nullptr);
   SAFEDELETE( dummy );
 
 
@@ -1216,12 +1245,13 @@ ID3D11Texture2D* CCoreDX11Device::GetBackBuffer()
 {
   ID3D11Texture2D* bb;
 
-  HRESULT res = SwapChain->GetBuffer( 0, __uuidof( ID3D11Texture2D ), (LPVOID*)&bb );
+  HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                     reinterpret_cast<LPVOID*>(&bb));
   if ( res != S_OK )
   {
     _com_error err( res );
     LOG( LOG_ERROR, _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ), err.ErrorMessage() );
-    return NULL;
+    return nullptr;
   }
 
   return bb;

@@ -11,29 +11,29 @@ CCoreShader::~CCoreShader() {
 //////////////////////////////////////////////////////////////////////////
 // base pixelshader class
 
-CCorePixelShader::~CCorePixelShader() {}
+CCorePixelShader::~CCorePixelShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base geometryshader class
 
-CCoreGeometryShader::~CCoreGeometryShader() {}
+CCoreGeometryShader::~CCoreGeometryShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base vertexshader class
 
-CCoreVertexShader::~CCoreVertexShader() {}
+CCoreVertexShader::~CCoreVertexShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base Hullshader class
 
-CCoreHullShader::~CCoreHullShader() {}
+CCoreHullShader::~CCoreHullShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base Domainshader class
 
-CCoreDomainShader::~CCoreDomainShader() {}
+CCoreDomainShader::~CCoreDomainShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base Computeshader class
 
-CCoreComputeShader::~CCoreComputeShader() {}
+CCoreComputeShader::~CCoreComputeShader() = default;

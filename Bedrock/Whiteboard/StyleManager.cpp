@@ -2,14 +2,9 @@
 
 #include "../BaseLib/string_format.h"
 
-CStyleManager::CStyleManager( void )
-{
-}
+CStyleManager::CStyleManager() = default;
 
-
-CStyleManager::~CStyleManager( void )
-{
-}
+CStyleManager::~CStyleManager() = default;
 
 void CStyleManager::ParseDeclarations(
     std::string_view s,

@@ -18,17 +18,19 @@ GW2Notepad::GW2Notepad(CWBItem *Parent, CRect Position)
   CStreamReaderMemory nptext;
   if (!nptext.Open("notepad.txt")) return;
 
-  CWBTextBox *tb = (CWBTextBox *)FindChildByID("notepad", "textbox");
+  CWBTextBox *tb =
+      dynamic_cast<CWBTextBox *>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   tb->SetForcedMouseTransparency(true);
-  tb->SetText(
-      std::string_view((TS8 *)nptext.GetData(), (int32_t)(nptext.GetLength())));
+  tb->SetText(std::string_view(reinterpret_cast<TS8 *>(nptext.GetData()),
+                               static_cast<int32_t>(nptext.GetLength())));
   tb->SetCursorPos(0, false);
 }
 
 GW2Notepad::~GW2Notepad() {
-  CWBTextBox *tb = (CWBTextBox *)FindChildByID("notepad", "textbox");
+  CWBTextBox *tb =
+      dynamic_cast<CWBTextBox *>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   CStreamWriterFile nptext;
@@ -42,7 +44,8 @@ CWBItem *GW2Notepad::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
 }
 
 void GW2Notepad::StartEdit() {
-  CWBTextBox *tb = (CWBTextBox *)FindChildByID("notepad", "textbox");
+  CWBTextBox *tb =
+      dynamic_cast<CWBTextBox *>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   canSetFocus = true;
@@ -55,12 +58,12 @@ void GW2Notepad::OnDraw(CWBDrawAPI *API) {}
 TBOOL GW2Notepad::MessageProc(CWBMessage &Message) {
   switch (Message.GetMessage()) {
     case WBM_FOCUSGAINED: {
-      CWBItem *tb = (CWBItem *)FindChildByID("notepad", "textbox");
+      CWBItem *tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == Message.GetTarget())
         tb->SetForcedMouseTransparency(false);
     } break;
     case WBM_FOCUSLOST: {
-      CWBItem *tb = (CWBItem *)FindChildByID("notepad", "textbox");
+      CWBItem *tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == Message.GetTarget())
         tb->SetForcedMouseTransparency(true);
     } break;

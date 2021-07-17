@@ -6,8 +6,8 @@ CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device *dev) : CCoreIndexBuf
 {
 	Dev = dev->GetDevice();
 	DeviceContext = dev->GetDeviceContext();
-	IndexBufferHandle = NULL;
-	IndexCount = 0;
+        IndexBufferHandle = nullptr;
+        IndexCount = 0;
 	IndexSize = 0;
 }
 
@@ -19,7 +19,7 @@ CCoreDX11IndexBuffer::~CCoreDX11IndexBuffer()
 void CCoreDX11IndexBuffer::Release()
 {
 	if (IndexBufferHandle) IndexBufferHandle->Release();
-	IndexBufferHandle = NULL;
+        IndexBufferHandle = nullptr;
 }
 
 TBOOL CCoreDX11IndexBuffer::Apply()
@@ -44,8 +44,8 @@ TBOOL CCoreDX11IndexBuffer::Create(const uint32_t idxcount, const uint32_t idxsi
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	HRESULT res = Dev->CreateBuffer(&bd, NULL, &IndexBufferHandle);
-	if (res != S_OK)
+        HRESULT res = Dev->CreateBuffer(&bd, nullptr, &IndexBufferHandle);
+        if (res != S_OK)
 	{
 		_com_error err(res);
 		LOG(LOG_ERROR, _T("[core] CreateBuffer for indexbuffer failed (%s)"), err.ErrorMessage());

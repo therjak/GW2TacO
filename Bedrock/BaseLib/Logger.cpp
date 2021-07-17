@@ -3,9 +3,9 @@
 #include <Windows.h>
 #include <debugapi.h>
 #include <tchar.h>
-#include <time.h>
 
 #include <cstdint>
+#include <ctime>
 #include <string>
 #include <string_view>
 
@@ -15,9 +15,9 @@ CLogger Logger;
 
 void CLoggerOutput::Process(LOGVERBOSITY v, const std::string& String) {}
 
-CLoggerOutput::~CLoggerOutput() {}
+CLoggerOutput::~CLoggerOutput() = default;
 
-CLoggerOutput::CLoggerOutput() {}
+CLoggerOutput::CLoggerOutput() = default;
 
 void CLoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
                                         const std::string& String) {
@@ -25,17 +25,17 @@ void CLoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
   OutputDebugString(_T( "\n" ));
 }
 
-CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() {}
+CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() = default;
 
-CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput() {}
+CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput() = default;
 
 void CLoggerOutput_StdOut::Process(LOGVERBOSITY v, const std::string& String) {
   _tprintf(_T( "%s\n" ), String.c_str());
 }
 
-CLoggerOutput_StdOut::~CLoggerOutput_StdOut() {}
+CLoggerOutput_StdOut::~CLoggerOutput_StdOut() = default;
 
-CLoggerOutput_StdOut::CLoggerOutput_StdOut() {}
+CLoggerOutput_StdOut::CLoggerOutput_StdOut() = default;
 
 void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
   if (!f) {
@@ -69,7 +69,7 @@ bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
 
 CLoggerOutput_File::~CLoggerOutput_File() {
   if (f) fclose(f);
-  f = 0;
+  f = nullptr;
 }
 
 CLoggerOutput_File::CLoggerOutput_File(std::string_view Filename,
@@ -80,7 +80,7 @@ CLoggerOutput_File::CLoggerOutput_File(std::string_view Filename,
 }
 
 CLoggerOutput_File::CLoggerOutput_File() {
-  f = 0;
+  f = nullptr;
   Append = true;
   fname = _T( "log.log" );
 }
@@ -150,7 +150,7 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
 
 void CLogger::Close() { Outputs.clear(); }
 
-CLogger::~CLogger() {}
+CLogger::~CLogger() = default;
 
 CLogger::CLogger() {
   Verbosity = LOGGER_BASE_OUTPUT_VERBOSITY;
@@ -159,9 +159,9 @@ CLogger::CLogger() {
 #endif
 }
 
-CLoggerOutput_RingBuffer::CLoggerOutput_RingBuffer() {}
+CLoggerOutput_RingBuffer::CLoggerOutput_RingBuffer() = default;
 
-CLoggerOutput_RingBuffer::~CLoggerOutput_RingBuffer() {}
+CLoggerOutput_RingBuffer::~CLoggerOutput_RingBuffer() = default;
 
 void CLoggerOutput_RingBuffer::Process(LOGVERBOSITY v,
                                        const std::string& String) {

@@ -7,26 +7,26 @@ CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice *Device)
   Dirty = true;
 }
 
-CCoreRenderStateBatch::~CCoreRenderStateBatch() {}
+CCoreRenderStateBatch::~CCoreRenderStateBatch() = default;
 
 CCoreBlendState::CCoreBlendState(CCoreDevice *Device)
     : CCoreRenderStateBatch(Device) {
   AlphaToCoverage = false;
   IndependentBlend = false;
 
-  for (int32_t x = 0; x < 8; x++) {
-    RenderTargetBlendStates[x].BlendEnable = false;
-    RenderTargetBlendStates[x].SrcBlend = COREBLEND_ONE;
-    RenderTargetBlendStates[x].DestBlend = COREBLEND_ZERO;
-    RenderTargetBlendStates[x].BlendOp = COREBLENDOP_ADD;
-    RenderTargetBlendStates[x].SrcBlendAlpha = COREBLEND_ONE;
-    RenderTargetBlendStates[x].DestBlendAlpha = COREBLEND_ZERO;
-    RenderTargetBlendStates[x].BlendOpAlpha = COREBLENDOP_ADD;
-    RenderTargetBlendStates[x].RenderTargetWriteMask = 0x0f;
+  for (auto &RenderTargetBlendState : RenderTargetBlendStates) {
+    RenderTargetBlendState.BlendEnable = false;
+    RenderTargetBlendState.SrcBlend = COREBLEND_ONE;
+    RenderTargetBlendState.DestBlend = COREBLEND_ZERO;
+    RenderTargetBlendState.BlendOp = COREBLENDOP_ADD;
+    RenderTargetBlendState.SrcBlendAlpha = COREBLEND_ONE;
+    RenderTargetBlendState.DestBlendAlpha = COREBLEND_ZERO;
+    RenderTargetBlendState.BlendOpAlpha = COREBLENDOP_ADD;
+    RenderTargetBlendState.RenderTargetWriteMask = 0x0f;
   }
 }
 
-CCoreBlendState::~CCoreBlendState() {}
+CCoreBlendState::~CCoreBlendState() = default;
 
 void CCoreBlendState::SetRenderTargetWriteMask(int32_t rt, uint8_t e) {
   if (RenderTargetBlendStates[rt].RenderTargetWriteMask != e) Dirty = true;
@@ -187,7 +187,7 @@ CCoreDepthStencilState::CCoreDepthStencilState(CCoreDevice *Device)
   DepthFunc = CORECMP_LESS;
 }
 
-CCoreDepthStencilState::~CCoreDepthStencilState() {}
+CCoreDepthStencilState::~CCoreDepthStencilState() = default;
 
 void CCoreDepthStencilState::SetDepthFunc(CORECOMPARISONFUNCTION e) {
   if (e != DepthFunc) Dirty = true;
@@ -241,7 +241,7 @@ CCoreRasterizerState::CCoreRasterizerState(CCoreDevice *Device)
   AntialiasedLineEnable = false;
 }
 
-CCoreRasterizerState::~CCoreRasterizerState() {}
+CCoreRasterizerState::~CCoreRasterizerState() = default;
 
 void CCoreRasterizerState::SetAntialiasedLineEnable(TBOOL e) {
   if (AntialiasedLineEnable != e) Dirty = true;
@@ -363,7 +363,7 @@ CCoreSamplerState::CCoreSamplerState(CCoreDevice *Device)
   BorderColor[0] = BorderColor[1] = BorderColor[2] = BorderColor[3] = 1;
 }
 
-CCoreSamplerState::~CCoreSamplerState() {}
+CCoreSamplerState::~CCoreSamplerState() = default;
 
 void CCoreSamplerState::SetBorderColor(float r, float g, float b, float a) {
   if (BorderColor[0] != r || BorderColor[1] != g || BorderColor[2] != b ||

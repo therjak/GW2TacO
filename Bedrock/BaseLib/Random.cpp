@@ -9,7 +9,7 @@ float CRandom::frand(float min, float max) {
 
 float CRandom::frand() {
   int32_t r = rand();
-  return r / (float)RAND_MAX;
+  return r / static_cast<float>(RAND_MAX);
 }
 
 uint32_t CRandom::rand() {

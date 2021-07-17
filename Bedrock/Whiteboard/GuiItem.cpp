@@ -13,7 +13,7 @@ CWBDisplayState::CWBDisplayState() {
   memset(VisualSet, 0, sizeof(TBOOL) * WB_ITEM_COUNT);
 }
 
-CWBDisplayState::~CWBDisplayState() {}
+CWBDisplayState::~CWBDisplayState() = default;
 
 CColor CWBDisplayState::GetColor(WBITEMVISUALCOMPONENT v) { return Visuals[v]; }
 
@@ -32,9 +32,9 @@ int32_t CWBDisplayState::GetValue(WBITEMVISUALCOMPONENT v) {
   return Visuals[v];
 }
 
-CWBDisplayProperties::CWBDisplayProperties() {}
+CWBDisplayProperties::CWBDisplayProperties() = default;
 
-CWBDisplayProperties::~CWBDisplayProperties() {}
+CWBDisplayProperties::~CWBDisplayProperties() = default;
 
 WBSKINELEMENTID CWBDisplayProperties::GetSkin(WBITEMSTATE s,
                                               WBITEMVISUALCOMPONENT v) {
@@ -370,10 +370,10 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI *API,
       // skin element
       CWBSkinElement *e = App->GetSkin()->GetElement(id);
       if (e) {
-        WBALIGNMENT AlignX =
-            (WBALIGNMENT)Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_X);
-        WBALIGNMENT AlignY =
-            (WBALIGNMENT)Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_Y);
+        WBALIGNMENT AlignX = static_cast<WBALIGNMENT>(
+            Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_X));
+        WBALIGNMENT AlignY = static_cast<WBALIGNMENT>(
+            Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_Y));
         CSize elementsize = e->GetElementSize(API);
         CPoint offset = CPoint(0, 0);
         CSize size = Pos.Size();
@@ -568,7 +568,7 @@ CWBItem *CWBItem::GetItemUnderMouse(CPoint &Pos, CRect &CropRect,
 
   if (Hidden || !CropRect.Contains(Pos)) {
     CropRect = OldCropRect;
-    return NULL;
+    return nullptr;
   }
 
   CropRect = CropRect | ClientToScreen(GetClientRect());
@@ -611,12 +611,12 @@ void CWBItem::SetBottommost() {
 }
 
 CWBItem::CWBItem() : Guid(WB_GUID_COUNTER++) {
-  Parent = NULL;
-  App = NULL;
-  ChildInFocus = NULL;
+  Parent = nullptr;
+  App = nullptr;
+  ChildInFocus = nullptr;
   Hidden = false;
   Disabled = false;
-  Data = NULL;
+  Data = nullptr;
 }
 
 CWBItem::CWBItem(CWBItem *parent, const CRect &position)
@@ -682,8 +682,8 @@ int32_t CWBItem::GetChildIndex(CWBItem *Item) {
 TBOOL CWBItem::Initialize(CWBItem *parent, const CRect &position) {
   Hidden = false;
   Disabled = false;
-  Data = NULL;
-  ChildInFocus = NULL;
+  Data = nullptr;
+  ChildInFocus = nullptr;
   Parent = parent;
   Scrollbar_ThumbMinimalSize = 4;
   Scrollbar_Size = 16;
@@ -746,15 +746,17 @@ void CWBItem::SetPosition(const CRect &Pos) {
 void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
                                int32_t bottom) {
   if (left != WBMARGIN_KEEP)
-    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_LEFT, 0, (float)left);
+    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_LEFT, 0,
+                                              static_cast<float>(left));
   if (right != WBMARGIN_KEEP)
     CSSProperties.PositionDescriptor.SetValue(WB_PADDING_RIGHT, 0,
-                                              (float)right);
+                                              static_cast<float>(right));
   if (top != WBMARGIN_KEEP)
-    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_TOP, 0, (float)top);
+    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_TOP, 0,
+                                              static_cast<float>(top));
   if (bottom != WBMARGIN_KEEP)
     CSSProperties.PositionDescriptor.SetValue(WB_PADDING_BOTTOM, 0,
-                                              (float)bottom);
+                                              static_cast<float>(bottom));
 
   CalculateClientPosition();
 }
@@ -853,7 +855,7 @@ void CWBItem::MarkForDeletion() {
 }
 
 CWBContextMenu *CWBItem::OpenContextMenu(CPoint pos) {
-  if (!App) return NULL;
+  if (!App) return nullptr;
   auto ctx = CWBContextMenu::Create(
       App->GetRoot(), CRect(pos, pos + CPoint(10, 10)), GetGuid());
   App->ApplyStyle(ctx.get());
@@ -869,13 +871,14 @@ void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams &s, int32_t &a1,
   int32_t mi = s.MinScroll;
   int32_t ma = s.MaxScroll;
 
-  float scrollsize = (float)(ma - mi);
+  float scrollsize = static_cast<float>(ma - mi);
   float rs = max(0.0f, min(1.0f, s.ViewSize / scrollsize));
   float rp =
       max(0.0f, min(1.0f, (s.ScrollPos - mi) / (scrollsize - s.ViewSize)));
 
-  thumbsize = (int32_t)max(Scrollbar_ThumbMinimalSize, rs * (a2 - a1));
-  thumbpos = (int32_t)((a2 - thumbsize - a1) * rp) + a1;
+  thumbsize =
+      static_cast<int32_t> max(Scrollbar_ThumbMinimalSize, rs * (a2 - a1));
+  thumbpos = static_cast<int32_t>((a2 - thumbsize - a1) * rp) + a1;
 }
 
 int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams &s,
@@ -889,17 +892,18 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams &s,
 
   int32_t mi = s.MinScroll;
   int32_t ma = s.MaxScroll;
-  float scrollsize = (float)(ma - mi);
+  float scrollsize = static_cast<float>(ma - mi);
 
   float sp = max(
       0.0f, min(1.0f, (s.DragStartPosition - mi) / (scrollsize - s.ViewSize)));
-  int32_t thumbposstart = (int32_t)((a2 - thumbsize - a1) * sp);
+  int32_t thumbposstart = static_cast<int32_t>((a2 - thumbsize - a1) * sp);
 
   int32_t thumbposdelta =
       max(0, min(a2 - thumbsize - a1, thumbposstart + delta));
   int32_t newscrollpos =
-      (int32_t)((thumbposdelta / (float)(a2 - thumbsize - a1)) *
-                (scrollsize - s.ViewSize)) +
+      static_cast<int32_t>(
+          (thumbposdelta / static_cast<float>(a2 - thumbsize - a1)) *
+          (scrollsize - s.ViewSize)) +
       mi;
 
   if (a2 - thumbsize - a1 == 0)  // invalid state
@@ -1456,14 +1460,14 @@ std::vector<std::string> CWBItem::ExplodeValueWithoutSplittingParameters(
   int32_t bracketcnt = 0;
 
   while (x < String.size()) {
-    while (x < String.size() && SPACE((SPACETYPE)String[x])) x++;
+    while (x < String.size() && SPACE(static_cast<SPACETYPE>(String[x]))) x++;
 
     if (String[x] == _T('(')) bracketcnt++;
     if (String[x] == _T(')') && bracketcnt) bracketcnt--;
 
     nPrevious = x;
     while (x < String.size() &&
-           (bracketcnt || (!SPACE((SPACETYPE)String[x])))) {
+           (bracketcnt || (!SPACE(static_cast<SPACETYPE>(String[x]))))) {
       if (String[x] == _T('(')) bracketcnt++;
       if (String[x] == _T(')') && bracketcnt) bracketcnt--;
       x++;
@@ -1661,7 +1665,7 @@ TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
     std::string v(value);
     std::sscanf(v.c_str(), _T( "%f" ), &dw);
 
-    int32_t o = (int32_t)max(0, min(255, dw * 255));
+    int32_t o = static_cast<int32_t> max(0, min(255, dw * 255));
 
     VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_OPACITY,
                           CColor::FromARGB(o * 0x01010101), pseudo);
@@ -1995,7 +1999,7 @@ CWBItem *CWBItem::FindParentByID(std::string_view value,
     }
     i = i->GetParent();
   }
-  return NULL;
+  return nullptr;
 }
 
 CWBItem *CWBItem::ChildSearcherFunct(std::string_view value,
@@ -2010,7 +2014,7 @@ CWBItem *CWBItem::ChildSearcherFunct(std::string_view value,
     if (i) return i;
   }
 
-  return NULL;
+  return nullptr;
 }
 
 void CWBItem::ApplyStyleDeclarations(std::string_view String) {
@@ -2048,7 +2052,7 @@ CWBFont *CWBItem::GetFont(WBITEMSTATE State) {
 void CWBItem::ApplyOpacity(CWBDrawAPI *API) {
   CColor o =
       CSSProperties.DisplayDescriptor.GetColor(GetState(), WB_ITEM_OPACITY);
-  API->SetOpacity((uint8_t)(o.A() * OpacityMultiplier));
+  API->SetOpacity(static_cast<uint8_t>(o.A() * OpacityMultiplier));
 }
 
 CWBPositionDescriptor &CWBItem::GetPositionDescriptor() {
@@ -2068,7 +2072,7 @@ TBOOL CWBItem::IsEnabled() { return !Disabled; }
 
 void CWBItem::SetChildInFocus(CWBItem *i) {
   if (!i) {
-    ChildInFocus = NULL;
+    ChildInFocus = nullptr;
     return;
   }
   if (i->Parent == this) ChildInFocus = i;
@@ -2093,7 +2097,7 @@ TBOOL CWBItem::ParseRGBA(std::string_view description, CColor &output) {
 
   int32_t Colors[3];
   for (int32_t y = 0; y < 3; y++) Colors[y] = max(0, min(255, c[y]));
-  int32_t Alpha = (int32_t)(max(0, min(1, a)) * 255);
+  int32_t Alpha = static_cast<int32_t>(max(0, min(1, a)) * 255);
 
   output = CColor::FromARGB((Alpha << 24) + (Colors[0] << 16) +
                             (Colors[1] << 8) + Colors[2]);

@@ -5,9 +5,8 @@ void CWBLabel::OnDraw(CWBDrawAPI *API) {
 
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
     CColor TextColor =
@@ -26,7 +25,7 @@ CWBLabel::CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view Txt)
   Initialize(Parent, Pos, Txt);
 }
 
-CWBLabel::~CWBLabel() {}
+CWBLabel::~CWBLabel() = default;
 
 TBOOL CWBLabel::Initialize(CWBItem *Parent, const CRect &Position,
                            std::string_view Txt) {
@@ -52,9 +51,8 @@ void CWBLabel::SetText(std::string_view val) {
 CSize CWBLabel::GetContentSize() {
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return CSize(0, 0);
   return CSize(Font->GetWidth(Text, false, TextTransform),

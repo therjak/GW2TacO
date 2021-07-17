@@ -26,7 +26,7 @@ public:
   {
     Capacity = 0;
     ItemCount = 0;
-    Array = 0;
+    Array = nullptr;
   }
 
   CArray( int32_t Size )
@@ -48,7 +48,7 @@ public:
   {
     if ( Array ) delete[] Array;
     Capacity = ItemCount = 0;
-    Array = 0;
+    Array = nullptr;
   }
 
   int32_t NumItems() const
@@ -347,9 +347,7 @@ public:
     InitializeLightweightCS( &critsec );
   }
 
-  ~CArrayThreadSafe()
-  {
-  }
+  ~CArrayThreadSafe() = default;
 
   int32_t NumItems()
   {

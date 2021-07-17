@@ -4,7 +4,7 @@ ClickThroughButton::ClickThroughButton(CWBItem *Parent, const CRect &Pos,
                                        std::string_view txt /*= _T( "" ) */)
     : CWBButton(Parent, Pos, txt) {}
 
-ClickThroughButton::~ClickThroughButton() {}
+ClickThroughButton::~ClickThroughButton() = default;
 
 TBOOL ClickThroughButton::Initialize(CWBItem *Parent, const CRect &Position,
                                      std::string_view txt /*= _T( "" ) */) {

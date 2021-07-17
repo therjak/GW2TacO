@@ -58,11 +58,11 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
         if (json.has<Array>("raids")) {
           auto raidData = json.get<Array>("raids").values();
 
-          for (unsigned int x = 0; x < raidData.size(); x++) {
-            if (!raidData[x]->is<String>()) continue;
+          for (auto& x : raidData) {
+            if (!x->is<String>()) continue;
 
             Raid r;
-            r.name = raidData[x]->get<String>();
+            r.name = x->get<String>();
             if (!r.name.empty()) {
               r.shortName = std::toupper(r.name[0]);
 
@@ -83,11 +83,11 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
             }
 
             r.configName = "showraid_" + r.name;
-            for (uint32_t y = 0; y < r.configName.size(); y++)
-              if (!isalnum(r.configName[y]))
-                r.configName[y] = '_';
+            for (char& y : r.configName)
+              if (!isalnum(y))
+                y = '_';
               else
-                r.configName[y] = std::tolower(r.configName[y]);
+                y = std::tolower(y);
 
             auto raidInfo = key->QueryAPI("v2/raids/" + r.name);
             Object raidJson;
@@ -95,15 +95,15 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
 
             if (raidJson.has<Array>("wings")) {
               auto wings = raidJson.get<Array>("wings").values();
-              for (unsigned y = 0; y < wings.size(); y++) {
-                auto wing = wings[y]->get<Object>();
+              for (auto& y : wings) {
+                auto wing = y->get<Object>();
                 Wing w;
                 if (wing.has<String>("id")) w.name = wing.get<String>("id");
 
                 if (wing.has<Array>("events")) {
                   auto events = wing.get<Array>("events").values();
-                  for (unsigned int z = 0; z < events.size(); z++) {
-                    auto _event = events[z]->get<Object>();
+                  for (auto& event : events) {
+                    auto _event = event->get<Object>();
                     RaidEvent e;
                     if (_event.has<String>("id"))
                       e.name = _event.get<String>("id");
@@ -133,10 +133,10 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       if (json.has<Array>("raids")) {
         auto raidData = json.get<Array>("raids").values();
 
-        for (unsigned int x = 0; x < raidData.size(); x++) {
-          if (!raidData[x]->is<String>()) continue;
+        for (auto& x : raidData) {
+          if (!x->is<String>()) continue;
 
-          auto eventName = raidData[x]->get<String>();
+          auto eventName = x->get<String>();
           for (auto& r : raids)
             for (auto& w : r.wings)
               for (auto& e : w.events) {

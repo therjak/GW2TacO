@@ -36,7 +36,7 @@ GW2HPGrid::GW2HPGrid(CWBItem *Parent, CRect Position)
   LoadGrids();
 }
 
-GW2HPGrid::~GW2HPGrid() {}
+GW2HPGrid::~GW2HPGrid() = default;
 
 CWBItem *GW2HPGrid::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
   return GW2HPGrid::Create(Root, Pos).get();

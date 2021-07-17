@@ -38,9 +38,16 @@ public:
 	DWORD OverrideWindowStyleEx = 0;
 
 	CCoreWindowParameters();
-	CCoreWindowParameters(HINSTANCE hinst, TBOOL FullScreen, int32_t XRes, int32_t YRes, TCHAR *WindowTitle, HICON Icon = 0, TBOOL Maximized = false, TBOOL ResizeDisabled = false);
+        CCoreWindowParameters(HINSTANCE hinst, TBOOL FullScreen, int32_t XRes,
+                              int32_t YRes, TCHAR *WindowTitle,
+                              HICON Icon = nullptr, TBOOL Maximized = false,
+                              TBOOL ResizeDisabled = false);
 
-	virtual void Initialize(CCoreDevice *device, HINSTANCE hinst, TBOOL FullScreen, int32_t XRes, int32_t YRes, TCHAR *WindowTitle, HICON Icon = 0, TBOOL Maximized = false, TBOOL ResizeDisabled = false);
+        virtual void Initialize(CCoreDevice *device, HINSTANCE hinst,
+                                TBOOL FullScreen, int32_t XRes, int32_t YRes,
+                                TCHAR *WindowTitle, HICON Icon = nullptr,
+                                TBOOL Maximized = false,
+                                TBOOL ResizeDisabled = false);
 };
 
 

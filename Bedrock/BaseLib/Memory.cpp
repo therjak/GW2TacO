@@ -1,15 +1,15 @@
 #include "Memory.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "BaseConfig.h"
 
 #ifdef MEMORY_TRACKING
 
-#include <stdio.h>
 #include <tchar.h>
 #include <windows.h>
 
+#include <cstdio>
 #include <new>
 
 #include "String.h"
@@ -71,7 +71,8 @@ void CMemTracker::AddPointer(void* p, const TS8* file, int32_t line,
   CLightweightCriticalSection cs(&critsec);
   if (MemTrackerPool && !Paused && p) {
     Paused = true;
-    CAllocationInfo& allocinfo = CAllocationInfo((TS8*)file, line, size);
+    CAllocationInfo& allocinfo =
+        CAllocationInfo(const_cast<TS8*>(file), line, size);
     MemTrackerPool->operator[](p) = allocinfo;
     Paused = false;
     CurrentAllocCount++;

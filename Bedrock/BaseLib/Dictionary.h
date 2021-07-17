@@ -37,7 +37,7 @@ public:
     virtual ~KDPair()
     {
       delete Next;
-      Next = 0;
+      Next = nullptr;
     }
   };
 
@@ -108,7 +108,7 @@ protected:
       p = p->Next;
     }
 
-    return 0;
+    return nullptr;
   }
 
 public:
@@ -127,7 +127,7 @@ public:
     for ( int32_t x = 0; x < TableSize; x++ )
     {
       delete HashTable[ x ];
-      HashTable[ x ] = 0;
+      HashTable[x] = nullptr;
     }
     delete[] HashTable;
   }
@@ -172,7 +172,7 @@ public:
     uint32_t idx = DictionaryHash( Key ) % TableSize;
 
     KDPair *p = HashTable[ idx ];
-    KDPair *Previous = 0;
+    KDPair *Previous = nullptr;
 
     while ( p )
     {
@@ -185,7 +185,7 @@ public:
         else
           HashTable[ idx ] = p->Next;
 
-        p->Next = 0;
+        p->Next = nullptr;
         delete p;
         ItemCount--;
       }
@@ -273,10 +273,7 @@ public:
     }
   }
 
-  TBOOL HasKey( const KeyType &Key ) const
-  {
-    return Find( Key ) != 0;
-  }
+  TBOOL HasKey(const KeyType &Key) const { return Find(Key) != nullptr; }
 
   virtual int32_t NumItems() const
   {
@@ -324,7 +321,7 @@ public:
     }
 
     //out of bounds, undefined behavior:
-    return 0;
+    return nullptr;
   }
 
   virtual ItemType &GetByIndex( int32_t idx, KeyType &Key )
@@ -370,7 +367,7 @@ public:
     for ( int32_t x = 0; x < TableSize; x++ )
     {
       delete HashTable[ x ];
-      HashTable[ x ] = 0;
+      HashTable[x] = nullptr;
     }
     ItemCount = 0;
   }

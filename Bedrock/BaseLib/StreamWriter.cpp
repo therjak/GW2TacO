@@ -5,7 +5,7 @@
 
 CStreamWriter::CStreamWriter() { writerCurrentChar = 0; }
 
-CStreamWriter::~CStreamWriter() {}
+CStreamWriter::~CStreamWriter() = default;
 
 bool CStreamWriter::Write(std::string_view data) {
   return WriteStream(data) == data.size();
@@ -34,11 +34,11 @@ CStreamWriterMemory::CStreamWriterMemory() : CStreamWriter() {
   DataLength = 0;
 }
 
-CStreamWriterMemory::~CStreamWriterMemory() {}
+CStreamWriterMemory::~CStreamWriterMemory() = default;
 
 int32_t CStreamWriterMemory::WriteStream(std::string_view data) {
   if (DataLength + data.size() > BufferSize) {
-    BufferSize = (uint32_t)((BufferSize + data.size()) * 1.2f);
+    BufferSize = static_cast<uint32_t>((BufferSize + data.size()) * 1.2f);
     auto temp = std::make_unique<uint8_t[]>(BufferSize);
     std::swap(Data, temp);
     memcpy(Data.get(), temp.get(), DataLength);
@@ -63,7 +63,7 @@ void CStreamWriterMemory::Flush() {
 //////////////////////////////////////////////////////////////////////////
 // streamwriterfile
 
-CStreamWriterFile::CStreamWriterFile() : CStreamWriter() { File = NULL; }
+CStreamWriterFile::CStreamWriterFile() : CStreamWriter() { File = nullptr; }
 
 CStreamWriterFile::~CStreamWriterFile() {
   if (File) CloseHandle(File);
@@ -71,7 +71,7 @@ CStreamWriterFile::~CStreamWriterFile() {
 
 int32_t CStreamWriterFile::WriteStream(std::string_view data) {
   DWORD nWritten = 0;
-  BOOL b = WriteFile(File, data.data(), data.size(), &nWritten, NULL);
+  BOOL b = WriteFile(File, data.data(), data.size(), &nWritten, nullptr);
   if (!b) return 0;
   return nWritten;
 }
@@ -83,18 +83,18 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
 
   File =
       CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 NULL, OPEN_ALWAYS, NULL, NULL);
+                 nullptr, OPEN_ALWAYS, NULL, nullptr);
   CloseHandle(File);
 
   File =
       CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 NULL, OPEN_ALWAYS | TRUNCATE_EXISTING, NULL, NULL);
+                 nullptr, OPEN_ALWAYS | TRUNCATE_EXISTING, NULL, nullptr);
   if (File == INVALID_HANDLE_VALUE) {
     LPTSTR pMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                  NULL, GetLastError(),
-                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&pMsgBuf,
-                  0, NULL);
+                  nullptr, GetLastError(),
+                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  reinterpret_cast<LPTSTR>(&pMsgBuf), 0, nullptr);
 
     LOG_ERR("[writer] Error opening file '%s': %s",
             std::string(Filename).c_str(), pMsgBuf);
@@ -105,6 +105,6 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
 }
 
 void CStreamWriterFile::Flush() {
-  SetFilePointer(File, 0, NULL, FILE_BEGIN);
+  SetFilePointer(File, 0, nullptr, FILE_BEGIN);
   SetEndOfFile(File);
 }

@@ -4,5 +4,5 @@
 
 //type definitions with broken use
 
-typedef char				TS8;
-typedef unsigned char		TBOOL;
+using TS8 = char;
+using TBOOL = unsigned char;

@@ -9,7 +9,7 @@ CTimer globalTimer;
 
 CTimer::CTimer() { LastUpdateTime = StartTime = timeGetTime(); }
 
-CTimer::~CTimer() {}
+CTimer::~CTimer() = default;
 
 void CTimer::Update() {
   int32_t CurrentTime = timeGetTime();
@@ -20,7 +20,7 @@ void CTimer::Update() {
   else
     TimeExtension += ElapsedTime;
 
-  Time = (int32_t)((CurrentTime - StartTime) - TimeExtension);
+  Time = static_cast<int32_t>((CurrentTime - StartTime) - TimeExtension);
   LastUpdateTime = CurrentTime;
 }
 

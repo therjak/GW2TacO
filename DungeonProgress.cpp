@@ -37,11 +37,11 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
         if (json.has<Array>("dungeons")) {
           auto dungeonData = json.get<Array>("dungeons").values();
 
-          for (unsigned int x = 0; x < dungeonData.size(); x++) {
-            if (!dungeonData[x]->is<String>()) continue;
+          for (auto &x : dungeonData) {
+            if (!x->is<String>()) continue;
 
             Dungeon d;
-            d.name = dungeonData[x]->get<String>();
+            d.name = x->get<String>();
 
             auto raidInfo = key->QueryAPI("v2/dungeons/" + d.name);
             Object dungeonJson;
@@ -49,8 +49,8 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
 
             if (dungeonJson.has<Array>("paths")) {
               auto wings = dungeonJson.get<Array>("paths").values();
-              for (unsigned y = 0; y < wings.size(); y++) {
-                auto dungeonPath = wings[y]->get<Object>();
+              for (auto &wing : wings) {
+                auto dungeonPath = wing->get<Object>();
                 DungeonPath p;
                 if (dungeonPath.has<String>("id"))
                   p.name = dungeonPath.get<String>("id");
@@ -104,10 +104,10 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
       if (json.has<Array>("dungeons")) {
         auto dungeonData = json.get<Array>("dungeons").values();
 
-        for (unsigned int x = 0; x < dungeonData.size(); x++) {
-          if (!dungeonData[x]->is<String>()) continue;
+        for (auto &x : dungeonData) {
+          if (!x->is<String>()) continue;
 
-          auto eventName = dungeonData[x]->get<String>();
+          auto eventName = x->get<String>();
           for (auto &d : dungeons)
             for (auto &p : d.paths) {
               if (p.name == eventName) p.finished = true;
@@ -126,10 +126,9 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
           if (obj.has<Array>("bits")) {
             auto bits = obj.get<Array>("bits").values();
             if (bits.size() > 0) {
-              for (unsigned int x = 0; x < bits.size(); x++) {
-                if (bits[x]->is<Number>()) {
-                  auto frequentedID =
-                      static_cast<int32_t>(bits[x]->get<Number>());
+              for (auto &bit : bits) {
+                if (bit->is<Number>()) {
+                  auto frequentedID = static_cast<int32_t>(bit->get<Number>());
                   for (auto &d : dungeons)
                     for (auto &p : d.paths) {
                       if (dungeonToAchievementMap.find(p.name) !=

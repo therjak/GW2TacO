@@ -6,7 +6,7 @@
 CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice *Device)
     : CCoreResource(Device) {}
 
-CCoreConstantBuffer::~CCoreConstantBuffer() {}
+CCoreConstantBuffer::~CCoreConstantBuffer() = default;
 
 void CCoreConstantBuffer::Reset() { DataLength = 0; }
 

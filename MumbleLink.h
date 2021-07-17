@@ -66,7 +66,7 @@ struct LinkedMem {
 #define AVGCAMCOUNTER 6
 
 class CMumbleLink {
-  LinkedMem *lm = NULL;
+  LinkedMem *lm = nullptr;
   CVector4 camchardist[AVGCAMCOUNTER];
 
  public:

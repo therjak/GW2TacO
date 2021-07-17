@@ -102,9 +102,11 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// vertexformat functions
 
-	virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *vs = NULL) = 0;
+        virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
+            const CArray<COREVERTEXATTRIBUTE> &Attributes,
+            CCoreVertexShader *vs = nullptr) = 0;
 
-	//////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////
 	// renderstate functions
 
 	TBOOL SetRenderState(CCoreRasterizerState *RasterizerState);
@@ -129,30 +131,29 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// shader functions
 
-	virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
+        virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
             LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
-            LPCSTR ShaderVersion, std::string *Err = NULL) = 0;
+            LPCSTR ShaderVersion, std::string *Err = nullptr) = 0;
         virtual std::unique_ptr<CCorePixelShader> CreatePixelShader(
             LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
-            LPCSTR ShaderVersion, std::string *Err = NULL) = 0;
-  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob( uint8_t *Code, int32_t CodeSize ) = 0;
-  virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob( uint8_t *Code, int32_t CodeSize ) = 0;
-  virtual CCoreGeometryShader *CreateGeometryShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string *Err = NULL) = 0;
-  virtual CCoreDomainShader *CreateDomainShader(LPCSTR Code, int32_t CodeSize,
-                                                LPCSTR EntryFunction,
-                                                LPCSTR ShaderVersion,
-                                                std::string *Err = NULL) = 0;
-  virtual CCoreHullShader *CreateHullShader(LPCSTR Code, int32_t CodeSize,
-                                            LPCSTR EntryFunction,
-                                            LPCSTR ShaderVersion,
-                                            std::string *Err = NULL) = 0;
-  virtual CCoreComputeShader *CreateComputeShader(LPCSTR Code, int32_t CodeSize,
-                                                  LPCSTR EntryFunction,
-                                                  LPCSTR ShaderVersion,
-                                                  std::string *Err = NULL) = 0;
-	virtual CCoreVertexShader *CreateVertexShader() = 0;
+            LPCSTR ShaderVersion, std::string *Err = nullptr) = 0;
+        virtual std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
+            uint8_t *Code, int32_t CodeSize) = 0;
+        virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
+            uint8_t *Code, int32_t CodeSize) = 0;
+        virtual CCoreGeometryShader *CreateGeometryShader(
+            LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+            LPCSTR ShaderVersion, std::string *Err = nullptr) = 0;
+        virtual CCoreDomainShader *CreateDomainShader(
+            LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+            LPCSTR ShaderVersion, std::string *Err = nullptr) = 0;
+        virtual CCoreHullShader *CreateHullShader(
+            LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+            LPCSTR ShaderVersion, std::string *Err = nullptr) = 0;
+        virtual CCoreComputeShader *CreateComputeShader(
+            LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+            LPCSTR ShaderVersion, std::string *Err = nullptr) = 0;
+        virtual CCoreVertexShader *CreateVertexShader() = 0;
 	virtual CCorePixelShader *CreatePixelShader() = 0;
 	virtual CCoreGeometryShader *CreateGeometryShader() = 0;
 	virtual CCoreDomainShader *CreateDomainShader() = 0;
@@ -171,8 +172,11 @@ public:
 
 	virtual TBOOL BeginScene() = 0;
 	virtual TBOOL EndScene() = 0;
-	virtual TBOOL Clear(const TBOOL clearPixels = true, const TBOOL clearDepth = true, const CColor &Color = CColor((uint32_t)0), const float Depth = 1, const int32_t Stencil = 0) = 0;
-	virtual TBOOL Flip(TBOOL Vsync = true) = 0;
+        virtual TBOOL Clear(
+            const TBOOL clearPixels = true, const TBOOL clearDepth = true,
+            const CColor &Color = CColor(static_cast<uint32_t>(0)),
+            const float Depth = 1, const int32_t Stencil = 0) = 0;
+        virtual TBOOL Flip(TBOOL Vsync = true) = 0;
 	virtual TBOOL DrawIndexedTriangles(int32_t Count, int32_t NumVertices) = 0;
 	virtual TBOOL DrawIndexedLines(int32_t Count, int32_t NumVertices) = 0;
 	virtual TBOOL DrawTriangles(int32_t Count) = 0;

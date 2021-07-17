@@ -14,9 +14,9 @@
 #include "../UtilLib/RapidXML/rapidxml_print.hpp"
 #include "XMLNode.h"
 
-CXMLDocument::CXMLDocument(void) {}
+CXMLDocument::CXMLDocument() = default;
 
-CXMLDocument::~CXMLDocument(void) { CoUninitialize(); }
+CXMLDocument::~CXMLDocument() { CoUninitialize(); }
 
 bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
   memString = baselib::ReadFile(szFileName);
@@ -74,11 +74,11 @@ std::string CXMLDocument::SaveToString() {
 bool CXMLDocument::SaveToFile(std::string_view sz) {
   auto s = SaveToString();
 
-  HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, NULL, NULL, CREATE_ALWAYS,
-                        NULL, NULL);
+  HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS,
+                        NULL, nullptr);
   if (h == INVALID_HANDLE_VALUE) return false;
   DWORD b;
-  WriteFile(h, s.c_str(), s.length(), &b, NULL);
+  WriteFile(h, s.c_str(), s.length(), &b, nullptr);
   CloseHandle(h);
 
   return true;

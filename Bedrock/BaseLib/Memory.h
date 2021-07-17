@@ -20,7 +20,7 @@ void __cdecl operator delete[](void* pointer, const TS8* file, int32_t line);
 
 class CAllocationInfo {
  public:
-  TS8* File = 0;
+  TS8* File = nullptr;
   int32_t Line = 0;
   int32_t Size = 0;
 
@@ -28,7 +28,8 @@ class CAllocationInfo {
   CStackTracker Stack;
 #endif
 
-  CAllocationInfo(){};
+  CAllocationInfo() = default;
+  ;
   CAllocationInfo(TS8* file, int32_t line, int32_t size) {
     File = file;
     Line = line;

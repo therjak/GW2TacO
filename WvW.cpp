@@ -1,16 +1,17 @@
 ﻿#include "WvW.h"
-#include <thread>
-#include "Bedrock/UtilLib/jsonxx.h"
-#include "gw2tactical.h"
-#include "GW2API.h"
-#include "OverlayConfig.h"
-#include <time.h>
-#include "Language.h"
 
-#include <vector>
+#include <ctime>
 #include <string_view>
+#include <thread>
 #include <unordered_map>
+#include <vector>
+
 #include "Bedrock/BaseLib/string_format.h"
+#include "Bedrock/UtilLib/jsonxx.h"
+#include "GW2API.h"
+#include "Language.h"
+#include "OverlayConfig.h"
+#include "gw2tactical.h"
 
 using namespace jsonxx;
 
@@ -199,12 +200,10 @@ void LoadWvWObjectives()
     wvwobjs.parse( wvwobjectives );
     auto objs = wvwobjs.values();
 
-    for ( unsigned int x = 0; x < objs.size(); x++ )
-    {
-      if ( !objs[ x ]->is<Object>() )
-        continue;
+    for (auto& x : objs) {
+      if (!x->is<Object>()) continue;
 
-      auto obj = objs[ x ]->get<Object>();
+      auto obj = x->get<Object>();
 
       if ( !obj.has<String>( "id" ) )
         continue;
@@ -264,7 +263,8 @@ void LoadWvWObjectives()
                 ok = false;
                 break;
               }
-              continentRectValues[ continentRectCnt++ ] = (int)( continentRectCoords[ y ]->get<Number>() );
+              continentRectValues[continentRectCnt++] =
+                  static_cast<int>(continentRectCoords[y]->get<Number>());
             }
           }
 
@@ -281,7 +281,7 @@ void LoadWvWObjectives()
           CVector3 v( 0, 0, 0 );
           for ( int x = 0; x < 3; x++ )
             if ( coord[ x ]->is<Number>() )
-              v[ x ] = (float)( coord[ x ]->get<Number>() );
+              v[x] = static_cast<float>(coord[x]->get<Number>());
 
           CRect& r = wvwContinentRects[ mapID ];
           CVector3 offset = CVector3( ( r.x1 + r.x2 ) / 2.0f, 0, ( r.y1 + r.y2 ) / 2.0f );
@@ -312,11 +312,11 @@ void LoadWvWObjectives()
       if ( obj.has<String>( "name" ) )
         o.nameToken = o.name = obj.get<String>( "name" );
 
-      for ( uint32_t n = 0; n < o.nameToken.size(); n++ )
-        if ( !isalnum( o.nameToken[ n ] ) )
-          o.nameToken[ n ] = '_';
+      for (char& n : o.nameToken)
+        if (!isalnum(n))
+          n = '_';
         else
-          o.nameToken[ n ] = tolower( o.nameToken[ n ] );
+          n = tolower(n);
 
       extern WBATLASHANDLE DefaultIconHandle;
       extern CSize DefaultIconSize;
@@ -411,22 +411,18 @@ void UpdateWvWStatus()
     if ( o.has<Array>( "maps" ) )
     {
       auto m = o.get<Array>( "maps" ).values();
-      for ( unsigned int x = 0; x < m.size(); x++ )
-      {
-        if ( !m[ x ]->is<Object>() )
-          continue;
+      for (auto& x : m) {
+        if (!x->is<Object>()) continue;
 
-        auto map = m[ x ]->get<Object>();
+        auto map = x->get<Object>();
 
         if ( !map.has<Array>( "objectives" ) )
           continue;
 
         auto objs = map.get<Array>( "objectives" ).values();
-        for ( unsigned int y = 0; y < objs.size(); y++ )
-        {
-          if ( !objs[ y ]->is<Object>() )
-            continue;
-          auto objective = objs[ y ]->get<Object>();
+        for (auto& obj : objs) {
+          if (!obj->is<Object>()) continue;
+          auto objective = obj->get<Object>();
 
           std::string id;
           if ( objective.has<String>( "id" ) )
@@ -461,7 +457,6 @@ void UpdateWvWStatus()
           char flags;
           parseISO8601( lastFlipped.c_str(), flipTime, flags );
           poi.lastUpdateTime = flipTime;
-
         }
       }
     }

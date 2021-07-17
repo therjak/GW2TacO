@@ -87,7 +87,7 @@ APIKey::APIKey(std::string_view key) : apiKey(key) {
           accountName = json.get<String>( "name" );
 
         if ( json.has<Number>( "world" ) )
-          worldId = (int32_t)( json.get<Number>( "world" ) );
+          worldId = static_cast<int32_t>(json.get<Number>("world"));
       }
 
       initialized = true;

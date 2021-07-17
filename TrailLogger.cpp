@@ -24,8 +24,8 @@ float GameToWorldCoords(float game);
 float GetMapFade();
 
 void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos) {
-  GW2TrailDisplay* trails = (GW2TrailDisplay*)App->GetRoot()->FindChildByID(
-      _T( "trail" ), _T( "gw2Trails" ));
+  GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+      App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
   if (trails) trails->DoTrailLogging(mapID, charPos);
 }
 
@@ -37,10 +37,10 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
   cam.SetLookAtLH(mumbleLink.camPosition,
                   mumbleLink.camPosition + mumbleLink.camDir,
                   CVector3(0, 1, 0));
-  persp.SetPerspectiveFovLH(mumbleLink.fov,
-                            drawrect.Width() / (float)drawrect.Height(), 0.01f,
-                            150.0f);
-  asp = drawrect.Width() / (float)drawrect.Height();
+  persp.SetPerspectiveFovLH(
+      mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
+      0.01f, 150.0f);
+  asp = drawrect.Width() / static_cast<float>(drawrect.Height());
 
   // CMatrix4x4 m = cam*persp;
 
@@ -341,13 +341,14 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(std::string_view fname,
           mz_zip_archive_file_stat stat;
           if (mz_zip_reader_file_stat(zip, idx, &stat) &&
               stat.m_uncomp_size > 0) {
-            auto data =
-                std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
+            auto data = std::make_unique<uint8_t[]>(
+                static_cast<int32_t>(stat.m_uncomp_size));
 
-            if (mz_zip_reader_extract_to_mem(zip, idx, data.get(),
-                                             (int32_t)stat.m_uncomp_size, 0)) {
+            if (mz_zip_reader_extract_to_mem(
+                    zip, idx, data.get(),
+                    static_cast<int32_t>(stat.m_uncomp_size), 0)) {
               auto tex = App->GetDevice()->CreateTexture2D(
-                  data.get(), (int32_t)stat.m_uncomp_size);
+                  data.get(), static_cast<int32_t>(stat.m_uncomp_size));
               if (tex) {
                 auto t = tex.get();
                 textureCache[s] = std::move(tex);
@@ -465,9 +466,9 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
       "float2(0,data.x))*color*float4(1,1,1,a); }";
 
   vxShader.swap(App->GetDevice()->CreateVertexShader(
-      code, (int32_t)strlen(code), "vsmain", "vs_4_0"));
-  pxShader.swap(App->GetDevice()->CreatePixelShader(code, (int32_t)strlen(code),
-                                                    "psmain", "ps_4_0"));
+      code, static_cast<int32_t>(strlen(code)), "vsmain", "vs_4_0"));
+  pxShader.swap(App->GetDevice()->CreatePixelShader(
+      code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0"));
 
   COREVERTEXATTRIBUTE TrailVertexFormat[] = {
       COREVXATTR_POSITIONT4, COREVXATTR_TEXCOORD2,
@@ -542,27 +543,27 @@ void GW2TrailDisplay::ExportTrail() {
   OPENFILENAME opf;
   opf.hwndOwner = (HWND)App->GetHandle();
   opf.lpstrFilter = "GW2 Taco Trail Files\0*.trl\0\0";
-  opf.lpstrCustomFilter = 0;
+  opf.lpstrCustomFilter = nullptr;
   opf.nMaxCustFilter = 0L;
   opf.nFilterIndex = 1L;
   opf.lpstrFile = Filestring;
   opf.lpstrFile[0] = '\0';
   opf.nMaxFile = 256;
-  opf.lpstrFileTitle = 0;
+  opf.lpstrFileTitle = nullptr;
   opf.nMaxFileTitle = 50;
   opf.lpstrInitialDir = "Data";
   opf.lpstrTitle = "Save Trail";
   opf.nFileOffset = 0;
   opf.nFileExtension = 0;
   opf.lpstrDefExt = "trl";
-  opf.lpfnHook = NULL;
+  opf.lpfnHook = nullptr;
   opf.lCustData = 0;
   opf.Flags = (OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NONETWORKBUTTON) &
               ~OFN_ALLOWMULTISELECT;
   opf.lStructSize = sizeof(OPENFILENAME);
 
-  opf.hInstance = GetModuleHandle(0);
-  opf.pvReserved = NULL;
+  opf.hInstance = GetModuleHandle(nullptr);
+  opf.pvReserved = nullptr;
   opf.dwReserved = 0;
   opf.FlagsEx = 0;
 
@@ -589,27 +590,27 @@ void GW2TrailDisplay::ImportTrail() {
   OPENFILENAME opf;
   opf.hwndOwner = (HWND)App->GetHandle();
   opf.lpstrFilter = "GW2 Taco Trail Files\0*.trl\0\0";
-  opf.lpstrCustomFilter = 0;
+  opf.lpstrCustomFilter = nullptr;
   opf.nMaxCustFilter = 0L;
   opf.nFilterIndex = 1L;
   opf.lpstrFile = Filestring;
   opf.lpstrFile[0] = '\0';
   opf.nMaxFile = 256;
-  opf.lpstrFileTitle = 0;
+  opf.lpstrFileTitle = nullptr;
   opf.nMaxFileTitle = 50;
   opf.lpstrInitialDir = "Data";
   opf.lpstrTitle = "Import Trail";
   opf.nFileOffset = 0;
   opf.nFileExtension = 0;
   opf.lpstrDefExt = "trl";
-  opf.lpfnHook = NULL;
+  opf.lpfnHook = nullptr;
   opf.lCustData = 0;
   opf.Flags = (OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON) &
               ~OFN_ALLOWMULTISELECT;
   opf.lStructSize = sizeof(OPENFILENAME);
 
-  opf.hInstance = GetModuleHandle(0);
-  opf.pvReserved = NULL;
+  opf.hInstance = GetModuleHandle(nullptr);
+  opf.pvReserved = nullptr;
   opf.dwReserved = 0;
   opf.FlagsEx = 0;
 
@@ -660,7 +661,7 @@ TBOOL GW2Trail::SaveToFile(std::string_view fname) {
   return true;
 }
 
-GW2Trail::~GW2Trail() {}
+GW2Trail::~GW2Trail() = default;
 
 void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
                      int pointCount) {
@@ -753,14 +754,14 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
     vertexCount += 2;
   }
 
-  trailMesh = dev->CreateVertexBuffer((uint8_t*)vertices,
+  trailMesh = dev->CreateVertexBuffer(reinterpret_cast<uint8_t*>(vertices),
                                       vertexCount * sizeof(GW2TrailVertex));
   length = pointCount * 2;
   idxBuf = dev->CreateIndexBuffer((pointCount - 1) * 6, 4);
 
   int32_t* idxData;
 
-  if (idxBuf->Lock((void**)&idxData)) {
+  if (idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
     memcpy(idxData, indices, sizeof(int32_t) * 6 * (pointCount - 1));
     // int cnt = 0;
     // for ( int32_t x = 0; x < pointCount - 1; x++ )
@@ -790,7 +791,8 @@ void GW2Trail::Draw() {
 void GW2Trail::Update() {
   if (!App->GetDevice()) return;
 
-  Build(App->GetDevice(), map, (float*)&positions[0], positions.size());
+  Build(App->GetDevice(), map, reinterpret_cast<float*>(&positions[0]),
+        positions.size());
 }
 
 void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
@@ -854,11 +856,13 @@ TBOOL GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
   if (keepPoints) {
     positions.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++)
-      positions.emplace_back(CVector3(&((float*)(f.GetData() + 8))[x * 3]));
+      positions.emplace_back(
+          CVector3(&(reinterpret_cast<float*>(f.GetData() + 8))[x * 3]));
   }
 
-  Build(App->GetDevice(), *(int32_t*)(f.GetData() + 4),
-        (float*)(f.GetData() + 8), int32_t((f.GetLength() - 8) / 12));
+  Build(App->GetDevice(), *reinterpret_cast<int32_t*>(f.GetData() + 4),
+        reinterpret_cast<float*>(f.GetData() + 8),
+        int32_t((f.GetLength() - 8) / 12));
   return true;
 }
 
@@ -873,10 +877,12 @@ TBOOL GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
         mz_zip_archive_file_stat stat;
         if (mz_zip_reader_file_stat(zip, idx, &stat) &&
             stat.m_uncomp_size > 0) {
-          auto data = std::make_unique<uint8_t[]>((int32_t)stat.m_uncomp_size);
+          auto data = std::make_unique<uint8_t[]>(
+              static_cast<int32_t>(stat.m_uncomp_size));
 
-          if (mz_zip_reader_extract_to_mem(zip, idx, data.get(),
-                                           (int32_t)stat.m_uncomp_size, 0)) {
+          if (mz_zip_reader_extract_to_mem(
+                  zip, idx, data.get(),
+                  static_cast<int32_t>(stat.m_uncomp_size), 0)) {
             CStreamReaderMemory f;
             if (f.Open(data.get(), int32_t(stat.m_uncomp_size))) {
               if (Import(f, keepPoints)) return true;

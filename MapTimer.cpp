@@ -45,10 +45,10 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
 
           worldBosses.clear();
 
-          for (unsigned int x = 0; x < dungeonData.size(); x++) {
-            if (!dungeonData[x]->is<String>()) continue;
+          for (auto &x : dungeonData) {
+            if (!x->is<String>()) continue;
 
-            auto eventName = dungeonData[x]->get<String>();
+            auto eventName = x->get<String>();
             worldBosses.push_back(eventName);
           }
         }
@@ -64,10 +64,10 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
 
           mapchests.clear();
 
-          for (unsigned int x = 0; x < dungeonData.size(); x++) {
-            if (!dungeonData[x]->is<String>()) continue;
+          for (auto &x : dungeonData) {
+            if (!x->is<String>()) continue;
 
-            auto eventName = dungeonData[x]->get<String>();
+            auto eventName = x->get<String>();
             mapchests.push_back(eventName);
           }
         }
@@ -112,9 +112,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
       CRect(cl.TopLeft(), CPoint(cl.Width(), mapCount * mapheight + 1)),
       GetState());
 
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
   int32_t lefttime = minutes - timeWindow / 2;
@@ -151,10 +150,12 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
     }
 
     while (currtime < 72 * 60) {
-      int32_t p1 = (int32_t)(cl.Width() * currtime / (float)timeWindow);
+      int32_t p1 = static_cast<int32_t>(cl.Width() * currtime /
+                                        static_cast<float>(timeWindow));
       int32_t p2 =
-          (int32_t)(cl.Width() * (currtime + maps[x].events[currevent].length) /
-                    (float)timeWindow) +
+          static_cast<int32_t>(cl.Width() *
+                               (currtime + maps[x].events[currevent].length) /
+                               static_cast<float>(timeWindow)) +
           1;
 
       if (p2 >= 0 && p1 <= cl.Width()) {
@@ -295,7 +296,7 @@ GW2MapTimer::GW2MapTimer(CWBItem *Parent, CRect Position)
   SetID("MapTimer");
 }
 
-GW2MapTimer::~GW2MapTimer() {}
+GW2MapTimer::~GW2MapTimer() = default;
 
 CWBItem *GW2MapTimer::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
   return GW2MapTimer::Create(Root, Pos).get();

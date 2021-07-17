@@ -162,7 +162,7 @@ public:
   static float Atof( const TCHAR *str );
   static int32_t Atoi( const TCHAR *str );
 
-  typedef std::function<TBOOL( uint32_t )> UTF8CHARCALLBACK;
+  using UTF8CHARCALLBACK = std::function<TBOOL(uint32_t)>;
 
   void DecodeUtf8( UTF8CHARCALLBACK callback );
   static void DecodeUtf8( const TCHAR* Input, UTF8CHARCALLBACK callback );

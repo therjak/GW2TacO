@@ -1,7 +1,6 @@
 #include "Application.h"
 
-#include <locale.h>
-
+#include <clocale>
 #include <cstdio>
 
 #include "../BaseLib/read_file.h"
@@ -10,13 +9,13 @@
 #include "WhiteBoard.h"
 
 CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
-  Root = NULL;
-  MouseCaptureItem = NULL;
-  MouseItem = NULL;
+  Root = nullptr;
+  MouseCaptureItem = nullptr;
+  MouseItem = nullptr;
   DrawAPI = new CWBDrawAPI();
   Skin = new CWBSkin();
-  Atlas = NULL;
-  DefaultFont = NULL;
+  Atlas = nullptr;
+  DefaultFont = nullptr;
   Alt = Ctrl = Shift = Left = Middle = Right = false;
   Vsync = true;
   FrameTimes = new CRingBuffer<int32_t>(60);
@@ -388,7 +387,8 @@ TBOOL CWBApplication::HandleMessages() {
 
   for (int32_t x = 0; x < MessageBuffer.NumItems(); x++) {
     CWBMessage currentMessage;
-    memcpy((void *)&currentMessage, &MessageBuffer[x], sizeof(CWBMessage));
+    memcpy((void *)&currentMessage, (void *)&MessageBuffer[x],
+           sizeof(CWBMessage));
     ProcessMessage(currentMessage);
   }
 
@@ -458,10 +458,10 @@ void CWBApplication::Display(CWBDrawAPI *API) {
 }
 
 CWBItem *CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR *type) {
-  if (Items.find(Guid) == Items.end()) return NULL;
+  if (Items.find(Guid) == Items.end()) return nullptr;
   CWBItem *i = Items[Guid];
 
-  if (type) return i->InstanceOf(type) ? i : NULL;
+  if (type) return i->InstanceOf(type) ? i : nullptr;
 
   return i;
 }
@@ -477,7 +477,7 @@ CWBItem *CWBApplication::SetCapture(CWBItem *Capturer) {
 }
 
 TBOOL CWBApplication::ReleaseCapture() {
-  MouseCaptureItem = NULL;
+  MouseCaptureItem = nullptr;
   return true;
 }
 
@@ -610,7 +610,8 @@ TBOOL CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
     return false;
   }
 
-  std::string_view s((char *)f.GetData(), (int32_t)f.GetLength());
+  std::string_view s(reinterpret_cast<char *>(f.GetData()),
+                     static_cast<int32_t>(f.GetLength()));
   return LoadXMLLayout(s);
 }
 
@@ -686,7 +687,8 @@ TBOOL CWBApplication::LoadCSSFromFile(std::string_view FileName,
     return false;
   }
 
-  std::string_view s((char *)f.GetData(), (int32_t)f.GetLength());
+  std::string_view s(reinterpret_cast<char *>(f.GetData()),
+                     static_cast<int32_t>(f.GetLength()));
   TBOOL b = LoadCSS(s, ResetStyleManager);
 
   return b;
@@ -733,8 +735,8 @@ TBOOL CWBApplication::LoadSkin(std::string_view XML,
 
         WBATLASHANDLE h = Atlas->AddImage(Image, XRes, YRes, r2);
         Skin->AddElement(e.GetAttributeAsString(_T( "name" )), h,
-                         (WBSKINELEMENTBEHAVIOR)b.x,
-                         (WBSKINELEMENTBEHAVIOR)b.y);
+                         static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
+                         static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
       }
       SAFEDELETEA(Image);
     }
@@ -762,8 +764,8 @@ TBOOL CWBApplication::LoadSkin(std::string_view XML,
     auto img = n.GetAttributeAsString(_T( "image" ));
     auto bin = n.GetAttributeAsString(_T( "binary" ));
 
-    uint8_t *Dataimg = NULL;
-    uint8_t *Databin = NULL;
+    uint8_t *Dataimg = nullptr;
+    uint8_t *Databin = nullptr;
     int32_t Sizeimg = 0;
     int32_t Sizebin = 0;
     auto dataimg = B64Decode(img);
@@ -801,7 +803,8 @@ TBOOL CWBApplication::LoadSkinFromFile(std::string_view FileName,
     return false;
   }
 
-  std::string_view s((char *)f.GetData(), (int32_t)f.GetLength());
+  std::string_view s(reinterpret_cast<char *>(f.GetData()),
+                     static_cast<int32_t>(f.GetLength()));
   TBOOL b = LoadSkin(s, enabledGlyphs);
   if (b)
     LOG_NFO("[gui] Successfully loaded Skin '%s'",
@@ -909,7 +912,7 @@ CWBItem *CWBApplication::GenerateUIItem(CWBItem *Root, CXMLNode &node,
 
   LOG(LOG_ERROR, _T( "[xml2gui] Unknown tag: '%s'" ),
       node.GetNodeName().c_str());
-  return NULL;
+  return nullptr;
 }
 
 void CWBApplication::RegisterUIFactoryCallback(
@@ -918,19 +921,19 @@ void CWBApplication::RegisterUIFactoryCallback(
 }
 
 void CWBApplication::TakeScreenshot() {
-  CreateDirectory(_T( "Screenshots" ), NULL);
+  CreateDirectory(_T( "Screenshots" ), nullptr);
 
   int32_t maxcnt = 0;
   {
     auto s = ScreenShotName + _T( "_*.png" );
     CFileList fl(s, _T( "Screenshots" ));
 
-    for (uint32_t x = 0; x < fl.Files.size(); x++) {
-      if (fl.Files[x].FileName.find(ScreenShotName) == std::string::npos) {
+    for (auto &File : fl.Files) {
+      if (File.FileName.find(ScreenShotName) == std::string::npos) {
         auto s2 = ScreenShotName + _T( "_%d" );
 
         int32_t no = -1;
-        int32_t i = sscanf(fl.Files[x].FileName.c_str(), s2.c_str(), &no);
+        int32_t i = sscanf(File.FileName.c_str(), s2.c_str(), &no);
         maxcnt = max(maxcnt, no);
       }
     }
@@ -969,5 +972,5 @@ float CWBApplication::GetFrameRate() {
 
   if (!FrameCount) return 0;
   if (!FrameTimeAcc) return 9999;
-  return 1000.0f / (FrameTimeAcc / (float)FrameCount);
+  return 1000.0f / (FrameTimeAcc / static_cast<float>(FrameCount));
 }

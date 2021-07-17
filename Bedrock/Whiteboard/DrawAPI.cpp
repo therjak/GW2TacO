@@ -36,8 +36,8 @@ void CWBDrawAPI::AddDisplayRect(
 
   if (Pos != rect)  // need to cull UV
   {
-    const float xs = (float)rect.Width();
-    const float ys = (float)rect.Height();
+    const float xs = static_cast<float>(rect.Width());
+    const float ys = static_cast<float>(rect.Height());
     const float us = u2 - u1;
     const float vs = v2 - v1;
 
@@ -55,8 +55,8 @@ void CWBDrawAPI::AddDisplayRect(
   CColor Color = color;
   Color.A() = (Color.A() * Opacity) / 255;
 
-  const CVector2 TL((float)Pos.x1,(float)Pos.y1);
-  const CVector2 BR((float)Pos.x2,(float)Pos.y2);
+  const CVector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
+  const CVector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
 
   DisplayList.emplace_back(WBGUIVERTEX{TL.x, TL.y, u1f, v1f, Color});
   DisplayList.emplace_back(WBGUIVERTEX{BR.x, TL.y, u2f, v1f, Color});
@@ -84,8 +84,8 @@ void CWBDrawAPI::AddDisplayLine(const CPoint &_p1, const CPoint &_p2,
   float t1 = 0;
   float t2 = 0;
 
-  const float xs = (float)abs(p2.x - p1.x);
-  const float ys = (float)abs(p2.y - p1.y);
+  const float xs = static_cast<float>(abs(p2.x - p1.x));
+  const float ys = static_cast<float>(abs(p2.y - p1.y));
 
   if (p1.x < rArea.x1) t1 = max(t1, (rArea.x1 - p1.x) / xs);
   if (p1.y < rArea.y1) t1 = max(t1, (rArea.y1 - p1.y) / ys);
@@ -142,8 +142,8 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect &Rect, const float u1,
 
   if (Pos != rect)  // need to cull UV
   {
-    const float xs = (float)rect.Width();
-    const float ys = (float)rect.Height();
+    const float xs = static_cast<float>(rect.Width());
+    const float ys = static_cast<float>(rect.Height());
     const float us = u2 - u1;
     const float vs = v2 - v1;
 
@@ -161,8 +161,8 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect &Rect, const float u1,
   CColor Color = color;
   Color.A() = (Color.A() * Opacity) / 255;
 
-  const CVector2 TL((float)Pos.x1,(float)Pos.y1);
-  const CVector2 BR((float)Pos.x2,(float)Pos.y2);
+  const CVector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
+  const CVector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
 
   const CVector2 center = (TL + BR) / 2.0f;
   const auto a = CVector2(TL.x, TL.y).Rotated(center, rotation);
@@ -266,13 +266,16 @@ void CWBDrawAPI::AddDisplayTri(const CPoint &_p1, const CPoint &_p2,
   WBGUIVERTEX
       Vertices[6];  // max vertex count is 6, when all triangle edges are cut
   int32_t VertexCount = 3;
-  Vertices[0].Pos = CVector4((float)p1.x, (float)p1.y, 0, 1);
+  Vertices[0].Pos =
+      CVector4(static_cast<float>(p1.x), static_cast<float>(p1.y), 0, 1);
   Vertices[0].UV = CVector2(u1, v1);
   Vertices[0].Color = a;
-  Vertices[1].Pos = CVector4((float)p2.x, (float)p2.y, 0, 1);
+  Vertices[1].Pos =
+      CVector4(static_cast<float>(p2.x), static_cast<float>(p2.y), 0, 1);
   Vertices[1].UV = CVector2(u2, v2);
   Vertices[1].Color = b;
-  Vertices[2].Pos = CVector4((float)p3.x, (float)p3.y, 0, 1);
+  Vertices[2].Pos =
+      CVector4(static_cast<float>(p3.x), static_cast<float>(p3.y), 0, 1);
   Vertices[2].UV = CVector2(u3, v3);
   Vertices[2].Color = c;
 
@@ -310,7 +313,7 @@ void CWBDrawAPI::RenderDisplayList() {
   while (VxCount > 0) {
     const int32_t Count = min(VxCount, VERTEXBUFFERVERTEXCOUNT);
 
-    void *Buffer = NULL;
+    void *Buffer = nullptr;
 
     if (!VertexBuffer->Lock(&Buffer, 0, Count * sizeof(WBGUIVERTEX),
                             CORELOCK_DISCARD)) {
@@ -362,15 +365,15 @@ CWBDrawAPI::CWBDrawAPI() {
   Offset = CPoint(0, 0);
   CropRect = CRect(0, 0, 0, 0);
   DrawMode = WBD_RECTANGLES;
-  Atlas = NULL;
+  Atlas = nullptr;
 
-  App = NULL;
+  App = nullptr;
   Opacity = 255;
 
-  Device = NULL;
+  Device = nullptr;
 }
 
-CWBDrawAPI::~CWBDrawAPI() {}
+CWBDrawAPI::~CWBDrawAPI() = default;
 
 TBOOL CWBDrawAPI::Initialize(CWBApplication *Application, CCoreDevice *Dev,
                              CAtlas *atlas) {
@@ -394,7 +397,7 @@ TBOOL CWBDrawAPI::Initialize(CWBApplication *Application, CCoreDevice *Dev,
 
   uint16_t *Locked = nullptr;
 
-  if (rectIndexBuffer->Lock((void **)&Locked)) {
+  if (rectIndexBuffer->Lock(reinterpret_cast<void **>(&Locked))) {
     for (int32_t x = 0; x < VERTEXBUFFERRECTCOUNT; x++) {
       Locked[x * 6 + 0] = x * 4;
       Locked[x * 6 + 1] = x * 4 + 1;
@@ -710,20 +713,20 @@ void CWBDrawAPI::SetUIRenderState() {
   Device->SetVertexShader(VxShader.get());
   Device->SetVertexFormat(VertexFormat.get());
   Device->SetVertexBuffer(VertexBuffer.get(), 0);
-  Device->SetGeometryShader(NULL);
-  Device->SetHullShader(NULL);
-  Device->SetDomainShader(NULL);
+  Device->SetGeometryShader(nullptr);
+  Device->SetHullShader(nullptr);
+  Device->SetDomainShader(nullptr);
   Device->SetPixelShader(PxShader.get());
   Device->SetTexture(CORESMP_PS0, Atlas->GetTexture());
 
-  Device->SetRenderTarget(NULL);
+  Device->SetRenderTarget(nullptr);
 
   if (GuiSampler) GuiSampler->Apply(CORESMP_PS0);
 
   ResolutionData->Reset();
 
-  CVector4 Resolution =
-      CVector4((float)App->GetXRes(), (float)App->GetYRes(), 0, 1);
+  CVector4 Resolution = CVector4(static_cast<float>(App->GetXRes()),
+                                 static_cast<float>(App->GetYRes()), 0, 1);
   ResolutionData->AddData(&Resolution, sizeof(CVector4));
   ResolutionData->Upload();
   Device->SetShaderConstants(ResolutionData.get());
@@ -903,19 +906,21 @@ void CWBDrawAPI::SetOpacity(uint8_t o) { Opacity = o; }
 
 void ZoomToMouseCenter(CPoint &Offset, int32_t &Zoom, int32_t NewZoom,
                        CPoint ZoomCenter) {
-  const float dz = NewZoom / (float)Zoom;
+  const float dz = NewZoom / static_cast<float>(Zoom);
 
-  const CVector2 v = CVector2((float)ZoomCenter.x, (float)ZoomCenter.y) * (1 - dz);
-  Offset += CPoint((int32_t)v.x, (int32_t)v.y);
+  const CVector2 v = CVector2(static_cast<float>(ZoomCenter.x),
+                              static_cast<float>(ZoomCenter.y)) *
+                     (1 - dz);
+  Offset += CPoint(static_cast<int32_t>(v.x), static_cast<int32_t>(v.y));
 
   Zoom = NewZoom;
 }
 
 void ZoomToMouseCenter(CPoint &Offset, float &Zoom, float NewZoom, CPoint Pos) {
-  const float dz = NewZoom / (float)Zoom;
+  const float dz = NewZoom / Zoom;
 
-  Offset.x = (int32_t)(Pos.x + Offset.x - Pos.x * dz);
-  Offset.y = (int32_t)(Pos.y + Offset.y - Pos.y * dz);
+  Offset.x = static_cast<int32_t>(Pos.x + Offset.x - Pos.x * dz);
+  Offset.y = static_cast<int32_t>(Pos.y + Offset.y - Pos.y * dz);
 
   Zoom = NewZoom;
 }

@@ -114,8 +114,7 @@ CQuaternion::CQuaternion(const float _x, const float _y,
   FromEuler(_x, _y, _z);
 }
 
-CQuaternion::CQuaternion(const CQuaternion &v)
-    : x(v.x), y(v.y), z(v.z), s(v.s) {}
+CQuaternion::CQuaternion(const CQuaternion &v) = default;
 
 CQuaternion::CQuaternion(const float *v) : x(v[0]), y(v[1]), z(v[2]), s(v[3]) {}
 
@@ -126,7 +125,7 @@ CQuaternion::CQuaternion(const float _x, const float _y, const float _z,
                          const float _s)
     : x(_x), y(_y), z(_z), s(_s) {}
 
-CQuaternion::CQuaternion() {}
+CQuaternion::CQuaternion() = default;
 
 void CQuaternion::FromRotationMatrix(const CMatrix4x4 &m) {
   float diag = m(0, 0) + m(1, 1) + m(2, 2) + 1.0f;
@@ -213,22 +212,18 @@ void CQuaternion::FromEuler(const float _x, const float _y, const float _z) {
 }
 
 float const CQuaternion::operator[](int32_t idx) const {
-  return ((const float *)this)[idx];
+  return (reinterpret_cast<const float *>(this))[idx];
 }
 
-float &CQuaternion::operator[](int32_t idx) { return ((float *)this)[idx]; }
-
-CQuaternion::operator float *() { return (float *)&x; }
-
-CQuaternion::operator const float *() const { return (const float *)&x; }
-
-CQuaternion &CQuaternion::operator=(const CQuaternion &q) {
-  s = q.s;
-  x = q.x;
-  y = q.y;
-  z = q.z;
-  return *this;
+float &CQuaternion::operator[](int32_t idx) {
+  return (reinterpret_cast<float *>(this))[idx];
 }
+
+CQuaternion::operator float *() { return &x; }
+
+CQuaternion::operator const float *() const { return &x; }
+
+CQuaternion &CQuaternion::operator=(const CQuaternion &q) = default;
 
 CQuaternion &CQuaternion::operator+=(const CQuaternion &v) {
   x += v.x;

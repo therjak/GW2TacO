@@ -6,8 +6,8 @@ CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device *dev) : CCoreVertex
 {
 	Dev = dev->GetDevice();
 	DeviceContext = dev->GetDeviceContext();
-	VertexFormatHandle = NULL;
-	Size = 0;
+        VertexFormatHandle = nullptr;
+        Size = 0;
 }
 
 CCoreDX11VertexFormat::~CCoreDX11VertexFormat()
@@ -18,7 +18,7 @@ CCoreDX11VertexFormat::~CCoreDX11VertexFormat()
 void CCoreDX11VertexFormat::Release()
 {
 	if (VertexFormatHandle) VertexFormatHandle->Release();
-	VertexFormatHandle = NULL;
+        VertexFormatHandle = nullptr;
 }
 
 TBOOL CCoreDX11VertexFormat::Apply()

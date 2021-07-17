@@ -28,9 +28,8 @@ void CWBButton::OnDraw(CWBDrawAPI *API) {
 
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
     CColor TextColor =
@@ -49,7 +48,7 @@ CWBButton::CWBButton(CWBItem *Parent, const CRect &Pos, std::string_view Txt)
   Initialize(Parent, Pos, Txt);
 }
 
-CWBButton::~CWBButton() {}
+CWBButton::~CWBButton() = default;
 
 TBOOL CWBButton::Initialize(CWBItem *Parent, const CRect &Position,
                             std::string_view Txt) {
@@ -104,9 +103,8 @@ TBOOL CWBButton::MessageProc(CWBMessage &Message) {
 CSize CWBButton::GetContentSize() {
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform =
-      (WBTEXTTRANSFORM)CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM);
+  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return CSize(0, 0);
   return CSize(Font->GetWidth(Text, false, TextTransform),

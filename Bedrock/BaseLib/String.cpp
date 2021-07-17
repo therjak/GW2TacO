@@ -1,7 +1,7 @@
 #include "BaseLib.h"
 
 void CString::Initialize() {
-  String = NULL;
+  String = nullptr;
   LengthCached = 0;
 #ifdef HASHED_STRINGS
   Hash = LowercaseHash = 0;
@@ -10,7 +10,7 @@ void CString::Initialize() {
 
 void CString::StringChanged() {
   LengthCached = 0;
-  if (String) LengthCached = (int32_t)_tcslen(String);
+  if (String) LengthCached = static_cast<int32_t>(_tcslen(String));
   CALCULATEHASH();
 }
 
@@ -176,7 +176,7 @@ const CString &CString::Append(const TS8 *str, const uint32_t len) {
 
 const CString &CString::Append(const TS8 *str) {
   if (!str) return *this;
-  return Append(str, (int32_t)strlen(str));
+  return Append(str, static_cast<int32_t>(strlen(str)));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -208,8 +208,8 @@ const CString &CString::Append(const wchar_t *str, const uint32_t len) {
   int32_t lengthCalculated = lengthIncoming;
 
 #ifndef UNICODE
-  lengthCalculated =
-      WideCharToMultiByte(CP_UTF8, 0, str, lengthIncoming, NULL, 0, NULL, NULL);
+  lengthCalculated = WideCharToMultiByte(CP_UTF8, 0, str, lengthIncoming,
+                                         nullptr, 0, nullptr, nullptr);
 #endif
 
   TCHAR *newString = new TCHAR[lengthOriginal + lengthCalculated + 1];
@@ -219,8 +219,8 @@ const CString &CString::Append(const wchar_t *str, const uint32_t len) {
   if (lengthCalculated) {
 #ifndef UNICODE
     WideCharToMultiByte(CP_UTF8, 0, str, lengthIncoming,
-                        newString + lengthOriginal, lengthCalculated, NULL,
-                        NULL);
+                        newString + lengthOriginal, lengthCalculated, nullptr,
+                        nullptr);
 #else
     memcpy(newString + lengthOriginal, str, lengthCalculated * sizeof(TCHAR));
 #endif
@@ -238,7 +238,7 @@ const CString &CString::Append(const wchar_t *str, const uint32_t len) {
 
 const CString &CString::Append(const wchar_t *str) {
   if (!str) return *this;
-  return Append(str, (int32_t)wcslen(str));
+  return Append(str, static_cast<int32_t>(wcslen(str)));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -421,7 +421,7 @@ void CString::Insert(int32_t pos, const TCHAR *Input) {
 }
 
 void CString::DeleteChar(int32_t pos) {
-  if (pos < 0 || pos >= (int32_t)Length()) return;
+  if (pos < 0 || pos >= static_cast<int32_t>(Length())) return;
   if (pos == 0) {
     *this = CString(String + 1);
     return;
@@ -436,12 +436,12 @@ void CString::DeleteChar(int32_t pos) {
 
 void CString::DeleteRegion(int32_t pos, int32_t size) {
   if (!size) return;
-  if (pos < 0 || pos >= (int32_t)Length()) return;
-  if (size >= (int32_t)Length()) {
+  if (pos < 0 || pos >= static_cast<int32_t>(Length())) return;
+  if (size >= static_cast<int32_t>(Length())) {
     *this = _T( "" );
     return;
   }
-  if (pos + size >= (int32_t)Length())  // cut the end
+  if (pos + size >= static_cast<int32_t>(Length()))  // cut the end
   {
     String[pos] = 0;
     *this = CString(String);
@@ -463,13 +463,13 @@ void CString::DeleteRegion(int32_t pos, int32_t size) {
 
 void CString::ToUnixNewline() {
   uint32_t cnt = 0;
-  for (int32_t x = 0; x < (int32_t)Length(); x++)
+  for (int32_t x = 0; x < static_cast<int32_t>(Length()); x++)
     if (String[x] == '\r') cnt++;
   if (!cnt) return;
 
   uint32_t pos = 0;
   TCHAR *str = new TCHAR[Length() - cnt + 2];
-  for (int32_t x = 0; x < (int32_t)Length(); x++)
+  for (int32_t x = 0; x < static_cast<int32_t>(Length()); x++)
     if (String[x] != '\r') str[pos++] = String[x];
 
   str[pos] = 0;
@@ -481,13 +481,13 @@ void CString::ToUnixNewline() {
 void CString::ToWindowsNewline() {
   ToUnixNewline();  // make sure there aren't any '\r's in the string
   int32_t cnt = 0;
-  for (int32_t x = 0; x < (int32_t)Length(); x++)
+  for (int32_t x = 0; x < static_cast<int32_t>(Length()); x++)
     if (String[x] == '\n') cnt++;
   if (!cnt) return;
 
   int32_t pos = 0;
   TCHAR *str = new TCHAR[Length() + cnt + 2];
-  for (int32_t x = 0; x < (int32_t)Length(); x++) {
+  for (int32_t x = 0; x < static_cast<int32_t>(Length()); x++) {
     if (String[x] == '\n') str[pos++] = '\r';
     str[pos++] = String[x];
   }
@@ -632,7 +632,7 @@ int32_t CString::Find(const CString &v, uint32_t nStart) const {
   if (nStart > Length()) return -1;
   TCHAR *sz = _tcsstr(String + nStart, v.GetPointer());
   if (!sz) return -1;
-  return (int32_t)(sz - String);
+  return static_cast<int32_t>(sz - String);
 }
 
 int32_t CString::Find(const TS8 *v, uint32_t nStart) const {
@@ -757,8 +757,9 @@ CString CString::Substring(int32_t nStart, int32_t nLength) const {
   if (nStart < 0) nStart = Length() + nStart;
   if (nLength < 0) nLength = (Length() - nStart) + nLength;
   if (nLength < 0 || nStart < 0) return CString(_T( "" ));
-  if ((uint32_t)nStart > Length()) return CString(_T( "" ));
-  if ((uint32_t)nStart + (uint32_t)nLength > Length()) return CString(_T( "" ));
+  if (static_cast<uint32_t>(nStart) > Length()) return CString(_T( "" ));
+  if (static_cast<uint32_t>(nStart) + static_cast<uint32_t>(nLength) > Length())
+    return CString(_T( "" ));
   return CString(String + nStart, nLength);
 }
 
@@ -790,7 +791,7 @@ TBOOL is_base64(TCHAR c) {
 }
 
 TS8 find_base64(TCHAR t) {
-  for (int32_t x = 0; x < (int32_t)_tcslen(base64_chars); x++)
+  for (int32_t x = 0; x < static_cast<int32_t>(_tcslen(base64_chars)); x++)
     if (base64_chars[x] == t) return x;
   return -1;
 }
@@ -805,7 +806,7 @@ CString CString::EncodeToBase64(uint8_t *Data, int32_t Length) {
   memset(szret, 0, Length * 5 * sizeof(TCHAR));
   TCHAR *p = szret;
 
-  uint8_t *szText = (uint8_t *)Data;
+  uint8_t *szText = Data;
   int32_t nLength = Length;
   while (nLength--) {
     char_array_3[i++] = *(szText++);
@@ -876,7 +877,7 @@ void CString::DecodeBase64(uint8_t *&Data, int32_t &outsize) {
   CStreamWriterMemory ret;
 
   while (in_len-- && (String[in_] != _T('=')) && is_base64(String[in_])) {
-    char_array_4[i++] = (uint8_t)String[in_];
+    char_array_4[i++] = static_cast<uint8_t>(String[in_]);
     in_++;
     if (i == 4) {
       for (i = 0; i < 4; i++) char_array_4[i] = find_base64(char_array_4[i]);
@@ -905,7 +906,7 @@ void CString::DecodeBase64(uint8_t *&Data, int32_t &outsize) {
     for (j = 0; (j < i - 1); j++) ret.WriteByte(char_array_3[j]);
   }
 
-  Data = NULL;
+  Data = nullptr;
   outsize = 0;
 
   if (ret.GetLength()) {
@@ -915,8 +916,8 @@ void CString::DecodeBase64(uint8_t *&Data, int32_t &outsize) {
   }
 }
 
-#include <stdio.h>
-#include <wchar.h>
+#include <cstdio>
+#include <cwchar>
 
 // static int vsscanf_proxy(const char *buffer, const char *format, va_list
 // argPtr)
@@ -1041,7 +1042,9 @@ int32_t CString::Strncmp(const TCHAR *str, const TCHAR *str2,
   return _tcsncmp(str, str2, len);
 }
 
-float CString::Atof(const TCHAR *str) { return (float)_tstof(str); }
+float CString::Atof(const TCHAR *str) {
+  return static_cast<float>(_tstof(str));
+}
 
 int32_t CString::Atoi(const TCHAR *str) { return _tstoi(str); }
 

@@ -1,10 +1,12 @@
 #include "BaseLib.h"
+// need this order
 #include <DbgHelp.h>
-#include <time.h>
 
+#include <ctime>
 #include <string>
 #include <string_view>
 
+#include "CrashTracker.h"
 #include "string_format.h"
 
 std::string BuildVersion;
@@ -17,7 +19,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   SYSTEMTIME st;
   GetLocalTime(&st);
 
-  CreateDirectory(_T( "Crashlogs" ), NULL);
+  CreateDirectory(_T( "Crashlogs" ), nullptr);
 
   int32_t filename[1024];
   ZeroMemory(filename, 1024);
@@ -27,8 +29,8 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
       st.wSecond);
 
   HANDLE hFile =
-      CreateFile(fname.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-                 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, NULL);
+      CreateFile(fname.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, nullptr);
   if (hFile == INVALID_HANDLE_VALUE) return EXCEPTION_EXECUTE_HANDLER;
 
   MINIDUMP_EXCEPTION_INFORMATION eInfo;
@@ -36,13 +38,13 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   eInfo.ExceptionPointers = excpInfo;
   eInfo.ClientPointers = FALSE;
 
-  MiniDumpWriteDump(
-      GetCurrentProcess(), GetCurrentProcessId(), hFile,
-      nMoreDetail
-          ? (MINIDUMP_TYPE)(MiniDumpWithDataSegs + MiniDumpWithHandleData +
-                            MiniDumpWithIndirectlyReferencedMemory)
-          : MiniDumpNormal,
-      excpInfo ? &eInfo : NULL, NULL, NULL);
+  MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile,
+                    nMoreDetail
+                        ? static_cast<MINIDUMP_TYPE>(
+                              MiniDumpWithDataSegs + MiniDumpWithHandleData +
+                              MiniDumpWithIndirectlyReferencedMemory)
+                        : MiniDumpNormal,
+                    excpInfo ? &eInfo : nullptr, nullptr, nullptr);
 
   CloseHandle(hFile);
 
@@ -60,12 +62,13 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
             "Crash occurred at: %d-%.2d-%.2d %.2d:%.2d:%.2d\nBuild version: "
             "%s\nException Type: %.8x\n%s\n\0",
             timeinfo.tm_year + 1900, timeinfo.tm_mon + 1, timeinfo.tm_mday,
-            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec, BuildVersion.c_str(),
-            excpInfo->ExceptionRecord->ExceptionCode, Result.c_str());
+            timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec,
+            BuildVersion.c_str(), excpInfo->ExceptionRecord->ExceptionCode,
+            Result.c_str());
 
   TBOOL Saved = false;
 
-  FILE *f = NULL;
+  FILE *f = nullptr;
   if (!fopen_s(&f, "crash.log", "at")) {
     if (f) {
       fputs(CrashString, f);
@@ -81,12 +84,12 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
 
   if (Saved)
     MessageBox(
-        NULL,
+        nullptr,
         _T( "Application has crashed.\nStack trace has been saved to crash.log" ),
         _T( "Crash" ), MB_ICONERROR);
   else
     MessageBox(
-        NULL,
+        nullptr,
         _T( "Application has crashed.\nFailed to save stack trace to crash.log" ),
         _T( "Crash" ), MB_ICONERROR);
 
@@ -101,18 +104,18 @@ LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   SYSTEMTIME st;
   GetLocalTime(&st);
 
-  CreateDirectory(_T( "Crashlogs" ), NULL);
+  CreateDirectory(_T( "Crashlogs" ), nullptr);
 
   int32_t filename[1024];
   ZeroMemory(filename, 1024);
   auto fname = FormatString(
       _T( "Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp" ),
-      BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour,
-      st.wMinute, st.wSecond);
+      BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute,
+      st.wSecond);
 
   HANDLE hFile =
-      CreateFile(fname.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS,
-                 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, NULL);
+      CreateFile(fname.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                 FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, nullptr);
   if (hFile == INVALID_HANDLE_VALUE) return EXCEPTION_EXECUTE_HANDLER;
 
   MINIDUMP_EXCEPTION_INFORMATION eInfo;
@@ -120,15 +123,15 @@ LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   eInfo.ExceptionPointers = excpInfo;
   eInfo.ClientPointers = FALSE;
 
-  MiniDumpWriteDump(
-      GetCurrentProcess(), GetCurrentProcessId(), hFile,
-      // nMoreDetail ? (MINIDUMP_TYPE)(MiniDumpWithDataSegs +
-      // MiniDumpWithHandleData + MiniDumpWithIndirectlyReferencedMemory) :
-      // MiniDumpNormal,
-      (MINIDUMP_TYPE)(MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo |
-                      MiniDumpWithHandleData | MiniDumpWithUnloadedModules |
-                      MiniDumpWithThreadInfo),
-      excpInfo ? &eInfo : NULL, NULL, NULL);
+  MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile,
+                    // nMoreDetail ? (MINIDUMP_TYPE)(MiniDumpWithDataSegs +
+                    // MiniDumpWithHandleData +
+                    // MiniDumpWithIndirectlyReferencedMemory) : MiniDumpNormal,
+                    static_cast<MINIDUMP_TYPE>(
+                        MiniDumpWithFullMemory | MiniDumpWithFullMemoryInfo |
+                        MiniDumpWithHandleData | MiniDumpWithUnloadedModules |
+                        MiniDumpWithThreadInfo),
+                    excpInfo ? &eInfo : nullptr, nullptr, nullptr);
 
   CloseHandle(hFile);
 
@@ -136,7 +139,7 @@ LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
 
   // if ( Saved )
   MessageBox(
-      NULL,
+      nullptr,
       _T( "Application has crashed.\nDump has been saved to the Crashlogs folder" ),
       _T( "Crash" ), MB_ICONERROR);
   // else

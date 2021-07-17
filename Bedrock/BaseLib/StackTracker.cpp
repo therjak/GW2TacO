@@ -19,7 +19,7 @@ bool CStackTracker::DbgInitialized = false;
 CStackTracker::CStackTracker() {
   memset(Stack, 0, sizeof(void*) * STACK_TRACE_DEPTH);
 #ifdef _DEBUG
-  RtlCaptureStackBackTrace(4, STACK_TRACE_DEPTH, Stack, NULL);
+  RtlCaptureStackBackTrace(4, STACK_TRACE_DEPTH, Stack, nullptr);
 #else
   RtlCaptureStackBackTrace(0, STACK_TRACE_DEPTH, Stack, NULL);
 #endif
@@ -29,7 +29,7 @@ CStackTracker::CStackTracker(void* Context) {
   InitializeSym();
   memset(Stack, 0, sizeof(void*) * STACK_TRACE_DEPTH);
 
-  CONTEXT* context = (CONTEXT*)Context;
+  CONTEXT* context = static_cast<CONTEXT*>(Context);
 
   DWORD machine_type;
   STACKFRAME frame;
@@ -51,8 +51,8 @@ CStackTracker::CStackTracker(void* Context) {
 
   for (int32_t i = 0; i < STACK_TRACE_DEPTH; i++) {
     if (StackWalk(machine_type, GetCurrentProcess(), GetCurrentThread(), &frame,
-                  context, NULL, SymFunctionTableAccess, SymGetModuleBase,
-                  NULL)) {
+                  context, nullptr, SymFunctionTableAccess, SymGetModuleBase,
+                  nullptr)) {
       if (i >= 0) {
         Stack[i] = (void*)(frame.AddrPC.Offset);
       }
@@ -65,18 +65,18 @@ CStackTracker::CStackTracker(void* Context) {
 void CStackTracker::DumpToLog(LOGVERBOSITY v) {
   InitializeSym();
 
-  for (int32_t x = 0; x < STACK_TRACE_DEPTH; x++) {
-    if (Stack[x]) {
+  for (auto& x : Stack) {
+    if (x) {
       DWORD dwDisplacement;
       IMAGEHLP_LINE line;
 
       line.SizeOfStruct = sizeof(IMAGEHLP_LINE);
 
-      if (SymGetLineFromAddr(GetCurrentProcess(), (DWORD)Stack[x],
-                             &dwDisplacement, &line)) {
+      if (SymGetLineFromAddr(GetCurrentProcess(), (DWORD)x, &dwDisplacement,
+                             &line)) {
         LOGSIMPLE(v, _T( "\t\t%s (%d)" ), line.FileName, line.LineNumber);
       } else {
-        LOGSIMPLE(v, _T( "\t\tUnresolved address: %8X" ), Stack[x]);
+        LOGSIMPLE(v, _T( "\t\tUnresolved address: %8X" ), x);
       }
     }
   }
@@ -86,21 +86,21 @@ void CStackTracker::DumpToLog(LOGVERBOSITY v) {
 void CStackTracker::DumpToDebugOutput() {
   InitializeSym();
 
-  for (int32_t x = 0; x < STACK_TRACE_DEPTH; x++) {
-    if (Stack[x]) {
+  for (auto& x : Stack) {
+    if (x) {
       DWORD dwDisplacement;
       IMAGEHLP_LINE line;
 
       line.SizeOfStruct = sizeof(IMAGEHLP_LINE);
 
-      if (SymGetLineFromAddr(GetCurrentProcess(), (DWORD)Stack[x],
-                             &dwDisplacement, &line)) {
+      if (SymGetLineFromAddr(GetCurrentProcess(), (DWORD)x, &dwDisplacement,
+                             &line)) {
         std::stringstream ss;
         ss << "\t\t" << line.FileName << " (" << line.LineNumber << ")\n";
         OutputDebugString(ss.str().c_str());
       } else {
         std::stringstream ss;
-        ss << "\t\tUnresolved address: " << std::hex << Stack[x] << '\n';
+        ss << "\t\tUnresolved address: " << std::hex << x << '\n';
         OutputDebugString(ss.str().c_str());
       }
     }
@@ -113,18 +113,18 @@ std::string CStackTracker::DumpToString() {
 
   InitializeSym();
 
-  for (int32_t x = 0; x < STACK_TRACE_DEPTH; x++) {
-    if (Stack[x]) {
+  for (auto& x : Stack) {
+    if (x) {
       DWORD dwDisplacement;
       IMAGEHLP_LINE line;
 
       line.SizeOfStruct = sizeof(IMAGEHLP_LINE);
 
-      if (SymGetLineFromAddr(GetCurrentProcess(), (DWORD)Stack[x],
-                             &dwDisplacement, &line)) {
+      if (SymGetLineFromAddr(GetCurrentProcess(), (DWORD)x, &dwDisplacement,
+                             &line)) {
         ss << "\t\t" << line.FileName << " (" << line.LineNumber << ")\n";
       } else {
-        ss << "\t\tUnresolved address: " << std::hex << Stack[x] << '\n';
+        ss << "\t\tUnresolved address: " << std::hex << x << '\n';
       }
     }
   }
@@ -135,7 +135,7 @@ std::string CStackTracker::DumpToString() {
 
 void CStackTracker::InitializeSym() {
   if (!DbgInitialized) {
-    SymInitialize(GetCurrentProcess(), NULL, true);
+    SymInitialize(GetCurrentProcess(), nullptr, true);
     SymSetOptions(SYMOPT_LOAD_LINES);
     DbgInitialized = true;
   }

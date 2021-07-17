@@ -5,22 +5,21 @@
 
 uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32_t &XSize, int32_t &YSize )
 {
-  if ( !ImageData || !ImageDataSize ) return 0;
+  if (!ImageData || !ImageDataSize) return nullptr;
 
   XSize = YSize = 0;
-  LPPICTURE gpPicture = NULL;
+  LPPICTURE gpPicture = nullptr;
 
-  LPVOID pvData = NULL;
+  LPVOID pvData = nullptr;
   HGLOBAL hGlobal = GlobalAlloc( GMEM_MOVEABLE, ImageDataSize );
 
-  if ( !hGlobal )
-    return 0;
+  if (!hGlobal) return nullptr;
 
   pvData = GlobalLock( hGlobal );
   if ( !pvData )
   {
     GlobalFree( hGlobal );
-    return 0;
+    return nullptr;
   }
 
   memcpy( pvData, ImageData, ImageDataSize );
@@ -30,19 +29,20 @@ uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32
   if ( GetLastError() != NO_ERROR )
   {
     GlobalFree( hGlobal );
-    return 0;
+    return nullptr;
   }
 
-  LPSTREAM pstm = NULL;
+  LPSTREAM pstm = nullptr;
   HRESULT res = CreateStreamOnHGlobal( hGlobal, TRUE, &pstm );
   if ( res != S_OK )
   {
     _com_error err( res );
     LOG( LOG_ERROR, _T( "[base] CreateStreamOnHGlobal failed (%s)" ), err.ErrorMessage() );
-    return 0;
+    return nullptr;
   }
 
-  res = OleLoadPicture( pstm, ImageDataSize, FALSE, IID_IPicture, (LPVOID *)&gpPicture );
+  res = OleLoadPicture(pstm, ImageDataSize, FALSE, IID_IPicture,
+                       reinterpret_cast<LPVOID *>(&gpPicture));
 
   if ( res != S_OK )
   {
@@ -53,13 +53,13 @@ uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32
     }
     pstm->Release();
     GlobalFree( hGlobal );
-    return 0;
+    return nullptr;
   }
 
   pstm->Release();
   GlobalFree( hGlobal );
 
-  if ( !gpPicture ) return NULL;
+  if (!gpPicture) return nullptr;
 
   OLE_XSIZE_HIMETRIC hmWidth;
   OLE_YSIZE_HIMETRIC hmHeight;
@@ -67,7 +67,7 @@ uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32
   gpPicture->get_Width( &hmWidth );
   gpPicture->get_Height( &hmHeight );
 
-  HDC hdc = GetDC( NULL );
+  HDC hdc = GetDC(nullptr);
   HDC mdc = CreateCompatibleDC( hdc );
 
   XSize = MulDiv( hmWidth, GetDeviceCaps( mdc, LOGPIXELSX ), HIMETRIC_INCH );
@@ -88,7 +88,7 @@ uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32
   HGDIOBJ oldbm = SelectObject( mdc, bm );
   RECT r = { 0, 0, XSize, YSize };
 
-  FillRect( mdc, &r, (HBRUSH)GetStockObject( BLACK_BRUSH ) );
+  FillRect(mdc, &r, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
 
   SetBkMode( mdc, TRANSPARENT );
 
@@ -108,7 +108,7 @@ uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32
   SelectObject( mdc, oldbm );
   DeleteDC( mdc );
   DeleteObject( bm );
-  ReleaseDC( NULL, hdc );
+  ReleaseDC(nullptr, hdc);
 
   gpPicture->Release();
 

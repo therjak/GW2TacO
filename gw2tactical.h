@@ -243,7 +243,7 @@ class GW2TacticalCategory {
   bool IsDisplayed = true;
   bool IsVisible();
 
-  virtual ~GW2TacticalCategory() {}
+  virtual ~GW2TacticalCategory() = default;
 };
 
 void AddPOI(CWBApplication *App);

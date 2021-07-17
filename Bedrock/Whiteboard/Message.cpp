@@ -3,14 +3,12 @@
 
 CWBMessage::CWBMessage()
 {
-  App = NULL;
+  App = nullptr;
   Message = WBM_NONE;
   Target = 0;
 }
 
-CWBMessage::~CWBMessage()
-{
-}
+CWBMessage::~CWBMessage() = default;
 
 CWBMessage::CWBMessage( CWBApplication *app, WBMESSAGE message, WBGUID target )
 {

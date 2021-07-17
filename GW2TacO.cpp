@@ -256,15 +256,15 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
 TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_COMMAND: {
-      CWBButton* cb = (CWBButton*)App->FindItemByGuid(
-          Message.GetTarget(), _T( "clickthroughbutton" ));
+      CWBButton* cb = dynamic_cast<CWBButton*>(
+          App->FindItemByGuid(Message.GetTarget(), _T( "clickthroughbutton" )));
       if (cb && cb->GetID() == _T( "TPButton" )) {
         TurnOffTPLight();
         break;
       }
 
-      CWBButton* b =
-          (CWBButton*)App->FindItemByGuid(Message.GetTarget(), _T( "button" ));
+      CWBButton* b = dynamic_cast<CWBButton*>(
+          App->FindItemByGuid(Message.GetTarget(), _T( "button" )));
       if (!b) break;
 
       if (b->GetID() == _T( "MenuButton" )) {
@@ -541,8 +541,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
                   (GetConfigValue("MapTimerCompact") ? " [x]" : " [ ]"),
               Menu_ToggleCompactMapTimer);
 
-          GW2MapTimer* timer = (GW2MapTimer*)App->GetRoot()->FindChildByID(
-              "MapTimer", "maptimer");
+          GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+              App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
           if (timer) {
             auto itm = ctx->AddItem(DICT("configmaptimer"), 0);
@@ -579,7 +579,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
           for (int32_t x = 1; x < ActionNames.size(); x++) {
             auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
             for (auto& kb : KeyBindings)
-              if ((int32_t)kb.second == x) {
+              if (static_cast<int32_t>(kb.second) == x) {
                 str = DICT(ActionNames[x]) + FormatString(" [%c]", kb.first);
                 break;
               }
@@ -698,7 +698,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
         for (int32_t x = 1; x < ActionNames.size(); x++) {
           auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
           for (auto& kb : KeyBindings)
-            if ((int32_t)kb.second == x) {
+            if (static_cast<int32_t>(kb.second) == x) {
               str = DICT(ActionNames[x]) + FormatString(" [%c]", kb.first);
               break;
             }
@@ -752,12 +752,12 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
       }
       if (b->GetID() == _T( "GoToWebsite" )) {
         ShellExecute((HWND)App->GetHandle(), "open", "http://www.gw2taco.com",
-                     NULL, NULL, SW_SHOW);
+                     nullptr, nullptr, SW_SHOW);
         return true;
       }
       if (b->GetID() == _T( "SendEmail" )) {
         ShellExecute((HWND)App->GetHandle(), "open", "mailto:boyc@scene.hu",
-                     NULL, NULL, SW_SHOW);
+                     nullptr, nullptr, SW_SHOW);
         return true;
       }
     } break;
@@ -771,8 +771,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
         if (rp) {
           auto& raids = rp->GetRaids();
           if (raidToggle < raids.size()) {
-            CWBContextMenu* ctxMenu =
-                (CWBContextMenu*)App->FindItemByGuid(Message.Position[1]);
+            CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+                App->FindItemByGuid(Message.Position[1]));
             auto itm = ctxMenu->GetItem(Message.Data);
             auto& r = raids[raidToggle];
             itm->SetText(
@@ -786,8 +786,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
 
       if (Message.Data >= Menu_MarkerFilter_Base &&
           Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
-        CWBContextMenu* ctxMenu =
-            (CWBContextMenu*)App->FindItemByGuid(Message.Position[1]);
+        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            App->FindItemByGuid(Message.Position[1]));
         auto itm = ctxMenu->GetItem(Message.Data);
 
         auto& dta = CategoryList[Message.Data - Menu_MarkerFilter_Base];
@@ -806,13 +806,13 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
         break;
       }
       if (Message.Data >= Menu_ToggleMapTimerMap) {
-        CWBContextMenu* ctxMenu =
-            (CWBContextMenu*)App->FindItemByGuid(Message.Position[1]);
+        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            App->FindItemByGuid(Message.Position[1]));
         auto itm = ctxMenu->GetItem(Message.Data);
         int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
 
-        GW2MapTimer* timer =
-            (GW2MapTimer*)App->GetRoot()->FindChildByID("MapTimer", "maptimer");
+        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+            App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
         if (!timer) break;
 
         TBOOL open = true;
@@ -827,8 +827,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
       }
 
       {
-        CWBContextMenu* ctxMenu =
-            (CWBContextMenu*)App->FindItemByGuid(Message.Position[1]);
+        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            App->FindItemByGuid(Message.Position[1]));
         auto itm = ctxMenu->GetItem(Message.Data);
 
         switch (Message.Data) {
@@ -927,7 +927,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
 
       if (Message.Data >= Menu_RebindKey_Base &&
           Message.Data < Menu_RebindKey_Base + ActionNames.size()) {
-        RebindAction((TacOKeyAction)(Message.Data - Menu_RebindKey_Base));
+        RebindAction(
+            static_cast<TacOKeyAction>(Message.Data - Menu_RebindKey_Base));
         break;
       }
 
@@ -956,8 +957,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
       }
 
       if (Message.Data >= Menu_ToggleMapTimerMap) {
-        GW2MapTimer* timer =
-            (GW2MapTimer*)App->GetRoot()->FindChildByID("MapTimer", "maptimer");
+        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+            App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
         if (timer) {
           if (Message.Data < Menu_ToggleMapTimerMap + timer->maps.size()) {
@@ -1044,7 +1045,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
         //  break;
         case Menu_DownloadNewBuild:
           ShellExecute((HWND)App->GetHandle(), "open", "http://www.gw2taco.com",
-                       NULL, NULL, SW_SHOW);
+                       nullptr, nullptr, SW_SHOW);
           return true;
           break;
         case Menu_ToggleRangeCircles:
@@ -1259,9 +1260,9 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
           SetConfigValue("OpacityMap", 1);
           return true;
         case Menu_DeleteMyMarkers: {
-          GW2TacticalDisplay* tactical =
-              (GW2TacticalDisplay*)GetApplication()->GetRoot()->FindChildByID(
-                  "tactical", "gw2tactical");
+          GW2TacticalDisplay* tactical = dynamic_cast<GW2TacticalDisplay*>(
+              GetApplication()->GetRoot()->FindChildByID("tactical",
+                                                         "gw2tactical"));
           if (tactical) tactical->RemoveUserMarkersFromMap();
           return true;
         }
@@ -1316,8 +1317,8 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
             return true;
           }
           case TacOKeyAction::EditNotepad: {
-            GW2Notepad* d =
-                (GW2Notepad*)FindChildByID(_T( "notepad" ), _T( "notepad" ));
+            GW2Notepad* d = dynamic_cast<GW2Notepad*>(
+                FindChildByID(_T( "notepad" ), _T( "notepad" )));
             if (d) {
               d->StartEdit();
               return true;
@@ -1325,11 +1326,12 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
             return true;
           }
           case TacOKeyAction::StartTrailRec: {
-            CWBButton* startTrail = (CWBButton*)App->GetRoot()->FindChildByID(
-                _T( "starttrail" ), _T( "button" ));
+            CWBButton* startTrail =
+                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
+                    _T( "starttrail" ), _T( "button" )));
             GW2TrailDisplay* trails =
-                (GW2TrailDisplay*)App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" ));
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
             if (startTrail && trails) {
               // startTrail->Push( !startTrail->IsPushed() );
               App->SendMessage(
@@ -1338,11 +1340,12 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
           }
             return true;
           case TacOKeyAction::PauseTrailRec: {
-            CWBButton* pauseTrail = (CWBButton*)App->GetRoot()->FindChildByID(
-                _T( "pausetrail" ), _T( "button" ));
+            CWBButton* pauseTrail =
+                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
+                    _T( "pausetrail" ), _T( "button" )));
             GW2TrailDisplay* trails =
-                (GW2TrailDisplay*)App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" ));
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
             if (pauseTrail && trails) {
               // pauseTrail->Push( !pauseTrail->IsPushed() );
               App->SendMessage(
@@ -1352,17 +1355,18 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
             return true;
           case TacOKeyAction::DeleteLastTrailSegment: {
             GW2TrailDisplay* trails =
-                (GW2TrailDisplay*)App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" ));
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
             if (trails) trails->DeleteLastTrailSegment();
           }
             return true;
           case TacOKeyAction::ResumeTrailAndCreateNewSection: {
-            CWBButton* pauseTrail = (CWBButton*)App->GetRoot()->FindChildByID(
-                _T( "startnewsection" ), _T( "button" ));
+            CWBButton* pauseTrail =
+                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
+                    _T( "startnewsection" ), _T( "button" )));
             GW2TrailDisplay* trails =
-                (GW2TrailDisplay*)App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" ));
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
             if (pauseTrail && !pauseTrail->IsHidden() && trails)
               App->SendMessage(
                   CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
@@ -1602,7 +1606,8 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
   auto it = FindChildByID(_T( "MenuHoverBox" ));
   if (it) {
-    auto taco = (CWBButton*)FindChildByID(_T( "MenuButton" ), _T( "button" ));
+    auto taco = dynamic_cast<CWBButton*>(
+        FindChildByID(_T( "MenuButton" ), _T( "button" )));
     if (taco) {
 #define speed 500.0f
 
@@ -1627,7 +1632,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       float col = 1 - delta * 0.5f;
       if (hover) col = 0.5f + delta * 0.5f;
 
-      int32_t o = (int32_t)max(0, min(255, col * 255));
+      int32_t o = static_cast<int32_t> max(0, min(255, col * 255));
 
       taco->SetDisplayProperty(WB_STATE_NORMAL, WB_ITEM_OPACITY,
                                CColor::FromARGB(o * 0x01010101));
@@ -1907,8 +1912,8 @@ void SetMouseToolTip(std::string_view toolTip) {
 
   if (!App) return;
 
-  GW2TacO* tacoRoot =
-      (GW2TacO*)App->GetRoot()->FindChildByID("tacoroot", "GW2TacO");
+  GW2TacO* tacoRoot = dynamic_cast<GW2TacO*>(
+      App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
   if (!tacoRoot) return;
 
   tacoRoot->SetMouseToolTip(toolTip);

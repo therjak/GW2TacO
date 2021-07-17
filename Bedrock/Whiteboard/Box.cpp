@@ -9,7 +9,7 @@ CWBBox::CWBBox(CWBItem *Parent, const CRect &Pos) : CWBItem() {
   Initialize(Parent, Pos);
 }
 
-CWBBox::~CWBBox() {}
+CWBBox::~CWBBox() = default;
 
 TBOOL CWBBox::Initialize(CWBItem *Parent, const CRect &Position) {
   Arrangement = WB_ARRANGE_NONE;
@@ -128,7 +128,7 @@ void CWBBox::RearrangeHorizontal() {
 
   int32_t width = (NumChildren() - 1) * Spacing;
   int32_t DynamicWidth = GetClientRect().Width() - NonDynamicWidth - width;
-  float itemsizes = DynamicWidth / (float)NumDynamicChildren;
+  float itemsizes = DynamicWidth / static_cast<float>(NumDynamicChildren);
 
   for (uint32_t x = 0; x < NumChildren(); x++)
     width += GetChild(x)->GetPosition().Width();
@@ -144,8 +144,8 @@ void CWBBox::RearrangeHorizontal() {
       if (!GetChild(x)->IsWidthSet()) {
         ChildPosition.x1 = pos;
         Excess += itemsizes;
-        ChildPosition.x2 = ChildPosition.x1 + (int32_t)Excess;
-        Excess -= (int32_t)Excess;
+        ChildPosition.x2 = ChildPosition.x1 + static_cast<int32_t>(Excess);
+        Excess -= static_cast<int32_t>(Excess);
         if (x == LastDynamic && Excess >= 0.5)
           ChildPosition.x2++;  // fucking float inaccuracies...
       } else {
@@ -202,7 +202,7 @@ void CWBBox::RearrangeVertical() {
 
   int32_t height = (NumChildren() - 1) * Spacing;
   int32_t DynamicHeight = GetClientRect().Height() - NonDynamicHeight - height;
-  float itemsizes = DynamicHeight / (float)NumDynamicChildren;
+  float itemsizes = DynamicHeight / static_cast<float>(NumDynamicChildren);
 
   for (uint32_t x = 0; x < NumChildren(); x++)
     height += GetChild(x)->GetPosition().Height();
@@ -223,8 +223,8 @@ void CWBBox::RearrangeVertical() {
       if (!GetChild(x)->IsHeightSet()) {
         ChildPosition.y1 = pos;
         Excess += itemsizes;
-        ChildPosition.y2 = ChildPosition.y1 + (int32_t)Excess;
-        Excess -= (int32_t)Excess;
+        ChildPosition.y2 = ChildPosition.y1 + static_cast<int32_t>(Excess);
+        Excess -= static_cast<int32_t>(Excess);
         if (x == LastDynamic && Excess >= 0.5)
           ChildPosition.y2++;  // fucking float inaccuracies...
       } else {

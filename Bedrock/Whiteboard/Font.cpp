@@ -16,7 +16,7 @@ CWBKerningPair::CWBKerningPair(uint16_t a, uint16_t b) {
   Second = b;
 }
 
-CWBFontDescription::CWBFontDescription() { Image = NULL; }
+CWBFontDescription::CWBFontDescription() { Image = nullptr; }
 
 CWBFontDescription::~CWBFontDescription() { SAFEDELETE(Image); }
 
@@ -97,7 +97,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
               _T( "[gui] Error loading font data: common block size doesn't match" ));
           return false;
         }
-        BMCOMMON *cmn = (BMCOMMON *)BlockData;
+        BMCOMMON *cmn = reinterpret_cast<BMCOMMON *>(BlockData);
         if (cmn->pages > 1) {
           LOG(LOG_ERROR,
               _T( "[gui] Error loading font data: only single page fonts are supported" ));
@@ -116,7 +116,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
           return false;
         }
 
-        BMCHAR *c = (BMCHAR *)BlockData;
+        BMCHAR *c = reinterpret_cast<BMCHAR *>(BlockData);
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMCHAR); x++) {
           if (enabledGlyphs.empty() ||
@@ -141,7 +141,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
           return false;
         }
 
-        BMKERNINGDATA *k = (BMKERNINGDATA *)BlockData;
+        BMKERNINGDATA *k = reinterpret_cast<BMKERNINGDATA *>(BlockData);
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMKERNINGDATA); x++) {
           WBKERNINGDATA d;
@@ -360,10 +360,10 @@ uint32_t ReadUTF8Char(char const *&Text) {
 int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
                            CColor Color) {
   if (Char >= AlphabetSize ||
-      Alphabet[(uint16_t)Char].Char !=
+      Alphabet[static_cast<uint16_t>(Char)].Char !=
           Char)  // missing character replaced by a simple rectangle
   {
-    if (Alphabet[(uint16_t)MissingChar].Char != MissingChar) {
+    if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar) {
       LOG(LOG_WARNING,
           _T( "[font] Used character %d and fallback character %d also missing from font." ),
           Char, MissingChar);
@@ -373,7 +373,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
     int32_t width = GetWidth(MissingChar);
 
     if (Char != ' ') {
-      WBSYMBOL &mc = Alphabet[(uint16_t)MissingChar];
+      WBSYMBOL &mc = Alphabet[static_cast<uint16_t>(MissingChar)];
       DrawApi->DrawRectBorder(
           CRect(x + mc.OffsetX, y + mc.OffsetY, x + mc.OffsetX + mc.SizeX,
                 y + mc.OffsetY + mc.SizeY),
@@ -382,7 +382,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
     return width;
   }
 
-  WBSYMBOL &Symbol = Alphabet[(uint16_t)Char];
+  WBSYMBOL &Symbol = Alphabet[static_cast<uint16_t>(Char)];
   int32_t width = Symbol.Advance;
   if (!width) return 0;
   // DrawApi->DrawRect(CRect(x + Symbol.OffsetX, y + Symbol.OffsetY, x +
@@ -437,15 +437,15 @@ int32_t CWBFont::Write(CWBDrawAPI *DrawApi, std::string_view String, CPoint &p,
 }
 
 int32_t CWBFont::GetWidth(uint16_t Char, TBOOL Advance) {
-  if (Char >= AlphabetSize ||
-      Alphabet[(uint16_t)Char].Char != Char)  // missing character
+  if (Char >= AlphabetSize || Alphabet[Char].Char != Char)  // missing character
   {
-    if (Alphabet[(uint16_t)MissingChar].Char != MissingChar) return 0;
-    return Alphabet[(uint16_t)MissingChar].Advance;
+    if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar)
+      return 0;
+    return Alphabet[static_cast<uint16_t>(MissingChar)].Advance;
   }
-  return Advance ? Alphabet[(uint16_t)Char].Advance
-                 : (Alphabet[(uint16_t)Char].OffsetX +
-                    Alphabet[(uint16_t)Char].calculatedContentRect.x2);
+  return Advance ? Alphabet[Char].Advance
+                 : (Alphabet[Char].OffsetX +
+                    Alphabet[Char].calculatedContentRect.x2);
 }
 
 int32_t CWBFont::GetWidth(std::string_view String, TBOOL AdvanceLastChar,
@@ -469,10 +469,11 @@ int32_t CWBFont::GetWidth(std::string_view String, TBOOL AdvanceLastChar,
     }
 
     if (firstCharHack && firstChar && !AdvanceLastChar) {
-      if (Char >= AlphabetSize || Alphabet[(uint16_t)Char].Char != Char)
-        xp -= Alphabet[(uint16_t)MissingChar].calculatedContentRect.x1;
+      if (Char >= AlphabetSize || Alphabet[Char].Char != Char)
+        xp -= Alphabet[static_cast<uint16_t>(MissingChar)]
+                  .calculatedContentRect.x1;
       else
-        xp -= Alphabet[(uint16_t)Char].calculatedContentRect.x1;
+        xp -= Alphabet[Char].calculatedContentRect.x1;
     }
 
     if (AdvanceLastChar)
@@ -512,7 +513,7 @@ TBOOL CWBFont::Initialize(CWBFontDescription *Description, TCHAR mc) {
   Alphabet = new WBSYMBOL[AlphabetSize];
   memset(Alphabet, 0, AlphabetSize * sizeof(WBSYMBOL));
   for (int32_t x = 0; x < AlphabetSize; x++)
-    Alphabet[x].Char = (int16_t)(x - 1);
+    Alphabet[x].Char = static_cast<int16_t>(x - 1);
 
   for (const auto &abc : Description->Alphabet)
     if (abc.UV.Area() > 0) {
@@ -563,19 +564,25 @@ int32_t CWBFont::GetLineHeight() { return LineHeight; }
 int32_t CWBFont::GetBase() { return Base; }
 
 int32_t CWBFont::GetOffsetX(TCHAR Char) {
-  if (Char >= AlphabetSize || Alphabet[(uint16_t)Char].Char != Char)
+  if (Char >= AlphabetSize ||
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
     Char = MissingChar;
-  if (Char >= AlphabetSize || Alphabet[(uint16_t)Char].Char != Char) return 0;
+  if (Char >= AlphabetSize ||
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
+    return 0;
 
-  return Alphabet[(uint16_t)Char].OffsetX;
+  return Alphabet[static_cast<uint16_t>(Char)].OffsetX;
 }
 
 int32_t CWBFont::GetOffsetY(TCHAR Char) {
-  if (Char >= AlphabetSize || Alphabet[(uint16_t)Char].Char != Char)
+  if (Char >= AlphabetSize ||
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
     Char = MissingChar;
-  if (Char >= AlphabetSize || Alphabet[(uint16_t)Char].Char != Char) return 0;
+  if (Char >= AlphabetSize ||
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
+    return 0;
 
-  return Alphabet[(uint16_t)Char].OffsetY;
+  return Alphabet[static_cast<uint16_t>(Char)].OffsetY;
 }
 
 int32_t CWBFont::GetCenterWidth(int32_t x1, int32_t x2, std::string_view Text,
