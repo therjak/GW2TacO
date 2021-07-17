@@ -516,7 +516,9 @@ void CWBApplication::CleanTrash() {
   std::scoped_lock l(TrashMutex);
   for (auto i = Trash.size(); i > 0; i--) {
     auto &t = Trash[i - 1];
-    t->Parent->RemoveChild(t);
+    if (t->Parent) {
+      t->Parent->RemoveChild(t);
+    }
     t.reset();
   }
   Trash.clear();

@@ -118,8 +118,8 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
       lastState = *pkbdllhook;
       // You might also need to hang onto the dbKbdState array... I'm thinking
       // not. Clear out the buffer to return to the previous state - wait for
-      // ToAsciiEx to return a value other than -1 by passing the same key again.
-      // It should happen after 1 call.
+      // ToAsciiEx to return a value other than -1 by passing the same key
+      // again. It should happen after 1 call.
       while (ToAsciiEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
                        reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) < 0)
         ;
@@ -440,8 +440,6 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
 #pragma comment(lib, "Urlmon.lib")
 
 bool HooksInitialized = false;
-TBOOL IsTacOUptoDate = true;
-int NewTacOVersion = RELEASECOUNT;
 
 volatile int mainLoopCounter = 0;
 volatile int lastCnt = 0;
@@ -891,36 +889,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   if (!HasConfigValue("KeybindsEnabled")) SetConfigValue("KeybindsEnabled", 1);
 
   SetConfigValue("LogTrails", 0);
-
-  if (GetConfigValue(_T( "CheckForUpdates" ))) {
-    DWORD UpdateCheckThreadID = 0;
-    auto hookThread = CreateThread(
-        nullptr,  // default security attributes
-        0,        // use default stack size
-        [](LPVOID data) {
-          auto s = FetchHTTP("www.gw2taco.com", "/2000/01/buildid.html");
-          int32_t idpos = s.find("[buildid:");
-          if (idpos != s.npos) {
-            auto sub = s.substr(idpos);
-            int32_t release = 0;
-            int32_t build = 0;
-            if (std::sscanf(sub.c_str(), "[buildid:%d.%dr]", &release,
-                            &build) == 2) {
-              extern int32_t TacORelease;
-              extern int32_t TacOBuildCount;
-              if (release > TacORelease || build > TacOBuildCount) {
-                NewTacOVersion = release;
-                IsTacOUptoDate = false;
-              }
-            }
-          }
-
-          return static_cast<DWORD>(0);
-        },
-        nullptr,  // argument to thread function
-        0,        // use default creation flags
-        &UpdateCheckThreadID);
-  }
 
   SetLayeredWindowAttributes(handle, 0, 255, LWA_ALPHA);
 

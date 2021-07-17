@@ -239,11 +239,6 @@ void ChangeUIScale(int size) {
   iconSizesStored = false;
 }
 
-std::string_view buildText2(
-    "WW91IGNhbiBzdXBwb3J0IGRldmVsb3BtZW50IGJ5IGRvbmF0aW5nIGluLWdhbWUgdG8gQm95Qy"
-    "4yNjUzIDop");  // You can support development by donating in-game to
-                    // BoyC.2653 :)
-
 std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
   for (auto& kb : KeyBindings)
     if (kb.second == action) {
@@ -652,7 +647,6 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
               Menu_ToggleTPTracker_OnlyNextFulfilled);
         }
         ctx->AddSeparator();
-        extern TBOOL IsTacOUptoDate;
 
         auto settings = ctx->AddItem(DICT("tacosettings"), Menu_TacOSettings);
         settings->AddItem(
@@ -744,20 +738,14 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
 
         ctx->AddSeparator();
         ctx->AddItem(DICT("abouttaco"), Menu_About);
-        if (!IsTacOUptoDate)
-          ctx->AddItem(DICT("getnewbuild"), Menu_DownloadNewBuild);
         ctx->AddSeparator();
         ctx->AddItem(DICT("exittaco"), Menu_Exit);
         return true;
       }
       if (b->GetID() == _T( "GoToWebsite" )) {
-        ShellExecute((HWND)App->GetHandle(), "open", "http://www.gw2taco.com",
-                     nullptr, nullptr, SW_SHOW);
-        return true;
-      }
-      if (b->GetID() == _T( "SendEmail" )) {
-        ShellExecute((HWND)App->GetHandle(), "open", "mailto:boyc@scene.hu",
-                     nullptr, nullptr, SW_SHOW);
+        ShellExecute((HWND)App->GetHandle(), "open",
+                     "https://github.com/therjak/GW2TacO/", nullptr, nullptr,
+                     SW_SHOW);
         return true;
       }
     } break;
@@ -1541,12 +1529,6 @@ void GW2TacO::OpenAboutWindow() {
       w.get(), CRect(3, height - 25, width / 2 - 1, height - 3), "WebSite");
   WebsiteButton->SetID("GoToWebsite");
   WebsiteButton->ApplyStyleDeclarations("font-family:ProFont;");
-
-  auto ContactButton = CWBButton::Create(
-      w.get(), CRect(width / 2 + 2, height - 25, width - 3, height - 3),
-      "email: boyc@scene.hu");
-  ContactButton->SetID("SendEmail");
-  ContactButton->ApplyStyleDeclarations("font-family:ProFont;");
 }
 
 float GetWindowTooSmallScale() {
@@ -1581,28 +1563,6 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
   teamSpeakConnection.Tick();
   CheckItemPickup();
-
-  // auto style = GetWindowLong((HWND)App->GetHandle(), GWL_EXSTYLE);
-
-  // CWBItem *it = App->GetFocusItem();
-  // if (it && it->InstanceOf("textbox"))
-  //{
-  //	if (style&WS_EX_TRANSPARENT)
-  //	{
-  //		SetWindowLong((HWND)App->GetHandle(), GWL_EXSTYLE, style &
-  //(~WS_EX_TRANSPARENT));
-  // SetForegroundWindow((HWND)App->GetHandle());
-  //	}
-  //}
-  // else
-  //{
-  //	if (!(style&WS_EX_TRANSPARENT))
-  //	{
-  //		LOG_ERR("Changing back!",
-  //		SetWindowLong((HWND)App->GetHandle(), GWL_EXSTYLE, style |
-  // WS_EX_TRANSPARENT);
-  //	}
-  //}
 
   auto it = FindChildByID(_T( "MenuHoverBox" ));
   if (it) {
@@ -1752,45 +1712,6 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
                     WBTT_UPPERCASE, true);
 
     font->Write(API, infoline, startpos, 0xffffffff, WBTT_UPPERCASE, true);
-    ypos += font->GetLineHeight();
-  }
-
-  extern TBOOL IsTacOUptoDate;
-  extern int NewTacOVersion;
-  if (!IsTacOUptoDate) {
-    auto font = App->GetFont("UniFont");
-    if (!font) return;
-
-    auto infoline = DICT("new_build_txt1") +
-                    FormatString(" %d ", NewTacOVersion - RELEASECOUNT) +
-                    DICT("new_build_txt2");
-
-    CPoint startpos = font->GetTextPosition(
-        infoline, GetClientRect(), WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE);
-    if (GetConfigValue("InfoLineVisible")) startpos.y += font->GetLineHeight();
-
-    for (int x = 0; x < 3; x++)
-      for (int y = 0; y < 3; y++)
-        font->Write(API, infoline, startpos + CPoint(x - 1, y - 1), 0xff000000,
-                    WBTT_UPPERCASE, true);
-
-    font->Write(API, infoline, startpos, 0xffffffff, WBTT_UPPERCASE, true);
-    ypos += font->GetLineHeight();
-
-    auto build = B64Decode(std::string(buildText2));
-
-    CPoint spos2 = font->GetTextPosition(build, GetClientRect(), WBTA_CENTERX,
-                                         WBTA_TOP, WBTT_UPPERCASE);
-
-    for (int x = 0; x < 3; x++)
-      for (int y = 0; y < 3; y++)
-        font->Write(
-            API, build,
-            CPoint(spos2.x + x - 1, startpos.y + y - 1 + font->GetLineHeight()),
-            0xff000000, WBTT_UPPERCASE, true);
-
-    font->Write(API, build, CPoint(spos2.x, startpos.y + font->GetLineHeight()),
-                0xffffffff, WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
   }
 
