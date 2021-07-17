@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "Bedrock/BaseLib/Dictionary.h"
@@ -50,12 +51,12 @@ class TS3Connection {
     TBOOL Connected = false;
     int32_t myclientid = 0;
     TBOOL clientIDInvalid = true;
-    CDictionaryEnumerable<int32_t, TS3Channel> Channels;
+    std::unordered_map<int32_t, TS3Channel> Channels;
     CDictionaryEnumerable<int32_t, TS3Client> Clients;
     std::string name;
   };
 
-  CDictionary<int32_t, TS3Schandler> handlers;
+  std::unordered_map<int32_t, TS3Schandler> handlers;
 
   TS3Connection();
   virtual ~TS3Connection();

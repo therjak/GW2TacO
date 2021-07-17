@@ -12,7 +12,7 @@ TS3Connection::~TS3Connection() { DeinitWinsock(); }
 bool TS3Connection::TryConnect() {
   if (connection.IsConnected()) return true;
 
-  handlers.Flush();
+  handlers.clear();
 
   bool connected = connection.Connect("localhost", 25639);
   if (!connected) return false;
@@ -27,9 +27,9 @@ bool TS3Connection::TryConnect() {
 }
 
 void TS3Connection::TryValidateClientID() {
-  for (int32_t x = 0; x < handlers.NumItems(); x++)
-    if (handlers[x].Connected && handlers[x].clientIDInvalid) {
-      currentHandlerID = handlers[x].id;
+  for (const auto& handler : handlers)
+    if (handler.second.Connected && handler.second.clientIDInvalid) {
+      currentHandlerID = handler.second.id;
       CommandResponse use =
           SendCommand(FormatString("use %d", currentHandlerID));
       if (use.ErrorCode) continue;
@@ -271,13 +271,13 @@ void TS3Connection::ProcessNotification(std::string_view s) {
     for (int32_t x = 1; x < cmd.size(); x++) {
       if (cmd[x].find("status=disconnected") == 0) {
         handlers[schandlerid].Connected = false;
-        handlers[schandlerid].Channels.Flush();
+        handlers[schandlerid].Channels.clear();
         handlers[schandlerid].Clients.Flush();
       }
 
       if (cmd[x].find("status=connecting") == 0) {
         handlers[schandlerid].Connected = false;
-        handlers[schandlerid].Channels.Flush();
+        handlers[schandlerid].Channels.clear();
         handlers[schandlerid].Clients.Flush();
       }
 
@@ -522,4 +522,3 @@ std::string TS3Connection::unescape(std::string_view string) {
 }
 
 bool TS3Connection::IsConnected() { return connection.IsConnected(); }
-

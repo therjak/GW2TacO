@@ -1938,8 +1938,8 @@ void GW2TacO::OpenWindow(std::string_view s) {
 
 void GW2TacO::BuildChannelTree(TS3Connection::TS3Schandler& h,
                                CWBContextItem* parentitm, int32_t ParentID) {
-  for (int32_t x = 0; x < h.Channels.NumItems(); x++) {
-    TS3Connection::TS3Channel& chn = h.Channels[x];
+  for (const auto& x : h.Channels) {
+    const TS3Connection::TS3Channel& chn = x.second;
     if (chn.parentid == ParentID) {
       auto newitm = parentitm->AddItem(chn.name, 0);
       if (chn.id != chn.parentid) BuildChannelTree(h, newitm, chn.id);

@@ -35,8 +35,8 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
 
   for (int32_t cnt = 0; cnt < 2; cnt++) {
     int32_t ypos = 0;
-    for (int32_t x = 0; x < teamSpeakConnection.handlers.NumItems(); x++) {
-      TS3Connection::TS3Schandler &handler = teamSpeakConnection.handlers[x];
+    for (auto &x : teamSpeakConnection.handlers) {
+      TS3Connection::TS3Schandler &handler = x.second;
       if (handler.Connected && handler.Clients.HasKey(handler.myclientid)) {
         CPoint p = f->GetTextPosition(
             handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
@@ -46,10 +46,10 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
 
         int32_t mychannelid = handler.Clients[handler.myclientid].channelid;
 
-        if (handler.Channels.HasKey(mychannelid)) {
+        if (handler.Channels.find(mychannelid) != handler.Channels.end()) {
           int32_t participants = 0;
           for (int32_t y = 0; y < handler.Clients.NumItems(); y++) {
-            TS3Connection::TS3Client &cl = handler.Clients[y];
+            const TS3Connection::TS3Client &cl = handler.Clients[y];
             if (cl.channelid == mychannelid) participants++;
           }
 
@@ -66,7 +66,7 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
         for (int32_t y = 0; y < handler.Clients.NumItems(); y++) {
           if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
-          TS3Connection::TS3Client &cl = handler.Clients.GetByIndex(y);
+          const TS3Connection::TS3Client &cl = handler.Clients.GetByIndex(y);
           if (cl.channelid == mychannelid) {
             WBSKINELEMENTID id = playeroff;
             if (cl.inputmuted) id = inputoff;
