@@ -1,4 +1,4 @@
-#include "OverlayWindow.h"
+﻿#include "OverlayWindow.h"
 
 #include "OverlayConfig.h"
 

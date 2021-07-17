@@ -1,4 +1,4 @@
-#include "GW2TacO.h"
+﻿#include "GW2TacO.h"
 
 #include <Shellapi.h>
 

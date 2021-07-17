@@ -46,8 +46,7 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
     ParseDeclarations( properties[ 1 ], dRuleset );
 
     auto selectors = Split(properties[ 0 ], _T( "," ) );
-    for ( const auto s: selectors )
-    {
+    for (const auto& s : selectors) {
       std::string selector(Trim(s));
       auto& mr = dRules[selector];
       for (auto& or : dRuleset) {

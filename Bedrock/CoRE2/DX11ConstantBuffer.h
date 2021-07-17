@@ -1,22 +1,19 @@
 #pragma once
-#include "DX11Device.h"
 #include "ConstantBuffer.h"
+#include "DX11Device.h"
 
 #ifdef CORE_API_DX11
-class CCoreDX11ConstantBuffer : public CCoreConstantBuffer
-{
-	ID3D11Buffer *Buffer;
-	ID3D11Device *Dev;
-	ID3D11DeviceContext *DeviceContext;
-	int32_t AllocatedBufferSize;
+class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {
+  ID3D11Buffer *Buffer;
+  ID3D11Device *Dev;
+  ID3D11DeviceContext *DeviceContext;
+  int32_t AllocatedBufferSize;
 
-public:
+ public:
+  CCoreDX11ConstantBuffer(CCoreDX11Device *Device);
+  ~CCoreDX11ConstantBuffer() override;
 
-	CCoreDX11ConstantBuffer(CCoreDX11Device *Device);
-	virtual ~CCoreDX11ConstantBuffer();
-
-	virtual void Upload();
-	virtual void *GetBufferPointer() const;
-
+  void Upload() override;
+  void *GetBufferPointer() const override;
 };
 #endif

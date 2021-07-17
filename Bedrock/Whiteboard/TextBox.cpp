@@ -491,7 +491,7 @@ int32_t CWBTextBox::GetLineLeadingWhiteSpaceSize() {
 
 CPoint CWBTextBox::GetTextStartOffset() {
   CPoint pos(0, 0);
-  if (!Flags & WB_TEXTBOX_SINGLELINE) return pos;
+  if (!(Flags & WB_TEXTBOX_SINGLELINE)) return pos;
 
   WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
@@ -1042,10 +1042,10 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
     }
     End = min((int32_t)Text.size() - 1, End);
   } else {
-    while (Start >= 0 && _istalnum(Text[Start]) || Text[Start] == _T('_')) {
+    while ((Start >= 0 && _istalnum(Text[Start])) || Text[Start] == _T('_')) {
       Start--;
     }
-    while (End < (int32_t)Text.size() && _istalnum(Text[End]) ||
+    while ((End < (int32_t)Text.size() && _istalnum(Text[End])) ||
            Text[End] == _T('_')) {
       End++;
     }

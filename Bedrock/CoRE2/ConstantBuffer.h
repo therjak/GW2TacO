@@ -23,7 +23,7 @@ class CCoreConstantBuffer : public CCoreResource {
 
  public:
   CCoreConstantBuffer(CCoreDevice *Device);
-  virtual ~CCoreConstantBuffer();
+  ~CCoreConstantBuffer() override;
 
   void Reset();
   void AddData(void *Data, int32_t Length);

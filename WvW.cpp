@@ -1,4 +1,4 @@
-#include "WvW.h"
+﻿#include "WvW.h"
 #include <thread>
 #include "Bedrock/UtilLib/jsonxx.h"
 #include "gw2tactical.h"

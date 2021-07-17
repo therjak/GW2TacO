@@ -4,68 +4,67 @@
 
 #ifdef CORE_API_DX11
 
-class CCoreDX11Texture2D : public CCoreTexture2D
-{
-	ID3D11Device *Dev;
-	ID3D11DeviceContext *DeviceContext;
-	ID3D11Texture2D *TextureHandle;
-	ID3D11ShaderResourceView *View;
-	ID3D11RenderTargetView *RTView;
-	ID3D11DepthStencilView *DepthView;
+class CCoreDX11Texture2D : public CCoreTexture2D {
+  ID3D11Device *Dev;
+  ID3D11DeviceContext *DeviceContext;
+  ID3D11Texture2D *TextureHandle;
+  ID3D11ShaderResourceView *View;
+  ID3D11RenderTargetView *RTView;
+  ID3D11DepthStencilView *DepthView;
 
-	TBOOL RenderTarget;
+  TBOOL RenderTarget;
 
-	virtual void Release();
-	virtual TBOOL SetToSampler(const CORESAMPLER Sampler);
+  virtual void Release();
+  TBOOL SetToSampler(const CORESAMPLER Sampler) override;
 
-public:
+ public:
+  CCoreDX11Texture2D(CCoreDX11Device *Device);
+  ~CCoreDX11Texture2D() override;
 
-	CCoreDX11Texture2D(CCoreDX11Device *Device);
-	virtual ~CCoreDX11Texture2D();
+  void OnDeviceLost() override;
+  void OnDeviceReset() override;
 
-	virtual void OnDeviceLost();
-	virtual void OnDeviceReset();
+  TBOOL Create(const int32_t XRes, const int32_t YRes, const uint8_t *Data,
+               const TS8 BytesPerPixel = 4,
+               const COREFORMAT Format = COREFMT_A8R8G8B8,
+               const TBOOL RenderTarget = false) override;
+  TBOOL Create(const uint8_t *Data, const int32_t Size) override;
+  TBOOL CreateDepthBuffer(const int32_t XRes, const int32_t YRes,
+                          const int32_t MSCount = 1) override;
+  TBOOL Lock(void **Result, int32_t &pitch) override;
+  TBOOL UnLock() override;
 
-	virtual TBOOL Create(const int32_t XRes, const int32_t YRes, const uint8_t *Data, const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8, const TBOOL RenderTarget = false);
-	virtual TBOOL Create(const uint8_t *Data, const int32_t Size);
-	virtual TBOOL CreateDepthBuffer(const int32_t XRes, const int32_t YRes, const int32_t MSCount = 1);
-	virtual TBOOL Lock(void **Result, int32_t &pitch);
-	virtual TBOOL UnLock();
+  TBOOL Update(const uint8_t *Data, const int32_t XRes, const int32_t YRes,
+               const TS8 BytesPerPixel = 4) override;
+  void SetTextureHandle(ID3D11Texture2D *Hnd) { TextureHandle = Hnd; }
+  void SetView(ID3D11ShaderResourceView *v) { View = v; }
 
-	virtual TBOOL Update(const uint8_t *Data, const int32_t XRes, const int32_t YRes, const TS8 BytesPerPixel = 4);
-	void SetTextureHandle(ID3D11Texture2D *Hnd) { TextureHandle = Hnd; }
-	void SetView(ID3D11ShaderResourceView *v) { View = v; }
-
-	ID3D11Texture2D *GetTextureHandle() { return TextureHandle; }
-	ID3D11DepthStencilView *GetDepthView() { return DepthView; }
-	ID3D11RenderTargetView *GetRenderTargetView() { return RTView; }
-	ID3D11ShaderResourceView *GetShaderResourceView() { return View; }
+  ID3D11Texture2D *GetTextureHandle() { return TextureHandle; }
+  ID3D11DepthStencilView *GetDepthView() { return DepthView; }
+  ID3D11RenderTargetView *GetRenderTargetView() { return RTView; }
+  ID3D11ShaderResourceView *GetShaderResourceView() { return View; }
   ID3D11DeviceContext *GetDeviceContext() { return DeviceContext; }
 
-	virtual CCoreTexture2D *Copy();
-	virtual void ExportToImage(std::string_view Filename, TBOOL ClearAlpha, EXPORTIMAGEFORMAT Format, bool degamma);
+  CCoreTexture2D *Copy() override;
+  void ExportToImage(std::string_view Filename, TBOOL ClearAlpha,
+                     EXPORTIMAGEFORMAT Format, bool degamma) override;
 };
 
-class CCoreDX11Texture3D : public CCoreTexture3D
-{
-	//LPDIRECT3DDEVICE9 Dev;
+class CCoreDX11Texture3D : public CCoreTexture3D {
+  // LPDIRECT3DDEVICE9 Dev;
 
-public:
-
-	CCoreDX11Texture3D(CCoreDX11Device *Device);
-
+ public:
+  CCoreDX11Texture3D(CCoreDX11Device *Device);
 };
 
-class CCoreDX11TextureCube : public CCoreTextureCube
-{
-	//LPDIRECT3DDEVICE9 Dev;
+class CCoreDX11TextureCube : public CCoreTextureCube {
+  // LPDIRECT3DDEVICE9 Dev;
 
-public:
-
-	CCoreDX11TextureCube(CCoreDX11Device *Device);
-
+ public:
+  CCoreDX11TextureCube(CCoreDX11Device *Device);
 };
 
-HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext, _In_ ID3D11Resource* pSource, CStreamWriter &Writer);
+HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext *pContext,
+                       _In_ ID3D11Resource *pSource, CStreamWriter &Writer);
 
 #endif

@@ -19,7 +19,7 @@ int32_t GetStringHash(char* string) {
   char* str = string;
 
   int32_t Hash = 5381;
-  while (c = *str++) Hash = ((Hash << 5) + Hash) + c;  // hash * 33 + c
+  while ((c = *str++)) Hash = ((Hash << 5) + Hash) + c;  // hash * 33 + c
 
   return Hash;
 }
@@ -66,7 +66,7 @@ int32_t CXMLNode::GetChildCount() {
 
   int32_t count = 1;
 
-  while (node = node->next_sibling()) count++;
+  while ((node = node->next_sibling())) count++;
 
   childCount = count;
 
@@ -86,7 +86,7 @@ int32_t CXMLNode::GetChildCount(char* szNodeName) {
 
   int32_t count = 1;
 
-  while (node = node->next_sibling(szNodeName)) count++;
+  while ((node = node->next_sibling(szNodeName))) count++;
 
   childCounts[hash] = count;
 
@@ -108,7 +108,7 @@ CXMLNode CXMLNode::GetChild(int32_t n) {
 
   int32_t count = 1;
 
-  while (node = node->next_sibling()) {
+  while ((node = node->next_sibling())) {
     if (n == count) return CXMLNode(node, pDoc, nLevel + 1);
     count++;
   }
@@ -135,7 +135,7 @@ CXMLNode CXMLNode::GetChild(char* szNodeName, int32_t n) {
 
   int32_t count = 1;
 
-  while (node = node->next_sibling(szNodeName)) {
+  while ((node = node->next_sibling(szNodeName))) {
     if (n == count) return CXMLNode(node, pDoc, nLevel + 1);
     count++;
   }

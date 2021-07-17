@@ -1,6 +1,6 @@
-#pragma once
+﻿#pragma once
 
-#include "Bedrock/WhiteBoard/whiteboard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 enum class MouseColor {
   red,
@@ -23,11 +23,11 @@ enum class MouseColor {
 
 class GW2MouseHighlight : public CWBItem {
   CPoint lastpos;
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
  public:
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   GW2MouseHighlight(CWBItem *Parent, CRect Position);
   static inline std::shared_ptr<GW2MouseHighlight> Create(CWBItem *Parent,
@@ -39,7 +39,7 @@ class GW2MouseHighlight : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2MouseHighlight();
+  ~GW2MouseHighlight() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "mousehighlight" ), CWBItem);

@@ -85,8 +85,8 @@ class CWBTextBox : public CWBItem {
 
   std::string OriginalText;  // for escape cancel
 
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual TBOOL MessageProc(CWBMessage &Message);
+  void OnDraw(CWBDrawAPI *API) override;
+  TBOOL MessageProc(CWBMessage &Message) override;
   void InsertText(int32_t Position, std::string_view Text, int32_t Length,
                   int32_t CursorPosAfter, TBOOL ChangeHistory = true);
   void RemoveText(int32_t Position, int32_t Length, int32_t CursorPosAfter,
@@ -105,13 +105,13 @@ class CWBTextBox : public CWBItem {
     }
     return p;
   }
-  virtual ~CWBTextBox();
+  ~CWBTextBox() override;
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
                            int32_t flags = WB_TEXTBOX_SINGLELINE,
                            std::string_view txt = _T( "" ));
-  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string> &pseudo);
+  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                   const std::vector<std::string> &pseudo) override;
 
   std::string GetText() const {
     return Text;

@@ -1,12 +1,12 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 #include "gw2tactical.h"
 
 class GW2MarkerEditor : public CWBItem {
-  virtual TBOOL MessageProc(CWBMessage &Message);
-  virtual void OnDraw(CWBDrawAPI *API);
+  TBOOL MessageProc(CWBMessage &Message) override;
+  void OnDraw(CWBDrawAPI *API) override;
   TBOOL Hidden = false;
   GUID CurrentPOI;
 
@@ -14,8 +14,8 @@ class GW2MarkerEditor : public CWBItem {
   TBOOL ChangeDefault = false;
 
  public:
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   GW2MarkerEditor(CWBItem *Parent, CRect Position);
   static inline std::shared_ptr<GW2MarkerEditor> Create(CWBItem *Parent,
@@ -27,7 +27,7 @@ class GW2MarkerEditor : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2MarkerEditor();
+  ~GW2MarkerEditor() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "markereditor" ), CWBItem);

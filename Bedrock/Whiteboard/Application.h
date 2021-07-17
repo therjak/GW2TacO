@@ -86,19 +86,19 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   CWBDrawAPI *DrawAPI;
 
-  virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+  LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
   TBOOL GenerateGUIFromXML(CWBItem *Root, CXMLDocument *doc);
   virtual TBOOL Initialize();
 
  public:
-  virtual TBOOL Initialize(const CCoreWindowParameters &WindowParams);
+  TBOOL Initialize(const CCoreWindowParameters &WindowParams) override;
 
   CWBApplication();
-  virtual ~CWBApplication();
+  ~CWBApplication() override;
 
   CWBItem *GetRoot();
   CWBItem *GetFocusItem();
-  virtual TBOOL HandleMessages();
+  TBOOL HandleMessages() override;
   virtual TBOOL IsDone() { return Done; }
   virtual void SetDone(TBOOL d);
   virtual void Display();
@@ -187,7 +187,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   int32_t GetInitialKeyboardDelay();
   int32_t GetKeyboardRepeatTime();
 
-  virtual void HandleResize();
+  void HandleResize() override;
 
   LRESULT InjectMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

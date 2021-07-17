@@ -1,4 +1,4 @@
-#include "OverlayApplication.h"
+﻿#include "OverlayApplication.h"
 #include "ProFont.h"
 #include <dwmapi.h>
 #include <memory>
@@ -1102,8 +1102,9 @@ INT WINAPI WinMain( _In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
           if ( EditedButNotSelected )
             App->GetRoot()->SetFocus();
 
-          if ( gw2Window && ( !( App->GetFocusItem() && App->GetFocusItem()->InstanceOf( "textbox" ) || EditedButNotSelected ) ) )
-          {
+          if (gw2Window && (!((App->GetFocusItem() &&
+                               App->GetFocusItem()->InstanceOf("textbox")) ||
+                              EditedButNotSelected))) {
             HWND wnd = ::GetNextWindow( gw2Window, GW_HWNDPREV );
             if ( wnd != handle )
             {

@@ -1,10 +1,10 @@
-#pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+﻿#pragma once
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 #include "gw2tactical.h"
 
 class GW2Notepad : public CWBItem {
-  virtual TBOOL MessageProc(CWBMessage &Message);
-  virtual void OnDraw(CWBDrawAPI *API);
+  TBOOL MessageProc(CWBMessage &Message) override;
+  void OnDraw(CWBDrawAPI *API) override;
   TBOOL Hidden = false;
   GUID CurrentPOI;
 
@@ -12,8 +12,8 @@ class GW2Notepad : public CWBItem {
   bool canSetFocus = false;
 
  public:
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   GW2Notepad(CWBItem *Parent, CRect Position);
   static inline std::shared_ptr<GW2Notepad> Create(CWBItem *Parent,
@@ -25,7 +25,7 @@ class GW2Notepad : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2Notepad();
+  ~GW2Notepad() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "notepad" ), CWBItem);

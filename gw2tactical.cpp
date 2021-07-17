@@ -1,4 +1,4 @@
-#include "gw2tactical.h"
+﻿#include "gw2tactical.h"
 
 #include <mmsystem.h>
 
@@ -71,7 +71,7 @@ void FindClosestRouteMarkers(TBOOL force) {
       GUID g = r.route[y];
       if (POIs.HasKey(g)) {
         POI &p = POIs[g];
-        if (!p.mapID == mumbleLink.mapID) continue;
+        if (!(p.mapID == mumbleLink.mapID)) continue;
 
         float dist = (p.position - mumbleLink.charPosition).Length();
         if (dist < closestdist) {
@@ -1921,7 +1921,7 @@ bool POI::IsVisible(const tm &ptm, const time_t &currtime,
       if (achievements[typeData.achievementId].done) {
         return true;
       }
-      if ((typeData.achievementBit == -1)) {
+      if (typeData.achievementBit == -1) {
         return false;
       }
       const auto &bits = achievements[typeData.achievementId].bits;

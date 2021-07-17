@@ -849,21 +849,6 @@ void *CWBItem::GetData() { return Data; }
 
 void CWBItem::MarkForDeletion() {
   auto sr = SelfRef.lock();
-  /*
-  if (removeFromParent) {
-    if (Parent->ChildInFocus == this) {
-      Parent->ChildInFocus = NULL;
-    }
-    auto &pc = Parent->Children;
-    auto it = std::find_if(pc.begin(), pc.end(),
-                           [this](const std::shared_ptr<CWBItem> &it) {
-                             return it.get() == this;
-                           });
-    if (it != pc.end()) {
-      pc.erase(it);
-    }
-    Parent = nullptr;
-  }*/
   App->AddToTrash(sr);
 }
 
@@ -940,8 +925,8 @@ WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
   TBOOL HBar =
       Component == WB_ITEM_SCROLL_HBAR || Component == WB_ITEM_SCROLL_HTHUMB ||
       Component == WB_ITEM_SCROLL_LEFT || Component == WB_ITEM_SCROLL_RIGHT;
-  if (!MouseOver() && (HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE ||
-                       !HBar && VScrollbar.Dragmode == WB_SCROLLDRAG_NONE))
+  if (!MouseOver() && ((HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE) ||
+                       (!HBar && VScrollbar.Dragmode == WB_SCROLLDRAG_NONE)))
     return WB_STATE_NORMAL;
 
   CPoint MousePos = App->GetMousePos();

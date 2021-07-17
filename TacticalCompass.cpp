@@ -1,4 +1,4 @@
-#include "TacticalCompass.h"
+﻿#include "TacticalCompass.h"
 
 #include "Language.h"
 #include "MumbleLink.h"

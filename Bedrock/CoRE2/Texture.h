@@ -17,11 +17,9 @@ class CCoreTexture : public CCoreResource
 public:
 
   INLINE CCoreTexture( CCoreDevice *Device ) : CCoreResource( Device ) {}
-  INLINE virtual ~CCoreTexture()
-  {
+  INLINE ~CCoreTexture() override {
     //should remove this texture from the device render state here
   }
-
 };
 
 class CCoreTexture2D : public CCoreTexture

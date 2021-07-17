@@ -34,7 +34,7 @@ class CCoreShader : public CCoreResource {
     Binary = NULL;
     BinaryLength = 0;
   };
-  virtual ~CCoreShader();
+  ~CCoreShader() override;
 
   virtual TBOOL Create(void *Binary, int32_t Length) = 0;
 
@@ -61,39 +61,39 @@ class CCoreShader : public CCoreResource {
 class CCorePixelShader : public CCoreShader {
  public:
   INLINE CCorePixelShader(CCoreDevice *Device) : CCoreShader(Device){};
-  virtual ~CCorePixelShader();
-  virtual void *GetHandle() = 0;
+  ~CCorePixelShader() override;
+  void *GetHandle() override = 0;
 };
 
 class CCoreGeometryShader : public CCoreShader {
  public:
   INLINE CCoreGeometryShader(CCoreDevice *Device) : CCoreShader(Device){};
-  virtual ~CCoreGeometryShader();
+  ~CCoreGeometryShader() override;
 };
 
 class CCoreVertexShader : public CCoreShader {
  public:
   INLINE CCoreVertexShader(CCoreDevice *Device) : CCoreShader(Device){};
-  virtual ~CCoreVertexShader();
+  ~CCoreVertexShader() override;
 };
 
 class CCoreHullShader : public CCoreShader {
  public:
   INLINE CCoreHullShader(CCoreDevice *Device) : CCoreShader(Device){};
-  virtual ~CCoreHullShader();
-  virtual void *GetHandle() = 0;
+  ~CCoreHullShader() override;
+  void *GetHandle() override = 0;
 };
 
 class CCoreDomainShader : public CCoreShader {
  public:
   INLINE CCoreDomainShader(CCoreDevice *Device) : CCoreShader(Device){};
-  virtual ~CCoreDomainShader();
-  virtual void *GetHandle() = 0;
+  ~CCoreDomainShader() override;
+  void *GetHandle() override = 0;
 };
 
 class CCoreComputeShader : public CCoreShader {
  public:
   INLINE CCoreComputeShader(CCoreDevice *Device) : CCoreShader(Device){};
-  virtual ~CCoreComputeShader();
-  virtual void *GetHandle() = 0;
+  ~CCoreComputeShader() override;
+  void *GetHandle() override = 0;
 };

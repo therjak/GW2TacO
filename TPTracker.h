@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 #include <thread>
 #include <vector>
 
 #include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 struct TransactionItem {
   int32_t transactionID = 0;
@@ -23,7 +23,7 @@ struct GW2ItemData {
 extern CDictionary<int32_t, GW2ItemData> itemDataCache;
 
 class TPTracker : public CWBItem {
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -48,11 +48,11 @@ class TPTracker : public CWBItem {
     }
     return p;
   }
-  virtual ~TPTracker();
+  ~TPTracker() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "tptracker" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 };

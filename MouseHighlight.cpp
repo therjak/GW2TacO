@@ -1,4 +1,4 @@
-#include "MouseHighlight.h"
+﻿#include "MouseHighlight.h"
 
 #include "OverlayConfig.h"
 

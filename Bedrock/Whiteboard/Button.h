@@ -9,8 +9,8 @@ class CWBButton : public CWBItem {
   std::string Text;
   TBOOL Pushed;
 
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual TBOOL MessageProc(CWBMessage &Message);
+  void OnDraw(CWBDrawAPI *API) override;
+  TBOOL MessageProc(CWBMessage &Message) override;
 
  public:
   CWBButton(CWBItem *Parent, const CRect &Pos, std::string_view txt);
@@ -23,7 +23,7 @@ class CWBButton : public CWBItem {
     }
     return p;
   }
-  virtual ~CWBButton();
+  ~CWBButton() override;
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
                            std::string_view txt = _T( "" ));
@@ -34,10 +34,10 @@ class CWBButton : public CWBItem {
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "button" ), CWBItem);
 
-  virtual CSize GetContentSize();
+  CSize GetContentSize() override;
 
   virtual void Push(TBOOL pushed);
   virtual TBOOL IsPushed();
 
-  virtual WBITEMSTATE GetState();
+  WBITEMSTATE GetState() override;
 };

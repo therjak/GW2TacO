@@ -1,11 +1,11 @@
-#pragma once
+﻿#pragma once
 #include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/WhiteBoard/whiteboard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 #include "MumbleLink.h"
 #include "gw2tactical.h"
 
@@ -65,7 +65,7 @@ class GW2TrailDisplay : public CWBItem {
   CMatrix4x4 persp;
   CRect drawrect;
 
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
   std::unique_ptr<CCoreVertexShader> vxShader;
   std::unique_ptr<CCoreVertexFormat> vertexFormat;
@@ -102,13 +102,13 @@ class GW2TrailDisplay : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2TrailDisplay();
+  ~GW2TrailDisplay() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "gw2Trails" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   void DoTrailLogging(int32_t mapID, CVector3 charPos);
 

@@ -1,4 +1,4 @@
-#include "TS3Control.h"
+﻿#include "TS3Control.h"
 
 #include "Bedrock/BaseLib/string_format.h"
 #include "Language.h"

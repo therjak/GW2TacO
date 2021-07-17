@@ -1,5 +1,5 @@
-#pragma once
-#include "Bedrock/WhiteBoard/whiteboard.h"
+﻿#pragma once
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 // Needs to stay above
 #include <objbase.h>
 
@@ -188,7 +188,7 @@ class GW2TacticalDisplay : public CWBItem {
   void DrawPOIMinimap(CWBDrawAPI *API, const CRect &miniRect, CVector2 &pos,
                       const tm &ptm, const time_t &currtime, POI &poi,
                       float alpha, float zoomLevel);
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
   CVector3 ProjectTacticalPos(CVector3 pos, float fov, float asp);
   std::vector<POI *> mapPOIs;
   std::vector<POI *> minimapPOIs;
@@ -213,13 +213,13 @@ class GW2TacticalDisplay : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2TacticalDisplay();
+  ~GW2TacticalDisplay() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "gw2tactical" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
   void RemoveUserMarkersFromMap();
 };
 

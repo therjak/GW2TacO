@@ -1,18 +1,18 @@
-#pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+﻿#pragma once
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class COverlayApp : public CWBApplication {
  protected:
-  virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
-  virtual TBOOL DeviceOK();
+  LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+  TBOOL DeviceOK() override;
 
  public:
-  virtual TBOOL Initialize(const CCoreWindowParameters &WindowParams);
+  TBOOL Initialize(const CCoreWindowParameters &WindowParams) override;
 
   COverlayApp();
-  virtual ~COverlayApp();
+  ~COverlayApp() override;
 
-  virtual void TakeScreenshot();
+  void TakeScreenshot() override;
 
   std::unique_ptr<CCoreBlendState> holePunchBlendState;
 };

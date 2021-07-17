@@ -1,4 +1,4 @@
-#include "BuildInfo.h"
+﻿#include "BuildInfo.h"
 #include "BuildCount.h"
 
 #include "Bedrock/BaseLib/string_format.h"

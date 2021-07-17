@@ -1,4 +1,4 @@
-#include "GW2API.h"
+﻿#include "GW2API.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 #include "Language.h"

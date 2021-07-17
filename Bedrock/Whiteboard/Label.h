@@ -7,7 +7,7 @@
 
 class CWBLabel : public CWBItem {
   std::string Text;
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
  public:
   CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view txt);
@@ -20,7 +20,7 @@ class CWBLabel : public CWBItem {
     }
     return p;
   }
-  virtual ~CWBLabel();
+  ~CWBLabel() override;
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
                            std::string_view txt = _T( "" ));
@@ -31,8 +31,9 @@ class CWBLabel : public CWBItem {
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "label" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint, WBMESSAGE MessageType) {
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override {
     return true;
   }
-  virtual CSize GetContentSize();
+  CSize GetContentSize() override;
 };

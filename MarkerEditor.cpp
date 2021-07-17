@@ -1,4 +1,4 @@
-#include "MarkerEditor.h"
+﻿#include "MarkerEditor.h"
 
 #include "MumbleLink.h"
 #include "OverlayConfig.h"

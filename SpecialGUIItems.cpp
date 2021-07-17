@@ -1,4 +1,4 @@
-#include "SpecialGUIItems.h"
+﻿#include "SpecialGUIItems.h"
 
 ClickThroughButton::ClickThroughButton(CWBItem *Parent, const CRect &Pos,
                                        std::string_view txt /*= _T( "" ) */)

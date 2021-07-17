@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "GW2TacO.h"
 #include <string_view>

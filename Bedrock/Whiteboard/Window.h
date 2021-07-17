@@ -45,8 +45,8 @@ class CWBWindow : public CWBItem {
   uint32_t Style;
   uint32_t DragMode;
 
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual TBOOL MessageProc(CWBMessage &Message);
+  void OnDraw(CWBDrawAPI *API) override;
+  TBOOL MessageProc(CWBMessage &Message) override;
 
  public:
   CWBWindow(CWBItem *Parent, const CRect &Pos, const TCHAR *txt = _T( "" ),
@@ -61,13 +61,13 @@ class CWBWindow : public CWBItem {
     }
     return p;
   }
-  virtual ~CWBWindow();
+  ~CWBWindow() override;
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
                            const TCHAR *txt = _T( "" ),
                            uint32_t style = WB_WINDOW_DEFAULT);
-  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string> &pseudo);
+  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                   const std::vector<std::string> &pseudo) override;
 
   std::string GetTitle() const { return WindowTitle; }
   void SetTitle(std::string_view val) { WindowTitle = val; }

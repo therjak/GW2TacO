@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <vector>
 
 #include "Bedrock/BaseLib/BaseLib.h"
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class LocationalTimer {
  public:
@@ -34,9 +34,9 @@ class LocationalTimer {
 
 class TimerDisplay : public CWBItem {
  public:
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  void OnDraw(CWBDrawAPI *API) override;
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   TimerDisplay(CWBItem *Parent, CRect Position);
   static inline std::shared_ptr<TimerDisplay> Create(CWBItem *Parent,
@@ -48,7 +48,7 @@ class TimerDisplay : public CWBItem {
     }
     return p;
   }
-  virtual ~TimerDisplay();
+  ~TimerDisplay() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "TimerDisplay" ), CWBItem);

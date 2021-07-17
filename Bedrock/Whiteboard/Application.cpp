@@ -388,7 +388,7 @@ TBOOL CWBApplication::HandleMessages() {
 
   for (int32_t x = 0; x < MessageBuffer.NumItems(); x++) {
     CWBMessage currentMessage;
-    memcpy(&currentMessage, &MessageBuffer[x], sizeof(CWBMessage));
+    memcpy((void *)&currentMessage, &MessageBuffer[x], sizeof(CWBMessage));
     ProcessMessage(currentMessage);
   }
 
@@ -515,9 +515,6 @@ void CWBApplication::CleanTrash() {
   for (auto i = Trash.size(); i > 0; i--) {
     auto &t = Trash[i - 1];
     t->Parent->RemoveChild(t);
-    if (!t.unique()) {
-      int i = 5;
-    }
     t.reset();
   }
   Trash.clear();

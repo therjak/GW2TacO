@@ -1,4 +1,4 @@
-#include "Notepad.h"
+﻿#include "Notepad.h"
 
 #include "MumbleLink.h"
 #include "OverlayConfig.h"

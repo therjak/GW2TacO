@@ -28,11 +28,11 @@ class CStreamWriterMemory : public CStreamWriter {
   uint32_t BufferSize;
   uint32_t DataLength;
 
-  virtual int32_t WriteStream(std::string_view);
+  int32_t WriteStream(std::string_view) override;
 
  public:
   CStreamWriterMemory();
-  virtual ~CStreamWriterMemory();
+  ~CStreamWriterMemory() override;
 
   // std::string_view GetData();
   uint8_t* GetData();
@@ -44,11 +44,11 @@ class CStreamWriterMemory : public CStreamWriter {
 class CStreamWriterFile : public CStreamWriter {
   HANDLE File;
 
-  virtual int32_t WriteStream(std::string_view);
+  int32_t WriteStream(std::string_view) override;
 
  public:
   CStreamWriterFile();
-  virtual ~CStreamWriterFile();
+  ~CStreamWriterFile() override;
 
   int32_t Open(std::string_view filename);
   void Flush();

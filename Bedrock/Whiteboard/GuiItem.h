@@ -301,7 +301,7 @@ class CWBItem : public IWBCSS {
   CWBItem(CWBItem *Parent, const CRect &Position);
 
  public:
-  virtual ~CWBItem();
+  ~CWBItem() override;
 
   virtual void AddChild(const std::shared_ptr<CWBItem> &Item);
   virtual void RemoveChild(const std::shared_ptr<CWBItem> &Item);
@@ -370,12 +370,12 @@ class CWBItem : public IWBCSS {
 
   virtual CWBContextMenu *OpenContextMenu(CPoint Position);
 
-  virtual const std::string &GetType() const {
+  const std::string &GetType() const override {
     static const std::string type = _T( "guiitem" );
     return type;
   }
 
-  virtual TBOOL InstanceOf(std::string_view name) const {
+  TBOOL InstanceOf(std::string_view name) const override {
     return name == GetClassName();
   }
 
@@ -401,8 +401,8 @@ class CWBItem : public IWBCSS {
   virtual void SetBorderSizes(TS8 Left, TS8 Top, TS8 Right, TS8 Bottom);
   virtual void SetFont(WBITEMSTATE State, std::string_view Font);
 
-  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string> &pseudo);
+  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                   const std::vector<std::string> &pseudo) override;
 
   CWBItem *FindChildByID(std::string_view value,
                          std::string_view type = _T( "" ));

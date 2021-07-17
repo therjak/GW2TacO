@@ -1,12 +1,12 @@
-#pragma once
+﻿#pragma once
 
 #include <vector>
 
-#include "Bedrock/WhiteBoard/whiteboard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class GW2HPGrid : public CWBItem {
   CPoint lastpos;
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
   struct GridLine {
     float percentage = 0;
@@ -22,8 +22,8 @@ class GW2HPGrid : public CWBItem {
   std::vector<GridData> Grids;
 
  public:
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   virtual void LoadGrids();
 
@@ -37,7 +37,7 @@ class GW2HPGrid : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2HPGrid();
+  ~GW2HPGrid() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "hpgrid" ), CWBItem);

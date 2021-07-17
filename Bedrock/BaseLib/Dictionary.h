@@ -427,8 +427,7 @@ private:
     IndexMap[ b ] = k;
   }
 
-  virtual KDPair *AddNew( const KeyType &Key )
-  {
+  KDPair *AddNew(const KeyType &Key) override {
     KDPair *p = CDictionary<KeyType, ItemType>::AddNew( Key );
     IndexMap.push_back( p );
     return p;
@@ -446,8 +445,7 @@ public:
     *this += dict;
   }
 
-  virtual void Add( const KeyType &Key, const ItemType &Data )
-  {
+  void Add(const KeyType &Key, const ItemType &Data) override {
     KDPair *p = Find( Key );
     CDictionary<KeyType, ItemType>::Add( Key, Data );
     if ( !p )
@@ -457,29 +455,25 @@ public:
     }
   }
 
-  virtual void Delete( const KeyType &Key )
-  {
+  void Delete(const KeyType &Key) override {
     KDPair *p = Find( Key );
     CDictionary<KeyType, ItemType>::Delete( Key );
     if ( p )
       IndexMap.erase(std::remove(IndexMap.begin(), IndexMap.end(), p));
   }
 
-  virtual ItemType &GetByIndex( int32_t idx )
-  {
-    BASEASSERT( idx >= 0 && idx < ItemCount );
+  ItemType &GetByIndex(int32_t idx) override {
+    BASEASSERT(idx >= 0 && idx < this->ItemCount);
     return ( (KDPair*)IndexMap[ idx ] )->Data;
   }
 
-  virtual void DeleteByIndex( const int32_t idx )
-  {
-    BASEASSERT( idx >= 0 && idx < ItemCount );
+  void DeleteByIndex(const int32_t idx) override {
+    BASEASSERT(idx >= 0 && idx < this->ItemCount);
     Delete( IndexMap[ idx ]->Key );
   }
 
-  virtual ItemType &GetByIndex( int32_t idx, KeyType &Key )
-  {
-    BASEASSERT( idx >= 0 && idx < ItemCount );
+  ItemType &GetByIndex(int32_t idx, KeyType &Key) override {
+    BASEASSERT(idx >= 0 && idx < this->ItemCount);
     Key = ( (KDPair*)IndexMap[ idx ] )->Key;
     return ( (KDPair*)IndexMap[ idx ] )->Data;
   }
@@ -493,7 +487,7 @@ public:
   {
 
     if ( !SortCallback ) return;
-    if ( ItemCount < 2 ) return;
+    if (this->ItemCount < 2) return;
 
     //qsort implementation - calling crt qsort isn't viable here due to template hackery
     //implementation taken from crt
@@ -502,7 +496,7 @@ public:
     int32_t stkptr = 0;
 
     uint32_t lo = 0;
-    uint32_t hi = ItemCount - 1;
+    uint32_t hi = this->ItemCount - 1;
 
   recurse:
 
@@ -576,7 +570,7 @@ public:
     int32_t stkptr = 0;
 
     uint32_t lo = 0;
-    uint32_t hi = ItemCount - 1;
+    uint32_t hi = this->ItemCount - 1;
 
   recurse:
 
@@ -639,8 +633,7 @@ public:
 
   }
 
-  virtual void Flush()
-  {
+  void Flush() override {
     CDictionary<KeyType, ItemType>::Flush();
     IndexMap.clear();
   }

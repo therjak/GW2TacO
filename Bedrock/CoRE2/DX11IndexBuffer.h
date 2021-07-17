@@ -4,28 +4,28 @@
 
 #ifdef CORE_API_DX11
 
-class CCoreDX11IndexBuffer : public CCoreIndexBuffer
-{
-	ID3D11Device *Dev;
-	ID3D11DeviceContext *DeviceContext;
-	ID3D11Buffer *IndexBufferHandle;
+class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
+  ID3D11Device *Dev;
+  ID3D11DeviceContext *DeviceContext;
+  ID3D11Buffer *IndexBufferHandle;
 
-	int32_t IndexCount;
-	int32_t IndexSize;
+  int32_t IndexCount;
+  int32_t IndexSize;
 
-	virtual void Release();
-	virtual TBOOL Apply();
+  virtual void Release();
+  TBOOL Apply() override;
 
-public:
+ public:
+  CCoreDX11IndexBuffer(CCoreDX11Device *dev);
+  ~CCoreDX11IndexBuffer() override;
 
-	CCoreDX11IndexBuffer(CCoreDX11Device *dev);
-	virtual ~CCoreDX11IndexBuffer();
-
-	virtual TBOOL Create(const uint32_t IndexCount, const uint32_t IndexSize = 2);
-	virtual TBOOL Lock(void **Result);
-	virtual TBOOL Lock(void **Result, const uint32_t IndexOffset, const int32_t IndexCount);
-	virtual TBOOL UnLock();
-	virtual void* GetHandle() { return IndexBufferHandle; }
+  TBOOL Create(const uint32_t IndexCount,
+               const uint32_t IndexSize = 2) override;
+  TBOOL Lock(void **Result) override;
+  TBOOL Lock(void **Result, const uint32_t IndexOffset,
+             const int32_t IndexCount) override;
+  TBOOL UnLock() override;
+  void *GetHandle() override { return IndexBufferHandle; }
 };
 
 #endif

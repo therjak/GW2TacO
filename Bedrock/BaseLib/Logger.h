@@ -37,15 +37,15 @@ class CLoggerOutput {
 class CLoggerOutput_DebugOutput : public CLoggerOutput {
  public:
   CLoggerOutput_DebugOutput();
-  virtual ~CLoggerOutput_DebugOutput();
-  virtual void Process(LOGVERBOSITY v, const std::string& String);
+  ~CLoggerOutput_DebugOutput() override;
+  void Process(LOGVERBOSITY v, const std::string& String) override;
 };
 
 class CLoggerOutput_StdOut : public CLoggerOutput {
  public:
   CLoggerOutput_StdOut();
-  virtual ~CLoggerOutput_StdOut();
-  virtual void Process(LOGVERBOSITY v, const std::string& String);
+  ~CLoggerOutput_StdOut() override;
+  void Process(LOGVERBOSITY v, const std::string& String) override;
 };
 
 class CLoggerOutput_File : public CLoggerOutput {
@@ -56,9 +56,9 @@ class CLoggerOutput_File : public CLoggerOutput {
  public:
   CLoggerOutput_File();
   CLoggerOutput_File(std::string_view Filename, bool append = true);
-  virtual ~CLoggerOutput_File();
+  ~CLoggerOutput_File() override;
   bool OpenLogFile(std::string_view Filename, bool Append = true);
-  virtual void Process(LOGVERBOSITY v, const std::string& String);
+  void Process(LOGVERBOSITY v, const std::string& String) override;
 };
 
 class CLoggerOutput_RingBuffer : public CLoggerOutput {
@@ -66,8 +66,8 @@ class CLoggerOutput_RingBuffer : public CLoggerOutput {
 
  public:
   CLoggerOutput_RingBuffer();
-  virtual ~CLoggerOutput_RingBuffer();
-  virtual void Process(LOGVERBOSITY v, const std::string& String);
+  ~CLoggerOutput_RingBuffer() override;
+  void Process(LOGVERBOSITY v, const std::string& String) override;
   void Dump(std::string_view fname);
 };
 

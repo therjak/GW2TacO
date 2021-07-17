@@ -1,4 +1,4 @@
-#include "LocationalTimer.h"
+﻿#include "LocationalTimer.h"
 
 #include <vector>
 

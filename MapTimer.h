@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <thread>
 #include <vector>
 
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class GW2MapTimer : public CWBItem {
   struct Event {
@@ -25,7 +25,7 @@ class GW2MapTimer : public CWBItem {
   };
 
   CPoint lastpos;
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
   void SetLayout(CXMLNode &node);
 
   bool beingFetched = false;
@@ -53,11 +53,11 @@ class GW2MapTimer : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2MapTimer();
+  ~GW2MapTimer() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "maptimer" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 };

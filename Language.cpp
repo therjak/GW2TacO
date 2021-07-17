@@ -1,4 +1,4 @@
-#include "Language.h"
+﻿#include "Language.h"
 #include "OverlayConfig.h"
 
 #include <algorithm>

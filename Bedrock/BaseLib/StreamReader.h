@@ -32,18 +32,18 @@ class CStreamReaderMemory : public CStreamReader
   uint64_t DataSize;
   uint64_t Offset;
 
-  virtual int32_t ReadStream( void *lpBuf, uint32_t nCount );
-  virtual int64_t GetOffset() const;
+  int32_t ReadStream(void *lpBuf, uint32_t nCount) override;
+  int64_t GetOffset() const override;
 
  public:
 
   CStreamReaderMemory();
-  virtual ~CStreamReaderMemory();
+  ~CStreamReaderMemory() override;
 
   int32_t Open( uint8_t *data, uint32_t size );
   int32_t Open(std::string_view filename);
   std::string ReadLine();
 
   uint8_t *GetData() const;
-  virtual int64_t GetLength() const;
+  int64_t GetLength() const override;
 };

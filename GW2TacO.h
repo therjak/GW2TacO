@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 #include "TS3Connection.h"
 #include "gw2tactical.h"
 
@@ -91,10 +91,10 @@ class GW2TacO : public CWBItem {
   std::string GetKeybindString(TacOKeyAction action);
 
  public:
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual void OnPostDraw(CWBDrawAPI *API);
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  void OnDraw(CWBDrawAPI *API) override;
+  void OnPostDraw(CWBDrawAPI *API) override;
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   GW2TacO(CWBItem *Parent, CRect Position);
   static inline std::shared_ptr<GW2TacO> Create(CWBItem *Parent,
@@ -106,14 +106,14 @@ class GW2TacO : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2TacO();
+  ~GW2TacO() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "GW2TacO" ), CWBItem);
   void OpenWindow(std::string_view s);
 
-  virtual TBOOL MessageProc(
-      CWBMessage &Message);  // return true if this item handled the message
+  // return true if this item handled the message
+  TBOOL MessageProc(CWBMessage &Message) override;
 
   void SetInfoLine(std::string_view string);
   void SetMouseToolTip(std::string_view toolTip);

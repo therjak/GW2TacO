@@ -126,23 +126,23 @@ protected:
 	static LRESULT CALLBACK WndProcProxy(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	virtual void HandleResize();
-	virtual void HandleAltEnter();
+        void HandleResize() override;
+        void HandleAltEnter() override;
 
-public:
+       public:
 
 	CCoreWindowHandlerWin();
-	virtual ~CCoreWindowHandlerWin();
+        ~CCoreWindowHandlerWin() override;
 
-	virtual TBOOL Initialize(const CCoreWindowParameters &WindowParams);
-	virtual void Destroy();
-	virtual TBOOL HandleMessages();
-	virtual TBOOL HandleOSMessages();
-	virtual TBOOL DeviceOK();
-	virtual void ToggleFullScreen();
+        TBOOL Initialize(const CCoreWindowParameters &WindowParams) override;
+        void Destroy() override;
+        TBOOL HandleMessages() override;
+        TBOOL HandleOSMessages() override;
+        TBOOL DeviceOK() override;
+        void ToggleFullScreen() override;
 
-	uint32_t GetHandle();
+        uint32_t GetHandle() override;
 
-	virtual void FinalizeMouseCursor();
-        virtual void SetWindowTitle(std::string_view Title);
+        void FinalizeMouseCursor() override;
+        void SetWindowTitle(std::string_view Title) override;
 };

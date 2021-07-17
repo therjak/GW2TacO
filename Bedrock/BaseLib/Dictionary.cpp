@@ -13,8 +13,7 @@ uint32_t DictionaryHash( const void *i ) //hash for a pointer
 
   //djb2 hash
   uint32_t Hash = 5381;
-  while ( c = v & 0xff )
-  {
+  while ((c = v & 0xff)) {
     Hash = ( ( Hash << 5 ) + Hash ) + c; // hash * 33 + c
     v = v >> 8;
   }

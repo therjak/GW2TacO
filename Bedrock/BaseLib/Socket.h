@@ -12,14 +12,14 @@ class CSocket : public CStreamReader, public CStreamWriter {
   int64_t LastActivity;
   SOCKET Socket;
 
-  virtual int32_t ReadStream(void *lpBuf, uint32_t nCount);
-  virtual int32_t WriteStream(std::string_view);
+  int32_t ReadStream(void *lpBuf, uint32_t nCount) override;
+  int32_t WriteStream(std::string_view) override;
   static uint32_t Resolve(std::string_view Address);
 
  public:
   CSocket();
   CSocket(const CSocket &) = delete;
-  virtual ~CSocket();
+  ~CSocket() override;
 
   //////////////////////////////////////////////////////////////////////////
   // socket functions
@@ -33,8 +33,8 @@ class CSocket : public CStreamReader, public CStreamWriter {
   // streamreader functions
 
   // returns the currently available bytes in the socket
-  virtual int64_t GetLength() const;
-  virtual int64_t GetOffset() const;  // is always 0
+  int64_t GetLength() const override;
+  int64_t GetOffset() const override;  // is always 0
 
   std::string ReadLine();
 

@@ -1,4 +1,4 @@
-#include "OverlayConfig.h"
+﻿#include "OverlayConfig.h"
 #include "Bedrock/UtilLib/XMLDocument.h"
 
 #include <string>

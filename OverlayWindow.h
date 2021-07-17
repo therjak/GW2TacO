@@ -1,12 +1,12 @@
-#pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+﻿#pragma once
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class OverlayWindow : public CWBWindow {
  public:
-  virtual TBOOL MessageProc(CWBMessage &Message);
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL MessageProc(CWBMessage &Message) override;
+  void OnDraw(CWBDrawAPI *API) override;
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 
   OverlayWindow(CWBItem *Parent, CRect Position);
   static inline std::shared_ptr<OverlayWindow> Create(CWBItem *Parent,
@@ -19,7 +19,7 @@ class OverlayWindow : public CWBWindow {
     return p;
   }
 
-  virtual ~OverlayWindow();
+  ~OverlayWindow() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "OverlayWindow" ), CWBItem);

@@ -1,8 +1,8 @@
-#pragma once
+﻿#pragma once
 #include <string>
 #include <thread>
 
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class RaidEvent {
  public:
@@ -27,7 +27,7 @@ class Raid {
 
 class RaidProgress : public CWBItem {
   CPoint lastpos;
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -49,12 +49,12 @@ class RaidProgress : public CWBItem {
     }
     return p;
   }
-  virtual ~RaidProgress();
+  ~RaidProgress() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "raidprogress" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
   std::vector<Raid> &GetRaids();
 };

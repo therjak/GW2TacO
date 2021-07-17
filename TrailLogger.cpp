@@ -1,4 +1,4 @@
-#include "TrailLogger.h"
+﻿#include "TrailLogger.h"
 
 #include <commdlg.h>
 

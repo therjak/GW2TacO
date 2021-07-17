@@ -1,4 +1,4 @@
-#include "TS3Connection.h"
+﻿#include "TS3Connection.h"
 
 #include "Bedrock/BaseLib/string_format.h"
 #include "OverlayConfig.h"

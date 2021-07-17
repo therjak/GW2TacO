@@ -521,7 +521,7 @@ void CString::CalculateHash() {
   TCHAR *str = String;
 
   // djb2 hash
-  while (c = *str++) Hash = ((Hash << 5) + Hash) + c;  // hash * 33 + c
+  while ((c = *str++)) Hash = ((Hash << 5) + Hash) + c;  // hash * 33 + c
 }
 
 uint32_t CString::GetHash() const { return Hash; }

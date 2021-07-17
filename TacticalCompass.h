@@ -1,8 +1,8 @@
-#pragma once
-#include "Bedrock/WhiteBoard/whiteboard.h"
+﻿#pragma once
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class GW2TacticalCompass : public CWBItem {
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
   void DrawTacticalCompass(CWBDrawAPI *API);
 
  public:
@@ -16,11 +16,11 @@ class GW2TacticalCompass : public CWBItem {
     }
     return p;
   }
-  virtual ~GW2TacticalCompass();
+  ~GW2TacticalCompass() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "gw2rangecircles" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 };

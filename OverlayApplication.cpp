@@ -1,4 +1,4 @@
-#include "OverlayApplication.h"
+﻿#include "OverlayApplication.h"
 
 COverlayApp::COverlayApp() {}
 

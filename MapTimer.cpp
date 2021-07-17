@@ -1,4 +1,4 @@
-#include "MapTimer.h"
+﻿#include "MapTimer.h"
 
 #include <string>
 

@@ -69,9 +69,9 @@ class CMatrix4x4 {
                            const float zf);
   void SetPerspectiveFovRH(const float fovy, const float aspect, const float zn,
                            const float zf);
-  static CMatrix4x4 CMatrix4x4::Translation(const CVector3 &v);
-  static CMatrix4x4 CMatrix4x4::Scaling(const CVector3 &v);
-  static CMatrix4x4 CMatrix4x4::Rotation(const CQuaternion &q);
+  static CMatrix4x4 Translation(const CVector3 &v);
+  static CMatrix4x4 Scaling(const CVector3 &v);
+  static CMatrix4x4 Rotation(const CQuaternion &q);
   CVector3 GetTranslation() const;
   CVector3 GetScaling() const;
   CQuaternion GetRotation() const;

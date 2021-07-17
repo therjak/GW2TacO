@@ -1,7 +1,7 @@
-#pragma once
+﻿#pragma once
 #include <string_view>
 
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class ClickThroughButton : public CWBButton {
  public:
@@ -15,10 +15,10 @@ class ClickThroughButton : public CWBButton {
     }
     return p;
   }
-  virtual ~ClickThroughButton();
+  ~ClickThroughButton() override;
 
-  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
-                           std::string_view txt = _T( "" ));
+  TBOOL Initialize(CWBItem *Parent, const CRect &Position,
+                   std::string_view txt = _T( "" )) override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "clickthroughbutton" ), CWBItem);

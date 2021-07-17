@@ -1,4 +1,4 @@
-#include "RangeDisplay.h"
+﻿#include "RangeDisplay.h"
 
 #include "MumbleLink.h"
 #include "OverlayConfig.h"

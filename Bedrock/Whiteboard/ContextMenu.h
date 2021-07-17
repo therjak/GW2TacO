@@ -45,16 +45,16 @@ class CWBContextMenu : public CWBItem {
   CWBContextMenu *ParentMenu = nullptr;
   std::vector<std::unique_ptr<CWBContextItem>> Items;
 
-  TBOOL MessageProc(CWBMessage &Message);
+  TBOOL MessageProc(CWBMessage &Message) override;
   virtual void ResizeToContentSize();
-  virtual void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI *API) override;
   void SpawnSubMenu(int32_t itemidx);
   CRect GetItemRect(int32_t idx);
   void MarkParentForDeletion();
 
   TBOOL MouseInContextHierarchy();
   CWBContextMenu *GetContextRoot();
-  virtual TBOOL AllowMouseHighlightWhileCaptureItem() { return true; }
+  TBOOL AllowMouseHighlightWhileCaptureItem() override { return true; }
 
   CWBCSSPropertyBatch SeparatorElements;
   void MarkForDeletion() override;
@@ -71,7 +71,7 @@ class CWBContextMenu : public CWBItem {
     }
     return p;
   }
-  virtual ~CWBContextMenu();
+  ~CWBContextMenu() override;
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
                            WBGUID Target);
@@ -83,7 +83,7 @@ class CWBContextMenu : public CWBItem {
                                   TBOOL closesContext = true);
   virtual void AddSeparator();
 
-  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string> &pseudo) override;
+  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                   const std::vector<std::string> &pseudo) override;
   virtual CWBContextItem *GetItem(int32_t ID);
 };

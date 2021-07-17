@@ -1,4 +1,4 @@
-#include "cssitem.h"
+#include "CSSItem.h"
 
 IWBCSS::IWBCSS() {}
 

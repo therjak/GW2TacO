@@ -1,4 +1,4 @@
-#include "RaidProgress.h"
+﻿#include "RaidProgress.h"
 
 #include <cctype>
 

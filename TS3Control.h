@@ -1,9 +1,9 @@
-#pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+﻿#pragma once
+#include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class TS3Control : public CWBItem {
   CPoint lastpos;
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
 
  public:
   TS3Control(CWBItem *Parent, CRect Position);
@@ -16,11 +16,11 @@ class TS3Control : public CWBItem {
     }
     return p;
   }
-  virtual ~TS3Control();
+  ~TS3Control() override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "ts3control" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 };

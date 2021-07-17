@@ -22,11 +22,11 @@ enum WBBOXSIZING {
 
 class CWBBox : public CWBItem {
  protected:
-  virtual void AddChild(const std::shared_ptr<CWBItem> &Item) override;
-  virtual TBOOL MessageProc(CWBMessage &Message);
+  void AddChild(const std::shared_ptr<CWBItem> &Item) override;
+  TBOOL MessageProc(CWBMessage &Message) override;
   virtual void RearrangeChildren();
 
-  virtual void OnDraw(CWBDrawAPI *API);
+  void OnDraw(CWBDrawAPI *API) override;
   void RearrangeHorizontal();
   void RearrangeVertical();
   void UpdateScrollbarData();
@@ -49,9 +49,9 @@ class CWBBox : public CWBItem {
     return p;
   }
 
-  virtual ~CWBBox();
+  ~CWBBox() override;
 
-  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position);
+  TBOOL Initialize(CWBItem *Parent, const CRect &Position) override;
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
   WB_DECLARE_GUIITEM(_T( "box" ), CWBItem);
@@ -61,8 +61,8 @@ class CWBBox : public CWBItem {
   virtual void SetSpacing(int32_t s);
   virtual void SetAlignment(WBBOXAXIS axis, WBALIGNMENT align);
   virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
-  virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string> &pseudo);
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
+                   const std::vector<std::string> &pseudo) override;
+  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                           WBMESSAGE MessageType) override;
 };
