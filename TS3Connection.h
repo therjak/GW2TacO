@@ -1,15 +1,13 @@
 #pragma once
-#include "Bedrock/BaseLib/BaseLib.h"
-
 #include <string>
 #include <string_view>
 
-class TS3Connection
-{
+#include "Bedrock/BaseLib/BaseLib.h"
+
+class TS3Connection {
   CSocket connection;
 
-  struct CommandResponse
-  {
+  struct CommandResponse {
     std::vector<std::string> Lines;
     int32_t ErrorCode = -1;
     std::string Message;
@@ -17,18 +15,16 @@ class TS3Connection
 
   int32_t currentHandlerID = 1;
 
-  void ProcessNotification( std::string_view s );
-  void ProcessChannelList( std::string_view channeldata, int32_t handler );
-  void ProcessClientList( std::string_view clientdata, int32_t handler );
+  void ProcessNotification(std::string_view s);
+  void ProcessChannelList(std::string_view channeldata, int32_t handler);
+  void ProcessClientList(std::string_view clientdata, int32_t handler);
   std::string ReadLine();
 
   int32_t LastPingTime = 0;
 
-public:
-
-  class TS3Client
-  {
-  public:
+ public:
+  class TS3Client {
+   public:
     int32_t clientid = 0;
     int32_t channelid = 0;
     std::string name;
@@ -39,18 +35,16 @@ public:
     uint64_t lastTalkTime = 0;
   };
 
-  class TS3Channel
-  {
-  public:
+  class TS3Channel {
+   public:
     int32_t id = 0;
     int32_t parentid = 0;
     int32_t order = 0;
     std::string name;
   };
 
-  class TS3Schandler
-  {
-  public:
+  class TS3Schandler {
+   public:
     int32_t id = 0;
     TBOOL Connected = false;
     int32_t myclientid = 0;
@@ -71,17 +65,15 @@ public:
   void Tick();
   void InitConnection();
 
-  CommandResponse SendCommand( std::string_view message );
+  CommandResponse SendCommand(std::string_view message);
 
   void ProcessNotifications();
 
   bool IsConnected();
 
-  std::string unescape( std::string_view string );
+  std::string unescape(std::string_view string);
 
   bool authenticated = false;
-
 };
 
 extern TS3Connection teamSpeakConnection;
-

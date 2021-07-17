@@ -27,7 +27,6 @@
     <ClInclude Include="Font.h" />
     <ClInclude Include="GuiItem.h" />
     <ClInclude Include="Box.h" />
-    <ClInclude Include="ItemSelector.h" />
     <ClInclude Include="TextBox.h" />
     <ClInclude Include="Label.h" />
     <ClInclude Include="Message.h" />
@@ -58,7 +57,6 @@
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="GuiItem.cpp" />
     <ClCompile Include="Box.cpp" />
-    <ClCompile Include="ItemSelector.cpp" />
     <ClCompile Include="TextBox.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="Message.cpp" />

@@ -7,8 +7,7 @@
 //////////////////////////////////////////////////////////////////////////
 // metrics
 
-CWBMetricValue::CWBMetricValue() : Metrics{0}, MetricsUsed{0} {
-}
+CWBMetricValue::CWBMetricValue() : Metrics{0}, MetricsUsed{0} {}
 
 void CWBMetricValue::SetMetric(WBMETRICTYPE w, float Value) {
   Metrics[w] = Value;
@@ -108,7 +107,8 @@ CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
   return r;
 }
 
-CRect CWBPositionDescriptor::GetPadding(CSize ParentSize, const CRect &BorderSizes) {
+CRect CWBPositionDescriptor::GetPadding(CSize ParentSize,
+                                        const CRect &BorderSizes) {
   CRect r(0, 0, 0, 0);
 
   r.x1 = (int32_t)Positions[WB_PADDING_LEFT].GetValue((float)ParentSize.x, 0) +
@@ -255,12 +255,14 @@ FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI *API, CRect &Pos) {
 
 void CWBMosaicImage::SetColor(CColor color) { Color = color; }
 
-void CWBMosaic::AddImage(const CWBMosaicImage &Image) { Images.push_back(Image); }
+void CWBMosaic::AddImage(const CWBMosaicImage &Image) {
+  Images.push_back(Image);
+}
 
 void CWBMosaic::Render(CWBDrawAPI *API, const CRect &Position) {
-  for (auto& image: Images)
-    image.Render(API, Position + CRect(Overshoot[0], Overshoot[1],
-                                           Overshoot[2], Overshoot[3]));
+  for (auto &image : Images)
+    image.Render(API, Position + CRect(Overshoot[0], Overshoot[1], Overshoot[2],
+                                       Overshoot[3]));
 }
 
 void CWBMosaic::SetName(std::string_view name) { Name = name; }
@@ -375,7 +377,7 @@ WBSKINELEMENTID CWBSkin::GetElementID(std::string_view Name) {
 void CWBSkin::AddElement(std::string_view Name, WBATLASHANDLE Handle,
                          WBSKINELEMENTBEHAVIOR Xbehav,
                          WBSKINELEMENTBEHAVIOR Ybehav) {
-  for (auto& skin: SkinItems)
+  for (auto &skin : SkinItems)
     if (skin.GetName() == Name) {
       skin.SetHandle(Handle);
       skin.SetBehavior(0, Xbehav);
@@ -394,7 +396,7 @@ CWBMosaic *CWBSkin::AddMosaic(std::string_view Name,
                               std::string_view Description,
                               int32_t OverShootLeft, int32_t OverShootTop,
                               int32_t OverShootRight, int32_t OverShootBottom) {
-  for (auto& mosaic: Mosaics) {
+  for (auto &mosaic : Mosaics) {
     if (mosaic.GetName() == Name) {
       return &mosaic;
     }
@@ -494,9 +496,7 @@ CSize CWBSkin::GetElementSize(CWBDrawAPI *API, WBSKINELEMENTID ID) {
 
   if (!(ID & 0x80000000)) return CSize(0, 0);  // mosaics don't have sizes
 
-  if (idx < SkinItems.size())
-    return SkinItems[idx].GetElementSize(API);
+  if (idx < SkinItems.size()) return SkinItems[idx].GetElementSize(API);
 
   return CSize(0, 0);
 }
-

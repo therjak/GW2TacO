@@ -1,5 +1,6 @@
 #pragma once
 #include "Bedrock/WhiteBoard/whiteboard.h"
+// Needs to stay above
 #include <objbase.h>
 
 #include <memory>
@@ -7,7 +8,6 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
-
 
 enum class POIBehavior : int32_t {
   AlwaysVisible,
@@ -204,6 +204,15 @@ class GW2TacticalDisplay : public CWBItem {
 
  public:
   GW2TacticalDisplay(CWBItem *Parent, CRect Position);
+  static inline std::shared_ptr<GW2TacticalDisplay> Create(CWBItem *Parent,
+                                                           CRect Position) {
+    auto p = std::make_shared<GW2TacticalDisplay>(Parent, Position);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~GW2TacticalDisplay();
 
   static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
@@ -259,4 +268,3 @@ void FindClosestRouteMarkers(TBOOL force);
 
 int32_t GetTime();
 std::string &GetStringFromMap(int32_t idx);
-

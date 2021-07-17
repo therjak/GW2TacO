@@ -974,7 +974,7 @@ GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
 CWBItem *GW2TacticalDisplay::Factory(CWBItem *Root, CXMLNode &node,
                                      CRect &Pos) {
-  return new GW2TacticalDisplay(Root, Pos);
+  return GW2TacticalDisplay::Create(Root, Pos).get();
 }
 
 TBOOL GW2TacticalDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,

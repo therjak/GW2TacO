@@ -70,9 +70,6 @@
     <ClInclude Include="TextBox.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
-    <ClInclude Include="ItemSelector.h">
-      <Filter>Header Files\GuiItems</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />
@@ -124,9 +121,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TextBox.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="ItemSelector.cpp">
       <Filter>Source Files\GuiItems</Filter>
     </ClCompile>
   </ItemGroup>

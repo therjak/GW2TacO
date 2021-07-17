@@ -206,10 +206,10 @@ GW2TacO::~GW2TacO() {
 }
 
 CWBItem* GW2TacO::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  auto ret = new GW2TacO(Root, Pos);
+  auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();
 
-  return ret;
+  return ret.get();
 }
 
 bool iconSizesStored = false;
@@ -926,8 +926,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
       }
 
       if (Message.Data >= Menu_RebindKey_Base &&
-          Message.Data <
-              Menu_RebindKey_Base + ActionNames.size()) {
+          Message.Data < Menu_RebindKey_Base + ActionNames.size()) {
         RebindAction((TacOKeyAction)(Message.Data - Menu_RebindKey_Base));
         break;
       }
@@ -1439,7 +1438,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
           default:
             break;
         }
-        SAFEDELETE(APIKeyInput);
+        APIKeyInput->MarkForDeletion();
         return true;
       }
       break;
@@ -1496,54 +1495,54 @@ void GW2TacO::OpenAboutWindow() {
 
   CPoint cl = GetClientRect().Center();
 
-  CWBWindow* w = new CWBWindow(
+  auto w = CWBWindow::Create(
       this, CRect(cl - CPoint(180, 160), cl + CPoint(180, 50 + 26)),
       "About GW2 TacO");
+  this->AddChild(w);
   w->SetID("About");
 
   w->ReapplyStyles();
 
-  CWBLabel* l1 = new CWBLabel(w, w->GetClientRect() + CPoint(0, 2),
-                              "GW2 TacO - The Guild Wars 2 Tactical Overlay");
+  auto l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 2),
+                             "GW2 TacO - The Guild Wars 2 Tactical Overlay");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = new CWBLabel(w, w->GetClientRect() + CPoint(0, 16),
-                    "Build " + TacOBuild + " built on " + buildDateTime);
+  l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 16),
+                        "Build " + TacOBuild + " built on " + buildDateTime);
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = new CWBLabel(w, w->GetClientRect() + CPoint(0, 32),
-                    "(c) BoyC / Conspiracy");
+  l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 32),
+                        "(c) BoyC / Conspiracy");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = new CWBLabel(w, w->GetClientRect() + CPoint(0, 48),
-                    "Taco Icon from http://icons8.com");
+  l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 48),
+                        "Taco Icon from http://icons8.com");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = new CWBLabel(w, w->GetClientRect() + CPoint(0, 64),
-                    "If you like TacO, send some Mystic Coins to BoyC.2653 :)");
+  l1 = CWBLabel::Create(
+      w.get(), w->GetClientRect() + CPoint(0, 64),
+      "If you like TacO, send some Mystic Coins to BoyC.2653 :)");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
 
-  auto TacoIcon = new CWBButton(
-      w, CRect(-50, -40 + 16, 50, 72 + 16) + w->GetClientRect().Center());
+  auto TacoIcon = CWBButton::Create(
+      w.get(), CRect(-50, -40 + 16, 50, 72 + 16) + w->GetClientRect().Center());
   TacoIcon->ApplyStyleDeclarations(
       "background-color:none;background: skin(TacoIcon) center middle;");
 
   int32_t width = w->GetClientRect().Width();
   int32_t height = w->GetClientRect().Height();
 
-  auto WebsiteButton = new CWBButton(
-      w, CRect(3, height - 25, width / 2 - 1, height - 3), "WebSite");
+  auto WebsiteButton = CWBButton::Create(
+      w.get(), CRect(3, height - 25, width / 2 - 1, height - 3), "WebSite");
   WebsiteButton->SetID("GoToWebsite");
   WebsiteButton->ApplyStyleDeclarations("font-family:ProFont;");
 
-  auto ContactButton =
-      new CWBButton(w, CRect(width / 2 + 2, height - 25, width - 3, height - 3),
-                    "email: boyc@scene.hu");
+  auto ContactButton = CWBButton::Create(
+      w.get(), CRect(width / 2 + 2, height - 25, width - 3, height - 3),
+      "email: boyc@scene.hu");
   ContactButton->SetID("SendEmail");
   ContactButton->ApplyStyleDeclarations("font-family:ProFont;");
-
-  // CWBTextBox *tb = new CWBTextBox(w, w->GetClientRect());
 }
 
 float GetWindowTooSmallScale() {
@@ -1587,7 +1586,8 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   //	if (style&WS_EX_TRANSPARENT)
   //	{
   //		SetWindowLong((HWND)App->GetHandle(), GWL_EXSTYLE, style &
-  //(~WS_EX_TRANSPARENT)); 		SetForegroundWindow((HWND)App->GetHandle());
+  //(~WS_EX_TRANSPARENT));
+  // SetForegroundWindow((HWND)App->GetHandle());
   //	}
   //}
   // else
@@ -1596,7 +1596,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   //	{
   //		LOG_ERR("Changing back!",
   //		SetWindowLong((HWND)App->GetHandle(), GWL_EXSTYLE, style |
-  //WS_EX_TRANSPARENT);
+  // WS_EX_TRANSPARENT);
   //	}
   //}
 
@@ -1953,59 +1953,59 @@ void GW2TacO::OpenWindow(std::string_view s) {
   }
 
   if (s == "MapTimer") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    GW2MapTimer* mt = new GW2MapTimer(w, w->GetClientRect());
+    auto mt = GW2MapTimer::Create(w.get(), w->GetClientRect());
     w->ReapplyStyles();
   }
 
   if (s == "TS3Control") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    TS3Control* mt = new TS3Control(w, w->GetClientRect());
+    auto mt = TS3Control::Create(w.get(), w->GetClientRect());
     w->ReapplyStyles();
   }
 
   if (s == "MarkerEditor") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    GW2MarkerEditor* mt = new GW2MarkerEditor(w, w->GetClientRect());
+    auto mt = GW2MarkerEditor::Create(w.get(), w->GetClientRect());
     w->ReapplyStyles();
   }
 
   if (s == "Notepad") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    GW2Notepad* mt = new GW2Notepad(w, w->GetClientRect());
+    auto mt = GW2Notepad::Create(w.get(), w->GetClientRect());
     w->ReapplyStyles();
   }
 
   if (s == "RaidProgress") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    RaidProgress* mt = new RaidProgress(w, w->GetClientRect());
+    auto mt = RaidProgress::Create(w.get(), w->GetClientRect());
     mt->SetID("RaidProgressView");
     w->ReapplyStyles();
   }
 
   if (s == "DungeonProgress") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    DungeonProgress* mt = new DungeonProgress(w, w->GetClientRect());
+    auto mt = DungeonProgress::Create(w.get(), w->GetClientRect());
     w->ReapplyStyles();
   }
 
   if (s == "TPTracker") {
-    OverlayWindow* w = new OverlayWindow(this, pos);
+    auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    TPTracker* mt = new TPTracker(w, w->GetClientRect());
+    auto mt = TPTracker::Create(w.get(), w->GetClientRect());
     w->ReapplyStyles();
   }
 }
@@ -2038,7 +2038,8 @@ void GW2TacO::RebindScriptKey(int32_t eventIndex) {
 void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   ApiKeyInputMode = true;
   ApiKeyToSet = keyType;
-  APIKeyInput = new CWBTextBox(this, GetClientRect(), WB_TEXTBOX_SINGLELINE);
+  APIKeyInput =
+      CWBTextBox::Create(this, GetClientRect(), WB_TEXTBOX_SINGLELINE);
   APIKeyInput->SetID("APIkeyInput");
   APIKeyInput->ReapplyStyles();
   APIKeyInput->EnableHScrollbar(false, false);

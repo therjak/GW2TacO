@@ -22,7 +22,7 @@ enum WBBOXSIZING {
 
 class CWBBox : public CWBItem {
  protected:
-  virtual void AddChild(CWBItem *Item);
+  virtual void AddChild(const std::shared_ptr<CWBItem> &Item) override;
   virtual TBOOL MessageProc(CWBMessage &Message);
   virtual void RearrangeChildren();
 
@@ -38,8 +38,17 @@ class CWBBox : public CWBItem {
   bool ClickThrough = false;
 
  public:
-  CWBBox();
   CWBBox(CWBItem *Parent, const CRect &Pos);
+  static inline std::shared_ptr<CWBBox> Create(CWBItem *Parent,
+                                               const CRect &Pos) {
+    auto p = std::make_shared<CWBBox>(Parent, Pos);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
+
   virtual ~CWBBox();
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position);
@@ -53,7 +62,7 @@ class CWBBox : public CWBItem {
   virtual void SetAlignment(WBBOXAXIS axis, WBALIGNMENT align);
   virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
   virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string>& pseudo);
+                           const std::vector<std::string> &pseudo);
   virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
                                    WBMESSAGE MessageType);
 };

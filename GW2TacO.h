@@ -1,14 +1,14 @@
 #pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
-#include "gw2tactical.h"
-#include "TS3Connection.h"
-#include <thread>
-#include <vector>
 #include <string>
+#include <thread>
 #include <unordered_map>
+#include <vector>
 
-enum class TacOKeyAction : int32_t
-{
+#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include "TS3Connection.h"
+#include "gw2tactical.h"
+
+enum class TacOKeyAction : int32_t {
   NoAction = 0,
   AddPOI,
   RemovePOI,
@@ -33,11 +33,10 @@ enum class TacOKeyAction : int32_t
   Toggle_tp_tracker,
   Toggle_window_edit_mode,
 
-  //if you add one here, add it to the ActionNames array in the .cpp as well!
+  // if you add one here, add it to the ActionNames array in the .cpp as well!
 };
 
-enum class APIKeys
-{
+enum class APIKeys {
   None = 0,
   TS3APIKey,
   GW2APIKey,
@@ -45,8 +44,7 @@ enum class APIKeys
 
 extern std::vector<std::string_view> ActionNames;
 
-class GW2TacO : public CWBItem
-{
+class GW2TacO : public CWBItem {
   std::string lastInfoLine;
   TBOOL RebindMode = false;
   TBOOL ScriptRebindMode = false;
@@ -58,17 +56,18 @@ class GW2TacO : public CWBItem
   int32_t ApiKeyIndex = 0;
 
   void OpenAboutWindow();
-  void BuildChannelTree( TS3Connection::TS3Schandler &h, CWBContextItem *parentitm, int32_t ParentID );
+  void BuildChannelTree(TS3Connection::TS3Schandler &h,
+                        CWBContextItem *parentitm, int32_t ParentID);
 
   std::unordered_map<int32_t, TacOKeyAction> KeyBindings;
   std::unordered_map<int32_t, std::string> ScriptKeyBindings;
 
-  void RebindAction( TacOKeyAction Action );
-  void RebindScriptKey( int32_t evendIDX );
-  std::vector<GW2TacticalCategory*> CategoryList;
+  void RebindAction(TacOKeyAction Action);
+  void RebindScriptKey(int32_t evendIDX);
+  std::vector<GW2TacticalCategory *> CategoryList;
 
-  void ApiKeyInputAction( APIKeys keyType, int32_t idx );
-  CWBTextBox* APIKeyInput = nullptr;
+  void ApiKeyInputAction(APIKeys keyType, int32_t idx);
+  std::shared_ptr<CWBTextBox> APIKeyInput;
 
   TBOOL menuHoverLastFrame = false;
   int32_t lastMenuHoverTransitionTime = 0;
@@ -91,27 +90,38 @@ class GW2TacO : public CWBItem
   std::string mouseToolTip;
   std::string GetKeybindString(TacOKeyAction action);
 
-public:
-  virtual void OnDraw( CWBDrawAPI *API );
-  virtual void OnPostDraw(CWBDrawAPI* API);
-  virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
+ public:
+  virtual void OnDraw(CWBDrawAPI *API);
+  virtual void OnPostDraw(CWBDrawAPI *API);
+  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                                   WBMESSAGE MessageType);
 
-  GW2TacO( CWBItem *Parent, CRect Position );
+  GW2TacO(CWBItem *Parent, CRect Position);
+  static inline std::shared_ptr<GW2TacO> Create(CWBItem *Parent,
+                                                CRect Position) {
+    auto p = std::make_shared<GW2TacO>(Parent, Position);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~GW2TacO();
 
-  static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
-  WB_DECLARE_GUIITEM( _T( "GW2TacO" ), CWBItem );
+  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  WB_DECLARE_GUIITEM(_T( "GW2TacO" ), CWBItem);
   void OpenWindow(std::string_view s);
 
-  virtual TBOOL MessageProc( CWBMessage &Message ); //return true if this item handled the message
+  virtual TBOOL MessageProc(
+      CWBMessage &Message);  // return true if this item handled the message
 
-  void SetInfoLine( std::string_view string );
+  void SetInfoLine(std::string_view string);
   void SetMouseToolTip(std::string_view toolTip);
 
   void InitScriptEngines();
   void TickScriptEngine();
-  void TriggerScriptEngineAction( GUID& guid );
-  void TriggerScriptEngineKeyEvent( std::string_view eventID );
+  void TriggerScriptEngineAction(GUID &guid);
+  void TriggerScriptEngineKeyEvent(std::string_view eventID);
 };
 
 extern std::string_view UIFileNames[];

@@ -176,8 +176,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
                   60;  // (currtime + maps[x].events[currevent].length) * 60 -
                        // (minutes * 60 + systime.wSecond);
           if (timeleft >= 0 && timeleft <= map.events[currevent].length * 60)
-            text =
-                FormatString("%s %d:%.2d", text.c_str(), timeleft / 60, timeleft % 60);
+            text = FormatString("%s %d:%.2d", text.c_str(), timeleft / 60,
+                                timeleft % 60);
         }
 
         if (ClientToScreen(r).Contains(GetApplication()->GetMousePos())) {
@@ -199,7 +199,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
               std::find(worldBosses.begin(), worldBosses.end(), bossId) !=
                   worldBosses.end())
             isHighlighted = true;
-          if (!map.events[currevent].worldBossId.empty()  &&
+          if (!map.events[currevent].worldBossId.empty() &&
               std::find(mapchests.begin(), mapchests.end(), bossId) !=
                   mapchests.end())
             isHighlighted = true;
@@ -238,8 +238,7 @@ void GW2MapTimer::SetLayout(CXMLNode &node) {
     if (mapNode.HasAttribute("id")) {
       map.id = mapNode.GetAttributeAsString("id");
       auto str = "maptimer_mapopen_" + map.id;
-      if (HasConfigValue(str))
-        map.display = GetConfigValue(str);
+      if (HasConfigValue(str)) map.display = GetConfigValue(str);
     }
 
     if (mapNode.HasAttribute("Length"))
@@ -273,7 +272,7 @@ void GW2MapTimer::SetLayout(CXMLNode &node) {
       if (eventNode.HasAttribute("Color")) {
         auto s = eventNode.GetAttributeAsString("Color");
         int c = 0;
-        std::sscanf(s.c_str(),"%x", &c);
+        std::sscanf(s.c_str(), "%x", &c);
         event.color = CColor(c);
       }
 
@@ -299,8 +298,7 @@ GW2MapTimer::GW2MapTimer(CWBItem *Parent, CRect Position)
 GW2MapTimer::~GW2MapTimer() {}
 
 CWBItem *GW2MapTimer::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
-  auto tmr = new GW2MapTimer(Root, Pos);
-  return tmr;
+  return GW2MapTimer::Create(Root, Pos).get();
 }
 
 TBOOL GW2MapTimer::IsMouseTransparent(CPoint &ClientSpacePoint,

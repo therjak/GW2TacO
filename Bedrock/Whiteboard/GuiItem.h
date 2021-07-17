@@ -1,13 +1,14 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <string_view>
-
-#include "DrawAPI.h"
-#include "CSSItem.h"
-#include "Skin.h"
-
 #include <unordered_map>
+#include <vector>
+
+#include "CSSItem.h"
+#include "DrawAPI.h"
+#include "Skin.h"
 
 typedef uint32_t WBGUID;
 class CWBDrawAPI;
@@ -162,7 +163,7 @@ class CWBItem : public IWBCSS {
   CSize StoredContentSize;
 
   CWBItem *Parent;
-  CArray<CWBItem *> Children;
+  std::vector<std::shared_ptr<CWBItem>> Children;
 
   int32_t SortLayer;
   int32_t ZIndex;
@@ -236,6 +237,7 @@ class CWBItem : public IWBCSS {
   }
 
  protected:
+  std::weak_ptr<CWBItem> SelfRef;
   CWBApplication *App;
   CWBItem *ChildInFocus;
 
@@ -256,7 +258,6 @@ class CWBItem : public IWBCSS {
 
   CWBItem *SetCapture();
   TBOOL ReleaseCapture() const;
-  virtual void AddChild(CWBItem *Item);
   virtual int32_t GetChildIndex(CWBItem *Item);
 
   virtual TBOOL ScrollbarDragged();
@@ -296,12 +297,14 @@ class CWBItem : public IWBCSS {
   TBOOL ScrollbarsEnabled();
 
   virtual CPoint GetContentOffset() { return ContentOffset; }
-
- public:
   CWBItem();
   CWBItem(CWBItem *Parent, const CRect &Position);
+
+ public:
   virtual ~CWBItem();
 
+  virtual void AddChild(const std::shared_ptr<CWBItem> &Item);
+  virtual void RemoveChild(const std::shared_ptr<CWBItem> &Item);
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position);
   virtual TBOOL MessageProc(
       CWBMessage &Message);  // return true if this item handled the message
@@ -310,8 +313,6 @@ class CWBItem : public IWBCSS {
   INLINE const WBGUID GetGuid() const { return Guid; }
   INLINE CWBApplication *GetApplication() const { return App; }
   INLINE CWBItem *GetParent() const { return Parent; }
-
-  virtual void SetParent(CWBItem *i);
 
   virtual CRect GetClientRect() const;  // returns value in client space
   virtual CRect GetWindowRect() const;  // returns value in client space
@@ -330,8 +331,8 @@ class CWBItem : public IWBCSS {
   virtual void SetClientPadding(int32_t left, int32_t top, int32_t right,
                                 int32_t bottom);
 
-  TBOOL IsWidthSet();  // tells if the width has been specified in the style of
-                       // the item
+  TBOOL IsWidthSet();   // tells if the width has been specified in the style of
+                        // the item
   TBOOL IsHeightSet();  // tells if the height has been specified in the style
                         // of the item
   int32_t GetCalculatedWidth(
@@ -365,7 +366,7 @@ class CWBItem : public IWBCSS {
   void SetData(void *data);
   void *GetData();
 
-  void MarkForDeletion(bool removeFromParent = false);
+  virtual void MarkForDeletion();
 
   virtual CWBContextMenu *OpenContextMenu(CPoint Position);
 
@@ -405,12 +406,12 @@ class CWBItem : public IWBCSS {
 
   CWBItem *FindChildByID(std::string_view value,
                          std::string_view type = _T( "" ));
-  
+
   template <typename t>
   t *FindChildByID(std::string_view value) {
     CWBItem *it = FindChildByID(value, t::GetClassName());
     if (!it) return nullptr;
-    return static_cast<t*>(it);
+    return static_cast<t *>(it);
   }
 
   template <typename... Args>
@@ -448,7 +449,6 @@ class CWBItem : public IWBCSS {
   CWBPositionDescriptor &GetPositionDescriptor();
   CSize GetClientWindowSizeDifference();
 
-  virtual void DeleteChildren();
   virtual void SetChildInFocus(CWBItem *i);
 
   virtual TBOOL InterpretPositionString(CWBCSSPropertyBatch &pos,
@@ -475,9 +475,9 @@ class CWBItem : public IWBCSS {
 
 // OOP kung-fu follows to provide InstanceOf() functionality for use with CSS
 // the initial virtual InstanceOf() call ensures we start at the bottom of the
-// class hierarchy on each level we check if the static name of the current class
-// is the typename we're comparing against if not we traverse up the hierarchy by
-// directly calling the InstanceOf() of the parent class
+// class hierarchy on each level we check if the static name of the current
+// class is the typename we're comparing against if not we traverse up the
+// hierarchy by directly calling the InstanceOf() of the parent class
 
 #define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)    \
   virtual const std::string &GetType() const {            \
@@ -521,7 +521,7 @@ class CWBItem : public IWBCSS {
 
 #define WB_DECLARE_GUIITEM_3PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2,          \
                                     PARENTCLASS3)                              \
-  virtual const std::string &GetType() const override {                                 \
+  virtual const std::string &GetType() const override {                        \
     static const std::string type = TYPE;                                      \
     return type;                                                               \
   }                                                                            \
@@ -547,5 +547,3 @@ class CWBItem : public IWBCSS {
   EXPAND(EXPAND(WB_DECLARE_MACRO_SELECTOR(                                   \
       __VA_ARGS__, WB_DECLARE_GUIITEM_3PARENTS, WB_DECLARE_GUIITEM_2PARENTS, \
       WB_DECLARE_GUIITEM_1PARENTS))(TYPE, __VA_ARGS__))
-
-

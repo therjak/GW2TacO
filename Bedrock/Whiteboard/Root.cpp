@@ -1,4 +1,5 @@
 #include "Root.h"
+
 #include "Application.h"
 #include "Message.h"
 
@@ -20,8 +21,6 @@ TBOOL CWBRoot::MessageProc(CWBMessage &Message) {
 
   return CWBItem::MessageProc(Message);
 }
-
-CWBRoot::CWBRoot() : CWBItem() { App = NULL; }
 
 CWBRoot::CWBRoot(CWBItem *Parent, const CRect &Pos) : CWBItem() {
   Initialize(Parent, Pos);

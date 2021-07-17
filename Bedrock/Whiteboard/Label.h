@@ -10,8 +10,16 @@ class CWBLabel : public CWBItem {
   virtual void OnDraw(CWBDrawAPI *API);
 
  public:
-  CWBLabel();
-  CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view txt = _T( "" ));
+  CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view txt);
+  static inline std::shared_ptr<CWBLabel> Create(
+      CWBItem *Parent, const CRect &Pos, std::string_view txt = _T("")) {
+    auto p = std::make_shared<CWBLabel>(Parent, Pos, txt);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~CWBLabel();
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,

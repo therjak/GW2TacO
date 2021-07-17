@@ -1,36 +1,33 @@
 #pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
-#include <thread>
 #include <string>
+#include <thread>
 
-class RaidEvent
-{
-public:
+#include "Bedrock/WhiteBoard/WhiteBoard.h"
+
+class RaidEvent {
+ public:
   std::string name;
   std::string type;
   bool finished = false;
 };
 
-class Wing
-{
-public:
+class Wing {
+ public:
   std::string name;
   std::vector<RaidEvent> events;
 };
 
-class Raid
-{
-public:
+class Raid {
+ public:
   std::string name;
   std::string shortName;
   std::string configName;
   std::vector<Wing> wings;
 };
 
-class RaidProgress : public CWBItem
-{
+class RaidProgress : public CWBItem {
   CPoint lastpos;
-  virtual void OnDraw( CWBDrawAPI *API );
+  virtual void OnDraw(CWBDrawAPI *API);
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -41,16 +38,23 @@ class RaidProgress : public CWBItem
 
   std::vector<Raid> raids;
 
-public:
-
-  RaidProgress( CWBItem *Parent, CRect Position );
+ public:
+  RaidProgress(CWBItem *Parent, CRect Position);
+  static inline std::shared_ptr<RaidProgress> Create(CWBItem *Parent,
+                                                     CRect Position) {
+    auto p = std::make_shared<RaidProgress>(Parent, Position);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~RaidProgress();
 
-  static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
-  WB_DECLARE_GUIITEM( _T( "raidprogress" ), CWBItem );
+  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  WB_DECLARE_GUIITEM(_T( "raidprogress" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
-  std::vector<Raid>& GetRaids();
+  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                                   WBMESSAGE MessageType);
+  std::vector<Raid> &GetRaids();
 };
-
-

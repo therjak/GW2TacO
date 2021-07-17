@@ -93,10 +93,18 @@ class CWBTextBox : public CWBItem {
                   TBOOL ChangeHistory = true);
 
  public:
-  CWBTextBox();
-  CWBTextBox(CWBItem *Parent, const CRect &Pos,
-             int32_t flags = WB_TEXTBOX_SINGLELINE,
-             std::string_view txt = _T( "" ));
+  CWBTextBox(CWBItem *Parent, const CRect &Pos, int32_t flags,
+             std::string_view txt);
+  static inline std::shared_ptr<CWBTextBox> Create(
+      CWBItem *Parent, const CRect &Pos, int32_t flags = WB_TEXTBOX_SINGLELINE,
+      std::string_view txt = _T( "" )) {
+    auto p = std::make_shared<CWBTextBox>(Parent, Pos, flags, txt);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~CWBTextBox();
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,

@@ -1,7 +1,10 @@
 #pragma once
 
-#include "Types.h"
+#include <memory>
+#include <unordered_map>
+
 #include "BaseConfig.h"
+#include "Types.h"
 
 #ifdef MEMORY_TRACKING
 
@@ -36,7 +39,7 @@ class CAllocationInfo {
 class CMemTracker {
   LIGHTWEIGHT_CRITICALSECTION critsec;
 
-  CDictionary<void*, CAllocationInfo>* MemTrackerPool;
+  std::unique_ptr<std::unordered_map<void*, CAllocationInfo>> MemTrackerPool;
   bool Paused;
   bool IgnoreMissing;
 

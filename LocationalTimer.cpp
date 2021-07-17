@@ -138,5 +138,5 @@ TimerDisplay::TimerDisplay(CWBItem *Parent, CRect Position)
 TimerDisplay::~TimerDisplay() {}
 
 CWBItem *TimerDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
-  return new TimerDisplay(Root, Pos);
+  return TimerDisplay::Create(Root, Pos).get();
 }

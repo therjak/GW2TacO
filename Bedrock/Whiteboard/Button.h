@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string_view>
 #include <string>
+#include <string_view>
 
 #include "Application.h"
 
@@ -13,7 +13,16 @@ class CWBButton : public CWBItem {
   virtual TBOOL MessageProc(CWBMessage &Message);
 
  public:
-  CWBButton(CWBItem *Parent, const CRect &Pos, std::string_view txt = _T( "" ));
+  CWBButton(CWBItem *Parent, const CRect &Pos, std::string_view txt);
+  static inline std::shared_ptr<CWBButton> Create(
+      CWBItem *Parent, const CRect &Pos, std::string_view txt = _T( "" )) {
+    auto p = std::make_shared<CWBButton>(Parent, Pos, txt);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~CWBButton();
 
   virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,

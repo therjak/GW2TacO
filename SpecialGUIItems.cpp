@@ -13,7 +13,7 @@ TBOOL ClickThroughButton::Initialize(CWBItem *Parent, const CRect &Position,
 
 CWBItem *ClickThroughButton::Factory(CWBItem *Root, CXMLNode &node,
                                      CRect &Pos) {
-  ClickThroughButton *button = new ClickThroughButton(Root, Pos);
+  auto button = ClickThroughButton::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     button->SetText(node.GetAttribute(_T( "text" )));
 
@@ -23,5 +23,5 @@ CWBItem *ClickThroughButton::Factory(CWBItem *Root, CXMLNode &node,
     button->Hide(x);
   }
 
-  return button;
+  return button.get();
 }

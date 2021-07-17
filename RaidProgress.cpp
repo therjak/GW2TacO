@@ -1,11 +1,12 @@
 #include "RaidProgress.h"
-#include "GW2API.h"
-#include "OverlayConfig.h"
-#include "Bedrock/UtilLib/jsonxx.h"
-#include "Language.h"
+
 #include <cctype>
 
 #include "Bedrock/BaseLib/string_format.h"
+#include "Bedrock/UtilLib/jsonxx.h"
+#include "GW2API.h"
+#include "Language.h"
+#include "OverlayConfig.h"
 
 using namespace jsonxx;
 
@@ -30,42 +31,38 @@ void BeautifyString(std::string& str) {
   }
 }
 
-void RaidProgress::OnDraw( CWBDrawAPI *API )
-{
-  if ( !HasConfigValue( "CompactRaidWindow" ) )
-    SetConfigValue( "CompactRaidWindow", 0 );
+void RaidProgress::OnDraw(CWBDrawAPI* API) {
+  if (!HasConfigValue("CompactRaidWindow"))
+    SetConfigValue("CompactRaidWindow", 0);
 
-  TBOOL compact = GetConfigValue( "CompactRaidWindow" );
+  TBOOL compact = GetConfigValue("CompactRaidWindow");
 
-  CWBFont *f = GetFont( GetState() );
+  CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
-  GW2::APIKeyManager::Status status = GW2::apiKeyManager.DisplayStatusText(API, f);
+  GW2::APIKeyManager::Status status =
+      GW2::apiKeyManager.DisplayStatusText(API, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if ( key && key->valid && ( GetTime() - lastFetchTime > 150000 || !lastFetchTime ) && !beingFetched && !fetchThread.joinable() )
-  {
+  if (key && key->valid &&
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
+      !fetchThread.joinable()) {
     beingFetched = true;
-    fetchThread = std::thread( [ this, key ]()
-    {
-      if ( !hasFullRaidInfo )
-      {
+    fetchThread = std::thread([this, key]() {
+      if (!hasFullRaidInfo) {
         Object json;
 
-        auto globalRaidInfo = "{\"raids\":" + key->QueryAPI( "v2/raids" ) + "}";
-        json.parse( globalRaidInfo );
+        auto globalRaidInfo = "{\"raids\":" + key->QueryAPI("v2/raids") + "}";
+        json.parse(globalRaidInfo);
 
-        if ( json.has<Array>( "raids" ) )
-        {
-          auto raidData = json.get<Array>( "raids" ).values();
+        if (json.has<Array>("raids")) {
+          auto raidData = json.get<Array>("raids").values();
 
-          for ( unsigned int x = 0; x < raidData.size(); x++ )
-          {
-            if ( !raidData[ x ]->is<String>() )
-              continue;
+          for (unsigned int x = 0; x < raidData.size(); x++) {
+            if (!raidData[x]->is<String>()) continue;
 
             Raid r;
-            r.name = raidData[ x ]->get<String>();
+            r.name = raidData[x]->get<String>();
             if (!r.name.empty()) {
               r.shortName = std::toupper(r.name[0]);
 
@@ -86,37 +83,32 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
             }
 
             r.configName = "showraid_" + r.name;
-            for ( uint32_t y = 0; y < r.configName.size(); y++ )
-              if ( !isalnum( r.configName[ y ] ) )
-                r.configName[ y ] = '_';
+            for (uint32_t y = 0; y < r.configName.size(); y++)
+              if (!isalnum(r.configName[y]))
+                r.configName[y] = '_';
               else
-                r.configName[ y ] = std::tolower( r.configName[ y ] );
+                r.configName[y] = std::tolower(r.configName[y]);
 
-            auto raidInfo = key->QueryAPI(  "v2/raids/"  + r.name  );
+            auto raidInfo = key->QueryAPI("v2/raids/" + r.name);
             Object raidJson;
-            raidJson.parse( raidInfo );
+            raidJson.parse(raidInfo);
 
-            if ( raidJson.has<Array>( "wings" ) )
-            {
-              auto wings = raidJson.get<Array>( "wings" ).values();
-              for ( unsigned y = 0; y < wings.size(); y++ )
-              {
-                auto wing = wings[ y ]->get<Object>();
+            if (raidJson.has<Array>("wings")) {
+              auto wings = raidJson.get<Array>("wings").values();
+              for (unsigned y = 0; y < wings.size(); y++) {
+                auto wing = wings[y]->get<Object>();
                 Wing w;
-                if ( wing.has<String>( "id" ) )
-                  w.name = wing.get<String>( "id" );
+                if (wing.has<String>("id")) w.name = wing.get<String>("id");
 
-                if ( wing.has<Array>( "events" ) )
-                {
-                  auto events = wing.get<Array>( "events" ).values();
-                  for ( unsigned int z = 0; z < events.size(); z++ )
-                  {
-                    auto _event = events[ z ]->get<Object>();
+                if (wing.has<Array>("events")) {
+                  auto events = wing.get<Array>("events").values();
+                  for (unsigned int z = 0; z < events.size(); z++) {
+                    auto _event = events[z]->get<Object>();
                     RaidEvent e;
-                    if ( _event.has<String>( "id" ) )
-                      e.name = _event.get<String>( "id" );
-                    if ( _event.has<String>( "type" ) )
-                      e.type = _event.get<String>( "type" );
+                    if (_event.has<String>("id"))
+                      e.name = _event.get<String>("id");
+                    if (_event.has<String>("type"))
+                      e.type = _event.get<String>("type");
 
                     w.events.push_back(e);
                   }
@@ -125,7 +117,7 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
               }
             }
 
-            BeautifyString( r.name );
+            BeautifyString(r.name);
             raids.push_back(r);
           }
         }
@@ -133,135 +125,117 @@ void RaidProgress::OnDraw( CWBDrawAPI *API )
         hasFullRaidInfo = true;
       }
 
-      auto lastRaidStatus = "{\"raids\":" + key->QueryAPI( "v2/account/raids" ) + "}";
+      auto lastRaidStatus =
+          "{\"raids\":" + key->QueryAPI("v2/account/raids") + "}";
       Object json;
-      json.parse( lastRaidStatus );
+      json.parse(lastRaidStatus);
 
-      if ( json.has<Array>( "raids" ) )
-      {
-        auto raidData = json.get<Array>( "raids" ).values();
+      if (json.has<Array>("raids")) {
+        auto raidData = json.get<Array>("raids").values();
 
-        for ( unsigned int x = 0; x < raidData.size(); x++ )
-        {
-          if ( !raidData[ x ]->is<String>() )
-            continue;
+        for (unsigned int x = 0; x < raidData.size(); x++) {
+          if (!raidData[x]->is<String>()) continue;
 
-          auto eventName = raidData[ x ]->get<String>();
-          for ( auto& r:raids )
-            for ( auto& w:r.wings)
-              for ( auto& e: w.events )
-              {
-                if ( e.name == eventName )
-                  e.finished = true;
+          auto eventName = raidData[x]->get<String>();
+          for (auto& r : raids)
+            for (auto& w : r.wings)
+              for (auto& e : w.events) {
+                if (e.name == eventName) e.finished = true;
               }
         }
-
       }
 
-
       beingFetched = false;
-    } );
+    });
   }
 
-  if ( !beingFetched && fetchThread.joinable() )
-  {
+  if (!beingFetched && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
   }
 
-  if ( hasFullRaidInfo )
-  {
+  if (hasFullRaidInfo) {
     int32_t posx = 0;
-    if ( compact )
-    {
-      for ( const auto& r:raids )
-        posx = max( posx, f->GetWidth( r.shortName.c_str() ) );
+    if (compact) {
+      for (const auto& r : raids)
+        posx = max(posx, f->GetWidth(r.shortName.c_str()));
     }
     posx += 3;
     int32_t oposx = posx;
 
     int32_t posy = 0;
-    for ( auto& r:raids )
-    {
-      if ( HasConfigValue( r.configName.c_str() ) && !GetConfigValue( r.configName.c_str() ) )
+    for (auto& r : raids) {
+      if (HasConfigValue(r.configName.c_str()) &&
+          !GetConfigValue(r.configName.c_str()))
         continue;
 
-      if ( !compact )
-      {
-        f->Write( API, DICT( r.configName.c_str(), r.name.c_str() ), CPoint( 0, posy + 1 ), 0xffffffff );
+      if (!compact) {
+        f->Write(API, DICT(r.configName.c_str(), r.name.c_str()),
+                 CPoint(0, posy + 1), 0xffffffff);
         posy += f->GetLineHeight();
-      }
-      else
-      {
-        f->Write( API, r.shortName.c_str(), CPoint( 0, posy + 1 ), 0xffffffff );
+      } else {
+        f->Write(API, r.shortName.c_str(), CPoint(0, posy + 1), 0xffffffff);
       }
       for (int y = 0; y < r.wings.size(); y++) {
-        auto &w = r.wings[y];
+        auto& w = r.wings[y];
 
         if (!compact)
           posx = f->GetLineHeight() * 1;
         else
           posx = oposx;
 
-        if ( !compact )
-          f->Write( API, DICT( "raid_wing" ) + FormatString( "%d:", y + 1 ), CPoint( posx, posy + 1 ), 0xffffffff );
+        if (!compact)
+          f->Write(API, DICT("raid_wing") + FormatString("%d:", y + 1),
+                   CPoint(posx, posy + 1), 0xffffffff);
 
-        if ( !compact )
-          posx = f->GetLineHeight() * 3;
+        if (!compact) posx = f->GetLineHeight() * 3;
 
         int cnt = 1;
 
-        for ( auto& e: w.events )
-        {
-          CRect r = CRect( posx, posy, posx + f->GetLineHeight() * 2, posy + f->GetLineHeight() - 1 );
+        for (auto& e : w.events) {
+          CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
+                          posy + f->GetLineHeight() - 1);
           CRect cr = API->GetCropRect();
-          API->SetCropRect( ClientToScreen( r ) );
+          API->SetCropRect(ClientToScreen(r));
           posx += f->GetLineHeight() * 2 + 1;
-          API->DrawRect( r, e.finished ? 0x8033cc11 : 0x80cc3322 );
-          auto s = e.type[ 0 ] == 'B' ? ( DICT( "raid_boss" ) + FormatString( "%d", cnt ) ) : DICT( "raid_event" );
+          API->DrawRect(r, e.finished ? 0x8033cc11 : 0x80cc3322);
+          auto s = e.type[0] == 'B'
+                       ? (DICT("raid_boss") + FormatString("%d", cnt))
+                       : DICT("raid_event");
 
-          if ( e.type[ 0 ] == 'B' )
-            cnt++;
+          if (e.type[0] == 'B') cnt++;
 
-          CPoint tp = f->GetTextPosition( s, r + CRect( -3, 0, 0, 0 ), WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE );
+          CPoint tp = f->GetTextPosition(s, r + CRect(-3, 0, 0, 0),
+                                         WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE);
           tp.y = posy + 1;
-          f->Write( API, s, tp, 0xffffffff );
-          API->DrawRectBorder( r, 0x80000000 );
-          API->SetCropRect( cr );
+          f->Write(API, s, tp, 0xffffffff);
+          API->DrawRectBorder(r, 0x80000000);
+          API->SetCropRect(cr);
         }
 
         posy += f->GetLineHeight();
       }
     }
-  }
-  else
-    f->Write( API, DICT( "waitingforapi" ), CPoint( 0, 0 ), 0xffffffff );
+  } else
+    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), 0xffffffff);
 
-  DrawBorder( API );
+  DrawBorder(API);
 }
 
-RaidProgress::RaidProgress( CWBItem *Parent, CRect Position ) : CWBItem( Parent, Position )
-{
+RaidProgress::RaidProgress(CWBItem* Parent, CRect Position)
+    : CWBItem(Parent, Position) {}
+
+RaidProgress::~RaidProgress() {
+  if (fetchThread.joinable()) fetchThread.join();
 }
 
-RaidProgress::~RaidProgress()
-{
-  if ( fetchThread.joinable() )
-    fetchThread.join();
+CWBItem* RaidProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+  return RaidProgress::Create(Root, Pos).get();
 }
 
-CWBItem * RaidProgress::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
-{
-  return new RaidProgress( Root, Pos );
-}
-
-TBOOL RaidProgress::IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType )
-{
+TBOOL RaidProgress::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                       WBMESSAGE MessageType) {
   return true;
 }
 
-std::vector<Raid>& RaidProgress::GetRaids()
-{
-  return raids;
-}
-
+std::vector<Raid>& RaidProgress::GetRaids() { return raids; }

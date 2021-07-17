@@ -107,7 +107,7 @@ GW2TacticalCompass::~GW2TacticalCompass() {}
 
 CWBItem *GW2TacticalCompass::Factory(CWBItem *Root, CXMLNode &node,
                                      CRect &Pos) {
-  return new GW2TacticalCompass(Root, Pos);
+  return GW2TacticalCompass::Create(Root, Pos).get();
 }
 
 TBOOL GW2TacticalCompass::IsMouseTransparent(CPoint &ClientSpacePoint,

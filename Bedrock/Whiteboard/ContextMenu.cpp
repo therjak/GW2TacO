@@ -1,13 +1,13 @@
-#include "Application.h"
 #include "ContextMenu.h"
+
+#include "Application.h"
 #include "Button.h"
 
 void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
   const WBITEMSTATE i = GetState();
   CWBFont *Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform =
-      static_cast<WBTEXTTRANSFORM>(CSSProperties.DisplayDescriptor.GetValue(
-          i, WB_ITEM_TEXTTRANSFORM));
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API, WB_STATE_NORMAL);
 
@@ -25,8 +25,8 @@ void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
           CSize(GetWindowRect().Width(), arbitraryValue), CRect(0, 0, 0, 0));
       Offset.y += padding.y1;
 
-      const int height = SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0),
-                                                                  CSize(0, 0));
+      const int height = SeparatorElements.PositionDescriptor.GetHeight(
+          CSize(0, 0), CSize(0, 0));
 
       CRect separatorRect =
           CRect(GetWindowRect().x1 + padding.x1, Offset.y,
@@ -92,17 +92,29 @@ void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-CWBContextMenu::CWBContextMenu() : CWBItem() {
-}
-
 CWBContextMenu::CWBContextMenu(CWBItem *Parent, const CRect &Pos, WBGUID trg)
     : CWBItem() {
   CWBContextMenu::Initialize(Parent, Pos, trg);
 }
 
 CWBContextMenu::~CWBContextMenu() {
+  /*
+  if (SubMenu) {
+    std::vector<CWBContextMenu *> subs;
+    auto s = SubMenu;
+    while (s) {
+      subs.emplace_back(s);
+      s = s->SubMenu;
+    }
+    std::reverse(subs.begin(), subs.end());
+    for (auto s : subs) {
+      s->ParentMenu = nullptr;
+      s->MarkForDeletion();
+    }
+  }*/
   if (ParentMenu) {
-    ParentMenu->SubMenu = NULL;
+    ParentMenu->SubMenu = nullptr;
+    ParentMenu->SubMenuIdx = -1;
   }
 }
 
@@ -296,9 +308,24 @@ TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
   return CWBItem::MessageProc(Message);
 }
 
+void CWBContextMenu::MarkForDeletion() {
+  ParentMenu = nullptr;
+  if (SubMenu) {
+    SubMenu->MarkForDeletion();
+  }
+  CWBItem::MarkForDeletion();
+}
+
 void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
   if (itemidx < 0 || itemidx >= Items.size()) return;
-  SubMenu.reset();
+  if (itemidx == SubMenuIdx) {
+    return;
+  }
+  if (SubMenu) {
+    SubMenu->MarkForDeletion();
+    SubMenu = nullptr;
+    SubMenuIdx = -1;
+  }
   if (Items[itemidx]->Children.size() <= 0) return;
 
   const CRect p = GetItemRect(itemidx) + GetPosition().TopLeft();
@@ -306,11 +333,15 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
 
   CRect newpos = CRect(w.x2 - 1, p.y1, w.x2 + 10, p.y1 + 10);
 
-  SubMenu.swap(std::make_unique<CWBContextMenu>(GetParent(), newpos, Target));
-  App->ApplyStyle(SubMenu.get());
+  // We need to select the parent as we are restricted to draw within the parent
+  // rect.
+  auto sm = CWBContextMenu::Create(GetParent(), newpos, Target);
+  SubMenu = sm.get();
+  SubMenuIdx = itemidx;
+  App->ApplyStyle(SubMenu);
   SubMenu->ParentMenu = this;
-  App->SetCapture(
-      GetContextRoot());  // message control must stay with the root item
+  // message control must stay with the root item
+  App->SetCapture(GetContextRoot());
 
   for (auto &child : Items[itemidx]->Children) {
     CWBContextItem *olditm = child.get();
@@ -346,8 +377,8 @@ CRect CWBContextMenu::GetItemRect(int32_t idx) {
     if (Items[x]->Separator) {
       Offset.y += separatorHeight;
     } else if (Font) {
-      const CRect EntryPos = CRect(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
-                             Offset.y + Font->GetLineHeight());
+      const CRect EntryPos(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
+                           Offset.y + Font->GetLineHeight());
       if (x == idx) return EntryPos;
       Offset.y += Font->GetLineHeight();
     }
@@ -452,4 +483,3 @@ CWBContextItem *CWBContextMenu::GetItem(int32_t ID) {
     if (item->ReturnID == ID) return item.get();
   return nullptr;
 }
-

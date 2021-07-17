@@ -1,30 +1,28 @@
 #pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
+#include <string>
 #include <thread>
 #include <vector>
-#include <string>
 
-class DungeonPath
-{
-public:
+#include "Bedrock/WhiteBoard/WhiteBoard.h"
+
+class DungeonPath {
+ public:
   std::string name;
   std::string type;
   bool finished = false;
   bool frequenter = false;
 };
 
-class Dungeon
-{
-public:
+class Dungeon {
+ public:
   std::string name;
   std::string shortName;
   std::vector<DungeonPath> paths;
 };
 
-class DungeonProgress : public CWBItem
-{
+class DungeonProgress : public CWBItem {
   CPoint lastpos;
-  virtual void OnDraw( CWBDrawAPI *API );
+  virtual void OnDraw(CWBDrawAPI *API);
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -35,15 +33,22 @@ class DungeonProgress : public CWBItem
 
   std::vector<Dungeon> dungeons;
 
-public:
-
-  DungeonProgress( CWBItem *Parent, CRect Position );
+ public:
+  DungeonProgress(CWBItem *Parent, CRect Position);
+  static inline std::shared_ptr<DungeonProgress> Create(CWBItem *Parent,
+                                                        CRect Position) {
+    auto p = std::make_shared<DungeonProgress>(Parent, Position);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~DungeonProgress();
 
-  static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
-  WB_DECLARE_GUIITEM( _T( "dungeonprogress" ), CWBItem );
+  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  WB_DECLARE_GUIITEM(_T( "dungeonprogress" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
+  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                                   WBMESSAGE MessageType);
 };
-
-

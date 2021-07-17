@@ -21,8 +21,6 @@ void CWBLabel::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-CWBLabel::CWBLabel() : CWBItem() {}
-
 CWBLabel::CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view Txt)
     : CWBItem() {
   Initialize(Parent, Pos, Txt);
@@ -40,10 +38,10 @@ TBOOL CWBLabel::Initialize(CWBItem *Parent, const CRect &Position,
 }
 
 CWBItem *CWBLabel::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
-  CWBLabel *label = new CWBLabel(Root, Pos);
+  auto label = CWBLabel::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     label->SetText(node.GetAttribute(_T( "text" )));
-  return label;
+  return label.get();
 }
 
 void CWBLabel::SetText(std::string_view val) {

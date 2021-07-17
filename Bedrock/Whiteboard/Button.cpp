@@ -125,8 +125,8 @@ std::string CWBButton::GetText() const { return Text; }
 TBOOL CWBButton::IsPushed() { return Pushed; }
 
 CWBItem *CWBButton::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
-  CWBButton *button = new CWBButton(Root, Pos);
+  auto button = CWBButton::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     button->SetText(node.GetAttribute(_T( "text" )));
-  return button;
+  return button.get();
 }

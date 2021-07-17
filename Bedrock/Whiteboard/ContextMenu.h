@@ -1,16 +1,15 @@
 #pragma once
 
-#include <string_view>
-#include <string>
-#include <vector>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "GuiItem.h"
 
-#define WB_CONTEXT_SEPARATOR ((void*)(INT_MIN))
+#define WB_CONTEXT_SEPARATOR ((void *)(INT_MIN))
 
-class CWBContextItem
-{
+class CWBContextItem {
   friend class CWBContextMenu;
 
   std::string Text;
@@ -20,12 +19,11 @@ class CWBContextItem
   TBOOL closesContext;
 
   std::vector<std::unique_ptr<CWBContextItem>> Children;
-  CWBContextItem* CopyOf = nullptr;
+  CWBContextItem *CopyOf = nullptr;
 
-  void CopyChildrenFrom( CWBContextItem *itm );
+  void CopyChildrenFrom(CWBContextItem *itm);
 
-public:
-
+ public:
   CWBContextItem();
   virtual ~CWBContextItem();
   virtual CWBContextItem *AddItem(std::string_view Text, int32_t ID,
@@ -33,23 +31,25 @@ public:
                                   TBOOL closesContext = true);
   virtual void AddSeparator();
   virtual void SetText(std::string_view text);
-  virtual void SetHighlight( TBOOL highlighted );
+  virtual void SetHighlight(TBOOL highlighted);
 };
 
-class CWBContextMenu : public CWBItem
-{
-  bool Pushed = false; //used to ignore mouse clicks originating from the opening item
+class CWBContextMenu : public CWBItem {
+  bool Pushed =
+      false;  // used to ignore mouse clicks originating from the opening item
   WBGUID Target = 0;
 
-  std::unique_ptr<CWBContextMenu> SubMenu;
+  // SubMenu is also a child
+  CWBContextMenu *SubMenu = nullptr;
+  int32_t SubMenuIdx = -1;
   CWBContextMenu *ParentMenu = nullptr;
   std::vector<std::unique_ptr<CWBContextItem>> Items;
 
-  TBOOL MessageProc( CWBMessage &Message );
+  TBOOL MessageProc(CWBMessage &Message);
   virtual void ResizeToContentSize();
-  virtual void OnDraw( CWBDrawAPI *API ) override;
-  void SpawnSubMenu( int32_t itemidx );
-  CRect GetItemRect( int32_t idx );
+  virtual void OnDraw(CWBDrawAPI *API) override;
+  void SpawnSubMenu(int32_t itemidx);
+  CRect GetItemRect(int32_t idx);
   void MarkParentForDeletion();
 
   TBOOL MouseInContextHierarchy();
@@ -57,16 +57,26 @@ class CWBContextMenu : public CWBItem
   virtual TBOOL AllowMouseHighlightWhileCaptureItem() { return true; }
 
   CWBCSSPropertyBatch SeparatorElements;
+  void MarkForDeletion() override;
 
-public:
-
-  CWBContextMenu();
-  CWBContextMenu( CWBItem *Parent, const CRect &Pos, WBGUID Target );
+ public:
+  CWBContextMenu(CWBItem *Parent, const CRect &Pos, WBGUID Target);
+  static inline std::shared_ptr<CWBContextMenu> Create(CWBItem *Parent,
+                                                       const CRect &Pos,
+                                                       WBGUID Target) {
+    auto p = std::make_shared<CWBContextMenu>(Parent, Pos, Target);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~CWBContextMenu();
 
-  virtual TBOOL Initialize( CWBItem *Parent, const CRect &Position, WBGUID Target );
+  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
+                           WBGUID Target);
 
-  WB_DECLARE_GUIITEM( _T( "contextmenu" ), CWBItem );
+  WB_DECLARE_GUIITEM(_T( "contextmenu" ), CWBItem);
 
   virtual CWBContextItem *AddItem(std::string_view Text, int32_t ID,
                                   TBOOL Highlighted = false,
@@ -75,6 +85,5 @@ public:
 
   virtual TBOOL ApplyStyle(std::string_view prop, std::string_view value,
                            const std::vector<std::string> &pseudo) override;
-  virtual CWBContextItem *GetItem( int32_t ID );
+  virtual CWBContextItem *GetItem(int32_t ID);
 };
-

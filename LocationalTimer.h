@@ -1,15 +1,12 @@
 #pragma once
+#include <vector>
+
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "Bedrock/WhiteBoard/WhiteBoard.h"
 
-#include <vector>
-
-class LocationalTimer
-{
-public:
-
-  struct TimerEvent
-  {
+class LocationalTimer {
+ public:
+  struct TimerEvent {
     std::string Text;
     int32_t Time;
     int32_t CountdownLength;
@@ -17,9 +14,9 @@ public:
   };
 
   int32_t MapID = 0;
-  CSphere EnterSphere = CSphere( CVector3( 0, 0, 0 ), 0 );
-  CSphere ExitSphere = CSphere( CVector3( 0, 0, 0 ), 0 );
-  CVector3 ResetPoint = CVector3( 0, 0, 0 );
+  CSphere EnterSphere = CSphere(CVector3(0, 0, 0), 0);
+  CSphere ExitSphere = CSphere(CVector3(0, 0, 0), 0);
+  CVector3 ResetPoint = CVector3(0, 0, 0);
   int32_t TimerLength = 0;
   int32_t StartDelay = 0;
 
@@ -32,22 +29,29 @@ public:
   virtual ~LocationalTimer();
 
   void Update();
-  void ImportData( CXMLNode &node );
-
+  void ImportData(CXMLNode &node);
 };
 
-class TimerDisplay : public CWBItem
-{
-public:
+class TimerDisplay : public CWBItem {
+ public:
+  virtual void OnDraw(CWBDrawAPI *API);
+  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                                   WBMESSAGE MessageType);
 
-  virtual void OnDraw( CWBDrawAPI *API );
-  virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
-
-  TimerDisplay( CWBItem *Parent, CRect Position );
+  TimerDisplay(CWBItem *Parent, CRect Position);
+  static inline std::shared_ptr<TimerDisplay> Create(CWBItem *Parent,
+                                                     CRect Position) {
+    auto p = std::make_shared<TimerDisplay>(Parent, Position);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~TimerDisplay();
 
-  static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
-  WB_DECLARE_GUIITEM( _T( "TimerDisplay" ), CWBItem );
+  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  WB_DECLARE_GUIITEM(_T( "TimerDisplay" ), CWBItem);
 };
 
 extern std::vector<LocationalTimer> LocationalTimers;

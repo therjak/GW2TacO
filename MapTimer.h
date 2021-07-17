@@ -1,12 +1,11 @@
 #pragma once
-#include "Bedrock/WhiteBoard/WhiteBoard.h"
 #include <thread>
 #include <vector>
 
-class GW2MapTimer : public CWBItem
-{
-  struct Event
-  {
+#include "Bedrock/WhiteBoard/WhiteBoard.h"
+
+class GW2MapTimer : public CWBItem {
+  struct Event {
     std::string name;
     std::string waypoint;
     std::string worldBossId;
@@ -15,8 +14,7 @@ class GW2MapTimer : public CWBItem
     CColor color;
   };
 
-  struct Map
-  {
+  struct Map {
     std::string name;
     std::string chestId;
     int Length;
@@ -27,8 +25,8 @@ class GW2MapTimer : public CWBItem
   };
 
   CPoint lastpos;
-  virtual void OnDraw( CWBDrawAPI *API );
-  void SetLayout( CXMLNode &node );
+  virtual void OnDraw(CWBDrawAPI *API);
+  void SetLayout(CXMLNode &node);
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -42,17 +40,24 @@ class GW2MapTimer : public CWBItem
 
   LIGHTWEIGHT_CRITICALSECTION critSec;
 
-public:
-
+ public:
   std::vector<Map> maps;
 
-  GW2MapTimer( CWBItem *Parent, CRect Position );
+  GW2MapTimer(CWBItem *Parent, CRect Position);
+  static inline std::shared_ptr<GW2MapTimer> Create(CWBItem *Parent,
+                                                    CRect Position) {
+    auto p = std::make_shared<GW2MapTimer>(Parent, Position);
+    p->SelfRef = p;
+    if (Parent) {
+      Parent->AddChild(p);
+    }
+    return p;
+  }
   virtual ~GW2MapTimer();
 
-  static CWBItem *Factory( CWBItem *Root, CXMLNode &node, CRect &Pos );
-  WB_DECLARE_GUIITEM( _T( "maptimer" ), CWBItem );
+  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  WB_DECLARE_GUIITEM(_T( "maptimer" ), CWBItem);
 
-  virtual TBOOL IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType );
+  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
+                                   WBMESSAGE MessageType);
 };
-
-

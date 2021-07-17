@@ -1,11 +1,9 @@
 #include "Box.h"
 
-void CWBBox::AddChild(CWBItem *Item) {
+void CWBBox::AddChild(const std::shared_ptr<CWBItem> &Item) {
   CWBItem::AddChild(Item);
   RearrangeChildren();
 }
-
-CWBBox::CWBBox() : CWBItem() {}
 
 CWBBox::CWBBox(CWBItem *Parent, const CRect &Pos) : CWBItem() {
   Initialize(Parent, Pos);
@@ -416,7 +414,7 @@ void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
 }
 
 CWBItem *CWBBox::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
-  CWBBox *box = new CWBBox(Root, Pos);
+  auto box = CWBBox::Create(Root, Pos);
 
   if (node.HasAttribute(_T( "clickthrough" ))) {
     int32_t b = 0;
@@ -424,7 +422,7 @@ CWBItem *CWBBox::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
     box->ClickThrough = b != 0;
   }
 
-  return box;
+  return box.get();
 }
 
 void CWBBox::UpdateScrollbarData() {

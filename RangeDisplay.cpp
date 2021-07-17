@@ -163,7 +163,7 @@ GW2RangeDisplay::GW2RangeDisplay(CWBItem *Parent, CRect Position)
 GW2RangeDisplay::~GW2RangeDisplay() {}
 
 CWBItem *GW2RangeDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
-  return new GW2RangeDisplay(Root, Pos);
+  return GW2RangeDisplay::Create(Root, Pos).get();
 }
 
 TBOOL GW2RangeDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,

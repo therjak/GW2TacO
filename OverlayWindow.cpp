@@ -1,75 +1,63 @@
 #include "OverlayWindow.h"
+
 #include "OverlayConfig.h"
 
-TBOOL OverlayWindow::IsMouseTransparent( CPoint &ClientSpacePoint, WBMESSAGE MessageType )
-{
-  if ( GetConfigValue( "EditMode" ) ) return false;
+TBOOL OverlayWindow::IsMouseTransparent(CPoint &ClientSpacePoint,
+                                        WBMESSAGE MessageType) {
+  if (GetConfigValue("EditMode")) return false;
   return true;
 }
 
-OverlayWindow::OverlayWindow( CWBItem *Parent, CRect Position ) : CWBWindow( Parent, Position )
-{
+OverlayWindow::OverlayWindow(CWBItem *Parent, CRect Position)
+    : CWBWindow(Parent, Position) {}
 
+OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
+
+CWBItem *OverlayWindow::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+  return OverlayWindow::Create(Root, Pos).get();
 }
 
-OverlayWindow::~OverlayWindow()
-{
-  SetWindowPosition( GetID(), GetPosition() );
+void OverlayWindow::OnDraw(CWBDrawAPI *API) {
+  if (!GetConfigValue("EditMode")) return;
+  CWBWindow::OnDraw(API);
 }
 
-CWBItem * OverlayWindow::Factory( CWBItem *Root, CXMLNode &node, CRect &Pos )
-{
-  return new OverlayWindow( Root, Pos );
-}
+TBOOL OverlayWindow::MessageProc(CWBMessage &Message) {
+  switch (Message.GetMessage()) {
+    case WBM_LEFTBUTTONDOWN:
+      if (CWBItem::MessageProc(Message)) return true;
+      if (App->GetMouseItem() == this) {
+        SetCapture();
+        SavePosition();
 
-void OverlayWindow::OnDraw( CWBDrawAPI *API )
-{
-  if ( !GetConfigValue( "EditMode" ) ) return;
-  CWBWindow::OnDraw( API );
-}
+        if (Style & WB_WINDOW_CLOSEABLE) {
+          if (GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
+                  .Contains(ScreenToClient(Message.GetPosition()))) {
+            DragMode = WB_DRAGMODE_CLOSEBUTTON;
+            return true;
+          }
+        }
 
-TBOOL OverlayWindow::MessageProc( CWBMessage &Message )
-{
-  switch ( Message.GetMessage() )
-  {
-  case WBM_LEFTBUTTONDOWN:
-    if ( CWBItem::MessageProc( Message ) ) return true;
-    if ( App->GetMouseItem() == this )
-    {
-      SetCapture();
-      SavePosition();
+        if (Style & WB_WINDOW_RESIZABLE) {
+          DragMode = GetBorderSelectionArea(Message.GetPosition());
+          if (DragMode & WB_DRAGMASK) return true;
+        }
 
-      if ( Style & WB_WINDOW_CLOSEABLE )
-      {
-        if ( GetElementPos( WB_WINELEMENT_CLOSE ).Contains( ScreenToClient( Message.GetPosition() ) ) )
-        {
-          DragMode = WB_DRAGMODE_CLOSEBUTTON;
+        if (Style & WB_WINDOW_MOVEABLE) {
+          DragMode = WB_DRAGMODE_MOVE;
           return true;
         }
-      }
 
-      if ( Style & WB_WINDOW_RESIZABLE )
-      {
-        DragMode = GetBorderSelectionArea( Message.GetPosition() );
-        if ( DragMode & WB_DRAGMASK ) return true;
+        DragMode = 0;
       }
-
-      if ( Style & WB_WINDOW_MOVEABLE )
-      {
-        DragMode = WB_DRAGMODE_MOVE;
-        return true;
-      }
-
-      DragMode = 0;
-    }
-    break;
-  case WBM_REPOSITION:
-    SetWindowPosition( GetID(), GetPosition() );
-    break;
-  case WBM_CLOSE:
-    SetWindowOpenState( GetID(), false );
-    break;
+      break;
+    case WBM_REPOSITION:
+      SetWindowPosition(GetID(), GetPosition());
+      break;
+    case WBM_CLOSE:
+      SetWindowOpenState(GetID(), false);
+      break;
   }
 
-  return CWBWindow::MessageProc( Message );
+  return CWBWindow::MessageProc(Message);
 }

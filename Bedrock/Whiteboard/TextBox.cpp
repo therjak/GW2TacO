@@ -112,8 +112,6 @@ void CWBTextBox::OnDraw(CWBDrawAPI *API) {
     App->SelectMouseCursor(CM_TEXT);
 }
 
-CWBTextBox::CWBTextBox() : CWBItem() {}
-
 CWBTextBox::CWBTextBox(CWBItem *Parent, const CRect &Pos, int32_t flags,
                        std::string_view Txt)
     : CWBItem() {
@@ -1007,7 +1005,7 @@ CWBItem *CWBTextBox::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
     Flags |= (!b) * WB_TEXTBOX_NOSELECTION;
   }
 
-  CWBTextBox *textbox = new CWBTextBox(Root, Pos, Flags);
+  auto textbox = CWBTextBox::Create(Root, Pos, Flags);
   if (node.HasAttribute(_T( "text" )))
     textbox->SetTextInternal(node.GetAttribute(_T( "text" )), false, true);
 
@@ -1016,7 +1014,7 @@ CWBItem *CWBTextBox::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
     textbox->EnableVScrollbar(false, false);
   }
 
-  return textbox;
+  return textbox.get();
 }
 
 void CWBTextBox::SelectWord(int32_t CharacterInWord) {
