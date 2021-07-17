@@ -1,12 +1,13 @@
-#include "BaseLib.h"
-// need this order
+#include "CrashTracker.h"
+
 #include <DbgHelp.h>
 
 #include <ctime>
 #include <string>
 #include <string_view>
 
-#include "CrashTracker.h"
+#include "Logger.h"
+#include "StackTracker.h"
 #include "string_format.h"
 
 std::string BuildVersion;
@@ -19,14 +20,14 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   SYSTEMTIME st;
   GetLocalTime(&st);
 
-  CreateDirectory(_T( "Crashlogs" ), nullptr);
+  CreateDirectory("Crashlogs", nullptr);
 
   int32_t filename[1024];
   ZeroMemory(filename, 1024);
-  auto fname = FormatString(
-      _T( "Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp" ),
-      BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute,
-      st.wSecond);
+  auto fname =
+      FormatString("Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp",
+                   BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour,
+                   st.wMinute, st.wSecond);
 
   HANDLE hFile =
       CreateFile(fname.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
@@ -66,7 +67,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
             BuildVersion.c_str(), excpInfo->ExceptionRecord->ExceptionCode,
             Result.c_str());
 
-  TBOOL Saved = false;
+  bool Saved = false;
 
   FILE *f = nullptr;
   if (!fopen_s(&f, "crash.log", "at")) {
@@ -85,13 +86,13 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   if (Saved)
     MessageBox(
         nullptr,
-        _T( "Application has crashed.\nStack trace has been saved to crash.log" ),
-        _T( "Crash" ), MB_ICONERROR);
+        "Application has crashed.\nStack trace has been saved to crash.log",
+        "Crash", MB_ICONERROR);
   else
     MessageBox(
         nullptr,
-        _T( "Application has crashed.\nFailed to save stack trace to crash.log" ),
-        _T( "Crash" ), MB_ICONERROR);
+        "Application has crashed.\nFailed to save stack trace to crash.log",
+        "Crash", MB_ICONERROR);
 
   return EXCEPTION_EXECUTE_HANDLER;
 }
@@ -104,14 +105,14 @@ LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   SYSTEMTIME st;
   GetLocalTime(&st);
 
-  CreateDirectory(_T( "Crashlogs" ), nullptr);
+  CreateDirectory("Crashlogs", nullptr);
 
   int32_t filename[1024];
   ZeroMemory(filename, 1024);
-  auto fname = FormatString(
-      _T( "Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp" ),
-      BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute,
-      st.wSecond);
+  auto fname =
+      FormatString("Crashlogs\\crashlog_%s_%04d_%02d_%02d_%02d_%02d_%02d.dmp",
+                   BuildVersion.c_str(), st.wYear, st.wMonth, st.wDay, st.wHour,
+                   st.wMinute, st.wSecond);
 
   HANDLE hFile =
       CreateFile(fname.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
@@ -140,8 +141,8 @@ LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   // if ( Saved )
   MessageBox(
       nullptr,
-      _T( "Application has crashed.\nDump has been saved to the Crashlogs folder" ),
-      _T( "Crash" ), MB_ICONERROR);
+      "Application has crashed.\nDump has been saved to the Crashlogs folder",
+      "Crash", MB_ICONERROR);
   // else
   //  MessageBox( NULL, _T( "Application has crashed.\nFailed to save dump to
   //  the Crashlogs folder" ), _T( "Crash" ), MB_ICONERROR );

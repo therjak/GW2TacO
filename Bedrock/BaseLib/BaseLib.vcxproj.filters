@@ -66,9 +66,6 @@
     <ClInclude Include="Color.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Constants.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="CriticalSection.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>

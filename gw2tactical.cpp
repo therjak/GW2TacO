@@ -7,6 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Bedrock/BaseLib/FileList.h"
+#include "Bedrock/BaseLib/Timer.h"
 #include "Bedrock/BaseLib/string_format.h"
 #include "Bedrock/UtilLib/PNGDecompressor.h"
 #include "Bedrock/UtilLib/jsonxx.h"
@@ -18,6 +20,7 @@
 #include "OverlayConfig.h"
 #include "TrailLogger.h"
 #include "WvW.h"
+
 using namespace jsonxx;
 
 WBATLASHANDLE DefaultIconHandle = -1;
@@ -1319,7 +1322,7 @@ void ImportMarkerPack(CWBApplication *App, std::string_view zipFile) {
       continue;
     }
 
-    std::string_view doc(reinterpret_cast<TS8 *>(data.get()),
+    std::string_view doc(reinterpret_cast<char *>(data.get()),
                          static_cast<uint32_t>(stat.m_uncomp_size));
     ImportPOIString(App, doc, zipFile);
   }

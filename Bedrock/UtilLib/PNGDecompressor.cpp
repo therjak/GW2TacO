@@ -55,7 +55,7 @@ bool ExportPNG(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
   if (ClearAlpha)
     for (int32_t x = 0; x < XRes * YRes; x++) Image[x * 4 + 3] = 255;
 
-  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1);
+  auto FileName = std::make_unique<char[]>(OutFile.size() + 1);
   _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());
 
   bool result = stbi_write_png(FileName.get(), XRes, YRes, 4, Image, XRes * 4);
@@ -71,7 +71,7 @@ bool ExportTga(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
   if (ClearAlpha)
     for (int32_t x = 0; x < XRes * YRes; x++) Image[x * 4 + 3] = 255;
 
-  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1);
+  auto FileName = std::make_unique<char[]>(OutFile.size() + 1);
   _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());
 
   bool result = stbi_write_tga(FileName.get(), XRes, YRes, 4, Image);
@@ -84,7 +84,7 @@ bool ExportTga(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
 
 bool ExportBmp(uint8_t *Image, int32_t XRes, int32_t YRes,
                std::string_view OutFile) {
-  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1);
+  auto FileName = std::make_unique<char[]>(OutFile.size() + 1);
   _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());
 
   bool result = stbi_write_bmp(FileName.get(), XRes, YRes, 4, Image);
@@ -97,7 +97,7 @@ bool ExportBmp(uint8_t *Image, int32_t XRes, int32_t YRes,
 
 bool ExportRaw(uint8_t *Image, int32_t XRes, int32_t YRes,
                std::string_view OutFile) {
-  auto FileName = std::make_unique<TS8[]>(OutFile.size() + 1);
+  auto FileName = std::make_unique<char[]>(OutFile.size() + 1);
   _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());
 
   bool result = stbi_write_bmp(FileName.get(), XRes, YRes, 4, Image);

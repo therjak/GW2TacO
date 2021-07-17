@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../BaseLib/Color.h"
 #include "CSSItem.h"
 #include "DrawAPI.h"
 #include "Skin.h"
@@ -398,7 +399,7 @@ class CWBItem : public IWBCSS {
   virtual void SetTopmost();
   virtual void SetBottommost();
 
-  virtual void SetBorderSizes(TS8 Left, TS8 Top, TS8 Right, TS8 Bottom);
+  virtual void SetBorderSizes(char Left, char Top, char Right, char Bottom);
   virtual void SetFont(WBITEMSTATE State, std::string_view Font);
 
   TBOOL ApplyStyle(std::string_view prop, std::string_view value,

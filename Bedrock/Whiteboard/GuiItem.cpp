@@ -2036,7 +2036,7 @@ WBITEMSTATE CWBItem::GetState() {
   return i;
 }
 
-void CWBItem::SetBorderSizes(TS8 Left, TS8 Top, TS8 Right, TS8 Bottom) {
+void CWBItem::SetBorderSizes(char Left, char Top, char Right, char Bottom) {
   CSSProperties.BorderSizes = CRect(Left, Top, Right, Bottom);
 }
 

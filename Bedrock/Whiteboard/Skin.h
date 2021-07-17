@@ -1,35 +1,33 @@
 #pragma once
-#include "DrawAPI.h"
-
 #include <vector>
 
-enum WBMETRICTYPE
-{
+#include "../BaseLib/Color.h"
+#include "../BaseLib/Dictionary.h"
+#include "DrawAPI.h"
+
+enum WBMETRICTYPE {
   WB_UNDEFINED = 0,
   WB_PIXELS,
   WB_RELATIVE,
 
-  WB_METRIC_COUNT, //used as array size, don't remove
+  WB_METRIC_COUNT,  // used as array size, don't remove
 };
 
-class CWBMetricValue
-{
+class CWBMetricValue {
   float Metrics[WB_METRIC_COUNT]{0};
   TBOOL MetricsUsed[WB_METRIC_COUNT]{0};
   bool AutoSize = false;
 
-public:
-
+ public:
   CWBMetricValue();
-  void SetMetric( WBMETRICTYPE w, float Value );
-  void SetValue( float Relative, float Pixels );
-  float GetValue( float ParentSize, int32_t ContentSize );
-  void SetAutoSize( TBOOL Auto );
+  void SetMetric(WBMETRICTYPE w, float Value);
+  void SetValue(float Relative, float Pixels);
+  float GetValue(float ParentSize, int32_t ContentSize);
+  void SetAutoSize(TBOOL Auto);
   TBOOL IsAutoResizer();
 };
 
-enum WBPOSITIONTYPE
-{
+enum WBPOSITIONTYPE {
   WB_MARGIN_LEFT = 0,
   WB_MARGIN_RIGHT = 1,
   WB_MARGIN_TOP = 2,
@@ -42,139 +40,124 @@ enum WBPOSITIONTYPE
   WB_PADDING_BOTTOM = 9
 };
 
-class CWBPositionDescriptor
-{
+class CWBPositionDescriptor {
   CDictionary<WBPOSITIONTYPE, CWBMetricValue> Positions;
 
-public:
-
-  void SetValue( WBPOSITIONTYPE p, float Relative, float Pixels );
-  void SetMetric( WBPOSITIONTYPE p, WBMETRICTYPE m, float Value );
-  void SetAutoSize( WBPOSITIONTYPE p );
-  void ClearMetrics( WBPOSITIONTYPE p );
-  CRect GetPosition( CSize ParentSize, CSize ContentSize, const CRect &Original );
-  CRect GetPadding( CSize ParentSize, const CRect &BorderSize );
+ public:
+  void SetValue(WBPOSITIONTYPE p, float Relative, float Pixels);
+  void SetMetric(WBPOSITIONTYPE p, WBMETRICTYPE m, float Value);
+  void SetAutoSize(WBPOSITIONTYPE p);
+  void ClearMetrics(WBPOSITIONTYPE p);
+  CRect GetPosition(CSize ParentSize, CSize ContentSize, const CRect &Original);
+  CRect GetPadding(CSize ParentSize, const CRect &BorderSize);
 
   TBOOL IsWidthSet();
   TBOOL IsHeightSet();
-  int32_t GetWidth( CSize ParentSize, CSize ContentSize );
-  int32_t GetHeight( CSize ParentSize, CSize ContentSize );
+  int32_t GetWidth(CSize ParentSize, CSize ContentSize);
+  int32_t GetHeight(CSize ParentSize, CSize ContentSize);
 
   TBOOL IsAutoResizer();
 };
 
-class CWBPositionDescriptorPixels
-{
-  TBOOL Set[ 6 ];
-  int32_t Positions[ 6 ];
+class CWBPositionDescriptorPixels {
+  TBOOL Set[6];
+  int32_t Positions[6];
 
-public:
-
+ public:
   CWBPositionDescriptorPixels();
-  void SetValue( WBPOSITIONTYPE p, int32_t Pixels );
-  FORCEINLINE CRect GetPosition( CSize ParentSize );
+  void SetValue(WBPOSITIONTYPE p, int32_t Pixels);
+  FORCEINLINE CRect GetPosition(CSize ParentSize);
 };
 
-enum WBSKINELEMENTBEHAVIOR
-{
+enum WBSKINELEMENTBEHAVIOR {
   WB_SKINBEHAVIOR_PIXELCORRECT = 0,
   WB_SKINBEHAVIOR_STRETCH,
   WB_SKINBEHAVIOR_TILE,
 };
 
-enum WBRECTSIDE
-{
+enum WBRECTSIDE {
   WB_RECTSIDE_LEFT = 0,
   WB_RECTSIDE_TOP = 1,
   WB_RECTSIDE_RIGHT = 2,
   WB_RECTSIDE_BOTTOM = 3,
 };
 
-class CWBSkinElement
-{
+class CWBSkinElement {
   std::string Name;
   WBATLASHANDLE Handle;
-  WBSKINELEMENTBEHAVIOR DefaultBehavior[ 2 ]; //x-y stretching behaviors
+  WBSKINELEMENTBEHAVIOR DefaultBehavior[2];  // x-y stretching behaviors
 
-public:
-
+ public:
   CWBSkinElement();
-  CWBSkinElement( const CWBSkinElement &Copy );
-  CWBSkinElement &operator=( const CWBSkinElement &Copy );
+  CWBSkinElement(const CWBSkinElement &Copy);
+  CWBSkinElement &operator=(const CWBSkinElement &Copy);
 
-  void SetHandle( WBATLASHANDLE h );
-  void SetBehavior( int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior );
-  WBSKINELEMENTBEHAVIOR GetBehavior( int32_t Axis );
+  void SetHandle(WBATLASHANDLE h);
+  void SetBehavior(int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior);
+  WBSKINELEMENTBEHAVIOR GetBehavior(int32_t Axis);
   void SetName(std::string_view Name);
   WBATLASHANDLE GetHandle();
   std::string &GetName();
 
-  FORCEINLINE void Render( CWBDrawAPI *API, CRect &Pos );
-  CSize GetElementSize( CWBDrawAPI *API );
+  FORCEINLINE void Render(CWBDrawAPI *API, CRect &Pos);
+  CSize GetElementSize(CWBDrawAPI *API);
 };
 
-class CWBMosaicImage
-{
+class CWBMosaicImage {
   CWBPositionDescriptorPixels Position;
-  TBOOL Tiling[ 2 ];
-  TBOOL Stretching[ 2 ];
+  TBOOL Tiling[2];
+  TBOOL Stretching[2];
   WBATLASHANDLE Handle;
   CColor Color;
 
-public:
-
+ public:
   CWBMosaicImage();
-  void SetPositionValue( WBPOSITIONTYPE p, int32_t Pixels );
-  void SetTiling( int32_t Axis, TBOOL v );
-  void SetStretching( int32_t Axis, TBOOL v );
-  void SetHandle( WBATLASHANDLE handle );
-  void SetColor( CColor color );
+  void SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels);
+  void SetTiling(int32_t Axis, TBOOL v);
+  void SetStretching(int32_t Axis, TBOOL v);
+  void SetHandle(WBATLASHANDLE handle);
+  void SetColor(CColor color);
 
-  FORCEINLINE void Render( CWBDrawAPI *API, CRect &Pos );
+  FORCEINLINE void Render(CWBDrawAPI *API, CRect &Pos);
 };
 
-class CWBMosaic
-{
+class CWBMosaic {
   std::string Name;
   std::vector<CWBMosaicImage> Images;
-  int32_t Overshoot[ 4 ];
+  int32_t Overshoot[4];
 
-public:
-
+ public:
   CWBMosaic();
-  CWBMosaic( const CWBMosaic &Copy );
-  CWBMosaic &operator=( const CWBMosaic &Copy );
+  CWBMosaic(const CWBMosaic &Copy);
+  CWBMosaic &operator=(const CWBMosaic &Copy);
 
   void SetName(std::string_view Name);
   std::string &GetName();
-  void AddImage( const CWBMosaicImage &Image );
+  void AddImage(const CWBMosaicImage &Image);
   void Flush();
-  void Render( CWBDrawAPI *API, const CRect &Position );
-  void SetOverShoot( WBRECTSIDE side, int32_t val );
+  void Render(CWBDrawAPI *API, const CRect &Position);
+  void SetOverShoot(WBRECTSIDE side, int32_t val);
 };
 
 typedef uint32_t WBSKINELEMENTID;
 
-class CWBSkin
-{
+class CWBSkin {
   std::vector<CWBSkinElement> SkinItems;
   std::vector<CWBMosaic> Mosaics;
 
   CWBSkinElement *GetElement(std::string_view Name);
 
-public:
-
+ public:
   void AddElement(std::string_view Name, WBATLASHANDLE Handle,
-                 WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav);
- CWBMosaic *AddMosaic(std::string_view Name, std::string_view Description,
-                      int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
-                      int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
+                  WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav);
+  CWBMosaic *AddMosaic(std::string_view Name, std::string_view Description,
+                       int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
+                       int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
 
-  void RenderElement( CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos );
+  void RenderElement(CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos);
   void RenderElement(CWBDrawAPI *API, std::string_view Name, CRect &Pos);
   // void RenderElement( CWBDrawAPI *API, TCHAR *Name, CRect &Pos );
   WBSKINELEMENTID GetElementID(std::string_view Name);
-  CWBSkinElement *GetElement( WBSKINELEMENTID id );
-  CSize GetElementSize( CWBDrawAPI *API, WBSKINELEMENTID id );
+  CWBSkinElement *GetElement(WBSKINELEMENTID id);
+  CSize GetElementSize(CWBDrawAPI *API, WBSKINELEMENTID id);
 };
-

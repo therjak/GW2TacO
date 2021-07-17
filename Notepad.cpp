@@ -23,7 +23,7 @@ GW2Notepad::GW2Notepad(CWBItem *Parent, CRect Position)
   if (!tb) return;
 
   tb->SetForcedMouseTransparency(true);
-  tb->SetText(std::string_view(reinterpret_cast<TS8 *>(nptext.GetData()),
+  tb->SetText(std::string_view(reinterpret_cast<char *>(nptext.GetData()),
                                static_cast<int32_t>(nptext.GetLength())));
   tb->SetCursorPos(0, false);
 }

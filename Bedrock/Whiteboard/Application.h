@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "../BaseLib/Color.h"
 #include "../CoRE2/Core2.h"
 #include "../UtilLib/XMLDocument.h"
 #include "ContextMenu.h"

@@ -3,6 +3,8 @@
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 
+constexpr float PI = 3.1415926535897932384626433832795f;
+
 void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI *API, float range,
                                       float alpha) {
   if (!mumbleLink.IsValid()) return;

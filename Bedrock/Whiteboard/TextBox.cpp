@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <regex>
 
+#include "../BaseLib/Timer.h"
+
 INLINE void CWBTextBox::DrawCursor(CWBDrawAPI *API, CPoint &p) {
   WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2))

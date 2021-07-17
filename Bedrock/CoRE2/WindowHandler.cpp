@@ -1,6 +1,9 @@
 #include "WindowHandler.h"
 
+#include "../BaseLib/Rectangle.h"
+#include "../BaseLib/Timer.h"
 #include "DX11Device.h"
+
 typedef CCoreDX11Device CCore;
 
 //////////////////////////////////////////////////////////////////////////

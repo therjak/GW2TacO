@@ -4,6 +4,8 @@
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 
+constexpr float PI = 3.1415926535897932384626433832795f;
+
 float GetMapFade();
 
 void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {

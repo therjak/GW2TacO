@@ -1,11 +1,12 @@
 #pragma once
 
-#include <WinSock2.h>
-
 #include <string_view>
 
 #include "StreamReader.h"
 #include "StreamWriter.h"
+
+typedef _W64 unsigned int UINT_PTR, *PUINT_PTR;
+typedef UINT_PTR SOCKET;
 
 class CSocket : public CStreamReader, public CStreamWriter {
  protected:

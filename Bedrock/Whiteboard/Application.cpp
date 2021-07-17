@@ -3,6 +3,8 @@
 #include <clocale>
 #include <cstdio>
 
+#include "../BaseLib/FileList.h"
+#include "../BaseLib/Timer.h"
 #include "../BaseLib/read_file.h"
 #include "../BaseLib/string_format.h"
 #include "../UtilLib/PNGDecompressor.h"

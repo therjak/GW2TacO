@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Bedrock/BaseLib/Sphere.h"
 #include "Bedrock/BaseLib/string_format.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"

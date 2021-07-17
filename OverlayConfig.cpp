@@ -1,12 +1,13 @@
 ﻿#include "OverlayConfig.h"
-#include "Bedrock/UtilLib/XMLDocument.h"
 
+#include <map>
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <map>
 
+#include "Bedrock/BaseLib/Timer.h"
 #include "Bedrock/BaseLib/string_format.h"
+#include "Bedrock/UtilLib/XMLDocument.h"
 
 // These maps must be sorted. So no unordered_map.
 std::map<std::string, int32_t> ConfigNums;
@@ -14,77 +15,67 @@ std::map<std::string, std::string> ConfigStrings;
 bool configChanged = false;
 auto lastConfigChangeTime = globalTimer.GetTime();
 
-void LoadConfig()
-{
-  FORCEDDEBUGLOG( "Loading config." );
+void LoadConfig() {
+  FORCEDDEBUGLOG("Loading config.");
   CXMLDocument d;
-  if ( !d.LoadFromFile( "TacOConfig.xml" ) )
-  {
-    FORCEDDEBUGLOG( "Config failed to load, setting defaults." );
-    SetConfigValue( "EditMode", 0 );
-    SetConfigValue( "InterfaceSize", 1 );
-    SetConfigValue( "CloseWithGW2", 1 );
-    SetWindowOpenState( "MapTimer", true );
-    SetWindowPosition( "MapTimer", CRect( 6, 97, 491, 813 ) );
+  if (!d.LoadFromFile("TacOConfig.xml")) {
+    FORCEDDEBUGLOG("Config failed to load, setting defaults.");
+    SetConfigValue("EditMode", 0);
+    SetConfigValue("InterfaceSize", 1);
+    SetConfigValue("CloseWithGW2", 1);
+    SetWindowOpenState("MapTimer", true);
+    SetWindowPosition("MapTimer", CRect(6, 97, 491, 813));
     return;
   }
   ConfigNums.clear();
   ConfigStrings.clear();
-  FORCEDDEBUGLOG( "Config flushed." );
+  FORCEDDEBUGLOG("Config flushed.");
 
-  if ( !d.GetDocumentNode().GetChildCount( "TacOConfig" ) ) return;
-  CXMLNode root = d.GetDocumentNode().GetChild( "TacOConfig" );
+  if (!d.GetDocumentNode().GetChildCount("TacOConfig")) return;
+  CXMLNode root = d.GetDocumentNode().GetChild("TacOConfig");
 
-  FORCEDDEBUGLOG( "Config root found." );
+  FORCEDDEBUGLOG("Config root found.");
 
-  for ( int32_t x = 0; x < root.GetChildCount(); x++ )
-  {
-    FORCEDDEBUGLOG( "Loading config value %d/%d.", x, root.GetChildCount() );
+  for (int32_t x = 0; x < root.GetChildCount(); x++) {
+    FORCEDDEBUGLOG("Loading config value %d/%d.", x, root.GetChildCount());
 
-    auto item = root.GetChild( x );
-    if ( item.HasAttribute( "Data" ) )
-    {
+    auto item = root.GetChild(x);
+    if (item.HasAttribute("Data")) {
       int32_t data = 0;
-      item.GetAttributeAsInteger( "Data", &data );
-      ConfigNums[ item.GetNodeName() ] = data;
+      item.GetAttributeAsInteger("Data", &data);
+      ConfigNums[item.GetNodeName()] = data;
     }
 
-    if ( item.HasAttribute( "String" ) )
-    {
-      ConfigStrings[ item.GetNodeName() ] = item.GetAttributeAsString( "String" );
+    if (item.HasAttribute("String")) {
+      ConfigStrings[item.GetNodeName()] = item.GetAttributeAsString("String");
     }
   }
 
   configChanged = false;
 }
 
-void SaveConfig()
-{
+void SaveConfig() {
   CXMLDocument doc;
   CXMLNode& root = doc.GetDocumentNode();
-  root = root.AddChild( "TacOConfig" );
-  for ( const auto& kdp: ConfigNums )
-  {
-    root.AddChild( kdp.first ).SetAttributeFromInteger( "Data", kdp.second );
+  root = root.AddChild("TacOConfig");
+  for (const auto& kdp : ConfigNums) {
+    root.AddChild(kdp.first).SetAttributeFromInteger("Data", kdp.second);
   }
-  for ( const auto& kdp: ConfigStrings )
-  {
-    root.AddChild( kdp.first ).SetAttribute( "String", kdp.second );
+  for (const auto& kdp : ConfigStrings) {
+    root.AddChild(kdp.first).SetAttribute("String", kdp.second);
   }
-  doc.SaveToFile( "TacOConfig.xml" );
+  doc.SaveToFile("TacOConfig.xml");
 }
 
 void ToggleConfigValue(std::string_view key) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
   std::string k(key);
-  if ( ConfigNums.find( k ) != ConfigNums.end() )
-  {
-    int32_t v = ConfigNums[ k ];
-    ConfigNums[ k ] = !v;
-  }
-  else
-    ConfigNums[ k ] = 0;
+  if (ConfigNums.find(k) != ConfigNums.end()) {
+    int32_t v = ConfigNums[k];
+    ConfigNums[k] = !v;
+  } else
+    ConfigNums[k] = 0;
 }
 
 int32_t GetConfigValue(std::string_view value) {
@@ -98,7 +89,7 @@ int32_t GetConfigValue(std::string_view value) {
 void SetConfigValue(std::string_view value, int32_t val) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[ std::string(value) ] = val;
+  ConfigNums[std::string(value)] = val;
 }
 
 TBOOL HasConfigValue(std::string_view value) {
@@ -109,24 +100,22 @@ TBOOL HasConfigString(std::string_view value) {
   return ConfigStrings.find(std::string(value)) != ConfigStrings.end();
 }
 
-void SetConfigString(std::string_view value,
-                     std::string_view val) {
+void SetConfigString(std::string_view value, std::string_view val) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigStrings[ std::string(value) ] = val;
+  ConfigStrings[std::string(value)] = val;
 }
 
 std::string GetConfigString(std::string_view value) {
   std::string v(value);
   auto f = ConfigStrings.find(v);
-  if ( f != ConfigStrings.end() )
-    return f->second;
+  if (f != ConfigStrings.end()) return f->second;
   return "";
 }
 
 TBOOL IsWindowOpen(std::string_view windowname) {
-  std::string s( windowname );
-  return GetConfigValue( ( s + "_open" ) );
+  std::string s(windowname);
+  return GetConfigValue((s + "_open"));
 }
 
 void SetWindowOpenState(std::string_view windowname, TBOOL Open) {
@@ -137,74 +126,64 @@ void SetWindowOpenState(std::string_view windowname, TBOOL Open) {
 CRect GetWindowPosition(std::string_view windowname) {
   CRect r;
   std::string s(windowname);
-  r.x1 = GetConfigValue( ( s + "_x1" ) );
-  r.y1 = GetConfigValue( ( s + "_y1" ) );
-  r.x2 = GetConfigValue( ( s + "_x2" ) );
-  r.y2 = GetConfigValue( ( s + "_y2" ) );
+  r.x1 = GetConfigValue((s + "_x1"));
+  r.y1 = GetConfigValue((s + "_y1"));
+  r.x2 = GetConfigValue((s + "_x2"));
+  r.y2 = GetConfigValue((s + "_y2"));
   return r;
 }
 
 void SetWindowPosition(std::string_view windowname, CRect Pos) {
   std::string s(windowname);
-  SetConfigValue( ( s + "_x1" ), Pos.x1 );
-  SetConfigValue( ( s + "_y1" ), Pos.y1 );
-  SetConfigValue( ( s + "_x2" ), Pos.x2 );
-  SetConfigValue( ( s + "_y2" ), Pos.y2 );
+  SetConfigValue((s + "_x1"), Pos.x1);
+  SetConfigValue((s + "_y1"), Pos.y1);
+  SetConfigValue((s + "_x2"), Pos.x2);
+  SetConfigValue((s + "_y2"), Pos.y2);
 }
 
 TBOOL HasWindowData(std::string_view windowname) {
   std::string s(windowname);
-  return HasConfigValue( ( s + "_open" ) ) &&
-    HasConfigValue( ( s + "_x1" ) ) &&
-    HasConfigValue( ( s + "_y1" ) ) &&
-    HasConfigValue( ( s + "_x2" ) ) &&
-    HasConfigValue( ( s + "_y2" ) );
+  return HasConfigValue((s + "_open")) && HasConfigValue((s + "_x1")) &&
+         HasConfigValue((s + "_y1")) && HasConfigValue((s + "_x2")) &&
+         HasConfigValue((s + "_y2"));
 }
 
-void GetKeyBindings( std::unordered_map<int32_t, TacOKeyAction> &KeyBindings )
-{
+void GetKeyBindings(std::unordered_map<int32_t, TacOKeyAction>& KeyBindings) {
   KeyBindings.clear();
 
-  for ( const auto& kdp: ConfigNums )
-  {
-    if ( kdp.first.find( "KeyboardKey_" ) != 0 )
-      continue;
+  for (const auto& kdp : ConfigNums) {
+    if (kdp.first.find("KeyboardKey_") != 0) continue;
     int32_t key;
-    if ( std::sscanf(kdp.first.c_str(), "KeyboardKey_%d", &key ) != 1 )
-      continue;
+    if (std::sscanf(kdp.first.c_str(), "KeyboardKey_%d", &key) != 1) continue;
     if (kdp.second == static_cast<int32_t>(TacOKeyAction::NoAction)) continue;
     KeyBindings[key] = static_cast<TacOKeyAction>(kdp.second);
   }
 
-  if ( KeyBindings.empty() )
-  {
-    SetKeyBinding( TacOKeyAction::AddPOI, '+' );
-    SetKeyBinding( TacOKeyAction::RemovePOI, '-' );
-    SetKeyBinding( TacOKeyAction::ActivatePOI, 'F' );
-    SetKeyBinding( TacOKeyAction::ActivatePOI, 'f' );
-    SetKeyBinding( TacOKeyAction::EditNotepad, ']' );
+  if (KeyBindings.empty()) {
+    SetKeyBinding(TacOKeyAction::AddPOI, '+');
+    SetKeyBinding(TacOKeyAction::RemovePOI, '-');
+    SetKeyBinding(TacOKeyAction::ActivatePOI, 'F');
+    SetKeyBinding(TacOKeyAction::ActivatePOI, 'f');
+    SetKeyBinding(TacOKeyAction::EditNotepad, ']');
 
-    KeyBindings[ '+' ] = TacOKeyAction::AddPOI;
-    KeyBindings[ '-' ] = TacOKeyAction::RemovePOI;
-    KeyBindings[ 'F' ] = TacOKeyAction::ActivatePOI;
-    KeyBindings[ 'f' ] = TacOKeyAction::ActivatePOI;
-    KeyBindings[ ']' ] = TacOKeyAction::EditNotepad;
+    KeyBindings['+'] = TacOKeyAction::AddPOI;
+    KeyBindings['-'] = TacOKeyAction::RemovePOI;
+    KeyBindings['F'] = TacOKeyAction::ActivatePOI;
+    KeyBindings['f'] = TacOKeyAction::ActivatePOI;
+    KeyBindings[']'] = TacOKeyAction::EditNotepad;
   }
 }
 
-void SetKeyBinding( TacOKeyAction action, int32_t key )
-{
+void SetKeyBinding(TacOKeyAction action, int32_t key) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
   ConfigNums[FormatString("KeyboardKey_%d", key)] =
       static_cast<int32_t>(action);
 }
 
-void DeleteKeyBinding( int32_t keyToDelete )
-{
+void DeleteKeyBinding(int32_t keyToDelete) {
   auto elm = ConfigNums.begin();
-  while ( elm != ConfigNums.end() )
-  {
+  while (elm != ConfigNums.end()) {
     if (elm->first.find("KeyboardKey_") != 0) {
       ++elm;
       continue;
@@ -215,31 +194,27 @@ void DeleteKeyBinding( int32_t keyToDelete )
       continue;
     }
 
-    if ( key == keyToDelete ) {
-      elm = ConfigNums.erase( elm );
+    if (key == keyToDelete) {
+      elm = ConfigNums.erase(elm);
     } else {
       ++elm;
     }
   }
 }
 
-void GetScriptKeyBindings( std::unordered_map<int32_t, std::string> &ScriptKeyBindings )
-{
+void GetScriptKeyBindings(
+    std::unordered_map<int32_t, std::string>& ScriptKeyBindings) {
   ScriptKeyBindings.clear();
 
-  for ( const auto& kdp: ConfigNums )
-  {
-    if ( kdp.first.find( "ScriptKey_" ) != 0 )
-      continue;
-    auto key = kdp.first.substr( 10 );
-    if ( key.empty() )
-      continue;
-    ScriptKeyBindings[ kdp.second ] = key;
+  for (const auto& kdp : ConfigNums) {
+    if (kdp.first.find("ScriptKey_") != 0) continue;
+    auto key = kdp.first.substr(10);
+    if (key.empty()) continue;
+    ScriptKeyBindings[kdp.second] = key;
   }
 }
 
-void SetScriptKeyBinding( std::string_view scriptEvent, int32_t key )
-{
+void SetScriptKeyBinding(std::string_view scriptEvent, int32_t key) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
   ConfigNums[FormatString("ScriptKey_%s", std::string(scriptEvent).c_str())] =
@@ -262,29 +237,22 @@ void DeleteScriptKeyBinding(std::string_view scriptEvent) {
   }
 }
 
-GW2TacticalCategory *GetCategory( std::string_view s );
+GW2TacticalCategory* GetCategory(std::string_view s);
 
-void LoadMarkerCategoryVisibilityInfo()
-{
-  for ( auto& kdp: ConfigNums )
-  {
-    if ( kdp.first.find( "CategoryVisible_" ) != 0 )
-      continue;
+void LoadMarkerCategoryVisibilityInfo() {
+  for (auto& kdp : ConfigNums) {
+    if (kdp.first.find("CategoryVisible_") != 0) continue;
 
-    auto str = kdp.first.substr( 16 );
-    auto cat = GetCategory( str );
-    if ( cat )
-      cat->IsDisplayed = kdp.second != 0;
+    auto str = kdp.first.substr(16);
+    auto cat = GetCategory(str);
+    if (cat) cat->IsDisplayed = kdp.second != 0;
   }
 }
 
-void AutoSaveConfig()
-{
-  if ( !configChanged )
-    return;
+void AutoSaveConfig() {
+  if (!configChanged) return;
 
-  if ( globalTimer.GetTime() - lastConfigChangeTime > 10000 )
-  {
+  if (globalTimer.GetTime() - lastConfigChangeTime > 10000) {
     configChanged = false;
     SaveConfig();
   }

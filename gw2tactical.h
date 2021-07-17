@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "Bedrock/BaseLib/Dictionary.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 // Needs to stay above
 #include <objbase.h>
@@ -8,6 +9,8 @@
 #include <thread>
 #include <unordered_map>
 #include <vector>
+
+#include "Bedrock/BaseLib/Color.h"
 
 enum class POIBehavior : int32_t {
   AlwaysVisible,

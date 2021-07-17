@@ -1,6 +1,8 @@
 #include "DX11Shader.h"
 #ifdef CORE_API_DX11
 
+#include <comdef.h>
+
 typedef HRESULT(__stdcall d3d_compile_func)(
     LPCVOID pSrcData, SIZE_T SrcDataSize, LPCSTR pSourceName,
     const D3D_SHADER_MACRO *pDefines, ID3DInclude *pInclude, LPCSTR pEntrypoint,
@@ -19,7 +21,7 @@ typedef HRESULT(__stdcall D3DXCompileShader(
 d3d_compile_func *D3DCompileFunc = nullptr;
 D3DXCompileShader *D3DXCompileFunc = nullptr;
 
-void *GetFunctionFromD3DXDLL(const std::string& FunctName) {
+void *GetFunctionFromD3DXDLL(const std::string &FunctName) {
   HMODULE dll = nullptr;
 
   std::string_view CompilerDLLs[] = {
@@ -39,7 +41,8 @@ void *GetFunctionFromD3DXDLL(const std::string& FunctName) {
     if (dll) {
       void *func = GetProcAddress(dll, FunctName.c_str());
       if (func) {
-        LOG_NFO("[core] Successfully loaded %s from %s", FunctName.c_str(), cd.data());
+        LOG_NFO("[core] Successfully loaded %s from %s", FunctName.c_str(),
+                cd.data());
         return func;
       }
     }
@@ -49,7 +52,7 @@ void *GetFunctionFromD3DXDLL(const std::string& FunctName) {
   return nullptr;
 }
 
-void *GetFunctionFromD3DCompileDLL(const std::string& FunctName) {
+void *GetFunctionFromD3DCompileDLL(const std::string &FunctName) {
   HMODULE dll = nullptr;
 
   std::string_view CompilerDLLs[] = {
@@ -64,13 +67,15 @@ void *GetFunctionFromD3DCompileDLL(const std::string& FunctName) {
     if (dll) {
       void *func = GetProcAddress(dll, FunctName.c_str());
       if (func) {
-        LOG_NFO("[core] Successfully loaded %s from %s", FunctName.c_str(), cd.data());
+        LOG_NFO("[core] Successfully loaded %s from %s", FunctName.c_str(),
+                cd.data());
         return func;
       }
     }
   }
 
-  LOG_ERR("[core] Failed to load %s from d3dcompile_xx.dll!", FunctName.c_str());
+  LOG_ERR("[core] Failed to load %s from d3dcompile_xx.dll!",
+          FunctName.c_str());
   return nullptr;
 }
 

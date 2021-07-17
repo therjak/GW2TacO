@@ -1,11 +1,13 @@
 ﻿#include "Language.h"
-#include "OverlayConfig.h"
 
 #include <algorithm>
-#include <string_view>
-#include <string>
 #include <functional>
+#include <string>
+#include <string_view>
 #include <vector>
+
+#include "Bedrock/BaseLib/FileList.h"
+#include "OverlayConfig.h"
 
 typedef std::function<bool(uint32_t)> UTF8CHARCALLBACK;
 void DecodeUtf8(std::string_view Input, UTF8CHARCALLBACK callback) {

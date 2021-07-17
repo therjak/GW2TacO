@@ -1,26 +1,26 @@
 #include "DX11Device.h"
+
+#include <DComp.h>
+#include <comdef.h>
+
+#include "DX11ConstantBuffer.h"
+#include "DX11IndexBuffer.h"
+#include "DX11RenderState.h"
+#include "DX11Shader.h"
 #include "DX11Texture.h"
 #include "DX11VertexBuffer.h"
-#include "DX11IndexBuffer.h"
 #include "DX11VertexFormat.h"
-#include "DX11Shader.h"
-#include "DX11ConstantBuffer.h"
-#include "DX11RenderState.h"
-#include <DComp.h>
-#pragma comment(lib,"DXGI.lib")
+#pragma comment(lib, "DXGI.lib")
 //#pragma comment(lib,"dcomp.lib")
 
-typedef HRESULT( __stdcall* DCompositionCreateDeviceCallback )(
-  _In_opt_ IDXGIDevice* dxgiDevice,
-  _In_ REFIID iid,
-  _Outptr_ void** dcompositionDevice
-  );
+typedef HRESULT(__stdcall* DCompositionCreateDeviceCallback)(
+    _In_opt_ IDXGIDevice* dxgiDevice, _In_ REFIID iid,
+    _Outptr_ void** dcompositionDevice);
 DCompositionCreateDeviceCallback DCompositionCreateDeviceFunc = nullptr;
 
 #ifdef CORE_API_DX11
 
-CCoreDX11Device::CCoreDX11Device()
-{
+CCoreDX11Device::CCoreDX11Device() {
   Device = nullptr;
   DeviceContext = nullptr;
   SwapChain = nullptr;
@@ -32,109 +32,97 @@ CCoreDX11Device::CCoreDX11Device()
   CurrentRasterizerState = nullptr;
 }
 
-CCoreDX11Device::~CCoreDX11Device()
-{
-  if ( OcclusionQuery ) OcclusionQuery->Release();
+CCoreDX11Device::~CCoreDX11Device() {
+  if (OcclusionQuery) OcclusionQuery->Release();
 
-  if ( BackBufferView ) BackBufferView->Release();
-  if ( DepthBufferView ) DepthBufferView->Release();
-  if ( DepthBuffer ) DepthBuffer->Release();
-  if ( SwapChain )
-  {
+  if (BackBufferView) BackBufferView->Release();
+  if (DepthBufferView) DepthBufferView->Release();
+  if (DepthBuffer) DepthBuffer->Release();
+  if (SwapChain) {
     SwapChain->SetFullscreenState(false, nullptr);
     SwapChain->Release();
   }
 
-  if ( DeviceContext )
-  {
+  if (DeviceContext) {
     DeviceContext->ClearState();
     DeviceContext->Flush();
     DeviceContext->Release();
   }
 
-  if ( Device )
-  {
+  if (Device) {
     ID3D11Debug* dbg = nullptr;
-    Device->QueryInterface( __uuidof( ID3D11Debug ), reinterpret_cast<void**>( &dbg ) );
-    if ( dbg )
-    {
-      LOG_NFO( "[core] Dumping Live objects before freeing device:" );
-      dbg->ReportLiveDeviceObjects( D3D11_RLDO_DETAIL );
+    Device->QueryInterface(__uuidof(ID3D11Debug),
+                           reinterpret_cast<void**>(&dbg));
+    if (dbg) {
+      LOG_NFO("[core] Dumping Live objects before freeing device:");
+      dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
       dbg->Release();
     }
   }
-  if ( Device ) Device->Release();
-
+  if (Device) Device->Release();
 }
 
-void CCoreDX11Device::ResetPrivateResources()
-{
-  //if (BackBufferSurface) BackBufferSurface->Release();
-  //BackBufferSurface=NULL;
-
-  //Device->Reset(&D3DPP);
-
-  //Device->GetRenderTarget(0,&BackBufferSurface);
-}
+void CCoreDX11Device::ResetPrivateResources() {}
 
 #define BACKBUFFERFORMAT D3DFMT_A8R8G8B8
 
-TBOOL CCoreDX11Device::CreateBackBuffer( int32_t XRes, int32_t YRes )
-{
-  if ( BackBufferView ) BackBufferView->Release();
+TBOOL CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
+  if (BackBufferView) BackBufferView->Release();
 
-  FORCEDDEBUGLOG( "creating backbuffer" );
+  FORCEDDEBUGLOG("creating backbuffer");
 
   HRESULT res = S_OK;
   ID3D11Texture2D* bb;
 
   res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
                              reinterpret_cast<LPVOID*>(&bb));
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ),
+        err.ErrorMessage());
     return false;
   }
 
-  FORCEDDEBUGLOG( "getbuffer called" );
+  FORCEDDEBUGLOG("getbuffer called");
 
   res = Device->CreateRenderTargetView(bb, nullptr, &BackBufferView);
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 Rendertarget View creation failed (%s)" ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectX11 Rendertarget View creation failed (%s)" ),
+        err.ErrorMessage());
     return false;
   }
 
-  FORCEDDEBUGLOG( "createrendertargetview called" );
+  FORCEDDEBUGLOG("createrendertargetview called");
 
   res = bb->Release();
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 Swapchain buffer texture release failed (%s)" ), err.ErrorMessage() );
-    //return false;
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectX11 Swapchain buffer texture release failed (%s)" ),
+        err.ErrorMessage());
+    // return false;
   }
 
-  FORCEDDEBUGLOG( "previous buffer released" );
+  FORCEDDEBUGLOG("previous buffer released");
 
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDepthBuffer( int32_t XRes, int32_t YRes )
-{
-  if ( DepthBufferView ) DepthBufferView->Release();
-  if ( DepthBuffer ) DepthBuffer->Release();
+TBOOL CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
+  if (DepthBufferView) DepthBufferView->Release();
+  if (DepthBuffer) DepthBuffer->Release();
 
-  FORCEDDEBUGLOG( "creating depthbuffer" );
+  FORCEDDEBUGLOG("creating depthbuffer");
 
   HRESULT res = S_OK;
 
   D3D11_TEXTURE2D_DESC depthBufferDesc;
   D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
 
-  memset( &depthBufferDesc, 0, sizeof( depthBufferDesc ) );
+  memset(&depthBufferDesc, 0, sizeof(depthBufferDesc));
 
   depthBufferDesc.Width = XRes;
   depthBufferDesc.Height = YRes;
@@ -149,43 +137,46 @@ TBOOL CCoreDX11Device::CreateDepthBuffer( int32_t XRes, int32_t YRes )
   depthBufferDesc.MiscFlags = 0;
 
   res = Device->CreateTexture2D(&depthBufferDesc, nullptr, &DepthBuffer);
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 Depth Texture creation failed (%s)" ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR, _T( "[core] DirectX11 Depth Texture creation failed (%s)" ),
+        err.ErrorMessage());
     return false;
   }
 
-  FORCEDDEBUGLOG( "createtexture called" );
+  FORCEDDEBUGLOG("createtexture called");
 
-  ZeroMemory( &depthStencilViewDesc, sizeof( depthStencilViewDesc ) );
+  ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
   depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
   depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
   depthStencilViewDesc.Texture2D.MipSlice = 0;
 
-  res = Device->CreateDepthStencilView( DepthBuffer, &depthStencilViewDesc, &DepthBufferView );
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 DepthStencil View creation failed (%s)" ), err.ErrorMessage() );
+  res = Device->CreateDepthStencilView(DepthBuffer, &depthStencilViewDesc,
+                                       &DepthBufferView);
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectX11 DepthStencil View creation failed (%s)" ),
+        err.ErrorMessage());
     return false;
   }
 
-  FORCEDDEBUGLOG( "createdepthstencilview called" );
+  FORCEDDEBUGLOG("createdepthstencilview called");
 
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateClassicSwapChain( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
-{
-  LOG_NFO( "[core] Creating classic swap chain" );
+TBOOL CCoreDX11Device::CreateClassicSwapChain(
+    const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes,
+    const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
+  LOG_NFO("[core] Creating classic swap chain");
 
-  FORCEDDEBUGLOG( "Initapi" );
+  FORCEDDEBUGLOG("Initapi");
   HRESULT res = S_OK;
 
   DXGI_SWAP_CHAIN_DESC scd;
-  memset( &scd, 0, sizeof( DXGI_SWAP_CHAIN_DESC ) );
+  memset(&scd, 0, sizeof(DXGI_SWAP_CHAIN_DESC));
 
   scd.BufferCount = 1;
   scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -193,9 +184,6 @@ TBOOL CCoreDX11Device::CreateClassicSwapChain( const uint32_t hWnd, const TBOOL 
   scd.OutputWindow = (HWND)hWnd;
   scd.SampleDesc.Count = 1;
   scd.Windowed = !FullScreen;
-  //scd.BufferDesc.RefreshRate.Numerator=RefreshRate;
-  //scd.BufferDesc.RefreshRate.Denominator=1;
-
 
 #ifdef ENABLE_CORE_DEBUG_MODE
   res = D3D11CreateDeviceAndSwapChain(
@@ -203,115 +191,97 @@ TBOOL CCoreDX11Device::CreateClassicSwapChain( const uint32_t hWnd, const TBOOL 
       nullptr, NULL, D3D11_SDK_VERSION, &scd,
       reinterpret_cast<IDXGISwapChain**>(&SwapChain), &Device, nullptr,
       &DeviceContext);
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_WARNING, _T( "[core] DirectX11 debug mode device creation failed. (%s) Trying without debug mode..." ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_WARNING,
+        _T( "[core] DirectX11 debug mode device creation failed. (%s) Trying without debug mode..." ),
+        err.ErrorMessage());
 #endif
-    FORCEDDEBUGLOG( "About to create d3d device" );
+    FORCEDDEBUGLOG("About to create d3d device");
     res = D3D11CreateDeviceAndSwapChain(
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, NULL,
         D3D11_SDK_VERSION, &scd, reinterpret_cast<IDXGISwapChain**>(&SwapChain),
         &Device, nullptr, &DeviceContext);
-    if ( res != S_OK )
-    {
-      _com_error error( res );
-      LOG( LOG_ERROR, _T( "[core] DirectX11 Device creation failed (%s)" ), error.ErrorMessage() );
+    if (res != S_OK) {
+      _com_error error(res);
+      LOG(LOG_ERROR, _T( "[core] DirectX11 Device creation failed (%s)" ),
+          error.ErrorMessage());
       return false;
     }
-    FORCEDDEBUGLOG( "D3D device created" );
+    FORCEDDEBUGLOG("D3D device created");
 #ifdef ENABLE_CORE_DEBUG_MODE
   }
 #endif
 
-  if ( !CreateBackBuffer( XRes, YRes ) ) return false;
-  FORCEDDEBUGLOG( "Backbuffer created" );
-  if ( !CreateDepthBuffer( XRes, YRes ) ) return false;
-  FORCEDDEBUGLOG( "Depthbuffer created" );
-  DeviceContext->OMSetRenderTargets( 1, &BackBufferView, DepthBufferView );
+  if (!CreateBackBuffer(XRes, YRes)) return false;
+  FORCEDDEBUGLOG("Backbuffer created");
+  if (!CreateDepthBuffer(XRes, YRes)) return false;
+  FORCEDDEBUGLOG("Depthbuffer created");
+  DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
 
-  FORCEDDEBUGLOG( "rendertargets set" );
+  FORCEDDEBUGLOG("rendertargets set");
 
-  SetViewport( CRect( 0, 0, XRes, YRes ) );
-  FORCEDDEBUGLOG( "viewports set" );
+  SetViewport(CRect(0, 0, XRes, YRes));
+  FORCEDDEBUGLOG("viewports set");
 
-  if ( CreateDefaultRenderStates() )
-    LOG( LOG_INFO, _T( "[core] DirectX11 Device initialization successful." ) );
+  if (CreateDefaultRenderStates())
+    LOG(LOG_INFO, _T( "[core] DirectX11 Device initialization successful." ));
 
-  FORCEDDEBUGLOG( "default renderstates created" );
+  FORCEDDEBUGLOG("default renderstates created");
 
   D3D11_QUERY_DESC queryDesc;
-  memset( &queryDesc, 0, sizeof( queryDesc ) );
+  memset(&queryDesc, 0, sizeof(queryDesc));
   queryDesc.Query = D3D11_QUERY_OCCLUSION;
   queryDesc.MiscFlags = 0;
 
-  Device->CreateQuery( &queryDesc, &OcclusionQuery );
+  Device->CreateQuery(&queryDesc, &OcclusionQuery);
 
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate )
-{
-  LOG_NFO( "[core] Creating DirectComposition swap chain" );
+TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain(
+    const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes,
+    const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
+  LOG_NFO("[core] Creating DirectComposition swap chain");
 
-  FORCEDDEBUGLOG( "Initapi" );
+  FORCEDDEBUGLOG("Initapi");
   HRESULT res = S_OK;
-
 
   IDXGIFactory2* dxgiFactory;
 #ifdef _DEBUG
   res = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(IDXGIFactory2),
                            reinterpret_cast<void**>(&dxgiFactory));
 #else
-  res = CreateDXGIFactory1( __uuidof( IDXGIFactory2 ), (void**)&dxgiFactory );
+  res = CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
 #endif
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DXGI factory creation failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR, _T( "[core] DXGI factory creation failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
-
-  /*
-    DXGI_SWAP_CHAIN_DESC1 scd;
-    memset(&scd, 0, sizeof(DXGI_SWAP_CHAIN_DESC1));
-
-    scd.BufferCount = 1;
-    scd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    //scd.OutputWindow = (HWND)hWnd;
-    scd.SampleDesc.Count = 1;
-    //scd.Windowed = !FullScreen;
-
-    scd.BufferCount = 2;
-    scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    scd.AlphaMode = DXGI_ALPHA_MODE_STRAIGHT;
-    //scd.BufferDesc.RefreshRate.Numerator=RefreshRate;
-    //scd.BufferDesc.RefreshRate.Denominator=1;
-  */
 
 #ifdef ENABLE_CORE_DEBUG_MODE
   res = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
                           D3D11_CREATE_DEVICE_DEBUG, nullptr, NULL,
                           D3D11_SDK_VERSION, &Device, nullptr, &DeviceContext);
-  //res = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, NULL, NULL, D3D11_SDK_VERSION, &scd, &SwapChain, &Device, NULL, &DeviceContext);
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_WARNING, _T( "[core] DirectX11 debug mode device creation failed. (%s) Trying without debug mode..." ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_WARNING,
+        _T( "[core] DirectX11 debug mode device creation failed. (%s) Trying without debug mode..." ),
+        err.ErrorMessage());
 #endif
-    FORCEDDEBUGLOG( "About to create d3d device" );
+    FORCEDDEBUGLOG("About to create d3d device");
     res = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
                             nullptr, NULL, D3D11_SDK_VERSION, &Device, nullptr,
                             &DeviceContext);
-    //res = D3D11CreateDeviceAndSwapChain( NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, NULL, NULL, D3D11_SDK_VERSION, &scd, &SwapChain, &Device, NULL, &DeviceContext );
-    if ( res != S_OK )
-    {
-      _com_error error( res );
-      LOG( LOG_ERROR, _T( "[core] DirectX11 Device creation failed (%s)" ), error.ErrorMessage() );
+    if (res != S_OK) {
+      _com_error error(res);
+      LOG(LOG_ERROR, _T( "[core] DirectX11 Device creation failed (%s)" ),
+          error.ErrorMessage());
       return false;
     }
-    FORCEDDEBUGLOG( "D3D device created" );
+    FORCEDDEBUGLOG("D3D device created");
 #ifdef ENABLE_CORE_DEBUG_MODE
   }
 #endif
@@ -328,14 +298,12 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
                                       DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL,
                                       DXGI_ALPHA_MODE_PREMULTIPLIED,
                                       0};
-  res = dxgiFactory->CreateSwapChainForComposition( Device, &swapChainDesc, nullptr, &SwapChain );
-  //res = dxgiFactory->CreateSwapChainForHwnd( Device, (HWND)hWnd, &swapChainDesc, nullptr, nullptr, &SwapChain );
-
-  //res = dxgiFactory->CreateSwapChain( Device, (DXGI_SWAP_CHAIN_DESC*)&swapChainDesc, (IDXGISwapChain**)&SwapChain );
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 SwapChain creation failed (%s)" ), error.ErrorMessage() );
+  res = dxgiFactory->CreateSwapChainForComposition(Device, &swapChainDesc,
+                                                   nullptr, &SwapChain);
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR, _T( "[core] DirectX11 SwapChain creation failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
 
@@ -345,298 +313,272 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain( const uint32_t hWnd, co
                                      __uuidof(IDCompositionDevice),
                                      reinterpret_cast<void**>(&dcompDevice));
 
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectComposition device creation failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR, _T( "[core] DirectComposition device creation failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
 
   IDCompositionTarget* dcompTarget = nullptr;
-  res = dcompDevice->CreateTargetForHwnd( HWND( hWnd ), true, &dcompTarget );
+  res = dcompDevice->CreateTargetForHwnd(HWND(hWnd), true, &dcompTarget);
 
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectComposition target creation failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR, _T( "[core] DirectComposition target creation failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
 
   IDCompositionVisual* dcompVisual = nullptr;
-  res = dcompDevice->CreateVisual( &dcompVisual );
+  res = dcompDevice->CreateVisual(&dcompVisual);
 
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectComposition visual creation failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR, _T( "[core] DirectComposition visual creation failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
 
-  res = dcompVisual->SetContent( SwapChain );
+  res = dcompVisual->SetContent(SwapChain);
 
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectComposition visual swapchain content setting failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectComposition visual swapchain content setting failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
 
-  res = dcompTarget->SetRoot( dcompVisual );
+  res = dcompTarget->SetRoot(dcompVisual);
 
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectComposition setting target root visual failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectComposition setting target root visual failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
-
 
   res = dcompDevice->Commit();
 
-  if ( res != S_OK )
-  {
-    _com_error error( res );
-    LOG( LOG_ERROR, _T( "[core] DirectComposition commit failed (%s)" ), error.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error error(res);
+    LOG(LOG_ERROR, _T( "[core] DirectComposition commit failed (%s)" ),
+        error.ErrorMessage());
     return false;
   }
-
-
-  //res = dxgiFactory->MakeWindowAssociation( (HWND)hWnd, DXGI_MWA_NO_ALT_ENTER );
-  //if ( res != S_OK )
-  //{
-  //  _com_error error( res );
-  //  LOG( LOG_ERROR, _T( "[core] DirectX11 failed to unset alt-enter association (%s)" ), error.ErrorMessage() );
-  //  return false;
-  //}
-
-
 
   dxgiFactory->Release();
 
-  if ( !CreateBackBuffer( XRes, YRes ) ) return false;
-  FORCEDDEBUGLOG( "Backbuffer created" );
-  if ( !CreateDepthBuffer( XRes, YRes ) ) return false;
-  FORCEDDEBUGLOG( "Depthbuffer created" );
-  DeviceContext->OMSetRenderTargets( 1, &BackBufferView, DepthBufferView );
+  if (!CreateBackBuffer(XRes, YRes)) return false;
+  FORCEDDEBUGLOG("Backbuffer created");
+  if (!CreateDepthBuffer(XRes, YRes)) return false;
+  FORCEDDEBUGLOG("Depthbuffer created");
+  DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
 
-  FORCEDDEBUGLOG( "rendertargets set" );
+  FORCEDDEBUGLOG("rendertargets set");
 
-  SetViewport( CRect( 0, 0, XRes, YRes ) );
-  FORCEDDEBUGLOG( "viewports set" );
+  SetViewport(CRect(0, 0, XRes, YRes));
+  FORCEDDEBUGLOG("viewports set");
 
-  if ( CreateDefaultRenderStates() )
-    LOG( LOG_INFO, _T( "[core] DirectX11 Device initialization successful." ) );
+  if (CreateDefaultRenderStates())
+    LOG(LOG_INFO, _T( "[core] DirectX11 Device initialization successful." ));
 
-  FORCEDDEBUGLOG( "default renderstates created" );
+  FORCEDDEBUGLOG("default renderstates created");
 
   D3D11_QUERY_DESC queryDesc;
-  memset( &queryDesc, 0, sizeof( queryDesc ) );
+  memset(&queryDesc, 0, sizeof(queryDesc));
   queryDesc.Query = D3D11_QUERY_OCCLUSION;
   queryDesc.MiscFlags = 0;
 
-  Device->CreateQuery( &queryDesc, &OcclusionQuery );
+  Device->CreateQuery(&queryDesc, &OcclusionQuery);
 
   return true;
 }
 
-TBOOL CCoreDX11Device::InitAPI( const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes, const int32_t YRes, const int32_t AALevel/* =0 */, const int32_t RefreshRate/* =60 */ )
-{
-  auto dcomp = LoadLibrary( "dcomp.dll" );
+TBOOL CCoreDX11Device::InitAPI(const uint32_t hWnd, const TBOOL FullScreen,
+                               const int32_t XRes, const int32_t YRes,
+                               const int32_t AALevel /* =0 */,
+                               const int32_t RefreshRate /* =60 */) {
+  auto dcomp = LoadLibrary("dcomp.dll");
 
-  if ( dcomp )
-  {
-    DCompositionCreateDeviceFunc = DCompositionCreateDeviceCallback( GetProcAddress( dcomp, "DCompositionCreateDevice" ) );
+  if (dcomp) {
+    DCompositionCreateDeviceFunc = DCompositionCreateDeviceCallback(
+        GetProcAddress(dcomp, "DCompositionCreateDevice"));
   }
 
-  if ( !dcomp || !DCompositionCreateDeviceFunc )
-    return CreateClassicSwapChain( hWnd, FullScreen, XRes, YRes, AALevel, RefreshRate );
+  if (!dcomp || !DCompositionCreateDeviceFunc)
+    return CreateClassicSwapChain(hWnd, FullScreen, XRes, YRes, AALevel,
+                                  RefreshRate);
   else
-    return CreateDirectCompositionSwapchain( hWnd, FullScreen, XRes, YRes, AALevel, RefreshRate );
+    return CreateDirectCompositionSwapchain(hWnd, FullScreen, XRes, YRes,
+                                            AALevel, RefreshRate);
 
-  if ( dcomp )
-    FreeLibrary( dcomp );
+  if (dcomp) FreeLibrary(dcomp);
 }
 
-TBOOL CCoreDX11Device::Initialize( CCoreWindowHandler* window, const int32_t AALevel )
-{
-  FORCEDDEBUGLOG( "Initializing DX11 device" );
+TBOOL CCoreDX11Device::Initialize(CCoreWindowHandler* window,
+                                  const int32_t AALevel) {
+  FORCEDDEBUGLOG("Initializing DX11 device");
   Window = window;
 
-  if ( !InitAPI( Window->GetHandle(), Window->GetInitParameters().FullScreen, Window->GetXRes(), Window->GetYRes(), AALevel, 60 ) ) return false;
+  if (!InitAPI(Window->GetHandle(), Window->GetInitParameters().FullScreen,
+               Window->GetXRes(), Window->GetYRes(), AALevel, 60))
+    return false;
 
-  FORCEDDEBUGLOG( "InitAPI ran" );
+  FORCEDDEBUGLOG("InitAPI ran");
 
-  ShowWindow( (HWND)Window->GetHandle(), Window->GetInitParameters().Maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL );
-  FORCEDDEBUGLOG( "Showwindow ran" );
-  SetForegroundWindow( (HWND)Window->GetHandle() );
-  FORCEDDEBUGLOG( "Setforegroundwindow ran" );
-  SetFocus( (HWND)Window->GetHandle() );
-  FORCEDDEBUGLOG( "Setfocus ran" );
+  ShowWindow((HWND)Window->GetHandle(), Window->GetInitParameters().Maximized
+                                            ? SW_SHOWMAXIMIZED
+                                            : SW_SHOWNORMAL);
+  FORCEDDEBUGLOG("Showwindow ran");
+  SetForegroundWindow((HWND)Window->GetHandle());
+  FORCEDDEBUGLOG("Setforegroundwindow ran");
+  SetFocus((HWND)Window->GetHandle());
+  FORCEDDEBUGLOG("Setfocus ran");
   return true;
 }
 
-TBOOL CCoreDX11Device::IsWindowed()
-{
+TBOOL CCoreDX11Device::IsWindowed() {
   BOOL fs = false;
   IDXGIOutput* i = nullptr;
 
-  if ( SwapChain->GetFullscreenState( &fs, &i ) != S_OK )
-  {
-    LOG( LOG_ERROR, _T( "[core] Failed to get fullscreen state" ) );
+  if (SwapChain->GetFullscreenState(&fs, &i) != S_OK) {
+    LOG(LOG_ERROR, _T( "[core] Failed to get fullscreen state" ));
     return false;
   }
 
-  if ( i ) i->Release();
+  if (i) i->Release();
   return fs;
 }
 
-void CCoreDX11Device::Resize( const int32_t xr, const int32_t yr )
-{
-  //LOG(LOG_INFO,_T("[core] Resizing backbuffer to %dx%d"),xr,yr);
-
-  if ( xr <= 0 || yr <= 0 )
-  {
-    LOG( LOG_WARNING, _T( "[core] Trying to resize swapchain to invalid resolution: %d %d"), xr, yr );
+void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
+  if (xr <= 0 || yr <= 0) {
+    LOG(LOG_WARNING,
+        _T( "[core] Trying to resize swapchain to invalid resolution: %d %d"),
+        xr, yr);
     return;
   }
-
 
   DXGI_SWAP_CHAIN_DESC desc;
-  HRESULT res = SwapChain->GetDesc( &desc );
-  if ( res != S_OK )
-  {
-    LOG( LOG_ERROR, _T( "[core] Failed to get swapchain description" ) );
+  HRESULT res = SwapChain->GetDesc(&desc);
+  if (res != S_OK) {
+    LOG(LOG_ERROR, _T( "[core] Failed to get swapchain description" ));
     return;
   }
 
-  if ( desc.BufferDesc.Width == xr && desc.BufferDesc.Height == yr ) return;
+  if (desc.BufferDesc.Width == xr && desc.BufferDesc.Height == yr) return;
 
-  if ( BackBufferView ) BackBufferView->Release();
-  if ( DepthBufferView ) DepthBufferView->Release();
-  if ( DepthBuffer ) DepthBuffer->Release();
+  if (BackBufferView) BackBufferView->Release();
+  if (DepthBufferView) DepthBufferView->Release();
+  if (DepthBuffer) DepthBuffer->Release();
   BackBufferView = nullptr;
   DepthBufferView = nullptr;
   DepthBuffer = nullptr;
 
-  res = SwapChain->ResizeBuffers( desc.BufferCount, xr, yr, DXGI_FORMAT_UNKNOWN, desc.Flags );
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] Failed to resize swapchain to %d %d (bufferCount: %d, flags: %d) (%s)" ), xr, yr, desc.BufferCount, desc.Flags, err.ErrorMessage() );
+  res = SwapChain->ResizeBuffers(desc.BufferCount, xr, yr, DXGI_FORMAT_UNKNOWN,
+                                 desc.Flags);
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] Failed to resize swapchain to %d %d (bufferCount: %d, flags: %d) (%s)" ),
+        xr, yr, desc.BufferCount, desc.Flags, err.ErrorMessage());
     return;
   }
 
-  if ( !CreateBackBuffer( xr, yr ) ) return;
-  if ( !CreateDepthBuffer( xr, yr ) ) return;
+  if (!CreateBackBuffer(xr, yr)) return;
+  if (!CreateDepthBuffer(xr, yr)) return;
 
-  DeviceContext->OMSetRenderTargets( 1, &BackBufferView, DepthBufferView );
-  SetViewport( CRect( 0, 0, xr, yr ) );
-
+  DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
+  SetViewport(CRect(0, 0, xr, yr));
 }
 
-void CCoreDX11Device::SetFullScreenMode( const TBOOL FullScreen, const int32_t xr, const int32_t yr )
-{
-  //if (xr && yr)
-  //{
-  //	DXGI_MODE_DESC m;
-  //	SwapChain->GetDesc()
-  //	SwapChain->ResizeTarget();
-  //}
-
-  LOG( LOG_INFO, _T( "[core] Switching fullscreen mode to %d" ), FullScreen );
+void CCoreDX11Device::SetFullScreenMode(const TBOOL FullScreen,
+                                        const int32_t xr, const int32_t yr) {
+  LOG(LOG_INFO, _T( "[core] Switching fullscreen mode to %d" ), FullScreen);
 
   HRESULT res = SwapChain->SetFullscreenState(FullScreen, nullptr);
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] Failed to set FullScreen mode to %d. (%s)" ), FullScreen, err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR, _T( "[core] Failed to set FullScreen mode to %d. (%s)" ),
+        FullScreen, err.ErrorMessage());
     return;
   }
 }
 
-TBOOL CCoreDX11Device::DeviceOk()
-{
-  return true;
-}
+TBOOL CCoreDX11Device::DeviceOk() { return true; }
 
 //////////////////////////////////////////////////////////////////////////
 // texture functions
 
-std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D( const int32_t XRes, const int32_t YRes, const uint8_t* Data, const TS8 BytesPerPixel, const COREFORMAT Format/* =COREFMT_A8R8G8B8 */, const TBOOL RenderTarget/* =false */ )
-{
-  auto Result = std::make_unique<CCoreDX11Texture2D>( this );
-  if ( !Result->Create( XRes, YRes, Data, BytesPerPixel, Format, RenderTarget ) )
+std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
+    const int32_t XRes, const int32_t YRes, const uint8_t* Data,
+    const char BytesPerPixel, const COREFORMAT Format /* =COREFMT_A8R8G8B8 */,
+    const TBOOL RenderTarget /* =false */) {
+  auto Result = std::make_unique<CCoreDX11Texture2D>(this);
+  if (!Result->Create(XRes, YRes, Data, BytesPerPixel, Format, RenderTarget))
     Result.reset();
   return Result;
 }
 
-std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D( const uint8_t* Data, const int32_t Size )
-{
-  auto Result = std::make_unique<CCoreDX11Texture2D>( this );
-  if ( !Result->Create( Data, Size ) )
-    Result.reset();
+std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
+    const uint8_t* Data, const int32_t Size) {
+  auto Result = std::make_unique<CCoreDX11Texture2D>(this);
+  if (!Result->Create(Data, Size)) Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // vertexbuffer functions
 
-std::unique_ptr <    CCoreVertexBuffer> CCoreDX11Device::CreateVertexBuffer(const uint8_t* Data,
-                                                           const int32_t Size) {
-  auto Result = std::make_unique<CCoreDX11VertexBuffer>( this );
-  if ( !Result->Create( Data, Size ) )
-    Result.reset();
+std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBuffer(
+    const uint8_t* Data, const int32_t Size) {
+  auto Result = std::make_unique<CCoreDX11VertexBuffer>(this);
+  if (!Result->Create(Data, Size)) Result.reset();
   return Result;
 }
 
-std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBufferDynamic( const int32_t Size )
-{
-  auto Result = std::make_unique<CCoreDX11VertexBuffer>( this );
-  if ( !Result->CreateDynamic( Size ) )
-    Result.reset();
+std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBufferDynamic(
+    const int32_t Size) {
+  auto Result = std::make_unique<CCoreDX11VertexBuffer>(this);
+  if (!Result->CreateDynamic(Size)) Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // indexbuffer functions
 
-std::unique_ptr<CCoreIndexBuffer> CCoreDX11Device::CreateIndexBuffer( const int32_t IndexCount, const int32_t IndexSize )
-{
-  auto Result = std::make_unique<CCoreDX11IndexBuffer>( this );
-  if ( !Result->Create( IndexCount, IndexSize ) )
-    Result.reset();
+std::unique_ptr<CCoreIndexBuffer> CCoreDX11Device::CreateIndexBuffer(
+    const int32_t IndexCount, const int32_t IndexSize) {
+  auto Result = std::make_unique<CCoreDX11IndexBuffer>(this);
+  if (!Result->Create(IndexCount, IndexSize)) Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // vertexformat functions
 
-std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat( const CArray<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs )
-{
-  auto Result = std::make_unique<CCoreDX11VertexFormat>( this );
-  if ( !Result->Create( Attributes, vs ) )
-    Result.reset();
+std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat(
+    const CArray<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs) {
+  auto Result = std::make_unique<CCoreDX11VertexFormat>(this);
+  if (!Result->Create(Attributes, vs)) Result.reset();
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // shader functions
 
-//#ifndef CORE_API_D3DX
-//#include <D3Dcompiler.h>
-//#pragma comment(lib,"d3dcompiler.lib")
-//#endif
-
 std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
-  if ( Err ) *Err = _T( "" );
+  if (Err) *Err = _T( "" );
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return {};
 
-  auto s = std::make_unique<CCoreDX11VertexShader>( this );
-  s->SetCode( Code, EntryFunction ,  ShaderVersion  );
+  auto s = std::make_unique<CCoreDX11VertexShader>(this);
+  s->SetCode(Code, EntryFunction, ShaderVersion);
 
-  if ( !s->CompileAndCreate( Err ) ) {
+  if (!s->CompileAndCreate(Err)) {
     s.reset();
   }
 
@@ -646,36 +588,33 @@ std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
 std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
-  if ( Err ) *Err = _T( "" );
+  if (Err) *Err = _T( "" );
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return {};
 
-  auto s = std::make_unique<CCoreDX11PixelShader>( this );
-  s->SetCode( Code, EntryFunction , ShaderVersion );
+  auto s = std::make_unique<CCoreDX11PixelShader>(this);
+  s->SetCode(Code, EntryFunction, ShaderVersion);
 
-  if ( !s->CompileAndCreate( Err ) )
-  {
+  if (!s->CompileAndCreate(Err)) {
     s.reset();
   }
 
   return s;
 }
 
-std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShaderFromBlob( uint8_t* Code, int32_t CodeSize )
-{
-  auto s = std::make_unique<CCoreDX11VertexShader>( this );
-  if ( !s->CreateFromBlob( Code, CodeSize ) )
-  {
+std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShaderFromBlob(
+    uint8_t* Code, int32_t CodeSize) {
+  auto s = std::make_unique<CCoreDX11VertexShader>(this);
+  if (!s->CreateFromBlob(Code, CodeSize)) {
     s.reset();
   }
 
   return s;
 }
 
-std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShaderFromBlob( uint8_t* Code, int32_t CodeSize )
-{
-  auto s = std::make_unique<CCoreDX11PixelShader>( this );
-  if ( !s->CreateFromBlob( Code, CodeSize ) )
-  {
+std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShaderFromBlob(
+    uint8_t* Code, int32_t CodeSize) {
+  auto s = std::make_unique<CCoreDX11PixelShader>(this);
+  if (!s->CreateFromBlob(Code, CodeSize)) {
     s.reset();
   }
 
@@ -687,15 +626,14 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
                                                            LPCSTR EntryFunction,
                                                            LPCSTR ShaderVersion,
                                                            std::string* Err) {
-  if ( Err ) *Err = _T( "" );
+  if (Err) *Err = _T( "" );
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
-  CCoreDX11GeometryShader* s = new CCoreDX11GeometryShader( this );
-  s->SetCode( Code, EntryFunction, ShaderVersion );
+  CCoreDX11GeometryShader* s = new CCoreDX11GeometryShader(this);
+  s->SetCode(Code, EntryFunction, ShaderVersion);
 
-  if ( !s->CompileAndCreate( Err ) )
-  {
-    SAFEDELETE( s );
+  if (!s->CompileAndCreate(Err)) {
+    SAFEDELETE(s);
     return nullptr;
   }
 
@@ -707,15 +645,14 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
                                                        LPCSTR EntryFunction,
                                                        LPCSTR ShaderVersion,
                                                        std::string* Err) {
-  if ( Err ) *Err = _T( "" );
+  if (Err) *Err = _T( "" );
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
-  CCoreDX11DomainShader* s = new CCoreDX11DomainShader( this );
-  s->SetCode( Code , EntryFunction, ShaderVersion );
+  CCoreDX11DomainShader* s = new CCoreDX11DomainShader(this);
+  s->SetCode(Code, EntryFunction, ShaderVersion);
 
-  if ( !s->CompileAndCreate( Err ) )
-  {
-    SAFEDELETE( s );
+  if (!s->CompileAndCreate(Err)) {
+    SAFEDELETE(s);
     return nullptr;
   }
 
@@ -727,15 +664,14 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
                                                    LPCSTR EntryFunction,
                                                    LPCSTR ShaderVersion,
                                                    std::string* Err) {
-  if ( Err ) *Err = _T( "" );
+  if (Err) *Err = _T( "" );
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
-  CCoreDX11HullShader* s = new CCoreDX11HullShader( this );
-  s->SetCode( Code, EntryFunction, ShaderVersion );
+  CCoreDX11HullShader* s = new CCoreDX11HullShader(this);
+  s->SetCode(Code, EntryFunction, ShaderVersion);
 
-  if ( !s->CompileAndCreate( Err ) )
-  {
-    SAFEDELETE( s );
+  if (!s->CompileAndCreate(Err)) {
+    SAFEDELETE(s);
     return nullptr;
   }
 
@@ -747,332 +683,252 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
                                                          LPCSTR EntryFunction,
                                                          LPCSTR ShaderVersion,
                                                          std::string* Err) {
-  if ( Err ) *Err = _T( "" );
+  if (Err) *Err = _T( "" );
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) return nullptr;
 
-  CCoreDX11ComputeShader* s = new CCoreDX11ComputeShader( this );
-  s->SetCode( Code, EntryFunction, ShaderVersion );
+  CCoreDX11ComputeShader* s = new CCoreDX11ComputeShader(this);
+  s->SetCode(Code, EntryFunction, ShaderVersion);
 
-  if ( !s->CompileAndCreate( Err ) )
-  {
-    SAFEDELETE( s );
+  if (!s->CompileAndCreate(Err)) {
+    SAFEDELETE(s);
     return nullptr;
   }
 
   return s;
 }
 
-CCoreVertexShader* CCoreDX11Device::CreateVertexShader()
-{
-  return new CCoreDX11VertexShader( this );
+CCoreVertexShader* CCoreDX11Device::CreateVertexShader() {
+  return new CCoreDX11VertexShader(this);
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShader()
-{
-  return new CCoreDX11PixelShader( this );
+CCorePixelShader* CCoreDX11Device::CreatePixelShader() {
+  return new CCoreDX11PixelShader(this);
 }
 
-CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader()
-{
-  return new CCoreDX11GeometryShader( this );
+CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader() {
+  return new CCoreDX11GeometryShader(this);
 }
 
-CCoreHullShader* CCoreDX11Device::CreateHullShader()
-{
-  return new CCoreDX11HullShader( this );
+CCoreHullShader* CCoreDX11Device::CreateHullShader() {
+  return new CCoreDX11HullShader(this);
 }
 
-CCoreDomainShader* CCoreDX11Device::CreateDomainShader()
-{
-  return new CCoreDX11DomainShader( this );
+CCoreDomainShader* CCoreDX11Device::CreateDomainShader() {
+  return new CCoreDX11DomainShader(this);
 }
 
-CCoreComputeShader* CCoreDX11Device::CreateComputeShader()
-{
-  return new CCoreDX11ComputeShader( this );
+CCoreComputeShader* CCoreDX11Device::CreateComputeShader() {
+  return new CCoreDX11ComputeShader(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // renderstate
 
-TBOOL CCoreDX11Device::ApplyRenderState( const CORESAMPLER Sampler, const CORERENDERSTATE RenderState, const CORERENDERSTATEVALUE Value )
-{
-  switch ( RenderState )
-  {
-  case CORERS_BLENDSTATE:
-  {
-    if ( !Value.BlendState )
-    {
-      DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
-      CurrentBlendState = nullptr;
-      return true;
-    }
-    return Value.BlendState->Apply();
-  }
-  break;
-  case CORERS_RASTERIZERSTATE:
-  {
-    if ( !Value.RasterizerState )
-    {
-      DeviceContext->RSSetState(nullptr);
-      CurrentRasterizerState = nullptr;
-      return true;
-    }
-    return Value.RasterizerState->Apply();
-  }
-  break;
-  case CORERS_DEPTHSTENCILSTATE:
-  {
-    if ( !Value.DepthStencilState )
-    {
-      DeviceContext->OMSetDepthStencilState(nullptr, 0);
-      CurrentDepthStencilState = nullptr;
-      return true;
-    }
-    return Value.DepthStencilState->Apply();
-  }
-  break;
-  case CORERS_SAMPLERSTATE:
-  {
-    if ( !Value.SamplerState ) return false;
-    return Value.SamplerState->Apply( Sampler );
-  }
-  break;
-  case CORERS_TEXTURE:
-  {
-    if ( !Value.Texture )
-    {
-      ID3D11ShaderResourceView* null[ 1 ];
-      null[0] = nullptr;
+TBOOL CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
+                                        const CORERENDERSTATE RenderState,
+                                        const CORERENDERSTATEVALUE Value) {
+  switch (RenderState) {
+    case CORERS_BLENDSTATE: {
+      if (!Value.BlendState) {
+        DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+        CurrentBlendState = nullptr;
+        return true;
+      }
+      return Value.BlendState->Apply();
+    } break;
+    case CORERS_RASTERIZERSTATE: {
+      if (!Value.RasterizerState) {
+        DeviceContext->RSSetState(nullptr);
+        CurrentRasterizerState = nullptr;
+        return true;
+      }
+      return Value.RasterizerState->Apply();
+    } break;
+    case CORERS_DEPTHSTENCILSTATE: {
+      if (!Value.DepthStencilState) {
+        DeviceContext->OMSetDepthStencilState(nullptr, 0);
+        CurrentDepthStencilState = nullptr;
+        return true;
+      }
+      return Value.DepthStencilState->Apply();
+    } break;
+    case CORERS_SAMPLERSTATE: {
+      if (!Value.SamplerState) return false;
+      return Value.SamplerState->Apply(Sampler);
+    } break;
+    case CORERS_TEXTURE: {
+      if (!Value.Texture) {
+        ID3D11ShaderResourceView* null[1];
+        null[0] = nullptr;
 
-      if ( Sampler >= CORESMP_PS0 && Sampler <= CORESMP_PS15 )
-        DeviceContext->PSSetShaderResources( Sampler, 1, null );
-      if ( Sampler >= CORESMP_VS0 && Sampler <= CORESMP_VS3 )
-        DeviceContext->VSSetShaderResources( Sampler - CORESMP_VS0, 1, null );
-      if ( Sampler >= CORESMP_GS0 && Sampler <= CORESMP_GS3 )
-        DeviceContext->GSSetShaderResources( Sampler - CORESMP_GS0, 1, null );
-      return true;
-    }
-    return ApplyTextureToSampler( Sampler, Value.Texture );
-  }
-  break;
-  case CORERS_VERTEXFORMAT:
-  {
-    if ( !Value.VertexFormat )
-    {
-      CurrentVertexFormatSize = 0;
-      DeviceContext->IASetInputLayout(nullptr);
-      return true;
-    }
+        if (Sampler >= CORESMP_PS0 && Sampler <= CORESMP_PS15)
+          DeviceContext->PSSetShaderResources(Sampler, 1, null);
+        if (Sampler >= CORESMP_VS0 && Sampler <= CORESMP_VS3)
+          DeviceContext->VSSetShaderResources(Sampler - CORESMP_VS0, 1, null);
+        if (Sampler >= CORESMP_GS0 && Sampler <= CORESMP_GS3)
+          DeviceContext->GSSetShaderResources(Sampler - CORESMP_GS0, 1, null);
+        return true;
+      }
+      return ApplyTextureToSampler(Sampler, Value.Texture);
+    } break;
+    case CORERS_VERTEXFORMAT: {
+      if (!Value.VertexFormat) {
+        CurrentVertexFormatSize = 0;
+        DeviceContext->IASetInputLayout(nullptr);
+        return true;
+      }
 
-    CurrentVertexFormatSize = Value.VertexFormat->GetSize();
-    return ApplyVertexFormat( Value.VertexFormat );
-  }
-  break;
-  case CORERS_INDEXBUFFER:
-  {
-    if ( !Value.IndexBuffer )
-    {
-      DeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
+      CurrentVertexFormatSize = Value.VertexFormat->GetSize();
+      return ApplyVertexFormat(Value.VertexFormat);
+    } break;
+    case CORERS_INDEXBUFFER: {
+      if (!Value.IndexBuffer) {
+        DeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
+        return true;
+      }
+      return ApplyIndexBuffer(Value.IndexBuffer);
+    } break;
+    case CORERS_VERTEXSHADER: {
+      if (!Value.VertexShader) {
+        DeviceContext->VSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyVertexShader(Value.VertexShader);
+    } break;
+    case CORERS_GEOMETRYSHADER: {
+      if (!Value.GeometryShader) {
+        DeviceContext->GSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyGeometryShader(Value.GeometryShader);
+    } break;
+    case CORERS_HULLSHADER: {
+      if (!Value.GeometryShader) {
+        DeviceContext->HSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyHullShader(Value.HullShader);
+    } break;
+    case CORERS_DOMAINSHADER: {
+      if (!Value.DomainShader) {
+        DeviceContext->DSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyDomainShader(Value.DomainShader);
+    } break;
+    case CORERS_COMPUTESHADER: {
+      if (!Value.ComputeShader) {
+        DeviceContext->DSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyComputeShader(Value.ComputeShader);
+    } break;
+    case CORERS_PIXELSHADER: {
+      if (!Value.PixelShader) {
+        DeviceContext->PSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyPixelShader(Value.PixelShader);
+    } break;
+    default:
       return true;
-    }
-    return ApplyIndexBuffer( Value.IndexBuffer );
-  }
-  break;
-  case CORERS_VERTEXSHADER:
-  {
-    if ( !Value.VertexShader )
-    {
-      DeviceContext->VSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyVertexShader( Value.VertexShader );
-  }
-  break;
-  case CORERS_GEOMETRYSHADER:
-  {
-    if ( !Value.GeometryShader )
-    {
-      DeviceContext->GSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyGeometryShader( Value.GeometryShader );
-  }
-  break;
-  case CORERS_HULLSHADER:
-  {
-    if ( !Value.GeometryShader )
-    {
-      DeviceContext->HSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyHullShader( Value.HullShader );
-  }
-  break;
-  case CORERS_DOMAINSHADER:
-  {
-    if ( !Value.DomainShader )
-    {
-      DeviceContext->DSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyDomainShader( Value.DomainShader );
-  }
-  break;
-  case CORERS_COMPUTESHADER:
-  {
-    if ( !Value.ComputeShader )
-    {
-      DeviceContext->DSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyComputeShader( Value.ComputeShader );
-  }
-  break;
-  case CORERS_PIXELSHADER:
-  {
-    if ( !Value.PixelShader )
-    {
-      DeviceContext->PSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyPixelShader( Value.PixelShader );
-  }
-  break;
-  default: return true;
   }
 }
 
-TBOOL CCoreDX11Device::SetNoVertexBuffer()
-{
+TBOOL CCoreDX11Device::SetNoVertexBuffer() {
   DeviceContext->IASetVertexBuffers(0, 1, nullptr, nullptr, nullptr);
   return true;
 }
 
-TBOOL CCoreDX11Device::CommitRenderStates()
-{
-  return true;
-}
+TBOOL CCoreDX11Device::CommitRenderStates() { return true; }
 
 //////////////////////////////////////////////////////////////////////////
 // display functions
 
-TBOOL CCoreDX11Device::BeginScene()
-{
-  return true;
-}
+TBOOL CCoreDX11Device::BeginScene() { return true; }
 
-TBOOL CCoreDX11Device::EndScene()
-{
-  return true;
-}
+TBOOL CCoreDX11Device::EndScene() { return true; }
 
-TBOOL CCoreDX11Device::Clear( const TBOOL clearPixels, const TBOOL clearDepth, const CColor& Color, const float Depth, const int32_t Stencil )
-{
+TBOOL CCoreDX11Device::Clear(const TBOOL clearPixels, const TBOOL clearDepth,
+                             const CColor& Color, const float Depth,
+                             const int32_t Stencil) {
   int32_t Flags = 0;
 
-  float col[ 4 ] = { Color[ 0 ] / 255.0f, Color[ 1 ] / 255.0f, Color[ 2 ] / 255.0f, Color[ 3 ] / 255.0f };
+  float col[4] = {Color[0] / 255.0f, Color[1] / 255.0f, Color[2] / 255.0f,
+                  Color[3] / 255.0f};
 
-  if ( clearPixels )
-    DeviceContext->ClearRenderTargetView( BackBufferView, col );
+  if (clearPixels) DeviceContext->ClearRenderTargetView(BackBufferView, col);
 
-  if ( clearDepth )
-    DeviceContext->ClearDepthStencilView( DepthBufferView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, Depth, Stencil );
+  if (clearDepth)
+    DeviceContext->ClearDepthStencilView(
+        DepthBufferView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, Depth,
+        Stencil);
 
-  //if (clearPixels) Flags|=D3DCLEAR_TARGET;
-  //if (clearDepth) Flags|=D3DCLEAR_ZBUFFER;
-  //return Device->Clear(0, NULL, Flags , Color, Depth, Stencil)==D3D_OK;
   return true;
 }
 
-TBOOL CCoreDX11Device::Flip( TBOOL Vsync )
-{
-  //RECT r;
-  //r.top=r.left=0; 
-  //r.right=D3DPP.BackBufferWidth; 
-  //r.bottom=D3DPP.BackBufferHeight;
-
-  //if (D3DPP.Windowed)
-  //	return Device->Present(&r,NULL,NULL,NULL)==D3D_OK;
-  //else
-  //	return Device->Present(NULL,NULL,NULL,NULL)==D3D_OK;
-
-
-  //VSYNC: SwapChain->Present(1,0);
-  //NON VSYNC: SwapChain->Present(0,0);
-
+TBOOL CCoreDX11Device::Flip(TBOOL Vsync) {
   HRESULT res;
 
-  if ( Vsync ) res = SwapChain->Present( 1, 0 );
-  else res = SwapChain->Present( 0, 0 );
+  if (Vsync)
+    res = SwapChain->Present(1, 0);
+  else
+    res = SwapChain->Present(0, 0);
 
-  //if (res!=S_OK)
-  //{
-  //	_com_error err(res);
-  //	LOG(LOG_ERROR,_T("[core] Present failed (%s)"),err.ErrorMessage());
-  //}
   return res == S_OK;
 }
 
-TBOOL CCoreDX11Device::DrawIndexedTriangles( int32_t Count, int32_t NumVertices )
-{
-  DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-  if ( !ApplyRequestedRenderState() ) return false;
-  DeviceContext->DrawIndexed( Count * 3, 0, 0 );
+TBOOL CCoreDX11Device::DrawIndexedTriangles(int32_t Count,
+                                            int32_t NumVertices) {
+  DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  if (!ApplyRequestedRenderState()) return false;
+  DeviceContext->DrawIndexed(Count * 3, 0, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawLines( int32_t Count )
-{
-  DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
-  if ( !ApplyRequestedRenderState() ) return false;
-  DeviceContext->Draw( Count * 2, 0 );
+TBOOL CCoreDX11Device::DrawLines(int32_t Count) {
+  DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+  if (!ApplyRequestedRenderState()) return false;
+  DeviceContext->Draw(Count * 2, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawIndexedLines( int32_t Count, int32_t NumVertices )
-{
-  DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
-  if ( !ApplyRequestedRenderState() ) return false;
-  DeviceContext->DrawIndexed( Count * 2, 0, 0 );
+TBOOL CCoreDX11Device::DrawIndexedLines(int32_t Count, int32_t NumVertices) {
+  DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+  if (!ApplyRequestedRenderState()) return false;
+  DeviceContext->DrawIndexed(Count * 2, 0, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawTriangles( int32_t Count )
-{
-  DeviceContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-  if ( !ApplyRequestedRenderState() ) return false;
-  DeviceContext->Draw( Count * 3, 0 );
+TBOOL CCoreDX11Device::DrawTriangles(int32_t Count) {
+  DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+  if (!ApplyRequestedRenderState()) return false;
+  DeviceContext->Draw(Count * 3, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::SetViewport( CRect Viewport )
-{
+TBOOL CCoreDX11Device::SetViewport(CRect Viewport) {
   D3D11_VIEWPORT viewport;
-  memset( &viewport, 0, sizeof( D3D11_VIEWPORT ) );
+  memset(&viewport, 0, sizeof(D3D11_VIEWPORT));
 
   viewport.TopLeftX = static_cast<float>(Viewport.x1);
   viewport.TopLeftY = static_cast<float>(Viewport.y1);
-  viewport.Width = max( 0, (float)Viewport.Width() );
-  viewport.Height = max( 0, (float)Viewport.Height() );
+  viewport.Width = max(0, (float)Viewport.Width());
+  viewport.Height = max(0, (float)Viewport.Height());
   viewport.MinDepth = 0;
   viewport.MaxDepth = 1;
-  DeviceContext->RSSetViewports( 1, &viewport );
+  DeviceContext->RSSetViewports(1, &viewport);
 
   return true;
 }
 
-void CCoreDX11Device::SetShaderConstants( const CCoreConstantBuffer* Buffers )
-{
-  void* buffers[ 16 ];
+void CCoreDX11Device::SetShaderConstants(const CCoreConstantBuffer* Buffers) {
+  void* buffers[16];
 
-  if ( Buffers )
-  {
-      buffers[ 0 ] = Buffers->GetBufferPointer();
-  }
-  else
-  {
-    memset( buffers, 0, 16 * sizeof( void* ) );
+  if (Buffers) {
+    buffers[0] = Buffers->GetBufferPointer();
+  } else {
+    memset(buffers, 0, 16 * sizeof(void*));
   }
 
   DeviceContext->VSSetConstantBuffers(
@@ -1083,75 +939,61 @@ void CCoreDX11Device::SetShaderConstants( const CCoreConstantBuffer* Buffers )
       0, 1, reinterpret_cast<ID3D11Buffer**>(buffers));
 }
 
-std::unique_ptr<CCoreConstantBuffer> CCoreDX11Device::CreateConstantBuffer()
-{
-  return std::make_unique<CCoreDX11ConstantBuffer>( this );
+std::unique_ptr<CCoreConstantBuffer> CCoreDX11Device::CreateConstantBuffer() {
+  return std::make_unique<CCoreDX11ConstantBuffer>(this);
 }
 
-std::unique_ptr<CCoreBlendState> CCoreDX11Device::CreateBlendState()
-{
-  return std::make_unique<CCoreDX11BlendState>( this );
+std::unique_ptr<CCoreBlendState> CCoreDX11Device::CreateBlendState() {
+  return std::make_unique<CCoreDX11BlendState>(this);
 }
 
-std::unique_ptr<CCoreDepthStencilState> CCoreDX11Device::CreateDepthStencilState()
-{
-  return std::make_unique<CCoreDX11DepthStencilState>( this );
+std::unique_ptr<CCoreDepthStencilState>
+CCoreDX11Device::CreateDepthStencilState() {
+  return std::make_unique<CCoreDX11DepthStencilState>(this);
 }
 
-std::unique_ptr<CCoreRasterizerState> CCoreDX11Device::CreateRasterizerState()
-{
-  return std::make_unique<CCoreDX11RasterizerState>( this );
+std::unique_ptr<CCoreRasterizerState> CCoreDX11Device::CreateRasterizerState() {
+  return std::make_unique<CCoreDX11RasterizerState>(this);
 }
 
-std::unique_ptr<CCoreSamplerState> CCoreDX11Device::CreateSamplerState()
-{
-  return std::make_unique<CCoreDX11SamplerState>( this );
+std::unique_ptr<CCoreSamplerState> CCoreDX11Device::CreateSamplerState() {
+  return std::make_unique<CCoreDX11SamplerState>(this);
 }
 
-void CCoreDX11Device::SetCurrentDepthStencilState( ID3D11DepthStencilState* bs )
-{
+void CCoreDX11Device::SetCurrentDepthStencilState(ID3D11DepthStencilState* bs) {
   CurrentDepthStencilState = bs;
 }
 
-ID3D11DepthStencilState* CCoreDX11Device::GetCurrentDepthStencilState()
-{
+ID3D11DepthStencilState* CCoreDX11Device::GetCurrentDepthStencilState() {
   return CurrentDepthStencilState;
 }
 
-void CCoreDX11Device::SetCurrentRasterizerState( ID3D11RasterizerState* bs )
-{
+void CCoreDX11Device::SetCurrentRasterizerState(ID3D11RasterizerState* bs) {
   CurrentRasterizerState = bs;
 }
 
-ID3D11RasterizerState* CCoreDX11Device::GetCurrentRasterizerState()
-{
+ID3D11RasterizerState* CCoreDX11Device::GetCurrentRasterizerState() {
   return CurrentRasterizerState;
 }
 
-void CCoreDX11Device::SetCurrentBlendState( ID3D11BlendState* bs )
-{
+void CCoreDX11Device::SetCurrentBlendState(ID3D11BlendState* bs) {
   CurrentBlendState = bs;
 }
 
-ID3D11BlendState* CCoreDX11Device::GetCurrentBlendState()
-{
+ID3D11BlendState* CCoreDX11Device::GetCurrentBlendState() {
   return CurrentBlendState;
 }
 
-TBOOL CCoreDX11Device::SetRenderTarget( CCoreTexture2D* RT )
-{
-  if ( !RT )
-  {
-    //DeviceContext->OMSetRenderTargetsAndUnorderedAccessViews( 1, &BackBufferView, DepthBufferView, 0, 0, NULL, NULL );
-    DeviceContext->OMSetRenderTargets( 1, &BackBufferView, DepthBufferView );
+TBOOL CCoreDX11Device::SetRenderTarget(CCoreTexture2D* RT) {
+  if (!RT) {
+    DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
     return true;
   }
 
   return false;
 }
 
-void CCoreDX11Device::ForceStateReset()
-{
+void CCoreDX11Device::ForceStateReset() {
   CurrentVertexBuffer = nullptr;
   CurrentRenderState.Flush();
   CurrentBlendState = nullptr;
@@ -1159,44 +1001,35 @@ void CCoreDX11Device::ForceStateReset()
   CurrentRasterizerState = nullptr;
 }
 
-CCoreTexture2D* CCoreDX11Device::CopyTexture( CCoreTexture2D* Texture )
-{
+CCoreTexture2D* CCoreDX11Device::CopyTexture(CCoreTexture2D* Texture) {
   return Texture->Copy();
 }
 
-void CCoreDX11Device::TakeScreenShot( std::string_view Filename )
-{
+void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
   ID3D11Texture2D* bb;
 
   HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
                                      reinterpret_cast<LPVOID*>(&bb));
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ),
+        err.ErrorMessage());
     return;
   }
 
-  //D3DX11SaveTextureToFile(DeviceContext, bb, D3DX11_IFF_PNG, Filename.GetPointer());
+  CCoreDX11Texture2D* dummy = new CCoreDX11Texture2D(this);
+  dummy->SetTextureHandle(bb);
 
-  //CStreamWriterMemory Writer;
-  //HRESULT res = SaveDDSTexture(DeviceContext, bb, Writer);
-
-//	CCoreTexture2D *t=new
-
-  CCoreDX11Texture2D* dummy = new CCoreDX11Texture2D( this );
-  dummy->SetTextureHandle( bb );
-
-  dummy->ExportToImage( Filename, true, CORE_PNG, false );
+  dummy->ExportToImage(Filename, true, CORE_PNG, false);
 
   dummy->SetTextureHandle(nullptr);
   dummy->SetView(nullptr);
-  SAFEDELETE( dummy );
-
+  SAFEDELETE(dummy);
 
   bb->Release();
 
-  LOG_NFO( "[core] Screenshot %s saved", Filename );
+  LOG_NFO("[core] Screenshot %s saved", Filename);
 }
 
 #ifdef ENABLE_PIX_API
@@ -1204,35 +1037,30 @@ void CCoreDX11Device::TakeScreenShot( std::string_view Filename )
 #include "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vsgcapture.h"
 #endif
 
-void CCoreDX11Device::InitializeDebugAPI()
-{
+void CCoreDX11Device::InitializeDebugAPI() {
 #ifdef ENABLE_PIX_API
-  //InitVsPix();
+  // InitVsPix();
 #endif
 }
 
-void CCoreDX11Device::CaptureCurrentFrame()
-{
+void CCoreDX11Device::CaptureCurrentFrame() {
 #ifdef ENABLE_PIX_API
   g_pVsgDbg->CaptureCurrentFrame();
 #endif
 }
 
-void CCoreDX11Device::BeginOcclusionQuery()
-{
-  if ( OcclusionQuery )
-    DeviceContext->Begin( OcclusionQuery );
+void CCoreDX11Device::BeginOcclusionQuery() {
+  if (OcclusionQuery) DeviceContext->Begin(OcclusionQuery);
 }
 
-TBOOL CCoreDX11Device::EndOcclusionQuery()
-{
-  if ( OcclusionQuery )
-  {
-    DeviceContext->End( OcclusionQuery );
+TBOOL CCoreDX11Device::EndOcclusionQuery() {
+  if (OcclusionQuery) {
+    DeviceContext->End(OcclusionQuery);
 
-    UINT64 queryData; // This data type is different depending on the query type
-    while ( S_OK != DeviceContext->GetData( OcclusionQuery, &queryData, sizeof( UINT64 ), 0 ) )
-    {
+    UINT64
+    queryData;  // This data type is different depending on the query type
+    while (S_OK != DeviceContext->GetData(OcclusionQuery, &queryData,
+                                          sizeof(UINT64), 0)) {
     }
 
     return queryData > 0;
@@ -1241,16 +1069,16 @@ TBOOL CCoreDX11Device::EndOcclusionQuery()
   return 0;
 }
 
-ID3D11Texture2D* CCoreDX11Device::GetBackBuffer()
-{
+ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
   ID3D11Texture2D* bb;
 
   HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
                                      reinterpret_cast<LPVOID*>(&bb));
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ), err.ErrorMessage() );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR,
+        _T( "[core] DirectX11 Swapchain buffer acquisition failed (%s)" ),
+        err.ErrorMessage());
     return nullptr;
   }
 

@@ -1,119 +1,120 @@
-#include "BaseLib.h"
+#include "ImageDecompressor.h"
+
+#include <comdef.h>
 #include <olectl.h>
 
-#define HIMETRIC_INCH	2540
+#include "BaseLib.h"
 
-uint8_t *DecompressImage( const uint8_t *ImageData, int32_t ImageDataSize, int32_t &XSize, int32_t &YSize )
-{
+#define HIMETRIC_INCH 2540
+
+uint8_t *DecompressImage(const uint8_t *ImageData, int32_t ImageDataSize,
+                         int32_t &XSize, int32_t &YSize) {
   if (!ImageData || !ImageDataSize) return nullptr;
 
   XSize = YSize = 0;
   LPPICTURE gpPicture = nullptr;
 
   LPVOID pvData = nullptr;
-  HGLOBAL hGlobal = GlobalAlloc( GMEM_MOVEABLE, ImageDataSize );
+  HGLOBAL hGlobal = GlobalAlloc(GMEM_MOVEABLE, ImageDataSize);
 
   if (!hGlobal) return nullptr;
 
-  pvData = GlobalLock( hGlobal );
-  if ( !pvData )
-  {
-    GlobalFree( hGlobal );
+  pvData = GlobalLock(hGlobal);
+  if (!pvData) {
+    GlobalFree(hGlobal);
     return nullptr;
   }
 
-  memcpy( pvData, ImageData, ImageDataSize );
+  memcpy(pvData, ImageData, ImageDataSize);
 
-  GlobalUnlock( hGlobal );
+  GlobalUnlock(hGlobal);
 
-  if ( GetLastError() != NO_ERROR )
-  {
-    GlobalFree( hGlobal );
+  if (GetLastError() != NO_ERROR) {
+    GlobalFree(hGlobal);
     return nullptr;
   }
 
   LPSTREAM pstm = nullptr;
-  HRESULT res = CreateStreamOnHGlobal( hGlobal, TRUE, &pstm );
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[base] CreateStreamOnHGlobal failed (%s)" ), err.ErrorMessage() );
+  HRESULT res = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR, _T( "[base] CreateStreamOnHGlobal failed (%s)" ),
+        err.ErrorMessage());
     return nullptr;
   }
 
   res = OleLoadPicture(pstm, ImageDataSize, FALSE, IID_IPicture,
                        reinterpret_cast<LPVOID *>(&gpPicture));
 
-  if ( res != S_OK )
-  {
-    if ( res != 0x800A01E1 ) // this is given when a png is loaded through oleloadpicture
+  if (res != S_OK) {
+    if (res != 0x800A01E1)  // this is given when a png is loaded through
+                            // oleloadpicture
     {
-      _com_error err( res );
-      LOG( LOG_DEBUG, _T( "[base] OleLoadPicture failed (%s)" ), err.ErrorMessage() );
+      _com_error err(res);
+      LOG(LOG_DEBUG, _T( "[base] OleLoadPicture failed (%s)" ),
+          err.ErrorMessage());
     }
     pstm->Release();
-    GlobalFree( hGlobal );
+    GlobalFree(hGlobal);
     return nullptr;
   }
 
   pstm->Release();
-  GlobalFree( hGlobal );
+  GlobalFree(hGlobal);
 
   if (!gpPicture) return nullptr;
 
   OLE_XSIZE_HIMETRIC hmWidth;
   OLE_YSIZE_HIMETRIC hmHeight;
 
-  gpPicture->get_Width( &hmWidth );
-  gpPicture->get_Height( &hmHeight );
+  gpPicture->get_Width(&hmWidth);
+  gpPicture->get_Height(&hmHeight);
 
   HDC hdc = GetDC(nullptr);
-  HDC mdc = CreateCompatibleDC( hdc );
+  HDC mdc = CreateCompatibleDC(hdc);
 
-  XSize = MulDiv( hmWidth, GetDeviceCaps( mdc, LOGPIXELSX ), HIMETRIC_INCH );
-  YSize = MulDiv( hmHeight, GetDeviceCaps( mdc, LOGPIXELSY ), HIMETRIC_INCH );
+  XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), HIMETRIC_INCH);
+  YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), HIMETRIC_INCH);
 
-  uint8_t *Image = new uint8_t[ XSize*YSize * 4 ];
-  memset( Image, 0, XSize*YSize * 4 );
+  uint8_t *Image = new uint8_t[XSize * YSize * 4];
+  memset(Image, 0, XSize * YSize * 4);
 
-  HBITMAP bm = CreateCompatibleBitmap( hdc, XSize, YSize );
+  HBITMAP bm = CreateCompatibleBitmap(hdc, XSize, YSize);
   BITMAPINFO bmi;
-  bmi.bmiHeader.biSize = sizeof( bmi.bmiHeader );
+  bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
   bmi.bmiHeader.biWidth = XSize;
   bmi.bmiHeader.biHeight = YSize;
   bmi.bmiHeader.biPlanes = 1;
   bmi.bmiHeader.biBitCount = 32;
   bmi.bmiHeader.biCompression = BI_RGB;
 
-  HGDIOBJ oldbm = SelectObject( mdc, bm );
-  RECT r = { 0, 0, XSize, YSize };
+  HGDIOBJ oldbm = SelectObject(mdc, bm);
+  RECT r = {0, 0, XSize, YSize};
 
   FillRect(mdc, &r, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
 
-  SetBkMode( mdc, TRANSPARENT );
+  SetBkMode(mdc, TRANSPARENT);
 
-  res = gpPicture->Render( mdc, 0, YSize - 1, XSize, -YSize, 0, hmHeight, hmWidth, -hmHeight, &r );
+  res = gpPicture->Render(mdc, 0, YSize - 1, XSize, -YSize, 0, hmHeight,
+                          hmWidth, -hmHeight, &r);
 
-  if ( res != S_OK )
-  {
-    _com_error err( res );
-    LOG( LOG_ERROR, _T( "[base] gpPicture->Render failed (%s)" ), err.ErrorMessage() );
-    SAFEDELETEA( Image );
+  if (res != S_OK) {
+    _com_error err(res);
+    LOG(LOG_ERROR, _T( "[base] gpPicture->Render failed (%s)" ),
+        err.ErrorMessage());
+    SAFEDELETEA(Image);
+  } else {
+    GetDIBits(mdc, bm, 0, YSize, Image, &bmi, DIB_RGB_COLORS);
   }
-  else
-  {
-    GetDIBits( mdc, bm, 0, YSize, Image, &bmi, DIB_RGB_COLORS );
-  }
 
-  SelectObject( mdc, oldbm );
-  DeleteDC( mdc );
-  DeleteObject( bm );
+  SelectObject(mdc, oldbm);
+  DeleteDC(mdc);
+  DeleteObject(bm);
   ReleaseDC(nullptr, hdc);
 
   gpPicture->Release();
 
-  for ( int32_t x = 0; x < XSize*YSize; x++ )
-    Image[ x * 4 + 3 ] = 255;
+  for (int32_t x = 0; x < XSize * YSize; x++) Image[x * 4 + 3] = 255;
 
   return Image;
 }

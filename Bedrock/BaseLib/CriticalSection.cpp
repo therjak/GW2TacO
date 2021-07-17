@@ -50,7 +50,7 @@ void LeaveLightweightCS(LIGHTWEIGHT_CRITICALSECTION* cs) {
   }
 }
 
-TBOOL IsLightweightCSInUse(LIGHTWEIGHT_CRITICALSECTION* cs) {
+bool IsLightweightCSInUse(LIGHTWEIGHT_CRITICALSECTION* cs) {
   return !(cs->spinCount == 0 && cs->threadID == THREAD_UNUSED);
 }
 

@@ -1,5 +1,6 @@
 ﻿#include "HPGrid.h"
 
+#include "Bedrock/BaseLib/Sphere.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 

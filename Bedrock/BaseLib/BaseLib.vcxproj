@@ -56,7 +56,6 @@
     <ClInclude Include="BaseConfig.h" />
     <ClInclude Include="BaseLib.h" />
     <ClInclude Include="Color.h" />
-    <ClInclude Include="Constants.h" />
     <ClInclude Include="CrashTracker.h" />
     <ClInclude Include="CriticalSection.h" />
     <ClInclude Include="Dictionary.h" />

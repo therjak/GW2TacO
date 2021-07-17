@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Bedrock/BaseLib/Sphere.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class GW2HPGrid : public CWBItem {

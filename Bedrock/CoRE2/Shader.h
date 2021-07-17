@@ -54,7 +54,6 @@ class CCoreShader : public CCoreResource {
   virtual TBOOL CompileAndCreate(std::string *Err) = 0;
   virtual TBOOL CreateFromBlob(void *Code, int32_t CodeSize) = 0;
 
-  // virtual int32_t GetConstantBufferIndex(TS8 *Name) = 0;
   virtual void *GetHandle() = 0;
 };
 

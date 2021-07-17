@@ -5,6 +5,7 @@
 #include <string_view>
 #include <vector>
 
+#include "../BaseLib/Color.h"
 #include "Application.h"
 
 #define WB_TEXTBOX_SINGLELINE 0x0000001

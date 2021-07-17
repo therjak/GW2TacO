@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 
+#include "../BaseLib/Dictionary.h"
 #include "../CoRE2/Core2.h"
 
 // cache size must be 2^x

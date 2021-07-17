@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "Bedrock/BaseLib/BaseLib.h"
+#include "Bedrock/BaseLib/Sphere.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class LocationalTimer {

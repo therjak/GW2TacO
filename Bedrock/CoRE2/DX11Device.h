@@ -1,26 +1,26 @@
 #pragma once
-#include "Core2_Config.h"
-#include "../BaseLib/BaseLib.h"
-#include "Device.h"
-
-#include "DX11Enums.h"
 #include <dxgi1_3.h>
+
+#include "../BaseLib/BaseLib.h"
+#include "../BaseLib/Color.h"
+#include "Core2_Config.h"
+#include "DX11Enums.h"
+#include "Device.h"
 
 #ifdef CORE_API_DX11
 
-class CCoreDX11Device : public CCoreDevice
-{
-	IDXGISwapChain1 *SwapChain;
-	ID3D11Device *Device;
-	ID3D11DeviceContext *DeviceContext;
+class CCoreDX11Device : public CCoreDevice {
+  IDXGISwapChain1 *SwapChain;
+  ID3D11Device *Device;
+  ID3D11DeviceContext *DeviceContext;
 
-	ID3D11RenderTargetView *BackBufferView;
-	ID3D11Texture2D* DepthBuffer;
-	ID3D11DepthStencilView *DepthBufferView;
+  ID3D11RenderTargetView *BackBufferView;
+  ID3D11Texture2D *DepthBuffer;
+  ID3D11DepthStencilView *DepthBufferView;
 
-	ID3D11BlendState *CurrentBlendState;
-	ID3D11DepthStencilState *CurrentDepthStencilState;
-	ID3D11RasterizerState *CurrentRasterizerState;
+  ID3D11BlendState *CurrentBlendState;
+  ID3D11DepthStencilState *CurrentDepthStencilState;
+  ID3D11RasterizerState *CurrentRasterizerState;
 
   ID3D11Query *OcclusionQuery = nullptr;
 
@@ -72,7 +72,7 @@ class CCoreDX11Device : public CCoreDevice
 
   std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const int32_t XRes, const int32_t YRes, const uint8_t *Data,
-      const TS8 BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8,
+      const char BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8,
       const TBOOL RenderTarget = false) override;
   std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t *Data,
                                                   const int32_t Size) override;
@@ -181,9 +181,9 @@ class CCoreDX11Device : public CCoreDevice
   TBOOL EndOcclusionQuery() override;
 
   //////////////////////////////////////////////////////////////////////////
-	// dx11 specific functions
+  // dx11 specific functions
 
-	ID3D11DepthStencilView *GetDepthBufferView() { return DepthBufferView; }
+  ID3D11DepthStencilView *GetDepthBufferView() { return DepthBufferView; }
 };
 
 #endif

@@ -8,10 +8,10 @@
 
 #ifdef MEMORY_TRACKING
 
-void* __cdecl operator new(size_t size, const TS8* file, int32_t line);
-void* __cdecl operator new[](size_t size, const TS8* file, int32_t line);
-void __cdecl operator delete(void* pointer, const TS8* file, int32_t line);
-void __cdecl operator delete[](void* pointer, const TS8* file, int32_t line);
+void* __cdecl operator new(size_t size, const char* file, int32_t line);
+void* __cdecl operator new[](size_t size, const char* file, int32_t line);
+void __cdecl operator delete(void* pointer, const char* file, int32_t line);
+void __cdecl operator delete[](void* pointer, const char* file, int32_t line);
 
 #define new new (__FILE__, __LINE__)
 
@@ -20,7 +20,7 @@ void __cdecl operator delete[](void* pointer, const TS8* file, int32_t line);
 
 class CAllocationInfo {
  public:
-  TS8* File = nullptr;
+  char* File = nullptr;
   int32_t Line = 0;
   int32_t Size = 0;
 
@@ -30,7 +30,7 @@ class CAllocationInfo {
 
   CAllocationInfo() = default;
   ;
-  CAllocationInfo(TS8* file, int32_t line, int32_t size) {
+  CAllocationInfo(char* file, int32_t line, int32_t size) {
     File = file;
     Line = line;
     Size = size;
@@ -47,7 +47,7 @@ class CMemTracker {
  public:
   CMemTracker();
   virtual ~CMemTracker();
-  void AddPointer(void* p, const TS8* file, int32_t line, int32_t size);
+  void AddPointer(void* p, const char* file, int32_t line, int32_t size);
   void RemovePointer(void* p);
   bool SetMissingIgnore(bool b) {
     CLightweightCriticalSection cs(&critsec);

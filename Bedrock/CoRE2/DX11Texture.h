@@ -25,7 +25,7 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
   void OnDeviceReset() override;
 
   TBOOL Create(const int32_t XRes, const int32_t YRes, const uint8_t *Data,
-               const TS8 BytesPerPixel = 4,
+               const char BytesPerPixel = 4,
                const COREFORMAT Format = COREFMT_A8R8G8B8,
                const TBOOL RenderTarget = false) override;
   TBOOL Create(const uint8_t *Data, const int32_t Size) override;
@@ -35,7 +35,7 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
   TBOOL UnLock() override;
 
   TBOOL Update(const uint8_t *Data, const int32_t XRes, const int32_t YRes,
-               const TS8 BytesPerPixel = 4) override;
+               const char BytesPerPixel = 4) override;
   void SetTextureHandle(ID3D11Texture2D *Hnd) { TextureHandle = Hnd; }
   void SetView(ID3D11ShaderResourceView *v) { View = v; }
 

@@ -2,6 +2,7 @@
 #include <thread>
 #include <vector>
 
+#include "Bedrock/BaseLib/Dictionary.h"
 #include "Bedrock/UtilLib/jsonxx.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 
