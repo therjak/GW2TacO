@@ -1,8 +1,8 @@
 #pragma once
+#include <unordered_map>
 #include <vector>
 
 #include "../BaseLib/Color.h"
-#include "../BaseLib/Dictionary.h"
 #include "DrawAPI.h"
 
 enum WBMETRICTYPE {
@@ -41,7 +41,7 @@ enum WBPOSITIONTYPE {
 };
 
 class CWBPositionDescriptor {
-  CDictionary<WBPOSITIONTYPE, CWBMetricValue> Positions;
+  std::unordered_map<WBPOSITIONTYPE, CWBMetricValue> Positions;
 
  public:
   void SetValue(WBPOSITIONTYPE p, float Relative, float Pixels);
@@ -156,7 +156,6 @@ class CWBSkin {
 
   void RenderElement(CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos);
   void RenderElement(CWBDrawAPI *API, std::string_view Name, CRect &Pos);
-  // void RenderElement( CWBDrawAPI *API, TCHAR *Name, CRect &Pos );
   WBSKINELEMENTID GetElementID(std::string_view Name);
   CWBSkinElement *GetElement(WBSKINELEMENTID id);
   CSize GetElementSize(CWBDrawAPI *API, WBSKINELEMENTID id);

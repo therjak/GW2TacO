@@ -47,12 +47,12 @@ CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
   int32_t Right = 0;
   int32_t Bottom = 0;
 
-  const bool WidthSet = Positions.HasKey(WB_WIDTH);
-  const bool HeightSet = Positions.HasKey(WB_HEIGHT);
-  const bool TopSet = Positions.HasKey(WB_MARGIN_TOP);
-  const bool LeftSet = Positions.HasKey(WB_MARGIN_LEFT);
-  const bool RightSet = Positions.HasKey(WB_MARGIN_RIGHT);
-  const bool BottomSet = Positions.HasKey(WB_MARGIN_BOTTOM);
+  const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
+  const bool HeightSet = Positions.find(WB_HEIGHT) != Positions.end();
+  const bool TopSet = Positions.find(WB_MARGIN_TOP) != Positions.end();
+  const bool LeftSet = Positions.find(WB_MARGIN_LEFT) != Positions.end();
+  const bool RightSet = Positions.find(WB_MARGIN_RIGHT) != Positions.end();
+  const bool BottomSet = Positions.find(WB_MARGIN_BOTTOM) != Positions.end();
 
   if (WidthSet) {
     Width = static_cast<int32_t>(Positions[WB_WIDTH].GetValue(
@@ -140,17 +140,19 @@ void CWBPositionDescriptor::SetValue(WBPOSITIONTYPE p, float Relative,
 }
 
 void CWBPositionDescriptor::ClearMetrics(WBPOSITIONTYPE p) {
-  Positions.Delete(p);
+  Positions.erase(p);
 }
 
-TBOOL CWBPositionDescriptor::IsWidthSet() { return Positions.HasKey(WB_WIDTH); }
+TBOOL CWBPositionDescriptor::IsWidthSet() {
+  return Positions.find(WB_WIDTH) != Positions.end();
+}
 
 TBOOL CWBPositionDescriptor::IsHeightSet() {
-  return Positions.HasKey(WB_HEIGHT);
+  return Positions.find(WB_HEIGHT) != Positions.end();
 }
 
 int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize, CSize ContentSize) {
-  const bool WidthSet = Positions.HasKey(WB_WIDTH);
+  const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
   if (WidthSet)
     return static_cast<int32_t>(Positions[WB_WIDTH].GetValue(
         static_cast<float>(ParentSize.x), ContentSize.x));
@@ -158,7 +160,7 @@ int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize, CSize ContentSize) {
 }
 
 int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
-  const bool HeightSet = Positions.HasKey(WB_HEIGHT);
+  const bool HeightSet = Positions.find(WB_HEIGHT) != Positions.end();
   if (HeightSet)
     return static_cast<int32_t>(Positions[WB_HEIGHT].GetValue(
         static_cast<float>(ParentSize.y), ContentSize.y));
@@ -166,10 +168,10 @@ int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
 }
 
 TBOOL CWBPositionDescriptor::IsAutoResizer() {
-  const bool WidthSet = Positions.HasKey(WB_WIDTH);
+  const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
   if (WidthSet && Positions[WB_WIDTH].IsAutoResizer()) return true;
 
-  const bool HeightSet = Positions.HasKey(WB_HEIGHT);
+  const bool HeightSet = Positions.find(WB_HEIGHT) != Positions.end();
   if (HeightSet && Positions[WB_HEIGHT].IsAutoResizer()) return true;
 
   return false;
