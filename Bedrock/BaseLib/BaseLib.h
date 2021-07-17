@@ -1,9 +1,8 @@
 #pragma once
-#include "Types.h"
-
 #include "BaseConfig.h"
-#include "StackTracker.h"
 #include "Memory.h"
+#include "StackTracker.h"
+#include "Types.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -41,8 +40,10 @@
 #include "Sphere.h"
 #include "StreamReader.h"
 #include "StreamWriter.h"
-#include "String.h"
 #include "Timer.h"
 #include "Vector.h"
 
-#define NoEmptyFile()   namespace { char NoEmptyFileDummy##__LINE__; }
+#define NoEmptyFile()              \
+  namespace {                      \
+  char NoEmptyFileDummy##__LINE__; \
+  }

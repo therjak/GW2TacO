@@ -12,7 +12,6 @@
 #include <cstdio>
 #include <new>
 
-#include "String.h"
 #undef new
 
 // this should force the memTracker variable to be constructed before everything
@@ -35,11 +34,12 @@ CMemTracker::CMemTracker() {
 }
 
 void DumpMemleakEntry(CAllocationInfo& e) {
-  OutputDebugString((CString("Leak:\t") + e.Size + " bytes\n").GetPointer());
+  OutputDebugString(
+      (std::string("Leak:\t") + std::to_string(e.Size) + " bytes\n").c_str());
 
 #ifndef ENABLE_MALLOC_STACK_TRACE
   OutputDebugString(
-      (CString("\t\t") + e.File + " (" + e.Line + ")\n").GetPointer());
+      (std::string("\t\t") + e.File + " (" + e.Line + ")\n").c_str());
 #else
   e.Stack.DumpToDebugOutput();
 #endif
@@ -51,12 +51,13 @@ CMemTracker::~CMemTracker() {
 
   if (!MemTrackerPool->empty()) {
     // report leaks
-    OutputDebugString(CString("\n---Memleaks start here---\n\n").GetPointer());
+    OutputDebugString("\n---Memleaks start here---\n\n");
     for (auto& item : *MemTrackerPool) {
       DumpMemleakEntry(item.second);
     }
-    OutputDebugString((CString("\tTotal bytes leaked: ") + TotalLeaked + "\n\n")
-                          .GetPointer());
+    OutputDebugString((std::string("\tTotal bytes leaked: ") +
+                       std::to_string(TotalLeaked) + "\n\n")
+                          .c_str());
   } else {
     OutputDebugString(
         _T( "**********************************************************\n\t\t\t\t\tNo memleaks found.\n**********************************************************\n\n" ));

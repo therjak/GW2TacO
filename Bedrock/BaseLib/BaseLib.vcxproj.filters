@@ -119,9 +119,6 @@
     <ClInclude Include="CrashTracker.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="String.h">
-      <Filter>Header Files\Basic Classes</Filter>
-    </ClInclude>
     <ClInclude Include="RingBuffer.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
@@ -141,9 +138,6 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="String.cpp">
-      <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>
     <ClCompile Include="Memory.cpp">
       <Filter>Source Files\System</Filter>
