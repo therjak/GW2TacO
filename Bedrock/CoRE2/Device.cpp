@@ -74,16 +74,17 @@ void CCoreDevice::ResetDevice() {
   for (auto &r : Resources) r->OnDeviceReset();
 
   // reload render state
-  RequestedRenderState = CurrentRenderState + RequestedRenderState;
-  CurrentRenderState.Flush();
+  RequestedRenderState.merge(CurrentRenderState);
+  CurrentRenderState.clear();
 }
 
 TBOOL CCoreDevice::ApplyRequestedRenderState() {
-  for (int32_t x = 0; x < RequestedRenderState.NumItems(); x++) {
-    CORERENDERSTATEID ID = 0;
-    CORERENDERSTATEVALUE Value = RequestedRenderState.GetByIndex(x, ID);
+  for (const auto &x : RequestedRenderState) {
+    CORERENDERSTATEID ID = x.first;
+    CORERENDERSTATEVALUE Value = x.second;
 
-    if (!CurrentRenderState.HasKey(ID) || CurrentRenderState[ID] != Value) {
+    if (CurrentRenderState.find(ID) == CurrentRenderState.end() ||
+        CurrentRenderState[ID] != Value) {
       CORERENDERSTATE RS;
       CORESAMPLER Smp;
       RenderStateFromID(ID, RS, Smp);
@@ -107,7 +108,7 @@ TBOOL CCoreDevice::ApplyRequestedRenderState() {
     }
   }
 
-  RequestedRenderState.Flush();
+  RequestedRenderState.clear();
 
   return CommitRenderStates();
 }
@@ -257,10 +258,12 @@ TBOOL CCoreDevice::SetVertexFormat(CCoreVertexFormat *VertexFormat) {
 int32_t CCoreDevice::GetVertexFormatSize() { return CurrentVertexFormatSize; }
 
 CCoreTexture *CCoreDevice::GetTexture(CORESAMPLER Sampler) {
-  if (RequestedRenderState.HasKey(IDFromRenderState(CORERS_TEXTURE, Sampler)))
+  if (RequestedRenderState.find(IDFromRenderState(CORERS_TEXTURE, Sampler)) !=
+      RequestedRenderState.end())
     return RequestedRenderState[IDFromRenderState(CORERS_TEXTURE, Sampler)]
         .Texture;
-  if (CurrentRenderState.HasKey(IDFromRenderState(CORERS_TEXTURE, Sampler)))
+  if (CurrentRenderState.find(IDFromRenderState(CORERS_TEXTURE, Sampler)) !=
+      CurrentRenderState.end())
     return CurrentRenderState[IDFromRenderState(CORERS_TEXTURE, Sampler)]
         .Texture;
   return nullptr;

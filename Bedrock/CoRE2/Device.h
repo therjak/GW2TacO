@@ -1,10 +1,10 @@
 #pragma once
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "../BaseLib/BaseLib.h"
 #include "../BaseLib/Color.h"
-#include "../BaseLib/Dictionary.h"
 #include "../UtilLib/XMLDocument.h"
 #include "ConstantBuffer.h"
 #include "Enums.h"
@@ -39,9 +39,9 @@ class CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // renderstate management
 
-  CDictionaryEnumerable<CORERENDERSTATEID, CORERENDERSTATEVALUE>
+  std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
       CurrentRenderState;
-  CDictionaryEnumerable<CORERENDERSTATEID, CORERENDERSTATEVALUE>
+  std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
       RequestedRenderState;
 
   CCoreVertexBuffer *CurrentVertexBuffer, *RequestedVertexBuffer;

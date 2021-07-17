@@ -995,7 +995,7 @@ TBOOL CCoreDX11Device::SetRenderTarget(CCoreTexture2D* RT) {
 
 void CCoreDX11Device::ForceStateReset() {
   CurrentVertexBuffer = nullptr;
-  CurrentRenderState.Flush();
+  CurrentRenderState.clear();
   CurrentBlendState = nullptr;
   CurrentDepthStencilState = nullptr;
   CurrentRasterizerState = nullptr;
