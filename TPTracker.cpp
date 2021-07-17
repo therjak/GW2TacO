@@ -1,6 +1,7 @@
 ﻿#include "TPTracker.h"
 
 #include <algorithm>
+#include <unordered_map>
 #include <vector>
 
 #include "Bedrock/BaseLib/string_format.h"
@@ -13,16 +14,17 @@ using namespace jsonxx;
 
 LIGHTWEIGHT_CRITICALSECTION itemCacheCritSec;
 
-CDictionary<int32_t, GW2ItemData> itemDataCache;
+std::unordered_map<int32_t, GW2ItemData> itemDataCache;
 
 TBOOL HasGW2ItemData(int32_t itemID) {
   CLightweightCriticalSection cs(&itemCacheCritSec);
-  return itemDataCache.HasKey(itemID);
+  return itemDataCache.find(itemID) != itemDataCache.end();
 }
 
 GW2ItemData GetGW2ItemData(int32_t itemID) {
   CLightweightCriticalSection cs(&itemCacheCritSec);
-  if (itemDataCache.HasKey(itemID)) return itemDataCache[itemID];
+  if (itemDataCache.find(itemID) != itemDataCache.end())
+    return itemDataCache[itemID];
   return GW2ItemData();
 }
 
@@ -111,7 +113,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (!TPTracker::ParseTransaction(item, itemData)) continue;
           incoming.push_back(itemData);
 
-          if (!itemDataCache.HasKey(itemData.itemID))
+          if (itemDataCache.find(itemData.itemID) == itemDataCache.end())
             unknownItems.push_back(itemData.itemID);
 
           if (std::find(priceCheckList.begin(), priceCheckList.end(),
@@ -133,7 +135,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (!TPTracker::ParseTransaction(item, itemData)) continue;
           outgoing.push_back(itemData);
 
-          if (!itemDataCache.HasKey(itemData.itemID))
+          if (itemDataCache.find(itemData.itemID) == itemDataCache.end())
             unknownItems.push_back(itemData.itemID);
 
           if (std::find(priceCheckList.begin(), priceCheckList.end(),

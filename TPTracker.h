@@ -2,7 +2,6 @@
 #include <thread>
 #include <vector>
 
-#include "Bedrock/BaseLib/Dictionary.h"
 #include "Bedrock/UtilLib/jsonxx.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 
@@ -20,8 +19,6 @@ struct GW2ItemData {
   int32_t buyPrice = 0;
   int32_t sellPrice = 0;
 };
-
-extern CDictionary<int32_t, GW2ItemData> itemDataCache;
 
 class TPTracker : public CWBItem {
   void OnDraw(CWBDrawAPI *API) override;
