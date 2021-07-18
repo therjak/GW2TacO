@@ -23,24 +23,24 @@ class LocationalTimer {
 
   std::vector<TimerEvent> Events;
 
-  TBOOL IsRunning = false;
+  bool IsRunning = false;
   int32_t StartTime = 0;
 
   LocationalTimer();
   virtual ~LocationalTimer();
 
   void Update();
-  void ImportData(CXMLNode &node);
+  void ImportData(CXMLNode& node);
 };
 
 class TimerDisplay : public CWBItem {
  public:
-  void OnDraw(CWBDrawAPI *API) override;
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
-  TimerDisplay(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<TimerDisplay> Create(CWBItem *Parent,
+  TimerDisplay(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<TimerDisplay> Create(CWBItem* Parent,
                                                      CRect Position) {
     auto p = std::make_shared<TimerDisplay>(Parent, Position);
     p->SelfRef = p;
@@ -51,7 +51,7 @@ class TimerDisplay : public CWBItem {
   }
   ~TimerDisplay() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "TimerDisplay" ), CWBItem);
 };
 

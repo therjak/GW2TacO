@@ -21,17 +21,17 @@ CCoreWindowParameters::CCoreWindowParameters() {
   ResizeDisabled = false;
 }
 
-CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, TBOOL fs,
-                                             int32_t x, int32_t y, TCHAR *title,
-                                             HICON icon, TBOOL maximize,
-                                             TBOOL noresize) {
+CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, bool fs,
+                                             int32_t x, int32_t y, TCHAR* title,
+                                             HICON icon, bool maximize,
+                                             bool noresize) {
   Initialize(new CCore(), hinst, fs, x, y, title, icon, maximize, noresize);
 }
 
-void CCoreWindowParameters::Initialize(CCoreDevice *device, HINSTANCE hinst,
-                                       TBOOL fs, int32_t x, int32_t y,
-                                       TCHAR *title, HICON icon, TBOOL maximize,
-                                       TBOOL noresize) {
+void CCoreWindowParameters::Initialize(CCoreDevice* device, HINSTANCE hinst,
+                                       bool fs, int32_t x, int32_t y,
+                                       TCHAR* title, HICON icon, bool maximize,
+                                       bool noresize) {
   Device = device;
   hInstance = hinst;
   FullScreen = fs;
@@ -68,7 +68,7 @@ int32_t CCoreWindowHandler::GetXRes() { return XRes; }
 
 int32_t CCoreWindowHandler::GetYRes() { return YRes; }
 
-CCoreWindowParameters &CCoreWindowHandler::GetInitParameters() {
+CCoreWindowParameters& CCoreWindowHandler::GetInitParameters() {
   return InitParameters;
 }
 
@@ -84,7 +84,7 @@ CPoint CCoreWindowHandler::GetRightDownPos() { return RightDownPos; }
 
 CPoint CCoreWindowHandler::GetMidDownPos() { return MidDownPos; }
 
-void CCoreWindowHandler::SetInactiveFrameLimiter(TBOOL set) {
+void CCoreWindowHandler::SetInactiveFrameLimiter(bool set) {
   InactiveFrameLimiter = set;
 }
 
@@ -104,7 +104,7 @@ CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
   }
 }
 
-TBOOL CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters &wp) {
+bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   FORCEDDEBUGLOG("CCoreWindowHandlerWin::Initialize");
   XRes = wp.XRes;
   YRes = wp.YRes;
@@ -214,9 +214,9 @@ TBOOL CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters &wp) {
   return true;
 }
 
-TBOOL CCoreWindowHandlerWin::HandleMessages() { return HandleOSMessages(); }
+bool CCoreWindowHandlerWin::HandleMessages() { return HandleOSMessages(); }
 
-TBOOL CCoreWindowHandlerWin::HandleOSMessages() {
+bool CCoreWindowHandlerWin::HandleOSMessages() {
   MSG msg;
   while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != 0) {
     TranslateMessage(&msg);
@@ -225,7 +225,7 @@ TBOOL CCoreWindowHandlerWin::HandleOSMessages() {
   return !Done;
 }
 
-TBOOL CCoreWindowHandlerWin::DeviceOK() {
+bool CCoreWindowHandlerWin::DeviceOK() {
   if (!Active) {
     if (!InactiveFrameLimiter) return Device && Device->DeviceOk();
 
@@ -291,15 +291,15 @@ void CCoreWindowHandlerWin::HandleAltEnter() {
 LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
                                                      WPARAM wParam,
                                                      LPARAM lParam) {
-  CCoreWindowHandlerWin *wnd = nullptr;
+  CCoreWindowHandlerWin* wnd = nullptr;
 
   if (uMsg == WM_NCCREATE) {
-    wnd = static_cast<CCoreWindowHandlerWin *>(
+    wnd = static_cast<CCoreWindowHandlerWin*>(
         ((LPCREATESTRUCT)lParam)->lpCreateParams);
     SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)wnd);
     wnd->hWnd = hWnd;
   } else
-    wnd = (CCoreWindowHandlerWin *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    wnd = (CCoreWindowHandlerWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
   if (wnd)
     return wnd->WindowProc(uMsg, wParam, lParam);

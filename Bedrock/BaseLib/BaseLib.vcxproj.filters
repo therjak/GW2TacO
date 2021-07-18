@@ -75,9 +75,6 @@
     <ClInclude Include="Random.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="Assert.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>

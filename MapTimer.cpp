@@ -9,7 +9,7 @@
 
 using namespace jsonxx;
 
-void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
+void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("MapTimerVisible")) {
     SetConfigValue("MapTimerVisible", 1);
   }
@@ -25,7 +25,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
   std::string mouseToolTip;
 
   if (GW2::apiKeyManager.GetStatus() == GW2::APIKeyManager::Status::OK) {
-    GW2::APIKey *key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+    GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
     if (key && key->valid &&
         (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
@@ -45,7 +45,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
 
           worldBosses.clear();
 
-          for (auto &x : dungeonData) {
+          for (auto& x : dungeonData) {
             if (!x->is<String>()) continue;
 
             auto eventName = x->get<String>();
@@ -64,7 +64,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
 
           mapchests.clear();
 
-          for (auto &x : dungeonData) {
+          for (auto& x : dungeonData) {
             if (!x->is<String>()) continue;
 
             auto eventName = x->get<String>();
@@ -82,7 +82,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
     fetchThread.join();
   }
 
-  TBOOL compact = GetConfigValue("MapTimerCompact");
+  bool compact = GetConfigValue("MapTimerCompact");
 
   int32_t timeWindow = 120;
   int32_t mapheight = 40;
@@ -96,7 +96,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
   gmtime_s(&ptm, &rawtime);
 
   WBITEMSTATE i = GetState();
-  CWBFont *f = GetFont(i);
+  CWBFont* f = GetFont(i);
 
   barheight = f->GetLineHeight();
   mapheight = barheight + f->GetLineHeight();
@@ -104,7 +104,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
   if (compact) mapheight = barheight;
 
   int32_t mapCount = 0;
-  for (const auto &m : maps)
+  for (const auto& m : maps)
     if (m.display) mapCount++;
 
   DrawBackgroundItem(
@@ -122,7 +122,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
 
   std::vector<CRect> highlightRects;
   int x = 0;
-  for (const auto &map : maps)  // int x = 0; x < maps.NumItems(); x++ )
+  for (const auto& map : maps)  // int x = 0; x < maps.NumItems(); x++ )
   {
     if (!map.display) continue;
 
@@ -195,7 +195,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
 
         {
           CLightweightCriticalSection cs(&critSec);
-          const auto &bossId = map.events[currevent].worldBossId;
+          const auto& bossId = map.events[currevent].worldBossId;
           if (!map.events[currevent].worldBossId.empty() &&
               std::find(worldBosses.begin(), worldBosses.end(), bossId) !=
                   worldBosses.end())
@@ -219,15 +219,15 @@ void GW2MapTimer::OnDraw(CWBDrawAPI *API) {
     ypos += mapheight;
   }
 
-  for (const auto &r : highlightRects) API->DrawRectBorder(r, 0xffffcc00);
+  for (const auto& r : highlightRects) API->DrawRectBorder(r, 0xffffcc00);
 
   API->DrawRect(CRect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos), 0x80ffffff);
   SetMouseToolTip(mouseToolTip);
 }
 
-void GW2MapTimer::SetLayout(CXMLNode &node) {
+void GW2MapTimer::SetLayout(CXMLNode& node) {
   for (int x = 0; x < node.GetChildCount("Map"); x++) {
-    CXMLNode &mapNode = node.GetChild("Map", x);
+    CXMLNode& mapNode = node.GetChild("Map", x);
 
     Map map;
     if (mapNode.HasAttribute("Name"))
@@ -251,7 +251,7 @@ void GW2MapTimer::SetLayout(CXMLNode &node) {
     int start = 0;
 
     for (int y = 0; y < mapNode.GetChildCount("Event"); y++) {
-      CXMLNode &eventNode = mapNode.GetChild("Event", y);
+      CXMLNode& eventNode = mapNode.GetChild("Event", y);
       Event event;
       event.length = 0;
       event.start = start;
@@ -284,7 +284,7 @@ void GW2MapTimer::SetLayout(CXMLNode &node) {
   }
 }
 
-GW2MapTimer::GW2MapTimer(CWBItem *Parent, CRect Position)
+GW2MapTimer::GW2MapTimer(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {
   CXMLDocument d;
   if (!d.LoadFromFile("maptimer.xml")) return;
@@ -298,11 +298,11 @@ GW2MapTimer::GW2MapTimer(CWBItem *Parent, CRect Position)
 
 GW2MapTimer::~GW2MapTimer() = default;
 
-CWBItem *GW2MapTimer::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* GW2MapTimer::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2MapTimer::Create(Root, Pos).get();
 }
 
-TBOOL GW2MapTimer::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                      WBMESSAGE MessageType) {
+bool GW2MapTimer::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                     WBMESSAGE MessageType) {
   return true;
 }

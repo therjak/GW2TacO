@@ -55,14 +55,14 @@ class CWBKerningPair {
   CWBKerningPair(uint16_t a, uint16_t b);
 };
 
-inline bool operator==(const CWBKerningPair &lhs, const CWBKerningPair &rhs) {
+inline bool operator==(const CWBKerningPair& lhs, const CWBKerningPair& rhs) {
   return lhs.First == rhs.First && lhs.Second == rhs.Second;
 }
 
-INLINE uint32_t DictionaryHash(const CWBKerningPair &i);
+INLINE uint32_t DictionaryHash(const CWBKerningPair& i);
 
 struct DHash {
-  std::size_t operator()(const CWBKerningPair &i) const {
+  std::size_t operator()(const CWBKerningPair& i) const {
     return DictionaryHash(i);
   }
 };
@@ -72,7 +72,7 @@ class CWBDrawAPI;
 class CWBFontDescription {
   friend class CWBFont;
 
-  uint8_t *Image;
+  uint8_t* Image;
   int32_t XRes, YRes;
 
   std::vector<WBSYMBOLINPUT> Alphabet;
@@ -85,30 +85,30 @@ class CWBFontDescription {
   CWBFontDescription();
   ~CWBFontDescription();
 
-  TBOOL LoadBMFontBinary(
-      uint8_t *Binary, int32_t BinarySize, uint8_t *Image, int32_t XRes,
+  bool LoadBMFontBinary(
+      uint8_t* Binary, int32_t BinarySize, uint8_t* Image, int32_t XRes,
       int32_t YRes,
-      std::vector<int> &enabledGlyphs);  // 32 bit raw image data
-  TBOOL LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
-                         int32_t XRes, int32_t YRes) {
+      std::vector<int>& enabledGlyphs);  // 32 bit raw image data
+  bool LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize, uint8_t* Image,
+                        int32_t XRes, int32_t YRes) {
     std::vector<int> eg;
     return LoadBMFontBinary(Binary, BinarySize, Image, XRes, YRes, eg);
   }
-  TBOOL LoadBMFontText(
-      uint8_t *Binary, int32_t BinarySize, uint8_t *Image, int32_t XRes,
+  bool LoadBMFontText(
+      uint8_t* Binary, int32_t BinarySize, uint8_t* Image, int32_t XRes,
       int32_t YRes,
-      std::vector<int> &enabledGlyphs);  // 32 bit raw image data
-  TBOOL LoadBMFontText(uint8_t *Binary, int32_t BinarySize, uint8_t *Image,
-                       int32_t XRes, int32_t YRes) {
+      std::vector<int>& enabledGlyphs);  // 32 bit raw image data
+  bool LoadBMFontText(uint8_t* Binary, int32_t BinarySize, uint8_t* Image,
+                      int32_t XRes, int32_t YRes) {
     std::vector<int> eg;
     return LoadBMFontText(Binary, BinarySize, Image, XRes, YRes, eg);
   }
 };
 
 class CWBFont {
-  CAtlas *Atlas;
+  CAtlas* Atlas;
   int32_t AlphabetSize = 0;
-  WBSYMBOL *Alphabet;
+  WBSYMBOL* Alphabet;
   std::unordered_map<CWBKerningPair, int16_t, DHash> Kerning;
 
   int32_t LineHeight;
@@ -119,17 +119,16 @@ class CWBFont {
 
   TCHAR MissingChar;
 
-  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize &Size,
-                 const CPoint &Offset, int32_t Advance, CRect contentRect);
+  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize& Size,
+                 const CPoint& Offset, int32_t Advance, CRect contentRect);
   void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
-  INLINE uint16_t ApplyTextTransformUtf8(const char *Text, char const *&CurrPos,
+  INLINE uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
                                          WBTEXTTRANSFORM Transform);
 
  public:
-  CWBFont(CAtlas *Atlas);
+  CWBFont(CAtlas* Atlas);
   virtual ~CWBFont();
-  TBOOL Initialize(CWBFontDescription *Description,
-                   TCHAR MissingChar = _T('o'));
+  bool Initialize(CWBFontDescription* Description, TCHAR MissingChar = _T('o'));
 
   int32_t GetLineHeight();
   int32_t GetBase();
@@ -142,32 +141,32 @@ class CWBFont {
                    WBTEXTTRANSFORM Transform = WBTT_NONE);
   int32_t GetMedian();
 
-  int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
+  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
                     CColor Color = 0xffffffff);
-  int32_t Write(CWBDrawAPI *DrawApi, std::string_view String, int32_t x,
+  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
                 int32_t y, CColor Color = 0xffffffff,
-                WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true);
-  int32_t WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p,
+                WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
+  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, CPoint& p,
                     CColor Color = 0xffffffff);
-  int32_t Write(CWBDrawAPI *DrawApi, std::string_view String, CPoint &p,
+  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, CPoint& p,
                 CColor Color = 0xffffffff,
-                WBTEXTTRANSFORM Transform = WBTT_NONE, TBOOL DoKerning = true);
+                WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
   int32_t GetWidth(
       uint16_t Char,
-      TBOOL Advance = true);  // if Advance is set to false this returns the
-                              // width of the image in pixels
-  int32_t GetWidth(std::string_view String, TBOOL AdvanceLastChar = true,
-                   WBTEXTTRANSFORM Transform = WBTT_NONE,
-                   TBOOL DoKerning = true, TBOOL firstCharHack = false);
+      bool Advance = true);  // if Advance is set to false this returns the
+                             // width of the image in pixels
+  int32_t GetWidth(std::string_view String, bool AdvanceLastChar = true,
+                   WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true,
+                   bool firstCharHack = false);
 
   int32_t GetHeight(uint16_t Char);
   int32_t GetHeight(std::string_view String);
 
-  CPoint GetTextPosition(std::string_view String, CRect &Container,
+  CPoint GetTextPosition(std::string_view String, CRect& Container,
                          WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
-                         WBTEXTTRANSFORM Transform, TBOOL DoKerning = true);
+                         WBTEXTTRANSFORM Transform, bool DoKerning = true);
 
-  INLINE char ApplyTextTransform(const char *Text, const char *CurrPos,
+  INLINE char ApplyTextTransform(const char* Text, const char* CurrPos,
                                  WBTEXTTRANSFORM Transform);
 
   void ConvertToUppercase();

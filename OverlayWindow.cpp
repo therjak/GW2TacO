@@ -2,27 +2,27 @@
 
 #include "OverlayConfig.h"
 
-TBOOL OverlayWindow::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                        WBMESSAGE MessageType) {
+bool OverlayWindow::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                       WBMESSAGE MessageType) {
   if (GetConfigValue("EditMode")) return false;
   return true;
 }
 
-OverlayWindow::OverlayWindow(CWBItem *Parent, CRect Position)
+OverlayWindow::OverlayWindow(CWBItem* Parent, CRect Position)
     : CWBWindow(Parent, Position) {}
 
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
-CWBItem *OverlayWindow::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* OverlayWindow::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return OverlayWindow::Create(Root, Pos).get();
 }
 
-void OverlayWindow::OnDraw(CWBDrawAPI *API) {
+void OverlayWindow::OnDraw(CWBDrawAPI* API) {
   if (!GetConfigValue("EditMode")) return;
   CWBWindow::OnDraw(API);
 }
 
-TBOOL OverlayWindow::MessageProc(CWBMessage &Message) {
+bool OverlayWindow::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
       if (CWBItem::MessageProc(Message)) return true;

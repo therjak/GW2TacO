@@ -4,10 +4,10 @@
 class COverlayApp : public CWBApplication {
  protected:
   LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
-  TBOOL DeviceOK() override;
+  bool DeviceOK() override;
 
  public:
-  TBOOL Initialize(const CCoreWindowParameters &WindowParams) override;
+  bool Initialize(const CCoreWindowParameters& WindowParams) override;
 
   COverlayApp();
   ~COverlayApp() override;

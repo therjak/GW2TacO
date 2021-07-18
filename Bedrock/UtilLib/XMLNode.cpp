@@ -1,13 +1,13 @@
 #include "XMLNode.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <cstring>
 #include <memory>
 #include <string_view>
-#include <algorithm>
 
 #include "../UtilLib/RapidXML/rapidxml.hpp"
 #include "XMLDocument.h"
-#include <tchar.h>
 
 using rapidxml::node_type;
 using rapidxml::xml_node;
@@ -43,8 +43,6 @@ CXMLNode::CXMLNode(xml_node<char>* p, CXMLDocument* d, int32_t l) {
 }
 
 CXMLNode CXMLNode::operator=(const CXMLNode Original) {
-  // if (pNode) pNode->Release();
-
   nLevel = Original.nLevel;
   pNode = Original.pNode;
   pDoc = Original.pDoc;
@@ -164,7 +162,7 @@ bool CXMLNode::GetAttribute(char* szAttribute, char* szBuffer,
   auto attr = pNode->first_attribute(szAttribute);
   if (!attr) return false;
 
-  _tcsncpy_s(szBuffer, nBufferSize, attr->value(), _TRUNCATE);
+  strncpy_s(szBuffer, nBufferSize, attr->value(), _TRUNCATE);
   return true;
 }
 
@@ -193,13 +191,13 @@ int32_t CXMLNode::IsValid() { return pNode != nullptr; }
 void CXMLNode::GetAttributeAsInteger(char* szAttribute, int32_t* pnValue) {
   char s[20] = {0};
   GetAttribute(szAttribute, s, 20);
-  _stscanf_s(s, _T("%d"), pnValue);
+  sscanf_s(s, "%d", pnValue);
 }
 
 void CXMLNode::GetAttributeAsFloat(char* szAttribute, float* pfValue) {
   char s[20] = {0};
   GetAttribute(szAttribute, s, 20);
-  _stscanf_s(s, _T("%g"), pfValue);
+  sscanf_s(s, "%g", pfValue);
 }
 
 CXMLNode& CXMLNode::AddChild(std::string_view szNodeName) {
@@ -246,14 +244,14 @@ void CXMLNode::SetAttributeFromInteger(std::string_view szAttributeName,
                                        int32_t nValue) {
   char s[64];
   memset(s, 0, sizeof(char) * 64);
-  _sntprintf_s(s, 64, _T("%d"), nValue);
+  _snprintf_s(s, 64, "%d", nValue);
   SetAttribute(szAttributeName, s);
 }
 
 void CXMLNode::SetAttributeFromFloat(std::string_view szAttributeName,
                                      float fValue) {
   char s[64];
-  _sntprintf_s(s, 64, _T("%g"), fValue);
+  _snprintf_s(s, 64, "%g", fValue);
   SetAttribute(szAttributeName, s);
 }
 
@@ -268,27 +266,36 @@ void CXMLNode::SetText(std::string_view s) {
 
 void CXMLNode::SetInt(int32_t Int) {
   char s[64];
-  _sntprintf_s(s, 64, _T("%d"), Int);
+  _snprintf_s(s, 64, "%d", Int);
   SetText(s);
 }
 
 void CXMLNode::SetFloat(float Float) {
   char s[64];
-  _sntprintf_s(s, 64, _T("%g"), Float);
+  _snprintf_s(s, 64, "%g", Float);
   SetText(s);
 }
 
 bool CXMLNode::GetValue(int32_t& Int) {
   char s[20] = {0};
   GetText(s, 20);
-  return _stscanf_s(s, _T("%d"), &Int) == 1;
+  return sscanf_s(s, "%d", &Int) == 1;
 }
 
-bool CXMLNode::GetValue(TBOOL& Int) {
+bool CXMLNode::GetValue(uint8_t& Int) {
   char s[20] = {0};
   GetText(s, 20);
   int32_t x = 0;
-  int32_t r = _stscanf_s(s, _T("%d"), &x);
+  int32_t r = sscanf_s(s, "%d", &x);
+  if (r == 1) Int = x;
+  return r == 1;
+}
+
+bool CXMLNode::GetValue(bool& Int) {
+  char s[20] = {0};
+  GetText(s, 20);
+  int32_t x = 0;
+  int32_t r = sscanf_s(s, "%d", &x);
   if (r == 1) Int = x != 0;
   return r == 1;
 }
@@ -296,5 +303,5 @@ bool CXMLNode::GetValue(TBOOL& Int) {
 bool CXMLNode::GetValue(float& Float) {
   char s[20] = {0};
   GetText(s, 20);
-  return _stscanf_s(s, _T("%g"), &Float) == 1;
+  return sscanf_s(s, "%g", &Float) == 1;
 }

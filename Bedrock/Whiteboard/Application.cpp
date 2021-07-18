@@ -41,7 +41,7 @@ CWBApplication::~CWBApplication() {
   LayoutRepository.clear();
 }
 
-TBOOL CWBApplication::SendMessageToItem(CWBMessage &Message, CWBItem *Target) {
+bool CWBApplication::SendMessageToItem(CWBMessage& Message, CWBItem* Target) {
   if (Root && Message.GetTarget() == Root->GetGuid()) {
     Target = Root.get();
   }
@@ -52,7 +52,7 @@ TBOOL CWBApplication::SendMessageToItem(CWBMessage &Message, CWBItem *Target) {
     return false;
   }
 
-  std::vector<CWBItem *> MessagePath;
+  std::vector<CWBItem*> MessagePath;
   while (Target) {
     MessagePath.push_back(Target);
     Target = Target->GetParent();
@@ -64,9 +64,9 @@ TBOOL CWBApplication::SendMessageToItem(CWBMessage &Message, CWBItem *Target) {
   return false;
 }
 
-void CWBApplication::ProcessMessage(CWBMessage &Message) {
+void CWBApplication::ProcessMessage(CWBMessage& Message) {
   if (Message.GetTarget()) {
-    CWBItem *Target = FindItemByGuid(Message.GetTarget());
+    CWBItem* Target = FindItemByGuid(Message.GetTarget());
     SendMessageToItem(Message, Target);
     return;
   }
@@ -92,7 +92,7 @@ void CWBApplication::ProcessMessage(CWBMessage &Message) {
       return;
     }
 
-    CWBItem *mi = GetItemUnderMouse(MousePos, Message.GetMessage());
+    CWBItem* mi = GetItemUnderMouse(MousePos, Message.GetMessage());
 
     if (mi) {
       // handle focus change
@@ -118,9 +118,9 @@ void CWBApplication::ProcessMessage(CWBMessage &Message) {
   //}
 
   // bottom to top version:
-  std::vector<CWBItem *> MessagePath;
+  std::vector<CWBItem*> MessagePath;
 
-  CWBItem *Target = GetRoot();
+  CWBItem* Target = GetRoot();
   while (Target) {
     MessagePath.push_back(Target);
     Target = Target->GetChildInFocus();
@@ -130,7 +130,7 @@ void CWBApplication::ProcessMessage(CWBMessage &Message) {
     if (MessagePath[x]->MessageProc(Message)) return;
 }
 
-CWBItem *CWBApplication::GetItemUnderMouse(CPoint &Point, WBMESSAGE w) {
+CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
   CRect r = Root->GetScreenRect();
   return Root->GetItemUnderMouse(Point, r, w);
 }
@@ -321,7 +321,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   return CCoreWindowHandlerWin::WindowProc(uMsg, wParam, lParam);
 }
 
-TBOOL CWBApplication::Initialize() {
+bool CWBApplication::Initialize() {
   Atlas = new CAtlas(2048, 2048);
   if (!Atlas->InitializeTexture(Device)) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Texture Atlas" ));
@@ -338,15 +338,15 @@ TBOOL CWBApplication::Initialize() {
   return true;
 }
 
-TBOOL CWBApplication::Initialize(const CCoreWindowParameters &WindowParams) {
+bool CWBApplication::Initialize(const CCoreWindowParameters& WindowParams) {
   if (!CCoreWindowHandlerWin::Initialize(WindowParams)) return false;
   return Initialize();
 }
 
-CWBItem *CWBApplication::GetRoot() { return Root.get(); }
+CWBItem* CWBApplication::GetRoot() { return Root.get(); }
 
-CWBItem *CWBApplication::GetFocusItem() {
-  CWBItem *fi = Root.get();
+CWBItem* CWBApplication::GetFocusItem() {
+  CWBItem* fi = Root.get();
   while (fi) {
     if (!fi->ChildInFocus) {
       return fi;
@@ -356,7 +356,7 @@ CWBItem *CWBApplication::GetFocusItem() {
   return Root.get();
 }
 
-TBOOL CWBApplication::HandleMessages() {
+bool CWBApplication::HandleMessages() {
   // as this function is called once every frame, it's the best place to update
   // the timer as well
   globalTimer.Update();
@@ -389,7 +389,7 @@ TBOOL CWBApplication::HandleMessages() {
 
   for (int32_t x = 0; x < MessageBuffer.NumItems(); x++) {
     CWBMessage currentMessage;
-    memcpy((void *)&currentMessage, (void *)&MessageBuffer[x],
+    memcpy((void*)&currentMessage, (void*)&MessageBuffer[x],
            sizeof(CWBMessage));
     ProcessMessage(currentMessage);
   }
@@ -399,17 +399,17 @@ TBOOL CWBApplication::HandleMessages() {
   return true;
 }
 
-void CWBApplication::RegisterItem(CWBItem *Item) {
+void CWBApplication::RegisterItem(CWBItem* Item) {
   Items[Item->GetGuid()] = Item;
 
   if (Item->GetScreenRect().Contains(MousePos)) UpdateMouseItem();
 }
 
-void CWBApplication::UnRegisterItem(CWBItem *Item) {
+void CWBApplication::UnRegisterItem(CWBItem* Item) {
   std::scoped_lock l(TrashMutex);
   auto it = std::find_if(
       Trash.begin(), Trash.end(),
-      [Item](const std::shared_ptr<CWBItem> &i) { return i.get() == Item; });
+      [Item](const std::shared_ptr<CWBItem>& i) { return i.get() == Item; });
   if (it != Trash.end()) {
     Trash.erase(it);
   }
@@ -420,11 +420,11 @@ void CWBApplication::UnRegisterItem(CWBItem *Item) {
   if (Item->GetScreenRect().Contains(MousePos)) UpdateMouseItem();
 }
 
-void CWBApplication::SetDone(TBOOL d) { Done = d; }
+void CWBApplication::SetDone(bool d) { Done = d; }
 
 void CWBApplication::Display() { Display(DrawAPI); }
 
-void CWBApplication::Display(CWBDrawAPI *API) {
+void CWBApplication::Display(CWBDrawAPI* API) {
   // LOG_DBG("Begin Frame");
 
   CleanTrash();
@@ -459,37 +459,37 @@ void CWBApplication::Display(CWBDrawAPI *API) {
   LastFrameTime = frametime;
 }
 
-CWBItem *CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR *type) {
+CWBItem* CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR* type) {
   if (Items.find(Guid) == Items.end()) return nullptr;
-  CWBItem *i = Items[Guid];
+  CWBItem* i = Items[Guid];
 
   if (type) return i->InstanceOf(type) ? i : nullptr;
 
   return i;
 }
 
-void CWBApplication::SendMessage(CWBMessage &Message) {
+void CWBApplication::SendMessage(CWBMessage& Message) {
   MessageBuffer += Message;
 }
 
-CWBItem *CWBApplication::SetCapture(CWBItem *Capturer) {
-  CWBItem *old = MouseCaptureItem;
+CWBItem* CWBApplication::SetCapture(CWBItem* Capturer) {
+  CWBItem* old = MouseCaptureItem;
   MouseCaptureItem = Capturer;
   return old;
 }
 
-TBOOL CWBApplication::ReleaseCapture() {
+bool CWBApplication::ReleaseCapture() {
   MouseCaptureItem = nullptr;
   return true;
 }
 
 void CWBApplication::UpdateMouseItem() {
-  CWBItem *MouseItemOld = MouseItem;
+  CWBItem* MouseItemOld = MouseItem;
   MouseItem = GetItemUnderMouse(MousePos, WBM_MOUSEMOVE);
   if (MouseItem != MouseItemOld) {
     // call onmouseleave for the old items
     if (MouseItem) {
-      CWBItem *olditem = MouseItemOld;
+      CWBItem* olditem = MouseItemOld;
       while (olditem) {
         // find the old item in the tree of the new. if not found the mouse left
         // the item
@@ -500,7 +500,7 @@ void CWBApplication::UpdateMouseItem() {
 
     // call onmouseenter for the new items
     if (MouseItemOld) {
-      CWBItem *newitem = MouseItem;
+      CWBItem* newitem = MouseItem;
       while (newitem) {
         // find the new item in the tree of the old. if not found the mouse
         // entered the item
@@ -515,7 +515,7 @@ void CWBApplication::UpdateMouseItem() {
 void CWBApplication::CleanTrash() {
   std::scoped_lock l(TrashMutex);
   for (auto i = Trash.size(); i > 0; i--) {
-    auto &t = Trash[i - 1];
+    auto& t = Trash[i - 1];
     if (t->Parent) {
       t->Parent->RemoveChild(t);
     }
@@ -524,12 +524,12 @@ void CWBApplication::CleanTrash() {
   Trash.clear();
 }
 
-CWBItem *CWBApplication::GetMouseItem() { return MouseItem; }
+CWBItem* CWBApplication::GetMouseItem() { return MouseItem; }
 
-CWBItem *CWBApplication::GetMouseCaptureItem() { return MouseCaptureItem; }
+CWBItem* CWBApplication::GetMouseCaptureItem() { return MouseCaptureItem; }
 
-TBOOL CWBApplication::CreateFont(std::string_view FontName,
-                                 CWBFontDescription *Font) {
+bool CWBApplication::CreateFont(std::string_view FontName,
+                                CWBFontDescription* Font) {
   if (!Font) return false;
 
   auto f = std::make_unique<CWBFont>(Atlas);
@@ -545,7 +545,7 @@ TBOOL CWBApplication::CreateFont(std::string_view FontName,
   return true;
 }
 
-CWBFont *CWBApplication::GetFont(std::string_view FontName) {
+CWBFont* CWBApplication::GetFont(std::string_view FontName) {
   auto f = Fonts.find(std::string(FontName));
   if (f != Fonts.end()) {
     return f->second.get();
@@ -555,16 +555,16 @@ CWBFont *CWBApplication::GetFont(std::string_view FontName) {
   return DefaultFont;
 }
 
-CWBFont *CWBApplication::GetDefaultFont() { return DefaultFont; }
+CWBFont* CWBApplication::GetDefaultFont() { return DefaultFont; }
 
-TBOOL CWBApplication::SetDefaultFont(std::string_view FontName) {
-  CWBFont *f = GetFont(FontName);
+bool CWBApplication::SetDefaultFont(std::string_view FontName) {
+  CWBFont* f = GetFont(FontName);
   if (!f) return false;
   DefaultFont = f;
   return true;
 }
 
-void CWBApplication::AddToTrash(const std::shared_ptr<CWBItem> &item) {
+void CWBApplication::AddToTrash(const std::shared_ptr<CWBItem>& item) {
   std::scoped_lock l(TrashMutex);
   auto it = std::find(Trash.begin(), Trash.end(), item);
   if (it == Trash.end()) {
@@ -572,7 +572,7 @@ void CWBApplication::AddToTrash(const std::shared_ptr<CWBItem> &item) {
   }
 }
 
-TBOOL CWBApplication::LoadXMLLayout(std::string_view XML) {
+bool CWBApplication::LoadXMLLayout(std::string_view XML) {
   auto doc = std::make_unique<CXMLDocument>();
   if (!doc->LoadFromString(XML)) {
     LOG_ERR("[gui] Error loading XML Layout: parsing failed");
@@ -606,7 +606,7 @@ TBOOL CWBApplication::LoadXMLLayout(std::string_view XML) {
   return true;
 }
 
-TBOOL CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
+bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
     LOG_ERR("[gui] Error loading XML Layout: file '%s' not found",
@@ -614,19 +614,19 @@ TBOOL CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
     return false;
   }
 
-  std::string_view s(reinterpret_cast<char *>(f.GetData()),
+  std::string_view s(reinterpret_cast<char*>(f.GetData()),
                      static_cast<int32_t>(f.GetLength()));
   return LoadXMLLayout(s);
 }
 
-TBOOL CWBApplication::GenerateGUI(CWBItem *Root, std::string_view Layout) {
+bool CWBApplication::GenerateGUI(CWBItem* Root, std::string_view Layout) {
   std::string l(Layout);
   if (LayoutRepository.find(l) == LayoutRepository.end()) {
     LOG_ERR("[gui] Error generating UI: layout '%s' not loaded", l.c_str());
     return false;
   }
 
-  TBOOL b = GenerateGUIFromXML(Root, LayoutRepository[l].get());
+  bool b = GenerateGUIFromXML(Root, LayoutRepository[l].get());
   if (!b) return false;
 
   StyleManager.ApplyStyles(Root);
@@ -637,9 +637,8 @@ TBOOL CWBApplication::GenerateGUI(CWBItem *Root, std::string_view Layout) {
   return true;
 }
 
-TBOOL CWBApplication::GenerateGUITemplate(CWBItem *Root,
-                                          std::string_view Layout,
-                                          std::string_view TemplateID) {
+bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
+                                         std::string_view TemplateID) {
   std::string l(Layout);
   if (LayoutRepository.find(l) == LayoutRepository.end()) {
     LOG_ERR("[gui] Error generating UI template: layout '%s' not loaded",
@@ -647,7 +646,7 @@ TBOOL CWBApplication::GenerateGUITemplate(CWBItem *Root,
     return false;
   }
 
-  TBOOL b =
+  bool b =
       GenerateGUITemplateFromXML(Root, LayoutRepository[l].get(), TemplateID);
   if (!b) return false;
 
@@ -660,7 +659,7 @@ TBOOL CWBApplication::GenerateGUITemplate(CWBItem *Root,
   return true;
 }
 
-void CWBApplication::ApplyStyle(CWBItem *Target) {
+void CWBApplication::ApplyStyle(CWBItem* Target) {
   StyleManager.ApplyStyles(Target);
   CWBMessage m;
   Target->BuildPositionMessage(Target->GetPosition(), m);
@@ -669,7 +668,7 @@ void CWBApplication::ApplyStyle(CWBItem *Target) {
 }
 
 void CWBApplication::ReApplyStyle() {
-  CWBItem *Root = GetRoot();
+  CWBItem* Root = GetRoot();
   StyleManager.ApplyStyles(Root);
   CWBMessage m;
   Root->BuildPositionMessage(Root->GetPosition(), m);
@@ -677,13 +676,13 @@ void CWBApplication::ReApplyStyle() {
   Root->MessageProc(m);
 }
 
-TBOOL CWBApplication::LoadCSS(std::string_view CSS, TBOOL ResetStyleManager) {
+bool CWBApplication::LoadCSS(std::string_view CSS, bool ResetStyleManager) {
   if (ResetStyleManager) StyleManager.Reset();
   return StyleManager.ParseStyleData(CSS);
 }
 
-TBOOL CWBApplication::LoadCSSFromFile(std::string_view FileName,
-                                      TBOOL ResetStyleManager) {
+bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
+                                     bool ResetStyleManager) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
     LOG_ERR("[gui] Error loading CSS: file '%s' not found",
@@ -691,19 +690,19 @@ TBOOL CWBApplication::LoadCSSFromFile(std::string_view FileName,
     return false;
   }
 
-  std::string_view s(reinterpret_cast<char *>(f.GetData()),
+  std::string_view s(reinterpret_cast<char*>(f.GetData()),
                      static_cast<int32_t>(f.GetLength()));
-  TBOOL b = LoadCSS(s, ResetStyleManager);
+  bool b = LoadCSS(s, ResetStyleManager);
 
   return b;
 }
 
-CAtlas *CWBApplication::GetAtlas() { return Atlas; }
+CAtlas* CWBApplication::GetAtlas() { return Atlas; }
 
-CWBSkin *CWBApplication::GetSkin() { return Skin; }
+CWBSkin* CWBApplication::GetSkin() { return Skin; }
 
-TBOOL CWBApplication::LoadSkin(std::string_view XML,
-                               std::vector<int> &enabledGlyphs) {
+bool CWBApplication::LoadSkin(std::string_view XML,
+                              std::vector<int>& enabledGlyphs) {
   CXMLDocument doc;
   if (!doc.LoadFromString(XML)) return false;
   if (!doc.GetDocumentNode().GetChildCount(_T( "whiteboardskin" )))
@@ -717,9 +716,9 @@ TBOOL CWBApplication::LoadSkin(std::string_view XML,
 
     auto data = B64Decode(img);
 
-    uint8_t *Image = nullptr;
+    uint8_t* Image = nullptr;
     int32_t XRes, YRes;
-    if (DecompressPNG((unsigned char *)data.c_str(), data.size(), Image, XRes,
+    if (DecompressPNG((unsigned char*)data.c_str(), data.size(), Image, XRes,
                       YRes)) {
       ARGBtoABGR(Image, XRes, YRes);
       ClearZeroAlpha(Image, XRes, YRes);
@@ -768,26 +767,26 @@ TBOOL CWBApplication::LoadSkin(std::string_view XML,
     auto img = n.GetAttributeAsString(_T( "image" ));
     auto bin = n.GetAttributeAsString(_T( "binary" ));
 
-    uint8_t *Dataimg = nullptr;
-    uint8_t *Databin = nullptr;
+    uint8_t* Dataimg = nullptr;
+    uint8_t* Databin = nullptr;
     int32_t Sizeimg = 0;
     int32_t Sizebin = 0;
     auto dataimg = B64Decode(img);
     auto databin = B64Decode(bin);
 
     int32_t XRes, YRes;
-    uint8_t *Image;
-    if (DecompressPNG((unsigned char *)dataimg.c_str(), dataimg.size(), Image,
+    uint8_t* Image;
+    if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), Image,
                       XRes, YRes)) {
       ARGBtoABGR(Image, XRes, YRes);
-      CWBFontDescription *fd = new CWBFontDescription();
-      if (fd->LoadBMFontBinary((unsigned char *)databin.c_str(), databin.size(),
+      CWBFontDescription* fd = new CWBFontDescription();
+      if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
                                Image, XRes, YRes, enabledGlyphs)) {
-        TBOOL f = CreateFont(Name, fd);
-      } else if (fd->LoadBMFontText((unsigned char *)databin.c_str(),
+        bool f = CreateFont(Name, fd);
+      } else if (fd->LoadBMFontText((unsigned char*)databin.c_str(),
                                     databin.size(), Image, XRes, YRes,
                                     enabledGlyphs)) {
-        TBOOL f = CreateFont(Name, fd);
+        bool f = CreateFont(Name, fd);
       }
 
       SAFEDELETE(fd);
@@ -798,8 +797,8 @@ TBOOL CWBApplication::LoadSkin(std::string_view XML,
   return true;
 }
 
-TBOOL CWBApplication::LoadSkinFromFile(std::string_view FileName,
-                                       std::vector<int> &enabledGlyphs) {
+bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
+                                      std::vector<int>& enabledGlyphs) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
     LOG_ERR("[gui] Error loading Skin: file '%s' not found",
@@ -807,9 +806,9 @@ TBOOL CWBApplication::LoadSkinFromFile(std::string_view FileName,
     return false;
   }
 
-  std::string_view s(reinterpret_cast<char *>(f.GetData()),
+  std::string_view s(reinterpret_cast<char*>(f.GetData()),
                      static_cast<int32_t>(f.GetLength()));
-  TBOOL b = LoadSkin(s, enabledGlyphs);
+  bool b = LoadSkin(s, enabledGlyphs);
   if (b)
     LOG_NFO("[gui] Successfully loaded Skin '%s'",
             std::string(FileName).c_str());
@@ -817,7 +816,7 @@ TBOOL CWBApplication::LoadSkinFromFile(std::string_view FileName,
   return b;
 }
 
-TBOOL CWBApplication::GenerateGUIFromXML(CWBItem *Root, CXMLDocument *doc) {
+bool CWBApplication::GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc) {
   CXMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount(_T( "guidescriptor" ))) return false;
@@ -831,9 +830,9 @@ TBOOL CWBApplication::GenerateGUIFromXML(CWBItem *Root, CXMLDocument *doc) {
   return ProcessGUIXML(Root, gui);
 }
 
-TBOOL CWBApplication::GenerateGUITemplateFromXML(CWBItem *Root,
-                                                 CXMLDocument *doc,
-                                                 std::string_view TemplateID) {
+bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
+                                                CXMLDocument* doc,
+                                                std::string_view TemplateID) {
   CXMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount(_T( "guidescriptor" ))) return false;
@@ -847,7 +846,7 @@ TBOOL CWBApplication::GenerateGUITemplateFromXML(CWBItem *Root,
       if (t.GetAttributeAsString(_T( "id" )) == TemplateID) {
         if (t.HasAttribute(_T( "class" ))) {
           auto a = Split(t.GetAttribute(_T( "class" )), _T( " " ));
-          for (const auto &s : a)
+          for (const auto& s : a)
             if (s.size() > 1) Root->AddClass(s);
         }
 
@@ -858,10 +857,10 @@ TBOOL CWBApplication::GenerateGUITemplateFromXML(CWBItem *Root,
   return false;
 }
 
-TBOOL CWBApplication::ProcessGUIXML(CWBItem *Root, CXMLNode &node) {
+bool CWBApplication::ProcessGUIXML(CWBItem* Root, CXMLNode& node) {
   CRect Pos(5, 5, 25, 25);
 
-  TBOOL b = true;
+  bool b = true;
   for (int i = 0; i < node.GetChildCount(); i++) {
     b &= GenerateGUIFromXMLNode(Root, node.GetChild(i), Pos);
     Pos = CRect(Pos.BottomLeft() + CPoint(0, 2),
@@ -870,13 +869,13 @@ TBOOL CWBApplication::ProcessGUIXML(CWBItem *Root, CXMLNode &node) {
   return b;
 }
 
-TBOOL CWBApplication::GenerateGUIFromXMLNode(CWBItem *Root, CXMLNode &node,
-                                             CRect &Pos) {
-  CWBItem *NewItem = GenerateUIItem(Root, node, Pos);
+bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, CXMLNode& node,
+                                            CRect& Pos) {
+  CWBItem* NewItem = GenerateUIItem(Root, node, Pos);
   if (!NewItem) return false;
 
   if (node.HasAttribute(_T( "pos" ))) {
-    const auto &pos = node.GetAttribute(_T( "pos" ));
+    const auto& pos = node.GetAttribute(_T( "pos" ));
     if (std::count(pos.begin(), pos.end(), ',') == 3) {
       std::sscanf(node.GetAttribute(_T( "pos" )).c_str(), _T( "%d,%d,%d,%d" ),
                   &Pos.x1, &Pos.y1, &Pos.x2, &Pos.y2);
@@ -901,15 +900,15 @@ TBOOL CWBApplication::GenerateGUIFromXMLNode(CWBItem *Root, CXMLNode &node,
 
   if (node.HasAttribute(_T( "class" ))) {
     auto a = Split(node.GetAttribute(_T( "class" )), _T( " " ));
-    for (const auto &s : a)
+    for (const auto& s : a)
       if (s.size() > 1) NewItem->AddClass(s);
   }
 
   return ProcessGUIXML(NewItem, node);
 }
 
-CWBItem *CWBApplication::GenerateUIItem(CWBItem *Root, CXMLNode &node,
-                                        CRect &Pos) {
+CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, CXMLNode& node,
+                                        CRect& Pos) {
   if (FactoryCallbacks.find(node.GetNodeName()) != FactoryCallbacks.end()) {
     return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);
   }
@@ -932,7 +931,7 @@ void CWBApplication::TakeScreenshot() {
     auto s = ScreenShotName + _T( "_*.png" );
     CFileList fl(s, _T( "Screenshots" ));
 
-    for (auto &File : fl.Files) {
+    for (auto& File : fl.Files) {
       if (File.FileName.find(ScreenShotName) == std::string::npos) {
         auto s2 = ScreenShotName + _T( "_%d" );
 

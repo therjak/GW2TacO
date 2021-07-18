@@ -34,7 +34,7 @@ struct CompassData {
   float mapCenterX;       // continentCoords
   float mapCenterY;       // continentCoords
   float mapScale;         // not even sure TBH :-P};
-  CMatrix4x4 BuildTransformationMatrix(const CRect &miniRect,
+  CMatrix4x4 BuildTransformationMatrix(const CRect& miniRect,
                                        bool ignoreRotation);
 };
 
@@ -66,7 +66,7 @@ struct LinkedMem {
 #define AVGCAMCOUNTER 6
 
 class CMumbleLink {
-  LinkedMem *lm = nullptr;
+  LinkedMem* lm = nullptr;
   CVector4 camchardist[AVGCAMCOUNTER];
 
  public:
@@ -108,9 +108,9 @@ class CMumbleLink {
   CVector4 averagedCharPosition;
 
   void Update();
-  TBOOL IsValid();
+  bool IsValid();
 
-  CRingBuffer<int32_t> *FrameTimes;
+  CRingBuffer<int32_t>* FrameTimes;
   float GetFrameRate();
 
   int32_t LastFrameTime = 0;
@@ -120,11 +120,11 @@ class CMumbleLink {
   uint64_t lastTickTime = 0;
   uint64_t lastTickLength = 0;
 
-  TBOOL charPosChanged = false;
-  TBOOL charEyeChanged = false;
-  TBOOL camPosChanged = false;
-  TBOOL camDirChanged = false;
-  TBOOL camUpChanged = false;
+  bool charPosChanged = false;
+  bool charEyeChanged = false;
+  bool camPosChanged = false;
+  bool camDirChanged = false;
+  bool camUpChanged = false;
 
   std::string mumblePath = "MumbleLink";
   uint32_t pID;

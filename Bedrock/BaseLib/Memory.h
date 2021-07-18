@@ -1,10 +1,10 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
 
 #include "BaseConfig.h"
-#include "Types.h"
 
 #ifdef MEMORY_TRACKING
 

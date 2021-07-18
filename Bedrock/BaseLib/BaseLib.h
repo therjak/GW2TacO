@@ -2,7 +2,6 @@
 #include "BaseConfig.h"
 #include "Memory.h"
 #include "StackTracker.h"
-#include "Types.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN

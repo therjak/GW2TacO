@@ -79,7 +79,6 @@
     <ClInclude Include="StreamWriter.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="StackTracker.h" />
-    <ClInclude Include="Types.h" />
     <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>

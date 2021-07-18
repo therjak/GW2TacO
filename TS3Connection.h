@@ -48,9 +48,9 @@ class TS3Connection {
   class TS3Schandler {
    public:
     int32_t id = 0;
-    TBOOL Connected = false;
+    bool Connected = false;
     int32_t myclientid = 0;
-    TBOOL clientIDInvalid = true;
+    bool clientIDInvalid = true;
     std::unordered_map<int32_t, TS3Channel> Channels;
     CDictionaryEnumerable<int32_t, TS3Client> Clients;
     std::string name;

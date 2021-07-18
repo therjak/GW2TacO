@@ -1,8 +1,7 @@
 #pragma once
 #include "GuiItem.h"
 
-enum WBMESSAGE
-{
+enum WBMESSAGE {
   WBM_NONE = 0,
   WBM_REPOSITION = 0x100,
   WBM_ROOTRESIZE,
@@ -69,54 +68,48 @@ enum WBMESSAGE
 
 };
 
-#define WB_KBSTATE_ALT			0x00000001
-#define WB_KBSTATE_CTRL			0x00000002
-#define WB_KBSTATE_SHIFT		0x00000004
+#define WB_KBSTATE_ALT 0x00000001
+#define WB_KBSTATE_CTRL 0x00000002
+#define WB_KBSTATE_SHIFT 0x00000004
 
-class CWBMessage
-{
-  CWBApplication *App;
+class CWBMessage {
+  CWBApplication* App;
   WBMESSAGE Message;
   WBGUID Target;
 
-public:
-
-  union
-  {
-    struct
-    {
+ public:
+  union {
+    struct {
       CRect Rectangle;
-      TBOOL Moved;
-      TBOOL Resized;
+      bool Moved;
+      bool Resized;
     };
-    int32_t Position[ 2 ];
+    int32_t Position[2];
     int32_t Data;
     int32_t HumanEdit;
-    struct
-    {
+    struct {
       int32_t Key;
       int32_t KeyboardState;
     };
-    struct
-    {
+    struct {
       int32_t ID;
       int32_t Flags;
     };
   };
 
   CWBMessage();
-  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target );
-  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target, int32_t x );
-  CWBMessage( CWBApplication *App, WBMESSAGE Message, WBGUID Target, int32_t x, int32_t y );
+  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target);
+  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x);
+  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x,
+             int32_t y);
   virtual ~CWBMessage();
 
   INLINE WBMESSAGE GetMessage() const { return Message; }
   INLINE WBGUID GetTarget() const { return Target; }
-  INLINE CPoint GetPosition() const { return CPoint( Position[ 0 ], Position[ 1 ] ); }
+  INLINE CPoint GetPosition() const { return CPoint(Position[0], Position[1]); }
 
-  TBOOL IsTargetID(std::string_view Name);
+  bool IsTargetID(std::string_view Name);
   std::string GetTargetID();
 
-  TBOOL IsMouseMessage();
-
+  bool IsMouseMessage();
 };

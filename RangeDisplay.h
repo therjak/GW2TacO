@@ -2,12 +2,12 @@
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 
 class GW2RangeDisplay : public CWBItem {
-  void OnDraw(CWBDrawAPI *API) override;
-  void DrawRangeCircle(CWBDrawAPI *API, float range, float alpha);
+  void OnDraw(CWBDrawAPI* API) override;
+  void DrawRangeCircle(CWBDrawAPI* API, float range, float alpha);
 
  public:
-  GW2RangeDisplay(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2RangeDisplay> Create(CWBItem *Parent,
+  GW2RangeDisplay(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2RangeDisplay> Create(CWBItem* Parent,
                                                         CRect Position) {
     auto p = std::make_shared<GW2RangeDisplay>(Parent, Position);
     p->SelfRef = p;
@@ -18,9 +18,9 @@ class GW2RangeDisplay : public CWBItem {
   }
   ~GW2RangeDisplay() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "gw2rangecircles" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 };

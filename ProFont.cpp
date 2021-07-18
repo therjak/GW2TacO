@@ -1701,14 +1701,14 @@ unsigned char raw_uni_png[] = {
 
 int raw_uni_png_size = 2711;
 
-TBOOL LoadBMFontBinaryMonochrome(CWBFontDescription *fd, uint8_t *Binary,
-                                 int32_t BinarySize, uint8_t *image,
-                                 int32_t ImageSize) {
+bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
+                                int32_t BinarySize, uint8_t* image,
+                                int32_t ImageSize) {
   if (!Binary || !BinarySize || !image || !ImageSize) return false;
 
   int32_t xr, yr;
 
-  uint8_t *img = DecompressImage(image, ImageSize, xr, yr);
+  uint8_t* img = DecompressImage(image, ImageSize, xr, yr);
   if (!img) {
     LOG(LOG_ERROR,
         _T( "[gui] Error loading font data: font img could not be loaded" ));
@@ -1718,32 +1718,32 @@ TBOOL LoadBMFontBinaryMonochrome(CWBFontDescription *fd, uint8_t *Binary,
   for (int32_t x = 0; x < xr * yr; x++)
     img[x * 4 + 1] = img[x * 4 + 2] = img[x * 4 + 3] = img[x * 4];
 
-  TBOOL res = fd->LoadBMFontBinary(Binary, BinarySize, img, xr, yr);
+  bool res = fd->LoadBMFontBinary(Binary, BinarySize, img, xr, yr);
   SAFEDELETEA(img);
   return res;
 }
 
-TBOOL CreateProFont(CWBApplication *App, std::string_view FontName) {
-  CWBFontDescription *fd = new CWBFontDescription();
+bool CreateProFont(CWBApplication* App, std::string_view FontName) {
+  CWBFontDescription* fd = new CWBFontDescription();
   if (!LoadBMFontBinaryMonochrome(fd, raw_profont_bin, raw_profont_bin_size,
                                   raw_profontgifsmall,
                                   raw_profontgifsmall_size)) {
     SAFEDELETE(fd);
     return NULL;
   }
-  TBOOL f = App->CreateFont(FontName, fd);
+  bool f = App->CreateFont(FontName, fd);
   SAFEDELETE(fd);
   return f;
 }
 
-TBOOL CreateUniFont(CWBApplication *App, std::string_view FontName) {
-  CWBFontDescription *fd = new CWBFontDescription();
+bool CreateUniFont(CWBApplication* App, std::string_view FontName) {
+  CWBFontDescription* fd = new CWBFontDescription();
   if (!LoadBMFontBinaryMonochrome(fd, raw_uni_fnt, raw_uni_fnt_size,
                                   raw_uni_png, raw_uni_png_size)) {
     SAFEDELETE(fd);
     return NULL;
   }
-  TBOOL f = App->CreateFont(FontName, fd);
+  bool f = App->CreateFont(FontName, fd);
   SAFEDELETE(fd);
   return f;
 }

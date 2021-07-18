@@ -4,7 +4,7 @@
 
 #include <comdef.h>
 
-CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device *dev)
+CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device* dev)
     : CCoreIndexBuffer(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -20,7 +20,7 @@ void CCoreDX11IndexBuffer::Release() {
   IndexBufferHandle = nullptr;
 }
 
-TBOOL CCoreDX11IndexBuffer::Apply() {
+bool CCoreDX11IndexBuffer::Apply() {
   if (!IndexBufferHandle) return false;
   DeviceContext->IASetIndexBuffer(
       IndexBufferHandle,
@@ -28,8 +28,8 @@ TBOOL CCoreDX11IndexBuffer::Apply() {
   return true;
 }
 
-TBOOL CCoreDX11IndexBuffer::Create(const uint32_t idxcount,
-                                   const uint32_t idxsize) {
+bool CCoreDX11IndexBuffer::Create(const uint32_t idxcount,
+                                  const uint32_t idxsize) {
   if (idxcount <= 0 || idxsize <= 0) return false;
   if (idxsize != 2 && idxsize != 4) return false;
 
@@ -57,8 +57,8 @@ TBOOL CCoreDX11IndexBuffer::Create(const uint32_t idxcount,
   return true;
 }
 
-TBOOL CCoreDX11IndexBuffer::Lock(void **Result, const uint32_t idxoffset,
-                                 const int32_t idxcount) {
+bool CCoreDX11IndexBuffer::Lock(void** Result, const uint32_t idxoffset,
+                                const int32_t idxcount) {
   if (!IndexBufferHandle) return false;
 
   D3D11_MAPPED_SUBRESOURCE ms;
@@ -75,11 +75,11 @@ TBOOL CCoreDX11IndexBuffer::Lock(void **Result, const uint32_t idxoffset,
   return true;
 }
 
-TBOOL CCoreDX11IndexBuffer::Lock(void **Result) {
+bool CCoreDX11IndexBuffer::Lock(void** Result) {
   return Lock(Result, 0, IndexCount);
 }
 
-TBOOL CCoreDX11IndexBuffer::UnLock() {
+bool CCoreDX11IndexBuffer::UnLock() {
   if (!IndexBufferHandle) return false;
   DeviceContext->Unmap(IndexBufferHandle, 0);
   return true;

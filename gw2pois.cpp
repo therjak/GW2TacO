@@ -30,13 +30,13 @@
 
 #pragma comment(lib, "Dwmapi.lib")
 
-CWBApplication *App = nullptr;
+CWBApplication* App = nullptr;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 
 bool disableHooks = false;
 
-TBOOL InitGUI(CWBApplication *App) {
+bool InitGUI(CWBApplication* App) {
   CreateUniFont(App, "UniFont");
   CreateProFont(App, "ProFont");
 
@@ -65,10 +65,10 @@ TBOOL InitGUI(CWBApplication *App) {
   return true;
 }
 
-void OpenWindows(CWBApplication *App) {
+void OpenWindows(CWBApplication* App) {
   auto root = App->GetRoot();
-  GW2TacO *taco =
-      dynamic_cast<GW2TacO *>(root->FindChildByID("tacoroot", "GW2TacO"));
+  GW2TacO* taco =
+      dynamic_cast<GW2TacO*>(root->FindChildByID("tacoroot", "GW2TacO"));
   if (!taco) return;
 
   if (HasWindowData("MapTimer") && IsWindowOpen("MapTimer"))
@@ -99,7 +99,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
   if (disableHooks) return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   if (ccode == HC_ACTION) {
-    KBDLLHOOKSTRUCT *pkbdllhook = (KBDLLHOOKSTRUCT *)lParam;
+    KBDLLHOOKSTRUCT* pkbdllhook = (KBDLLHOOKSTRUCT*)lParam;
     HKL dwhkl = nullptr;
     BYTE dbKbdState[256];
     TCHAR szCharBuf[32];
@@ -154,7 +154,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
   if (App && wnd == (HWND)App->GetHandle())
     return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
-  KBDLLHOOKSTRUCT *kbdat = (KBDLLHOOKSTRUCT *)lParam;
+  KBDLLHOOKSTRUCT* kbdat = (KBDLLHOOKSTRUCT*)lParam;
   PostMessage((HWND)App->GetHandle(), wParam, kbdat->vkCode,
               1 | (kbdat->scanCode << 16) + (kbdat->flags << 24));
 
@@ -182,7 +182,7 @@ LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
   if (App && wnd == (HWND)App->GetHandle())
     return CallNextHookEx(nullptr, code, wParam, lParam);
 
-  KBDLLHOOKSTRUCT *kbdat = (KBDLLHOOKSTRUCT *)lParam;
+  KBDLLHOOKSTRUCT* kbdat = (KBDLLHOOKSTRUCT*)lParam;
   UINT mapped = MapVirtualKey(kbdat->vkCode, MAPVK_VK_TO_CHAR);
 
   bool inFocus =
@@ -212,7 +212,7 @@ LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
       (wnd != gw2Window && App && wnd != (HWND)App->GetHandle()))
     return CallNextHookEx(nullptr, code, wParam, lParam);
 
-  MSLLHOOKSTRUCT *mousedat = (MSLLHOOKSTRUCT *)lParam;
+  MSLLHOOKSTRUCT* mousedat = (MSLLHOOKSTRUCT*)lParam;
 
   POINT ap = mousedat->pt;
   ScreenToClient((HWND)App->GetHandle(), &ap);
@@ -235,7 +235,7 @@ LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
   return CallNextHookEx(nullptr, code, wParam, lParam);
 }
 
-LONG WINAPI CrashOverride(struct _EXCEPTION_POINTERS *excpInfo) {
+LONG WINAPI CrashOverride(struct _EXCEPTION_POINTERS* excpInfo) {
   if (IsDebuggerPresent()) return EXCEPTION_CONTINUE_SEARCH;
   LONG res = baseCrashTracker(excpInfo);
   return res;
@@ -375,8 +375,7 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
   if (hConnect) WinHttpCloseHandle(hConnect);
   if (hSession) WinHttpCloseHandle(hSession);
 
-  return std::string(reinterpret_cast<char *>(data.GetData()),
-                     data.GetLength());
+  return std::string(reinterpret_cast<char*>(data.GetData()), data.GetLength());
 }
 
 std::string FetchHTTPS(std::string_view url, std::string_view path) {
@@ -432,7 +431,7 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
   if (hConnect) WinHttpCloseHandle(hConnect);
   if (hSession) WinHttpCloseHandle(hSession);
 
-  return std::string(reinterpret_cast<const char *>(data.GetData()),
+  return std::string(reinterpret_cast<const char*>(data.GetData()),
                      data.GetLength());
 }
 
@@ -460,7 +459,7 @@ void GetFileName(CHAR pfname[MAX_PATH]) {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());
 
   HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  PROCESSENTRY32 *processInfo = new PROCESSENTRY32;
+  PROCESSENTRY32* processInfo = new PROCESSENTRY32;
   processInfo->dwSize = sizeof(PROCESSENTRY32);
   while (Process32Next(hSnapShot, processInfo) != FALSE) {
     if (processInfo->th32ProcessID == dwOwnPID) {
@@ -482,7 +481,7 @@ BOOL AppIsAllreadyRunning() {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());
 
   HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  PROCESSENTRY32 *processInfo = new PROCESSENTRY32;
+  PROCESSENTRY32* processInfo = new PROCESSENTRY32;
   processInfo->dwSize = sizeof(PROCESSENTRY32);
   int index = 0;
   while (Process32Next(hSnapShot, processInfo) != FALSE) {
@@ -498,8 +497,8 @@ BOOL AppIsAllreadyRunning() {
   return bRunning;
 }
 
-TBOOL keyboardHookActive = false;
-TBOOL mouseHookActive = false;
+bool keyboardHookActive = false;
+bool mouseHookActive = false;
 
 bool SetupTacoProtocolHandling() {
   TCHAR szFileName[MAX_PATH + 1];
@@ -518,7 +517,7 @@ bool SetupTacoProtocolHandling() {
       return false;
   }
 
-  const char *urldesc = "URL:gw2taco protocol";
+  const char* urldesc = "URL:gw2taco protocol";
 
   if (RegSetKeyValue(key, nullptr, nullptr, REG_SZ, urldesc, strlen(urldesc)) !=
       ERROR_SUCCESS)
@@ -541,7 +540,7 @@ bool SetupTacoProtocolHandling() {
   return true;
 }
 
-bool DownloadFile(std::string_view url, CStreamWriterMemory &mem) {
+bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
   LPSTREAM stream;
 
   HRESULT hr = URLOpenBlockingStream(
@@ -583,7 +582,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
           std::string(ourl.substr(pos)).c_str());
 
   auto url = ourl.substr(pos + 21);
-  uint8_t *urlPtr = new uint8_t[url.size() + 1];
+  uint8_t* urlPtr = new uint8_t[url.size() + 1];
   memset(urlPtr, 0, url.size() + 1);
   memcpy(urlPtr, url.data(), url.size());
 
@@ -592,7 +591,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
   auto downloadThread = CreateThread(
       nullptr, 0,
       [](LPVOID data) {
-        std::string url(static_cast<char *>(data));
+        std::string url(static_cast<char*>(data));
         delete[] data;
 
         CStreamWriterMemory mem;
@@ -628,7 +627,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
         if (fileName.find(".taco") == fileName.size() - 5)
           fileName = fileName.substr(0, fileName.size() - 5);
 
-        for (char &x : fileName)
+        for (char& x : fileName)
           if (!isalnum(x)) x = '_';
 
         fileName = "POIs/" + fileName + ".taco";
@@ -654,7 +653,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
       urlPtr, 0, &downloadThreadID);
 }
 
-void ImportMarkerPack(CWBApplication *App, std::string_view zipFile);
+void ImportMarkerPack(CWBApplication* App, std::string_view zipFile);
 
 #include <imm.h>
 #pragma comment(lib, "Imm32.lib")
@@ -896,7 +895,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FORCEDDEBUGLOG("set some window attributes");
 
-  TBOOL FoundGW2Window = false;
+  bool FoundGW2Window = false;
 
   if (!HasConfigValue("Vsync")) SetConfigValue("Vsync", 1);
 
@@ -910,7 +909,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FORCEDDEBUGLOG("starting main loop");
 
-  GW2TacO *taco = dynamic_cast<GW2TacO *>(
+  GW2TacO* taco = dynamic_cast<GW2TacO*>(
       App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
 
   if (!taco) return 0;

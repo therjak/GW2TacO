@@ -79,10 +79,10 @@ enum WBSCROLLDRAGMODE {
 
 class CWBScrollbarParams {
  public:
-  TBOOL Enabled;  // determines whether the scrollbar will be displayed at all
-  TBOOL Dynamic;  // if true the scrollbar disappears when not needed
-  TBOOL Visible;  // if true the client area has been adjusted so the scrollbar
-                  // can fit
+  bool Enabled;  // determines whether the scrollbar will be displayed at all
+  bool Dynamic;  // if true the scrollbar disappears when not needed
+  bool Visible;  // if true the client area has been adjusted so the scrollbar
+                 // can fit
 
   // position data
   int32_t MinScroll, MaxScroll;
@@ -104,13 +104,13 @@ class CWBScrollbarParams {
 
 class CWBDisplayState {
   int32_t Visuals[WB_ITEM_COUNT];
-  TBOOL VisualSet[WB_ITEM_COUNT];
+  bool VisualSet[WB_ITEM_COUNT];
 
  public:
   CWBDisplayState();
   virtual ~CWBDisplayState();
 
-  TBOOL IsSet(WBITEMVISUALCOMPONENT v);
+  bool IsSet(WBITEMVISUALCOMPONENT v);
   CColor GetColor(WBITEMVISUALCOMPONENT v);
   WBSKINELEMENTID GetSkin(WBITEMVISUALCOMPONENT v);
   void SetValue(WBITEMVISUALCOMPONENT v, int32_t value);
@@ -140,10 +140,9 @@ class CWBCSSPropertyBatch {
   std::unordered_map<WBITEMSTATE, std::string> Fonts;
 
   CWBCSSPropertyBatch();
-  virtual CWBFont *GetFont(CWBApplication *App, WBITEMSTATE State);
-  TBOOL ApplyStyle(CWBItem *Owner, std::string_view prop,
-                   std::string_view value,
-                   const std::vector<std::string> &pseudo);
+  virtual CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
+  bool ApplyStyle(CWBItem* Owner, std::string_view prop, std::string_view value,
+                  const std::vector<std::string>& pseudo);
 };
 
 class CWBItem : public IWBCSS {
@@ -163,16 +162,16 @@ class CWBItem : public IWBCSS {
 
   CSize StoredContentSize;
 
-  CWBItem *Parent;
+  CWBItem* Parent;
   std::vector<std::shared_ptr<CWBItem>> Children;
 
   int32_t SortLayer;
   int32_t ZIndex;
   float OpacityMultiplier = 1;
 
-  TBOOL Hidden;
-  TBOOL Disabled;
-  TBOOL ForceMouseTransparent = false;
+  bool Hidden;
+  bool Disabled;
+  bool ForceMouseTransparent = false;
   int32_t Scrollbar_Size;
   int32_t Scrollbar_ButtonSize;
   int32_t Scrollbar_ThumbMinimalSize;
@@ -183,111 +182,111 @@ class CWBItem : public IWBCSS {
 
   void UpdateScreenRect();
 
-  virtual void OnMove(const CPoint &p);
-  virtual void OnResize(const CSize &s);
+  virtual void OnMove(const CPoint& p);
+  virtual void OnResize(const CSize& s);
   virtual void OnMouseEnter();
   virtual void OnMouseLeave();
 
   virtual void CalculateClientPosition();
 
-  void DrawTree(CWBDrawAPI *API);
+  void DrawTree(CWBDrawAPI* API);
 
-  virtual TBOOL Focusable() const;
+  virtual bool Focusable() const;
 
-  void *Data;
+  void* Data;
 
   virtual void AdjustClientAreaToFitScrollbars();
-  virtual void ScrollbarHelperFunct(CWBScrollbarParams &s, int32_t &r,
-                                    TBOOL ScrollbarNeeded);
-  virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams &s, int32_t &a1,
-                                           int32_t &a2, int32_t &thumbsize,
-                                           int32_t &thumbpos);
-  virtual TBOOL GetHScrollbarRectangles(
-      CRect &button1, CRect &Scrollup, CRect &Thumb, CRect &Scrolldown,
-      CRect &button2);  // returns the highlight areas of the scrollbar in
-                        // client space
-  virtual TBOOL GetVScrollbarRectangles(CRect &button1, CRect &Scrollup,
-                                        CRect &Thumb, CRect &Scrolldown,
-                                        CRect &button2);
-  virtual TBOOL ScrollbarRequired(CWBScrollbarParams &s);
-  virtual int32_t CalculateScrollbarMovement(CWBScrollbarParams &s,
+  virtual void ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t& r,
+                                    bool ScrollbarNeeded);
+  virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
+                                           int32_t& a2, int32_t& thumbsize,
+                                           int32_t& thumbpos);
+  virtual bool GetHScrollbarRectangles(
+      CRect& button1, CRect& Scrollup, CRect& Thumb, CRect& Scrolldown,
+      CRect& button2);  // returns the highlight areas of the
+                        // scrollbar in client space
+  virtual bool GetVScrollbarRectangles(CRect& button1, CRect& Scrollup,
+                                       CRect& Thumb, CRect& Scrolldown,
+                                       CRect& button2);
+  virtual bool ScrollbarRequired(CWBScrollbarParams& s);
+  virtual int32_t CalculateScrollbarMovement(CWBScrollbarParams& s,
                                              int32_t scrollbarsize,
                                              int32_t delta);
-  virtual void DrawScrollbarButton(CWBDrawAPI *API, CWBScrollbarParams &s,
-                                   CRect &r, WBITEMVISUALCOMPONENT Button);
-  virtual void DrawHScrollbar(CWBDrawAPI *API);
-  virtual void DrawVScrollbar(CWBDrawAPI *API);
+  virtual void DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
+                                   CRect& r, WBITEMVISUALCOMPONENT Button);
+  virtual void DrawHScrollbar(CWBDrawAPI* API);
+  virtual void DrawVScrollbar(CWBDrawAPI* API);
   virtual void HandleHScrollbarClick(WBSCROLLDRAGMODE m);
   virtual void HandleVScrollbarClick(WBSCROLLDRAGMODE m);
-  virtual TBOOL AllowMouseHighlightWhileCaptureItem() { return false; }
+  virtual bool AllowMouseHighlightWhileCaptureItem() { return false; }
 
-  TBOOL ScanPXValue(std::string_view Value, int32_t &Result,
-                    std::string_view PropName);
-  TBOOL ScanSkinValue(std::string_view Value, WBSKINELEMENTID &Result,
-                      std::string_view PropName);
+  bool ScanPXValue(std::string_view Value, int32_t& Result,
+                   std::string_view PropName);
+  bool ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
+                     std::string_view PropName);
 
-  CWBItem *ChildSearcherFunct(std::string_view value,
+  CWBItem* ChildSearcherFunct(std::string_view value,
                               std::string_view type = _T( "" ));
 
   WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, CRect r);
   virtual void ChangeContentOffset(CPoint ContentOff);
 
-  static const std::string &GetClassName() {
+  static const std::string& GetClassName() {
     static const std::string type = _T( "guiitem" );
     return type;
   }
 
  protected:
   std::weak_ptr<CWBItem> SelfRef;
-  CWBApplication *App;
-  CWBItem *ChildInFocus;
+  CWBApplication* App;
+  CWBItem* ChildInFocus;
 
-  virtual void OnDraw(CWBDrawAPI *API);
-  virtual void OnPostDraw(CWBDrawAPI *API);
+  virtual void OnDraw(CWBDrawAPI* API);
+  virtual void OnPostDraw(CWBDrawAPI* API);
 
   //////////////////////////////////////////////////////////////////////////
   // CSS modifiable properties
 
   CWBCSSPropertyBatch CSSProperties;
 
-  virtual CWBItem *GetItemUnderMouse(CPoint &Point, CRect &CropRect,
+  virtual CWBItem* GetItemUnderMouse(CPoint& Point, CRect& CropRect,
                                      WBMESSAGE MessageType);
   virtual void SetChildAsTopmost(int32_t Index);
   virtual void SetChildAsBottommost(int32_t Index);
-  virtual TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                                   WBMESSAGE MessageType);
+  virtual bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                                  WBMESSAGE MessageType);
 
-  CWBItem *SetCapture();
-  TBOOL ReleaseCapture() const;
-  virtual int32_t GetChildIndex(CWBItem *Item);
+  CWBItem* SetCapture();
+  bool ReleaseCapture() const;
+  virtual int32_t GetChildIndex(CWBItem* Item);
 
-  virtual TBOOL ScrollbarDragged();
+  virtual bool ScrollbarDragged();
 
   virtual void DrawBackgroundItem(
-      CWBDrawAPI *API, CWBDisplayProperties &Descriptor, CRect &Pos,
+      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, CRect& Pos,
       WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
-  virtual void DrawBackground(CWBDrawAPI *API, WBITEMSTATE State);
-  virtual void DrawBackground(CWBDrawAPI *API);
-  virtual void DrawBorder(CWBDrawAPI *API);
-  virtual void ApplyOpacity(CWBDrawAPI *API);
+  virtual void DrawBackground(CWBDrawAPI* API, WBITEMSTATE State);
+  virtual void DrawBackground(CWBDrawAPI* API);
+  virtual void DrawBorder(CWBDrawAPI* API);
+  virtual void ApplyOpacity(CWBDrawAPI* API);
 
-  virtual void DrawBackground(CWBDrawAPI *API, CRect &rect, WBITEMSTATE State,
-                              CWBCSSPropertyBatch &cssProps);
-  virtual void DrawBorder(CWBDrawAPI *API, CRect &rect,
-                          CWBCSSPropertyBatch &cssProps);
+  virtual void DrawBackground(CWBDrawAPI* API, CRect& rect, WBITEMSTATE State,
+                              CWBCSSPropertyBatch& cssProps);
+  virtual void DrawBorder(CWBDrawAPI* API, CRect& rect,
+                          CWBCSSPropertyBatch& cssProps);
 
   virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
       std::string_view String);
-  virtual TBOOL ParseRGBA(std::string_view description, CColor &output);
+  virtual bool ParseRGBA(std::string_view description, CColor& output);
 
-  static void PositionApplicator(CWBPositionDescriptor &pos,
+  static void PositionApplicator(CWBPositionDescriptor& pos,
                                  WBPOSITIONTYPE Type, std::string_view Value);
-  static void VisualStyleApplicator(CWBDisplayProperties &desc,
+  static void VisualStyleApplicator(CWBDisplayProperties& desc,
                                     WBITEMVISUALCOMPONENT TargetComponent,
                                     int32_t Value,
-                                    const std::vector<std::string> &pseudo);
-  static void FontStyleApplicator(CWBCSSPropertyBatch &desc,
-                                  const std::vector<std::string> &pseudo,
+                                    const std::vector<std::string>& pseudo);
+  static void FontStyleApplicator(CWBCSSPropertyBatch& desc,
+                                  const std::vector<std::string>& pseudo,
                                   std::string_view name);
 
   // auto resize stuff
@@ -295,105 +294,105 @@ class CWBItem : public IWBCSS {
   virtual void ContentChanged();
   virtual void ChangeContentOffsetX(int32_t OffsetX);
   virtual void ChangeContentOffsetY(int32_t OffsetY);
-  TBOOL ScrollbarsEnabled();
+  bool ScrollbarsEnabled();
 
   virtual CPoint GetContentOffset() { return ContentOffset; }
   CWBItem();
-  CWBItem(CWBItem *Parent, const CRect &Position);
+  CWBItem(CWBItem* Parent, const CRect& Position);
 
  public:
   ~CWBItem() override;
 
-  virtual void AddChild(const std::shared_ptr<CWBItem> &Item);
-  virtual void RemoveChild(const std::shared_ptr<CWBItem> &Item);
-  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position);
-  virtual TBOOL MessageProc(
-      CWBMessage &Message);  // return true if this item handled the message
-  TBOOL FindItemInParentTree(CWBItem *Item);
+  virtual void AddChild(const std::shared_ptr<CWBItem>& Item);
+  virtual void RemoveChild(const std::shared_ptr<CWBItem>& Item);
+  virtual bool Initialize(CWBItem* Parent, const CRect& Position);
+  virtual bool MessageProc(
+      CWBMessage& Message);  // return true if this item handled the message
+  bool FindItemInParentTree(CWBItem* Item);
 
   INLINE const WBGUID GetGuid() const { return Guid; }
-  INLINE CWBApplication *GetApplication() const { return App; }
-  INLINE CWBItem *GetParent() const { return Parent; }
+  INLINE CWBApplication* GetApplication() const { return App; }
+  INLINE CWBItem* GetParent() const { return Parent; }
 
   virtual CRect GetClientRect() const;  // returns value in client space
   virtual CRect GetWindowRect() const;  // returns value in client space
   virtual CRect GetScreenRect() const;  // returns value in screen space
 
-  virtual CPoint ScreenToClient(const CPoint &p) const;
-  virtual CRect ScreenToClient(const CRect &p) const;
-  virtual CPoint ClientToScreen(const CPoint &p) const;
-  virtual CRect ClientToScreen(const CRect &p) const;
+  virtual CPoint ScreenToClient(const CPoint& p) const;
+  virtual CRect ScreenToClient(const CRect& p) const;
+  virtual CPoint ClientToScreen(const CPoint& p) const;
+  virtual CRect ClientToScreen(const CRect& p) const;
 
-  virtual void SetPosition(const CRect &Pos);
+  virtual void SetPosition(const CRect& Pos);
   virtual void ApplyRelativePosition();
   virtual void ApplyPosition(
-      const CRect &Pos);  // only to be used by the parent item when moving the
-                          // item around
+      const CRect& Pos);  // only to be used by the parent item when
+                          // moving the item around
   virtual void SetClientPadding(int32_t left, int32_t top, int32_t right,
                                 int32_t bottom);
 
-  TBOOL IsWidthSet();   // tells if the width has been specified in the style of
-                        // the item
-  TBOOL IsHeightSet();  // tells if the height has been specified in the style
-                        // of the item
+  bool IsWidthSet();   // tells if the width has been specified in the style of
+                       // the item
+  bool IsHeightSet();  // tells if the height has been specified in the style
+                       // of the item
   int32_t GetCalculatedWidth(
-      CSize ParentSize);  // tells if the width has been specified in the style
-                          // of the item
+      CSize ParentSize);  // tells if the width has been specified
+                          // in the style of the item
   int32_t GetCalculatedHeight(
-      CSize ParentSize);  // tells if the height has been specified in the style
-                          // of the item
+      CSize ParentSize);  // tells if the height has been
+                          // specified in the style of the item
 
   CRect GetPosition();
 
   uint32_t NumChildren();
-  CWBItem *GetChild(uint32_t idx);
+  CWBItem* GetChild(uint32_t idx);
 
-  TBOOL InFocus();
-  TBOOL InLocalFocus();
+  bool InFocus();
+  bool InLocalFocus();
   void SetFocus();
   void ClearFocus();
-  TBOOL MouseOver();
-  virtual CWBItem *GetChildInFocus();
+  bool MouseOver();
+  virtual CWBItem* GetChildInFocus();
 
   void SavePosition();
   CRect GetSavedPosition() const;
-  void SetSavedPosition(CRect &savedPos);
+  void SetSavedPosition(CRect& savedPos);
 
-  void Hide(TBOOL Hide);
-  TBOOL IsHidden();
-  void Enable(TBOOL Enabled);
-  TBOOL IsEnabled();
+  void Hide(bool Hide);
+  bool IsHidden();
+  void Enable(bool Enabled);
+  bool IsEnabled();
 
-  void SetData(void *data);
-  void *GetData();
+  void SetData(void* data);
+  void* GetData();
 
   virtual void MarkForDeletion();
 
-  virtual CWBContextMenu *OpenContextMenu(CPoint Position);
+  virtual CWBContextMenu* OpenContextMenu(CPoint Position);
 
-  const std::string &GetType() const override {
+  const std::string& GetType() const override {
     static const std::string type = _T( "guiitem" );
     return type;
   }
 
-  TBOOL InstanceOf(std::string_view name) const override {
+  bool InstanceOf(std::string_view name) const override {
     return name == GetClassName();
   }
 
-  virtual void EnableHScrollbar(TBOOL Enabled, TBOOL Dynamic);
-  virtual void EnableVScrollbar(TBOOL Enabled, TBOOL Dynamic);
-  virtual TBOOL IsHScrollbarEnabled();
-  virtual TBOOL IsVScrollbarEnabled();
+  virtual void EnableHScrollbar(bool Enabled, bool Dynamic);
+  virtual void EnableVScrollbar(bool Enabled, bool Dynamic);
+  virtual bool IsHScrollbarEnabled();
+  virtual bool IsVScrollbarEnabled();
   virtual void SetHScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                        int32_t ViewSize);
   virtual void SetVScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                        int32_t ViewSize);
-  virtual void GetHScrollbarParameters(int32_t &MinScroll, int32_t &MaxScroll,
-                                       int32_t &ViewSize);
-  virtual void GetVScrollbarParameters(int32_t &MinScroll, int32_t &MaxScroll,
-                                       int32_t &ViewSize);
-  virtual void SetHScrollbarPos(int32_t ScrollPos, TBOOL Clamp = false);
-  virtual void SetVScrollbarPos(int32_t ScrollPos, TBOOL Clamp = false);
+  virtual void GetHScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
+                                       int32_t& ViewSize);
+  virtual void GetVScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
+                                       int32_t& ViewSize);
+  virtual void SetHScrollbarPos(int32_t ScrollPos, bool Clamp = false);
+  virtual void SetVScrollbarPos(int32_t ScrollPos, bool Clamp = false);
   virtual int32_t GetHScrollbarPos() { return HScrollbar.ScrollPos; };
   virtual int32_t GetVScrollbarPos() { return VScrollbar.ScrollPos; };
   virtual void SetTopmost();
@@ -402,23 +401,23 @@ class CWBItem : public IWBCSS {
   virtual void SetBorderSizes(char Left, char Top, char Right, char Bottom);
   virtual void SetFont(WBITEMSTATE State, std::string_view Font);
 
-  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                   const std::vector<std::string> &pseudo) override;
+  bool ApplyStyle(std::string_view prop, std::string_view value,
+                  const std::vector<std::string>& pseudo) override;
 
-  CWBItem *FindChildByID(std::string_view value,
+  CWBItem* FindChildByID(std::string_view value,
                          std::string_view type = _T( "" ));
 
   template <typename t>
-  t *FindChildByID(std::string_view value) {
-    CWBItem *it = FindChildByID(value, t::GetClassName());
+  t* FindChildByID(std::string_view value) {
+    CWBItem* it = FindChildByID(value, t::GetClassName());
     if (!it) return nullptr;
-    return static_cast<t *>(it);
+    return static_cast<t*>(it);
   }
 
   template <typename... Args>
-  CWBItem *FindChildByIDs(std::string_view value, Args... args) {
+  CWBItem* FindChildByIDs(std::string_view value, Args... args) {
     int len = sizeof...(Args);
-    const TCHAR *vals[] = {args...};
+    const TCHAR* vals[] = {args...};
 
     if (!len) return FindChildByID(value);
 
@@ -430,48 +429,48 @@ class CWBItem : public IWBCSS {
     return nullptr;
   }
 
-  CWBItem *FindParentByID(std::string_view value,
+  CWBItem* FindParentByID(std::string_view value,
                           std::string_view type = _T( "" ));
-  virtual void CalculateWindowPosition(const CSize &s);
+  virtual void CalculateWindowPosition(const CSize& s);
 
-  void BuildPositionMessage(const CRect &Pos, CWBMessage &m);
+  void BuildPositionMessage(const CRect& Pos, CWBMessage& m);
   void ApplyStyleDeclarations(std::string_view String);
 
   virtual WBITEMSTATE GetState();
   void SetDisplayProperty(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
                           int32_t value);
-  CWBDisplayProperties &GetDisplayDescriptor() {
+  CWBDisplayProperties& GetDisplayDescriptor() {
     return CSSProperties.DisplayDescriptor;
   }
-  CWBCSSPropertyBatch &GetCSSProperties() { return CSSProperties; }
+  CWBCSSPropertyBatch& GetCSSProperties() { return CSSProperties; }
 
-  virtual CWBFont *GetFont(WBITEMSTATE State);
+  virtual CWBFont* GetFont(WBITEMSTATE State);
 
-  CWBPositionDescriptor &GetPositionDescriptor();
+  CWBPositionDescriptor& GetPositionDescriptor();
   CSize GetClientWindowSizeDifference();
 
-  virtual void SetChildInFocus(CWBItem *i);
+  virtual void SetChildInFocus(CWBItem* i);
 
-  virtual TBOOL InterpretPositionString(CWBCSSPropertyBatch &pos,
-                                        std::string_view prop,
-                                        std::string_view value,
-                                        const std::vector<std::string> &pseudo);
-  virtual TBOOL InterpretDisplayString(CWBCSSPropertyBatch &desc,
+  virtual bool InterpretPositionString(CWBCSSPropertyBatch& pos,
                                        std::string_view prop,
                                        std::string_view value,
-                                       const std::vector<std::string> &pseudo);
-  virtual TBOOL InterpretFontString(CWBCSSPropertyBatch &desc,
-                                    std::string_view prop,
-                                    std::string_view value,
-                                    const std::vector<std::string> &pseudo);
+                                       const std::vector<std::string>& pseudo);
+  virtual bool InterpretDisplayString(CWBCSSPropertyBatch& desc,
+                                      std::string_view prop,
+                                      std::string_view value,
+                                      const std::vector<std::string>& pseudo);
+  virtual bool InterpretFontString(CWBCSSPropertyBatch& desc,
+                                   std::string_view prop,
+                                   std::string_view value,
+                                   const std::vector<std::string>& pseudo);
 
   virtual void SetTreeOpacityMultiplier(
       float OpacityMul);  // for fading out whole subtrees
   virtual float GetTreeOpacityMultiplier();
 
   virtual void ReapplyStyles();
-  virtual void SetForcedMouseTransparency(TBOOL transparent);
-  TBOOL MarkedForDeletion();
+  virtual void SetForcedMouseTransparency(bool transparent);
+  bool MarkedForDeletion();
 };
 
 // OOP kung-fu follows to provide InstanceOf() functionality for use with CSS
@@ -480,28 +479,28 @@ class CWBItem : public IWBCSS {
 // class is the typename we're comparing against if not we traverse up the
 // hierarchy by directly calling the InstanceOf() of the parent class
 
-#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)    \
-  virtual const std::string &GetType() const {            \
-    static const std::string type = TYPE;                 \
-    return type;                                          \
-  }                                                       \
-                                                          \
-  friend CWBItem;                                         \
-                                                          \
- private:                                                 \
-  static const std::string &GetClassName() {              \
-    static const std::string type = TYPE;                 \
-    return type;                                          \
-  }                                                       \
-                                                          \
- public:                                                  \
-  virtual TBOOL InstanceOf(std::string_view name) const { \
-    if (name == GetClassName()) return true;              \
-    return PARENTCLASS::InstanceOf(name);                 \
+#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)   \
+  virtual const std::string& GetType() const {           \
+    static const std::string type = TYPE;                \
+    return type;                                         \
+  }                                                      \
+                                                         \
+  friend CWBItem;                                        \
+                                                         \
+ private:                                                \
+  static const std::string& GetClassName() {             \
+    static const std::string type = TYPE;                \
+    return type;                                         \
+  }                                                      \
+                                                         \
+ public:                                                 \
+  virtual bool InstanceOf(std::string_view name) const { \
+    if (name == GetClassName()) return true;             \
+    return PARENTCLASS::InstanceOf(name);                \
   }
 
 #define WB_DECLARE_GUIITEM_2PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2)        \
-  virtual const std::string &GetType() const {                               \
+  virtual const std::string& GetType() const {                               \
     static const std::string type = TYPE;                                    \
     return type;                                                             \
   }                                                                          \
@@ -509,20 +508,20 @@ class CWBItem : public IWBCSS {
   friend CWBItem;                                                            \
                                                                              \
  private:                                                                    \
-  static const std::string &GetClassName() {                                 \
+  static const std::string& GetClassName() {                                 \
     static const std::string type = TYPE;                                    \
     return type;                                                             \
   }                                                                          \
                                                                              \
  public:                                                                     \
-  virtual TBOOL InstanceOf(std::string_view name) const {                    \
+  virtual bool InstanceOf(std::string_view name) const {                     \
     if (name == GetClassName()) return true;                                 \
     return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name); \
   }
 
 #define WB_DECLARE_GUIITEM_3PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2,          \
                                     PARENTCLASS3)                              \
-  virtual const std::string &GetType() const override {                        \
+  virtual const std::string& GetType() const override {                        \
     static const std::string type = TYPE;                                      \
     return type;                                                               \
   }                                                                            \
@@ -530,13 +529,13 @@ class CWBItem : public IWBCSS {
   friend CWBItem;                                                              \
                                                                                \
  private:                                                                      \
-  static const std::string &GetClassName() {                                   \
+  static const std::string& GetClassName() {                                   \
     static const std::string type = TYPE;                                      \
     return type;                                                               \
   }                                                                            \
                                                                                \
  public:                                                                       \
-  virtual TBOOL InstanceOf(std::string_view name) const {                      \
+  virtual bool InstanceOf(std::string_view name) const {                       \
     if (name == GetClassName()) return true;                                   \
     return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name) || \
            PARENTCLASS3::InstanceOf(name);                                     \

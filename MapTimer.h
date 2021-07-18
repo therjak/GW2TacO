@@ -20,13 +20,13 @@ class GW2MapTimer : public CWBItem {
     int Length;
     int Start;
     std::string id;
-    TBOOL display = true;
+    bool display = true;
     std::vector<Event> events;
   };
 
   CPoint lastpos;
-  void OnDraw(CWBDrawAPI *API) override;
-  void SetLayout(CXMLNode &node);
+  void OnDraw(CWBDrawAPI* API) override;
+  void SetLayout(CXMLNode& node);
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -43,8 +43,8 @@ class GW2MapTimer : public CWBItem {
  public:
   std::vector<Map> maps;
 
-  GW2MapTimer(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2MapTimer> Create(CWBItem *Parent,
+  GW2MapTimer(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2MapTimer> Create(CWBItem* Parent,
                                                     CRect Position) {
     auto p = std::make_shared<GW2MapTimer>(Parent, Position);
     p->SelfRef = p;
@@ -55,9 +55,9 @@ class GW2MapTimer : public CWBItem {
   }
   ~GW2MapTimer() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "maptimer" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 };

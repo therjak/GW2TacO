@@ -11,21 +11,21 @@ class CCoreRasterizerState;
 class CXMLNode;
 
 union CORERENDERSTATEVALUE {
-  CCoreSamplerState *SamplerState;
-  CCoreDepthStencilState *DepthStencilState;
-  CCoreBlendState *BlendState;
-  CCoreRasterizerState *RasterizerState;
-  CCoreTexture *Texture;
-  CCoreIndexBuffer *IndexBuffer;
-  CCoreVertexFormat *VertexFormat;
-  CCoreVertexShader *VertexShader;
-  CCorePixelShader *PixelShader;
-  CCoreGeometryShader *GeometryShader;
-  CCoreDomainShader *DomainShader;
-  CCoreComputeShader *ComputeShader;
-  CCoreHullShader *HullShader;
+  CCoreSamplerState* SamplerState;
+  CCoreDepthStencilState* DepthStencilState;
+  CCoreBlendState* BlendState;
+  CCoreRasterizerState* RasterizerState;
+  CCoreTexture* Texture;
+  CCoreIndexBuffer* IndexBuffer;
+  CCoreVertexFormat* VertexFormat;
+  CCoreVertexShader* VertexShader;
+  CCorePixelShader* PixelShader;
+  CCoreGeometryShader* GeometryShader;
+  CCoreDomainShader* DomainShader;
+  CCoreComputeShader* ComputeShader;
+  CCoreHullShader* HullShader;
 
-  INLINE const TBOOL operator!=(const CORERENDERSTATEVALUE &v) {
+  INLINE const bool operator!=(const CORERENDERSTATEVALUE& v) {
     return SamplerState != v.SamplerState;
   }
 };
@@ -33,7 +33,7 @@ union CORERENDERSTATEVALUE {
 typedef uint32_t CORERENDERSTATEID;
 
 struct COREBLENDDESCRIPTOR {
-  TBOOL BlendEnable;
+  bool BlendEnable;
   COREBLENDFACTOR SrcBlend;
   COREBLENDFACTOR DestBlend;
   COREBLENDOP BlendOp;
@@ -45,31 +45,31 @@ struct COREBLENDDESCRIPTOR {
 
 class CCoreRenderStateBatch : public CCoreResource {
  protected:
-  TBOOL Dirty;
+  bool Dirty;
 
  public:
-  CCoreRenderStateBatch(CCoreDevice *Device);
+  CCoreRenderStateBatch(CCoreDevice* Device);
   ~CCoreRenderStateBatch() override;
-  virtual TBOOL Import(CXMLNode *n) = 0;
-  virtual void Export(CXMLNode *n) = 0;
+  virtual bool Import(CXMLNode* n) = 0;
+  virtual void Export(CXMLNode* n) = 0;
 };
 
 class CCoreBlendState : public CCoreRenderStateBatch {
  protected:
-  TBOOL AlphaToCoverage;
-  TBOOL IndependentBlend;
+  bool AlphaToCoverage;
+  bool IndependentBlend;
   COREBLENDDESCRIPTOR RenderTargetBlendStates[8];
 
  public:
-  CCoreBlendState(CCoreDevice *Device);
+  CCoreBlendState(CCoreDevice* Device);
   ~CCoreBlendState() override;
 
-  virtual TBOOL Update() = 0;
-  virtual TBOOL Apply() = 0;
+  virtual bool Update() = 0;
+  virtual bool Apply() = 0;
 
-  void SetAlphaToCoverage(TBOOL e);
-  void SetIndependentBlend(TBOOL e);
-  void SetBlendEnable(int32_t rt, TBOOL e);
+  void SetAlphaToCoverage(bool e);
+  void SetIndependentBlend(bool e);
+  void SetBlendEnable(int32_t rt, bool e);
   void SetSrcBlend(int32_t rt, COREBLENDFACTOR e);
   void SetDestBlend(int32_t rt, COREBLENDFACTOR e);
   void SetBlendOp(int32_t rt, COREBLENDOP e);
@@ -78,68 +78,68 @@ class CCoreBlendState : public CCoreRenderStateBatch {
   void SetBlendOpAlpha(int32_t rt, COREBLENDOP e);
   void SetRenderTargetWriteMask(int32_t rt, uint8_t e);
 
-  TBOOL Import(CXMLNode *n) override;
-  void Export(CXMLNode *n) override;
-  virtual void *GetHandle() = 0;
+  bool Import(CXMLNode* n) override;
+  void Export(CXMLNode* n) override;
+  virtual void* GetHandle() = 0;
 };
 
 class CCoreDepthStencilState : public CCoreRenderStateBatch {
  protected:
-  TBOOL DepthEnable;
-  TBOOL ZWriteEnable;
+  bool DepthEnable;
+  bool ZWriteEnable;
   CORECOMPARISONFUNCTION DepthFunc;
 
  public:
-  CCoreDepthStencilState(CCoreDevice *Device);
+  CCoreDepthStencilState(CCoreDevice* Device);
   ~CCoreDepthStencilState() override;
 
-  virtual TBOOL Update() = 0;
-  virtual TBOOL Apply() = 0;
+  virtual bool Update() = 0;
+  virtual bool Apply() = 0;
 
-  void SetDepthEnable(TBOOL e);
-  void SetZWriteEnable(TBOOL e);
+  void SetDepthEnable(bool e);
+  void SetZWriteEnable(bool e);
   void SetDepthFunc(CORECOMPARISONFUNCTION e);
 
-  TBOOL Import(CXMLNode *n) override;
-  void Export(CXMLNode *n) override;
+  bool Import(CXMLNode* n) override;
+  void Export(CXMLNode* n) override;
 
-  virtual void *GetHandle() = 0;
+  virtual void* GetHandle() = 0;
 };
 
 class CCoreRasterizerState : public CCoreRenderStateBatch {
  protected:
   COREFILLMODE FillMode;
   CORECULLMODE CullMode;
-  TBOOL FrontCounterClockwise;
+  bool FrontCounterClockwise;
   int32_t DepthBias;
   float DepthBiasClamp;
   float SlopeScaledDepthBias;
-  TBOOL DepthClipEnable;
-  TBOOL ScissorEnable;
-  TBOOL MultisampleEnable;
-  TBOOL AntialiasedLineEnable;
+  bool DepthClipEnable;
+  bool ScissorEnable;
+  bool MultisampleEnable;
+  bool AntialiasedLineEnable;
 
  public:
-  CCoreRasterizerState(CCoreDevice *Device);
+  CCoreRasterizerState(CCoreDevice* Device);
   ~CCoreRasterizerState() override;
 
-  virtual TBOOL Update() = 0;
-  virtual TBOOL Apply() = 0;
+  virtual bool Update() = 0;
+  virtual bool Apply() = 0;
 
   void SetFillMode(COREFILLMODE e);
   void SetCullMode(CORECULLMODE e);
-  void SetFrontCounterClockwise(TBOOL e);
+  void SetFrontCounterClockwise(bool e);
   void SetDepthBias(int32_t e);
   void SetDepthBiasClamp(float e);
   void SetSlopeScaledDepthBias(float e);
-  void SetDepthClipEnable(TBOOL e);
-  void SetScissorEnable(TBOOL e);
-  void SetMultisampleEnable(TBOOL e);
-  void SetAntialiasedLineEnable(TBOOL e);
+  void SetDepthClipEnable(bool e);
+  void SetScissorEnable(bool e);
+  void SetMultisampleEnable(bool e);
+  void SetAntialiasedLineEnable(bool e);
 
-  TBOOL Import(CXMLNode *n) override;
-  void Export(CXMLNode *n) override;
-  virtual void *GetHandle() = 0;
+  bool Import(CXMLNode* n) override;
+  void Export(CXMLNode* n) override;
+  virtual void* GetHandle() = 0;
 };
 
 class CCoreSamplerState : public CCoreRenderStateBatch {
@@ -156,11 +156,11 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
   float MaxLOD;
 
  public:
-  CCoreSamplerState(CCoreDevice *Device);
+  CCoreSamplerState(CCoreDevice* Device);
   ~CCoreSamplerState() override;
 
-  virtual TBOOL Update() = 0;
-  virtual TBOOL Apply(CORESAMPLER Smp) = 0;
+  virtual bool Update() = 0;
+  virtual bool Apply(CORESAMPLER Smp) = 0;
 
   void SetFilter(COREFILTER e);
 
@@ -176,7 +176,7 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
 
   void SetBorderColor(float r, float g, float b, float a);
 
-  TBOOL Import(CXMLNode *n) override;
-  void Export(CXMLNode *n) override;
-  virtual void *GetHandle() = 0;
+  bool Import(CXMLNode* n) override;
+  void Export(CXMLNode* n) override;
+  virtual void* GetHandle() = 0;
 };

@@ -14,13 +14,13 @@ std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 
 using namespace jsonxx;
 
-void DungeonProgress::OnDraw(CWBDrawAPI *API) {
-  CWBFont *f = GetFont(GetState());
+void DungeonProgress::OnDraw(CWBDrawAPI* API) {
+  CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(API, f);
-  GW2::APIKey *key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+  GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->valid &&
       (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
@@ -37,7 +37,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
         if (json.has<Array>("dungeons")) {
           auto dungeonData = json.get<Array>("dungeons").values();
 
-          for (auto &x : dungeonData) {
+          for (auto& x : dungeonData) {
             if (!x->is<String>()) continue;
 
             Dungeon d;
@@ -49,7 +49,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
 
             if (dungeonJson.has<Array>("paths")) {
               auto wings = dungeonJson.get<Array>("paths").values();
-              for (auto &wing : wings) {
+              for (auto& wing : wings) {
                 auto dungeonPath = wing->get<Object>();
                 DungeonPath p;
                 if (dungeonPath.has<String>("id"))
@@ -104,12 +104,12 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
       if (json.has<Array>("dungeons")) {
         auto dungeonData = json.get<Array>("dungeons").values();
 
-        for (auto &x : dungeonData) {
+        for (auto& x : dungeonData) {
           if (!x->is<String>()) continue;
 
           auto eventName = x->get<String>();
-          for (auto &d : dungeons)
-            for (auto &p : d.paths) {
+          for (auto& d : dungeons)
+            for (auto& p : d.paths) {
               if (p.name == eventName) p.finished = true;
             }
         }
@@ -118,19 +118,19 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
       if (json2.has<Array>("dungeons")) {
         auto dungeonData = json2.get<Array>("dungeons").values();
 
-        for (auto &d : dungeons)
-          for (auto &p : d.paths) p.frequenter = false;
+        for (auto& d : dungeons)
+          for (auto& p : d.paths) p.frequenter = false;
 
         if (!dungeonData.empty() && dungeonData[0]->is<Object>()) {
           Object obj = dungeonData[0]->get<Object>();
           if (obj.has<Array>("bits")) {
             auto bits = obj.get<Array>("bits").values();
             if (bits.size() > 0) {
-              for (auto &bit : bits) {
+              for (auto& bit : bits) {
                 if (bit->is<Number>()) {
                   auto frequentedID = static_cast<int32_t>(bit->get<Number>());
-                  for (auto &d : dungeons)
-                    for (auto &p : d.paths) {
+                  for (auto& d : dungeons)
+                    for (auto& p : d.paths) {
                       if (dungeonToAchievementMap.find(p.name) !=
                           dungeonToAchievementMap.end()) {
                         if (dungeonToAchievementMap[p.name] == frequentedID)
@@ -157,15 +157,15 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
     int32_t posy = 1;
 
     int32_t textwidth = 0;
-    for (const auto &d : dungeons)
+    for (const auto& d : dungeons)
       textwidth = max(textwidth, f->GetWidth(d.shortName.c_str(), false));
 
-    for (auto &d : dungeons) {
+    for (auto& d : dungeons) {
       f->Write(API, (d.shortName + ":").c_str(), CPoint(0, posy + 1),
                0xffffffff);
       int32_t posx = textwidth + f->GetLineHeight() / 2;
       for (int y = 0; y < d.paths.size(); y++) {
-        auto &p = d.paths[y];
+        auto& p = d.paths[y];
 
         CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
                         posy + f->GetLineHeight() - 1);
@@ -205,7 +205,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-DungeonProgress::DungeonProgress(CWBItem *Parent, CRect Position)
+DungeonProgress::DungeonProgress(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {
   dungeonToAchievementMap["ac_story"] = 4;
   dungeonToAchievementMap["hodgins"] = 5;
@@ -245,11 +245,11 @@ DungeonProgress::~DungeonProgress() {
   if (fetchThread.joinable()) fetchThread.join();
 }
 
-CWBItem *DungeonProgress::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* DungeonProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return DungeonProgress::Create(Root, Pos).get();
 }
 
-TBOOL DungeonProgress::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                          WBMESSAGE MessageType) {
+bool DungeonProgress::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                         WBMESSAGE MessageType) {
   return true;
 }

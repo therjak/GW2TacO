@@ -1,17 +1,17 @@
 #include "Box.h"
 
-void CWBBox::AddChild(const std::shared_ptr<CWBItem> &Item) {
+void CWBBox::AddChild(const std::shared_ptr<CWBItem>& Item) {
   CWBItem::AddChild(Item);
   RearrangeChildren();
 }
 
-CWBBox::CWBBox(CWBItem *Parent, const CRect &Pos) : CWBItem() {
+CWBBox::CWBBox(CWBItem* Parent, const CRect& Pos) : CWBItem() {
   Initialize(Parent, Pos);
 }
 
 CWBBox::~CWBBox() = default;
 
-TBOOL CWBBox::Initialize(CWBItem *Parent, const CRect &Position) {
+bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
   Arrangement = WB_ARRANGE_NONE;
   Spacing = 0;
   AlignmentX = WB_ALIGN_LEFT;
@@ -23,7 +23,7 @@ TBOOL CWBBox::Initialize(CWBItem *Parent, const CRect &Position) {
   return true;
 }
 
-TBOOL CWBBox::MessageProc(CWBMessage &Message) {
+bool CWBBox::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_CLIENTAREACHANGED:
       if (Message.GetTarget() == GetGuid()) {
@@ -53,7 +53,7 @@ TBOOL CWBBox::MessageProc(CWBMessage &Message) {
       break;
 
     case WBM_HSCROLL: {
-      TBOOL Result = CWBItem::MessageProc(Message);
+      bool Result = CWBItem::MessageProc(Message);
       if (Message.GetTarget() == GetGuid()) {
         ChangeContentOffsetX(-Message.Data);
         return true;
@@ -61,7 +61,7 @@ TBOOL CWBBox::MessageProc(CWBMessage &Message) {
       return Result;
     } break;
     case WBM_VSCROLL: {
-      TBOOL Result = CWBItem::MessageProc(Message);
+      bool Result = CWBItem::MessageProc(Message);
       if (Message.GetTarget() == GetGuid()) {
         ChangeContentOffsetY(-Message.Data);
         return true;
@@ -76,7 +76,7 @@ TBOOL CWBBox::MessageProc(CWBMessage &Message) {
         return true;
       }
 
-      CWBItem *i = App->FindItemByGuid(Message.GetTarget());
+      CWBItem* i = App->FindItemByGuid(Message.GetTarget());
 
       if (i && i->GetParent() == this) {
         if (Arrangement == WB_ARRANGE_NONE) break;  // do nothing here
@@ -272,7 +272,7 @@ void CWBBox::RearrangeChildren() {
   UpdateScrollbarData();
 }
 
-void CWBBox::OnDraw(CWBDrawAPI *API) {
+void CWBBox::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
   DrawBorder(API);
 }
@@ -289,8 +289,8 @@ void CWBBox::SetSpacing(int32_t s) {
   RearrangeChildren();
 }
 
-TBOOL CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
-                         const std::vector<std::string> &pseudo) {
+bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
+                        const std::vector<std::string>& pseudo) {
   if (CWBItem::ApplyStyle(prop, value, pseudo)) return true;
 
   if (prop == _T( "child-layout" )) {
@@ -396,8 +396,8 @@ TBOOL CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
   return false;
 }
 
-TBOOL CWBBox::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                 WBMESSAGE MessageType) {
+bool CWBBox::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                WBMESSAGE MessageType) {
   return ClickThrough;
 }
 
@@ -413,7 +413,7 @@ void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
   RearrangeChildren();
 }
 
-CWBItem *CWBBox::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* CWBBox::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   auto box = CWBBox::Create(Root, Pos);
 
   if (node.HasAttribute(_T( "clickthrough" ))) {

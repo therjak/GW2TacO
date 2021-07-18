@@ -17,7 +17,7 @@
 class CWBTextBoxHistoryEntry {
   friend class CWBTextBox;
 
-  TBOOL Remove;
+  bool Remove;
   int32_t StartPosition;
   std::string Data;
 
@@ -45,8 +45,8 @@ class CWBTextBox : public CWBItem {
 
   CWBCSSPropertyBatch Selection;
 
-  INLINE void DrawCursor(CWBDrawAPI *API, CPoint &p);
-  void SetCursorPosXpxY(int32_t x, int32_t y, TBOOL Selecting);
+  INLINE void DrawCursor(CWBDrawAPI* API, CPoint& p);
+  void SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting);
   void RemoveSelectedText();
   void Copy();
   void Cut();
@@ -65,39 +65,39 @@ class CWBTextBox : public CWBItem {
 
   virtual void DoSyntaxHighlight(){};
   virtual void OnTextChange(bool nonHumanInteraction = false);
-  CWBTextBoxHistoryEntry *CreateNewHistoryEntry(bool Remove, int Start,
+  CWBTextBoxHistoryEntry* CreateNewHistoryEntry(bool Remove, int Start,
                                                 int Length);
 
-  virtual CColor GetTextColor(int32_t Index, CColor &DefaultColor);
-  virtual TBOOL GetTextBackground(int32_t Index, CColor &Result) {
+  virtual CColor GetTextColor(int32_t Index, CColor& DefaultColor);
+  virtual bool GetTextBackground(int32_t Index, CColor& Result) {
     return false;
   }
-  virtual TBOOL ColoredText() { return false; }
+  virtual bool ColoredText() { return false; }
   virtual void OnCursorPosChange(int32_t CursorPos) {}
   virtual void PostCharInsertion(int32_t CursorPos, int32_t Key){};
 
   virtual void SelectWord(int32_t CharacterInWord);
 
-  void SetTextInternal(std::string_view val, TBOOL EnableUndo = false,
-                       TBOOL nonHumanInteraction = false);
+  void SetTextInternal(std::string_view val, bool EnableUndo = false,
+                       bool nonHumanInteraction = false);
 
  protected:
   std::string Text;
 
   std::string OriginalText;  // for escape cancel
 
-  void OnDraw(CWBDrawAPI *API) override;
-  TBOOL MessageProc(CWBMessage &Message) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(CWBMessage& Message) override;
   void InsertText(int32_t Position, std::string_view Text, int32_t Length,
-                  int32_t CursorPosAfter, TBOOL ChangeHistory = true);
+                  int32_t CursorPosAfter, bool ChangeHistory = true);
   void RemoveText(int32_t Position, int32_t Length, int32_t CursorPosAfter,
-                  TBOOL ChangeHistory = true);
+                  bool ChangeHistory = true);
 
  public:
-  CWBTextBox(CWBItem *Parent, const CRect &Pos, int32_t flags,
+  CWBTextBox(CWBItem* Parent, const CRect& Pos, int32_t flags,
              std::string_view txt);
   static inline std::shared_ptr<CWBTextBox> Create(
-      CWBItem *Parent, const CRect &Pos, int32_t flags = WB_TEXTBOX_SINGLELINE,
+      CWBItem* Parent, const CRect& Pos, int32_t flags = WB_TEXTBOX_SINGLELINE,
       std::string_view txt = _T( "" )) {
     auto p = std::make_shared<CWBTextBox>(Parent, Pos, flags, txt);
     p->SelfRef = p;
@@ -108,21 +108,21 @@ class CWBTextBox : public CWBItem {
   }
   ~CWBTextBox() override;
 
-  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
-                           int32_t flags = WB_TEXTBOX_SINGLELINE,
-                           std::string_view txt = _T( "" ));
-  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                   const std::vector<std::string> &pseudo) override;
+  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
+                          int32_t flags = WB_TEXTBOX_SINGLELINE,
+                          std::string_view txt = _T( "" ));
+  bool ApplyStyle(std::string_view prop, std::string_view value,
+                  const std::vector<std::string>& pseudo) override;
 
   std::string GetText() const {
     return Text;
   }  // text returned here will always be in unix newline format ('\n' instead
      // of the windows '\r\n')
-  void SetText(std::string_view val, TBOOL EnableUndo = false);
+  void SetText(std::string_view val, bool EnableUndo = false);
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "textbox" ), CWBItem);
 
   virtual void SetSelection(int32_t start, int32_t end);
-  void SetCursorPos(int32_t pos, TBOOL Selecting);
+  void SetCursorPos(int32_t pos, bool Selecting);
 };

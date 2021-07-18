@@ -23,14 +23,14 @@ enum class MouseColor {
 
 class GW2MouseHighlight : public CWBItem {
   CPoint lastpos;
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
 
  public:
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
-  GW2MouseHighlight(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2MouseHighlight> Create(CWBItem *Parent,
+  GW2MouseHighlight(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2MouseHighlight> Create(CWBItem* Parent,
                                                           CRect Position) {
     auto p = std::make_shared<GW2MouseHighlight>(Parent, Position);
     p->SelfRef = p;
@@ -41,7 +41,7 @@ class GW2MouseHighlight : public CWBItem {
   }
   ~GW2MouseHighlight() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "mousehighlight" ), CWBItem);
 
   CPoint lastchangedpos;

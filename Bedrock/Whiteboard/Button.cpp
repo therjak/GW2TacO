@@ -23,11 +23,11 @@ WBITEMSTATE CWBButton::GetState() {
   return i;
 }
 
-void CWBButton::OnDraw(CWBDrawAPI *API) {
+void CWBButton::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
 
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
@@ -43,15 +43,15 @@ void CWBButton::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-CWBButton::CWBButton(CWBItem *Parent, const CRect &Pos, std::string_view Txt)
+CWBButton::CWBButton(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
     : CWBItem() {
   Initialize(Parent, Pos, Txt);
 }
 
 CWBButton::~CWBButton() = default;
 
-TBOOL CWBButton::Initialize(CWBItem *Parent, const CRect &Position,
-                            std::string_view Txt) {
+bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position,
+                           std::string_view Txt) {
   Pushed = false;
   Text = Txt;
 
@@ -74,7 +74,7 @@ TBOOL CWBButton::Initialize(CWBItem *Parent, const CRect &Position,
   return true;
 }
 
-TBOOL CWBButton::MessageProc(CWBMessage &Message) {
+bool CWBButton::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
     case WBM_RIGHTBUTTONDOWN:
@@ -102,7 +102,7 @@ TBOOL CWBButton::MessageProc(CWBMessage &Message) {
 
 CSize CWBButton::GetContentSize() {
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
@@ -111,7 +111,7 @@ CSize CWBButton::GetContentSize() {
                Font->GetLineHeight());
 }
 
-void CWBButton::Push(TBOOL pushed) { Pushed = pushed; }
+void CWBButton::Push(bool pushed) { Pushed = pushed; }
 
 void CWBButton::SetText(std::string_view val) {
   Text = val;
@@ -120,9 +120,9 @@ void CWBButton::SetText(std::string_view val) {
 
 std::string CWBButton::GetText() const { return Text; }
 
-TBOOL CWBButton::IsPushed() { return Pushed; }
+bool CWBButton::IsPushed() { return Pushed; }
 
-CWBItem *CWBButton::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* CWBButton::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   auto button = CWBButton::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     button->SetText(node.GetAttribute(_T( "text" )));

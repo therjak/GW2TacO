@@ -5,23 +5,23 @@
 
 typedef HRESULT(__stdcall d3d_compile_func)(
     LPCVOID pSrcData, SIZE_T SrcDataSize, LPCSTR pSourceName,
-    const D3D_SHADER_MACRO *pDefines, ID3DInclude *pInclude, LPCSTR pEntrypoint,
-    LPCSTR pTarget, UINT Flags1, UINT Flags2, ID3DBlob **ppCode,
-    ID3DBlob **ppErrorMsgs);
+    const D3D_SHADER_MACRO* pDefines, ID3DInclude* pInclude, LPCSTR pEntrypoint,
+    LPCSTR pTarget, UINT Flags1, UINT Flags2, ID3DBlob** ppCode,
+    ID3DBlob** ppErrorMsgs);
 typedef HRESULT(__stdcall d3d_reflect_func)(LPCVOID pSrcData,
                                             SIZE_T SrcDataSize,
                                             REFIID pInterface,
-                                            void **ppReflector);
+                                            void** ppReflector);
 
 typedef HRESULT(__stdcall D3DXCompileShader(
-    LPCSTR pSrcData, UINT srcDataLen, const void *pDefines, void *pInclude,
-    LPCSTR pFunctionName, LPCSTR pProfile, DWORD Flags, void **ppShader,
-    void **ppErrorMsgs, void **ppConstantTable));
+    LPCSTR pSrcData, UINT srcDataLen, const void* pDefines, void* pInclude,
+    LPCSTR pFunctionName, LPCSTR pProfile, DWORD Flags, void** ppShader,
+    void** ppErrorMsgs, void** ppConstantTable));
 
-d3d_compile_func *D3DCompileFunc = nullptr;
-D3DXCompileShader *D3DXCompileFunc = nullptr;
+d3d_compile_func* D3DCompileFunc = nullptr;
+D3DXCompileShader* D3DXCompileFunc = nullptr;
 
-void *GetFunctionFromD3DXDLL(const std::string &FunctName) {
+void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;
 
   std::string_view CompilerDLLs[] = {
@@ -36,10 +36,10 @@ void *GetFunctionFromD3DXDLL(const std::string &FunctName) {
       "d3dx10_32.dll", "d3dx10_31.dll",
   };
 
-  for (auto &cd : CompilerDLLs) {
+  for (auto& cd : CompilerDLLs) {
     dll = LoadLibraryA(cd.data());
     if (dll) {
-      void *func = GetProcAddress(dll, FunctName.c_str());
+      void* func = GetProcAddress(dll, FunctName.c_str());
       if (func) {
         LOG_NFO("[core] Successfully loaded %s from %s", FunctName.c_str(),
                 cd.data());
@@ -52,7 +52,7 @@ void *GetFunctionFromD3DXDLL(const std::string &FunctName) {
   return nullptr;
 }
 
-void *GetFunctionFromD3DCompileDLL(const std::string &FunctName) {
+void* GetFunctionFromD3DCompileDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;
 
   std::string_view CompilerDLLs[] = {
@@ -62,10 +62,10 @@ void *GetFunctionFromD3DCompileDLL(const std::string &FunctName) {
       "d3dcompiler_38.dll", "d3dcompiler_37.dll", "d3dcompiler_36.dll",
       "d3dcompiler_35.dll", "d3dcompiler_34.dll", "d3dcompiler_33.dll"};
 
-  for (auto &cd : CompilerDLLs) {
+  for (auto& cd : CompilerDLLs) {
     dll = LoadLibraryA(cd.data());
     if (dll) {
-      void *func = GetProcAddress(dll, FunctName.c_str());
+      void* func = GetProcAddress(dll, FunctName.c_str());
       if (func) {
         LOG_NFO("[core] Successfully loaded %s from %s", FunctName.c_str(),
                 cd.data());
@@ -79,9 +79,9 @@ void *GetFunctionFromD3DCompileDLL(const std::string &FunctName) {
   return nullptr;
 }
 
-TBOOL InitShaderCompiler() {
+bool InitShaderCompiler() {
   if (D3DCompileFunc || D3DXCompileFunc) return true;
-  D3DCompileFunc = static_cast<d3d_compile_func *>(
+  D3DCompileFunc = static_cast<d3d_compile_func*>(
       GetFunctionFromD3DCompileDLL(_T("D3DCompile")));
   return D3DCompileFunc != nullptr;
 }
@@ -89,7 +89,7 @@ TBOOL InitShaderCompiler() {
 //////////////////////////////////////////////////////////////////////////
 // vertex shader
 
-CCoreDX11VertexShader::CCoreDX11VertexShader(CCoreDX11Device *dev)
+CCoreDX11VertexShader::CCoreDX11VertexShader(CCoreDX11Device* dev)
     : CCoreVertexShader(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -98,7 +98,7 @@ CCoreDX11VertexShader::CCoreDX11VertexShader(CCoreDX11Device *dev)
 
 CCoreDX11VertexShader::~CCoreDX11VertexShader() { Release(); }
 
-TBOOL CCoreDX11VertexShader::Create(void *Binary, int32_t Length) {
+bool CCoreDX11VertexShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
   HRESULT res =
@@ -116,21 +116,21 @@ void CCoreDX11VertexShader::Release() {
   VertexShaderHandle = nullptr;
 }
 
-TBOOL CCoreDX11VertexShader::Apply() {
+bool CCoreDX11VertexShader::Apply() {
   if (!VertexShaderHandle) return false;
   DeviceContext->VSSetShader(VertexShaderHandle, nullptr, 0);
   return true;
 }
 
-TBOOL CCoreDX11VertexShader::CompileAndCreate(std::string *Err) {
+bool CCoreDX11VertexShader::CompileAndCreate(std::string* Err) {
   if (!D3DCompileFunc && !InitShaderCompiler()) return false;
 
   Release();
 
-  TBOOL Success = true;
+  bool Success = true;
 
-  ID3D10Blob *PS = nullptr;
-  ID3D10Blob *Error = nullptr;
+  ID3D10Blob* PS = nullptr;
+  ID3D10Blob* Error = nullptr;
 
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
@@ -148,12 +148,12 @@ TBOOL CCoreDX11VertexShader::CompileAndCreate(std::string *Err) {
   {
     if (!Err)
       LOG(LOG_ERROR, _T("[core] VertexShader compilation error: %s"),
-          (char *)Error->GetBufferPointer());
+          (char*)Error->GetBufferPointer());
     Success = false;
   }
 
   if (Err)
-    *Err = Error ? std::string(static_cast<char *>(Error->GetBufferPointer()))
+    *Err = Error ? std::string(static_cast<char*>(Error->GetBufferPointer()))
                  : _T("");
 
   if (Success) {
@@ -169,10 +169,10 @@ TBOOL CCoreDX11VertexShader::CompileAndCreate(std::string *Err) {
   return Success;
 }
 
-TBOOL CCoreDX11VertexShader::CreateFromBlob(void *CodeBlob,
-                                            int32_t CodeBlobSize) {
+bool CCoreDX11VertexShader::CreateFromBlob(void* CodeBlob,
+                                           int32_t CodeBlobSize) {
   Release();
-  TBOOL Success = true;
+  bool Success = true;
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
@@ -185,7 +185,7 @@ TBOOL CCoreDX11VertexShader::CreateFromBlob(void *CodeBlob,
 //////////////////////////////////////////////////////////////////////////
 // Pixel shader
 
-CCoreDX11PixelShader::CCoreDX11PixelShader(CCoreDX11Device *dev)
+CCoreDX11PixelShader::CCoreDX11PixelShader(CCoreDX11Device* dev)
     : CCorePixelShader(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -194,7 +194,7 @@ CCoreDX11PixelShader::CCoreDX11PixelShader(CCoreDX11Device *dev)
 
 CCoreDX11PixelShader::~CCoreDX11PixelShader() { Release(); }
 
-TBOOL CCoreDX11PixelShader::Create(void *Binary, int32_t Length) {
+bool CCoreDX11PixelShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
   HRESULT res =
@@ -212,21 +212,21 @@ void CCoreDX11PixelShader::Release() {
   PixelShaderHandle = nullptr;
 }
 
-TBOOL CCoreDX11PixelShader::Apply() {
+bool CCoreDX11PixelShader::Apply() {
   if (!PixelShaderHandle) return false;
   DeviceContext->PSSetShader(PixelShaderHandle, nullptr, 0);
   return true;
 }
 
-TBOOL CCoreDX11PixelShader::CompileAndCreate(std::string *Err) {
+bool CCoreDX11PixelShader::CompileAndCreate(std::string* Err) {
   if (!D3DCompileFunc && !InitShaderCompiler()) return false;
 
   Release();
 
-  TBOOL Success = true;
+  bool Success = true;
 
-  ID3D10Blob *PS = nullptr;
-  ID3D10Blob *Error = nullptr;
+  ID3D10Blob* PS = nullptr;
+  ID3D10Blob* Error = nullptr;
 
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
@@ -244,12 +244,12 @@ TBOOL CCoreDX11PixelShader::CompileAndCreate(std::string *Err) {
   {
     if (!Err)
       LOG(LOG_ERROR, _T("[core] PixelShader compilation error: %s"),
-          (char *)Error->GetBufferPointer());
+          (char*)Error->GetBufferPointer());
     Success = false;
   }
 
   if (Err)
-    *Err = Error ? std::string(static_cast<char *>(Error->GetBufferPointer()))
+    *Err = Error ? std::string(static_cast<char*>(Error->GetBufferPointer()))
                  : _T("");
 
   if (Success) {
@@ -265,10 +265,10 @@ TBOOL CCoreDX11PixelShader::CompileAndCreate(std::string *Err) {
   return Success;
 }
 
-TBOOL CCoreDX11PixelShader::CreateFromBlob(void *CodeBlob,
-                                           int32_t CodeBlobSize) {
+bool CCoreDX11PixelShader::CreateFromBlob(void* CodeBlob,
+                                          int32_t CodeBlobSize) {
   Release();
-  TBOOL Success = true;
+  bool Success = true;
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
@@ -281,7 +281,7 @@ TBOOL CCoreDX11PixelShader::CreateFromBlob(void *CodeBlob,
 //////////////////////////////////////////////////////////////////////////
 // Geometry shader
 
-CCoreDX11GeometryShader::CCoreDX11GeometryShader(CCoreDX11Device *dev)
+CCoreDX11GeometryShader::CCoreDX11GeometryShader(CCoreDX11Device* dev)
     : CCoreGeometryShader(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -290,7 +290,7 @@ CCoreDX11GeometryShader::CCoreDX11GeometryShader(CCoreDX11Device *dev)
 
 CCoreDX11GeometryShader::~CCoreDX11GeometryShader() { Release(); }
 
-TBOOL CCoreDX11GeometryShader::Create(void *Binary, int32_t Length) {
+bool CCoreDX11GeometryShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
   HRESULT res =
@@ -308,21 +308,21 @@ void CCoreDX11GeometryShader::Release() {
   GeometryShaderHandle = nullptr;
 }
 
-TBOOL CCoreDX11GeometryShader::Apply() {
+bool CCoreDX11GeometryShader::Apply() {
   if (!GeometryShaderHandle) return false;
   DeviceContext->GSSetShader(GeometryShaderHandle, nullptr, 0);
   return true;
 }
 
-TBOOL CCoreDX11GeometryShader::CompileAndCreate(std::string *Err) {
+bool CCoreDX11GeometryShader::CompileAndCreate(std::string* Err) {
   if (!D3DCompileFunc && !InitShaderCompiler()) return false;
 
   Release();
 
-  TBOOL Success = true;
+  bool Success = true;
 
-  ID3D10Blob *PS = nullptr;
-  ID3D10Blob *Error = nullptr;
+  ID3D10Blob* PS = nullptr;
+  ID3D10Blob* Error = nullptr;
 
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
@@ -340,12 +340,12 @@ TBOOL CCoreDX11GeometryShader::CompileAndCreate(std::string *Err) {
   {
     if (!Err)
       LOG(LOG_ERROR, _T("[core] GeometryShader compilation error: %s"),
-          (char *)Error->GetBufferPointer());
+          (char*)Error->GetBufferPointer());
     Success = false;
   }
 
   if (Err)
-    *Err = Error ? std::string(static_cast<char *>(Error->GetBufferPointer()))
+    *Err = Error ? std::string(static_cast<char*>(Error->GetBufferPointer()))
                  : _T("");
 
   if (Success) {
@@ -361,10 +361,10 @@ TBOOL CCoreDX11GeometryShader::CompileAndCreate(std::string *Err) {
   return Success;
 }
 
-TBOOL CCoreDX11GeometryShader::CreateFromBlob(void *CodeBlob,
-                                              int32_t CodeBlobSize) {
+bool CCoreDX11GeometryShader::CreateFromBlob(void* CodeBlob,
+                                             int32_t CodeBlobSize) {
   Release();
-  TBOOL Success = true;
+  bool Success = true;
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
@@ -377,7 +377,7 @@ TBOOL CCoreDX11GeometryShader::CreateFromBlob(void *CodeBlob,
 //////////////////////////////////////////////////////////////////////////
 // Domain shader
 
-CCoreDX11DomainShader::CCoreDX11DomainShader(CCoreDX11Device *dev)
+CCoreDX11DomainShader::CCoreDX11DomainShader(CCoreDX11Device* dev)
     : CCoreDomainShader(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -386,7 +386,7 @@ CCoreDX11DomainShader::CCoreDX11DomainShader(CCoreDX11Device *dev)
 
 CCoreDX11DomainShader::~CCoreDX11DomainShader() { Release(); }
 
-TBOOL CCoreDX11DomainShader::Create(void *Binary, int32_t Length) {
+bool CCoreDX11DomainShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
   HRESULT res =
@@ -404,21 +404,21 @@ void CCoreDX11DomainShader::Release() {
   DomainShaderHandle = nullptr;
 }
 
-TBOOL CCoreDX11DomainShader::Apply() {
+bool CCoreDX11DomainShader::Apply() {
   if (!DomainShaderHandle) return false;
   DeviceContext->DSSetShader(DomainShaderHandle, nullptr, 0);
   return true;
 }
 
-TBOOL CCoreDX11DomainShader::CompileAndCreate(std::string *Err) {
+bool CCoreDX11DomainShader::CompileAndCreate(std::string* Err) {
   if (!D3DCompileFunc && !InitShaderCompiler()) return false;
 
   Release();
 
-  TBOOL Success = true;
+  bool Success = true;
 
-  ID3D10Blob *PS = nullptr;
-  ID3D10Blob *Error = nullptr;
+  ID3D10Blob* PS = nullptr;
+  ID3D10Blob* Error = nullptr;
 
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
@@ -436,12 +436,12 @@ TBOOL CCoreDX11DomainShader::CompileAndCreate(std::string *Err) {
   {
     if (!Err)
       LOG(LOG_ERROR, _T("[core] DomainShader compilation error: %s"),
-          (char *)Error->GetBufferPointer());
+          (char*)Error->GetBufferPointer());
     Success = false;
   }
 
   if (Err)
-    *Err = Error ? std::string(static_cast<char *>(Error->GetBufferPointer()))
+    *Err = Error ? std::string(static_cast<char*>(Error->GetBufferPointer()))
                  : _T("");
 
   if (Success) {
@@ -457,10 +457,10 @@ TBOOL CCoreDX11DomainShader::CompileAndCreate(std::string *Err) {
   return Success;
 }
 
-TBOOL CCoreDX11DomainShader::CreateFromBlob(void *CodeBlob,
-                                            int32_t CodeBlobSize) {
+bool CCoreDX11DomainShader::CreateFromBlob(void* CodeBlob,
+                                           int32_t CodeBlobSize) {
   Release();
-  TBOOL Success = true;
+  bool Success = true;
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
@@ -473,7 +473,7 @@ TBOOL CCoreDX11DomainShader::CreateFromBlob(void *CodeBlob,
 //////////////////////////////////////////////////////////////////////////
 // Hull shader
 
-CCoreDX11HullShader::CCoreDX11HullShader(CCoreDX11Device *dev)
+CCoreDX11HullShader::CCoreDX11HullShader(CCoreDX11Device* dev)
     : CCoreHullShader(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -482,7 +482,7 @@ CCoreDX11HullShader::CCoreDX11HullShader(CCoreDX11Device *dev)
 
 CCoreDX11HullShader::~CCoreDX11HullShader() { Release(); }
 
-TBOOL CCoreDX11HullShader::Create(void *Binary, int32_t Length) {
+bool CCoreDX11HullShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
   HRESULT res =
@@ -500,21 +500,21 @@ void CCoreDX11HullShader::Release() {
   HullShaderHandle = nullptr;
 }
 
-TBOOL CCoreDX11HullShader::Apply() {
+bool CCoreDX11HullShader::Apply() {
   if (!HullShaderHandle) return false;
   DeviceContext->HSSetShader(HullShaderHandle, nullptr, 0);
   return true;
 }
 
-TBOOL CCoreDX11HullShader::CompileAndCreate(std::string *Err) {
+bool CCoreDX11HullShader::CompileAndCreate(std::string* Err) {
   if (!D3DCompileFunc && !InitShaderCompiler()) return false;
 
   Release();
 
-  TBOOL Success = true;
+  bool Success = true;
 
-  ID3D10Blob *PS = nullptr;
-  ID3D10Blob *Error = nullptr;
+  ID3D10Blob* PS = nullptr;
+  ID3D10Blob* Error = nullptr;
 
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
@@ -533,12 +533,12 @@ TBOOL CCoreDX11HullShader::CompileAndCreate(std::string *Err) {
   {
     if (!Err)
       LOG(LOG_ERROR, _T("[core] HullShader compilation error: %s"),
-          (char *)Error->GetBufferPointer());
+          (char*)Error->GetBufferPointer());
     Success = false;
   }
 
   if (Err)
-    *Err = Error ? std::string(static_cast<char *>(Error->GetBufferPointer()))
+    *Err = Error ? std::string(static_cast<char*>(Error->GetBufferPointer()))
                  : _T("");
 
   if (Success) {
@@ -554,10 +554,9 @@ TBOOL CCoreDX11HullShader::CompileAndCreate(std::string *Err) {
   return Success;
 }
 
-TBOOL CCoreDX11HullShader::CreateFromBlob(void *CodeBlob,
-                                          int32_t CodeBlobSize) {
+bool CCoreDX11HullShader::CreateFromBlob(void* CodeBlob, int32_t CodeBlobSize) {
   Release();
-  TBOOL Success = true;
+  bool Success = true;
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
@@ -570,7 +569,7 @@ TBOOL CCoreDX11HullShader::CreateFromBlob(void *CodeBlob,
 //////////////////////////////////////////////////////////////////////////
 // Compute shader
 
-CCoreDX11ComputeShader::CCoreDX11ComputeShader(CCoreDX11Device *dev)
+CCoreDX11ComputeShader::CCoreDX11ComputeShader(CCoreDX11Device* dev)
     : CCoreComputeShader(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -579,7 +578,7 @@ CCoreDX11ComputeShader::CCoreDX11ComputeShader(CCoreDX11Device *dev)
 
 CCoreDX11ComputeShader::~CCoreDX11ComputeShader() { Release(); }
 
-TBOOL CCoreDX11ComputeShader::Create(void *Binary, int32_t Length) {
+bool CCoreDX11ComputeShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
   HRESULT res =
@@ -597,21 +596,21 @@ void CCoreDX11ComputeShader::Release() {
   ComputeShaderHandle = nullptr;
 }
 
-TBOOL CCoreDX11ComputeShader::Apply() {
+bool CCoreDX11ComputeShader::Apply() {
   if (!ComputeShaderHandle) return false;
   DeviceContext->CSSetShader(ComputeShaderHandle, nullptr, 0);
   return true;
 }
 
-TBOOL CCoreDX11ComputeShader::CompileAndCreate(std::string *Err) {
+bool CCoreDX11ComputeShader::CompileAndCreate(std::string* Err) {
   if (!D3DCompileFunc && !InitShaderCompiler()) return false;
 
   Release();
 
-  TBOOL Success = true;
+  bool Success = true;
 
-  ID3D10Blob *PS = nullptr;
-  ID3D10Blob *Error = nullptr;
+  ID3D10Blob* PS = nullptr;
+  ID3D10Blob* Error = nullptr;
 
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
@@ -630,12 +629,12 @@ TBOOL CCoreDX11ComputeShader::CompileAndCreate(std::string *Err) {
   {
     if (!Err)
       LOG(LOG_ERROR, _T("[core] ComputeShader compilation error: %s"),
-          (char *)Error->GetBufferPointer());
+          (char*)Error->GetBufferPointer());
     Success = false;
   }
 
   if (Err)
-    *Err = Error ? std::string(static_cast<char *>(Error->GetBufferPointer()))
+    *Err = Error ? std::string(static_cast<char*>(Error->GetBufferPointer()))
                  : _T("");
 
   if (Success) {
@@ -651,10 +650,10 @@ TBOOL CCoreDX11ComputeShader::CompileAndCreate(std::string *Err) {
   return Success;
 }
 
-TBOOL CCoreDX11ComputeShader::CreateFromBlob(void *CodeBlob,
-                                             int32_t CodeBlobSize) {
+bool CCoreDX11ComputeShader::CreateFromBlob(void* CodeBlob,
+                                            int32_t CodeBlobSize) {
   Release();
-  TBOOL Success = true;
+  bool Success = true;
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);

@@ -8,16 +8,16 @@ INLINE const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
 }
 
 INLINE void RenderStateFromID(const CORERENDERSTATEID ID,
-                              CORERENDERSTATE &State, CORESAMPLER &Sampler) {
+                              CORERENDERSTATE& State, CORESAMPLER& Sampler) {
   State = static_cast<CORERENDERSTATE>(ID >> 16);
   Sampler = static_cast<CORESAMPLER>(ID & 0xffff);
 }
 
-void CCoreDevice::AddResource(CCoreResource *Resource) {
+void CCoreDevice::AddResource(CCoreResource* Resource) {
   Resources.push_back(Resource);
 }
 
-void CCoreDevice::RemoveResource(CCoreResource *Resource) {
+void CCoreDevice::RemoveResource(CCoreResource* Resource) {
   Resources.erase(std::remove(Resources.begin(), Resources.end(), Resource),
                   Resources.end());
 }
@@ -67,19 +67,19 @@ CCoreDevice::~CCoreDevice() {
 }
 
 void CCoreDevice::ResetDevice() {
-  for (auto &r : Resources) r->OnDeviceLost();
+  for (auto& r : Resources) r->OnDeviceLost();
 
   ResetPrivateResources();
 
-  for (auto &r : Resources) r->OnDeviceReset();
+  for (auto& r : Resources) r->OnDeviceReset();
 
   // reload render state
   RequestedRenderState.merge(CurrentRenderState);
   CurrentRenderState.clear();
 }
 
-TBOOL CCoreDevice::ApplyRequestedRenderState() {
-  for (const auto &x : RequestedRenderState) {
+bool CCoreDevice::ApplyRequestedRenderState() {
+  for (const auto& x : RequestedRenderState) {
     CORERENDERSTATEID ID = x.first;
     CORERENDERSTATEVALUE Value = x.second;
 
@@ -113,142 +113,142 @@ TBOOL CCoreDevice::ApplyRequestedRenderState() {
   return CommitRenderStates();
 }
 
-TBOOL CCoreDevice::ApplyTextureToSampler(const CORESAMPLER Sampler,
-                                         CCoreTexture *Texture) {
+bool CCoreDevice::ApplyTextureToSampler(const CORESAMPLER Sampler,
+                                        CCoreTexture* Texture) {
   if (!Texture) return false;
   return Texture->SetToSampler(Sampler);
 }
 
-TBOOL CCoreDevice::ApplyVertexShader(CCoreVertexShader *Shader) {
+bool CCoreDevice::ApplyVertexShader(CCoreVertexShader* Shader) {
   if (!Shader) return false;
   return Shader->Apply();
 }
 
-TBOOL CCoreDevice::ApplyGeometryShader(CCoreGeometryShader *Shader) {
+bool CCoreDevice::ApplyGeometryShader(CCoreGeometryShader* Shader) {
   if (!Shader) return false;
   return Shader->Apply();
 }
 
-TBOOL CCoreDevice::ApplyHullShader(CCoreHullShader *Shader) {
+bool CCoreDevice::ApplyHullShader(CCoreHullShader* Shader) {
   if (!Shader) return false;
   return Shader->Apply();
 }
 
-TBOOL CCoreDevice::ApplyDomainShader(CCoreDomainShader *Shader) {
+bool CCoreDevice::ApplyDomainShader(CCoreDomainShader* Shader) {
   if (!Shader) return false;
   return Shader->Apply();
 }
 
-TBOOL CCoreDevice::ApplyComputeShader(CCoreComputeShader *Shader) {
+bool CCoreDevice::ApplyComputeShader(CCoreComputeShader* Shader) {
   if (!Shader) return false;
   return Shader->Apply();
 }
 
-TBOOL CCoreDevice::ApplyPixelShader(CCorePixelShader *Shader) {
+bool CCoreDevice::ApplyPixelShader(CCorePixelShader* Shader) {
   if (!Shader) return false;
   return Shader->Apply();
 }
 
-TBOOL CCoreDevice::ApplyVertexFormat(CCoreVertexFormat *Format) {
+bool CCoreDevice::ApplyVertexFormat(CCoreVertexFormat* Format) {
   if (!Format) return false;
   return Format->Apply();
 }
 
-TBOOL CCoreDevice::ApplyIndexBuffer(CCoreIndexBuffer *IdxBuffer) {
+bool CCoreDevice::ApplyIndexBuffer(CCoreIndexBuffer* IdxBuffer) {
   if (!IdxBuffer) return false;
   return IdxBuffer->Apply();
 }
 
-TBOOL CCoreDevice::ApplyVertexBuffer(CCoreVertexBuffer *VxBuffer,
-                                     uint32_t Offset) {
+bool CCoreDevice::ApplyVertexBuffer(CCoreVertexBuffer* VxBuffer,
+                                    uint32_t Offset) {
   if (!VxBuffer) return false;
   return VxBuffer->Apply(Offset);
 }
 
-TBOOL CCoreDevice::SetSamplerState(CORESAMPLER Sampler,
-                                   CCoreSamplerState *SamplerState) {
+bool CCoreDevice::SetSamplerState(CORESAMPLER Sampler,
+                                  CCoreSamplerState* SamplerState) {
   RequestedRenderState[IDFromRenderState(CORERS_SAMPLERSTATE, Sampler)]
       .SamplerState = SamplerState;
   return true;
 }
 
-TBOOL CCoreDevice::SetRenderState(CCoreRasterizerState *RasterizerState) {
+bool CCoreDevice::SetRenderState(CCoreRasterizerState* RasterizerState) {
   RequestedRenderState[IDFromRenderState(CORERS_RASTERIZERSTATE,
                                          static_cast<CORESAMPLER>(0))]
       .RasterizerState = RasterizerState;
   return true;
 }
 
-TBOOL CCoreDevice::SetRenderState(CCoreBlendState *BlendState) {
+bool CCoreDevice::SetRenderState(CCoreBlendState* BlendState) {
   RequestedRenderState[IDFromRenderState(CORERS_BLENDSTATE,
                                          static_cast<CORESAMPLER>(0))]
       .BlendState = BlendState;
   return true;
 }
 
-TBOOL CCoreDevice::SetRenderState(CCoreDepthStencilState *DepthStencilState) {
+bool CCoreDevice::SetRenderState(CCoreDepthStencilState* DepthStencilState) {
   RequestedRenderState[IDFromRenderState(CORERS_DEPTHSTENCILSTATE,
                                          static_cast<CORESAMPLER>(0))]
       .DepthStencilState = DepthStencilState;
   return true;
 }
 
-TBOOL CCoreDevice::SetTexture(CORESAMPLER Sampler, CCoreTexture *Texture) {
+bool CCoreDevice::SetTexture(CORESAMPLER Sampler, CCoreTexture* Texture) {
   RequestedRenderState[IDFromRenderState(CORERS_TEXTURE, Sampler)].Texture =
       Texture;
   return true;
 }
 
-TBOOL CCoreDevice::SetVertexShader(CCoreVertexShader *Shader) {
+bool CCoreDevice::SetVertexShader(CCoreVertexShader* Shader) {
   RequestedRenderState[IDFromRenderState(CORERS_VERTEXSHADER,
                                          static_cast<CORESAMPLER>(0))]
       .VertexShader = Shader;
   return true;
 }
 
-TBOOL CCoreDevice::SetPixelShader(CCorePixelShader *Shader) {
+bool CCoreDevice::SetPixelShader(CCorePixelShader* Shader) {
   RequestedRenderState[IDFromRenderState(CORERS_PIXELSHADER,
                                          static_cast<CORESAMPLER>(0))]
       .PixelShader = Shader;
   return true;
 }
 
-TBOOL CCoreDevice::SetGeometryShader(CCoreGeometryShader *Shader) {
+bool CCoreDevice::SetGeometryShader(CCoreGeometryShader* Shader) {
   RequestedRenderState[IDFromRenderState(CORERS_GEOMETRYSHADER,
                                          static_cast<CORESAMPLER>(0))]
       .GeometryShader = Shader;
   return true;
 }
 
-TBOOL CCoreDevice::SetHullShader(CCoreHullShader *Shader) {
+bool CCoreDevice::SetHullShader(CCoreHullShader* Shader) {
   RequestedRenderState[IDFromRenderState(CORERS_HULLSHADER,
                                          static_cast<CORESAMPLER>(0))]
       .HullShader = Shader;
   return true;
 }
 
-TBOOL CCoreDevice::SetDomainShader(CCoreDomainShader *Shader) {
+bool CCoreDevice::SetDomainShader(CCoreDomainShader* Shader) {
   RequestedRenderState[IDFromRenderState(CORERS_DOMAINSHADER,
                                          static_cast<CORESAMPLER>(0))]
       .DomainShader = Shader;
   return true;
 }
 
-TBOOL CCoreDevice::SetVertexBuffer(CCoreVertexBuffer *VertexBuffer,
-                                   uint32_t Offset) {
+bool CCoreDevice::SetVertexBuffer(CCoreVertexBuffer* VertexBuffer,
+                                  uint32_t Offset) {
   RequestedVertexBuffer = VertexBuffer;
   RequestedVertexBufferOffset = Offset;
   return true;
 }
 
-TBOOL CCoreDevice::SetIndexBuffer(CCoreIndexBuffer *IndexBuffer) {
+bool CCoreDevice::SetIndexBuffer(CCoreIndexBuffer* IndexBuffer) {
   RequestedRenderState[IDFromRenderState(CORERS_INDEXBUFFER,
                                          static_cast<CORESAMPLER>(0))]
       .IndexBuffer = IndexBuffer;
   return true;
 }
 
-TBOOL CCoreDevice::SetVertexFormat(CCoreVertexFormat *VertexFormat) {
+bool CCoreDevice::SetVertexFormat(CCoreVertexFormat* VertexFormat) {
   RequestedRenderState[IDFromRenderState(CORERS_VERTEXFORMAT,
                                          static_cast<CORESAMPLER>(0))]
       .VertexFormat = VertexFormat;
@@ -257,7 +257,7 @@ TBOOL CCoreDevice::SetVertexFormat(CCoreVertexFormat *VertexFormat) {
 
 int32_t CCoreDevice::GetVertexFormatSize() { return CurrentVertexFormatSize; }
 
-CCoreTexture *CCoreDevice::GetTexture(CORESAMPLER Sampler) {
+CCoreTexture* CCoreDevice::GetTexture(CORESAMPLER Sampler) {
   if (RequestedRenderState.find(IDFromRenderState(CORERS_TEXTURE, Sampler)) !=
       RequestedRenderState.end())
     return RequestedRenderState[IDFromRenderState(CORERS_TEXTURE, Sampler)]
@@ -269,8 +269,8 @@ CCoreTexture *CCoreDevice::GetTexture(CORESAMPLER Sampler) {
   return nullptr;
 }
 
-TBOOL CCoreDevice::CreateDefaultRenderStates() {
-  TBOOL Success = true;
+bool CCoreDevice::CreateDefaultRenderStates() {
+  bool Success = true;
 
   DefaultBlendState.swap(CreateBlendState());
   DefaultBlendState->SetBlendEnable(0, true);

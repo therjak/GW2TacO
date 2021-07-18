@@ -1,6 +1,6 @@
 #include "Window.h"
 
-uint32_t CWBWindow::GetBorderSelectionArea(CPoint &mousepos) {
+uint32_t CWBWindow::GetBorderSelectionArea(CPoint& mousepos) {
   if (App->GetMouseItem() != this) return 0;
 
   CRect r = GetScreenRect();
@@ -48,7 +48,7 @@ CRect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
   }
 }
 
-void CWBWindow::OnDraw(CWBDrawAPI *API) {
+void CWBWindow::OnDraw(CWBDrawAPI* API) {
   WBITEMSTATE i = GetState();
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
@@ -57,10 +57,10 @@ void CWBWindow::OnDraw(CWBDrawAPI *API) {
 
   // title text
   if ((Style & WB_WINDOW_TITLE)) {
-    CWBCSSPropertyBatch &TitleProps =
+    CWBCSSPropertyBatch& TitleProps =
         Elements[WBWINDOWELEMENT::WB_WINELEMENT_TITLE];
 
-    CWBFont *Font = TitleProps.GetFont(App, i);
+    CWBFont* Font = TitleProps.GetFont(App, i);
     if (Font) {
       CRect titlepos = GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_TITLE);
       titlepos = TitleProps.PositionDescriptor.GetPadding(titlepos.Size(),
@@ -80,7 +80,7 @@ void CWBWindow::OnDraw(CWBDrawAPI *API) {
     }
   }
 
-  TBOOL MouseOverButton = false;
+  bool MouseOverButton = false;
 
   // close button
   if (Style & WB_WINDOW_CLOSEABLE) {
@@ -107,7 +107,7 @@ void CWBWindow::OnDraw(CWBDrawAPI *API) {
           API, Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE].DisplayDescriptor,
           closebuttonpos, buttonstate);
 
-      CWBFont *Font = GetFont(i);
+      CWBFont* Font = GetFont(i);
       if (Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
               .DisplayDescriptor.GetSkin(buttonstate,
                                          WB_ITEM_BACKGROUNDIMAGE) == 0xffffffff)
@@ -139,7 +139,7 @@ void CWBWindow::OnDraw(CWBDrawAPI *API) {
     App->SelectMouseCursor(CM_SIZENESW);
 }
 
-CWBWindow::CWBWindow(CWBItem *Parent, const CRect &Pos, const TCHAR *txt,
+CWBWindow::CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt,
                      uint32_t style)
     : CWBItem() {
   Initialize(Parent, Pos, txt, style);
@@ -147,8 +147,8 @@ CWBWindow::CWBWindow(CWBItem *Parent, const CRect &Pos, const TCHAR *txt,
 
 CWBWindow::~CWBWindow() = default;
 
-TBOOL CWBWindow::Initialize(CWBItem *Parent, const CRect &Position,
-                            const TCHAR *txt, uint32_t style) {
+bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position,
+                           const TCHAR* txt, uint32_t style) {
   WindowTitle = txt;
 
   DragMode = 0;
@@ -158,13 +158,13 @@ TBOOL CWBWindow::Initialize(CWBItem *Parent, const CRect &Position,
   TitleBarHeight = style & WB_WINDOW_TITLE ? 12 : 0;
   CornerSelectionSize = 15;
   MinSize = CSize(CornerSelectionSize * 2 + 1, CornerSelectionSize * 2 + 1);
-  auto &element = Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
-  auto &pdescriptor = element.PositionDescriptor;
+  auto& element = Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
+  auto& pdescriptor = element.PositionDescriptor;
   pdescriptor.SetMetric(WB_MARGIN_TOP, WB_PIXELS, 3);
   pdescriptor.SetMetric(WB_MARGIN_RIGHT, WB_PIXELS, 3);
   pdescriptor.SetMetric(WB_WIDTH, WB_PIXELS, 11);
   pdescriptor.SetMetric(WB_HEIGHT, WB_PIXELS, 11);
-  auto &ddescriptor = element.DisplayDescriptor;
+  auto& ddescriptor = element.DisplayDescriptor;
   ddescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
                        CColor::FromARGB(0xff2d2d30));
   ddescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
@@ -189,7 +189,7 @@ TBOOL CWBWindow::Initialize(CWBItem *Parent, const CRect &Position,
   return true;
 }
 
-TBOOL CWBWindow::MessageProc(CWBMessage &Message) {
+bool CWBWindow::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
       if (CWBItem::MessageProc(Message)) return true;
@@ -255,7 +255,7 @@ TBOOL CWBWindow::MessageProc(CWBMessage &Message) {
                   .Contains(ScreenToClient(Message.GetPosition())))
             App->SendMessage(CWBMessage(App, WBM_CLOSE, GetGuid()));
 
-        TBOOL b = ReleaseCapture();
+        bool b = ReleaseCapture();
         if (DragMode) {
           DragMode = 0;
           App->SendMessage(CWBMessage(App, WBM_WINDOWDRAGSTOPPED, GetGuid()));
@@ -276,9 +276,9 @@ TBOOL CWBWindow::MessageProc(CWBMessage &Message) {
 
 uint32_t CWBWindow::GetDragMode() { return DragMode; }
 
-TBOOL CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
-                            const std::vector<std::string> &pseudo) {
-  TBOOL ElementTarget = false;
+bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
+                           const std::vector<std::string>& pseudo) {
+  bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == _T( "title" ) || pseudo[x] == _T( "close" ) ||
@@ -294,7 +294,7 @@ TBOOL CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
                         value, pseudo);
   if (!ElementTarget) return CWBItem::ApplyStyle(prop, value, pseudo);
 
-  TBOOL Handled = false;
+  bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == _T( "title" )) {
@@ -325,7 +325,7 @@ TBOOL CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem *CWBWindow::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* CWBWindow::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   auto window = CWBWindow::Create(Root, Pos);
   if (node.HasAttribute(_T( "title" )))
     window->SetTitle(node.GetAttribute(_T( "title" )));

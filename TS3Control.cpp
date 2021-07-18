@@ -5,8 +5,8 @@
 #include "OverlayConfig.h"
 #include "TS3Connection.h"
 
-void TS3Control::OnDraw(CWBDrawAPI *API) {
-  CWBFont *f = GetFont(GetState());
+void TS3Control::OnDraw(CWBDrawAPI* API) {
+  CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
   if (!teamSpeakConnection.authenticated) {
@@ -27,7 +27,7 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
   WBSKINELEMENTID outputoff = App->GetSkin()->GetElementID("ts3outputmuted");
   WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID("ts3inputmuted");
 
-  TBOOL LeftAlign = true;
+  bool LeftAlign = true;
   CRect r = ClientToScreen(GetClientRect());
   LeftAlign = r.x1 < App->GetXRes() / 2 && r.x2 < App->GetXRes() / 2;
 
@@ -35,8 +35,8 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
 
   for (int32_t cnt = 0; cnt < 2; cnt++) {
     int32_t ypos = 0;
-    for (auto &x : teamSpeakConnection.handlers) {
-      TS3Connection::TS3Schandler &handler = x.second;
+    for (auto& x : teamSpeakConnection.handlers) {
+      TS3Connection::TS3Schandler& handler = x.second;
       if (handler.Connected && handler.Clients.HasKey(handler.myclientid)) {
         CPoint p = f->GetTextPosition(
             handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
@@ -49,7 +49,7 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
         if (handler.Channels.find(mychannelid) != handler.Channels.end()) {
           int32_t participants = 0;
           for (int32_t y = 0; y < handler.Clients.NumItems(); y++) {
-            const TS3Connection::TS3Client &cl = handler.Clients[y];
+            const TS3Connection::TS3Client& cl = handler.Clients[y];
             if (cl.channelid == mychannelid) participants++;
           }
 
@@ -66,7 +66,7 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
         for (int32_t y = 0; y < handler.Clients.NumItems(); y++) {
           if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
-          const TS3Connection::TS3Client &cl = handler.Clients.GetByIndex(y);
+          const TS3Connection::TS3Client& cl = handler.Clients.GetByIndex(y);
           if (cl.channelid == mychannelid) {
             WBSKINELEMENTID id = playeroff;
             if (cl.inputmuted) id = inputoff;
@@ -103,16 +103,16 @@ void TS3Control::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-TS3Control::TS3Control(CWBItem *Parent, CRect Position)
+TS3Control::TS3Control(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
 TS3Control::~TS3Control() = default;
 
-CWBItem *TS3Control::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* TS3Control::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return TS3Control::Create(Root, Pos).get();
 }
 
-TBOOL TS3Control::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                     WBMESSAGE MessageType) {
+bool TS3Control::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                    WBMESSAGE MessageType) {
   return true;
 }

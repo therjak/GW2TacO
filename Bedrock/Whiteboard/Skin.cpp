@@ -29,15 +29,15 @@ float CWBMetricValue::GetValue(float ParentSize, int32_t ContentSize) {
   return v;
 }
 
-TBOOL CWBMetricValue::IsAutoResizer() { return AutoSize; }
+bool CWBMetricValue::IsAutoResizer() { return AutoSize; }
 
-void CWBMetricValue::SetAutoSize(TBOOL Auto) { AutoSize = Auto; }
+void CWBMetricValue::SetAutoSize(bool Auto) { AutoSize = Auto; }
 
 //////////////////////////////////////////////////////////////////////////
 // position descriptor - general
 
 CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
-                                         const CRect &Original) {
+                                         const CRect& Original) {
   CRect r(0, 0, 0, 0);
 
   int32_t Width = 0;
@@ -108,7 +108,7 @@ CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
 }
 
 CRect CWBPositionDescriptor::GetPadding(CSize ParentSize,
-                                        const CRect &BorderSizes) {
+                                        const CRect& BorderSizes) {
   CRect r(0, 0, 0, 0);
 
   r.x1 = static_cast<int32_t>(Positions[WB_PADDING_LEFT].GetValue(
@@ -143,11 +143,11 @@ void CWBPositionDescriptor::ClearMetrics(WBPOSITIONTYPE p) {
   Positions.erase(p);
 }
 
-TBOOL CWBPositionDescriptor::IsWidthSet() {
+bool CWBPositionDescriptor::IsWidthSet() {
   return Positions.find(WB_WIDTH) != Positions.end();
 }
 
-TBOOL CWBPositionDescriptor::IsHeightSet() {
+bool CWBPositionDescriptor::IsHeightSet() {
   return Positions.find(WB_HEIGHT) != Positions.end();
 }
 
@@ -167,7 +167,7 @@ int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
   return 0;
 }
 
-TBOOL CWBPositionDescriptor::IsAutoResizer() {
+bool CWBPositionDescriptor::IsAutoResizer() {
   const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
   if (WidthSet && Positions[WB_WIDTH].IsAutoResizer()) return true;
 
@@ -238,15 +238,15 @@ void CWBMosaicImage::SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels) {
   Position.SetValue(p, Pixels);
 }
 
-void CWBMosaicImage::SetTiling(int32_t Axis, TBOOL y) { Tiling[Axis] = y; }
+void CWBMosaicImage::SetTiling(int32_t Axis, bool y) { Tiling[Axis] = y; }
 
-void CWBMosaicImage::SetStretching(int32_t Axis, TBOOL y) {
+void CWBMosaicImage::SetStretching(int32_t Axis, bool y) {
   Stretching[Axis] = y;
 }
 
 void CWBMosaicImage::SetHandle(WBATLASHANDLE handle) { Handle = handle; }
 
-FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI *API, CRect &Pos) {
+FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI* API, CRect& Pos) {
   CRect Croprect = API->GetCropRect();
   API->SetCropRect(Pos + API->GetOffset());
 
@@ -260,31 +260,31 @@ FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI *API, CRect &Pos) {
 
 void CWBMosaicImage::SetColor(CColor color) { Color = color; }
 
-void CWBMosaic::AddImage(const CWBMosaicImage &Image) {
+void CWBMosaic::AddImage(const CWBMosaicImage& Image) {
   Images.push_back(Image);
 }
 
-void CWBMosaic::Render(CWBDrawAPI *API, const CRect &Position) {
-  for (auto &image : Images)
+void CWBMosaic::Render(CWBDrawAPI* API, const CRect& Position) {
+  for (auto& image : Images)
     image.Render(API, Position + CRect(Overshoot[0], Overshoot[1], Overshoot[2],
                                        Overshoot[3]));
 }
 
 void CWBMosaic::SetName(std::string_view name) { Name = name; }
 
-std::string &CWBMosaic::GetName() { return Name; }
+std::string& CWBMosaic::GetName() { return Name; }
 
-CWBMosaic::CWBMosaic(const CWBMosaic &Copy) {
+CWBMosaic::CWBMosaic(const CWBMosaic& Copy) {
   Name = Copy.Name;
   Images = Copy.Images;
   for (int32_t x = 0; x < 4; x++) Overshoot[x] = Copy.Overshoot[x];
 }
 
 CWBMosaic::CWBMosaic() {
-  for (int &x : Overshoot) x = 0;
+  for (int& x : Overshoot) x = 0;
 }
 
-CWBMosaic &CWBMosaic::operator=(const CWBMosaic &Copy) {
+CWBMosaic& CWBMosaic::operator=(const CWBMosaic& Copy) {
   if (&Copy == this) return *this;
   Name = Copy.Name;
   Images = Copy.Images;
@@ -300,9 +300,9 @@ void CWBMosaic::SetOverShoot(WBRECTSIDE side, int32_t val) {
 
 void CWBSkinElement::SetName(std::string_view name) { Name = name; }
 
-std::string &CWBSkinElement::GetName() { return Name; }
+std::string& CWBSkinElement::GetName() { return Name; }
 
-FORCEINLINE void CWBSkinElement::Render(CWBDrawAPI *API, CRect &Pos) {
+FORCEINLINE void CWBSkinElement::Render(CWBDrawAPI* API, CRect& Pos) {
   API->DrawAtlasElement(Handle, Pos, DefaultBehavior[0] == WB_SKINBEHAVIOR_TILE,
                         DefaultBehavior[1] == WB_SKINBEHAVIOR_TILE,
                         DefaultBehavior[0] == WB_SKINBEHAVIOR_STRETCH,
@@ -319,7 +319,7 @@ WBSKINELEMENTBEHAVIOR CWBSkinElement::GetBehavior(int32_t Axis) {
   return DefaultBehavior[Axis];
 }
 
-CWBSkinElement &CWBSkinElement::operator=(const CWBSkinElement &Copy) {
+CWBSkinElement& CWBSkinElement::operator=(const CWBSkinElement& Copy) {
   if (&Copy == this) return *this;
   Name = Copy.Name;
   Handle = Copy.Handle;
@@ -328,7 +328,7 @@ CWBSkinElement &CWBSkinElement::operator=(const CWBSkinElement &Copy) {
   return *this;
 }
 
-CWBSkinElement::CWBSkinElement(const CWBSkinElement &Copy) {
+CWBSkinElement::CWBSkinElement(const CWBSkinElement& Copy) {
   Name = Copy.Name;
   Handle = Copy.Handle;
   DefaultBehavior[0] = Copy.DefaultBehavior[0];
@@ -343,11 +343,11 @@ CWBSkinElement::CWBSkinElement() {
 
 WBATLASHANDLE CWBSkinElement::GetHandle() { return Handle; }
 
-CSize CWBSkinElement::GetElementSize(CWBDrawAPI *API) {
+CSize CWBSkinElement::GetElementSize(CWBDrawAPI* API) {
   return API->GetAtlasElementSize(Handle);
 }
 
-void CWBSkin::RenderElement(CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos) {
+void CWBSkin::RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID, CRect& Pos) {
   if (ID == 0xffffffff) return;
 
   const uint32_t idx = ID & 0x7fffffff;
@@ -364,8 +364,8 @@ void CWBSkin::RenderElement(CWBDrawAPI *API, WBSKINELEMENTID ID, CRect &Pos) {
   }
 }
 
-void CWBSkin::RenderElement(CWBDrawAPI *API, std::string_view Name,
-                            CRect &Pos) {
+void CWBSkin::RenderElement(CWBDrawAPI* API, std::string_view Name,
+                            CRect& Pos) {
   RenderElement(API, GetElementID(Name), Pos);
 }
 
@@ -382,7 +382,7 @@ WBSKINELEMENTID CWBSkin::GetElementID(std::string_view Name) {
 void CWBSkin::AddElement(std::string_view Name, WBATLASHANDLE Handle,
                          WBSKINELEMENTBEHAVIOR Xbehav,
                          WBSKINELEMENTBEHAVIOR Ybehav) {
-  for (auto &skin : SkinItems)
+  for (auto& skin : SkinItems)
     if (skin.GetName() == Name) {
       skin.SetHandle(Handle);
       skin.SetBehavior(0, Xbehav);
@@ -397,11 +397,11 @@ void CWBSkin::AddElement(std::string_view Name, WBATLASHANDLE Handle,
   SkinItems.back().SetBehavior(1, Ybehav);
 }
 
-CWBMosaic *CWBSkin::AddMosaic(std::string_view Name,
+CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
                               std::string_view Description,
                               int32_t OverShootLeft, int32_t OverShootTop,
                               int32_t OverShootRight, int32_t OverShootBottom) {
-  for (auto &mosaic : Mosaics) {
+  for (auto& mosaic : Mosaics) {
     if (mosaic.GetName() == Name) {
       return &mosaic;
     }
@@ -416,12 +416,12 @@ CWBMosaic *CWBSkin::AddMosaic(std::string_view Name,
   Mosaics.back().SetOverShoot(WB_RECTSIDE_BOTTOM, OverShootBottom);
 
   auto Lines = Split(Description, _T( ")" ));
-  for (const auto &l : Lines) {
+  for (const auto& l : Lines) {
     auto Data = Split(Trim(l), _T( "(" ));
     CWBMosaicImage i;
 
     if (Data.size() == 2) {
-      CWBSkinElement *e = GetElement(Trim(Data[0]));
+      CWBSkinElement* e = GetElement(Trim(Data[0]));
       if (e) {
         i.SetHandle(e->GetHandle());
         i.SetTiling(0, e->GetBehavior(0) == WB_SKINBEHAVIOR_TILE);
@@ -431,7 +431,7 @@ CWBMosaic *CWBSkin::AddMosaic(std::string_view Name,
 
         auto Data2 = Split(Data[1], _T( ";" ));
 
-        for (const auto &d2 : Data2) {
+        for (const auto& d2 : Data2) {
           auto keyvalue = Split(d2, _T( ":" ));
           if (keyvalue.size() > 0) {
             const auto key = Trim(keyvalue[0]);
@@ -477,8 +477,8 @@ CWBMosaic *CWBSkin::AddMosaic(std::string_view Name,
   return &Mosaics.back();
 }
 
-CWBSkinElement *CWBSkin::GetElement(std::string_view Name) {
-  for (auto &skin : SkinItems) {
+CWBSkinElement* CWBSkin::GetElement(std::string_view Name) {
+  for (auto& skin : SkinItems) {
     if (skin.GetName() == Name) {
       return &skin;
     }
@@ -486,7 +486,7 @@ CWBSkinElement *CWBSkin::GetElement(std::string_view Name) {
   return nullptr;
 }
 
-CWBSkinElement *CWBSkin::GetElement(WBSKINELEMENTID id) {
+CWBSkinElement* CWBSkin::GetElement(WBSKINELEMENTID id) {
   if (id == 0xffffffff) return nullptr;
   if (!(id & 0x80000000)) return nullptr;  // mosaic
   const uint32_t idx = id & 0x7fffffff;
@@ -494,7 +494,7 @@ CWBSkinElement *CWBSkin::GetElement(WBSKINELEMENTID id) {
   return &SkinItems[idx];
 }
 
-CSize CWBSkin::GetElementSize(CWBDrawAPI *API, WBSKINELEMENTID ID) {
+CSize CWBSkin::GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID ID) {
   if (ID == 0xffffffff) return CSize(0, 0);
 
   const uint32_t idx = ID & 0x7fffffff;

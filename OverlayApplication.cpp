@@ -2,7 +2,7 @@
 
 COverlayApp::COverlayApp() = default;
 
-TBOOL COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
+bool COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
   FORCEDDEBUGLOG("COverlayApp::Initialize()");
 
   if (!CWBApplication::Initialize(WindowParams)) return false;
@@ -42,7 +42,7 @@ COverlayApp::~COverlayApp() = default;
 
 void COverlayApp::TakeScreenshot() {}
 
-TBOOL COverlayApp::DeviceOK() {
+bool COverlayApp::DeviceOK() {
   if (!Device) return false;
   return Device->DeviceOk();
 }

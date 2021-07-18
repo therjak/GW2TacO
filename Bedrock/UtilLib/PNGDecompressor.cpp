@@ -7,10 +7,10 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
-bool DecompressPNG(const uint8_t *IData, int32_t IDataSize, uint8_t *&Image,
-                   int32_t &XRes, int32_t &YRes) {
+bool DecompressPNG(const uint8_t* IData, int32_t IDataSize, uint8_t*& Image,
+                   int32_t& XRes, int32_t& YRes) {
   int32_t x, y, n;
-  uint8_t *Data = stbi_load_from_memory(IData, IDataSize, &x, &y, &n, 4);
+  uint8_t* Data = stbi_load_from_memory(IData, IDataSize, &x, &y, &n, 4);
 
   if (!Data) {
     LOG_ERR("[png] Image decompression failed: %s", stbi_failure_reason());
@@ -26,8 +26,8 @@ bool DecompressPNG(const uint8_t *IData, int32_t IDataSize, uint8_t *&Image,
   return true;
 }
 
-void ARGBtoABGR(uint8_t *Image, int32_t XRes, int32_t YRes) {
-  uint8_t *img = Image;
+void ARGBtoABGR(uint8_t* Image, int32_t XRes, int32_t YRes) {
+  uint8_t* img = Image;
 
   for (int32_t x = 0; x < XRes * YRes; x++) {
     uint8_t t = img[0];
@@ -37,8 +37,8 @@ void ARGBtoABGR(uint8_t *Image, int32_t XRes, int32_t YRes) {
   }
 }
 
-void ClearZeroAlpha(uint8_t *Image, int32_t XRes, int32_t YRes) {
-  uint8_t *img = Image;
+void ClearZeroAlpha(uint8_t* Image, int32_t XRes, int32_t YRes) {
+  uint8_t* img = Image;
 
   for (int32_t x = 0; x < XRes * YRes; x++) {
     if (img[3] == 0) img[0] = img[1] = img[2] = 0;
@@ -47,7 +47,7 @@ void ClearZeroAlpha(uint8_t *Image, int32_t XRes, int32_t YRes) {
   }
 }
 
-bool ExportPNG(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
+bool ExportPNG(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
                std::string_view OutFile) {
   auto Data = std::make_unique<uint8_t[]>(XRes * YRes * 4);
   memcpy(Data.get(), Image, XRes * YRes * 4);
@@ -66,7 +66,7 @@ bool ExportPNG(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
   return result;
 }
 
-bool ExportTga(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
+bool ExportTga(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
                std::string_view OutFile) {
   if (ClearAlpha)
     for (int32_t x = 0; x < XRes * YRes; x++) Image[x * 4 + 3] = 255;
@@ -82,7 +82,7 @@ bool ExportTga(uint8_t *Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
   return result;
 }
 
-bool ExportBmp(uint8_t *Image, int32_t XRes, int32_t YRes,
+bool ExportBmp(uint8_t* Image, int32_t XRes, int32_t YRes,
                std::string_view OutFile) {
   auto FileName = std::make_unique<char[]>(OutFile.size() + 1);
   _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());
@@ -95,7 +95,7 @@ bool ExportBmp(uint8_t *Image, int32_t XRes, int32_t YRes,
   return result;
 }
 
-bool ExportRaw(uint8_t *Image, int32_t XRes, int32_t YRes,
+bool ExportRaw(uint8_t* Image, int32_t XRes, int32_t YRes,
                std::string_view OutFile) {
   auto FileName = std::make_unique<char[]>(OutFile.size() + 1);
   _tcsncpy_s(FileName.get(), OutFile.size(), OutFile.data(), OutFile.size());

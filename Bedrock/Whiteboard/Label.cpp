@@ -1,10 +1,10 @@
 #include "Label.h"
 
-void CWBLabel::OnDraw(CWBDrawAPI *API) {
+void CWBLabel::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
 
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
@@ -20,15 +20,15 @@ void CWBLabel::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-CWBLabel::CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view Txt)
+CWBLabel::CWBLabel(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
     : CWBItem() {
   Initialize(Parent, Pos, Txt);
 }
 
 CWBLabel::~CWBLabel() = default;
 
-TBOOL CWBLabel::Initialize(CWBItem *Parent, const CRect &Position,
-                           std::string_view Txt) {
+bool CWBLabel::Initialize(CWBItem* Parent, const CRect& Position,
+                          std::string_view Txt) {
   Text = Txt;
 
   if (!CWBItem::Initialize(Parent, Position)) return false;
@@ -36,7 +36,7 @@ TBOOL CWBLabel::Initialize(CWBItem *Parent, const CRect &Position,
   return true;
 }
 
-CWBItem *CWBLabel::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* CWBLabel::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   auto label = CWBLabel::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     label->SetText(node.GetAttribute(_T( "text" )));
@@ -50,7 +50,7 @@ void CWBLabel::SetText(std::string_view val) {
 
 CSize CWBLabel::GetContentSize() {
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 

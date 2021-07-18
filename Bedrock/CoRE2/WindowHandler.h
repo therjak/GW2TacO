@@ -24,27 +24,26 @@ class CCoreWindowParameters {
  public:
   CCoreDevice *Device = nullptr;
   HINSTANCE hInstance;
-  TBOOL FullScreen;
+  bool FullScreen;
   int32_t XRes;
   int32_t YRes;
   TCHAR *WindowTitle;
   HICON Icon;
-  TBOOL Maximized;
-  TBOOL ResizeDisabled;
+  bool Maximized;
+  bool ResizeDisabled;
 
   DWORD OverrideWindowStyle = 0;
   DWORD OverrideWindowStyleEx = 0;
 
   CCoreWindowParameters();
-  CCoreWindowParameters(HINSTANCE hinst, TBOOL FullScreen, int32_t XRes,
+  CCoreWindowParameters(HINSTANCE hinst, bool FullScreen, int32_t XRes,
                         int32_t YRes, TCHAR *WindowTitle, HICON Icon = nullptr,
-                        TBOOL Maximized = false, TBOOL ResizeDisabled = false);
+                        bool Maximized = false, bool ResizeDisabled = false);
 
-  virtual void Initialize(CCoreDevice *device, HINSTANCE hinst,
-                          TBOOL FullScreen, int32_t XRes, int32_t YRes,
-                          TCHAR *WindowTitle, HICON Icon = nullptr,
-                          TBOOL Maximized = false,
-                          TBOOL ResizeDisabled = false);
+  virtual void Initialize(CCoreDevice *device, HINSTANCE hinst, bool FullScreen,
+                          int32_t XRes, int32_t YRes, TCHAR *WindowTitle,
+                          HICON Icon = nullptr, bool Maximized = false,
+                          bool ResizeDisabled = false);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,14 +51,14 @@ class CCoreWindowParameters {
 
 class CCoreWindowHandler {
  protected:
-  TBOOL Done;
+  bool Done;
   CCoreDevice *Device;
-  TBOOL Active;
-  TBOOL Maximized;
-  TBOOL Minimized;
+  bool Active;
+  bool Maximized;
+  bool Minimized;
   CRect ClientRect;
 
-  TBOOL InactiveFrameLimiter;
+  bool InactiveFrameLimiter;
   int32_t LimitedFPS;
   int32_t LastRenderedFrame;
 
@@ -80,12 +79,12 @@ class CCoreWindowHandler {
 
   // this initializer will change to accommodate multiple platforms at once once
   // we get to that point:
-  virtual TBOOL Initialize(const CCoreWindowParameters &WindowParams) = 0;
+  virtual bool Initialize(const CCoreWindowParameters &WindowParams) = 0;
 
   virtual void Destroy();
-  virtual TBOOL HandleMessages() = 0;
-  virtual TBOOL HandleOSMessages() = 0;
-  virtual TBOOL DeviceOK() = 0;
+  virtual bool HandleMessages() = 0;
+  virtual bool HandleOSMessages() = 0;
+  virtual bool DeviceOK() = 0;
   virtual void ToggleFullScreen() = 0;
 
   virtual uint32_t GetHandle() = 0;
@@ -104,7 +103,7 @@ class CCoreWindowHandler {
   INLINE CCoreDevice *GetDevice() { return Device; }
 
   virtual void SetWindowTitle(std::string_view Title) = 0;
-  virtual void SetInactiveFrameLimiter(TBOOL set);
+  virtual void SetInactiveFrameLimiter(bool set);
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -130,11 +129,11 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   CCoreWindowHandlerWin();
   ~CCoreWindowHandlerWin() override;
 
-  TBOOL Initialize(const CCoreWindowParameters &WindowParams) override;
+  bool Initialize(const CCoreWindowParameters &WindowParams) override;
   void Destroy() override;
-  TBOOL HandleMessages() override;
-  TBOOL HandleOSMessages() override;
-  TBOOL DeviceOK() override;
+  bool HandleMessages() override;
+  bool HandleOSMessages() override;
+  bool DeviceOK() override;
   void ToggleFullScreen() override;
 
   uint32_t GetHandle() override;

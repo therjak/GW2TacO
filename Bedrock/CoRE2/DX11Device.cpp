@@ -66,7 +66,7 @@ void CCoreDX11Device::ResetPrivateResources() {}
 
 #define BACKBUFFERFORMAT D3DFMT_A8R8G8B8
 
-TBOOL CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
+bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
   if (BackBufferView) BackBufferView->Release();
 
   FORCEDDEBUGLOG("creating backbuffer");
@@ -111,7 +111,7 @@ TBOOL CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
+bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
   if (DepthBufferView) DepthBufferView->Release();
   if (DepthBuffer) DepthBuffer->Release();
 
@@ -167,8 +167,8 @@ TBOOL CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateClassicSwapChain(
-    const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes,
+bool CCoreDX11Device::CreateClassicSwapChain(
+    const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
   LOG_NFO("[core] Creating classic swap chain");
 
@@ -239,8 +239,8 @@ TBOOL CCoreDX11Device::CreateClassicSwapChain(
   return true;
 }
 
-TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain(
-    const uint32_t hWnd, const TBOOL FullScreen, const int32_t XRes,
+bool CCoreDX11Device::CreateDirectCompositionSwapchain(
+    const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
   LOG_NFO("[core] Creating DirectComposition swap chain");
 
@@ -397,10 +397,10 @@ TBOOL CCoreDX11Device::CreateDirectCompositionSwapchain(
   return true;
 }
 
-TBOOL CCoreDX11Device::InitAPI(const uint32_t hWnd, const TBOOL FullScreen,
-                               const int32_t XRes, const int32_t YRes,
-                               const int32_t AALevel /* =0 */,
-                               const int32_t RefreshRate /* =60 */) {
+bool CCoreDX11Device::InitAPI(const uint32_t hWnd, const bool FullScreen,
+                              const int32_t XRes, const int32_t YRes,
+                              const int32_t AALevel /* =0 */,
+                              const int32_t RefreshRate /* =60 */) {
   auto dcomp = LoadLibrary("dcomp.dll");
 
   if (dcomp) {
@@ -418,8 +418,8 @@ TBOOL CCoreDX11Device::InitAPI(const uint32_t hWnd, const TBOOL FullScreen,
   if (dcomp) FreeLibrary(dcomp);
 }
 
-TBOOL CCoreDX11Device::Initialize(CCoreWindowHandler* window,
-                                  const int32_t AALevel) {
+bool CCoreDX11Device::Initialize(CCoreWindowHandler* window,
+                                 const int32_t AALevel) {
   FORCEDDEBUGLOG("Initializing DX11 device");
   Window = window;
 
@@ -440,7 +440,7 @@ TBOOL CCoreDX11Device::Initialize(CCoreWindowHandler* window,
   return true;
 }
 
-TBOOL CCoreDX11Device::IsWindowed() {
+bool CCoreDX11Device::IsWindowed() {
   BOOL fs = false;
   IDXGIOutput* i = nullptr;
 
@@ -494,8 +494,8 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
   SetViewport(CRect(0, 0, xr, yr));
 }
 
-void CCoreDX11Device::SetFullScreenMode(const TBOOL FullScreen,
-                                        const int32_t xr, const int32_t yr) {
+void CCoreDX11Device::SetFullScreenMode(const bool FullScreen, const int32_t xr,
+                                        const int32_t yr) {
   LOG(LOG_INFO, _T( "[core] Switching fullscreen mode to %d" ), FullScreen);
 
   HRESULT res = SwapChain->SetFullscreenState(FullScreen, nullptr);
@@ -507,7 +507,7 @@ void CCoreDX11Device::SetFullScreenMode(const TBOOL FullScreen,
   }
 }
 
-TBOOL CCoreDX11Device::DeviceOk() { return true; }
+bool CCoreDX11Device::DeviceOk() { return true; }
 
 //////////////////////////////////////////////////////////////////////////
 // texture functions
@@ -515,7 +515,7 @@ TBOOL CCoreDX11Device::DeviceOk() { return true; }
 std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
     const int32_t XRes, const int32_t YRes, const uint8_t* Data,
     const char BytesPerPixel, const COREFORMAT Format /* =COREFMT_A8R8G8B8 */,
-    const TBOOL RenderTarget /* =false */) {
+    const bool RenderTarget /* =false */) {
   auto Result = std::make_unique<CCoreDX11Texture2D>(this);
   if (!Result->Create(XRes, YRes, Data, BytesPerPixel, Format, RenderTarget))
     Result.reset();
@@ -724,9 +724,9 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader() {
 //////////////////////////////////////////////////////////////////////////
 // renderstate
 
-TBOOL CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
-                                        const CORERENDERSTATE RenderState,
-                                        const CORERENDERSTATEVALUE Value) {
+bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
+                                       const CORERENDERSTATE RenderState,
+                                       const CORERENDERSTATEVALUE Value) {
   switch (RenderState) {
     case CORERS_BLENDSTATE: {
       if (!Value.BlendState) {
@@ -835,23 +835,23 @@ TBOOL CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
   }
 }
 
-TBOOL CCoreDX11Device::SetNoVertexBuffer() {
+bool CCoreDX11Device::SetNoVertexBuffer() {
   DeviceContext->IASetVertexBuffers(0, 1, nullptr, nullptr, nullptr);
   return true;
 }
 
-TBOOL CCoreDX11Device::CommitRenderStates() { return true; }
+bool CCoreDX11Device::CommitRenderStates() { return true; }
 
 //////////////////////////////////////////////////////////////////////////
 // display functions
 
-TBOOL CCoreDX11Device::BeginScene() { return true; }
+bool CCoreDX11Device::BeginScene() { return true; }
 
-TBOOL CCoreDX11Device::EndScene() { return true; }
+bool CCoreDX11Device::EndScene() { return true; }
 
-TBOOL CCoreDX11Device::Clear(const TBOOL clearPixels, const TBOOL clearDepth,
-                             const CColor& Color, const float Depth,
-                             const int32_t Stencil) {
+bool CCoreDX11Device::Clear(const bool clearPixels, const bool clearDepth,
+                            const CColor& Color, const float Depth,
+                            const int32_t Stencil) {
   int32_t Flags = 0;
 
   float col[4] = {Color[0] / 255.0f, Color[1] / 255.0f, Color[2] / 255.0f,
@@ -867,7 +867,7 @@ TBOOL CCoreDX11Device::Clear(const TBOOL clearPixels, const TBOOL clearDepth,
   return true;
 }
 
-TBOOL CCoreDX11Device::Flip(TBOOL Vsync) {
+bool CCoreDX11Device::Flip(bool Vsync) {
   HRESULT res;
 
   if (Vsync)
@@ -878,36 +878,35 @@ TBOOL CCoreDX11Device::Flip(TBOOL Vsync) {
   return res == S_OK;
 }
 
-TBOOL CCoreDX11Device::DrawIndexedTriangles(int32_t Count,
-                                            int32_t NumVertices) {
+bool CCoreDX11Device::DrawIndexedTriangles(int32_t Count, int32_t NumVertices) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   if (!ApplyRequestedRenderState()) return false;
   DeviceContext->DrawIndexed(Count * 3, 0, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawLines(int32_t Count) {
+bool CCoreDX11Device::DrawLines(int32_t Count) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
   if (!ApplyRequestedRenderState()) return false;
   DeviceContext->Draw(Count * 2, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawIndexedLines(int32_t Count, int32_t NumVertices) {
+bool CCoreDX11Device::DrawIndexedLines(int32_t Count, int32_t NumVertices) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
   if (!ApplyRequestedRenderState()) return false;
   DeviceContext->DrawIndexed(Count * 2, 0, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::DrawTriangles(int32_t Count) {
+bool CCoreDX11Device::DrawTriangles(int32_t Count) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   if (!ApplyRequestedRenderState()) return false;
   DeviceContext->Draw(Count * 3, 0);
   return true;
 }
 
-TBOOL CCoreDX11Device::SetViewport(CRect Viewport) {
+bool CCoreDX11Device::SetViewport(CRect Viewport) {
   D3D11_VIEWPORT viewport;
   memset(&viewport, 0, sizeof(D3D11_VIEWPORT));
 
@@ -984,7 +983,7 @@ ID3D11BlendState* CCoreDX11Device::GetCurrentBlendState() {
   return CurrentBlendState;
 }
 
-TBOOL CCoreDX11Device::SetRenderTarget(CCoreTexture2D* RT) {
+bool CCoreDX11Device::SetRenderTarget(CCoreTexture2D* RT) {
   if (!RT) {
     DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
     return true;
@@ -1053,7 +1052,7 @@ void CCoreDX11Device::BeginOcclusionQuery() {
   if (OcclusionQuery) DeviceContext->Begin(OcclusionQuery);
 }
 
-TBOOL CCoreDX11Device::EndOcclusionQuery() {
+bool CCoreDX11Device::EndOcclusionQuery() {
   if (OcclusionQuery) {
     DeviceContext->End(OcclusionQuery);
 

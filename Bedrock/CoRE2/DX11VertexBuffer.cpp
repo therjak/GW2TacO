@@ -4,7 +4,7 @@
 
 #include <comdef.h>
 
-CCoreDX11VertexBuffer::CCoreDX11VertexBuffer(CCoreDX11Device *dev)
+CCoreDX11VertexBuffer::CCoreDX11VertexBuffer(CCoreDX11Device* dev)
     : CCoreVertexBuffer(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -20,7 +20,7 @@ void CCoreDX11VertexBuffer::Release() {
   VertexBufferHandle = nullptr;
 }
 
-TBOOL CCoreDX11VertexBuffer::Apply(const uint32_t Offset) {
+bool CCoreDX11VertexBuffer::Apply(const uint32_t Offset) {
   if (!VertexBufferHandle) return false;
   uint32_t stride = Device->GetVertexFormatSize();
   DeviceContext->IASetVertexBuffers(0, 1, &VertexBufferHandle, &stride,
@@ -28,7 +28,7 @@ TBOOL CCoreDX11VertexBuffer::Apply(const uint32_t Offset) {
   return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Create(const uint8_t *Data, const uint32_t size) {
+bool CCoreDX11VertexBuffer::Create(const uint8_t* Data, const uint32_t size) {
   if (!Data) return false;
   if (size <= 0) return false;
   Release();
@@ -57,7 +57,7 @@ TBOOL CCoreDX11VertexBuffer::Create(const uint8_t *Data, const uint32_t size) {
   return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size) {
+bool CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size) {
   if (size <= 0) return false;
   Release();
 
@@ -83,8 +83,8 @@ TBOOL CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size) {
   return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Update(const int32_t Offset, const uint8_t *Data,
-                                    const uint32_t Size) {
+bool CCoreDX11VertexBuffer::Update(const int32_t Offset, const uint8_t* Data,
+                                   const uint32_t Size) {
   if (!VertexBufferHandle || !Data || Dynamic) return false;
   if (!Size) return true;
 
@@ -98,8 +98,8 @@ TBOOL CCoreDX11VertexBuffer::Update(const int32_t Offset, const uint8_t *Data,
   return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Lock(void **Result, const uint32_t Offset,
-                                  const int32_t size, const int32_t Flags) {
+bool CCoreDX11VertexBuffer::Lock(void** Result, const uint32_t Offset,
+                                 const int32_t size, const int32_t Flags) {
   if (!Dynamic) {
     LOG(LOG_ERROR, _T("[core] Attempting to lock static vertexbuffer failed"));
     return false;
@@ -116,11 +116,11 @@ TBOOL CCoreDX11VertexBuffer::Lock(void **Result, const uint32_t Offset,
   return true;
 }
 
-TBOOL CCoreDX11VertexBuffer::Lock(void **Result) {
+bool CCoreDX11VertexBuffer::Lock(void** Result) {
   return Lock(Result, 0, Size);
 }
 
-TBOOL CCoreDX11VertexBuffer::UnLock() {
+bool CCoreDX11VertexBuffer::UnLock() {
   if (!VertexBufferHandle) return false;
   DeviceContext->Unmap(VertexBufferHandle, 0);
   return true;
