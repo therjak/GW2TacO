@@ -17,27 +17,26 @@ using namespace jsonxx;
 
 bool wvwCanBeRendered = false;
 std::vector<WvWObjective> wvwObjectives;
-std::string FetchHTTPS(std::string_view url,
-                       std::string_view path);
+std::string FetchHTTPS(std::string_view url, std::string_view path);
 std::unordered_map<std::string, POI> wvwPOIs;
-GW2TacticalCategory *GetCategory( std::string_view s );
-CDictionary<int, bool> wvwMapIDs;
+GW2TacticalCategory* GetCategory(std::string_view s);
+std::unordered_map<int, bool> wvwMapIDs;
 
 std::thread wvwPollThread;
 
-#define DAYFLAG    0x001000
-#define DHMSFLAG   0x001111
-#define HOURFLAG   0x000100
-#define HMSFLAG    0x000111
-#define MINFLAG    0x000010
-#define MSFLAG     0x000011
-#define SECFLAG    0x000001
+#define DAYFLAG 0x001000
+#define DHMSFLAG 0x001111
+#define HOURFLAG 0x000100
+#define HMSFLAG 0x000111
+#define MINFLAG 0x000010
+#define MSFLAG 0x000011
+#define SECFLAG 0x000001
 
-void parseISO8601( const char *text, time_t& isotime, char& flag ) {
-  const char *c;
+void parseISO8601(const char* text, time_t& isotime, char& flag) {
+  const char* c;
   int num;
 
-  struct tm  tmstruct;
+  struct tm tmstruct;
 
   int year = 0;
   int month = 0;
@@ -46,70 +45,64 @@ void parseISO8601( const char *text, time_t& isotime, char& flag ) {
   int hours = 0;
   int days = 0;
 
-  int dateflags = 0;   /* flag which date component we've seen */
+  int dateflags = 0; /* flag which date component we've seen */
 
   c = text;
   isotime = 0;
 
-  if ( *c++ == 'P' ) {
+  if (*c++ == 'P') {
     /* duration */
     flag = 'D';
-    while ( *c != '\0' ) {
+    while (*c != '\0') {
       num = 0;
-      while ( *c >= '0' && *c <= '9' ) {
+      while (*c >= '0' && *c <= '9') {
         /* assumes ASCII sequence! */
         num = 10 * num + *c++ - '0';
       }
 
-      switch ( *c++ ) {
-      case 'D':
-        if ( dateflags & DHMSFLAG ) {
-          /* day, hour, min or sec already set */
+      switch (*c++) {
+        case 'D':
+          if (dateflags & DHMSFLAG) {
+            /* day, hour, min or sec already set */
+            return;
+          } else {
+            dateflags |= DAYFLAG;
+            days = num;
+          }
+          break;
+        case 'H':
+          if (dateflags & HMSFLAG) {
+            /* hour, min or sec already set */
+            return;
+          } else {
+            dateflags |= DAYFLAG;
+            hours = num;
+          }
+          break;
+        case 'M':
+          if (dateflags & MSFLAG) {
+            /* min or sec already set */
+            return;
+          } else {
+            dateflags |= MINFLAG;
+            minutes = num;
+          }
+          break;
+        case 'S':
+          if (dateflags & SECFLAG) {
+            /* sec already set */
+            return;
+          } else {
+            dateflags |= SECFLAG;
+            seconds = num;
+          }
+          break;
+        default:
           return;
-        }
-        else {
-          dateflags |= DAYFLAG;
-          days = num;
-        }
-        break;
-      case 'H':
-        if ( dateflags & HMSFLAG ) {
-          /* hour, min or sec already set */
-          return;
-        }
-        else {
-          dateflags |= DAYFLAG;
-          hours = num;
-        }
-        break;
-      case 'M':
-        if ( dateflags & MSFLAG ) {
-          /* min or sec already set */
-          return;
-        }
-        else {
-          dateflags |= MINFLAG;
-          minutes = num;
-        }
-        break;
-      case 'S':
-        if ( dateflags & SECFLAG ) {
-          /* sec already set */
-          return;
-        }
-        else {
-          dateflags |= SECFLAG;
-          seconds = num;
-        }
-        break;
-      default:
-        return;
       }
     }
-    isotime = seconds + 60 * minutes + 3600 * hours +
-      86400 * days;
-  }
-  else {
+    isotime = seconds + 60 * minutes + 3600 * hours + 86400 * days;
+  } else {
     /* point in time, must be one of
     CCYYMMDD
     CCYY-MM-DD
@@ -125,13 +118,11 @@ void parseISO8601( const char *text, time_t& isotime, char& flag ) {
     because otherwise the separting '-' will be interpreted
     by sscanf as signs of a 1 digit integer .... :-(  */
 
-    if ( sscanf_s( text, "%4u-%2u-%2u", &year, &month, &days ) == 3 ) {
+    if (sscanf_s(text, "%4u-%2u-%2u", &year, &month, &days) == 3) {
       c += 10;
-    }
-    else if ( sscanf_s( text, "%4u%2u%2u", &year, &month, &days ) == 3 ) {
+    } else if (sscanf_s(text, "%4u%2u%2u", &year, &month, &days) == 3) {
       c += 8;
-    }
-    else {
+    } else {
       return;
     }
 
@@ -139,44 +130,40 @@ void parseISO8601( const char *text, time_t& isotime, char& flag ) {
     tmstruct.tm_mon = month - 1;
     tmstruct.tm_mday = days;
 
-    if ( *c == '\0' ) {
+    if (*c == '\0') {
       tmstruct.tm_hour = 0;
       tmstruct.tm_sec = 0;
       tmstruct.tm_min = 0;
-      isotime = _mkgmtime( &tmstruct );
-    }
-    else if ( *c == 'T' ) {
+      isotime = _mkgmtime(&tmstruct);
+    } else if (*c == 'T') {
       /* time of day part */
       c++;
-      if ( sscanf_s( c, "%2d%2d", &hours, &minutes ) == 2 ) {
+      if (sscanf_s(c, "%2d%2d", &hours, &minutes) == 2) {
         c += 4;
-      }
-      else if ( sscanf_s( c, "%2d:%2d", &hours, &minutes ) == 2 ) {
+      } else if (sscanf_s(c, "%2d:%2d", &hours, &minutes) == 2) {
         c += 5;
-      }
-      else {
+      } else {
         return;
       }
 
-      if ( *c == ':' ) {
+      if (*c == ':') {
         c++;
       }
 
-      if ( *c != '\0' ) {
-        if ( sscanf_s( c, "%2d", &seconds ) == 1 ) {
+      if (*c != '\0') {
+        if (sscanf_s(c, "%2d", &seconds) == 1) {
           c += 2;
-        }
-        else {
+        } else {
           return;
         }
-        if ( *c != '\0' && *c != 'Z' ) {      /* something left? */
+        if (*c != '\0' && *c != 'Z') { /* something left? */
           return;
         }
       }
       tmstruct.tm_hour = hours;
       tmstruct.tm_min = minutes;
       tmstruct.tm_sec = seconds;
-      isotime = _mkgmtime( &tmstruct );
+      isotime = _mkgmtime(&tmstruct);
     }
 
     else {
@@ -185,19 +172,18 @@ void parseISO8601( const char *text, time_t& isotime, char& flag ) {
   }
 }
 
-void LoadWvWObjectives()
-{
-  //https://api.guildwars2.com/v2/wvw/objectives
+void LoadWvWObjectives() {
+  // https://api.guildwars2.com/v2/wvw/objectives
 
-  wvwPollThread = std::thread( []()
-  {
-    CDictionary<int, CVector3> wvwObjectiveCoords;
-    CDictionary<int, CRect> wvwContinentRects;
+  wvwPollThread = std::thread([]() {
+    std::unordered_map<int, CVector3> wvwObjectiveCoords;
+    std::unordered_map<int, CRect> wvwContinentRects;
 
-    auto wvwobjectives = FetchHTTPS( "api.guildwars2.com", "/v2/wvw/objectives?ids=all" );
+    auto wvwobjectives =
+        FetchHTTPS("api.guildwars2.com", "/v2/wvw/objectives?ids=all");
 
     Array wvwobjs;
-    wvwobjs.parse( wvwobjectives );
+    wvwobjs.parse(wvwobjectives);
     auto objs = wvwobjs.values();
 
     for (auto& x : objs) {
@@ -205,61 +191,49 @@ void LoadWvWObjectives()
 
       auto obj = x->get<Object>();
 
-      if ( !obj.has<String>( "id" ) )
-        continue;
+      if (!obj.has<String>("id")) continue;
 
-      auto objid = obj.get<String>( "id" );
+      auto objid = obj.get<String>("id");
 
       int mapID, objident;
-      if ( std::sscanf(objid.c_str(), "%d-%d", &mapID, &objident ) != 2 )
-        continue;
+      if (std::sscanf(objid.c_str(), "%d-%d", &mapID, &objident) != 2) continue;
 
-      if ( !obj.has<Number>( "map_id" ) )
-        continue;
+      if (!obj.has<Number>("map_id")) continue;
 
-      if ( obj.get<Number>( "map_id" ) != mapID )
-        continue;
+      if (obj.get<Number>("map_id") != mapID) continue;
 
-      wvwMapIDs[ mapID ] = true;
+      wvwMapIDs[mapID] = true;
 
-      if ( obj.has<Array>( "coord" ) )
-      {
-        if ( !wvwContinentRects.HasKey( mapID ) )
-        {
-          auto mapPath = FormatString( "/v2/maps?id=%d", mapID );
-          auto wvwMapData = FetchHTTPS( "api.guildwars2.com", mapPath );
+      if (obj.has<Array>("coord")) {
+        if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
+          auto mapPath = FormatString("/v2/maps?id=%d", mapID);
+          auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
 
           Object map;
-          map.parse( wvwMapData );
-          if ( !map.has<Array>( "continent_rect" ) )
-            continue;
+          map.parse(wvwMapData);
+          if (!map.has<Array>("continent_rect")) continue;
 
-          auto continentRectArray = map.get<Array>( "continent_rect" ).values();
-          if ( continentRectArray.size() != 2 )
-            continue;
+          auto continentRectArray = map.get<Array>("continent_rect").values();
+          if (continentRectArray.size() != 2) continue;
 
           int continentRectCnt = 0;
-          int continentRectValues[ 4 ];
+          int continentRectValues[4];
           bool ok = true;
 
-          for ( int x = 0; x < 2; x++ )
-          {
-            if ( !continentRectArray[ x ]->is<Array>() )
-            {
+          for (int x = 0; x < 2; x++) {
+            if (!continentRectArray[x]->is<Array>()) {
               ok = false;
               break;
             }
-            auto continentRectCoords = continentRectArray[ x ]->get<Array>().values();
-            if ( continentRectCoords.size() != 2 )
-            {
+            auto continentRectCoords =
+                continentRectArray[x]->get<Array>().values();
+            if (continentRectCoords.size() != 2) {
               ok = false;
               break;
             }
 
-            for ( int y = 0; y < 2; y++ )
-            {
-              if ( !continentRectCoords[ y ]->is<Number>() )
-              {
+            for (int y = 0; y < 2; y++) {
+              if (!continentRectCoords[y]->is<Number>()) {
                 ok = false;
                 break;
               }
@@ -268,49 +242,56 @@ void LoadWvWObjectives()
             }
           }
 
-          if ( ok )
-            wvwContinentRects[ mapID ] = CRect( continentRectValues[ 0 ], continentRectValues[ 1 ], continentRectValues[ 2 ], continentRectValues[ 3 ] );
+          if (ok)
+            wvwContinentRects[mapID] =
+                CRect(continentRectValues[0], continentRectValues[1],
+                      continentRectValues[2], continentRectValues[3]);
         }
 
-        if ( !wvwContinentRects.HasKey( mapID ) )
+        if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
           continue;
+        }
 
-        auto coord = obj.get<Array>( "coord" ).values();
-        if ( coord.size() == 3 )
-        {
-          CVector3 v( 0, 0, 0 );
-          for ( int x = 0; x < 3; x++ )
-            if ( coord[ x ]->is<Number>() )
+        auto coord = obj.get<Array>("coord").values();
+        if (coord.size() == 3) {
+          CVector3 v(0, 0, 0);
+          for (int x = 0; x < 3; x++)
+            if (coord[x]->is<Number>())
               v[x] = static_cast<float>(coord[x]->get<Number>());
 
-          CRect& r = wvwContinentRects[ mapID ];
-          CVector3 offset = CVector3( ( r.x1 + r.x2 ) / 2.0f, 0, ( r.y1 + r.y2 ) / 2.0f );
+          CRect& r = wvwContinentRects[mapID];
+          CVector3 offset =
+              CVector3((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
 
-          if ( objident == 15 && abs( v.x - 11766.3 ) < 1 && abs( v.y - 14793.5 ) < 1 && abs( v.z - ( -2133.39 ) ) < 1 ) //Langor fix-hack
+          if (objident == 15 && abs(v.x - 11766.3) < 1 &&
+              abs(v.y - 14793.5) < 1 &&
+              abs(v.z - (-2133.39)) < 1)  // Langor fix-hack
           {
             v.x = 11462.5;
             v.y = 15600 - 2650 / 24;
             v.z -= 500;
           }
 
-          wvwObjectiveCoords[ objident ] = CVector3( GameToWorldCoords( ( v.x - offset.x ) * 24 ), GameToWorldCoords( -v.z ), GameToWorldCoords( ( -( v.y - offset.z ) ) * 24 ) );
+          wvwObjectiveCoords[objident] = CVector3(
+              GameToWorldCoords((v.x - offset.x) * 24), GameToWorldCoords(-v.z),
+              GameToWorldCoords((-(v.y - offset.z)) * 24));
         }
       }
 
-      if ( !wvwObjectiveCoords.HasKey( objident ) )
+      if (wvwObjectiveCoords.find(objident) == wvwObjectiveCoords.end()) {
         continue;
+      }
 
       WvWObjective o;
       o.id = objid;
       o.mapID = mapID;
       o.objectiveID = objident;
-      o.coord = wvwObjectiveCoords[ objident ];
+      o.coord = wvwObjectiveCoords[objident];
 
-      if ( obj.has<String>( "type" ) )
-        o.type = obj.get<String>( "type" );
+      if (obj.has<String>("type")) o.type = obj.get<String>("type");
 
-      if ( obj.has<String>( "name" ) )
-        o.nameToken = o.name = obj.get<String>( "name" );
+      if (obj.has<String>("name"))
+        o.nameToken = o.name = obj.get<String>("name");
 
       for (char& n : o.nameToken)
         if (!isalnum(n))
@@ -326,28 +307,27 @@ void LoadWvWObjectives()
       poi.mapID = o.mapID;
       poi.icon = DefaultIconHandle;
       poi.wvwObjectiveID = wvwObjectives.size();
-      //poi.iconSize = DefaultIconSize;
+      // poi.iconSize = DefaultIconSize;
 
       wvwObjectives.push_back(o);
 
-      CoCreateGuid( &poi.guid );
+      CoCreateGuid(&poi.guid);
 
-      auto cat = GetCategory( "Tactical.WvW." + o.type );
+      auto cat = GetCategory("Tactical.WvW." + o.type);
 
-      extern CWBApplication *App;
+      extern CWBApplication* App;
 
-      if ( cat )
-        poi.SetCategory( App, cat );
+      if (cat) poi.SetCategory(App, cat);
 
       poi.typeData.behavior = POIBehavior::WvWObjective;
 
-      wvwPOIs[ o.id ] = poi;
+      wvwPOIs[o.id] = poi;
     }
 
     UpdateWvWStatus();
 
     wvwCanBeRendered = true;
-  } );
+  });
 }
 
 bool wvwUpdating = false;
@@ -356,106 +336,92 @@ std::thread wvwUpdatThread;
 
 #include "MumbleLink.h"
 
-void UpdateWvWStatus()
-{
-  if ( wvwUpdating )
-    return;
+void UpdateWvWStatus() {
+  if (wvwUpdating) return;
 
-  if ( !wvwMapIDs.HasKey( mumbleLink.mapID ) )
+  if (wvwMapIDs.find(mumbleLink.mapID) == wvwMapIDs.end()) {
     return;
+  }
 
   int currTime = GetTime();
-  if ( currTime - lastWvWUpdateTime < 5000 )
-    return;
+  if (currTime - lastWvWUpdateTime < 5000) return;
 
-  if ( wvwUpdatThread.joinable() )
-    wvwUpdatThread.join();
+  if (wvwUpdatThread.joinable()) wvwUpdatThread.join();
 
   wvwUpdating = true;
 
-  wvwUpdatThread = std::thread( []()
-  {
+  wvwUpdatThread = std::thread([]() {
     GW2::APIKeyManager::Status status = GW2::apiKeyManager.GetStatus();
-    if (status != GW2::APIKeyManager::Status::OK)
-    {
+    if (status != GW2::APIKeyManager::Status::OK) {
       lastWvWUpdateTime = GetTime();
       wvwUpdating = false;
       return;
     }
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
-    if (!key)
-    {
+    if (!key) {
       lastWvWUpdateTime = GetTime();
       wvwUpdating = false;
       return;
     }
 
-    if ( !key->valid )
-    {
+    if (!key->valid) {
       lastWvWUpdateTime = GetTime();
       wvwUpdating = false;
       return;
     }
-    if ( !key->HasCaps( "account" ) )
-    {
+    if (!key->HasCaps("account")) {
       lastWvWUpdateTime = GetTime();
       wvwUpdating = false;
       return;
     }
 
-    auto apiPath = FormatString( "/v2/wvw/matches?world=%d", key->worldId );
+    auto apiPath = FormatString("/v2/wvw/matches?world=%d", key->worldId);
     auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath);
 
     Object o;
-    o.parse( wvwobjectiveids );
-    if ( o.has<Array>( "maps" ) )
-    {
-      auto m = o.get<Array>( "maps" ).values();
+    o.parse(wvwobjectiveids);
+    if (o.has<Array>("maps")) {
+      auto m = o.get<Array>("maps").values();
       for (auto& x : m) {
         if (!x->is<Object>()) continue;
 
         auto map = x->get<Object>();
 
-        if ( !map.has<Array>( "objectives" ) )
-          continue;
+        if (!map.has<Array>("objectives")) continue;
 
-        auto objs = map.get<Array>( "objectives" ).values();
+        auto objs = map.get<Array>("objectives").values();
         for (auto& obj : objs) {
           if (!obj->is<Object>()) continue;
           auto objective = obj->get<Object>();
 
           std::string id;
-          if ( objective.has<String>( "id" ) )
-            id = objective.get<String>( "id" );
+          if (objective.has<String>("id"))
+            id = objective.get<String>("id");
           else
             continue;
 
-          if ( wvwPOIs.find( id ) == wvwPOIs.end() )
-            continue;
+          if (wvwPOIs.find(id) == wvwPOIs.end()) continue;
 
-          auto& poi = wvwPOIs[ id ];
+          auto& poi = wvwPOIs[id];
           poi.typeData.color = 0xffffffff;
 
           std::string owner;
-          if ( objective.has<String>( "owner" ) )
-            owner = objective.get<String>( "owner" );
+          if (objective.has<String>("owner"))
+            owner = objective.get<String>("owner");
 
-          if ( owner == "Red" )
-            poi.typeData.color = 0xffe53b3b;
+          if (owner == "Red") poi.typeData.color = 0xffe53b3b;
 
-          if ( owner == "Green" )
-            poi.typeData.color = 0xff3dca67;
+          if (owner == "Green") poi.typeData.color = 0xff3dca67;
 
-          if ( owner == "Blue" )
-            poi.typeData.color = 0xff3aa2fa;
+          if (owner == "Blue") poi.typeData.color = 0xff3aa2fa;
 
           std::string lastFlipped;
-          if ( objective.has<String>( "last_flipped" ) )
-            lastFlipped = objective.get<String>( "last_flipped" );
+          if (objective.has<String>("last_flipped"))
+            lastFlipped = objective.get<String>("last_flipped");
 
           time_t flipTime;
           char flags;
-          parseISO8601( lastFlipped.c_str(), flipTime, flags );
+          parseISO8601(lastFlipped.c_str(), flipTime, flags);
           poi.lastUpdateTime = flipTime;
         }
       }
@@ -463,5 +429,5 @@ void UpdateWvWStatus()
 
     lastWvWUpdateTime = GetTime();
     wvwUpdating = false;
-  } );
+  });
 }
