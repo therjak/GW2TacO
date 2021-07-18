@@ -231,7 +231,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
 
 CDictionaryEnumerable<GUID, POI> POIs;
 CDictionaryEnumerable<POIActivationDataKey, POIActivationData> ActivationData;
-extern CDictionaryEnumerable<GUID, GW2Trail *> trails;
+
 std::vector<POIRoute> Routes;
 
 uint32_t DictionaryHash(const GUID &i) {
@@ -1054,8 +1054,8 @@ void ExportPOIS() {
     if (!p.External && !p.routeMember) ExportPOI(n, p);
   }
 
-  for (int32_t x = 0; x < trails.NumItems(); x++) {
-    auto &p = trails.GetByIndex(x);
+  for (auto &x : trails) {
+    auto &p = x.second;
     if (!p->External) ExportTrail(n, *p);
   }
 
@@ -1273,10 +1273,10 @@ void ImportPOIDocument(CWBApplication *App, CXMLDocument &d, TBOOL External,
     if (n.GetChildCount("Trail") > 0) {
       CXMLNode t = n.GetChild("Trail", 0);
       do {
-        GW2Trail *p = new GW2Trail();
+        auto p = std::make_unique<GW2Trail>();
         if (ImportTrail(App, t, *p, zipFile)) {
           p->External = External;
-          trails[p->guid] = p;
+          trails[p->guid] = std::move(p);
         }
       } while (t.Next(t, "Trail"));
     }

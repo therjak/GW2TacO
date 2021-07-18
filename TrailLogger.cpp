@@ -2,7 +2,10 @@
 
 #include <commdlg.h>
 
+#include <memory>
+#include <sstream>
 #include <string>
+#include <unordered_map>
 
 #include "OverlayConfig.h"
 
@@ -11,7 +14,15 @@
 extern float globalOpacity;
 extern float minimapOpacity;
 
-CDictionaryEnumerable<GUID, GW2Trail*> trails;
+namespace std {
+std::size_t hash<GUID>::operator()(const GUID& guid) const {
+  std::stringstream ss;
+  ss << std::hex << guid.Data1 << guid.Data2 << guid.Data3 << guid.Data4;
+  return std::hash<std::string>()(ss.str());
+}
+}  // namespace std
+
+std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;
 
 extern CWBApplication* App;
 CStreamWriterFile* TrailLog = nullptr;
@@ -76,8 +87,8 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
       CLightweightCriticalSection cs(&critsec);
 
-      for (int32_t y = 0; y < trails.NumItems(); y++) {
-        auto& trail = *trails.GetByIndex(y);
+      for (auto& y : trails) {
+        auto& trail = *y.second;
         if (!trail.typeData.bits.inGameVisible && showIngameTrails != 2)
           continue;
 
@@ -167,8 +178,8 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
       API->SetRenderView(miniRect);
 
-      for (int32_t y = 0; y < trails.NumItems(); y++) {
-        auto& trail = *trails.GetByIndex(y);
+      for (auto& y : trails) {
+        auto& trail = *y.second;
         if (!trail.typeData.bits.miniMapVisible && showMinimapTrails != 2)
           continue;
 
@@ -211,8 +222,8 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
       API->SetRenderView(miniRect);
 
-      for (int32_t y = 0; y < trails.NumItems(); y++) {
-        auto& trail = *trails.GetByIndex(y);
+      for (auto& y : trails) {
+        auto& trail = *y.second;
         if (!trail.typeData.bits.bigMapVisible && showBigmapTrails != 2)
           continue;
 

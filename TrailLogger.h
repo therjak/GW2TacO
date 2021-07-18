@@ -121,3 +121,11 @@ class GW2TrailDisplay : public CWBItem {
 
   void DrawProxy(CWBDrawAPI *API, bool miniMaprender);
 };
+
+namespace std {
+template <>
+struct hash<GUID> {
+  std::size_t operator()(const GUID &guid) const;
+};
+}  // namespace std
+extern std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;

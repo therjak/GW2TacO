@@ -1162,8 +1162,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   }
   if (wvwUpdatThread.joinable()) wvwUpdatThread.join();
 
-  extern CDictionaryEnumerable<GUID, GW2Trail *> trails;
-  for (int x = 0; x < trails.NumItems(); x++) delete trails.GetByIndex(x);
+  trails.clear();
 
   // cleanup
   SAFEDELETE(App);
