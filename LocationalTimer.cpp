@@ -48,7 +48,7 @@ void LocationalTimer::Update() {
   }
 }
 
-void LocationalTimer::ImportData(CXMLNode &node) {
+void LocationalTimer::ImportData(CXMLNode& node) {
   if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &MapID);
   if (node.HasAttribute("length"))
     node.GetAttributeAsInteger("length", &TimerLength);
@@ -94,23 +94,23 @@ void LocationalTimer::ImportData(CXMLNode &node) {
   }
 }
 
-void TimerDisplay::OnDraw(CWBDrawAPI *API) {
+void TimerDisplay::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("LocationalTimersVisible"))
     SetConfigValue("LocationalTimersVisible", 1);
   if (!GetConfigValue("LocationalTimersVisible")) return;
 
   int32_t tme = GetTime();
-  CWBFont *f = GetFont(GetState());
+  CWBFont* f = GetFont(GetState());
 
   int32_t ypos = Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
 
-  for (auto &t : LocationalTimers) {
+  for (auto& t : LocationalTimers) {
     t.Update();
     if (!t.IsRunning) continue;
 
     float timepos = (tme - t.StartTime) / 1000.0f - t.StartDelay;
 
-    for (auto &e : t.Events) {
+    for (auto& e : t.Events) {
       if (!(timepos > e.Time - e.CountdownLength &&
             timepos < e.Time + e.OnScreenLength))
         continue;
@@ -128,16 +128,16 @@ void TimerDisplay::OnDraw(CWBDrawAPI *API) {
   }
 }
 
-TBOOL TimerDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                       WBMESSAGE MessageType) {
+bool TimerDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                      WBMESSAGE MessageType) {
   return true;
 }
 
-TimerDisplay::TimerDisplay(CWBItem *Parent, CRect Position)
+TimerDisplay::TimerDisplay(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
 TimerDisplay::~TimerDisplay() = default;
 
-CWBItem *TimerDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* TimerDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return TimerDisplay::Create(Root, Pos).get();
 }

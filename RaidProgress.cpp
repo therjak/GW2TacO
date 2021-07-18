@@ -35,7 +35,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("CompactRaidWindow"))
     SetConfigValue("CompactRaidWindow", 0);
 
-  TBOOL compact = GetConfigValue("CompactRaidWindow");
+  bool compact = GetConfigValue("CompactRaidWindow");
 
   CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
@@ -233,8 +233,8 @@ CWBItem* RaidProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return RaidProgress::Create(Root, Pos).get();
 }
 
-TBOOL RaidProgress::IsMouseTransparent(CPoint& ClientSpacePoint,
-                                       WBMESSAGE MessageType) {
+bool RaidProgress::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                      WBMESSAGE MessageType) {
   return true;
 }
 

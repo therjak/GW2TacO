@@ -105,7 +105,7 @@ void CAtlasImage::TagRequired() { Required = true; }
 
 void CAtlasImage::ClearRequired() { Required = false; }
 
-TBOOL CAtlasImage::IsRequired() { return Required; }
+bool CAtlasImage::IsRequired() { return Required; }
 
 CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
   FlushCache();
@@ -144,7 +144,7 @@ CAtlas::~CAtlas() {
   SAFEDELETEA(Image);
 }
 
-TBOOL CAtlas::PackImage(CAtlasImage *img) {
+bool CAtlas::PackImage(CAtlasImage *img) {
   if (!img) return false;
 
   // LOG(LOG_DEBUG,_T("Packing Image %d"),img->GetHandle());
@@ -178,7 +178,7 @@ TBOOL CAtlas::PackImage(CAtlasImage *img) {
   return img->GetHandle() != 0;
 }
 
-TBOOL CAtlas::InitializeTexture(CCoreDevice *Device) {
+bool CAtlas::InitializeTexture(CCoreDevice *Device) {
   if (!Device) return false;
   Atlas.swap(Device->CreateTexture2D(XRes, YRes, Image));
   return Atlas.operator bool();
@@ -195,7 +195,7 @@ WBATLASHANDLE CAtlas::AddImage(uint8_t *i, int32_t xs, int32_t ys,
   return img->GetHandle();
 }
 
-TBOOL CAtlas::UpdateTexture() {
+bool CAtlas::UpdateTexture() {
   // LOG_DBG("Atlas Texture Update Request");
 
   if (!TextureUpdateNeeded) return true;
@@ -219,7 +219,7 @@ int SortImageStorage(CAtlasImage *const &a, CAtlasImage *const &b) {
   return h;
 }
 
-TBOOL CAtlas::Optimize(TBOOL DebugMode) {
+bool CAtlas::Optimize(bool DebugMode) {
   // rearranges the atlas in a more optimal fashion and removes unused
 
   LOG(LOG_DEBUG, _T( "[gui] Optimizing Atlas" ));
@@ -302,7 +302,7 @@ CSize CAtlas::GetSize(WBATLASHANDLE h) {
   return CSize(0, 0);
 }
 
-TBOOL CAtlas::RequestImageUse(WBATLASHANDLE h, CRect &r) {
+bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect &r) {
   if (!h) {
     r = CRect(0, 0, 0, 0);
     return true;
@@ -360,7 +360,7 @@ CAtlasNode *CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
   return n;
 }
 
-TBOOL CAtlas::Reset() {
+bool CAtlas::Reset() {
   SAFEDELETE(Root);
   Root = new CAtlasNode();
   Root->Area = CRect(0, 0, XRes, YRes);
@@ -380,7 +380,7 @@ TBOOL CAtlas::Reset() {
   return true;
 }
 
-TBOOL CAtlas::Resize(CCoreDevice *Device, int32_t XSize, int32_t YSize) {
+bool CAtlas::Resize(CCoreDevice *Device, int32_t XSize, int32_t YSize) {
   SAFEDELETE(Root);
   SAFEDELETEA(Image);
   Atlas.reset();

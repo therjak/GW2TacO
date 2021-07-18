@@ -10,14 +10,14 @@ static WBGUID WB_GUID_COUNTER = 1337;
 
 CWBDisplayState::CWBDisplayState() {
   memset(Visuals, 0, sizeof(int32_t) * WB_ITEM_COUNT);
-  memset(VisualSet, 0, sizeof(TBOOL) * WB_ITEM_COUNT);
+  memset(VisualSet, 0, sizeof(bool) * WB_ITEM_COUNT);
 }
 
 CWBDisplayState::~CWBDisplayState() = default;
 
 CColor CWBDisplayState::GetColor(WBITEMVISUALCOMPONENT v) { return Visuals[v]; }
 
-TBOOL CWBDisplayState::IsSet(WBITEMVISUALCOMPONENT v) { return VisualSet[v]; }
+bool CWBDisplayState::IsSet(WBITEMVISUALCOMPONENT v) { return VisualSet[v]; }
 
 void CWBDisplayState::SetValue(WBITEMVISUALCOMPONENT v, int32_t value) {
   Visuals[v] = value;
@@ -92,7 +92,7 @@ CWBCSSPropertyBatch::CWBCSSPropertyBatch() {
   TextAlignY = WBTA_CENTERY;
 }
 
-CWBFont *CWBCSSPropertyBatch::GetFont(CWBApplication *App, WBITEMSTATE State) {
+CWBFont* CWBCSSPropertyBatch::GetFont(CWBApplication* App, WBITEMSTATE State) {
   if (Fonts.find(State) != Fonts.end()) {
     return App->GetFont(Fonts[State]);
   }
@@ -102,9 +102,9 @@ CWBFont *CWBCSSPropertyBatch::GetFont(CWBApplication *App, WBITEMSTATE State) {
   return App->GetDefaultFont();
 }
 
-TBOOL CWBCSSPropertyBatch::ApplyStyle(CWBItem *Owner, std::string_view prop,
-                                      std::string_view value,
-                                      const std::vector<std::string> &pseudo) {
+bool CWBCSSPropertyBatch::ApplyStyle(CWBItem* Owner, std::string_view prop,
+                                     std::string_view value,
+                                     const std::vector<std::string>& pseudo) {
   if (Owner->InterpretPositionString(*this, prop, value, pseudo)) return true;
   if (Owner->InterpretDisplayString(*this, prop, value, pseudo)) return true;
   return false;
@@ -124,7 +124,7 @@ void CWBItem::UpdateScreenRect() {
   }
 
   if (sr != ScreenRect) {
-    for (auto &c : Children) {
+    for (auto& c : Children) {
       c->UpdateScreenRect();
     }
   }
@@ -164,7 +164,7 @@ void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
   }
 }
 
-TBOOL CWBItem::MessageProc(CWBMessage &Message) {
+bool CWBItem::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_NONE:
       LOG(LOG_ERROR,
@@ -307,7 +307,7 @@ TBOOL CWBItem::MessageProc(CWBMessage &Message) {
         if (Message.Resized) {
           OnResize(Message.Rectangle.Size());
         }
-        for (auto &c : Children) {
+        for (auto& c : Children) {
           c->CalculateWindowPosition(GetClientRect().Size());
         }
 
@@ -354,8 +354,8 @@ TBOOL CWBItem::MessageProc(CWBMessage &Message) {
   return false;
 }
 
-void CWBItem::DrawBackgroundItem(CWBDrawAPI *API,
-                                 CWBDisplayProperties &Descriptor, CRect &Pos,
+void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
+                                 CWBDisplayProperties& Descriptor, CRect& Pos,
                                  WBITEMSTATE i, WBITEMVISUALCOMPONENT v) {
   CColor bck = Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR);
   if (bck.A()) {
@@ -368,7 +368,7 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI *API,
   if (id != 0xffffffff) {
     if (id & 0x80000000) {
       // skin element
-      CWBSkinElement *e = App->GetSkin()->GetElement(id);
+      CWBSkinElement* e = App->GetSkin()->GetElement(id);
       if (e) {
         WBALIGNMENT AlignX = static_cast<WBALIGNMENT>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_X));
@@ -405,25 +405,25 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI *API,
   }
 }
 
-void CWBItem::DrawBackground(CWBDrawAPI *API, WBITEMSTATE State) {
+void CWBItem::DrawBackground(CWBDrawAPI* API, WBITEMSTATE State) {
   DrawBackground(API, GetWindowRect(), State, CSSProperties);
 }
 
-void CWBItem::DrawBackground(CWBDrawAPI *API) {
+void CWBItem::DrawBackground(CWBDrawAPI* API) {
   DrawBackground(API, GetState());
 }
 
-void CWBItem::DrawBackground(CWBDrawAPI *API, CRect &rect, WBITEMSTATE State,
-                             CWBCSSPropertyBatch &cssProps) {
+void CWBItem::DrawBackground(CWBDrawAPI* API, CRect& rect, WBITEMSTATE State,
+                             CWBCSSPropertyBatch& cssProps) {
   DrawBackgroundItem(API, cssProps.DisplayDescriptor, rect, State);
 }
 
-void CWBItem::DrawBorder(CWBDrawAPI *API) {
+void CWBItem::DrawBorder(CWBDrawAPI* API) {
   DrawBorder(API, GetWindowRect(), CSSProperties);
 }
 
-void CWBItem::DrawBorder(CWBDrawAPI *API, CRect &r,
-                         CWBCSSPropertyBatch &cssProps) {
+void CWBItem::DrawBorder(CWBDrawAPI* API, CRect& r,
+                         CWBCSSPropertyBatch& cssProps) {
   auto crop = API->GetCropRect();
 
   CColor color =
@@ -451,16 +451,16 @@ void CWBItem::DrawBorder(CWBDrawAPI *API, CRect &r,
   API->SetCropRect(crop);
 }
 
-void CWBItem::OnDraw(CWBDrawAPI *API) {
+void CWBItem::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
   DrawBorder(API);
 }
 
-void CWBItem::OnPostDraw(CWBDrawAPI *API) {}
+void CWBItem::OnPostDraw(CWBDrawAPI* API) {}
 
-void CWBItem::OnMove(const CPoint &p) {}
+void CWBItem::OnMove(const CPoint& p) {}
 
-void CWBItem::OnResize(const CSize &s) {}
+void CWBItem::OnResize(const CSize& s) {}
 
 void CWBItem::OnMouseEnter() {
   // LOG(LOG_DEBUG,_T("Mouse Entered Item %d"),GetGuid());
@@ -485,12 +485,12 @@ void CWBItem::CalculateClientPosition() {
     UpdateScreenRect();  // this updates all child items for the new position
 }
 
-void CWBItem::CalculateWindowPosition(const CSize &s) {
+void CWBItem::CalculateWindowPosition(const CSize& s) {
   SetPosition(CSSProperties.PositionDescriptor.GetPosition(s, StoredContentSize,
                                                            GetPosition()));
 }
 
-void CWBItem::DrawTree(CWBDrawAPI *API) {
+void CWBItem::DrawTree(CWBDrawAPI* API) {
   if (Hidden) return;
 
   CRect PCrop = API->GetParentCropRect();
@@ -513,7 +513,7 @@ void CWBItem::DrawTree(CWBDrawAPI *API) {
   // crop children to client rect
   API->SetCropRect(ClientToScreen(GetClientRect()));
 
-  for (auto &c : Children) {
+  for (auto& c : Children) {
     c->DrawTree(API);
   }
 
@@ -524,7 +524,7 @@ void CWBItem::DrawTree(CWBDrawAPI *API) {
   API->SetOffset(Offset);
 }
 
-void CWBItem::ApplyPosition(const CRect &Pos) {
+void CWBItem::ApplyPosition(const CRect& Pos) {
   CRect r = GetScreenRect();
 
   Position = Pos;
@@ -537,23 +537,23 @@ void CWBItem::ApplyPosition(const CRect &Pos) {
     App->UpdateMouseItem();
 }
 
-TBOOL CWBItem::Focusable() const { return true; }
+bool CWBItem::Focusable() const { return true; }
 
-CWBItem *CWBItem::GetChildInFocus() { return ChildInFocus; }
+CWBItem* CWBItem::GetChildInFocus() { return ChildInFocus; }
 
-CWBItem *CWBItem::SetCapture() { return App->SetCapture(this); }
+CWBItem* CWBItem::SetCapture() { return App->SetCapture(this); }
 
-TBOOL CWBItem::ReleaseCapture() const { return App->ReleaseCapture(); }
+bool CWBItem::ReleaseCapture() const { return App->ReleaseCapture(); }
 
-TBOOL CWBItem::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                  WBMESSAGE MessageType) {
+bool CWBItem::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                 WBMESSAGE MessageType) {
   if (ForceMouseTransparent) return true;
   if (Hidden) return true;
   return false;
 }
 
-TBOOL CWBItem::FindItemInParentTree(CWBItem *Item) {
-  CWBItem *i = this;
+bool CWBItem::FindItemInParentTree(CWBItem* Item) {
+  CWBItem* i = this;
   while (i) {
     if (i == Item) return true;
     i = i->Parent;
@@ -561,7 +561,7 @@ TBOOL CWBItem::FindItemInParentTree(CWBItem *Item) {
   return false;
 }
 
-CWBItem *CWBItem::GetItemUnderMouse(CPoint &Pos, CRect &CropRect,
+CWBItem* CWBItem::GetItemUnderMouse(CPoint& Pos, CRect& CropRect,
                                     WBMESSAGE MessageType) {
   CRect OldCropRect = CropRect;
   CropRect = CropRect | ScreenRect;
@@ -574,7 +574,7 @@ CWBItem *CWBItem::GetItemUnderMouse(CPoint &Pos, CRect &CropRect,
   CropRect = CropRect | ClientToScreen(GetClientRect());
 
   for (int32_t x = Children.size(); x > 0; x--) {
-    CWBItem *Res =
+    CWBItem* Res =
         Children[x - 1]->GetItemUnderMouse(Pos, CropRect, MessageType);
     if (Res) return Res;
   }
@@ -619,7 +619,7 @@ CWBItem::CWBItem() : Guid(WB_GUID_COUNTER++) {
   Data = nullptr;
 }
 
-CWBItem::CWBItem(CWBItem *parent, const CRect &position)
+CWBItem::CWBItem(CWBItem* parent, const CRect& position)
     : Guid(WB_GUID_COUNTER++) {
   Initialize(parent, position);
 }
@@ -629,7 +629,7 @@ CWBItem::~CWBItem() {
     App->UnRegisterItem(this);
   }
 
-  for (auto &c : Children) {
+  for (auto& c : Children) {
     c->Parent = nullptr;
   }
 
@@ -639,10 +639,10 @@ CWBItem::~CWBItem() {
   std::swap(c, Children);
 
   if (Parent) {
-    auto &pc = Parent->Children;
+    auto& pc = Parent->Children;
     auto it = std::find_if(
         pc.begin(), pc.end(),
-        [this](const std::shared_ptr<CWBItem> &i) { return i.get() == this; });
+        [this](const std::shared_ptr<CWBItem>& i) { return i.get() == this; });
     if (it != pc.end()) {
       pc.erase(it);
     }
@@ -654,11 +654,11 @@ CWBItem::~CWBItem() {
   c.clear();
 }
 
-void CWBItem::AddChild(const std::shared_ptr<CWBItem> &Item) {
+void CWBItem::AddChild(const std::shared_ptr<CWBItem>& Item) {
   Children.emplace_back(Item);
 }
 
-void CWBItem::RemoveChild(const std::shared_ptr<CWBItem> &Item) {
+void CWBItem::RemoveChild(const std::shared_ptr<CWBItem>& Item) {
   auto it = std::find(Children.begin(), Children.end(), Item);
   if (it != Children.end()) {
     if (ChildInFocus == Item.get()) {
@@ -669,17 +669,17 @@ void CWBItem::RemoveChild(const std::shared_ptr<CWBItem> &Item) {
   }
 }
 
-int32_t CWBItem::GetChildIndex(CWBItem *Item) {
+int32_t CWBItem::GetChildIndex(CWBItem* Item) {
   auto it = std::find_if(
       Children.begin(), Children.end(),
-      [Item](std::shared_ptr<CWBItem> &i) { return i.get() == Item; });
+      [Item](std::shared_ptr<CWBItem>& i) { return i.get() == Item; });
   if (it == Children.end()) {
     return -1;
   }
   return std::distance(Children.begin(), it);
 }
 
-TBOOL CWBItem::Initialize(CWBItem *parent, const CRect &position) {
+bool CWBItem::Initialize(CWBItem* parent, const CRect& position) {
   Hidden = false;
   Disabled = false;
   Data = nullptr;
@@ -713,23 +713,23 @@ CRect CWBItem::GetWindowRect() const {
 
 CRect CWBItem::GetScreenRect() const { return ScreenRect; }
 
-CPoint CWBItem::ClientToScreen(const CPoint &p) const {
+CPoint CWBItem::ClientToScreen(const CPoint& p) const {
   return ScreenRect.TopLeft() + ClientRect.TopLeft() + p;
 }
 
-CRect CWBItem::ClientToScreen(const CRect &p) const {
+CRect CWBItem::ClientToScreen(const CRect& p) const {
   return p + ScreenRect.TopLeft() + ClientRect.TopLeft();
 }
 
-CPoint CWBItem::ScreenToClient(const CPoint &p) const {
+CPoint CWBItem::ScreenToClient(const CPoint& p) const {
   return p - ScreenRect.TopLeft() - ClientRect.TopLeft();
 }
 
-CRect CWBItem::ScreenToClient(const CRect &p) const {
+CRect CWBItem::ScreenToClient(const CRect& p) const {
   return p - ScreenRect.TopLeft() - ClientRect.TopLeft();
 }
 
-void CWBItem::BuildPositionMessage(const CRect &Pos, CWBMessage &m) {
+void CWBItem::BuildPositionMessage(const CRect& Pos, CWBMessage& m) {
   m = CWBMessage(App, WBM_REPOSITION, Guid);
   m.Rectangle = Pos;
   m.Moved = Pos.x1 != Position.x1 || Pos.y1 != Position.y1;
@@ -737,7 +737,7 @@ void CWBItem::BuildPositionMessage(const CRect &Pos, CWBMessage &m) {
       Pos.Width() != Position.Width() || Pos.Height() != Position.Height();
 }
 
-void CWBItem::SetPosition(const CRect &Pos) {
+void CWBItem::SetPosition(const CRect& Pos) {
   CWBMessage m;
   BuildPositionMessage(Pos, m);
   App->SendMessage(m);
@@ -761,11 +761,11 @@ void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
   CalculateClientPosition();
 }
 
-TBOOL CWBItem::IsWidthSet() {
+bool CWBItem::IsWidthSet() {
   return CSSProperties.PositionDescriptor.IsWidthSet();
 }
 
-TBOOL CWBItem::IsHeightSet() {
+bool CWBItem::IsHeightSet() {
   return CSSProperties.PositionDescriptor.IsHeightSet();
 }
 
@@ -781,10 +781,10 @@ int32_t CWBItem::GetCalculatedHeight(CSize ParentSize) {
 
 CRect CWBItem::GetPosition() { return Position; }
 
-TBOOL CWBItem::InFocus() {
+bool CWBItem::InFocus() {
   if (!Parent) return true;
 
-  CWBItem *fi = App->GetRoot();
+  CWBItem* fi = App->GetRoot();
   while (fi) {
     if (fi == this) return true;
     fi = fi->ChildInFocus;
@@ -792,20 +792,20 @@ TBOOL CWBItem::InFocus() {
   return false;
 }
 
-TBOOL CWBItem::InLocalFocus() {
+bool CWBItem::InLocalFocus() {
   if (!Parent) return true;
   return Parent->ChildInFocus == this;
 }
 
 void CWBItem::SetFocus() {
-  CWBItem *fi = App->GetFocusItem();
+  CWBItem* fi = App->GetFocusItem();
   if (fi != this) {
     App->SendMessage(CWBMessage(App, WBM_FOCUSGAINED, GetGuid()));
     if (fi) App->SendMessage(CWBMessage(App, WBM_FOCUSLOST, fi->GetGuid()));
   }
 
-  CWBItem *p = Parent;
-  CWBItem *i = this;
+  CWBItem* p = Parent;
+  CWBItem* i = this;
   while (p) {
     p->ChildInFocus = i;
     i = p;
@@ -818,8 +818,8 @@ void CWBItem::ClearFocus() {
   App->SendMessage(CWBMessage(App, WBM_FOCUSLOST, GetGuid()));
 }
 
-TBOOL CWBItem::MouseOver() {
-  CWBItem *mi = App->GetMouseItem();
+bool CWBItem::MouseOver() {
+  CWBItem* mi = App->GetMouseItem();
   while (mi) {
     if (mi == this) return true;
     mi = mi->Parent;
@@ -831,30 +831,30 @@ void CWBItem::SavePosition() { StoredPosition = Position; }
 
 CRect CWBItem::GetSavedPosition() const { return StoredPosition; }
 
-void CWBItem::SetSavedPosition(CRect &savedPos) { StoredPosition = savedPos; }
+void CWBItem::SetSavedPosition(CRect& savedPos) { StoredPosition = savedPos; }
 
 uint32_t CWBItem::NumChildren() { return Children.size(); }
 
-CWBItem *CWBItem::GetChild(uint32_t idx) { return Children[idx].get(); }
+CWBItem* CWBItem::GetChild(uint32_t idx) { return Children[idx].get(); }
 
 CSize CWBItem::GetContentSize() { return GetClientRect().Size(); }
 
-void CWBItem::Hide(TBOOL Hide) {
+void CWBItem::Hide(bool Hide) {
   App->SendMessage(CWBMessage(App, Hide ? WBM_HIDE : WBM_UNHIDE, GetGuid()));
 }
 
-TBOOL CWBItem::IsHidden() { return Hidden; }
+bool CWBItem::IsHidden() { return Hidden; }
 
-void CWBItem::SetData(void *data) { Data = data; }
+void CWBItem::SetData(void* data) { Data = data; }
 
-void *CWBItem::GetData() { return Data; }
+void* CWBItem::GetData() { return Data; }
 
 void CWBItem::MarkForDeletion() {
   auto sr = SelfRef.lock();
   App->AddToTrash(sr);
 }
 
-CWBContextMenu *CWBItem::OpenContextMenu(CPoint pos) {
+CWBContextMenu* CWBItem::OpenContextMenu(CPoint pos) {
   if (!App) return nullptr;
   auto ctx = CWBContextMenu::Create(
       App->GetRoot(), CRect(pos, pos + CPoint(10, 10)), GetGuid());
@@ -862,9 +862,9 @@ CWBContextMenu *CWBItem::OpenContextMenu(CPoint pos) {
   return ctx.get();
 }
 
-void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams &s, int32_t &a1,
-                                          int32_t &a2, int32_t &thumbsize,
-                                          int32_t &thumbpos) {
+void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
+                                          int32_t& a2, int32_t& thumbsize,
+                                          int32_t& thumbpos) {
   a1 += Scrollbar_ButtonSize;
   a2 -= Scrollbar_ButtonSize;
 
@@ -881,7 +881,7 @@ void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams &s, int32_t &a1,
   thumbpos = static_cast<int32_t>((a2 - thumbsize - a1) * rp) + a1;
 }
 
-int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams &s,
+int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams& s,
                                             int32_t scrollbarsize,
                                             int32_t delta) {
   int32_t a1 = 0;
@@ -926,7 +926,7 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams &s,
 WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
                                        CRect r) {
   // mouse not over item, early exit if dragging is not in effect
-  TBOOL HBar =
+  bool HBar =
       Component == WB_ITEM_SCROLL_HBAR || Component == WB_ITEM_SCROLL_HTHUMB ||
       Component == WB_ITEM_SCROLL_LEFT || Component == WB_ITEM_SCROLL_RIGHT;
   if (!MouseOver() && ((HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE) ||
@@ -936,7 +936,7 @@ WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
   CPoint MousePos = App->GetMousePos();
 
   CRect ScreenRect = ClientToScreen(r);
-  TBOOL Hover = ScreenRect.Contains(MousePos);
+  bool Hover = ScreenRect.Contains(MousePos);
 
   // don't highlight if something else uses the mouse (including this item)
   if (App->GetMouseCaptureItem())
@@ -994,9 +994,9 @@ WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
   return WB_STATE_NORMAL;
 }
 
-TBOOL CWBItem::GetHScrollbarRectangles(CRect &button1, CRect &Scrollup,
-                                       CRect &Thumb, CRect &Scrolldown,
-                                       CRect &button2) {
+bool CWBItem::GetHScrollbarRectangles(CRect& button1, CRect& Scrollup,
+                                      CRect& Thumb, CRect& Scrolldown,
+                                      CRect& button2) {
   if (!HScrollbar.Enabled || !HScrollbar.Visible) return false;
 
   CRect r = CRect(GetClientRect().BottomLeft(),
@@ -1018,8 +1018,8 @@ TBOOL CWBItem::GetHScrollbarRectangles(CRect &button1, CRect &Scrollup,
   return true;
 }
 
-void CWBItem::DrawScrollbarButton(CWBDrawAPI *API, CWBScrollbarParams &s,
-                                  CRect &r, WBITEMVISUALCOMPONENT Button) {
+void CWBItem::DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
+                                  CRect& r, WBITEMVISUALCOMPONENT Button) {
   WBITEMSTATE State = GetScrollbarState(Button, r);
   WBSKINELEMENTID ButtonSkin =
       CSSProperties.DisplayDescriptor.GetSkin(State, Button);
@@ -1036,7 +1036,7 @@ void CWBItem::DrawScrollbarButton(CWBDrawAPI *API, CWBScrollbarParams &s,
     App->GetSkin()->RenderElement(API, ButtonSkin, r);
 }
 
-void CWBItem::DrawHScrollbar(CWBDrawAPI *API) {
+void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
   if (!HScrollbar.Enabled || !HScrollbar.Visible) return;
   CRect b1, su, th, sd, b2;
   GetHScrollbarRectangles(b1, su, th, sd, b2);
@@ -1087,9 +1087,9 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI *API) {
   API->SetParentCropRect(pr);
 }
 
-TBOOL CWBItem::GetVScrollbarRectangles(CRect &button1, CRect &Scrollup,
-                                       CRect &Thumb, CRect &Scrolldown,
-                                       CRect &button2) {
+bool CWBItem::GetVScrollbarRectangles(CRect& button1, CRect& Scrollup,
+                                      CRect& Thumb, CRect& Scrolldown,
+                                      CRect& button2) {
   if (!VScrollbar.Enabled || !VScrollbar.Visible) return false;
 
   CRect r = CRect(GetClientRect().TopRight(),
@@ -1110,7 +1110,7 @@ TBOOL CWBItem::GetVScrollbarRectangles(CRect &button1, CRect &Scrollup,
   return true;
 }
 
-void CWBItem::DrawVScrollbar(CWBDrawAPI *API) {
+void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
   if (!VScrollbar.Enabled || !VScrollbar.Visible) return;
   CRect b1, su, th, sd, b2;
   GetVScrollbarRectangles(b1, su, th, sd, b2);
@@ -1161,13 +1161,13 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI *API) {
   API->SetParentCropRect(pr);
 }
 
-TBOOL CWBItem::ScrollbarDragged() {
+bool CWBItem::ScrollbarDragged() {
   return HScrollbar.Dragmode != WB_SCROLLDRAG_NONE ||
          VScrollbar.Dragmode != WB_SCROLLDRAG_NONE;
 }
 
-void CWBItem::ScrollbarHelperFunct(CWBScrollbarParams &s, int32_t &r,
-                                   TBOOL ScrollbarNeeded) {
+void CWBItem::ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t& r,
+                                   bool ScrollbarNeeded) {
   if (!s.Enabled) {
     if (s.Visible)  // remove scrollbar
     {
@@ -1193,7 +1193,7 @@ void CWBItem::ScrollbarHelperFunct(CWBScrollbarParams &s, int32_t &r,
   }
 }
 
-TBOOL CWBItem::ScrollbarRequired(CWBScrollbarParams &s) {
+bool CWBItem::ScrollbarRequired(CWBScrollbarParams& s) {
   return s.ViewSize < s.MaxScroll - s.MinScroll ||
          (s.ScrollPos < s.MinScroll &&
           s.ScrollPos + s.ViewSize < s.MaxScroll) ||
@@ -1215,27 +1215,27 @@ void CWBItem::AdjustClientAreaToFitScrollbars() {
   ClientRect = crect;
 }
 
-void CWBItem::EnableHScrollbar(TBOOL Enabled, TBOOL Dynamic) {
+void CWBItem::EnableHScrollbar(bool Enabled, bool Dynamic) {
   HScrollbar.Enabled = Enabled;
   HScrollbar.Dynamic = Dynamic;
   AdjustClientAreaToFitScrollbars();
 }
 
-void CWBItem::EnableVScrollbar(TBOOL Enabled, TBOOL Dynamic) {
+void CWBItem::EnableVScrollbar(bool Enabled, bool Dynamic) {
   VScrollbar.Enabled = Enabled;
   VScrollbar.Dynamic = Dynamic;
   AdjustClientAreaToFitScrollbars();
 }
 
-TBOOL CWBItem::IsHScrollbarEnabled() { return HScrollbar.Enabled; }
+bool CWBItem::IsHScrollbarEnabled() { return HScrollbar.Enabled; }
 
-TBOOL CWBItem::IsVScrollbarEnabled() { return VScrollbar.Enabled; }
+bool CWBItem::IsVScrollbarEnabled() { return VScrollbar.Enabled; }
 
 void CWBItem::SetHScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                       int32_t ViewSize) {
-  TBOOL Changed = HScrollbar.MinScroll != MinScroll ||
-                  HScrollbar.MaxScroll != MaxScroll ||
-                  HScrollbar.ViewSize != ViewSize;
+  bool Changed = HScrollbar.MinScroll != MinScroll ||
+                 HScrollbar.MaxScroll != MaxScroll ||
+                 HScrollbar.ViewSize != ViewSize;
   HScrollbar.MinScroll = MinScroll;
   HScrollbar.MaxScroll = MaxScroll;
   HScrollbar.ViewSize = ViewSize;
@@ -1244,30 +1244,30 @@ void CWBItem::SetHScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
 
 void CWBItem::SetVScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                       int32_t ViewSize) {
-  TBOOL Changed = VScrollbar.MinScroll != MinScroll ||
-                  VScrollbar.MaxScroll != MaxScroll ||
-                  VScrollbar.ViewSize != ViewSize;
+  bool Changed = VScrollbar.MinScroll != MinScroll ||
+                 VScrollbar.MaxScroll != MaxScroll ||
+                 VScrollbar.ViewSize != ViewSize;
   VScrollbar.MinScroll = MinScroll;
   VScrollbar.MaxScroll = MaxScroll;
   VScrollbar.ViewSize = ViewSize;
   if (Changed) CalculateClientPosition();
 }
 
-void CWBItem::GetHScrollbarParameters(int32_t &MinScroll, int32_t &MaxScroll,
-                                      int32_t &ViewSize) {
+void CWBItem::GetHScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
+                                      int32_t& ViewSize) {
   MinScroll = HScrollbar.MinScroll;
   MaxScroll = HScrollbar.MaxScroll;
   ViewSize = HScrollbar.ViewSize;
 }
 
-void CWBItem::GetVScrollbarParameters(int32_t &MinScroll, int32_t &MaxScroll,
-                                      int32_t &ViewSize) {
+void CWBItem::GetVScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
+                                      int32_t& ViewSize) {
   MinScroll = VScrollbar.MinScroll;
   MaxScroll = VScrollbar.MaxScroll;
   ViewSize = VScrollbar.ViewSize;
 }
 
-void CWBItem::SetHScrollbarPos(int32_t ScrollPos, TBOOL Clamp) {
+void CWBItem::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
   int32_t sc = ScrollPos;
   if (Clamp)
     sc = max(HScrollbar.MinScroll,
@@ -1279,7 +1279,7 @@ void CWBItem::SetHScrollbarPos(int32_t ScrollPos, TBOOL Clamp) {
   }
 }
 
-void CWBItem::SetVScrollbarPos(int32_t ScrollPos, TBOOL Clamp) {
+void CWBItem::SetVScrollbarPos(int32_t ScrollPos, bool Clamp) {
   int32_t sc = ScrollPos;
   if (Clamp)
     sc = max(VScrollbar.MinScroll,
@@ -1297,10 +1297,10 @@ void CWBItem::ApplyRelativePosition() {
         Parent->GetClientRect().Size(), StoredContentSize, GetPosition()));
 }
 
-void CWBItem::VisualStyleApplicator(CWBDisplayProperties &desc,
+void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
                                     WBITEMVISUALCOMPONENT TargetComponent,
                                     int32_t Value,
-                                    const std::vector<std::string> &pseudo) {
+                                    const std::vector<std::string>& pseudo) {
   int32_t StateCount = 0;
   for (size_t x = 1; x < pseudo.size(); x++) {
     auto p = Trim(pseudo[x]);
@@ -1342,10 +1342,10 @@ void CWBItem::VisualStyleApplicator(CWBDisplayProperties &desc,
   }
 }
 
-TBOOL CWBItem::InterpretPositionString(CWBCSSPropertyBatch &props,
-                                       std::string_view prop,
-                                       std::string_view value,
-                                       const std::vector<std::string> &pseudo) {
+bool CWBItem::InterpretPositionString(CWBCSSPropertyBatch& props,
+                                      std::string_view prop,
+                                      std::string_view value,
+                                      const std::vector<std::string>& pseudo) {
   if (prop == _T( "left" )) {
     PositionApplicator(props.PositionDescriptor, WB_MARGIN_LEFT, value);
     return true;
@@ -1479,14 +1479,14 @@ std::vector<std::string> CWBItem::ExplodeValueWithoutSplittingParameters(
   return aOut;
 }
 
-TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
-                                      std::string_view prop,
-                                      std::string_view value,
-                                      const std::vector<std::string> &pseudo) {
+bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
+                                     std::string_view prop,
+                                     std::string_view value,
+                                     const std::vector<std::string>& pseudo) {
   if (prop == _T( "background" )) {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
-    for (const auto &attrib : Attribs) {
+    for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
@@ -1546,7 +1546,7 @@ TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
   if (prop == _T( "background-color" )) {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
-    for (const auto &attrib : Attribs) {
+    for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
@@ -1573,7 +1573,7 @@ TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
   if (prop == _T( "foreground-color" )) {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
-    for (const auto &attrib : Attribs) {
+    for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
@@ -1600,7 +1600,7 @@ TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
   if (prop == _T( "background-position" )) {
     auto Attribs = SplitByWhitespace(value);
 
-    for (const auto &attrib : Attribs) {
+    for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
 
       if (attrib == (_T( "left" )))
@@ -1635,7 +1635,7 @@ TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
   if (prop == _T( "background-image" )) {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
-    for (const auto &attrib : Attribs) {
+    for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
 
       if (attrib == (_T( "none" )))
@@ -1731,10 +1731,9 @@ TBOOL CWBItem::InterpretDisplayString(CWBCSSPropertyBatch &props,
   return false;
 }
 
-TBOOL CWBItem::InterpretFontString(CWBCSSPropertyBatch &props,
-                                   std::string_view prop,
-                                   std::string_view value,
-                                   const std::vector<std::string> &pseudo) {
+bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
+                                  std::string_view prop, std::string_view value,
+                                  const std::vector<std::string>& pseudo) {
   if (prop == _T( "font-color" )) {
     uint32_t dw = 0;
     std::string v(value);
@@ -1772,7 +1771,7 @@ TBOOL CWBItem::InterpretFontString(CWBCSSPropertyBatch &props,
   if (prop == _T( "font" )) {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
-    for (const auto &attrib : Attribs) {
+    for (const auto& attrib : Attribs) {
       // try to apply as color
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1) {
@@ -1817,8 +1816,8 @@ TBOOL CWBItem::InterpretFontString(CWBCSSPropertyBatch &props,
   return false;
 }
 
-TBOOL CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
-                          const std::vector<std::string> &pseudo) {
+bool CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
+                         const std::vector<std::string>& pseudo) {
   if (InterpretPositionString(CSSProperties, prop, value, pseudo)) {
     ContentChanged();
     return true;
@@ -1919,7 +1918,7 @@ TBOOL CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
   return false;
 }
 
-void CWBItem::PositionApplicator(CWBPositionDescriptor &pos,
+void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
                                  WBPOSITIONTYPE Type, std::string_view value) {
   if (Type == WB_WIDTH || Type == WB_HEIGHT) {
     if (value == _T( "none" )) {
@@ -1984,14 +1983,14 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor &pos,
   pos.SetMetric(Type, WB_RELATIVE, pcv / 100.0f);
 }
 
-CWBItem *CWBItem::FindChildByID(std::string_view value, std::string_view type) {
-  CWBItem *i = ChildSearcherFunct(value, type);
+CWBItem* CWBItem::FindChildByID(std::string_view value, std::string_view type) {
+  CWBItem* i = ChildSearcherFunct(value, type);
   return i;
 }
 
-CWBItem *CWBItem::FindParentByID(std::string_view value,
+CWBItem* CWBItem::FindParentByID(std::string_view value,
                                  std::string_view type) {
-  CWBItem *i = GetParent();
+  CWBItem* i = GetParent();
   while (i) {
     if (i->GetID() == value) {
       if (type.empty()) return i;
@@ -2002,15 +2001,15 @@ CWBItem *CWBItem::FindParentByID(std::string_view value,
   return nullptr;
 }
 
-CWBItem *CWBItem::ChildSearcherFunct(std::string_view value,
+CWBItem* CWBItem::ChildSearcherFunct(std::string_view value,
                                      std::string_view type) {
   if (GetID() == value) {
     if (type.empty()) return this;
     if (InstanceOf(type)) return this;
   }
 
-  for (auto &c : Children) {
-    CWBItem *i = c->ChildSearcherFunct(value, type);
+  for (auto& c : Children) {
+    CWBItem* i = c->ChildSearcherFunct(value, type);
     if (i) return i;
   }
 
@@ -2045,17 +2044,17 @@ void CWBItem::SetDisplayProperty(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
   CSSProperties.DisplayDescriptor.SetValue(s, v, value);
 }
 
-CWBFont *CWBItem::GetFont(WBITEMSTATE State) {
+CWBFont* CWBItem::GetFont(WBITEMSTATE State) {
   return CSSProperties.GetFont(App, State);
 }
 
-void CWBItem::ApplyOpacity(CWBDrawAPI *API) {
+void CWBItem::ApplyOpacity(CWBDrawAPI* API) {
   CColor o =
       CSSProperties.DisplayDescriptor.GetColor(GetState(), WB_ITEM_OPACITY);
   API->SetOpacity(static_cast<uint8_t>(o.A() * OpacityMultiplier));
 }
 
-CWBPositionDescriptor &CWBItem::GetPositionDescriptor() {
+CWBPositionDescriptor& CWBItem::GetPositionDescriptor() {
   return CSSProperties.PositionDescriptor;
 }
 
@@ -2066,11 +2065,11 @@ CSize CWBItem::GetClientWindowSizeDifference() {
   return CSize(w.Width() - c.Width(), w.Height() - c.Height());
 }
 
-void CWBItem::Enable(TBOOL Enabled) { Disabled = !Enabled; }
+void CWBItem::Enable(bool Enabled) { Disabled = !Enabled; }
 
-TBOOL CWBItem::IsEnabled() { return !Disabled; }
+bool CWBItem::IsEnabled() { return !Disabled; }
 
-void CWBItem::SetChildInFocus(CWBItem *i) {
+void CWBItem::SetChildInFocus(CWBItem* i) {
   if (!i) {
     ChildInFocus = nullptr;
     return;
@@ -2078,7 +2077,7 @@ void CWBItem::SetChildInFocus(CWBItem *i) {
   if (i->Parent == this) ChildInFocus = i;
 }
 
-TBOOL CWBItem::ParseRGBA(std::string_view description, CColor &output) {
+bool CWBItem::ParseRGBA(std::string_view description, CColor& output) {
   auto Params = Split(description, _T( "," ));
   if (Params.size() < 3 || Params.size() > 4) return false;
 
@@ -2104,8 +2103,8 @@ TBOOL CWBItem::ParseRGBA(std::string_view description, CColor &output) {
   return true;
 }
 
-void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch &desc,
-                                  const std::vector<std::string> &pseudo,
+void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch& desc,
+                                  const std::vector<std::string>& pseudo,
                                   std::string_view name) {
   if (pseudo.size() <= 1) {
     desc.Fonts.clear();
@@ -2137,8 +2136,8 @@ void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch &desc,
   }
 }
 
-TBOOL CWBItem::ScanPXValue(std::string_view Value, int32_t &Result,
-                           std::string_view PropName) {
+bool CWBItem::ScanPXValue(std::string_view Value, int32_t& Result,
+                          std::string_view PropName) {
   Result = 0;
   std::string v(Value);
   if (std::sscanf(v.c_str(), _T( "%dpx" ), &Result) != 1) {
@@ -2149,8 +2148,8 @@ TBOOL CWBItem::ScanPXValue(std::string_view Value, int32_t &Result,
   return true;
 }
 
-TBOOL CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID &Result,
-                             std::string_view PropName) {
+bool CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
+                            std::string_view PropName) {
   if (Value.find(_T( "skin(" )) == 0) {
     int32_t i = Value.find(_T( ")" ));
     if (i != std::string_view::npos) {
@@ -2207,13 +2206,13 @@ void CWBItem::ChangeContentOffsetY(int32_t OffsetY) {
                               ContentOffset.x, OffsetY));
 }
 
-TBOOL CWBItem::ScrollbarsEnabled() {
+bool CWBItem::ScrollbarsEnabled() {
   return HScrollbar.Enabled || VScrollbar.Enabled;
 }
 
 void CWBItem::SetTreeOpacityMultiplier(float OpacityMul) {
   OpacityMultiplier = OpacityMul;
-  for (auto &c : Children) {
+  for (auto& c : Children) {
     c->SetTreeOpacityMultiplier(OpacityMul);
   }
 }
@@ -2228,14 +2227,14 @@ void CWBItem::ReapplyStyles() {
   MessageProc(m);
 }
 
-void CWBItem::SetForcedMouseTransparency(TBOOL transparent) {
+void CWBItem::SetForcedMouseTransparency(bool transparent) {
   ForceMouseTransparent = transparent;
 }
 
-TBOOL CWBItem::MarkedForDeletion() {
+bool CWBItem::MarkedForDeletion() {
   std::scoped_lock l(App->TrashMutex);
   auto it = std::find_if(
       App->Trash.begin(), App->Trash.end(),
-      [this](const std::shared_ptr<CWBItem> &i) { return i.get() == this; });
+      [this](const std::shared_ptr<CWBItem>& i) { return i.get() == this; });
   return (it != App->Trash.end());
 }

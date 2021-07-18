@@ -46,30 +46,30 @@ extern std::vector<std::string_view> ActionNames;
 
 class GW2TacO : public CWBItem {
   std::string lastInfoLine;
-  TBOOL RebindMode = false;
-  TBOOL ScriptRebindMode = false;
+  bool RebindMode = false;
+  bool ScriptRebindMode = false;
   TacOKeyAction ActionToRebind = TacOKeyAction::NoAction;
   int32_t ScriptActionToRebind = 0;
 
-  TBOOL ApiKeyInputMode = false;
+  bool ApiKeyInputMode = false;
   APIKeys ApiKeyToSet = APIKeys::None;
   int32_t ApiKeyIndex = 0;
 
   void OpenAboutWindow();
-  void BuildChannelTree(TS3Connection::TS3Schandler &h,
-                        CWBContextItem *parentitm, int32_t ParentID);
+  void BuildChannelTree(TS3Connection::TS3Schandler& h,
+                        CWBContextItem* parentitm, int32_t ParentID);
 
   std::unordered_map<int32_t, TacOKeyAction> KeyBindings;
   std::unordered_map<int32_t, std::string> ScriptKeyBindings;
 
   void RebindAction(TacOKeyAction Action);
   void RebindScriptKey(int32_t evendIDX);
-  std::vector<GW2TacticalCategory *> CategoryList;
+  std::vector<GW2TacticalCategory*> CategoryList;
 
   void ApiKeyInputAction(APIKeys keyType, int32_t idx);
   std::shared_ptr<CWBTextBox> APIKeyInput;
 
-  TBOOL menuHoverLastFrame = false;
+  bool menuHoverLastFrame = false;
   int32_t lastMenuHoverTransitionTime = 0;
 
   void TurnOnTPLight();
@@ -78,10 +78,10 @@ class GW2TacO : public CWBItem {
   void CheckItemPickup();
 
   std::string lastItemPickup;
-  TBOOL pickupsBeingFetched = false;
+  bool pickupsBeingFetched = false;
   std::thread pickupFetcherThread;
   int32_t lastPickupFetchTime = 0;
-  TBOOL showPickupHighlight = false;
+  bool showPickupHighlight = false;
   float lastScaleValue = 1.0f;
 
   void StoreIconSizes();
@@ -91,13 +91,13 @@ class GW2TacO : public CWBItem {
   std::string GetKeybindString(TacOKeyAction action);
 
  public:
-  void OnDraw(CWBDrawAPI *API) override;
-  void OnPostDraw(CWBDrawAPI *API) override;
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  void OnPostDraw(CWBDrawAPI* API) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
-  GW2TacO(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2TacO> Create(CWBItem *Parent,
+  GW2TacO(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2TacO> Create(CWBItem* Parent,
                                                 CRect Position) {
     auto p = std::make_shared<GW2TacO>(Parent, Position);
     p->SelfRef = p;
@@ -108,19 +108,19 @@ class GW2TacO : public CWBItem {
   }
   ~GW2TacO() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "GW2TacO" ), CWBItem);
   void OpenWindow(std::string_view s);
 
   // return true if this item handled the message
-  TBOOL MessageProc(CWBMessage &Message) override;
+  bool MessageProc(CWBMessage& Message) override;
 
   void SetInfoLine(std::string_view string);
   void SetMouseToolTip(std::string_view toolTip);
 
   void InitScriptEngines();
   void TickScriptEngine();
-  void TriggerScriptEngineAction(GUID &guid);
+  void TriggerScriptEngineAction(GUID& guid);
   void TriggerScriptEngineKeyEvent(std::string_view eventID);
 };
 

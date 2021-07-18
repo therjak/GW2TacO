@@ -16,7 +16,7 @@ LIGHTWEIGHT_CRITICALSECTION itemCacheCritSec;
 
 std::unordered_map<int32_t, GW2ItemData> itemDataCache;
 
-TBOOL HasGW2ItemData(int32_t itemID) {
+bool HasGW2ItemData(int32_t itemID) {
   CLightweightCriticalSection cs(&itemCacheCritSec);
   return itemDataCache.find(itemID) != itemDataCache.end();
 }
@@ -268,7 +268,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         if (!HasGW2ItemData(buys[x].itemID)) continue;
 
         auto& itemData = GetGW2ItemData(buys[x].itemID);
-        TBOOL outbid = buys[x].price < itemData.buyPrice;
+        bool outbid = buys[x].price < itemData.buyPrice;
 
         if (nextSellOnly &&
             std::find(showedAlready.begin(), showedAlready.end(),
@@ -323,7 +323,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       for (size_t x = 0; x < sells.size(); x++) {
         if (!HasGW2ItemData(sells[x].itemID)) continue;
         auto& itemData = GetGW2ItemData(sells[x].itemID);
-        TBOOL outbid = sells[x].price > itemData.sellPrice;
+        bool outbid = sells[x].price > itemData.sellPrice;
 
         if (nextSellOnly &&
             std::find(showedAlready.begin(), showedAlready.end(),
@@ -368,7 +368,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-TBOOL TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
+bool TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
   if (!object.has<Number>("id") || !object.has<Number>("item_id") ||
       !object.has<Number>("price") || !object.has<Number>("quantity"))
     return false;
@@ -390,7 +390,7 @@ CWBItem* TPTracker::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return TPTracker::Create(Root, Pos).get();
 }
 
-TBOOL TPTracker::IsMouseTransparent(CPoint& ClientSpacePoint,
-                                    WBMESSAGE MessageType) {
+bool TPTracker::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                   WBMESSAGE MessageType) {
   return true;
 }

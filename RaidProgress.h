@@ -27,7 +27,7 @@ class Raid {
 
 class RaidProgress : public CWBItem {
   CPoint lastpos;
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -39,8 +39,8 @@ class RaidProgress : public CWBItem {
   std::vector<Raid> raids;
 
  public:
-  RaidProgress(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<RaidProgress> Create(CWBItem *Parent,
+  RaidProgress(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<RaidProgress> Create(CWBItem* Parent,
                                                      CRect Position) {
     auto p = std::make_shared<RaidProgress>(Parent, Position);
     p->SelfRef = p;
@@ -51,10 +51,10 @@ class RaidProgress : public CWBItem {
   }
   ~RaidProgress() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "raidprogress" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
-  std::vector<Raid> &GetRaids();
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
+  std::vector<Raid>& GetRaids();
 };

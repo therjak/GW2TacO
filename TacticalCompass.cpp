@@ -8,7 +8,7 @@ constexpr float PI = 3.1415926535897932384626433832795f;
 
 float GetMapFade();
 
-void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {
+void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
   CRect drawrect = GetClientRect();
 
   CMatrix4x4 cam;
@@ -50,7 +50,7 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {
   CVector3 toChar = CVector3(charpos - campos);
   float dist = toChar.Length();
 
-  CWBFont *f = GetFont(GetState());
+  CWBFont* f = GetFont(GetState());
 
   std::string txt[4] = {DICT("compassnorth"), DICT("compasseast"),
                         DICT("compasssouth"), DICT("compasswest")};
@@ -94,7 +94,7 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI *API) {
   }
 }
 
-void GW2TacticalCompass::OnDraw(CWBDrawAPI *API) {
+void GW2TacticalCompass::OnDraw(CWBDrawAPI* API) {
   if (!mumbleLink.IsValid()) return;
 
   if (!HasConfigValue("TacticalCompassVisible"))
@@ -103,16 +103,16 @@ void GW2TacticalCompass::OnDraw(CWBDrawAPI *API) {
   if (GetConfigValue("TacticalCompassVisible")) DrawTacticalCompass(API);
 }
 
-GW2TacticalCompass::GW2TacticalCompass(CWBItem *Parent, CRect Position)
+GW2TacticalCompass::GW2TacticalCompass(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 GW2TacticalCompass::~GW2TacticalCompass() = default;
 
-CWBItem *GW2TacticalCompass::Factory(CWBItem *Root, CXMLNode &node,
-                                     CRect &Pos) {
+CWBItem* GW2TacticalCompass::Factory(CWBItem* Root, CXMLNode& node,
+                                     CRect& Pos) {
   return GW2TacticalCompass::Create(Root, Pos).get();
 }
 
-TBOOL GW2TacticalCompass::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                             WBMESSAGE MessageType) {
+bool GW2TacticalCompass::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                            WBMESSAGE MessageType) {
   return true;
 }

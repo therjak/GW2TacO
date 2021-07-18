@@ -3,11 +3,11 @@
 
 class TS3Control : public CWBItem {
   CPoint lastpos;
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
 
  public:
-  TS3Control(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<TS3Control> Create(CWBItem *Parent,
+  TS3Control(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<TS3Control> Create(CWBItem* Parent,
                                                    CRect Position) {
     auto p = std::make_shared<TS3Control>(Parent, Position);
     p->SelfRef = p;
@@ -18,9 +18,9 @@ class TS3Control : public CWBItem {
   }
   ~TS3Control() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "ts3control" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 };

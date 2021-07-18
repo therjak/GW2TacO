@@ -4,7 +4,7 @@
 
 #include <comdef.h>
 
-CCoreDX11BlendState::CCoreDX11BlendState(CCoreDX11Device *d)
+CCoreDX11BlendState::CCoreDX11BlendState(CCoreDX11Device* d)
     : CCoreBlendState(d) {
   Device = d;
   Dev = Device->GetDevice();
@@ -16,7 +16,7 @@ CCoreDX11BlendState::~CCoreDX11BlendState() {
   if (State) State->Release();
 }
 
-TBOOL CCoreDX11BlendState::Update() {
+bool CCoreDX11BlendState::Update() {
   if (!Dirty) return true;
   if (State) State->Release();
   State = nullptr;
@@ -55,7 +55,7 @@ TBOOL CCoreDX11BlendState::Update() {
   return true;
 }
 
-TBOOL CCoreDX11BlendState::Apply() {
+bool CCoreDX11BlendState::Apply() {
   Update();
   if (Device->GetCurrentBlendState() != State) {
     Context->OMSetBlendState(State, nullptr, 0xffffffff);
@@ -64,7 +64,7 @@ TBOOL CCoreDX11BlendState::Apply() {
   return true;
 }
 
-CCoreDX11DepthStencilState::CCoreDX11DepthStencilState(CCoreDX11Device *d)
+CCoreDX11DepthStencilState::CCoreDX11DepthStencilState(CCoreDX11Device* d)
     : CCoreDepthStencilState(d) {
   Device = d;
   Dev = Device->GetDevice();
@@ -76,7 +76,7 @@ CCoreDX11DepthStencilState::~CCoreDX11DepthStencilState() {
   if (State) State->Release();
 }
 
-TBOOL CCoreDX11DepthStencilState::Update() {
+bool CCoreDX11DepthStencilState::Update() {
   if (!Dirty) return true;
   if (State) State->Release();
   State = nullptr;
@@ -104,7 +104,7 @@ TBOOL CCoreDX11DepthStencilState::Update() {
   return true;
 }
 
-TBOOL CCoreDX11DepthStencilState::Apply() {
+bool CCoreDX11DepthStencilState::Apply() {
   Update();
   if (Device->GetCurrentDepthStencilState() != State) {
     Context->OMSetDepthStencilState(State, 0);
@@ -113,7 +113,7 @@ TBOOL CCoreDX11DepthStencilState::Apply() {
   return true;
 }
 
-CCoreDX11RasterizerState::CCoreDX11RasterizerState(CCoreDX11Device *d)
+CCoreDX11RasterizerState::CCoreDX11RasterizerState(CCoreDX11Device* d)
     : CCoreRasterizerState(d) {
   Device = d;
   Dev = Device->GetDevice();
@@ -125,7 +125,7 @@ CCoreDX11RasterizerState::~CCoreDX11RasterizerState() {
   if (State) State->Release();
 }
 
-TBOOL CCoreDX11RasterizerState::Update() {
+bool CCoreDX11RasterizerState::Update() {
   if (!Dirty) return true;
   if (State) State->Release();
   State = nullptr;
@@ -154,7 +154,7 @@ TBOOL CCoreDX11RasterizerState::Update() {
   return true;
 }
 
-TBOOL CCoreDX11RasterizerState::Apply() {
+bool CCoreDX11RasterizerState::Apply() {
   Update();
   if (Device->GetCurrentRasterizerState() != State) {
     Context->RSSetState(State);
@@ -163,7 +163,7 @@ TBOOL CCoreDX11RasterizerState::Apply() {
   return true;
 }
 
-CCoreDX11SamplerState::CCoreDX11SamplerState(CCoreDX11Device *d)
+CCoreDX11SamplerState::CCoreDX11SamplerState(CCoreDX11Device* d)
     : CCoreSamplerState(d) {
   Device = d;
   Dev = Device->GetDevice();
@@ -175,7 +175,7 @@ CCoreDX11SamplerState::~CCoreDX11SamplerState() {
   if (State) State->Release();
 }
 
-TBOOL CCoreDX11SamplerState::Update() {
+bool CCoreDX11SamplerState::Update() {
   if (!Dirty) return true;
   if (State) State->Release();
   State = nullptr;
@@ -209,7 +209,7 @@ TBOOL CCoreDX11SamplerState::Update() {
   return true;
 }
 
-TBOOL CCoreDX11SamplerState::Apply(CORESAMPLER Smp) {
+bool CCoreDX11SamplerState::Apply(CORESAMPLER Smp) {
   Update();
 
   if (Smp >= CORESMP_PS0 && Smp <= CORESMP_PS15)

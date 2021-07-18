@@ -5,20 +5,20 @@
 #include "gw2tactical.h"
 
 class GW2MarkerEditor : public CWBItem {
-  TBOOL MessageProc(CWBMessage &Message) override;
-  void OnDraw(CWBDrawAPI *API) override;
-  TBOOL Hidden = false;
+  bool MessageProc(CWBMessage& Message) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  bool Hidden = false;
   GUID CurrentPOI;
 
-  std::vector<GW2TacticalCategory *> CategoryList;
-  TBOOL ChangeDefault = false;
+  std::vector<GW2TacticalCategory*> CategoryList;
+  bool ChangeDefault = false;
 
  public:
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
-  GW2MarkerEditor(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2MarkerEditor> Create(CWBItem *Parent,
+  GW2MarkerEditor(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2MarkerEditor> Create(CWBItem* Parent,
                                                         CRect Position) {
     auto p = std::make_shared<GW2MarkerEditor>(Parent, Position);
     p->SelfRef = p;
@@ -29,6 +29,6 @@ class GW2MarkerEditor : public CWBItem {
   }
   ~GW2MarkerEditor() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "markereditor" ), CWBItem);
 };

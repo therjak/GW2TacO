@@ -5,7 +5,7 @@
 
 #include "../BaseLib/Timer.h"
 
-INLINE void CWBTextBox::DrawCursor(CWBDrawAPI *API, CPoint &p) {
+INLINE void CWBTextBox::DrawCursor(CWBDrawAPI* API, CPoint& p) {
   WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2))
     API->DrawRect(
@@ -13,11 +13,11 @@ INLINE void CWBTextBox::DrawCursor(CWBDrawAPI *API, CPoint &p) {
         0xffffffff);
 }
 
-void CWBTextBox::OnDraw(CWBDrawAPI *API) {
+void CWBTextBox::OnDraw(CWBDrawAPI* API) {
   // background
   DrawBackground(API);
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
@@ -26,7 +26,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI *API) {
   CPoint Offset =
       -CPoint(GetHScrollbarPos(), GetVScrollbarPos()) + GetTextStartOffset();
 
-  TBOOL Focus = InFocus() && !GetChildInFocus();  // speedup
+  bool Focus = InFocus() && !GetChildInFocus();  // speedup
 
   API->SetCropToClient(this);
 
@@ -114,7 +114,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI *API) {
     App->SelectMouseCursor(CM_TEXT);
 }
 
-CWBTextBox::CWBTextBox(CWBItem *Parent, const CRect &Pos, int32_t flags,
+CWBTextBox::CWBTextBox(CWBItem* Parent, const CRect& Pos, int32_t flags,
                        std::string_view Txt)
     : CWBItem() {
   Initialize(Parent, Pos, flags, Txt);
@@ -122,8 +122,8 @@ CWBTextBox::CWBTextBox(CWBItem *Parent, const CRect &Pos, int32_t flags,
 
 CWBTextBox::~CWBTextBox() = default;
 
-TBOOL CWBTextBox::Initialize(CWBItem *Parent, const CRect &Position,
-                             int32_t flags, std::string_view Txt) {
+bool CWBTextBox::Initialize(CWBItem* Parent, const CRect& Position,
+                            int32_t flags, std::string_view Txt) {
   Flags = flags;
   Selection.DisplayDescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
                                        0);
@@ -163,8 +163,8 @@ TBOOL CWBTextBox::Initialize(CWBItem *Parent, const CRect &Position,
   return true;
 }
 
-void CWBTextBox::SetCursorPos(int32_t pos, TBOOL Selecting) {
-  CWBFont *Font = GetFont(GetState());
+void CWBTextBox::SetCursorPos(int32_t pos, bool Selecting) {
+  CWBFont* Font = GetFont(GetState());
   int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
 
   CursorBlinkStartTime = globalTimer.GetTime();
@@ -223,10 +223,10 @@ void CWBTextBox::SetCursorPos(int32_t pos, TBOOL Selecting) {
                      (CPos.y + Font->GetLineHeight() - VisibleRect.y2));
 }
 
-void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, TBOOL Selecting) {
+void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting) {
   int32_t p = 0;
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
@@ -313,7 +313,7 @@ void CWBTextBox::Copy() {
     HGLOBAL clipbuffer = GlobalAlloc(GMEM_DDESHARE | GHND, (out.size() + 1));
 
     if (clipbuffer) {
-      auto buffer = static_cast<char *>(GlobalLock(clipbuffer));
+      auto buffer = static_cast<char*>(GlobalLock(clipbuffer));
       if (buffer) {
         memcpy(buffer, out.c_str(), out.size());
         buffer[out.size()] = 0;
@@ -339,7 +339,7 @@ void CWBTextBox::Paste() {
   if (OpenClipboard((HWND)App->GetHandle())) {
     HANDLE Handle = GetClipboardData(CF_UNICODETEXT);
 
-    auto buffer = static_cast<wchar_t *>(GlobalLock(Handle));
+    auto buffer = static_cast<wchar_t*>(GlobalLock(Handle));
     if (buffer) {
 #ifndef UNICODE
       int32_t len = wcslen(buffer);
@@ -372,7 +372,7 @@ void CWBTextBox::Paste() {
     LOG(LOG_WARNING, _T( "[gui] Failed to open clipboard" ));
 }
 
-CWBTextBoxHistoryEntry *CWBTextBox::CreateNewHistoryEntry(bool Remove,
+CWBTextBoxHistoryEntry* CWBTextBox::CreateNewHistoryEntry(bool Remove,
                                                           int Start,
                                                           int Length) {
   for (; History.size() > HistoryPosition;) {
@@ -396,7 +396,7 @@ void CWBTextBox::Undo() {
   }
   HistoryPosition--;
 
-  auto &e = History[HistoryPosition];
+  auto& e = History[HistoryPosition];
 
   if (e->Remove)
     InsertText(e->StartPosition, e->Data, e->Data.size(), e->CursorPos_Before,
@@ -415,7 +415,7 @@ void CWBTextBox::Redo() {
     return;
   }
 
-  auto &e = History[HistoryPosition++];
+  auto& e = History[HistoryPosition++];
 
   if (e->Remove)
     RemoveText(e->StartPosition, e->Data.size(), e->StartPosition, false);
@@ -447,7 +447,7 @@ int32_t CWBTextBox::GetCursorY() {
 
 int32_t CWBTextBox::GetCursorXinPixels() {
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
@@ -496,7 +496,7 @@ CPoint CWBTextBox::GetTextStartOffset() {
   if (!(Flags & WB_TEXTBOX_SINGLELINE)) return pos;
 
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   CPoint TextPos =
@@ -511,7 +511,7 @@ CPoint CWBTextBox::GetTextStartOffset() {
 
 int32_t CWBTextBox::GetCursorPosMouse() {
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
@@ -562,7 +562,7 @@ int32_t CWBTextBox::GetCursorPosMouse() {
   return Text.size();
 }
 
-TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
+bool CWBTextBox::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_FOCUSGAINED:
       if (Message.GetTarget() == GetGuid()) {
@@ -581,7 +581,7 @@ TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
       break;
 
     case WBM_REPOSITION: {
-      TBOOL b = CWBItem::MessageProc(Message);
+      bool b = CWBItem::MessageProc(Message);
       int32_t mi, ma, vi;
       GetHScrollbarParameters(mi, ma, vi);
       SetHScrollbarParameters(mi, ma, GetClientRect().Width());
@@ -615,7 +615,7 @@ TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
       return true;
 
     case WBM_MOUSEWHEEL: {
-      CWBFont *Font = GetFont(GetState());
+      CWBFont* Font = GetFont(GetState());
       int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
       SetVScrollbarPos(
           GetVScrollbarPos() - Message.Data * 3 * Font->GetLineHeight(), true);
@@ -633,7 +633,7 @@ TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
           Message.KeyboardState & WB_KBSTATE_CTRL)
         break;  // altgr
 
-      CWBFont *Font = GetFont(GetState());
+      CWBFont* Font = GetFont(GetState());
       int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
 
       // handle cursor movement keys
@@ -835,7 +835,7 @@ TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
 
       // insert character
       RemoveSelectedText();
-      InsertText(CursorPos, reinterpret_cast<TCHAR *>(&Key), 1, CursorPos + 1);
+      InsertText(CursorPos, reinterpret_cast<TCHAR*>(&Key), 1, CursorPos + 1);
 
       PostCharInsertion(CursorPos, Message.Key);
 
@@ -848,12 +848,12 @@ TBOOL CWBTextBox::MessageProc(CWBMessage &Message) {
   return CWBItem::MessageProc(Message);
 }
 
-void CWBTextBox::SetText(std::string_view val, TBOOL EnableUndo) {
+void CWBTextBox::SetText(std::string_view val, bool EnableUndo) {
   SetTextInternal(val, EnableUndo, true);
 }
 
-void CWBTextBox::SetTextInternal(std::string_view val, TBOOL EnableUndo,
-                                 TBOOL nonHumanInteraction) {
+void CWBTextBox::SetTextInternal(std::string_view val, bool EnableUndo,
+                                 bool nonHumanInteraction) {
   if (!EnableUndo) {
     OriginalText = Text = val;
     Text.erase(std::remove(Text.begin(), Text.end(), '\r'), Text.end());
@@ -875,7 +875,7 @@ void CWBTextBox::SetTextInternal(std::string_view val, TBOOL EnableUndo,
 void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
   // calculate new scrollbar data
   WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
@@ -918,9 +918,9 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
 
 void CWBTextBox::InsertText(int32_t Position, std::string_view txt,
                             int32_t Length, int32_t CursorPosAfter,
-                            TBOOL ChangeHistory) {
+                            bool ChangeHistory) {
   if (ChangeHistory) {
-    CWBTextBoxHistoryEntry *e = CreateNewHistoryEntry(false, Position, Length);
+    CWBTextBoxHistoryEntry* e = CreateNewHistoryEntry(false, Position, Length);
     e->CursorPos_Before = CursorPos;
     e->SelectionStart_Before = SelectionStart;
     e->SelectionEnd_Before = SelectionEnd;
@@ -933,9 +933,9 @@ void CWBTextBox::InsertText(int32_t Position, std::string_view txt,
 }
 
 void CWBTextBox::RemoveText(int32_t Position, int32_t Length,
-                            int32_t CursorPosAfter, TBOOL ChangeHistory) {
+                            int32_t CursorPosAfter, bool ChangeHistory) {
   if (ChangeHistory) {
-    CWBTextBoxHistoryEntry *e = CreateNewHistoryEntry(true, Position, Length);
+    CWBTextBoxHistoryEntry* e = CreateNewHistoryEntry(true, Position, Length);
     e->CursorPos_Before = CursorPos;
     e->SelectionStart_Before = SelectionStart;
     e->SelectionEnd_Before = SelectionEnd;
@@ -952,13 +952,13 @@ void CWBTextBox::SetSelection(int32_t start, int32_t end) {
   SelectionEnd = min((int32_t)Text.size(), max(start, end));
 }
 
-CColor CWBTextBox::GetTextColor(int32_t Index, CColor &DefaultColor) {
+CColor CWBTextBox::GetTextColor(int32_t Index, CColor& DefaultColor) {
   return DefaultColor;
 }
 
-TBOOL CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
-                             const std::vector<std::string> &pseudo) {
-  TBOOL ElementTarget = false;
+bool CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
+                            const std::vector<std::string>& pseudo) {
+  bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == _T( "selection" )) {
@@ -969,7 +969,7 @@ TBOOL CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (!ElementTarget) return CWBItem::ApplyStyle(prop, value, pseudo);
 
-  TBOOL Handled = false;
+  bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == _T( "selection" )) {
@@ -981,7 +981,7 @@ TBOOL CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem *CWBTextBox::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* CWBTextBox::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   int32_t Flags = 0;
   if (node.HasAttribute(_T( "singleline" ))) {
     int32_t b = 0;
@@ -1024,8 +1024,8 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
       CharacterInWord >= static_cast<int32_t>(Text.size()))
     return;
 
-  TBOOL IsWhiteSpace = _istspace(Text[CharacterInWord]);
-  TBOOL IsAlNum = _istalnum(Text[CharacterInWord]);
+  bool IsWhiteSpace = _istspace(Text[CharacterInWord]);
+  bool IsAlNum = _istalnum(Text[CharacterInWord]);
   if (!IsWhiteSpace && !IsAlNum) {
     SetCursorPos(CharacterInWord, false);
     SetCursorPos(CharacterInWord + 1, true);

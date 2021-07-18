@@ -5,63 +5,63 @@
 #ifdef CORE_API_DX11
 
 class CCoreDX11BlendState : public CCoreBlendState {
-  CCoreDX11Device *Device;
-  ID3D11Device *Dev;
-  ID3D11DeviceContext *Context;
-  ID3D11BlendState *State;
+  CCoreDX11Device* Device;
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* Context;
+  ID3D11BlendState* State;
 
  public:
-  CCoreDX11BlendState(CCoreDX11Device *Device);
+  CCoreDX11BlendState(CCoreDX11Device* Device);
   ~CCoreDX11BlendState() override;
 
-  TBOOL Update() override;
-  TBOOL Apply() override;
-  void *GetHandle() override { return State; }
+  bool Update() override;
+  bool Apply() override;
+  void* GetHandle() override { return State; }
 };
 
 class CCoreDX11DepthStencilState : public CCoreDepthStencilState {
-  CCoreDX11Device *Device;
-  ID3D11Device *Dev;
-  ID3D11DeviceContext *Context;
-  ID3D11DepthStencilState *State;
+  CCoreDX11Device* Device;
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* Context;
+  ID3D11DepthStencilState* State;
 
  public:
-  CCoreDX11DepthStencilState(CCoreDX11Device *Device);
+  CCoreDX11DepthStencilState(CCoreDX11Device* Device);
   ~CCoreDX11DepthStencilState() override;
 
-  TBOOL Update() override;
-  TBOOL Apply() override;
-  void *GetHandle() override { return State; }
+  bool Update() override;
+  bool Apply() override;
+  void* GetHandle() override { return State; }
 };
 
 class CCoreDX11RasterizerState : public CCoreRasterizerState {
-  CCoreDX11Device *Device;
-  ID3D11Device *Dev;
-  ID3D11DeviceContext *Context;
-  ID3D11RasterizerState *State;
+  CCoreDX11Device* Device;
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* Context;
+  ID3D11RasterizerState* State;
 
  public:
-  CCoreDX11RasterizerState(CCoreDX11Device *Device);
+  CCoreDX11RasterizerState(CCoreDX11Device* Device);
   ~CCoreDX11RasterizerState() override;
 
-  TBOOL Update() override;
-  TBOOL Apply() override;
-  void *GetHandle() override { return State; }
+  bool Update() override;
+  bool Apply() override;
+  void* GetHandle() override { return State; }
 };
 
 class CCoreDX11SamplerState : public CCoreSamplerState {
-  CCoreDX11Device *Device;
-  ID3D11Device *Dev;
-  ID3D11DeviceContext *Context;
-  ID3D11SamplerState *State;
+  CCoreDX11Device* Device;
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* Context;
+  ID3D11SamplerState* State;
 
  public:
-  CCoreDX11SamplerState(CCoreDX11Device *Device);
+  CCoreDX11SamplerState(CCoreDX11Device* Device);
   ~CCoreDX11SamplerState() override;
 
-  TBOOL Update() override;
-  TBOOL Apply(CORESAMPLER Smp) override;
-  void *GetHandle() override { return State; }
+  bool Update() override;
+  bool Apply(CORESAMPLER Smp) override;
+  void* GetHandle() override { return State; }
 };
 
 #endif

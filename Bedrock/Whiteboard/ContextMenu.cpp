@@ -3,9 +3,9 @@
 #include "Application.h"
 #include "Button.h"
 
-void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
+void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   const WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
@@ -92,7 +92,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI *API) {
   DrawBorder(API);
 }
 
-CWBContextMenu::CWBContextMenu(CWBItem *Parent, const CRect &Pos, WBGUID trg)
+CWBContextMenu::CWBContextMenu(CWBItem* Parent, const CRect& Pos, WBGUID trg)
     : CWBItem() {
   CWBContextMenu::Initialize(Parent, Pos, trg);
 }
@@ -120,14 +120,14 @@ CWBContextMenu::~CWBContextMenu() {
 
 void CWBContextMenu::ResizeToContentSize() {
   const WBITEMSTATE i = GetState();
-  CWBFont *Font = GetFont(i);
+  CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   CSize ContentSize = CSize(0, 0);
 
-  TBOOL NeedsSubArrow = false;
-  for (const auto &item : Items) {
+  bool NeedsSubArrow = false;
+  for (const auto& item : Items) {
     if (!item->Children.empty()) {
       NeedsSubArrow = true;
     }
@@ -145,7 +145,7 @@ void CWBContextMenu::ResizeToContentSize() {
 
   ContentSize.y = padding.y1;
 
-  for (const auto &item : Items) {
+  for (const auto& item : Items) {
     if (item->Separator) {
       ContentSize.y += separatorHeight;
     } else if (Font) {
@@ -174,8 +174,8 @@ void CWBContextMenu::ResizeToContentSize() {
   SetPosition(CRect(r.TopLeft(), r.TopLeft() + Size));
 }
 
-TBOOL CWBContextMenu::Initialize(CWBItem *Parent, const CRect &Position,
-                                 WBGUID trg) {
+bool CWBContextMenu::Initialize(CWBItem* Parent, const CRect& Position,
+                                WBGUID trg) {
   ParentMenu = nullptr;
   SubMenu = nullptr;
   Pushed = false;
@@ -198,11 +198,10 @@ TBOOL CWBContextMenu::Initialize(CWBItem *Parent, const CRect &Position,
   return true;
 }
 
-CWBContextItem *CWBContextMenu::AddItem(std::string_view Text, int32_t ID,
-                                        TBOOL Highlighted,
-                                        TBOOL closesContext) {
+CWBContextItem* CWBContextMenu::AddItem(std::string_view Text, int32_t ID,
+                                        bool Highlighted, bool closesContext) {
   Items.emplace_back(std::make_unique<CWBContextItem>());
-  auto &item = Items.back();
+  auto& item = Items.back();
   item->Text = Text;
   item->ReturnID = ID;
   item->Highlighted = Highlighted;
@@ -217,7 +216,7 @@ void CWBContextMenu::AddSeparator() {
   Items.back()->Separator = true;
 }
 
-TBOOL CWBContextMenu::MessageProc(CWBMessage &Message) {
+bool CWBContextMenu::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_REPOSITION:
       if (Message.GetTarget() == GetGuid()) {
@@ -342,9 +341,9 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
   // message control must stay with the root item
   App->SetCapture(GetContextRoot());
 
-  for (auto &child : Items[itemidx]->Children) {
-    CWBContextItem *olditm = child.get();
-    CWBContextItem *newitm = SubMenu->AddItem(olditm->Text, olditm->ReturnID);
+  for (auto& child : Items[itemidx]->Children) {
+    CWBContextItem* olditm = child.get();
+    CWBContextItem* newitm = SubMenu->AddItem(olditm->Text, olditm->ReturnID);
     newitm->CopyOf = olditm;
     newitm->Separator = olditm->Separator;
     newitm->Highlighted = olditm->Highlighted;
@@ -371,7 +370,7 @@ CRect CWBContextMenu::GetItemRect(int32_t idx) {
 
   Offset.y = padding.y1;
 
-  CWBFont *Font = GetFont(WB_STATE_HOVER);
+  CWBFont* Font = GetFont(WB_STATE_HOVER);
   for (int32_t x = 0; x < Items.size(); x++) {
     if (Items[x]->Separator) {
       Offset.y += separatorHeight;
@@ -393,12 +392,12 @@ void CWBContextMenu::MarkParentForDeletion() {
   }
 }
 
-TBOOL CWBContextMenu::MouseInContextHierarchy() {
+bool CWBContextMenu::MouseInContextHierarchy() {
   if (!SubMenu) return MouseOver();
   return MouseOver() || SubMenu->MouseInContextHierarchy();
 }
 
-CWBContextMenu *CWBContextMenu::GetContextRoot() {
+CWBContextMenu* CWBContextMenu::GetContextRoot() {
   if (!ParentMenu) return this;
   return ParentMenu->GetContextRoot();
 }
@@ -411,10 +410,10 @@ CWBContextItem::CWBContextItem() {
 
 CWBContextItem::~CWBContextItem() = default;
 
-void CWBContextItem::CopyChildrenFrom(CWBContextItem *itm) {
-  for (auto &child : itm->Children) {
-    CWBContextItem *olditm = child.get();
-    CWBContextItem *newitm = AddItem(olditm->Text, olditm->ReturnID);
+void CWBContextItem::CopyChildrenFrom(CWBContextItem* itm) {
+  for (auto& child : itm->Children) {
+    CWBContextItem* olditm = child.get();
+    CWBContextItem* newitm = AddItem(olditm->Text, olditm->ReturnID);
     newitm->Separator = olditm->Separator;
     newitm->Highlighted = olditm->Highlighted;
     newitm->closesContext = olditm->closesContext;
@@ -423,11 +422,10 @@ void CWBContextItem::CopyChildrenFrom(CWBContextItem *itm) {
   }
 }
 
-CWBContextItem *CWBContextItem::AddItem(std::string_view Text, int32_t ID,
-                                        TBOOL Highlighted,
-                                        TBOOL closesContext) {
+CWBContextItem* CWBContextItem::AddItem(std::string_view Text, int32_t ID,
+                                        bool Highlighted, bool closesContext) {
   Children.emplace_back(std::make_unique<CWBContextItem>());
-  auto &item = Children.back();
+  auto& item = Children.back();
   item->Text = Text;
   item->ReturnID = ID;
   item->Highlighted = Highlighted;
@@ -445,14 +443,14 @@ void CWBContextItem::SetText(std::string_view text) {
   if (CopyOf) CopyOf->SetText(text);
 }
 
-void CWBContextItem::SetHighlight(TBOOL highlighted) {
+void CWBContextItem::SetHighlight(bool highlighted) {
   Highlighted = highlighted;
   if (CopyOf) CopyOf->SetHighlight(highlighted);
 }
 
-TBOOL CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
-                                 const std::vector<std::string> &pseudo) {
-  TBOOL ElementTarget = false;
+bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
+                                const std::vector<std::string>& pseudo) {
+  bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == _T( "separator" )) {
@@ -465,7 +463,7 @@ TBOOL CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   if (!ElementTarget) InterpretFontString(CSSProperties, prop, value, pseudo);
   if (!ElementTarget) return CWBItem::ApplyStyle(prop, value, pseudo);
 
-  TBOOL Handled = false;
+  bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == _T( "separator" )) {
@@ -477,8 +475,8 @@ TBOOL CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBContextItem *CWBContextMenu::GetItem(int32_t ID) {
-  for (const auto &item : Items)
+CWBContextItem* CWBContextMenu::GetItem(int32_t ID) {
+  for (const auto& item : Items)
     if (item->ReturnID == ID) return item.get();
   return nullptr;
 }

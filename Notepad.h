@@ -3,20 +3,20 @@
 #include "gw2tactical.h"
 
 class GW2Notepad : public CWBItem {
-  TBOOL MessageProc(CWBMessage &Message) override;
-  void OnDraw(CWBDrawAPI *API) override;
-  TBOOL Hidden = false;
+  bool MessageProc(CWBMessage& Message) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  bool Hidden = false;
   GUID CurrentPOI;
 
-  TBOOL ChangeDefault = false;
+  bool ChangeDefault = false;
   bool canSetFocus = false;
 
  public:
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
-  GW2Notepad(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2Notepad> Create(CWBItem *Parent,
+  GW2Notepad(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2Notepad> Create(CWBItem* Parent,
                                                    CRect Position) {
     auto p = std::make_shared<GW2Notepad>(Parent, Position);
     p->SelfRef = p;
@@ -27,7 +27,7 @@ class GW2Notepad : public CWBItem {
   }
   ~GW2Notepad() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "notepad" ), CWBItem);
 
   void StartEdit();

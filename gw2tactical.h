@@ -96,8 +96,8 @@ struct MarkerTypeData {
   int16_t achievementBit = -1;
   int16_t info = -1;
 
-  void Read(CXMLNode &n, TBOOL StoreSaveState);
-  void Write(CXMLNode *n);
+  void Read(CXMLNode& n, bool StoreSaveState);
+  void Write(CXMLNode* n);
 };
 
 class GW2TacticalCategory;
@@ -119,21 +119,21 @@ struct POI {
   std::string Type;
 
   time_t lastUpdateTime = 0;
-  TBOOL External = false;
-  TBOOL routeMember = false;
+  bool External = false;
+  bool routeMember = false;
 
   int16_t zipFile = 0;
   int16_t iconFile = 0;
 
   GUID guid;
 
-  GW2TacticalCategory *category = nullptr;
-  void SetCategory(CWBApplication *App, GW2TacticalCategory *t);
+  GW2TacticalCategory* category = nullptr;
+  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
 
-  bool IsVisible(const tm &ptm, const time_t &currtime,
+  bool IsVisible(const tm& ptm, const time_t& currtime,
                  bool achievementsFetched,
-                 std::unordered_map<int32_t, Achievement> &achievements,
-                 LIGHTWEIGHT_CRITICALSECTION &dataWriteCritSec);
+                 std::unordered_map<int32_t, Achievement>& achievements,
+                 LIGHTWEIGHT_CRITICALSECTION& dataWriteCritSec);
 };
 
 struct POIActivationDataKey {
@@ -144,7 +144,7 @@ struct POIActivationDataKey {
 
   POIActivationDataKey(GUID g, int inst) : guid(g), uniqueData(inst) {}
 
-  bool operator==(const POIActivationDataKey &d) {
+  bool operator==(const POIActivationDataKey& d) {
     return guid == d.guid && uniqueData == d.uniqueData;
   }
 };
@@ -157,10 +157,10 @@ struct POIActivationData {
 
 struct POIRoute {
   std::string name;
-  TBOOL backwards = true;
+  bool backwards = true;
   std::vector<GUID> route;
-  TBOOL external = false;
-  TBOOL hasResetPos = false;
+  bool external = false;
+  bool hasResetPos = false;
   CVector3 resetPos;
   float resetRad = 0;
   int MapID = 0;
@@ -168,8 +168,8 @@ struct POIRoute {
   int32_t activeItem = -1;
 };
 
-uint32_t DictionaryHash(const GUID &i);
-uint32_t DictionaryHash(const POIActivationDataKey &i);
+uint32_t DictionaryHash(const GUID& i);
+uint32_t DictionaryHash(const POIActivationDataKey& i);
 
 extern CDictionaryEnumerable<GUID, POI> POIs;
 extern CDictionaryEnumerable<POIActivationDataKey, POIActivationData>
@@ -178,23 +178,23 @@ extern std::vector<POIRoute> Routes;
 extern std::unordered_map<std::string, POI> wvwPOIs;
 
 class GW2TacticalDisplay : public CWBItem {
-  TBOOL TacticalIconsOnEdge;
+  bool TacticalIconsOnEdge;
   float asp = 0;
   CMatrix4x4 cam;
   CMatrix4x4 persp;
   CRect drawrect;
 
   void FetchAchievements();
-  void InsertPOI(POI &poi);
-  void DrawPOI(CWBDrawAPI *API, const tm &ptm, const time_t &currtime, POI &poi,
-               bool drawDistance, std::string &infoText);
-  void DrawPOIMinimap(CWBDrawAPI *API, const CRect &miniRect, CVector2 &pos,
-                      const tm &ptm, const time_t &currtime, POI &poi,
+  void InsertPOI(POI& poi);
+  void DrawPOI(CWBDrawAPI* API, const tm& ptm, const time_t& currtime, POI& poi,
+               bool drawDistance, std::string& infoText);
+  void DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect, CVector2& pos,
+                      const tm& ptm, const time_t& currtime, POI& poi,
                       float alpha, float zoomLevel);
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
   CVector3 ProjectTacticalPos(CVector3 pos, float fov, float asp);
-  std::vector<POI *> mapPOIs;
-  std::vector<POI *> minimapPOIs;
+  std::vector<POI*> mapPOIs;
+  std::vector<POI*> minimapPOIs;
   bool drawWvWNames = false;
 
   bool beingFetched = false;
@@ -206,8 +206,8 @@ class GW2TacticalDisplay : public CWBItem {
   std::unordered_map<int32_t, Achievement> achievements;
 
  public:
-  GW2TacticalDisplay(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2TacticalDisplay> Create(CWBItem *Parent,
+  GW2TacticalDisplay(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2TacticalDisplay> Create(CWBItem* Parent,
                                                            CRect Position) {
     auto p = std::make_shared<GW2TacticalDisplay>(Parent, Position);
     p->SelfRef = p;
@@ -218,11 +218,11 @@ class GW2TacticalDisplay : public CWBItem {
   }
   ~GW2TacticalDisplay() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "gw2tactical" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
   void RemoveUserMarkersFromMap();
 };
 
@@ -236,9 +236,9 @@ class GW2TacticalCategory {
   int16_t zipFile = 0;
 
   MarkerTypeData data;
-  TBOOL KeepSaveState = false;
-  TBOOL IsOnlySeparator = false;
-  GW2TacticalCategory *Parent = nullptr;
+  bool KeepSaveState = false;
+  bool IsOnlySeparator = false;
+  GW2TacticalCategory* Parent = nullptr;
   std::vector<std::unique_ptr<GW2TacticalCategory>> children;
 
   std::string GetFullTypeName();
@@ -249,25 +249,25 @@ class GW2TacticalCategory {
   virtual ~GW2TacticalCategory() = default;
 };
 
-void AddPOI(CWBApplication *App);
+void AddPOI(CWBApplication* App);
 void DeletePOI();
 void UpdatePOI();
-void ImportPOIS(CWBApplication *App);
+void ImportPOIS(CWBApplication* App);
 void ExportPOIS();
 void ImportPOIActivationData();
 
-void OpenTypeContextMenu(CWBContextMenu *ctx,
-                         std::vector<GW2TacticalCategory *> &CategoryList,
-                         TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0,
-                         TBOOL closeOnClick = false);
-void OpenTypeContextMenu(CWBContextItem *ctx,
-                         std::vector<GW2TacticalCategory *> &CategoryList,
-                         TBOOL AddVisibilityMarkers = false, int32_t BaseID = 0,
-                         TBOOL closeOnClick = false);
+void OpenTypeContextMenu(CWBContextMenu* ctx,
+                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         bool AddVisibilityMarkers = false, int32_t BaseID = 0,
+                         bool closeOnClick = false);
+void OpenTypeContextMenu(CWBContextItem* ctx,
+                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         bool AddVisibilityMarkers = false, int32_t BaseID = 0,
+                         bool closeOnClick = false);
 
 float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
-void FindClosestRouteMarkers(TBOOL force);
+void FindClosestRouteMarkers(bool force);
 
 int32_t GetTime();
-std::string &GetStringFromMap(int32_t idx);
+std::string& GetStringFromMap(int32_t idx);

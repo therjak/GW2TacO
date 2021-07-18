@@ -12,7 +12,7 @@ std::vector<std::string_view> CGAPaletteNames = {
     "green", "lightgreen", "cyan",      "lightcyan", "magenta", "lightmagenta",
     "brown", "yellow",     "lightgray", "white"};
 
-void GW2MouseHighlight::OnDraw(CWBDrawAPI *API) {
+void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("MouseHighlightVisible"))
     SetConfigValue("MouseHighlightVisible", 0);
 
@@ -56,16 +56,16 @@ void GW2MouseHighlight::OnDraw(CWBDrawAPI *API) {
   API->DrawRect(CRect(cl.x1, cp.y, cl.x2, cp.y + 1), CGAPalette[Color]);
 }
 
-GW2MouseHighlight::GW2MouseHighlight(CWBItem *Parent, CRect Position)
+GW2MouseHighlight::GW2MouseHighlight(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
-CWBItem *GW2MouseHighlight::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* GW2MouseHighlight::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2MouseHighlight::Create(Root, Pos).get();
 }
 
-TBOOL GW2MouseHighlight::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                            WBMESSAGE MessageType) {
+bool GW2MouseHighlight::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                           WBMESSAGE MessageType) {
   return true;
 }

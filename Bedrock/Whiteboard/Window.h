@@ -45,14 +45,14 @@ class CWBWindow : public CWBItem {
   uint32_t Style;
   uint32_t DragMode;
 
-  void OnDraw(CWBDrawAPI *API) override;
-  TBOOL MessageProc(CWBMessage &Message) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(CWBMessage& Message) override;
 
  public:
-  CWBWindow(CWBItem *Parent, const CRect &Pos, const TCHAR *txt = _T( "" ),
+  CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt = _T( "" ),
             uint32_t style = WB_WINDOW_DEFAULT);
   static inline std::shared_ptr<CWBWindow> Create(
-      CWBItem *Parent, const CRect &Pos, const TCHAR *txt = _T( "" ),
+      CWBItem* Parent, const CRect& Pos, const TCHAR* txt = _T( "" ),
       uint32_t style = WB_WINDOW_DEFAULT) {
     auto p = std::make_shared<CWBWindow>(Parent, Pos, txt, style);
     p->SelfRef = p;
@@ -63,20 +63,20 @@ class CWBWindow : public CWBItem {
   }
   ~CWBWindow() override;
 
-  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
-                           const TCHAR *txt = _T( "" ),
-                           uint32_t style = WB_WINDOW_DEFAULT);
-  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                   const std::vector<std::string> &pseudo) override;
+  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
+                          const TCHAR* txt = _T( "" ),
+                          uint32_t style = WB_WINDOW_DEFAULT);
+  bool ApplyStyle(std::string_view prop, std::string_view value,
+                  const std::vector<std::string>& pseudo) override;
 
   std::string GetTitle() const { return WindowTitle; }
   void SetTitle(std::string_view val) { WindowTitle = val; }
 
   uint32_t GetDragMode();
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
 
   CRect GetElementPos(WBWINDOWELEMENT Element);
-  uint32_t GetBorderSelectionArea(CPoint &mousepos);
+  uint32_t GetBorderSelectionArea(CPoint& mousepos);
 
   WB_DECLARE_GUIITEM(_T( "window" ), CWBItem);
 };

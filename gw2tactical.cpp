@@ -28,7 +28,7 @@ WBATLASHANDLE forbiddenIconHandle = -1;
 CSize forbiddenIconSize;
 std::unordered_map<std::string, WBATLASHANDLE> MapIcons;
 GW2TacticalCategory CategoryRoot;
-std::unordered_map<std::string, GW2TacticalCategory *> CategoryMap;
+std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
 int32_t useMetricDisplay = 0;
 
 std::string emptyString;
@@ -48,7 +48,7 @@ int32_t AddStringToMap(std::string_view string) {
   return stringArray.size() - 1;
 }
 
-std::string &GetStringFromMap(int32_t idx) {
+std::string& GetStringFromMap(int32_t idx) {
   if (idx < 0 || idx >= stringArray.size()) return emptyString;
   return stringArray[idx];
 }
@@ -59,8 +59,8 @@ int32_t GetTime() { return timeGetTime() - tacoStartTime; }
 
 void UpdateWvWStatus();
 
-void FindClosestRouteMarkers(TBOOL force) {
-  for (auto &r : Routes) {
+void FindClosestRouteMarkers(bool force) {
+  for (auto& r : Routes) {
     if (!force && r.activeItem != -1) continue;
 
     if (r.MapID == mumbleLink.mapID && r.hasResetPos &&
@@ -73,7 +73,7 @@ void FindClosestRouteMarkers(TBOOL force) {
     for (int32_t y = 0; y < r.route.size(); y++) {
       GUID g = r.route[y];
       if (POIs.HasKey(g)) {
-        POI &p = POIs[g];
+        POI& p = POIs[g];
         if (!(p.mapID == mumbleLink.mapID)) continue;
 
         float dist = (p.position - mumbleLink.charPosition).Length();
@@ -87,7 +87,7 @@ void FindClosestRouteMarkers(TBOOL force) {
   }
 }
 
-GW2TacticalCategory *GetCategory(std::string_view sv) {
+GW2TacticalCategory* GetCategory(std::string_view sv) {
   std::string s(sv);
   std::transform(s.begin(), s.end(), s.begin(),
                  [](unsigned char c) { return std::tolower(c); });
@@ -99,13 +99,13 @@ GW2TacticalCategory *GetCategory(std::string_view sv) {
 std::unordered_map<std::string, std::unique_ptr<mz_zip_archive>> zipDict;
 
 void FlushZipDict() {
-  for (auto &kv : zipDict) {
+  for (auto& kv : zipDict) {
     if (kv.second) mz_zip_reader_end(kv.second.get());
   }
   zipDict.clear();
 }
 
-mz_zip_archive *OpenZipFile(std::string_view zf) {
+mz_zip_archive* OpenZipFile(std::string_view zf) {
   std::string zipFile(zf);
   if (zipDict.find(zipFile) == zipDict.end()) {
     auto zip = std::make_unique<mz_zip_archive>();
@@ -122,11 +122,11 @@ mz_zip_archive *OpenZipFile(std::string_view zf) {
   return zipDict[zipFile].get();
 }
 
-WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
+WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
                          std::string_view zipFile,
                          std::string_view categoryZip) {
   std::string filename(fname);
-  for (char &x : filename)
+  for (char& x : filename)
     if (x == '\\') x = '/';
 
   auto s = (zipFile.size() ? (std::string(zipFile) + "\\") : "") + filename;
@@ -158,7 +158,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
 
       if (categoryZip.empty() && x == 1) continue;
 
-      mz_zip_archive *zip =
+      mz_zip_archive* zip =
           x == 0 ? OpenZipFile(zipFile) : OpenZipFile(categoryZip);
 
       if (zip) {
@@ -173,7 +173,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
             if (mz_zip_reader_extract_to_mem(
                     zip, idx, data.get(),
                     static_cast<int32_t>(stat.m_uncomp_size), 0)) {
-              uint8_t *imageData = nullptr;
+              uint8_t* imageData = nullptr;
               int32_t xres, yres;
               if (DecompressPNG(data.get(),
                                 static_cast<int32_t>(stat.m_uncomp_size),
@@ -211,7 +211,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication *App, std::string_view fname,
     return DefaultIconHandle;
   }
 
-  uint8_t *imageData = nullptr;
+  uint8_t* imageData = nullptr;
   int32_t xres, yres;
   if (!DecompressPNG(f.GetData(), static_cast<int32_t>(f.GetLength()),
                      imageData, xres, yres)) {
@@ -234,16 +234,16 @@ CDictionaryEnumerable<POIActivationDataKey, POIActivationData> ActivationData;
 
 std::vector<POIRoute> Routes;
 
-uint32_t DictionaryHash(const GUID &i) {
-  uint8_t *dta = (uint8_t *)(&i);
+uint32_t DictionaryHash(const GUID& i) {
+  uint8_t* dta = (uint8_t*)(&i);
   uint32_t Hash = 5381;
   for (int x = 0; x < sizeof(GUID); x++)
     Hash = ((Hash << 5) + Hash) + dta[x];  // hash * 33 + c
   return Hash;
 }
 
-uint32_t DictionaryHash(const POIActivationDataKey &i) {
-  uint8_t *dta = (uint8_t *)(&i);
+uint32_t DictionaryHash(const POIActivationDataKey& i) {
+  uint8_t* dta = (uint8_t*)(&i);
   uint32_t Hash = 5381;
   for (int x = 0; x < sizeof(POIActivationDataKey); x++)
     Hash = ((Hash << 5) + Hash) + dta[x];  // hash * 33 + c
@@ -274,7 +274,7 @@ bool testfrustum(CVector3 c, CPlane planes[4], int skip) {
   return v;
 }
 
-void SetRotate(CMatrix4x4 &m, float x, float y, float z, float phi) {
+void SetRotate(CMatrix4x4& m, float x, float y, float z, float phi) {
   m.Rotation(CQuaternion::FromAxisAngle(CVector3(x, y, z), phi));
 }
 
@@ -364,7 +364,7 @@ float GetMapFade() {
 void GW2TacticalDisplay::FetchAchievements() {
   if (GW2::apiKeyManager.GetStatus() != GW2::APIKeyManager::Status::OK) return;
 
-  GW2::APIKey *key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+  GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->valid &&
       (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
@@ -381,13 +381,13 @@ void GW2TacticalDisplay::FetchAchievements() {
 
         std::unordered_map<int32_t, Achievement> incoming;
 
-        for (auto &x : achiData) {
+        for (auto& x : achiData) {
           if (!x->is<Object>()) continue;
-          auto &data = x->get<Object>();
+          auto& data = x->get<Object>();
 
           if (!data.has<Boolean>("done")) continue;
 
-          TBOOL done = data.get<Boolean>("done");
+          bool done = data.get<Boolean>("done");
 
           if (!data.has<Number>("id")) continue;
 
@@ -395,9 +395,9 @@ void GW2TacticalDisplay::FetchAchievements() {
           incoming[achiId].done = done;
 
           if (!done && data.has<Array>("bits")) {
-            auto &bitArray = incoming[achiId].bits;
+            auto& bitArray = incoming[achiId].bits;
             auto bits = data.get<Array>("bits").values();
-            for (auto &bit : bits) {
+            for (auto& bit : bits) {
               if (!bit->is<Number>()) continue;
               bitArray.push_back(int32_t(bit->get<Number>()));
             }
@@ -422,13 +422,13 @@ void GW2TacticalDisplay::FetchAchievements() {
   }
 }
 
-void GW2TacticalDisplay::InsertPOI(POI &poi) {
+void GW2TacticalDisplay::InsertPOI(POI& poi) {
   if (poi.mapID != mumbleLink.mapID) return;
 
   if (poi.routeMember) {
-    TBOOL discard = true;
+    bool discard = true;
 
-    for (const auto &r : Routes) {
+    for (const auto& r : Routes) {
       if (r.activeItem >= 0) {
         if (r.route[r.activeItem] == poi.guid) {
           discard = false;
@@ -455,10 +455,10 @@ void GW2TacticalDisplay::InsertPOI(POI &poi) {
   mapPOIs.push_back(&poi);
 }
 
-void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
-                                 const time_t &currtime, POI &poi,
-                                 bool drawDistance, std::string &infoText) {
-  TBOOL drawCountdown = false;
+void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
+                                 const time_t& currtime, POI& poi,
+                                 bool drawDistance, std::string& infoText) {
+  bool drawCountdown = false;
   int32_t timeLeft;
   float alphaMultiplier = 1;
 
@@ -514,7 +514,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
 
   if (poi.routeMember && ((poi.position - mumbleLink.charPosition).Length() <=
                           poi.typeData.triggerRange)) {
-    for (auto &r : Routes) {
+    for (auto& r : Routes) {
       if (r.activeItem < 0) return;
 
       if (r.route[r.activeItem] == poi.guid) {
@@ -625,7 +625,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
   }
 
   if (drawWvWNames && poi.typeData.behavior == POIBehavior::WvWObjective) {
-    CWBFont *f = App->GetDefaultFont();
+    CWBFont* f = App->GetDefaultFont();
     extern std::vector<WvWObjective> wvwObjectives;
     std::string wvwObjectiveName;
 
@@ -653,7 +653,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
   }
 
   if (drawCountdown) {
-    CWBFont *f = GetFont(GetState());
+    CWBFont* f = GetFont(GetState());
     if (!f) return;
 
     if (poi.typeData.behavior == POIBehavior::WvWObjective)
@@ -711,7 +711,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
   }
 
   if (drawDistance) {
-    CWBFont *f = App->GetDefaultFont();
+    CWBFont* f = App->GetDefaultFont();
     if (!f) return;
 
     if (Alpha * alphaMultiplier > 0) {
@@ -749,9 +749,9 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI *API, const tm &ptm,
 
 float uiScale = 1.0f;
 
-void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI *API, const CRect &miniRect,
-                                        CVector2 &pos, const tm &ptm,
-                                        const time_t &currtime, POI &poi,
+void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
+                                        CVector2& pos, const tm& ptm,
+                                        const time_t& currtime, POI& poi,
                                         float alpha, float zoomLevel) {
   if (alpha <= 0) return;
   if (!poi.IsVisible(ptm, currtime, achievementsFetched, achievements,
@@ -796,7 +796,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI *API, const CRect &miniRect,
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
 }
 
-void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
+void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
   // default values
   if (!HasConfigValue("TacticalIconsOnEdge"))
     SetConfigValue("TacticalIconsOnEdge", 1);
@@ -876,14 +876,14 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
   asp = drawrect.Width() / static_cast<float>(drawrect.Height());
 
   for (int x = 0; x < POIs.NumItems(); x++) {
-    auto &poi = POIs.GetByIndex(x);
+    auto& poi = POIs.GetByIndex(x);
     InsertPOI(poi);
   }
 
   extern bool wvwCanBeRendered;
 
   if (wvwCanBeRendered) {
-    for (auto &e : wvwPOIs) {
+    for (auto& e : wvwPOIs) {
       InsertPOI(e.second);
     }
   }
@@ -891,11 +891,11 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
   time_t currtime;
   time(&currtime);
 
-  std::sort(mapPOIs.begin(), mapPOIs.end(), [](POI *a, POI *b) {
+  std::sort(mapPOIs.begin(), mapPOIs.end(), [](POI* a, POI* b) {
     return b->cameraSpacePosition.z > a->cameraSpacePosition.z;
   });
 
-  for (auto &r : Routes) {
+  for (auto& r : Routes) {
     if (r.hasResetPos && r.MapID == mumbleLink.mapID &&
         (r.resetPos - mumbleLink.charPosition).Length() < r.resetRad)
       r.activeItem = 0;
@@ -904,7 +904,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
   std::string infoText;
 
   if (showIngameMarkers > 0)
-    for (const auto &mp : mapPOIs) {
+    for (const auto& mp : mapPOIs) {
       if (!mp->typeData.bits.inGameVisible && showIngameMarkers != 2) continue;
       DrawPOI(API, ptm, currtime, *mp, drawDistance, infoText);
     }
@@ -915,7 +915,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
 
   API->FlushDrawBuffer();
   API->GetDevice()->SetRenderState(
-      (dynamic_cast<COverlayApp *>(App))->holePunchBlendState.get());
+      (dynamic_cast<COverlayApp*>(App))->holePunchBlendState.get());
 
   API->DrawRect(miniRect, CColor(0, 0, 0, 0));
 
@@ -924,7 +924,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
 
   // draw minimap trails
 
-  GW2TrailDisplay *trails = dynamic_cast<GW2TrailDisplay *>(
+  GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
       App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
   if (trails) trails->DrawProxy(API, true);
 
@@ -935,7 +935,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
   if (mapFade > 0 && showMinimapMarkers > 0) {
     CMatrix4x4 miniMapTrafo =
         mumbleLink.miniMap.BuildTransformationMatrix(miniRect, false);
-    for (const auto &mmp : minimapPOIs) {
+    for (const auto& mmp : minimapPOIs) {
       if (!mmp->typeData.bits.miniMapVisible && showMinimapMarkers != 2)
         continue;
       if (!mmp->IsVisible(ptm, currtime, achievementsFetched, achievements,
@@ -952,7 +952,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
     miniRect = GetClientRect();
     CMatrix4x4 miniMapTrafo =
         mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
-    for (const auto &mmp : minimapPOIs) {
+    for (const auto& mmp : minimapPOIs) {
       if (!mmp->typeData.bits.bigMapVisible && showBigmapMarkers != 2) continue;
       if (!mmp->IsVisible(ptm, currtime, achievementsFetched, achievements,
                           dataWriteCritSec))
@@ -973,18 +973,18 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI *API) {
   }
 }
 
-GW2TacticalDisplay::GW2TacticalDisplay(CWBItem *Parent, CRect Position)
+GW2TacticalDisplay::GW2TacticalDisplay(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() = default;
 
-CWBItem *GW2TacticalDisplay::Factory(CWBItem *Root, CXMLNode &node,
-                                     CRect &Pos) {
+CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, CXMLNode& node,
+                                     CRect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos).get();
 }
 
-TBOOL GW2TacticalDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                             WBMESSAGE MessageType) {
+bool GW2TacticalDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                            WBMESSAGE MessageType) {
   return true;
 }
 
@@ -1001,73 +1001,73 @@ void GW2TacticalDisplay::RemoveUserMarkersFromMap() {
   ExportPOIS();
 }
 
-TBOOL FindSavedCategory(GW2TacticalCategory *t) {
+bool FindSavedCategory(GW2TacticalCategory* t) {
   if (t->KeepSaveState) return true;
-  for (const auto &c : t->children)
+  for (const auto& c : t->children)
     if (FindSavedCategory(c.get())) return true;
   return false;
 }
 
-void ExportSavedCategories(CXMLNode *n, GW2TacticalCategory *t) {
+void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
   if (!FindSavedCategory(t)) return;
   auto nn = n->AddChild("MarkerCategory");
   nn.SetAttribute("name", t->name);
   if (t->name != t->displayName) nn.SetAttribute("DisplayName", t->displayName);
   t->data.Write(&nn);
-  for (const auto &c : t->children) ExportSavedCategories(&nn, c.get());
+  for (const auto& c : t->children) ExportSavedCategories(&nn, c.get());
 }
 
-void ExportPOI(CXMLNode *n, POI &p) {
-  CXMLNode *t = &n->AddChild(_T( "POI" ));
+void ExportPOI(CXMLNode* n, POI& p) {
+  CXMLNode* t = &n->AddChild(_T( "POI" ));
   t->SetAttributeFromInteger("MapID", p.mapID);
   t->SetAttributeFromFloat("xpos", p.position.x);
   t->SetAttributeFromFloat("ypos", p.position.y);
   t->SetAttributeFromFloat("zpos", p.position.z);
   if (!p.Type.empty()) t->SetAttribute("type", p.Type);
-  t->SetAttribute("GUID",
-                  B64Encode(std::string_view(
-                      reinterpret_cast<const char *>(&p.guid), sizeof(GUID))));
+  t->SetAttribute(
+      "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid),
+                                         sizeof(GUID))));
   p.typeData.Write(t);
 }
 
-void ExportTrail(CXMLNode *n, GW2Trail &p) {
-  CXMLNode *t = &n->AddChild(_T( "Trail" ));
+void ExportTrail(CXMLNode* n, GW2Trail& p) {
+  CXMLNode* t = &n->AddChild(_T( "Trail" ));
   if (!p.Type.empty()) t->SetAttribute("type", p.Type);
-  t->SetAttribute("GUID",
-                  B64Encode(std::string_view(
-                      reinterpret_cast<const char *>(&p.guid), sizeof(GUID))));
+  t->SetAttribute(
+      "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid),
+                                         sizeof(GUID))));
   p.typeData.Write(t);
 }
 
 void ExportPOIS() {
   CXMLDocument d;
-  CXMLNode &root = d.GetDocumentNode();
+  CXMLNode& root = d.GetDocumentNode();
   root = root.AddChild("OverlayData");
 
-  for (const auto &c : CategoryRoot.children)
+  for (const auto& c : CategoryRoot.children)
     ExportSavedCategories(&root, c.get());
 
-  CXMLNode *n = &root.AddChild("POIs");
+  CXMLNode* n = &root.AddChild("POIs");
 
   for (int32_t x = 0; x < POIs.NumItems(); x++) {
-    auto &p = POIs.GetByIndex(x);
+    auto& p = POIs.GetByIndex(x);
     if (!p.External && !p.routeMember) ExportPOI(n, p);
   }
 
-  for (auto &x : trails) {
-    auto &p = x.second;
+  for (auto& x : trails) {
+    auto& p = x.second;
     if (!p->External) ExportTrail(n, *p);
   }
 
-  for (const auto &r : Routes) {
+  for (const auto& r : Routes) {
     if (r.external) continue;
 
-    CXMLNode *t = &n->AddChild(_T( "Route" ));
+    CXMLNode* t = &n->AddChild(_T( "Route" ));
     t->SetAttribute("Name", r.name);
     t->SetAttributeFromInteger("BackwardDirection",
                                static_cast<int32_t>(r.backwards));
 
-    for (const auto &ar : r.route) {
+    for (const auto& ar : r.route) {
       if (POIs.HasKey(ar)) ExportPOI(t, POIs[ar]);
     }
   }
@@ -1075,7 +1075,7 @@ void ExportPOIS() {
   d.SaveToFile("poidata.xml");
 }
 
-GUID LoadGUID(CXMLNode &n) {
+GUID LoadGUID(CXMLNode& n) {
   auto guidb64 = n.GetAttributeAsString(_T( "GUID" ));
 
   auto data = B64Decode(guidb64);
@@ -1090,12 +1090,12 @@ GUID LoadGUID(CXMLNode &n) {
   return guid;
 }
 
-void RecursiveImportPOIType(CXMLNode &root, GW2TacticalCategory *Root,
+void RecursiveImportPOIType(CXMLNode& root, GW2TacticalCategory* Root,
                             std::string_view currentCategory,
-                            MarkerTypeData &defaults, TBOOL KeepSaveState,
+                            MarkerTypeData& defaults, bool KeepSaveState,
                             std::string_view zipFile) {
   for (int32_t x = 0; x < root.GetChildCount("MarkerCategory"); x++) {
-    auto &n = root.GetChild("MarkerCategory", x);
+    auto& n = root.GetChild("MarkerCategory", x);
     if (!n.HasAttribute("name")) continue;
 
     auto name = n.GetAttribute("name");
@@ -1108,10 +1108,10 @@ void RecursiveImportPOIType(CXMLNode &root, GW2TacticalCategory *Root,
 
     auto nameExploded = Split(name, ".");
 
-    GW2TacticalCategory *c = nullptr;
+    GW2TacticalCategory* c = nullptr;
 
     for (size_t y = 0; y < nameExploded.size(); y++) {
-      GW2TacticalCategory *Root2 = Root;
+      GW2TacticalCategory* Root2 = Root;
 
       if (!newCatName.empty()) newCatName += ".";
       newCatName += nameExploded[y];
@@ -1172,7 +1172,7 @@ void ImportPOITypes() {
   RecursiveImportPOIType(root, &CategoryRoot, "", MarkerTypeData(), false, "");
 }
 
-void ImportPOI(CWBApplication *App, CXMLNode &t, POI &p,
+void ImportPOI(CWBApplication* App, CXMLNode& t, POI& p,
                std::string_view zipFile) {
   if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p.mapID);
   if (t.HasAttribute("xpos")) t.GetAttributeAsFloat("xpos", &p.position.x);
@@ -1188,7 +1188,7 @@ void ImportPOI(CWBApplication *App, CXMLNode &t, POI &p,
 
   p.zipFile = AddStringToMap(zipFile);
 
-  auto *td = GetCategory(p.Type);
+  auto* td = GetCategory(p.Type);
   if (td) p.SetCategory(App, td);
 
   p.typeData.Read(t, true);
@@ -1196,8 +1196,8 @@ void ImportPOI(CWBApplication *App, CXMLNode &t, POI &p,
   p.iconFile = p.typeData.iconFile;
 }
 
-TBOOL ImportTrail(CWBApplication *App, CXMLNode &t, GW2Trail &p,
-                  std::string_view zipFile) {
+bool ImportTrail(CWBApplication* App, CXMLNode& t, GW2Trail& p,
+                 std::string_view zipFile) {
   p.zipFile = zipFile;
 
   if (t.HasAttribute("type")) p.Type = t.GetAttributeAsString("type");
@@ -1207,7 +1207,7 @@ TBOOL ImportTrail(CWBApplication *App, CXMLNode &t, GW2Trail &p,
   else
     p.guid = LoadGUID(t);
 
-  auto *td = GetCategory(p.Type);
+  auto* td = GetCategory(p.Type);
   if (td) p.SetCategory(App, td);
 
   p.typeData.Read(t, true);
@@ -1215,7 +1215,7 @@ TBOOL ImportTrail(CWBApplication *App, CXMLNode &t, GW2Trail &p,
   return p.Import(GetStringFromMap(p.typeData.trailData), zipFile);
 }
 
-void ImportPOIDocument(CWBApplication *App, CXMLDocument &d, TBOOL External,
+void ImportPOIDocument(CWBApplication* App, CXMLDocument& d, bool External,
                        std::string_view zipFile) {
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
   CXMLNode root = d.GetDocumentNode().GetChild("OverlayData");
@@ -1283,21 +1283,21 @@ void ImportPOIDocument(CWBApplication *App, CXMLDocument &d, TBOOL External,
   }
 }
 
-void ImportPOIFile(CWBApplication *App, std::string_view s, bool External) {
+void ImportPOIFile(CWBApplication* App, std::string_view s, bool External) {
   CXMLDocument d;
   if (!d.LoadFromFile(s.data())) return;
   ImportPOIDocument(App, d, External, "");
 }
 
-void ImportPOIString(CWBApplication *App, std::string_view data,
+void ImportPOIString(CWBApplication* App, std::string_view data,
                      std::string_view zipFile) {
   CXMLDocument d;
   if (!d.LoadFromString(data)) return;
   ImportPOIDocument(App, d, true, zipFile);
 }
 
-void ImportMarkerPack(CWBApplication *App, std::string_view zipFile) {
-  mz_zip_archive *zip = OpenZipFile(zipFile.data());
+void ImportMarkerPack(CWBApplication* App, std::string_view zipFile) {
+  mz_zip_archive* zip = OpenZipFile(zipFile.data());
   if (!zip) return;
 
   for (uint32_t x = 0; x < mz_zip_reader_get_num_files(zip); x++) {
@@ -1322,13 +1322,13 @@ void ImportMarkerPack(CWBApplication *App, std::string_view zipFile) {
       continue;
     }
 
-    std::string_view doc(reinterpret_cast<char *>(data.get()),
+    std::string_view doc(reinterpret_cast<char*>(data.get()),
                          static_cast<uint32_t>(stat.m_uncomp_size));
     ImportPOIString(App, doc, zipFile);
   }
 }
 
-void ImportPOIS(CWBApplication *App) {
+void ImportPOIS(CWBApplication* App) {
   FlushZipDict();
   ImportPOITypes();
 
@@ -1338,21 +1338,21 @@ void ImportPOIS(CWBApplication *App) {
   {
     CFileList list;
     list.ExpandSearch("*.xml", "POIs", false);
-    for (auto &File : list.Files)
+    for (auto& File : list.Files)
       ImportPOIFile(App, File.Path + File.FileName, true);
   }
 
   {
     CFileList list;
     list.ExpandSearch("*.zip", "POIs", false);
-    for (auto &File : list.Files)
+    for (auto& File : list.Files)
       ImportMarkerPack(App, File.Path + File.FileName);
   }
 
   {
     CFileList list;
     list.ExpandSearch("*.taco", "POIs", false);
-    for (auto &File : list.Files)
+    for (auto& File : list.Files)
       ImportMarkerPack(App, File.Path + File.FileName);
   }
 
@@ -1380,10 +1380,10 @@ void ImportPOIActivationData() {
 
       if (t.HasAttribute("lut1"))
         t.GetAttributeAsInteger(
-            "lut1", &(reinterpret_cast<int32_t *>(&p.lastUpdateTime))[0]);
+            "lut1", &(reinterpret_cast<int32_t*>(&p.lastUpdateTime))[0]);
       if (t.HasAttribute("lut2"))
         t.GetAttributeAsInteger(
-            "lut2", &(reinterpret_cast<int32_t *>(&p.lastUpdateTime))[1]);
+            "lut2", &(reinterpret_cast<int32_t*>(&p.lastUpdateTime))[1]);
 
       p.poiguid = LoadGUID(t);
 
@@ -1401,26 +1401,26 @@ void ImportPOIActivationData() {
 
 void ExportPOIActivationData() {
   CXMLDocument d;
-  CXMLNode &root = d.GetDocumentNode();
+  CXMLNode& root = d.GetDocumentNode();
   root = root.AddChild("OverlayData");
 
-  CXMLNode *n = &root.AddChild("Activations");
+  CXMLNode* n = &root.AddChild("Activations");
 
   for (int32_t x = 0; x < ActivationData.NumItems(); x++) {
-    auto &dat = ActivationData.GetByIndex(x);
+    auto& dat = ActivationData.GetByIndex(x);
     if (POIs.HasKey(dat.poiguid)) {
-      auto &poi = POIs[dat.poiguid];
+      auto& poi = POIs[dat.poiguid];
       if (poi.typeData.behavior == POIBehavior::AlwaysVisible) continue;
     }
 
-    CXMLNode *t = &n->AddChild(_T( "POIActivation" ));
+    CXMLNode* t = &n->AddChild(_T( "POIActivation" ));
     t->SetAttributeFromInteger(
-        "lut1", (reinterpret_cast<int32_t *>(&dat.lastUpdateTime))[0]);
+        "lut1", (reinterpret_cast<int32_t*>(&dat.lastUpdateTime))[0]);
     t->SetAttributeFromInteger(
-        "lut2", (reinterpret_cast<int32_t *>(&dat.lastUpdateTime))[1]);
+        "lut2", (reinterpret_cast<int32_t*>(&dat.lastUpdateTime))[1]);
     if (dat.uniqueData) t->SetAttributeFromInteger("instance", dat.uniqueData);
     t->SetAttribute("GUID", B64Encode(std::string_view(
-                                reinterpret_cast<const char *>(&dat.poiguid),
+                                reinterpret_cast<const char*>(&dat.poiguid),
                                 sizeof(GUID))));
   }
 
@@ -1429,7 +1429,7 @@ void ExportPOIActivationData() {
 
 std::string DefaultMarkerCategory = "";
 
-void AddPOI(CWBApplication *App) {
+void AddPOI(CWBApplication* App) {
   if (!mumbleLink.IsValid()) return;
   POI poi;
   poi.position = mumbleLink.charPosition;
@@ -1478,18 +1478,18 @@ void UpdatePOI() {
 
   if (mumbleLink.mapID == -1) return;
 
-  TBOOL found = false;
+  bool found = false;
 
   for (int32_t x = 0; x < POIs.NumItems(); x++) {
-    auto &cpoi = POIs.GetByIndex(x);
+    auto& cpoi = POIs.GetByIndex(x);
 
     if (cpoi.mapID != mumbleLink.mapID) continue;
 
     CVector3 v = cpoi.position - CVector3(mumbleLink.charPosition);
     if (v.Length() < cpoi.typeData.triggerRange) {
-      auto &str = GetStringFromMap(cpoi.typeData.toggleCategory);
+      auto& str = GetStringFromMap(cpoi.typeData.toggleCategory);
       if (!str.empty()) {
-        GW2TacticalCategory *cat = GetCategory(str);
+        GW2TacticalCategory* cat = GetCategory(str);
         if (cat) {
           cat->IsDisplayed = !cat->IsDisplayed;
           SetConfigValue(("CategoryVisible_" + cat->GetFullTypeName()),
@@ -1527,37 +1527,37 @@ MarkerTypeData::MarkerTypeData() {
   bits.scaleWithZoom = true;
 }
 
-void MarkerTypeData::Read(CXMLNode &n, TBOOL StoreSaveState) {
-  TBOOL _iconFileSaved = n.HasAttribute("iconFile");
-  TBOOL _sizeSaved = n.HasAttribute("iconSize");
-  TBOOL _alphaSaved = n.HasAttribute("alpha");
-  TBOOL _fadeNearSaved = n.HasAttribute("fadeNear");
-  TBOOL _fadeFarSaved = n.HasAttribute("fadeFar");
-  TBOOL _heightSaved = n.HasAttribute("heightOffset");
-  TBOOL _behaviorSaved = n.HasAttribute("behavior");
-  TBOOL _resetLengthSaved = n.HasAttribute("resetLength");
-  TBOOL _autoTriggerSaved = n.HasAttribute("autoTrigger");
-  TBOOL _hasCountdownSaved = n.HasAttribute("hasCountdown");
-  TBOOL _triggerRangeSaved = n.HasAttribute("triggerRange");
-  TBOOL _minSizeSaved = n.HasAttribute("minSize");
-  TBOOL _maxSizeSaved = n.HasAttribute("maxSize");
-  TBOOL _colorSaved = n.HasAttribute("color");
-  TBOOL _trailDataSaved = n.HasAttribute("trailData");
-  TBOOL _animSpeedSaved = n.HasAttribute("animSpeed");
-  TBOOL _textureSaved = n.HasAttribute("texture");
-  TBOOL _trailScaleSaved = n.HasAttribute("trailScale");
-  TBOOL _toggleCategorySaved = n.HasAttribute("toggleCategory");
-  TBOOL _achievementIdSaved = n.HasAttribute("achievementId");
-  TBOOL _achievementBitSaved = n.HasAttribute("achievementBit");
-  TBOOL _miniMapVisibleSaved = n.HasAttribute("miniMapVisibility");
-  TBOOL _bigMapVisibleSaved = n.HasAttribute("mapVisibility");
-  TBOOL _inGameVisibleSaved = n.HasAttribute("inGameVisibility");
-  TBOOL _scaleWithZoomSaved = n.HasAttribute("scaleOnMapWithZoom");
-  TBOOL _miniMapSizeSaved = n.HasAttribute("mapDisplaySize");
-  TBOOL _miniMapFadeOutLevelSaved = n.HasAttribute("mapFadeoutScaleLevel");
-  TBOOL _keepOnMapEdgeSaved = n.HasAttribute("keepOnMapEdge");
-  TBOOL _infoSaved = n.HasAttribute("info");
-  TBOOL _infoRangeSaved = n.HasAttribute("infoRange");
+void MarkerTypeData::Read(CXMLNode& n, bool StoreSaveState) {
+  bool _iconFileSaved = n.HasAttribute("iconFile");
+  bool _sizeSaved = n.HasAttribute("iconSize");
+  bool _alphaSaved = n.HasAttribute("alpha");
+  bool _fadeNearSaved = n.HasAttribute("fadeNear");
+  bool _fadeFarSaved = n.HasAttribute("fadeFar");
+  bool _heightSaved = n.HasAttribute("heightOffset");
+  bool _behaviorSaved = n.HasAttribute("behavior");
+  bool _resetLengthSaved = n.HasAttribute("resetLength");
+  bool _autoTriggerSaved = n.HasAttribute("autoTrigger");
+  bool _hasCountdownSaved = n.HasAttribute("hasCountdown");
+  bool _triggerRangeSaved = n.HasAttribute("triggerRange");
+  bool _minSizeSaved = n.HasAttribute("minSize");
+  bool _maxSizeSaved = n.HasAttribute("maxSize");
+  bool _colorSaved = n.HasAttribute("color");
+  bool _trailDataSaved = n.HasAttribute("trailData");
+  bool _animSpeedSaved = n.HasAttribute("animSpeed");
+  bool _textureSaved = n.HasAttribute("texture");
+  bool _trailScaleSaved = n.HasAttribute("trailScale");
+  bool _toggleCategorySaved = n.HasAttribute("toggleCategory");
+  bool _achievementIdSaved = n.HasAttribute("achievementId");
+  bool _achievementBitSaved = n.HasAttribute("achievementBit");
+  bool _miniMapVisibleSaved = n.HasAttribute("miniMapVisibility");
+  bool _bigMapVisibleSaved = n.HasAttribute("mapVisibility");
+  bool _inGameVisibleSaved = n.HasAttribute("inGameVisibility");
+  bool _scaleWithZoomSaved = n.HasAttribute("scaleOnMapWithZoom");
+  bool _miniMapSizeSaved = n.HasAttribute("mapDisplaySize");
+  bool _miniMapFadeOutLevelSaved = n.HasAttribute("mapFadeoutScaleLevel");
+  bool _keepOnMapEdgeSaved = n.HasAttribute("keepOnMapEdge");
+  bool _infoSaved = n.HasAttribute("info");
+  bool _infoRangeSaved = n.HasAttribute("infoRange");
 
   if (StoreSaveState) {
     bits.iconFileSaved = _iconFileSaved;
@@ -1690,7 +1690,7 @@ void MarkerTypeData::Read(CXMLNode &n, TBOOL StoreSaveState) {
   if (_infoRangeSaved) n.GetAttributeAsFloat("infoRange", &infoRange);
 }
 
-void MarkerTypeData::Write(CXMLNode *n) {
+void MarkerTypeData::Write(CXMLNode* n) {
   if (bits.iconFileSaved)
     n->SetAttribute("iconFile", GetStringFromMap(iconFile));
   if (bits.sizeSaved) n->SetAttributeFromFloat("iconSize", size);
@@ -1741,12 +1741,12 @@ void MarkerTypeData::Write(CXMLNode *n) {
   if (bits.infoRangeSaved) n->SetAttributeFromFloat("infoRange", infoRange);
 }
 
-void AddTypeContextMenu(CWBContextItem *ctx,
-                        std::vector<GW2TacticalCategory *> &CategoryList,
-                        const GW2TacticalCategory *Parent,
-                        TBOOL AddVisibilityMarkers, int32_t BaseID,
-                        TBOOL closeOnClick) {
-  for (const auto &cm : CategoryMap) {
+void AddTypeContextMenu(CWBContextItem* ctx,
+                        std::vector<GW2TacticalCategory*>& CategoryList,
+                        const GW2TacticalCategory* Parent,
+                        bool AddVisibilityMarkers, int32_t BaseID,
+                        bool closeOnClick) {
+  for (const auto& cm : CategoryMap) {
     auto dta = cm.second;
     if (dta->Parent == Parent) {
       std::string txt;
@@ -1778,12 +1778,12 @@ void AddTypeContextMenu(CWBContextItem *ctx,
   }
 }
 
-void AddTypeContextMenu(CWBContextMenu *ctx,
-                        std::vector<GW2TacticalCategory *> &CategoryList,
-                        const GW2TacticalCategory *Parent,
-                        TBOOL AddVisibilityMarkers, int32_t BaseID,
-                        TBOOL closeOnClick) {
-  for (auto &dtap : CategoryMap) {
+void AddTypeContextMenu(CWBContextMenu* ctx,
+                        std::vector<GW2TacticalCategory*>& CategoryList,
+                        const GW2TacticalCategory* Parent,
+                        bool AddVisibilityMarkers, int32_t BaseID,
+                        bool closeOnClick) {
+  for (auto& dtap : CategoryMap) {
     auto dta = dtap.second;
     if (dta->Parent == Parent) {
       std::string txt;
@@ -1815,19 +1815,19 @@ void AddTypeContextMenu(CWBContextMenu *ctx,
   }
 }
 
-void OpenTypeContextMenu(CWBContextItem *ctx,
-                         std::vector<GW2TacticalCategory *> &CategoryList,
-                         TBOOL AddVisibilityMarkers, int32_t BaseID,
-                         TBOOL closeOnClick) {
+void OpenTypeContextMenu(CWBContextItem* ctx,
+                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         bool AddVisibilityMarkers, int32_t BaseID,
+                         bool closeOnClick) {
   CategoryList.clear();
   AddTypeContextMenu(ctx, CategoryList, &CategoryRoot, AddVisibilityMarkers,
                      BaseID, closeOnClick);
 }
 
-void OpenTypeContextMenu(CWBContextMenu *ctx,
-                         std::vector<GW2TacticalCategory *> &CategoryList,
-                         TBOOL AddVisibilityMarkers, int32_t BaseID,
-                         TBOOL closeOnClick) {
+void OpenTypeContextMenu(CWBContextMenu* ctx,
+                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         bool AddVisibilityMarkers, int32_t BaseID,
+                         bool closeOnClick) {
   CategoryList.clear();
   AddTypeContextMenu(ctx, CategoryList, &CategoryRoot, AddVisibilityMarkers,
                      BaseID, closeOnClick);
@@ -1861,7 +1861,7 @@ bool GW2TacticalCategory::IsVisible() {
   return Parent->IsVisible() && IsDisplayed;
 }
 
-void POI::SetCategory(CWBApplication *App, GW2TacticalCategory *t) {
+void POI::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
   category = t;
   typeData = t->data;
   Type = t->GetFullTypeName();
@@ -1869,10 +1869,10 @@ void POI::SetCategory(CWBApplication *App, GW2TacticalCategory *t) {
   iconFile = typeData.iconFile;
 }
 
-bool POI::IsVisible(const tm &ptm, const time_t &currtime,
+bool POI::IsVisible(const tm& ptm, const time_t& currtime,
                     bool achievementsFetched,
-                    std::unordered_map<int32_t, Achievement> &achievements,
-                    LIGHTWEIGHT_CRITICALSECTION &dataWriteCritSec) {
+                    std::unordered_map<int32_t, Achievement>& achievements,
+                    LIGHTWEIGHT_CRITICALSECTION& dataWriteCritSec) {
   if (category && !category->IsVisible()) return false;
 
   if (typeData.behavior == POIBehavior::ReappearOnDailyReset) {
@@ -1923,7 +1923,7 @@ bool POI::IsVisible(const tm &ptm, const time_t &currtime,
 
   if (routeMember && ((position - mumbleLink.charPosition).Length() <=
                       typeData.triggerRange)) {
-    for (const auto &r : Routes) {
+    for (const auto& r : Routes) {
       if (r.activeItem < 0) return false;
     }
   }
@@ -1937,7 +1937,7 @@ bool POI::IsVisible(const tm &ptm, const time_t &currtime,
       if (typeData.achievementBit == -1) {
         return false;
       }
-      const auto &bits = achievements[typeData.achievementId].bits;
+      const auto& bits = achievements[typeData.achievementId].bits;
       if (std::find(bits.begin(), bits.end(), typeData.achievementBit) !=
           bits.end()) {
         return false;

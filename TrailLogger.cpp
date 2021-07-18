@@ -504,17 +504,17 @@ CWBItem* GW2TrailDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos).get();
 }
 
-TBOOL GW2TrailDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
-                                          WBMESSAGE MessageType) {
+bool GW2TrailDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                         WBMESSAGE MessageType) {
   return true;
 }
 
-void GW2TrailDisplay::StartStopTrailRecording(TBOOL start) {
+void GW2TrailDisplay::StartStopTrailRecording(bool start) {
   trailBeingRecorded = start;
   if (!trailBeingRecorded) ClearEditedTrail();
 }
 
-void GW2TrailDisplay::PauseTrail(TBOOL pause, TBOOL newSection) {
+void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   trailRecordPaused = pause;
 
   CWBButton* btn = App->GetRoot()->FindChildByID<CWBButton>("pausetrail");
@@ -657,7 +657,7 @@ void GW2Trail::Reset(int32_t _mapID /*= 0 */) {
   positions.clear();
 }
 
-TBOOL GW2Trail::SaveToFile(std::string_view fname) {
+bool GW2Trail::SaveToFile(std::string_view fname) {
   if (positions.empty()) return false;
 
   CStreamWriterFile TrailLog;
@@ -863,7 +863,7 @@ void GW2Trail::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
   Type = t->GetFullTypeName();
 }
 
-TBOOL GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
+bool GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
   if (keepPoints) {
     positions.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++)
@@ -877,8 +877,8 @@ TBOOL GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
   return true;
 }
 
-TBOOL GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
-                       bool keepPoints /*= false */) {
+bool GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
+                      bool keepPoints /*= false */) {
   if (!zipFile.empty()) {
     mz_zip_archive* zip = OpenZipFile(zipFile);
 

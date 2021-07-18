@@ -4,7 +4,7 @@
 
 #include <comdef.h>
 
-CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device *dev)
+CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device* dev)
     : CCoreVertexFormat(dev) {
   Dev = dev->GetDevice();
   DeviceContext = dev->GetDeviceContext();
@@ -19,14 +19,14 @@ void CCoreDX11VertexFormat::Release() {
   VertexFormatHandle = nullptr;
 }
 
-TBOOL CCoreDX11VertexFormat::Apply() {
+bool CCoreDX11VertexFormat::Apply() {
   if (!VertexFormatHandle) return false;
   DeviceContext->IASetInputLayout(VertexFormatHandle);
   return true;
 }
 
-TBOOL CCoreDX11VertexFormat::Create(
-    const CArray<COREVERTEXATTRIBUTE> &Attributes, CCoreVertexShader *vs) {
+bool CCoreDX11VertexFormat::Create(
+    const CArray<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs) {
   if (!vs) return false;
   if (!Attributes.NumItems()) return false;
   Release();
@@ -38,7 +38,7 @@ TBOOL CCoreDX11VertexFormat::Create(
 
   Size = 0;
 
-  D3D11_INPUT_ELEMENT_DESC *vxdecl =
+  D3D11_INPUT_ELEMENT_DESC* vxdecl =
       new D3D11_INPUT_ELEMENT_DESC[Attributes.NumItems() + 1];
   memset(vxdecl, 0,
          sizeof(D3D11_INPUT_ELEMENT_DESC) * (Attributes.NumItems() + 1));

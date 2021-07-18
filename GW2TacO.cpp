@@ -189,8 +189,8 @@ enum MainMenuItems {
   Menu_MarkerFilter_Base = 0x65535,
 };
 
-TBOOL GW2TacO::IsMouseTransparent(CPoint& ClientSpacePoint,
-                                  WBMESSAGE MessageType) {
+bool GW2TacO::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                 WBMESSAGE MessageType) {
   return true;
 }
 
@@ -248,7 +248,7 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
   return "";
 }
 
-TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
+bool GW2TacO::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_COMMAND: {
       CWBButton* cb = dynamic_cast<CWBButton*>(
@@ -543,7 +543,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
             auto itm = ctx->AddItem(DICT("configmaptimer"), 0);
 
             for (size_t x = 0; x < timer->maps.size(); x++) {
-              TBOOL open = true;
+              bool open = true;
               auto str = "maptimer_mapopen_" + timer->maps[x].id;
 
               if (HasConfigValue(str)) open = GetConfigValue(str);
@@ -803,7 +803,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
             App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
         if (!timer) break;
 
-        TBOOL open = true;
+        bool open = true;
         auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
 
         if (HasConfigValue(str)) open = GetConfigValue(str);
@@ -933,7 +933,7 @@ TBOOL GW2TacO::MessageProc(CWBMessage& Message) {
 
       if (Message.Data >= Menu_MarkerFilter_Base &&
           Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
-        TBOOL displayed =
+        bool displayed =
             !CategoryList[Message.Data - Menu_MarkerFilter_Base]->IsDisplayed;
         CategoryList[Message.Data - Menu_MarkerFilter_Base]->IsDisplayed =
             displayed;
@@ -1575,7 +1575,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       float delta =
           max(0, min(1, (currTime - lastMenuHoverTransitionTime) / speed));
 
-      TBOOL hover =
+      bool hover =
           ClientToScreen(it->GetClientRect()).Contains(App->GetMousePos());
 
       if (App->GetRoot()->FindChildByID("TacOMenu", "contextmenu")) {

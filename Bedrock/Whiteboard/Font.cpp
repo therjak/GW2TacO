@@ -5,7 +5,7 @@
 
 #include "DrawAPI.h"
 
-INLINE uint32_t DictionaryHash(const CWBKerningPair &i) {
+INLINE uint32_t DictionaryHash(const CWBKerningPair& i) {
   return i.First + (i.Second << 16);
 }
 
@@ -20,9 +20,9 @@ CWBFontDescription::CWBFontDescription() { Image = nullptr; }
 
 CWBFontDescription::~CWBFontDescription() { SAFEDELETE(Image); }
 
-TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
-                                           uint8_t *img, int32_t xr, int32_t yr,
-                                           std::vector<int> &enabledGlyphs) {
+bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
+                                          uint8_t* img, int32_t xr, int32_t yr,
+                                          std::vector<int>& enabledGlyphs) {
   if (!img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0) return false;
 
   XRes = xr;
@@ -79,7 +79,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
   while (!m.eof()) {
     int32_t BlockType = m.ReadByte();
     int32_t BlockSize = m.ReadDWord();
-    uint8_t *BlockData = new uint8_t[BlockSize];
+    uint8_t* BlockData = new uint8_t[BlockSize];
 
     if (m.Read(BlockData, BlockSize) != BlockSize) {
       LOG(LOG_ERROR,
@@ -97,7 +97,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
               _T( "[gui] Error loading font data: common block size doesn't match" ));
           return false;
         }
-        BMCOMMON *cmn = reinterpret_cast<BMCOMMON *>(BlockData);
+        BMCOMMON* cmn = reinterpret_cast<BMCOMMON*>(BlockData);
         if (cmn->pages > 1) {
           LOG(LOG_ERROR,
               _T( "[gui] Error loading font data: only single page fonts are supported" ));
@@ -116,7 +116,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
           return false;
         }
 
-        BMCHAR *c = reinterpret_cast<BMCHAR *>(BlockData);
+        BMCHAR* c = reinterpret_cast<BMCHAR*>(BlockData);
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMCHAR); x++) {
           if (enabledGlyphs.empty() ||
@@ -141,7 +141,7 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
           return false;
         }
 
-        BMKERNINGDATA *k = reinterpret_cast<BMKERNINGDATA *>(BlockData);
+        BMKERNINGDATA* k = reinterpret_cast<BMKERNINGDATA*>(BlockData);
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMKERNINGDATA); x++) {
           WBKERNINGDATA d;
@@ -164,15 +164,15 @@ TBOOL CWBFontDescription::LoadBMFontBinary(uint8_t *Binary, int32_t BinarySize,
   return true;
 }
 
-bool ReadInt(const std::string &s, std::string val, int32_t &result) {
+bool ReadInt(const std::string& s, std::string val, int32_t& result) {
   int p = s.find(val + "=");
   if (p == s.npos) return false;
   return std::sscanf(s.substr(p).c_str(), (val + "=%d").c_str(), &result) == 1;
 }
 
-TBOOL CWBFontDescription::LoadBMFontText(uint8_t *Binary, int32_t BinarySize,
-                                         uint8_t *img, int32_t xr, int32_t yr,
-                                         std::vector<int> &enabledGlyphs) {
+bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
+                                        uint8_t* img, int32_t xr, int32_t yr,
+                                        std::vector<int>& enabledGlyphs) {
   if (!img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0) return false;
 
   XRes = xr;
@@ -268,7 +268,7 @@ TBOOL CWBFontDescription::LoadBMFontText(uint8_t *Binary, int32_t BinarySize,
   return true;
 }
 
-CWBFont::CWBFont(CAtlas *atlas) {
+CWBFont::CWBFont(CAtlas* atlas) {
   Atlas = atlas;
   LineHeight = 0;
   Base = 0;
@@ -281,8 +281,8 @@ CWBFont::~CWBFont() {
   SAFEDELETEA(Alphabet);
 }
 
-void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize &Size,
-                        const CPoint &Offset, int32_t Advance,
+void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize& Size,
+                        const CPoint& Offset, int32_t Advance,
                         CRect contentRect) {
   if (Char >= AlphabetSize) return;
 
@@ -305,7 +305,7 @@ void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize &Size,
   }
 }
 
-uint32_t ReadUTF8Char(char const *&Text) {
+uint32_t ReadUTF8Char(char const*& Text) {
   uint32_t Char = *Text;
   Text++;
 
@@ -357,7 +357,7 @@ uint32_t ReadUTF8Char(char const *&Text) {
   return Char;
 }
 
-int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
+int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
                            CColor Color) {
   if (Char >= AlphabetSize ||
       Alphabet[static_cast<uint16_t>(Char)].Char !=
@@ -373,7 +373,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
     int32_t width = GetWidth(MissingChar);
 
     if (Char != ' ') {
-      WBSYMBOL &mc = Alphabet[static_cast<uint16_t>(MissingChar)];
+      WBSYMBOL& mc = Alphabet[static_cast<uint16_t>(MissingChar)];
       DrawApi->DrawRectBorder(
           CRect(x + mc.OffsetX, y + mc.OffsetY, x + mc.OffsetX + mc.SizeX,
                 y + mc.OffsetY + mc.SizeY),
@@ -382,7 +382,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
     return width;
   }
 
-  WBSYMBOL &Symbol = Alphabet[static_cast<uint16_t>(Char)];
+  WBSYMBOL& Symbol = Alphabet[static_cast<uint16_t>(Char)];
   int32_t width = Symbol.Advance;
   if (!width) return 0;
   // DrawApi->DrawRect(CRect(x + Symbol.OffsetX, y + Symbol.OffsetY, x +
@@ -393,9 +393,9 @@ int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, int32_t x, int32_t y,
   return width;
 }
 
-int32_t CWBFont::Write(CWBDrawAPI *DrawApi, std::string_view String, int32_t x,
+int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
                        int32_t y, CColor Color, WBTEXTTRANSFORM Transform,
-                       TBOOL DoKerning) {
+                       bool DoKerning) {
   if (String.empty()) return 0;
   std::string t(String);  // make sure we have a \0 at the correct place.
   auto Text = t.c_str();
@@ -425,18 +425,18 @@ int32_t CWBFont::Write(CWBDrawAPI *DrawApi, std::string_view String, int32_t x,
   return xp - x;
 }
 
-int32_t CWBFont::WriteChar(CWBDrawAPI *DrawApi, int Char, CPoint &p,
+int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, CPoint& p,
                            CColor Color) {
   return WriteChar(DrawApi, Char, p.x, p.y, Color);
 }
 
-int32_t CWBFont::Write(CWBDrawAPI *DrawApi, std::string_view String, CPoint &p,
+int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String, CPoint& p,
                        CColor Color, WBTEXTTRANSFORM Transform,
-                       TBOOL DoKerning) {
+                       bool DoKerning) {
   return Write(DrawApi, String, p.x, p.y, Color, Transform, DoKerning);
 }
 
-int32_t CWBFont::GetWidth(uint16_t Char, TBOOL Advance) {
+int32_t CWBFont::GetWidth(uint16_t Char, bool Advance) {
   if (Char >= AlphabetSize || Alphabet[Char].Char != Char)  // missing character
   {
     if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar)
@@ -448,9 +448,9 @@ int32_t CWBFont::GetWidth(uint16_t Char, TBOOL Advance) {
                     Alphabet[Char].calculatedContentRect.x2);
 }
 
-int32_t CWBFont::GetWidth(std::string_view String, TBOOL AdvanceLastChar,
-                          WBTEXTTRANSFORM Transform, TBOOL DoKerning,
-                          TBOOL firstCharHack) {
+int32_t CWBFont::GetWidth(std::string_view String, bool AdvanceLastChar,
+                          WBTEXTTRANSFORM Transform, bool DoKerning,
+                          bool firstCharHack) {
   if (String.empty()) return 0;
   std::string t(String);  // make sure we have a \0 at the correct place.
   auto Text = t.c_str();
@@ -500,14 +500,14 @@ void CWBFont::AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount) {
   Kerning[CWBKerningPair(First, Second)] = Amount;
 }
 
-TBOOL CWBFont::Initialize(CWBFontDescription *Description, TCHAR mc) {
+bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
   MissingChar = mc;
   if (!Description) return false;
   if (!Atlas) return false;
   if (!Description->Image) return false;
 
   AlphabetSize = 0;
-  for (const auto &abc : Description->Alphabet)
+  for (const auto& abc : Description->Alphabet)
     AlphabetSize = max(AlphabetSize, abc.Char) + 1;
 
   Alphabet = new WBSYMBOL[AlphabetSize];
@@ -515,7 +515,7 @@ TBOOL CWBFont::Initialize(CWBFontDescription *Description, TCHAR mc) {
   for (int32_t x = 0; x < AlphabetSize; x++)
     Alphabet[x].Char = static_cast<int16_t>(x - 1);
 
-  for (const auto &abc : Description->Alphabet)
+  for (const auto& abc : Description->Alphabet)
     if (abc.UV.Area() > 0) {
       WBATLASHANDLE h = Atlas->AddImage(Description->Image, Description->XRes,
                                         Description->YRes, abc.UV);
@@ -530,7 +530,7 @@ TBOOL CWBFont::Initialize(CWBFontDescription *Description, TCHAR mc) {
 
       for (int j = abc.UV.y1; j < abc.UV.y2; j++)
         for (int i = abc.UV.x1; i < abc.UV.x2; i++) {
-          uint8_t *c = Description->Image + (j * Description->XRes + i) * 4;
+          uint8_t* c = Description->Image + (j * Description->XRes + i) * 4;
 
           if (c[3] > 10) {
             hadContent = true;
@@ -549,7 +549,7 @@ TBOOL CWBFont::Initialize(CWBFontDescription *Description, TCHAR mc) {
       AddSymbol(abc.Char, h, abc.UV.Size(), abc.Offset, abc.Advance, content);
     }
 
-  for (const auto &kd : Description->KerningData) {
+  for (const auto& kd : Description->KerningData) {
     AddKerningPair(kd.First, kd.Second, kd.Amount);
   }
 
@@ -606,10 +606,10 @@ int32_t CWBFont::GetMedian() { return Offset_X_Char + Height_X_Char / 2; }
 void CWBFont::ConvertToUppercase() {
   for (int32_t x = 0; x < AlphabetSize; x++)
     if (Alphabet[x].Char == x) {
-      WBSYMBOL &c = Alphabet[x];
+      WBSYMBOL& c = Alphabet[x];
       if (c.Char != towupper(c.Char)) {
         if (Alphabet[towupper(c.Char)].Char == towupper(c.Char)) {
-          WBSYMBOL &C = Alphabet[towupper(c.Char)];
+          WBSYMBOL& C = Alphabet[towupper(c.Char)];
 
           c.Advance = C.Advance;
           Atlas->DeleteImage(c.Handle);
@@ -623,7 +623,7 @@ void CWBFont::ConvertToUppercase() {
     }
 }
 
-INLINE char CWBFont::ApplyTextTransform(const char *Text, const char *CurrPos,
+INLINE char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
                                         WBTEXTTRANSFORM Transform) {
   if (Transform <= 0) return *CurrPos;
   switch (Transform) {
@@ -648,8 +648,8 @@ INLINE char CWBFont::ApplyTextTransform(const char *Text, const char *CurrPos,
 }
 
 // Also increments CurrPos.
-INLINE uint16_t CWBFont::ApplyTextTransformUtf8(const char *Text,
-                                                char const *&CurrPos,
+INLINE uint16_t CWBFont::ApplyTextTransformUtf8(const char* Text,
+                                                char const*& CurrPos,
                                                 WBTEXTTRANSFORM Transform) {
   uint32_t decoded = ReadUTF8Char(CurrPos);
 
@@ -680,18 +680,18 @@ int32_t CWBFont::GetHeight(uint16_t Char) { return GetLineHeight(); }
 
 int32_t CWBFont::GetHeight(std::string_view String) {
   int32_t lineCount = 1;
-  for (const auto &c : String) {
+  for (const auto& c : String) {
     if (c == '\n') lineCount++;
   }
 
   return LineHeight * lineCount;
 }
 
-CPoint CWBFont::GetTextPosition(std::string_view String, CRect &Container,
+CPoint CWBFont::GetTextPosition(std::string_view String, CRect& Container,
                                 WBTEXTALIGNMENTX XAlign,
                                 WBTEXTALIGNMENTY YAlign,
                                 WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,
-                                TBOOL DoKerning /*= true*/) {
+                                bool DoKerning /*= true*/) {
   CPoint p = Container.TopLeft();
 
   int32_t Width = GetWidth(String, false, Transform, DoKerning);

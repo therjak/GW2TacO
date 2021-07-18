@@ -5,7 +5,7 @@
 
 constexpr float PI = 3.1415926535897932384626433832795f;
 
-void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI *API, float range,
+void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
                                       float alpha) {
   if (!mumbleLink.IsValid()) return;
 
@@ -113,7 +113,7 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI *API, float range,
   }
 }
 
-void GW2RangeDisplay::OnDraw(CWBDrawAPI *API) {
+void GW2RangeDisplay::OnDraw(CWBDrawAPI* API) {
   if (!mumbleLink.IsValid()) return;
 
   if (!HasConfigValue("RangeCirclesVisible"))
@@ -160,15 +160,15 @@ void GW2RangeDisplay::OnDraw(CWBDrawAPI *API) {
   }
 }
 
-GW2RangeDisplay::GW2RangeDisplay(CWBItem *Parent, CRect Position)
+GW2RangeDisplay::GW2RangeDisplay(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
-CWBItem *GW2RangeDisplay::Factory(CWBItem *Root, CXMLNode &node, CRect &Pos) {
+CWBItem* GW2RangeDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2RangeDisplay::Create(Root, Pos).get();
 }
 
-TBOOL GW2RangeDisplay::IsMouseTransparent(CPoint &ClientSpacePoint,
-                                          WBMESSAGE MessageType) {
+bool GW2RangeDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+                                         WBMESSAGE MessageType) {
   return true;
 }

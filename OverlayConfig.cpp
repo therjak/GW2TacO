@@ -92,11 +92,11 @@ void SetConfigValue(std::string_view value, int32_t val) {
   ConfigNums[std::string(value)] = val;
 }
 
-TBOOL HasConfigValue(std::string_view value) {
+bool HasConfigValue(std::string_view value) {
   return ConfigNums.find(std::string(value)) != ConfigNums.end();
 }
 
-TBOOL HasConfigString(std::string_view value) {
+bool HasConfigString(std::string_view value) {
   return ConfigStrings.find(std::string(value)) != ConfigStrings.end();
 }
 
@@ -113,12 +113,12 @@ std::string GetConfigString(std::string_view value) {
   return "";
 }
 
-TBOOL IsWindowOpen(std::string_view windowname) {
+bool IsWindowOpen(std::string_view windowname) {
   std::string s(windowname);
   return GetConfigValue((s + "_open"));
 }
 
-void SetWindowOpenState(std::string_view windowname, TBOOL Open) {
+void SetWindowOpenState(std::string_view windowname, bool Open) {
   std::string s(windowname);
   SetConfigValue((s + "_open"), static_cast<int>(Open));
 }
@@ -141,7 +141,7 @@ void SetWindowPosition(std::string_view windowname, CRect Pos) {
   SetConfigValue((s + "_y2"), Pos.y2);
 }
 
-TBOOL HasWindowData(std::string_view windowname) {
+bool HasWindowData(std::string_view windowname) {
   std::string s(windowname);
   return HasConfigValue((s + "_open")) && HasConfigValue((s + "_x1")) &&
          HasConfigValue((s + "_y1")) && HasConfigValue((s + "_x2")) &&

@@ -22,11 +22,11 @@ enum WBBOXSIZING {
 
 class CWBBox : public CWBItem {
  protected:
-  void AddChild(const std::shared_ptr<CWBItem> &Item) override;
-  TBOOL MessageProc(CWBMessage &Message) override;
+  void AddChild(const std::shared_ptr<CWBItem>& Item) override;
+  bool MessageProc(CWBMessage& Message) override;
   virtual void RearrangeChildren();
 
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
   void RearrangeHorizontal();
   void RearrangeVertical();
   void UpdateScrollbarData();
@@ -38,9 +38,9 @@ class CWBBox : public CWBItem {
   bool ClickThrough = false;
 
  public:
-  CWBBox(CWBItem *Parent, const CRect &Pos);
-  static inline std::shared_ptr<CWBBox> Create(CWBItem *Parent,
-                                               const CRect &Pos) {
+  CWBBox(CWBItem* Parent, const CRect& Pos);
+  static inline std::shared_ptr<CWBBox> Create(CWBItem* Parent,
+                                               const CRect& Pos) {
     auto p = std::make_shared<CWBBox>(Parent, Pos);
     p->SelfRef = p;
     if (Parent) {
@@ -51,9 +51,9 @@ class CWBBox : public CWBItem {
 
   ~CWBBox() override;
 
-  TBOOL Initialize(CWBItem *Parent, const CRect &Position) override;
+  bool Initialize(CWBItem* Parent, const CRect& Position) override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "box" ), CWBItem);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
@@ -61,8 +61,8 @@ class CWBBox : public CWBItem {
   virtual void SetSpacing(int32_t s);
   virtual void SetAlignment(WBBOXAXIS axis, WBALIGNMENT align);
   virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
-  TBOOL ApplyStyle(std::string_view prop, std::string_view value,
-                   const std::vector<std::string> &pseudo) override;
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool ApplyStyle(std::string_view prop, std::string_view value,
+                  const std::vector<std::string>& pseudo) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 };

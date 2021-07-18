@@ -46,8 +46,8 @@ bool IWBCSS::IsFitForSelector(std::string_view selector) {
   return true;
 }
 
-TBOOL IWBCSS::ApplyStyle(std::string_view prop, std::string_view value,
-                         const std::vector<std::string>& Pseudo) {
+bool IWBCSS::ApplyStyle(std::string_view prop, std::string_view value,
+                        const std::vector<std::string>& Pseudo) {
   return false;
 }
 

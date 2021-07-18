@@ -25,38 +25,38 @@ class GW2Trail {
 
   void Reset(int32_t _mapID = 0);
 
-  TBOOL SaveToFile(std::string_view fname);
+  bool SaveToFile(std::string_view fname);
 
  public:
   virtual ~GW2Trail();
 
   int32_t length = 0;
   std::unique_ptr<CCoreVertexBuffer> trailMesh;
-  CCoreDevice *dev = nullptr;
+  CCoreDevice* dev = nullptr;
   std::unique_ptr<CCoreIndexBuffer> idxBuf;
 
   int32_t map = 0;
 
-  void Build(CCoreDevice *dev, int32_t mapID, float *points, int pointCount);
+  void Build(CCoreDevice* dev, int32_t mapID, float* points, int pointCount);
   void Draw();
   void Update();
-  void SetupAndDraw(CCoreConstantBuffer *constBuffer, CCoreTexture *texture,
-                    CMatrix4x4 &cam, CMatrix4x4 &persp, float &one,
-                    bool scaleData, int32_t fadeoutBubble, float *data,
+  void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
+                    CMatrix4x4& cam, CMatrix4x4& persp, float& one,
+                    bool scaleData, int32_t fadeoutBubble, float* data,
                     float fadeAlpha, float width, float uvScale, float width2d);
 
   MarkerTypeData typeData;
   std::string Type;
   GUID guid;
-  TBOOL External = false;
+  bool External = false;
   std::string zipFile;
 
-  GW2TacticalCategory *category = nullptr;
-  void SetCategory(CWBApplication *App, GW2TacticalCategory *t);
+  GW2TacticalCategory* category = nullptr;
+  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
 
-  TBOOL Import(CStreamReaderMemory &file, bool keepPoints = false);
-  TBOOL Import(std::string_view fileName, std::string_view zipFile,
-               bool keepPoints = false);
+  bool Import(CStreamReaderMemory& file, bool keepPoints = false);
+  bool Import(std::string_view fileName, std::string_view zipFile,
+              bool keepPoints = false);
 };
 
 class GW2TrailDisplay : public CWBItem {
@@ -65,7 +65,7 @@ class GW2TrailDisplay : public CWBItem {
   CMatrix4x4 persp;
   CRect drawrect;
 
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
 
   std::unique_ptr<CCoreVertexShader> vxShader;
   std::unique_ptr<CCoreVertexFormat> vertexFormat;
@@ -78,22 +78,22 @@ class GW2TrailDisplay : public CWBItem {
   std::unique_ptr<CCoreRasterizerState> trailRasterizer3;
   std::unique_ptr<CCoreDepthStencilState> trailDepthStencil;
 
-  GW2Trail *editedTrail = nullptr;
+  GW2Trail* editedTrail = nullptr;
 
   void ClearEditedTrail();
-  TBOOL trailBeingRecorded = false;
-  TBOOL trailRecordPaused = false;
+  bool trailBeingRecorded = false;
+  bool trailRecordPaused = false;
 
   LIGHTWEIGHT_CRITICALSECTION critsec;
 
-  CCoreTexture2D *GetTexture(std::string_view fname, std::string_view zipFile,
+  CCoreTexture2D* GetTexture(std::string_view fname, std::string_view zipFile,
                              std::string_view categoryZip);
 
   std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 
  public:
-  GW2TrailDisplay(CWBItem *Parent, CRect Position);
-  static inline std::shared_ptr<GW2TrailDisplay> Create(CWBItem *Parent,
+  GW2TrailDisplay(CWBItem* Parent, CRect Position);
+  static inline std::shared_ptr<GW2TrailDisplay> Create(CWBItem* Parent,
                                                         CRect Position) {
     auto p = std::make_shared<GW2TrailDisplay>(Parent, Position);
     p->SelfRef = p;
@@ -104,28 +104,28 @@ class GW2TrailDisplay : public CWBItem {
   }
   ~GW2TrailDisplay() override;
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "gw2Trails" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
   void DoTrailLogging(int32_t mapID, CVector3 charPos);
 
-  void StartStopTrailRecording(TBOOL start);
-  void PauseTrail(TBOOL pause, TBOOL newSection = false);
+  void StartStopTrailRecording(bool start);
+  void PauseTrail(bool pause, bool newSection = false);
   void DeleteLastTrailSegment();
   void DeleteTrailSegment();
   void ExportTrail();
   void ImportTrail();
 
-  void DrawProxy(CWBDrawAPI *API, bool miniMaprender);
+  void DrawProxy(CWBDrawAPI* API, bool miniMaprender);
 };
 
 namespace std {
 template <>
 struct hash<GUID> {
-  std::size_t operator()(const GUID &guid) const;
+  std::size_t operator()(const GUID& guid) const;
 };
 }  // namespace std
 extern std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;

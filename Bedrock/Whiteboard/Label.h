@@ -7,12 +7,12 @@
 
 class CWBLabel : public CWBItem {
   std::string Text;
-  void OnDraw(CWBDrawAPI *API) override;
+  void OnDraw(CWBDrawAPI* API) override;
 
  public:
-  CWBLabel(CWBItem *Parent, const CRect &Pos, std::string_view txt);
+  CWBLabel(CWBItem* Parent, const CRect& Pos, std::string_view txt);
   static inline std::shared_ptr<CWBLabel> Create(
-      CWBItem *Parent, const CRect &Pos, std::string_view txt = _T("")) {
+      CWBItem* Parent, const CRect& Pos, std::string_view txt = _T("")) {
     auto p = std::make_shared<CWBLabel>(Parent, Pos, txt);
     p->SelfRef = p;
     if (Parent) {
@@ -22,17 +22,17 @@ class CWBLabel : public CWBItem {
   }
   ~CWBLabel() override;
 
-  virtual TBOOL Initialize(CWBItem *Parent, const CRect &Position,
-                           std::string_view txt = _T( "" ));
+  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
+                          std::string_view txt = _T( "" ));
 
   std::string GetText() const { return Text; }
   void SetText(std::string_view val);
 
-  static CWBItem *Factory(CWBItem *Root, CXMLNode &node, CRect &Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "label" ), CWBItem);
 
-  TBOOL IsMouseTransparent(CPoint &ClientSpacePoint,
-                           WBMESSAGE MessageType) override {
+  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override {
     return true;
   }
   CSize GetContentSize() override;
