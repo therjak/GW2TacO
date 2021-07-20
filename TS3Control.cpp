@@ -37,20 +37,23 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
     int32_t ypos = 0;
     for (auto& x : teamSpeakConnection.handlers) {
       TS3Connection::TS3Schandler& handler = x.second;
-      if (handler.Connected && handler.Clients.HasKey(handler.myclientid)) {
+      if (handler.Connected &&
+          handler.Clients.find(handler.myclientid) != handler.Clients.end()) {
         CPoint p = f->GetTextPosition(
             handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
             LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
-        if (cnt) f->Write(API, handler.name, p);
+        if (cnt)
+          f->Write(API, handler.name, p);
         ypos += f->GetLineHeight();
 
         int32_t mychannelid = handler.Clients[handler.myclientid].channelid;
 
         if (handler.Channels.find(mychannelid) != handler.Channels.end()) {
           int32_t participants = 0;
-          for (int32_t y = 0; y < handler.Clients.NumItems(); y++) {
-            const TS3Connection::TS3Client& cl = handler.Clients[y];
-            if (cl.channelid == mychannelid) participants++;
+          for (auto& y : handler.Clients) {
+            const TS3Connection::TS3Client& cl = y.second;
+            if (cl.channelid == mychannelid)
+              participants++;
           }
 
           auto channelText = FormatString(
@@ -60,18 +63,34 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
           CPoint p = f->GetTextPosition(
               channelText, GetClientRect() - CRect(size / 2, ypos, 0, 0),
               LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
-          if (cnt) f->Write(API, channelText, p);
+          if (cnt)
+            f->Write(API, channelText, p);
           ypos += f->GetLineHeight();
         }
-        for (int32_t y = 0; y < handler.Clients.NumItems(); y++) {
-          if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
-          const TS3Connection::TS3Client& cl = handler.Clients.GetByIndex(y);
-          if (cl.channelid == mychannelid) {
+        std::vector<TS3Connection::TS3Client*> clients;
+        for (auto& y : handler.Clients) {
+          clients.push_back(&y.second);
+        }
+
+        std::sort(clients.begin(), clients.end(),
+                  [](const TS3Connection::TS3Client* a,
+                     const TS3Connection::TS3Client* b) {
+                    return b->lastTalkTime < a->lastTalkTime;
+                  });
+
+        for (const auto cl : clients) {
+          if ((ypos + f->GetLineHeight()) > displayrect.y2)
+            break;
+
+          if (cl->channelid == mychannelid) {
             WBSKINELEMENTID id = playeroff;
-            if (cl.inputmuted) id = inputoff;
-            if (cl.outputmuted) id = outputoff;
-            if (cl.talkStatus) id = playeron;
+            if (cl->inputmuted)
+              id = inputoff;
+            if (cl->outputmuted)
+              id = outputoff;
+            if (cl->talkStatus)
+              id = playeron;
 
             App->GetSkin()->RenderElement(
                 API, id,
@@ -82,10 +101,11 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
                                   ypos + size - 1));
 
             CPoint p = f->GetTextPosition(
-                cl.name, GetClientRect() - CRect(2 * size, ypos, 2 * size, 0),
+                cl->name, GetClientRect() - CRect(2 * size, ypos, 2 * size, 0),
                 LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
 
-            if (cnt) f->Write(API, cl.name, p);
+            if (cnt)
+              f->Write(API, cl->name, p);
 
             ypos += f->GetLineHeight();
           }

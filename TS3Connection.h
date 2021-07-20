@@ -24,9 +24,9 @@ class TS3Connection {
 
   int32_t LastPingTime = 0;
 
- public:
+public:
   class TS3Client {
-   public:
+  public:
     int32_t clientid = 0;
     int32_t channelid = 0;
     std::string name;
@@ -38,7 +38,7 @@ class TS3Connection {
   };
 
   class TS3Channel {
-   public:
+  public:
     int32_t id = 0;
     int32_t parentid = 0;
     int32_t order = 0;
@@ -46,13 +46,13 @@ class TS3Connection {
   };
 
   class TS3Schandler {
-   public:
+  public:
     int32_t id = 0;
     bool Connected = false;
     int32_t myclientid = 0;
     bool clientIDInvalid = true;
     std::unordered_map<int32_t, TS3Channel> Channels;
-    CDictionaryEnumerable<int32_t, TS3Client> Clients;
+    std::unordered_map<int32_t, TS3Client> Clients;
     std::string name;
   };
 
