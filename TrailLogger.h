@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Bedrock/BaseLib/hasher.h"
 #include "Bedrock/Whiteboard/WhiteBoard.h"
 #include "MumbleLink.h"
 #include "gw2tactical.h"
@@ -27,7 +28,7 @@ class GW2Trail {
 
   bool SaveToFile(std::string_view fname);
 
- public:
+public:
   virtual ~GW2Trail();
 
   int32_t length = 0;
@@ -91,7 +92,7 @@ class GW2TrailDisplay : public CWBItem {
 
   std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 
- public:
+public:
   GW2TrailDisplay(CWBItem* Parent, CRect Position);
   static inline std::shared_ptr<GW2TrailDisplay> Create(CWBItem* Parent,
                                                         CRect Position) {
@@ -122,10 +123,4 @@ class GW2TrailDisplay : public CWBItem {
   void DrawProxy(CWBDrawAPI* API, bool miniMaprender);
 };
 
-namespace std {
-template <>
-struct hash<GUID> {
-  std::size_t operator()(const GUID& guid) const;
-};
-}  // namespace std
 extern std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;

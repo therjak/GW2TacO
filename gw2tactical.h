@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "Bedrock/BaseLib/Color.h"
+#include "Bedrock/BaseLib/hasher.h"
 
 enum class POIBehavior : int32_t {
   AlwaysVisible,
@@ -144,10 +145,16 @@ struct POIActivationDataKey {
 
   POIActivationDataKey(GUID g, int inst) : guid(g), uniqueData(inst) {}
 
-  bool operator==(const POIActivationDataKey& d) {
+  bool operator==(const POIActivationDataKey& d) const {
     return guid == d.guid && uniqueData == d.uniqueData;
   }
 };
+
+namespace std {
+template <> struct hash<POIActivationDataKey> {
+  std::size_t operator()(const POIActivationDataKey& guid) const;
+};
+} // namespace std
 
 struct POIActivationData {
   GUID poiguid;
@@ -171,8 +178,8 @@ struct POIRoute {
 uint32_t DictionaryHash(const GUID& i);
 uint32_t DictionaryHash(const POIActivationDataKey& i);
 
-extern CDictionaryEnumerable<GUID, POI> POIs;
-extern CDictionaryEnumerable<POIActivationDataKey, POIActivationData>
+extern std::unordered_map<GUID, POI> POIs;
+extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
 extern std::unordered_map<std::string, POI> wvwPOIs;
@@ -205,7 +212,7 @@ class GW2TacticalDisplay : public CWBItem {
 
   std::unordered_map<int32_t, Achievement> achievements;
 
- public:
+public:
   GW2TacticalDisplay(CWBItem* Parent, CRect Position);
   static inline std::shared_ptr<GW2TacticalDisplay> Create(CWBItem* Parent,
                                                            CRect Position) {
@@ -229,7 +236,7 @@ class GW2TacticalDisplay : public CWBItem {
 class GW2TacticalCategory {
   std::string cachedTypeName;
 
- public:
+public:
   std::string name;
   std::string displayName;
 

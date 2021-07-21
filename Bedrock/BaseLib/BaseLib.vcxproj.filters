@@ -122,6 +122,9 @@
     <ClInclude Include="read_file.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
+    <ClInclude Include="hasher.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />
@@ -198,6 +201,9 @@
     </ClCompile>
     <ClCompile Include="read_file.cpp">
       <Filter>Source Files\Basic Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="hasher.cpp">
+      <Filter>Source Files\System</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
