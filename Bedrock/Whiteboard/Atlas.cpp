@@ -10,14 +10,16 @@ CAtlasNode::CAtlasNode() {
 }
 
 CAtlasNode::~CAtlasNode() {
-  if (Children[0]) SAFEDELETE(Children[0]);
-  if (Children[1]) SAFEDELETE(Children[1]);
+  if (Children[0])
+    SAFEDELETE(Children[0]);
+  if (Children[1])
+    SAFEDELETE(Children[1]);
 }
 
-CRect &CAtlasNode::GetArea() { return Area; }
+CRect& CAtlasNode::GetArea() { return Area; }
 
-CAtlasNode *CAtlasNode::AddNode(int32_t width, int32_t height) {
-  CAtlasNode *NewNode;
+CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
+  CAtlasNode* NewNode;
   if (Children[0]) {
     NewNode = Children[0]->AddNode(width, height);
     return NewNode ? NewNode : Children[1]->AddNode(width, height);
@@ -45,7 +47,7 @@ CAtlasNode *CAtlasNode::AddNode(int32_t width, int32_t height) {
   return Children[0]->AddNode(width, height);
 }
 
-CAtlasImage *CAtlasNode::GetImage() { return Image; }
+CAtlasImage* CAtlasNode::GetImage() { return Image; }
 
 CAtlasImage::CAtlasImage() {
   Image = nullptr;
@@ -54,8 +56,8 @@ CAtlasImage::CAtlasImage() {
   Required = false;
 }
 
-CAtlasImage::CAtlasImage(uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes,
-                         const CRect &Source) {
+CAtlasImage::CAtlasImage(uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
+                         const CRect& Source) {
   Image = nullptr;
   XRes = Source.Width();
   YRes = Source.Height();
@@ -66,7 +68,7 @@ CAtlasImage::CAtlasImage(uint8_t *SourceImage, int32_t SrcXRes, int32_t SrcYRes,
     Image = new uint8_t[XRes * YRes * 4];
     memset(Image, 0, XRes * YRes * 4);
 
-    uint8_t *i = Image;
+    uint8_t* i = Image;
 
     for (int32_t y = 0; y < YRes; y++) {
       if (y + Source.y1 < 0 || y + Source.y1 >= SrcYRes) {
@@ -97,7 +99,7 @@ CAtlasImage::~CAtlasImage() { SAFEDELETEA(Image); }
 
 WBATLASHANDLE CAtlasImage::GetHandle() { return Handle; }
 
-uint8_t *CAtlasImage::GetImage() { return Image; }
+uint8_t* CAtlasImage::GetImage() { return Image; }
 
 CSize CAtlasImage::GetSize() const { return CSize(XRes, YRes); }
 
@@ -124,9 +126,10 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
 
   {
     CLightweightCriticalSection cs(&critsec);
-    CAtlasImage *img = new CAtlasImage(reinterpret_cast<uint8_t *>(&White), 2,
-                                       2, CRect(0, 0, 2, 2));
-    WhitePixel = ImageStorage[img->GetHandle()] = img;
+    auto img = std::make_unique<CAtlasImage>(reinterpret_cast<uint8_t*>(&White),
+                                             2, 2, CRect(0, 0, 2, 2));
+    WhitePixel = img.get();
+    ImageStorage[img->GetHandle()] = std::move(img);
   }
 
   CRect r;
@@ -137,29 +140,29 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
 CAtlas::~CAtlas() {
   {
     CLightweightCriticalSection cs(&critsec);
-    for (int x = 0; x < ImageStorage.NumItems(); x++)
-      delete ImageStorage.GetByIndex(x);
+    ImageStorage.clear();
   }
   SAFEDELETE(Root);
   SAFEDELETEA(Image);
 }
 
-bool CAtlas::PackImage(CAtlasImage *img) {
-  if (!img) return false;
+bool CAtlas::PackImage(CAtlasImage* img) {
+  if (!img)
+    return false;
 
   // LOG(LOG_DEBUG,_T("Packing Image %d"),img->GetHandle());
 
   FlushCache();
   CSize s = img->GetSize();
 
-  CAtlasNode *n = Root->AddNode(s.x, s.y);
+  CAtlasNode* n = Root->AddNode(s.x, s.y);
   if (!n) {
     LOG(LOG_WARNING, _T( "[gui] Atlas full. Image can't be added." ));
     return 0;
   }
 
-  uint8_t *target = Image + (n->Area.x1 + n->Area.y1 * XRes) * 4;
-  uint8_t *source = img->GetImage();
+  uint8_t* target = Image + (n->Area.x1 + n->Area.y1 * XRes) * 4;
+  uint8_t* source = img->GetImage();
 
   for (int32_t y = 0; y < s.y; y++) {
     memcpy(target, source, img->GetSize().x * 4);
@@ -178,44 +181,50 @@ bool CAtlas::PackImage(CAtlasImage *img) {
   return img->GetHandle() != 0;
 }
 
-bool CAtlas::InitializeTexture(CCoreDevice *Device) {
-  if (!Device) return false;
+bool CAtlas::InitializeTexture(CCoreDevice* Device) {
+  if (!Device)
+    return false;
   Atlas.swap(Device->CreateTexture2D(XRes, YRes, Image));
   return Atlas.operator bool();
 }
 
-WBATLASHANDLE CAtlas::AddImage(uint8_t *i, int32_t xs, int32_t ys,
-                               const CRect &a) {
-  if (a.Width() == 0 || a.Height() == 0) return 0;
+WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
+                               const CRect& a) {
+  if (a.Width() == 0 || a.Height() == 0)
+    return 0;
 
   CLightweightCriticalSection cs(&critsec);
 
-  CAtlasImage *img = new CAtlasImage(i, xs, ys, a);
-  ImageStorage[img->GetHandle()] = img;
-  return img->GetHandle();
+  auto img = std::make_unique<CAtlasImage>(i, xs, ys, a);
+  auto h = img->GetHandle();
+  ImageStorage[img->GetHandle()] = std::move(img);
+  return h;
 }
 
 bool CAtlas::UpdateTexture() {
   // LOG_DBG("Atlas Texture Update Request");
 
-  if (!TextureUpdateNeeded) return true;
+  if (!TextureUpdateNeeded)
+    return true;
 
   // LOG(LOG_DEBUG,_T("Updating Atlas Texture"));
 
-  if (!Atlas || !Atlas->Update(Image, XRes, YRes, 4)) return false;
+  if (!Atlas || !Atlas->Update(Image, XRes, YRes, 4))
+    return false;
 
   TextureUpdateNeeded = false;
   return true;
 }
 
-int SortImageStorage(CAtlasImage *const &a, CAtlasImage *const &b) {
+int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
   CSize ra = a->GetSize();
   CSize rb = b->GetSize();
 
   int32_t w = rb.x - ra.x;
   int32_t h = rb.y - ra.y;
 
-  if (w != 0) return w;
+  if (w != 0)
+    return w;
   return h;
 }
 
@@ -228,10 +237,10 @@ bool CAtlas::Optimize(bool DebugMode) {
 
   if (DebugMode) {
     CLightweightCriticalSection cs(&critsec);
-    for (int32_t x = 0; x < ImageStorage.NumItems(); x++) {
-      auto handle = ImageStorage.GetByIndex(x)->GetHandle();
+    for (auto& x : ImageStorage) {
+      auto handle = x.second->GetHandle();
       if (Dictionary.find(handle) != Dictionary.end()) {
-        ImageStorage.GetByIndex(x)->TagRequired();
+        x.second->TagRequired();
       }
     }
   }
@@ -247,19 +256,37 @@ bool CAtlas::Optimize(bool DebugMode) {
   {
     CLightweightCriticalSection cs(&critsec);
     int32_t RequiredCount = 0;
-    for (int32_t x = 0; x < ImageStorage.NumItems(); x++)
-      RequiredCount += ImageStorage.GetByIndex(x)->IsRequired();
+    for (auto& x : ImageStorage)
+      RequiredCount += x.second->IsRequired() ? 1 : 0;
 
     WhitePixel->TagRequired();
 
     if (RequiredCount) {
-      ImageStorage.SortByValue(SortImageStorage);
-      for (int32_t x = 0; x < ImageStorage.NumItems(); x++) {
-        if (ImageStorage.GetByIndex(x)->IsRequired())
-          if (!PackImage(ImageStorage.GetByIndex(x))) return false;
+      std::vector<CAtlasImage*> images;
+      for (auto& x : ImageStorage) {
+        images.push_back(x.second.get());
+      }
+      std::sort(images.begin(), images.end(),
+                [](const CAtlasImage* a, const CAtlasImage* b) {
+                  CSize ra = a->GetSize();
+                  CSize rb = b->GetSize();
+                  // As sort creates an ascending order and we want the largest
+                  // first, return true if a > b.
+                  if (ra.x != rb.x)
+                    return ra.x > rb.x;
+                  return ra.y > rb.y;
+                });
+
+      for (auto& x : images) {
+        if (x->IsRequired()) {
+          if (!PackImage(x)) {
+            return false;
+          }
+        }
       }
     } else {
-      if (!PackImage(WhitePixel)) return false;
+      if (!PackImage(WhitePixel))
+        return false;
     }
   }
 
@@ -274,48 +301,52 @@ bool CAtlas::Optimize(bool DebugMode) {
 void CAtlas::DeleteImage(const WBATLASHANDLE h) {
   {
     CLightweightCriticalSection cs(&critsec);
-    if (ImageStorage.HasKey(h)) {
-      SAFEDELETE(ImageStorage[h]);
-      ImageStorage.Delete(h);
-    }
+    ImageStorage.erase(h);
   }
 
-  CAtlasNode *n = GetNodeCached(h);
-  if (!n) return;
+  CAtlasNode* n = GetNodeCached(h);
+  if (!n)
+    return;
   n->Image = nullptr;
   Dictionary.erase(h);
   FlushCache();
   return;
 }
 
-CCoreTexture2D *CAtlas::GetTexture() { return Atlas.get(); }
+CCoreTexture2D* CAtlas::GetTexture() { return Atlas.get(); }
 
 CSize CAtlas::GetSize(WBATLASHANDLE h) {
-  CAtlasNode *n = GetNodeCached(h);
-  if (n) return n->GetArea().Size();
+  CAtlasNode* n = GetNodeCached(h);
+  if (n)
+    return n->GetArea().Size();
 
   {
     CLightweightCriticalSection cs(&critsec);
-    if (ImageStorage.HasKey(h)) return ImageStorage[h]->GetSize();
+    auto it = ImageStorage.find(h);
+    if (it != ImageStorage.end())
+      return it->second->GetSize();
   }
 
   return CSize(0, 0);
 }
 
-bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect &r) {
+bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect& r) {
   if (!h) {
     r = CRect(0, 0, 0, 0);
     return true;
   }
 
-  CAtlasNode *n = GetNodeCached(h);
+  CAtlasNode* n = GetNodeCached(h);
 
-  if (!n)  // image not on atlas, add it
-  {
+  if (!n) {
+    // image not on atlas, add it
     {
       CLightweightCriticalSection cs(&critsec);
-      if (ImageStorage.HasKey(h)) {
-        if (PackImage(ImageStorage[h])) n = GetNodeCached(h);
+      auto it = ImageStorage.find(h);
+      if (it != ImageStorage.end()) {
+        if (PackImage(it->second.get())) {
+          n = GetNodeCached(h);
+        }
       }
     }
 
@@ -326,8 +357,9 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect &r) {
   }
 
   // need to tag image as required HERE
-  if (n->GetImage()) n->GetImage()->TagRequired();
-
+  if (n->GetImage()) {
+    n->GetImage()->TagRequired();
+  }
   r = n->Area;
 
   return true;
@@ -337,18 +369,19 @@ CPoint CAtlas::GetWhitePixelUV() { return WhitePixelPosition; }
 
 void CAtlas::ClearImageUsageflags() {
   CLightweightCriticalSection cs(&critsec);
-  for (int32_t x = 0; x < ImageStorage.NumItems(); x++)
-    ImageStorage.GetByIndex(x)->ClearRequired();
+  for (auto& x : ImageStorage)
+    x.second->ClearRequired();
 }
 
 void CAtlas::FlushCache() { memset(AtlasCache, 0, sizeof(AtlasCache)); }
 
-CAtlasNode *CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
+CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
   int32_t idx = Handle & (ATLASCACHESIZE - 1);
 
-  if (AtlasCache[idx].Handle == Handle) return AtlasCache[idx].Node;
+  if (AtlasCache[idx].Handle == Handle)
+    return AtlasCache[idx].Node;
 
-  CAtlasNode *n = nullptr;
+  CAtlasNode* n = nullptr;
   auto it = Dictionary.find(Handle);
   if (it != Dictionary.end()) {
     n = it->second;
@@ -370,7 +403,8 @@ bool CAtlas::Reset() {
   FlushCache();
   WhitePixel->TagRequired();
 
-  if (!PackImage(WhitePixel)) return false;
+  if (!PackImage(WhitePixel))
+    return false;
 
   CRect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
@@ -380,7 +414,7 @@ bool CAtlas::Reset() {
   return true;
 }
 
-bool CAtlas::Resize(CCoreDevice *Device, int32_t XSize, int32_t YSize) {
+bool CAtlas::Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize) {
   SAFEDELETE(Root);
   SAFEDELETEA(Image);
   Atlas.reset();
@@ -399,9 +433,11 @@ bool CAtlas::Resize(CCoreDevice *Device, int32_t XSize, int32_t YSize) {
   Dictionary.clear();
   WhitePixel->TagRequired();
 
-  if (!InitializeTexture(Device)) return false;
+  if (!InitializeTexture(Device))
+    return false;
 
-  if (!PackImage(WhitePixel)) return false;
+  if (!PackImage(WhitePixel))
+    return false;
 
   CRect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
