@@ -1,5 +1,7 @@
 #include "DrawAPI.h"
 
+#include <vector>
+
 #include "Application.h"
 
 #define VERTEXBUFFERRECTCOUNT 4096
@@ -18,13 +20,16 @@ void CWBDrawAPI::AddDisplayRect(
     const float v2,
     const CColor
         color /*, const CColor c2, const CColor c3, const CColor c4*/) {
-  if (!Opacity) return;
+  if (!Opacity)
+    return;
 
   const CRect rect = Rect + Offset;
 
-  if (!CropRect.Intersects(rect)) return;
+  if (!CropRect.Intersects(rect))
+    return;
 
-  if (DrawMode != WBD_RECTANGLES) RenderDisplayList();
+  if (DrawMode != WBD_RECTANGLES)
+    RenderDisplayList();
   DrawMode = WBD_RECTANGLES;
 
   float u1f = u1;
@@ -34,7 +39,7 @@ void CWBDrawAPI::AddDisplayRect(
 
   const CRect Pos = CropRect.GetIntersection(rect);
 
-  if (Pos != rect)  // need to cull UV
+  if (Pos != rect) // need to cull UV
   {
     const float xs = static_cast<float>(rect.Width());
     const float ys = static_cast<float>(rect.Height());
@@ -76,8 +81,10 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
   CRect Area = CRect(p1, p2);
   Area.Normalize();
   const CRect rArea = CropRect | Area;
-  if (rArea.Width() < 0 || rArea.Height() < 0) return;
-  if (DrawMode != WBD_LINES) RenderDisplayList();
+  if (rArea.Width() < 0 || rArea.Height() < 0)
+    return;
+  if (DrawMode != WBD_LINES)
+    RenderDisplayList();
 
   DrawMode = WBD_LINES;
 
@@ -87,21 +94,30 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
   const float xs = static_cast<float>(abs(p2.x - p1.x));
   const float ys = static_cast<float>(abs(p2.y - p1.y));
 
-  if (p1.x < rArea.x1) t1 = max(t1, (rArea.x1 - p1.x) / xs);
-  if (p1.y < rArea.y1) t1 = max(t1, (rArea.y1 - p1.y) / ys);
+  if (p1.x < rArea.x1)
+    t1 = max(t1, (rArea.x1 - p1.x) / xs);
+  if (p1.y < rArea.y1)
+    t1 = max(t1, (rArea.y1 - p1.y) / ys);
 
-  if (p1.x > rArea.x2) t1 = max(t1, (p1.x - rArea.x2) / xs);
-  if (p1.y > rArea.y2) t1 = max(t1, (p1.y - rArea.y2) / ys);
+  if (p1.x > rArea.x2)
+    t1 = max(t1, (p1.x - rArea.x2) / xs);
+  if (p1.y > rArea.y2)
+    t1 = max(t1, (p1.y - rArea.y2) / ys);
 
-  if (p2.x < rArea.x1) t2 = max(t2, (rArea.x1 - p2.x) / xs);
-  if (p2.y < rArea.y1) t2 = max(t2, (rArea.y1 - p2.y) / ys);
+  if (p2.x < rArea.x1)
+    t2 = max(t2, (rArea.x1 - p2.x) / xs);
+  if (p2.y < rArea.y1)
+    t2 = max(t2, (rArea.y1 - p2.y) / ys);
 
-  if (p2.x > rArea.x2) t2 = max(t2, (p2.x - rArea.x2) / xs);
-  if (p2.y > rArea.y2) t2 = max(t2, (p2.y - rArea.y2) / ys);
+  if (p2.x > rArea.x2)
+    t2 = max(t2, (p2.x - rArea.x2) / xs);
+  if (p2.y > rArea.y2)
+    t2 = max(t2, (p2.y - rArea.y2) / ys);
 
   t2 = 1 - t2;
 
-  if (t1 >= t2) return;
+  if (t1 >= t2)
+    return;
 
   r.p1 = Lerp(p1, p2, t1);
   r.p2 = Lerp(p1, p2, t2);
@@ -124,13 +140,16 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
                                        const float v1, const float u2,
                                        const float v2, const CColor color,
                                        float rotation) {
-  if (!Opacity) return;
+  if (!Opacity)
+    return;
 
   const CRect rect = Rect + Offset;
 
-  if (!CropRect.Intersects(rect)) return;
+  if (!CropRect.Intersects(rect))
+    return;
 
-  if (DrawMode != WBD_RECTANGLES) RenderDisplayList();
+  if (DrawMode != WBD_RECTANGLES)
+    RenderDisplayList();
   DrawMode = WBD_RECTANGLES;
 
   float u1f = u1;
@@ -140,7 +159,7 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
 
   const CRect Pos = CropRect.GetIntersection(rect);
 
-  if (Pos != rect)  // need to cull UV
+  if (Pos != rect) // need to cull UV
   {
     const float xs = static_cast<float>(rect.Width());
     const float ys = static_cast<float>(rect.Height());
@@ -213,7 +232,8 @@ void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight, WBGUIVERTEX Vertices[6],
     S = E;
   }
 
-  for (int32_t y = 0; y < NewVertexCount; y++) Vertices[y] = NewVertices[y];
+  for (int32_t y = 0; y < NewVertexCount; y++)
+    Vertices[y] = NewVertices[y];
   VertexCount = NewVertexCount;
 }
 
@@ -242,7 +262,8 @@ void CWBDrawAPI::ClipTriY(int32_t y, bool KeepBottom, WBGUIVERTEX Vertices[6],
     S = E;
   }
 
-  for (int32_t x = 0; x < NewVertexCount; x++) Vertices[x] = NewVertices[x];
+  for (int32_t x = 0; x < NewVertexCount; x++)
+    Vertices[x] = NewVertices[x];
   VertexCount = NewVertexCount;
 }
 
@@ -262,13 +283,15 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
   Bound.y2 = max(max(p1.y, p2.y), p3.y);
 
   Bound |= CropRect | Bound;
-  if (Bound.Width() <= 0 || Bound.Height() <= 0) return;
+  if (Bound.Width() <= 0 || Bound.Height() <= 0)
+    return;
 
-  if (DrawMode != WBD_TRIANGLES) RenderDisplayList();
+  if (DrawMode != WBD_TRIANGLES)
+    RenderDisplayList();
   DrawMode = WBD_TRIANGLES;
 
   WBGUIVERTEX
-  Vertices[6];  // max vertex count is 6, when all triangle edges are cut
+  Vertices[6]; // max vertex count is 6, when all triangle edges are cut
   int32_t VertexCount = 3;
   Vertices[0].Pos =
       CVector4(static_cast<float>(p1.x), static_cast<float>(p1.y), 0, 1);
@@ -304,8 +327,10 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
 }
 
 void CWBDrawAPI::RenderDisplayList() {
-  if (DisplayList.empty()) return;
-  if (!VertexBuffer) return;
+  if (DisplayList.empty())
+    return;
+  if (!VertexBuffer)
+    return;
 
   // update texture atlas if needed
   if (Atlas && Device->GetTexture(CORESMP_PS0) == Atlas->GetTexture())
@@ -335,28 +360,28 @@ void CWBDrawAPI::RenderDisplayList() {
     }
 
     switch (DrawMode) {
-      case WBD_RECTANGLES:
-        if (!Device->DrawIndexedTriangles(Count / 2, Count)) {
-          LOG(LOG_ERROR, _T( "[gui] Error drawing UI Triangles (%d %d)" ),
-              Count / 2, Count);
-          return;
-        }
-        break;
-      case WBD_LINES:
-        if (!Device->DrawLines(Count / 2)) {
-          LOG(LOG_ERROR, _T( "[gui] Error drawing UI Lines (%d)" ), Count / 2);
-          return;
-        }
-        break;
-      case WBD_TRIANGLES:
-        if (!Device->DrawTriangles(Count / 3)) {
-          LOG(LOG_ERROR, _T( "[gui] Error drawing UI Triangles (%d)" ),
-              Count / 3);
-          return;
-        }
-        break;
-      default:
-        break;
+    case WBD_RECTANGLES:
+      if (!Device->DrawIndexedTriangles(Count / 2, Count)) {
+        LOG(LOG_ERROR, _T( "[gui] Error drawing UI Triangles (%d %d)" ),
+            Count / 2, Count);
+        return;
+      }
+      break;
+    case WBD_LINES:
+      if (!Device->DrawLines(Count / 2)) {
+        LOG(LOG_ERROR, _T( "[gui] Error drawing UI Lines (%d)" ), Count / 2);
+        return;
+      }
+      break;
+    case WBD_TRIANGLES:
+      if (!Device->DrawTriangles(Count / 3)) {
+        LOG(LOG_ERROR, _T( "[gui] Error drawing UI Triangles (%d)" ),
+            Count / 3);
+        return;
+      }
+      break;
+    default:
+      break;
     }
 
     VxCount -= Count;
@@ -384,7 +409,8 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   App = Application;
   Device = Dev;
   Atlas = atlas;
-  if (!Device || !Atlas) return false;
+  if (!Device || !Atlas)
+    return false;
 
   VertexBuffer.swap(Device->CreateVertexBufferDynamic(
       sizeof(WBGUIVERTEX) * VERTEXBUFFERRECTCOUNT * 4));
@@ -559,7 +585,8 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   if (!VxShader) {
     LOG(LOG_WARNING,
         _T( "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 functionality" ));
-    if (Device->GetAPIType() == COREAPI_DX11) return false;
+    if (Device->GetAPIType() == COREAPI_DX11)
+      return false;
   }
 
   PxShader.swap(
@@ -567,12 +594,14 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   if (!PxShader) {
     LOG(LOG_WARNING,
         _T( "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 functionality" ));
-    if (Device->GetAPIType() == COREAPI_DX11) return false;
+    if (Device->GetAPIType() == COREAPI_DX11)
+      return false;
   }
 
   COREVERTEXATTRIBUTE* vx = WBGuiVertexFormat;
-  CArray<COREVERTEXATTRIBUTE> Att;
-  while (*vx != COREVXATTR_STOP) Att += *vx++;
+  std::vector<COREVERTEXATTRIBUTE> Att;
+  while (*vx != COREVXATTR_STOP)
+    Att.emplace_back(*vx++);
 
   VertexFormat.swap(Device->CreateVertexFormat(Att, VxShader.get()));
   if (!VertexFormat) {
@@ -726,7 +755,8 @@ void CWBDrawAPI::SetUIRenderState() {
 
   Device->SetRenderTarget(nullptr);
 
-  if (GuiSampler) GuiSampler->Apply(CORESMP_PS0);
+  if (GuiSampler)
+    GuiSampler->Apply(CORESMP_PS0);
 
   ResolutionData->Reset();
 
@@ -750,14 +780,16 @@ void CWBDrawAPI::SetUISamplerState(
 void CWBDrawAPI::SetRenderView(CRect r) { Device->SetViewport(r); }
 
 CSize CWBDrawAPI::GetAtlasElementSize(WBATLASHANDLE h) {
-  if (!Atlas) return CSize(0, 0);
+  if (!Atlas)
+    return CSize(0, 0);
   return Atlas->GetSize(h);
 }
 
 static int32_t defragmentReportCount = 0;
 
 bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
-  if (!Atlas) return false;
+  if (!Atlas)
+    return false;
 
   if (!Atlas->RequestImageUse(h, UV)) {
     LOG_DBG("Request Atlas Image Failed for %d", h);
@@ -796,15 +828,17 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
 
 void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
                                   CColor Color) {
-  if (!Atlas) return;
+  if (!Atlas)
+    return;
 
   const CPoint pos = CPoint(x, y) + Offset;
 
   if (!CropRect.Intersects(CRect(pos, pos + Atlas->GetSize(h))))
-    return;  // pre-cull invisible items to spare unneeded atlas use
+    return; // pre-cull invisible items to spare unneeded atlas use
 
   CRect UV;
-  if (!RequestAtlasImageUse(h, UV)) return;
+  if (!RequestAtlasImageUse(h, UV))
+    return;
 
   DrawRect(CRect(x, y, UV.Width() + x, UV.Height() + y),
            UVTRANSLATION(UV.x1, Atlas->GetXRes()),
@@ -816,42 +850,50 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
 void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, CRect& Position, bool TileX,
                                   bool TileY, bool StretchX, bool StretchY,
                                   CColor Color /*=0xffffffff*/) {
-  if (!Atlas) return;
+  if (!Atlas)
+    return;
 
   const CRect rect = CropRect | (Position + Offset);
   if (rect.Width() <= 0 || rect.Height() <= 0)
-    return;  // pre-cull invisible items to spare unneeded atlas use
+    return; // pre-cull invisible items to spare unneeded atlas use
 
   CRect UV;
-  if (!RequestAtlasImageUse(h, UV)) return;
+  if (!RequestAtlasImageUse(h, UV))
+    return;
 
   CSize tilesize = Position.Size();
-  if (TileX) tilesize.x = UV.Width();
-  if (TileY) tilesize.y = UV.Height();
+  if (TileX)
+    tilesize.x = UV.Width();
+  if (TileY)
+    tilesize.y = UV.Height();
 
   CVector2 uvmod = CVector2(0, 0);
 
   CRect target = CRect(CPoint(0, 0), UV.Size()) + Position.TopLeft();
   target.x2 = target.x1 + Position.Width();
-  if (!TileX && StretchX) uvmod.x = 0.5;
+  if (!TileX && StretchX)
+    uvmod.x = 0.5;
 
-  if (TileX)  // crop unneeded tiles
+  if (TileX) // crop unneeded tiles
   {
     if (target.x1 < CropRect.x1 - Offset.x)
       target.x1 +=
           ((CropRect.x1 - Offset.x - target.x1) / tilesize.x) * tilesize.x;
-    if (target.x2 > CropRect.x2 - Offset.x) target.x2 = CropRect.x2;
+    if (target.x2 > CropRect.x2 - Offset.x)
+      target.x2 = CropRect.x2;
   }
 
   target.y2 = target.y1 + Position.Height();
-  if (!TileY && StretchY) uvmod.y = 0.5;
+  if (!TileY && StretchY)
+    uvmod.y = 0.5;
 
-  if (TileY)  // crop unneeded tiles
+  if (TileY) // crop unneeded tiles
   {
     if (target.y1 < CropRect.y1 - Offset.y)
       target.y1 +=
           ((CropRect.y1 - Offset.y - target.y1) / tilesize.y) * tilesize.y;
-    if (target.y2 > CropRect.y2 - Offset.y) target.y2 = CropRect.y2;
+    if (target.y2 > CropRect.y2 - Offset.y)
+      target.y2 = CropRect.y2;
   }
 
   const CRect p = CRect(CPoint(0, 0), tilesize);
@@ -873,15 +915,17 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, CRect& Position, bool TileX,
 
 void CWBDrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const CRect& position,
                                          CColor Color, float rotation) {
-  if (!Atlas) return;
+  if (!Atlas)
+    return;
 
   const CRect pos = position + Offset;
 
   if (!CropRect.Intersects(pos))
-    return;  // pre-cull invisible items to spare unneeded atlas use
+    return; // pre-cull invisible items to spare unneeded atlas use
 
   CRect UV;
-  if (!RequestAtlasImageUse(h, UV)) return;
+  if (!RequestAtlasImageUse(h, UV))
+    return;
 
   DrawRectRotated(pos, UVTRANSLATION(UV.x1 + 0.5f, Atlas->GetXRes()),
                   UVTRANSLATION(UV.y1 + 0.5f, Atlas->GetYRes()),
@@ -891,7 +935,8 @@ void CWBDrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const CRect& position,
 }
 
 void CWBDrawAPI::SetCropToClient(const CWBItem* i) {
-  if (!i) return;
+  if (!i)
+    return;
   SetCropRect(GetCropRect() | i->ClientToScreen(i->GetClientRect()));
 }
 

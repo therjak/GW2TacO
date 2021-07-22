@@ -23,7 +23,7 @@ class CCoreDevice {
   void AddResource(CCoreResource* Resource);
   std::vector<CCoreResource*> Resources;
 
- protected:
+protected:
   //////////////////////////////////////////////////////////////////////////
   // device management
 
@@ -70,7 +70,7 @@ class CCoreDevice {
   virtual bool CommitRenderStates() = 0;
   bool CreateDefaultRenderStates();
 
- public:
+public:
   CCoreDevice();
   virtual ~CCoreDevice();
   virtual COREDEVICEAPI GetAPIType() = 0;
@@ -91,34 +91,35 @@ class CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // texture functions
 
-  virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
-      const int32_t XRes, const int32_t YRes, const uint8_t* Data,
-      const char BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8,
-      const bool RenderTarget = false) = 0;
-  virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
-      const uint8_t* Data, const int32_t Size) = 0;
+  virtual std::unique_ptr<CCoreTexture2D>
+  CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t* Data,
+                  const char BytesPerPixel = 4,
+                  const COREFORMAT Format = COREFMT_A8R8G8B8,
+                  const bool RenderTarget = false) = 0;
+  virtual std::unique_ptr<CCoreTexture2D>
+  CreateTexture2D(const uint8_t* Data, const int32_t Size) = 0;
   virtual CCoreTexture2D* CopyTexture(CCoreTexture2D* Texture) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexbuffer functions
 
-  virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(
-      const uint8_t* Data, const int32_t Size) = 0;
-  virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(
-      const int32_t Size) = 0;
+  virtual std::unique_ptr<CCoreVertexBuffer>
+  CreateVertexBuffer(const uint8_t* Data, const int32_t Size) = 0;
+  virtual std::unique_ptr<CCoreVertexBuffer>
+  CreateVertexBufferDynamic(const int32_t Size) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // indexbuffer functions
 
-  virtual std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(
-      const int32_t IndexCount, const int32_t IndexSize = 2) = 0;
+  virtual std::unique_ptr<CCoreIndexBuffer>
+  CreateIndexBuffer(const int32_t IndexCount, const int32_t IndexSize = 2) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexformat functions
 
-  virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
-      const CArray<COREVERTEXATTRIBUTE>& Attributes,
-      CCoreVertexShader* vs = nullptr) = 0;
+  virtual std::unique_ptr<CCoreVertexFormat>
+  CreateVertexFormat(const std::vector<COREVERTEXATTRIBUTE>& Attributes,
+                     CCoreVertexShader* vs = nullptr) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // renderstate functions
@@ -145,19 +146,19 @@ class CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // shader functions
 
-  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) = 0;
-  virtual std::unique_ptr<CCorePixelShader> CreatePixelShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) = 0;
-  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
-      uint8_t* Code, int32_t CodeSize) = 0;
-  virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
-      uint8_t* Code, int32_t CodeSize) = 0;
-  virtual CCoreGeometryShader* CreateGeometryShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCoreVertexShader>
+  CreateVertexShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                     LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCorePixelShader>
+  CreatePixelShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                    LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCoreVertexShader>
+  CreateVertexShaderFromBlob(uint8_t* Code, int32_t CodeSize) = 0;
+  virtual std::unique_ptr<CCorePixelShader>
+  CreatePixelShaderFromBlob(uint8_t* Code, int32_t CodeSize) = 0;
+  virtual CCoreGeometryShader*
+  CreateGeometryShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                       LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
   virtual CCoreDomainShader* CreateDomainShader(LPCSTR Code, int32_t CodeSize,
                                                 LPCSTR EntryFunction,
                                                 LPCSTR ShaderVersion,
@@ -166,9 +167,9 @@ class CCoreDevice {
                                             LPCSTR EntryFunction,
                                             LPCSTR ShaderVersion,
                                             std::string* Err = nullptr) = 0;
-  virtual CCoreComputeShader* CreateComputeShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) = 0;
+  virtual CCoreComputeShader*
+  CreateComputeShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                      LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
   virtual CCoreVertexShader* CreateVertexShader() = 0;
   virtual CCorePixelShader* CreatePixelShader() = 0;
   virtual CCoreGeometryShader* CreateGeometryShader() = 0;

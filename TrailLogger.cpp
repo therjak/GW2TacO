@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "OverlayConfig.h"
 
@@ -494,9 +495,9 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
   };
 
   COREVERTEXATTRIBUTE* vx = TrailVertexFormat;
-  CArray<COREVERTEXATTRIBUTE> Att;
+  std::vector<COREVERTEXATTRIBUTE> Att;
   while (*vx != COREVXATTR_STOP)
-    Att += *vx++;
+    Att.emplace_back(*vx++);
 
   vertexFormat.swap(App->GetDevice()->CreateVertexFormat(Att, vxShader.get()));
   if (!vertexFormat) {

@@ -1,6 +1,8 @@
 #pragma once
 #include <dxgi1_3.h>
 
+#include <vector>
+
 #include "../BaseLib/BaseLib.h"
 #include "../BaseLib/Color.h"
 #include "Core2_Config.h"
@@ -46,7 +48,7 @@ class CCoreDX11Device : public CCoreDevice {
                                         const int32_t AALevel,
                                         const int32_t RefreshRate);
 
- public:
+public:
   CCoreDX11Device();
   ~CCoreDX11Device() override;
   INLINE ID3D11Device* GetDevice() { return Device; }
@@ -69,10 +71,11 @@ class CCoreDX11Device : public CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // texture functions
 
-  std::unique_ptr<CCoreTexture2D> CreateTexture2D(
-      const int32_t XRes, const int32_t YRes, const uint8_t* Data,
-      const char BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8,
-      const bool RenderTarget = false) override;
+  std::unique_ptr<CCoreTexture2D>
+  CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t* Data,
+                  const char BytesPerPixel = 4,
+                  const COREFORMAT Format = COREFMT_A8R8G8B8,
+                  const bool RenderTarget = false) override;
   std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t* Data,
                                                   const int32_t Size) override;
   CCoreTexture2D* CopyTexture(CCoreTexture2D* Texture) override;
@@ -80,40 +83,42 @@ class CCoreDX11Device : public CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // vertexbuffer functions
 
-  std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(
-      const uint8_t* Data, const int32_t Size) override;
-  std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(
-      const int32_t Size) override;
+  std::unique_ptr<CCoreVertexBuffer>
+  CreateVertexBuffer(const uint8_t* Data, const int32_t Size) override;
+  std::unique_ptr<CCoreVertexBuffer>
+  CreateVertexBufferDynamic(const int32_t Size) override;
 
   //////////////////////////////////////////////////////////////////////////
   // indexbuffer functions
 
-  std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(
-      const int32_t IndexCount, const int32_t IndexSize = 2) override;
+  std::unique_ptr<CCoreIndexBuffer>
+  CreateIndexBuffer(const int32_t IndexCount,
+                    const int32_t IndexSize = 2) override;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexformat functions
 
-  std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
-      const CArray<COREVERTEXATTRIBUTE>& Attributes,
-      CCoreVertexShader* vs = nullptr) override;
+  std::unique_ptr<CCoreVertexFormat>
+  CreateVertexFormat(const std::vector<COREVERTEXATTRIBUTE>& Attributes,
+                     CCoreVertexShader* vs = nullptr) override;
 
   //////////////////////////////////////////////////////////////////////////
   // shader functions
 
-  std::unique_ptr<CCoreVertexShader> CreateVertexShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) override;
-  std::unique_ptr<CCorePixelShader> CreatePixelShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) override;
-  std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
-      uint8_t* Code, int32_t CodeSize) override;
-  std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
-      uint8_t* Code, int32_t CodeSize) override;
-  CCoreGeometryShader* CreateGeometryShader(
-      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
-      std::string* Err = nullptr) override;
+  std::unique_ptr<CCoreVertexShader>
+  CreateVertexShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                     LPCSTR ShaderVersion, std::string* Err = nullptr) override;
+  std::unique_ptr<CCorePixelShader>
+  CreatePixelShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                    LPCSTR ShaderVersion, std::string* Err = nullptr) override;
+  std::unique_ptr<CCoreVertexShader>
+  CreateVertexShaderFromBlob(uint8_t* Code, int32_t CodeSize) override;
+  std::unique_ptr<CCorePixelShader>
+  CreatePixelShaderFromBlob(uint8_t* Code, int32_t CodeSize) override;
+  CCoreGeometryShader*
+  CreateGeometryShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
+                       LPCSTR ShaderVersion,
+                       std::string* Err = nullptr) override;
   CCoreDomainShader* CreateDomainShader(LPCSTR Code, int32_t CodeSize,
                                         LPCSTR EntryFunction,
                                         LPCSTR ShaderVersion,

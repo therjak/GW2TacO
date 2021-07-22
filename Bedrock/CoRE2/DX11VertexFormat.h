@@ -1,4 +1,7 @@
 #pragma once
+
+#include <vector>
+
 #include "DX11Device.h"
 #include "VertexFormat.h"
 
@@ -13,11 +16,11 @@ class CCoreDX11VertexFormat : public CCoreVertexFormat {
   virtual void Release();
   bool Apply() override;
 
- public:
+public:
   CCoreDX11VertexFormat(CCoreDX11Device* dev);
   ~CCoreDX11VertexFormat() override;
 
-  bool Create(const CArray<COREVERTEXATTRIBUTE>& Attributes,
+  bool Create(const std::vector<COREVERTEXATTRIBUTE>& Attributes,
               CCoreVertexShader* vs = nullptr) override;
   int32_t GetSize() override;
 };
