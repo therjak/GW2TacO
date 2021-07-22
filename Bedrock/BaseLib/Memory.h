@@ -15,11 +15,11 @@ void __cdecl operator delete[](void* pointer, const char* file, int32_t line);
 
 #define new new (__FILE__, __LINE__)
 
-#include "Dictionary.h"
+#include "CriticalSection.h"
 #include "StackTracker.h"
 
 class CAllocationInfo {
- public:
+public:
   char* File = nullptr;
   int32_t Line = 0;
   int32_t Size = 0;
@@ -44,7 +44,7 @@ class CMemTracker {
   bool Paused;
   bool IgnoreMissing;
 
- public:
+public:
   CMemTracker();
   virtual ~CMemTracker();
   void AddPointer(void* p, const char* file, int32_t line, int32_t size);
@@ -68,26 +68,26 @@ extern uint32_t CurrentAllocCount;
 
 #endif
 
-#define SAFEDELETE(x) \
-  {                   \
-    delete x;         \
-    x = NULL;         \
+#define SAFEDELETE(x)                                                          \
+  {                                                                            \
+    delete x;                                                                  \
+    x = NULL;                                                                  \
   }
-#define SAFEDELETEA(x) \
-  {                    \
-    delete[] x;        \
-    x = NULL;          \
+#define SAFEDELETEA(x)                                                         \
+  {                                                                            \
+    delete[] x;                                                                \
+    x = NULL;                                                                  \
   }
-#define SAFEFREE(x) \
-  {                 \
-    free(x);        \
-    x = NULL;       \
+#define SAFEFREE(x)                                                            \
+  {                                                                            \
+    free(x);                                                                   \
+    x = NULL;                                                                  \
   }
 
 #ifdef MEMORY_TRACKING
-#define IGNOREFREEERRORS(x)         \
-  do {                              \
-    memTracker.SetMissingIgnore(x); \
+#define IGNOREFREEERRORS(x)                                                    \
+  do {                                                                         \
+    memTracker.SetMissingIgnore(x);                                            \
   } while (0)
 #else
 #define IGNOREFREEERRORS(x)

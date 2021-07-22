@@ -42,9 +42,6 @@
     <ClInclude Include="Array.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="Dictionary.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="Matrix.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>
@@ -137,9 +134,6 @@
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Memory.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="Dictionary.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Quaternion.cpp">

@@ -2,6 +2,7 @@
 
 #include <mmsystem.h>
 
+#include <algorithm>
 #include <iterator>
 #include <string>
 #include <unordered_map>

@@ -4,7 +4,6 @@
 #include <unordered_map>
 
 #include "Bedrock/BaseLib/BaseLib.h"
-#include "Bedrock/BaseLib/Dictionary.h"
 
 class TS3Connection {
   CSocket connection;

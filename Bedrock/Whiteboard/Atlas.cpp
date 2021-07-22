@@ -1,5 +1,7 @@
 #include "Atlas.h"
 
+#include <algorithm>
+
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() {

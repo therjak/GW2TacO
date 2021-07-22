@@ -1,5 +1,7 @@
 ﻿#include "TS3Control.h"
 
+#include <algorithm>
+
 #include "Bedrock/BaseLib/string_format.h"
 #include "Language.h"
 #include "OverlayConfig.h"
