@@ -2,7 +2,8 @@
 #include <string>
 #include <thread>
 
-#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/DrawAPI.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 
 class RaidEvent {
  public:

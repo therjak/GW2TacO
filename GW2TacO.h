@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Bedrock/Whiteboard/GuiItem.h"
 #include "Bedrock/Whiteboard/TextBox.h"
 #include "Bedrock/Whiteboard/Window.h"
 #include "TS3Connection.h"

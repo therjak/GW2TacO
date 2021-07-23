@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/DrawAPI.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 
 class GW2TacticalCompass : public CWBItem {
   void OnDraw(CWBDrawAPI* API) override;

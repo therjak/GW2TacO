@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "Bedrock/BaseLib/FileList.h"
-#include "Bedrock/Whiteboard/Application.h"
 #include "OverlayConfig.h"
 
 typedef std::function<bool(uint32_t)> UTF8CHARCALLBACK;

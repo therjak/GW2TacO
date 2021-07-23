@@ -1,11 +1,10 @@
 ﻿#pragma once
-#include "Bedrock/BaseLib/BaseLib.h"
-
 #include <string>
 
-class WvWObjective
-{
-public:
+#include "Bedrock/BaseLib/Vector.h"
+
+class WvWObjective {
+ public:
   std::string id;
   std::string type;
   std::string mapType;

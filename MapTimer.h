@@ -2,7 +2,7 @@
 #include <thread>
 #include <vector>
 
-#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 
 class GW2MapTimer : public CWBItem {
   struct Event {

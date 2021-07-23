@@ -1,5 +1,7 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/Application.h"
+
+#include "Bedrock/Whiteboard/DrawAPI.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 
 class TS3Control : public CWBItem {
   CPoint lastpos;

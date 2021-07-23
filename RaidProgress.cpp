@@ -4,7 +4,6 @@
 
 #include "Bedrock/BaseLib/string_format.h"
 #include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/Whiteboard/Application.h"
 #include "GW2API.h"
 #include "Language.h"
 #include "OverlayConfig.h"

@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Bedrock/Whiteboard/Application.h"
 #include "Bedrock/Whiteboard/Button.h"
 #include "OverlayConfig.h"
 

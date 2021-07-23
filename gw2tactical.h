@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/Application.h"
-// Needs to stay above
 #include <objbase.h>
 
 #include <memory>
@@ -11,6 +9,8 @@
 
 #include "Bedrock/BaseLib/Color.h"
 #include "Bedrock/BaseLib/hasher.h"
+#include "Bedrock/Whiteboard/ContextMenu.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 
 enum class POIBehavior : int32_t {
   AlwaysVisible,

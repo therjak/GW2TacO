@@ -4,7 +4,6 @@
 #include <string>
 
 #include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/Whiteboard/Application.h"
 #include "Language.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"

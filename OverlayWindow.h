@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "Bedrock/Whiteboard/DrawAPI.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 #include "Bedrock/Whiteboard/Window.h"
 
 class OverlayWindow : public CWBWindow {

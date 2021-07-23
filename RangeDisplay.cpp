@@ -1,6 +1,5 @@
 ﻿#include "RangeDisplay.h"
 
-#include "Bedrock/Whiteboard/Application.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 

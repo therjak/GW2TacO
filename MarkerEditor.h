@@ -1,7 +1,8 @@
 ﻿#pragma once
 #include <vector>
 
-#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/DrawAPI.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 #include "gw2tactical.h"
 
 class GW2MarkerEditor : public CWBItem {

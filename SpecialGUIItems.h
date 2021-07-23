@@ -2,6 +2,7 @@
 #include <string_view>
 
 #include "Bedrock/Whiteboard/Button.h"
+#include "Bedrock/Whiteboard/GuiItem.h"
 
 class ClickThroughButton : public CWBButton {
  public:

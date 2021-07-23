@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "Bedrock/BaseLib/BaseLib.h"
-#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/DrawAPI.h"
 
 namespace GW2 {
 class APIKey {
