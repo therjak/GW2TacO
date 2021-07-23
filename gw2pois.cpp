@@ -3,8 +3,10 @@
 #include <windowsx.h>
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "Bedrock/BaseLib/Timer.h"
 #include "Bedrock/BaseLib/string_format.h"
@@ -69,7 +71,8 @@ void OpenWindows(CWBApplication* App) {
   auto root = App->GetRoot();
   GW2TacO* taco =
       dynamic_cast<GW2TacO*>(root->FindChildByID("tacoroot", "GW2TacO"));
-  if (!taco) return;
+  if (!taco)
+    return;
 
   if (HasWindowData("MapTimer") && IsWindowOpen("MapTimer"))
     taco->OpenWindow("MapTimer");
@@ -96,7 +99,8 @@ void OpenWindows(CWBApplication* App) {
 bool ShiftState = false;
 
 LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks) return CallNextHookEx(nullptr, ccode, wParam, lParam);
+  if (disableHooks)
+    return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   if (ccode == HC_ACTION) {
     KBDLLHOOKSTRUCT* pkbdllhook = (KBDLLHOOKSTRUCT*)lParam;
@@ -140,7 +144,8 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
     }
   }
 
-  if (ccode < 0) return CallNextHookEx(nullptr, ccode, wParam, lParam);
+  if (ccode < 0)
+    return CallNextHookEx(nullptr, ccode, wParam, lParam);
 
   if (wParam != WM_KEYDOWN && wParam != WM_KEYUP && wParam != WM_CHAR &&
       wParam != WM_DEADCHAR && wParam != WM_UNICHAR)
@@ -168,7 +173,8 @@ LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
   // !!!!!!!!!!!!!
   // https://stackoverflow.com/questions/3548932/keyboard-hook-changes-the-behavior-of-keys
 
-  if (code < 0) return CallNextHookEx(nullptr, code, wParam, lParam);
+  if (code < 0)
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   if (wParam != WM_KEYDOWN && wParam != WM_KEYUP && wParam != WM_CHAR &&
       wParam != WM_DEADCHAR && wParam != WM_UNICHAR)
@@ -205,7 +211,8 @@ LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks) return CallNextHookEx(nullptr, code, wParam, lParam);
+  if (disableHooks)
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 
   auto wnd = GetForegroundWindow();
   if (code < 0 || !lParam ||
@@ -229,14 +236,15 @@ LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
     PostMessage((HWND)App->GetHandle(), wParam, 0, ap.x + (ap.y << 16));
     return CallNextHookEx(
         nullptr, code, wParam,
-        lParam);  // let these through so we don't mess up dragging etc
+        lParam); // let these through so we don't mess up dragging etc
   }
 
   return CallNextHookEx(nullptr, code, wParam, lParam);
 }
 
 LONG WINAPI CrashOverride(struct _EXCEPTION_POINTERS* excpInfo) {
-  if (IsDebuggerPresent()) return EXCEPTION_CONTINUE_SEARCH;
+  if (IsDebuggerPresent())
+    return EXCEPTION_CONTINUE_SEARCH;
   LONG res = baseCrashTracker(excpInfo);
   return res;
 }
@@ -287,7 +295,8 @@ bool IsProcessRunning(DWORD pid) {
   PROCESSENTRY32 pe32;
   hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
-  if (hProcessSnap == INVALID_HANDLE_VALUE) return false;
+  if (hProcessSnap == INVALID_HANDLE_VALUE)
+    return false;
 
   pe32.dwSize = sizeof(PROCESSENTRY32);
   if (Process32First(hProcessSnap, &pe32)) {
@@ -337,12 +346,16 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
     bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
                                   WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
 
-  if (bResults) bResults = WinHttpReceiveResponse(hRequest, nullptr);
+  if (bResults)
+    bResults = WinHttpReceiveResponse(hRequest, nullptr);
 
   if (!bResults) {
-    if (hRequest) WinHttpCloseHandle(hRequest);
-    if (hConnect) WinHttpCloseHandle(hConnect);
-    if (hSession) WinHttpCloseHandle(hSession);
+    if (hRequest)
+      WinHttpCloseHandle(hRequest);
+    if (hConnect)
+      WinHttpCloseHandle(hConnect);
+    if (hSession)
+      WinHttpCloseHandle(hSession);
     return "";
   }
 
@@ -351,9 +364,12 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
   do {
     dwSize = 0;
     if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
-      if (hRequest) WinHttpCloseHandle(hRequest);
-      if (hConnect) WinHttpCloseHandle(hConnect);
-      if (hSession) WinHttpCloseHandle(hSession);
+      if (hRequest)
+        WinHttpCloseHandle(hRequest);
+      if (hConnect)
+        WinHttpCloseHandle(hConnect);
+      if (hSession)
+        WinHttpCloseHandle(hSession);
       return "";
     }
 
@@ -361,9 +377,12 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
 
     if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer.get(), dwSize,
                          &dwDownloaded)) {
-      if (hRequest) WinHttpCloseHandle(hRequest);
-      if (hConnect) WinHttpCloseHandle(hConnect);
-      if (hSession) WinHttpCloseHandle(hSession);
+      if (hRequest)
+        WinHttpCloseHandle(hRequest);
+      if (hConnect)
+        WinHttpCloseHandle(hConnect);
+      if (hSession)
+        WinHttpCloseHandle(hSession);
       return "";
     }
 
@@ -371,9 +390,12 @@ std::string FetchHTTP(std::string_view url, std::string_view path) {
 
   } while (dwSize > 0);
 
-  if (hRequest) WinHttpCloseHandle(hRequest);
-  if (hConnect) WinHttpCloseHandle(hConnect);
-  if (hSession) WinHttpCloseHandle(hSession);
+  if (hRequest)
+    WinHttpCloseHandle(hRequest);
+  if (hConnect)
+    WinHttpCloseHandle(hConnect);
+  if (hSession)
+    WinHttpCloseHandle(hSession);
 
   return std::string(reinterpret_cast<char*>(data.GetData()), data.GetLength());
 }
@@ -407,15 +429,18 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
     bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
                                   WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
 
-  if (bResults) bResults = WinHttpReceiveResponse(hRequest, nullptr);
+  if (bResults)
+    bResults = WinHttpReceiveResponse(hRequest, nullptr);
 
-  if (!bResults) return "";
+  if (!bResults)
+    return "";
 
   CStreamWriterMemory data;
 
   do {
     dwSize = 0;
-    if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) return "";
+    if (!WinHttpQueryDataAvailable(hRequest, &dwSize))
+      return "";
 
     auto pszOutBuffer = std::make_unique<char[]>(dwSize + 1);
 
@@ -427,15 +452,18 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
 
   } while (dwSize > 0);
 
-  if (hRequest) WinHttpCloseHandle(hRequest);
-  if (hConnect) WinHttpCloseHandle(hConnect);
-  if (hSession) WinHttpCloseHandle(hSession);
+  if (hRequest)
+    WinHttpCloseHandle(hRequest);
+  if (hConnect)
+    WinHttpCloseHandle(hConnect);
+  if (hSession)
+    WinHttpCloseHandle(hSession);
 
   return std::string(reinterpret_cast<const char*>(data.GetData()),
                      data.GetLength());
 }
 
-#include <Urlmon.h>  // URLOpenBlockingStreamW()
+#include <Urlmon.h> // URLOpenBlockingStreamW()
 #pragma comment(lib, "Urlmon.lib")
 
 bool HooksInitialized = false;
@@ -549,7 +577,8 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
     hr = URLOpenBlockingStream(nullptr, ("http://" + std::string(url)).c_str(),
                                &stream, 0, nullptr);
 
-  if (FAILED(hr)) return false;
+  if (FAILED(hr))
+    return false;
 
   char buffer[4096];
   do {
@@ -560,7 +589,8 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
 
   stream->Release();
 
-  if (FAILED(hr)) return false;
+  if (FAILED(hr))
+    return false;
 
   return true;
 }
@@ -568,7 +598,8 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
 #define MINIZ_HEADER_FILE_ONLY
 #include "Bedrock/UtilLib/miniz.c"
 
-CArrayThreadSafe<std::string> loadList;
+std::mutex loadListMutex;
+std::vector<std::string> loadList;
 
 void FetchMarkerPackOnline(std::string_view ourl) {
   int32_t pos = ourl.find("gw2taco://markerpack/");
@@ -613,7 +644,8 @@ void FetchMarkerPackOnline(std::string_view ourl) {
 
         int32_t cnt = 0;
         for (uint32_t x = 0; x < url.size(); x++)
-          if (url[x] == '\\' || url[x] == '/') cnt = x;
+          if (url[x] == '\\' || url[x] == '/')
+            cnt = x;
 
         auto fileName = url.substr(cnt + 1);
         if (fileName.empty()) {
@@ -628,7 +660,8 @@ void FetchMarkerPackOnline(std::string_view ourl) {
           fileName = fileName.substr(0, fileName.size() - 5);
 
         for (char& x : fileName)
-          if (!isalnum(x)) x = '_';
+          if (!isalnum(x))
+            x = '_';
 
         fileName = "POIs/" + fileName + ".taco";
 
@@ -645,8 +678,8 @@ void FetchMarkerPackOnline(std::string_view ourl) {
           remove(fileName.c_str());
           return static_cast<DWORD>(0);
         }
-
-        loadList.Add(fileName);
+        std::scoped_lock l(loadListMutex);
+        loadList.emplace_back(std::move(fileName));
 
         return static_cast<DWORD>(0);
       },
@@ -678,15 +711,16 @@ BOOL __stdcall gw2WindowCountFunc(HWND hwnd, LPARAM lParam) {
 }
 
 BOOL __stdcall gw2WindowFromPIDFunction(HWND hWnd, LPARAM a2) {
-  DWORD dwProcessId;    // [esp+4h] [ebp-198h]
-  CHAR ClassName[400];  // [esp+8h] [ebp-194h]
+  DWORD dwProcessId;   // [esp+4h] [ebp-198h]
+  CHAR ClassName[400]; // [esp+8h] [ebp-194h]
 
   memset(&ClassName, 0, 400);
   GetClassNameA(hWnd, ClassName, 199);
   if (!strcmp(ClassName, "ArenaNet_Dx_Window_Class")) {
     dwProcessId = 0;
     GetWindowThreadProcessId(hWnd, &dwProcessId);
-    if (a2 == dwProcessId) gw2WindowFromPid = hWnd;
+    if (a2 == dwProcessId)
+      gw2WindowFromPid = hWnd;
   }
   return 1;
 }
@@ -740,7 +774,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   }
 
   if (cmdLine.find("-forcenewinstance") == cmdLine.npos) {
-    if (AppIsAllreadyRunning()) return 0;
+    if (AppIsAllreadyRunning())
+      return 0;
   }
 
   auto mumblePos = cmdLine.find("-mumble");
@@ -792,7 +827,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       FreeLibrary(hUser32);
     }
 
-    if (!dpiSet) LOG_ERR("[GW2TacO] DPI Awareness NOT set");
+    if (!dpiSet)
+      LOG_ERR("[GW2TacO] DPI Awareness NOT set");
   }
 
   FORCEDDEBUGLOG("Config Loaded.");
@@ -823,7 +859,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   p.OverrideWindowStyle = WS_POPUP;
   p.OverrideWindowStyleEx =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
-      WS_EX_TOOLWINDOW;  // | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
+      WS_EX_TOOLWINDOW; // | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
   if (dComp)
     p.OverrideWindowStyleEx = WS_EX_TOPMOST | WS_EX_TRANSPARENT |
                               WS_EX_TOOLWINDOW | WS_EX_LAYERED |
@@ -842,9 +878,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   if (!ChangeWindowMessageFilterEx((HWND)App->GetHandle(), WM_COPYDATA,
                                    MSGFLT_ALLOW, nullptr))
-    LOG_ERR(
-        "[GW2TacO] Failed to change message filters for WM_COPYDATA - "
-        "gw2taco:// protocol messages will NOT be processed!");
+    LOG_ERR("[GW2TacO] Failed to change message filters for WM_COPYDATA - "
+            "gw2taco:// protocol messages will NOT be processed!");
 
   FORCEDDEBUGLOG("App initialized.");
 
@@ -880,12 +915,14 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   HWND handle = (HWND)App->GetHandle();
 
-  if (!HasConfigValue("CheckForUpdates")) SetConfigValue("CheckForUpdates", 1);
+  if (!HasConfigValue("CheckForUpdates"))
+    SetConfigValue("CheckForUpdates", 1);
 
   if (!HasConfigValue("HideOnLoadingScreens"))
     SetConfigValue("HideOnLoadingScreens", 1);
 
-  if (!HasConfigValue("KeybindsEnabled")) SetConfigValue("KeybindsEnabled", 1);
+  if (!HasConfigValue("KeybindsEnabled"))
+    SetConfigValue("KeybindsEnabled", 1);
 
   SetConfigValue("LogTrails", 0);
 
@@ -897,7 +934,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   bool FoundGW2Window = false;
 
-  if (!HasConfigValue("Vsync")) SetConfigValue("Vsync", 1);
+  if (!HasConfigValue("Vsync"))
+    SetConfigValue("Vsync", 1);
 
   if (!HasConfigValue("SmoothCharacterPos"))
     SetConfigValue("SmoothCharacterPos", 1);
@@ -912,12 +950,14 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   GW2TacO* taco = dynamic_cast<GW2TacO*>(
       App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
 
-  if (!taco) return 0;
+  if (!taco)
+    return 0;
 
   taco->InitScriptEngines();
 
   auto lastRenderTime = globalTimer.GetTime();
-  if (!HasConfigValue("FrameThrottling")) SetConfigValue("FrameThrottling", 1);
+  if (!HasConfigValue("FrameThrottling"))
+    SetConfigValue("FrameThrottling", 1);
 
   bool frameThrottling = GetConfigValue("FrameThrottling") != 0;
 
@@ -925,34 +965,38 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   while (App->HandleMessages()) {
 #ifdef _DEBUG
-    if (GetAsyncKeyState(VK_F11)) break;
+    if (GetAsyncKeyState(VK_F11))
+      break;
 #endif
 
     if (globalTimer.GetTime() - lastSlowEventTime > 1000) {
       if (GetConfigValue("CloseWithGW2"))
         if (!gw2Window && FoundGW2Window)
-          if (!IsProcessRunning(GW2Pid)) App->SetDone(true);
+          if (!IsProcessRunning(GW2Pid))
+            App->SetDone(true);
     }
-
-    if (loadList.NumItems()) {
-      auto file = loadList[0];
-      loadList.DeleteByIndex(0);
-      ImportMarkerPack(App, file);
+    {
+      std::scoped_lock l(loadListMutex);
+      if (!loadList.empty()) {
+        auto file = loadList[0];
+        loadList.erase(loadList.begin());
+        ImportMarkerPack(App, file);
+      }
     }
 
     FORCEDDEBUGLOG("messages handled");
     mumbleLink.Update();
     bool shortTick = (GetTime() - mumbleLink.LastFrameTime) < 333;
 
-    if (!hideOnLoadingScreens) shortTick = true;
+    if (!hideOnLoadingScreens)
+      shortTick = true;
 
     if (!FoundGW2Window) {
       // if (mumbleLink.mumblePath != "MumbleLink")
       {
         if (!mumbleLink.IsValid() && GetTime() > 60000) {
-          LOG_ERR(
-              "[GW2TacO] Closing TacO because GW2 with mumble link was not "
-              "found in under a minute");
+          LOG_ERR("[GW2TacO] Closing TacO because GW2 with mumble link was not "
+                  "found in under a minute");
           App->SetDone(true);
         }
       }
@@ -1057,7 +1101,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                foregroundWindow != (HWND)App->GetHandle() &&
                App->GetFocusItem() &&
                App->GetFocusItem()->InstanceOf("textbox"));
-          if (EditedButNotSelected) App->GetRoot()->SetFocus();
+          if (EditedButNotSelected)
+            App->GetRoot()->SetFocus();
 
           if (gw2Window && (!((App->GetFocusItem() &&
                                App->GetFocusItem()->InstanceOf("textbox")) ||
@@ -1094,8 +1139,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         {
           FORCEDDEBUGLOG("creating thread");
           auto hookThread = CreateThread(
-              nullptr,  // default security attributes
-              0,        // use default stack size
+              nullptr, // default security attributes
+              0,       // use default stack size
               [](LPVOID data) {
                 auto keyboardHook =
                     SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardHook, nullptr, 0);
@@ -1110,7 +1155,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                 mouseHookActive = true;
 
                 while (GetMessage(&msg, nullptr, 0, 0) > 0) {
-                  if (msg.message == WM_QUIT) break;
+                  if (msg.message == WM_QUIT)
+                    break;
                   TranslateMessage(&msg);
                 }
                 DispatchMessage(&msg);
@@ -1123,8 +1169,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
                 return static_cast<DWORD>(0);
               },
-              nullptr,  // argument to thread function
-              0,        // use default creation flags
+              nullptr, // argument to thread function
+              0,       // use default creation flags
               &hookThreadID);
         }
         HooksInitialized = true;
@@ -1140,7 +1186,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FORCEDDEBUGLOG("closing down taco");
 
-  if (hookThreadID) PostThreadMessage(hookThreadID, WM_QUIT, 0, 0);
+  if (hookThreadID)
+    PostThreadMessage(hookThreadID, WM_QUIT, 0, 0);
 
   ShowWindow(handle, SW_HIDE);
 
@@ -1159,7 +1206,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     wvwPollThread.join();
     Sleep(1000);
   }
-  if (wvwUpdatThread.joinable()) wvwUpdatThread.join();
+  if (wvwUpdatThread.joinable())
+    wvwUpdatThread.join();
 
   trails.clear();
 

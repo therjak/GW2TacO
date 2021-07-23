@@ -32,7 +32,8 @@ class CWBApplication : public CCoreWindowHandlerWin {
   int32_t LastFrameTime;
 
   std::unordered_map<WBGUID, CWBItem*> Items;
-  CArrayThreadSafe<CWBMessage> MessageBuffer;
+  std::mutex MessageBufferMutex;
+  std::vector<CWBMessage> MessageBuffer;
   std::recursive_mutex TrashMutex;
   std::vector<std::shared_ptr<CWBItem>> Trash;
 
@@ -55,7 +56,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   virtual void UpdateMouseItem();
   virtual void CleanTrash();
-  virtual void UpdateControlKeyStates();  // update ctrl alt shift states
+  virtual void UpdateControlKeyStates(); // update ctrl alt shift states
   virtual int32_t GetKeyboardState();
 
   WBMOUSECLICKREPEATMODE ClickRepeaterMode;
@@ -81,7 +82,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   CColor ClearColor = CColor(0, 0, 0, 255);
 
- protected:
+protected:
   CAtlas* Atlas;
   std::unique_ptr<CWBRoot> Root;
 
@@ -91,7 +92,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   bool GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc);
   virtual bool Initialize();
 
- public:
+public:
   bool Initialize(const CCoreWindowParameters& WindowParams) override;
 
   CWBApplication();
@@ -114,17 +115,19 @@ class CWBApplication : public CCoreWindowHandlerWin {
     int len = sizeof...(Args);
     const TCHAR* vals[] = {args...};
 
-    if (!len) return FindItemByGuid(Guid);
+    if (!len)
+      return FindItemByGuid(Guid);
 
     for (int x = 0; x < len; x++) {
       auto item = FindItemByGuid(Guid, vals[x]);
-      if (item) return item;
+      if (item)
+        return item;
     }
 
     return nullptr;
   }
 
-  virtual void SendMessage(CWBMessage& Message);
+  virtual void SendMessage(const CWBMessage& Message);
   CWBItem* SetCapture(CWBItem* Capturer);
   bool ReleaseCapture();
 

@@ -51,7 +51,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Array.h" />
     <ClInclude Include="Assert.h" />
     <ClInclude Include="BaseConfig.h" />
     <ClInclude Include="BaseLib.h" />

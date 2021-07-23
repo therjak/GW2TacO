@@ -39,9 +39,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Array.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="Matrix.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>

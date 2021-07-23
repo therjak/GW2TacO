@@ -23,7 +23,7 @@ class CWBContextItem {
 
   void CopyChildrenFrom(CWBContextItem* itm);
 
- public:
+public:
   CWBContextItem();
   virtual ~CWBContextItem();
   virtual CWBContextItem* AddItem(std::string_view Text, int32_t ID,
@@ -36,7 +36,7 @@ class CWBContextItem {
 
 class CWBContextMenu : public CWBItem {
   bool Pushed =
-      false;  // used to ignore mouse clicks originating from the opening item
+      false; // used to ignore mouse clicks originating from the opening item
   WBGUID Target = 0;
 
   // SubMenu is also a child
@@ -59,11 +59,10 @@ class CWBContextMenu : public CWBItem {
   CWBCSSPropertyBatch SeparatorElements;
   void MarkForDeletion() override;
 
- public:
+public:
   CWBContextMenu(CWBItem* Parent, const CRect& Pos, WBGUID Target);
-  static inline std::shared_ptr<CWBContextMenu> Create(CWBItem* Parent,
-                                                       const CRect& Pos,
-                                                       WBGUID Target) {
+  static inline std::shared_ptr<CWBContextMenu>
+  Create(CWBItem* Parent, const CRect& Pos, WBGUID Target) {
     auto p = std::make_shared<CWBContextMenu>(Parent, Pos, Target);
     p->SelfRef = p;
     if (Parent) {
