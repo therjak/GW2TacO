@@ -1,5 +1,7 @@
 ﻿#include "OverlayApplication.h"
 
+#include "Bedrock/Whiteboard/Application.h"
+
 COverlayApp::COverlayApp() = default;
 
 bool COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {

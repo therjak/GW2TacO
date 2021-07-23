@@ -1,5 +1,7 @@
 ﻿#include "Notepad.h"
 
+#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/TextBox.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 #include "gw2tactical.h"

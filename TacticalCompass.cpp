@@ -1,5 +1,6 @@
 ﻿#include "TacticalCompass.h"
 
+#include "Bedrock/Whiteboard/Application.h"
 #include "Language.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"

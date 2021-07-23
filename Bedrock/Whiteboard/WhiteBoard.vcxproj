@@ -34,7 +34,6 @@
     <ClInclude Include="Root.h" />
     <ClInclude Include="Skin.h" />
     <ClInclude Include="StyleManager.h" />
-    <ClInclude Include="WhiteBoard.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>

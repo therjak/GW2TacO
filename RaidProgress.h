@@ -2,7 +2,7 @@
 #include <string>
 #include <thread>
 
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 class RaidEvent {
  public:

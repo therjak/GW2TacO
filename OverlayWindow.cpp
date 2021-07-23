@@ -1,5 +1,6 @@
 ﻿#include "OverlayWindow.h"
 
+#include "Bedrock/Whiteboard/Window.h"
 #include "OverlayConfig.h"
 
 bool OverlayWindow::IsMouseTransparent(CPoint& ClientSpacePoint,

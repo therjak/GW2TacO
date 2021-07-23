@@ -1,5 +1,6 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+
+#include "Bedrock/Whiteboard/Window.h"
 
 class OverlayWindow : public CWBWindow {
  public:

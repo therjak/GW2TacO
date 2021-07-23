@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 class GW2RangeDisplay : public CWBItem {
   void OnDraw(CWBDrawAPI* API) override;

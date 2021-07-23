@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 #include "gw2tactical.h"
 
 class GW2Notepad : public CWBItem {

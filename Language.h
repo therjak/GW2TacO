@@ -2,40 +2,37 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
-class Language
-{
-public:
-
+class Language {
+ public:
   std::string name;
   std::unordered_map<std::string, std::string> dict;
 };
 
-class Localization
-{
+class Localization {
   size_t activeLanguageIdx = 0;
-  std::vector< Language > languages;
+  std::vector<Language> languages;
 
-  void ImportFile( std::string_view file );
-  void ImportLanguage( CXMLDocument& d );
+  void ImportFile(std::string_view file);
+  void ImportLanguage(CXMLDocument& d);
 
   std::vector<int> usedGlyphs;
 
-public:
-
+ public:
   Localization();
 
-  void SetActiveLanguage( std::string_view language );
+  void SetActiveLanguage(std::string_view language);
   std::vector<std::string> GetLanguages();
 
   void Import();
-  std::string Localize( std::string_view token, std::string_view fallback = ( "" ) );
+  std::string Localize(std::string_view token,
+                       std::string_view fallback = (""));
 
   int GetActiveLanguageIndex();
   std::vector<int>& GetUsedGlyphs();
-  void ProcessStringForUsedGlyphs( std::string_view string );
+  void ProcessStringForUsedGlyphs(std::string_view string);
 };
 
 extern Localization* localization;
-#define DICT( token, ... ) localization->Localize( token, __VA_ARGS__ )
+#define DICT(token, ...) localization->Localize(token, __VA_ARGS__)

@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 // Needs to stay above
 #include <objbase.h>
 
@@ -150,10 +150,11 @@ struct POIActivationDataKey {
 };
 
 namespace std {
-template <> struct hash<POIActivationDataKey> {
+template <>
+struct hash<POIActivationDataKey> {
   std::size_t operator()(const POIActivationDataKey& guid) const;
 };
-} // namespace std
+}  // namespace std
 
 struct POIActivationData {
   GUID poiguid;
@@ -211,7 +212,7 @@ class GW2TacticalDisplay : public CWBItem {
 
   std::unordered_map<int32_t, Achievement> achievements;
 
-public:
+ public:
   GW2TacticalDisplay(CWBItem* Parent, CRect Position);
   static inline std::shared_ptr<GW2TacticalDisplay> Create(CWBItem* Parent,
                                                            CRect Position) {
@@ -235,7 +236,7 @@ public:
 class GW2TacticalCategory {
   std::string cachedTypeName;
 
-public:
+ public:
   std::string name;
   std::string displayName;
 

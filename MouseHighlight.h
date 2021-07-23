@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 enum class MouseColor {
   red,

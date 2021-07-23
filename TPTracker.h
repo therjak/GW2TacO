@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 struct TransactionItem {
   int32_t transactionID = 0;

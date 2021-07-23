@@ -1,5 +1,7 @@
 ﻿#include "SpecialGUIItems.h"
 
+#include "Bedrock/Whiteboard/Button.h"
+
 ClickThroughButton::ClickThroughButton(CWBItem* Parent, const CRect& Pos,
                                        std::string_view txt /*= _T( "" ) */)
     : CWBButton(Parent, Pos, txt) {}

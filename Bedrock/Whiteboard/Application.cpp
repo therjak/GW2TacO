@@ -8,7 +8,11 @@
 #include "../BaseLib/read_file.h"
 #include "../BaseLib/string_format.h"
 #include "../UtilLib/PNGDecompressor.h"
-#include "WhiteBoard.h"
+#include "Box.h"
+#include "Button.h"
+#include "Label.h"
+#include "TextBox.h"
+#include "Window.h"
 
 CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
   Root = nullptr;

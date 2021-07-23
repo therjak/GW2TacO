@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <string_view>
 
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Button.h"
 
 class ClickThroughButton : public CWBButton {
  public:

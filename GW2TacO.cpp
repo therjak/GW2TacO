@@ -6,6 +6,11 @@
 
 #include "Bedrock/BaseLib/string_format.h"
 #include "Bedrock/UtilLib/jsonxx.h"
+#include "Bedrock/Whiteboard/Application.h"
+#include "Bedrock/Whiteboard/Button.h"
+#include "Bedrock/Whiteboard/Label.h"
+#include "Bedrock/Whiteboard/TextBox.h"
+#include "Bedrock/Whiteboard/Window.h"
 #include "BuildCount.h"
 #include "BuildInfo.h"
 #include "DungeonProgress.h"
@@ -34,15 +39,15 @@ std::string_view UIFileNames[] = {
 };
 
 std::vector<std::string_view> ActionNames = {
-    "no_action",               //"No Action",
-    "add_marker",              //"Add New Marker",
-    "remove_marker",           //"Remove Marker",
-    "action_key",              //"Action Key",
-    "edit_notepad",            //"Edit notepad",
-    "*toggle_trail_recording", //"*Start/Stop Trail Recording",
-    "*pause_trail_recording",  //"*Pause/Resume Trail Recording",
-    "*remove_last_trail",      //"*Remove Last Trail Segment",
-    "*resume_trail",           //"*Resume Trail By Creating New Section"
+    "no_action",                //"No Action",
+    "add_marker",               //"Add New Marker",
+    "remove_marker",            //"Remove Marker",
+    "action_key",               //"Action Key",
+    "edit_notepad",             //"Edit notepad",
+    "*toggle_trail_recording",  //"*Start/Stop Trail Recording",
+    "*pause_trail_recording",   //"*Pause/Resume Trail Recording",
+    "*remove_last_trail",       //"*Remove Last Trail Segment",
+    "*resume_trail",            //"*Resume Trail By Creating New Section"
     "toggle_tactical_layer",
     "toggle_range_circles",
     "toggle_tactical_compass",
@@ -60,9 +65,9 @@ std::vector<std::string_view> ActionNames = {
 };
 
 std::string_view APIKeyNames[] = {
-    "no_action",              //"No Action",
-    "ts3_clientquery_plugin", //"TS3 ClientQuery Plugin",
-    "guild_wars_2",           //"Guild Wars 2",
+    "no_action",               //"No Action",
+    "ts3_clientquery_plugin",  //"TS3 ClientQuery Plugin",
+    "guild_wars_2",            //"Guild Wars 2",
 };
 
 enum MainMenuItems {
@@ -200,8 +205,7 @@ GW2TacO::GW2TacO(CWBItem* Parent, CRect Position) : CWBItem(Parent, Position) {
 }
 
 GW2TacO::~GW2TacO() {
-  if (pickupFetcherThread.joinable())
-    pickupFetcherThread.join();
+  if (pickupFetcherThread.joinable()) pickupFetcherThread.join();
 
   // scriptEngines.FreeArray();
 }
@@ -222,15 +226,15 @@ int scaleCountDownHack = 0;
 
 void ChangeUIScale(int size) {
   if (size < 0 || size > 3) {
-    LOG_ERR("Someone wants to set the UI size to %d! Are you multi-clienting "
-            "perhaps?",
-            size);
+    LOG_ERR(
+        "Someone wants to set the UI size to %d! Are you multi-clienting "
+        "perhaps?",
+        size);
     return;
   }
 
   extern CWBApplication* App;
-  if (!App)
-    return;
+  if (!App) return;
 
   if (App->LoadCSSFromFile(UIFileNames[size], true))
     SetConfigValue("InterfaceSize", size);
@@ -251,324 +255,444 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
 
 bool GW2TacO::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
-  case WBM_COMMAND: {
-    CWBButton* cb = dynamic_cast<CWBButton*>(
-        App->FindItemByGuid(Message.GetTarget(), _T( "clickthroughbutton" )));
-    if (cb && cb->GetID() == _T( "TPButton" )) {
-      TurnOffTPLight();
-      break;
-    }
-
-    CWBButton* b = dynamic_cast<CWBButton*>(
-        App->FindItemByGuid(Message.GetTarget(), _T( "button" )));
-    if (!b)
-      break;
-
-    if (b->GetID() == _T( "MenuButton" )) {
-      auto ctx = b->OpenContextMenu(App->GetMousePos());
-      ctx->SetID("TacOMenu");
-
-      if (GetConfigValue("TacticalLayerVisible")) {
-        auto flt =
-            ctx->AddItem(DICT("filtermarkers"), Menu_ToggleTacticalsOnEdge);
-        OpenTypeContextMenu(flt, CategoryList, true, Menu_MarkerFilter_Base);
-        auto options = ctx->AddItem(DICT("tacticalsettings"), 0);
-
-        options->AddItem(
-            DICT("togglepoidistance") +
-                (GetConfigValue("TacticalDrawDistance") ? " [x]" : " [ ]"),
-            Menu_ToggleDrawDistance);
-        options->AddItem(
-            DICT("toggleherdicons") +
-                (GetConfigValue("TacticalIconsOnEdge") ? " [x]" : " [ ]"),
-            Menu_ToggleTacticalsOnEdge);
-        options->AddItem(DICT("toggledrawwvwnames") +
-                             (GetConfigValue("DrawWvWNames") ? " [x]" : " [ ]"),
-                         Menu_DrawWvWNames);
-        options->AddItem(
-            DICT("togglefadeoutbubble") +
-                (GetConfigValue("FadeoutBubble") ? " [x]" : " [ ]"),
-            Menu_ToggleFadeoutBubble);
-        options->AddItem(
-            DICT("togglemetricsystem") +
-                (GetConfigValue("UseMetricDisplay") ? " [x]" : " [ ]"),
-            Menu_ToggleMetricSystem);
-        options->AddItem(
-            DICT("toggletacticalinfotext") +
-                (GetConfigValue("TacticalInfoTextVisible") ? " [x]" : " [ ]"),
-            Menu_TogglePOIInfoText);
-
-        auto opacityMenu = options->AddItem(DICT("markeropacity"), 0);
-        auto opacityInGame = opacityMenu->AddItem(DICT("ingameopacity"), 0);
-        opacityInGame->AddItem(
-            DICT("opacitysolid") +
-                (GetConfigValue("OpacityIngame") == 0 ? " [x]" : " [ ]"),
-            Menu_OpacityIngame_Solid);
-        opacityInGame->AddItem(
-            DICT("opacitytransparent") +
-                (GetConfigValue("OpacityIngame") == 2 ? " [x]" : " [ ]"),
-            Menu_OpacityIngame_Transparent);
-        opacityInGame->AddItem(
-            DICT("opacityfaded") +
-                (GetConfigValue("OpacityIngame") == 1 ? " [x]" : " [ ]"),
-            Menu_OpacityIngame_Faded);
-        auto opacityMiniMap = opacityMenu->AddItem(DICT("mapopacity"), 0);
-        opacityMiniMap->AddItem(
-            DICT("opacitysolid") +
-                (GetConfigValue("OpacityMap") == 0 ? " [x]" : " [ ]"),
-            Menu_OpacityMap_Solid);
-        opacityMiniMap->AddItem(
-            DICT("opacitytransparent") +
-                (GetConfigValue("OpacityMap") == 2 ? " [x]" : " [ ]"),
-            Menu_OpacityMap_Transparent);
-        opacityMiniMap->AddItem(
-            DICT("opacityfaded") +
-                (GetConfigValue("OpacityMap") == 1 ? " [x]" : " [ ]"),
-            Menu_OpacityMap_Faded);
-
-        auto visibilityMenu = options->AddItem(DICT("visibilitymenu"), 0);
-        auto markerSubMenu =
-            visibilityMenu->AddItem(DICT("markervisibilitymenu"), 0);
-        auto markerInGameSubMenu =
-            markerSubMenu->AddItem(DICT("ingamevisibility"), 0);
-        markerInGameSubMenu->AddItem(
-            DICT("defaultvisibility") +
-                (GetConfigValue("ShowInGameMarkers") == 1 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_InGameMap_Default);
-        markerInGameSubMenu->AddItem(
-            DICT("forceonvisibility") +
-                (GetConfigValue("ShowInGameMarkers") == 2 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_InGameMap_Force);
-        markerInGameSubMenu->AddItem(
-            DICT("forceoffvisibility") +
-                (GetConfigValue("ShowInGameMarkers") == 0 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_InGameMap_Off);
-        auto markerMiniMapSubMenu =
-            markerSubMenu->AddItem(DICT("minimapvisibility"), 0);
-        markerMiniMapSubMenu->AddItem(
-            DICT("defaultvisibility") +
-                (GetConfigValue("ShowMinimapMarkers") == 1 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_MiniMap_Default);
-        markerMiniMapSubMenu->AddItem(
-            DICT("forceonvisibility") +
-                (GetConfigValue("ShowMinimapMarkers") == 2 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_MiniMap_Force);
-        markerMiniMapSubMenu->AddItem(
-            DICT("forceoffvisibility") +
-                (GetConfigValue("ShowMinimapMarkers") == 0 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_MiniMap_Off);
-        auto markerMapSubMenu =
-            markerSubMenu->AddItem(DICT("mapvisibility"), 0);
-        markerMapSubMenu->AddItem(
-            DICT("defaultvisibility") +
-                (GetConfigValue("ShowBigmapMarkers") == 1 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_BigMap_Default);
-        markerMapSubMenu->AddItem(
-            DICT("forceonvisibility") +
-                (GetConfigValue("ShowBigmapMarkers") == 2 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_BigMap_Force);
-        markerMapSubMenu->AddItem(
-            DICT("forceoffvisibility") +
-                (GetConfigValue("ShowBigmapMarkers") == 0 ? " [x]" : " [ ]"),
-            Menu_MarkerVisibility_BigMap_Off);
-        auto trailSubMenu =
-            visibilityMenu->AddItem(DICT("trailvisibilitymenu"), 0);
-        auto trailInGameSubMenu =
-            trailSubMenu->AddItem(DICT("ingamevisibility"), 0);
-        trailInGameSubMenu->AddItem(
-            DICT("defaultvisibility") +
-                (GetConfigValue("ShowInGameTrails") == 1 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_InGameMap_Default);
-        trailInGameSubMenu->AddItem(
-            DICT("forceonvisibility") +
-                (GetConfigValue("ShowInGameTrails") == 2 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_InGameMap_Force);
-        trailInGameSubMenu->AddItem(
-            DICT("forceoffvisibility") +
-                (GetConfigValue("ShowInGameTrails") == 0 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_InGameMap_Off);
-        auto trailMiniMapSubMenu =
-            trailSubMenu->AddItem(DICT("minimapvisibility"), 0);
-        trailMiniMapSubMenu->AddItem(
-            DICT("defaultvisibility") +
-                (GetConfigValue("ShowMinimapTrails") == 1 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_MiniMap_Default);
-        trailMiniMapSubMenu->AddItem(
-            DICT("forceonvisibility") +
-                (GetConfigValue("ShowMinimapTrails") == 2 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_MiniMap_Force);
-        trailMiniMapSubMenu->AddItem(
-            DICT("forceoffvisibility") +
-                (GetConfigValue("ShowMinimapTrails") == 0 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_MiniMap_Off);
-        auto trailMapSubMenu = trailSubMenu->AddItem(DICT("mapvisibility"), 0);
-        trailMapSubMenu->AddItem(
-            DICT("defaultvisibility") +
-                (GetConfigValue("ShowBigmapTrails") == 1 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_BigMap_Default);
-        trailMapSubMenu->AddItem(
-            DICT("forceonvisibility") +
-                (GetConfigValue("ShowBigmapTrails") == 2 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_BigMap_Force);
-        trailMapSubMenu->AddItem(
-            DICT("forceoffvisibility") +
-                (GetConfigValue("ShowBigmapTrails") == 0 ? " [x]" : " [ ]"),
-            Menu_TrailVisibility_BigMap_Off);
-
-        auto utils = ctx->AddItem(DICT("tacticalutilities"), 0);
-        utils->AddItem(DICT("reloadmarkers"), Menu_ReloadMarkers);
-        utils->AddItem(DICT("removemymarkers"), 0)
-            ->AddItem(DICT("reallyremovemarkers"), Menu_DeleteMyMarkers);
+    case WBM_COMMAND: {
+      CWBButton* cb = dynamic_cast<CWBButton*>(
+          App->FindItemByGuid(Message.GetTarget(), _T( "clickthroughbutton" )));
+      if (cb && cb->GetID() == _T( "TPButton" )) {
+        TurnOffTPLight();
+        break;
       }
-      ctx->AddItem(
-          DICT("toggletactical") +
-              (GetConfigValue("TacticalLayerVisible") ? " [x]" : " [ ]") +
-              GetKeybindString(TacOKeyAction::Toggle_tactical_layer),
-          Menu_ToggleTactical);
 
-      ctx->AddSeparator();
+      CWBButton* b = dynamic_cast<CWBButton*>(
+          App->FindItemByGuid(Message.GetTarget(), _T( "button" )));
+      if (!b) break;
 
-      if (mumbleLink.isPvp) {
-        ctx->AddItem(DICT("rangecirclesnotavailable"), 0);
-      } else {
-        ctx->AddItem(
-            DICT("togglerangecircles") +
-                (GetConfigValue("RangeCirclesVisible") ? " [x]" : " [ ]") +
-                GetKeybindString(TacOKeyAction::Toggle_range_circles),
-            Menu_ToggleRangeCircles);
-        if (GetConfigValue("RangeCirclesVisible")) {
-          auto trns = ctx->AddItem(DICT("rangevisibility"), 0);
-          trns->AddItem("40%", Menu_RangeCircleTransparency40);
-          trns->AddItem("60%", Menu_RangeCircleTransparency60);
-          trns->AddItem("100%", Menu_RangeCircleTransparency100);
-          auto ranges = ctx->AddItem(DICT("toggleranges"), 0);
-          ranges->AddItem(GetConfigValue("RangeCircle90") ? "90 [x]" : "90 [ ]",
-                          Menu_ToggleRangeCircle90, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle120") ? "120 [x]"
-                                                           : "120 [ ]",
-                          Menu_ToggleRangeCircle120, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle180") ? "180 [x]"
-                                                           : "180 [ ]",
-                          Menu_ToggleRangeCircle180, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle240") ? "240 [x]"
-                                                           : "240 [ ]",
-                          Menu_ToggleRangeCircle240, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle300") ? "300 [x]"
-                                                           : "300 [ ]",
-                          Menu_ToggleRangeCircle300, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle400") ? "400 [x]"
-                                                           : "400 [ ]",
-                          Menu_ToggleRangeCircle400, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle600") ? "600 [x]"
-                                                           : "600 [ ]",
-                          Menu_ToggleRangeCircle600, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle900") ? "900 [x]"
-                                                           : "900 [ ]",
-                          Menu_ToggleRangeCircle900, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle1200") ? "1200 [x]"
-                                                            : "1200 [ ]",
-                          Menu_ToggleRangeCircle1200, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle1500") ? "1500 [x]"
-                                                            : "1500 [ ]",
-                          Menu_ToggleRangeCircle1500, false, false);
-          ranges->AddItem(GetConfigValue("RangeCircle1600") ? "1600 [x]"
-                                                            : "1600 [ ]",
-                          Menu_ToggleRangeCircle1600, false, false);
+      if (b->GetID() == _T( "MenuButton" )) {
+        auto ctx = b->OpenContextMenu(App->GetMousePos());
+        ctx->SetID("TacOMenu");
+
+        if (GetConfigValue("TacticalLayerVisible")) {
+          auto flt =
+              ctx->AddItem(DICT("filtermarkers"), Menu_ToggleTacticalsOnEdge);
+          OpenTypeContextMenu(flt, CategoryList, true, Menu_MarkerFilter_Base);
+          auto options = ctx->AddItem(DICT("tacticalsettings"), 0);
+
+          options->AddItem(
+              DICT("togglepoidistance") +
+                  (GetConfigValue("TacticalDrawDistance") ? " [x]" : " [ ]"),
+              Menu_ToggleDrawDistance);
+          options->AddItem(
+              DICT("toggleherdicons") +
+                  (GetConfigValue("TacticalIconsOnEdge") ? " [x]" : " [ ]"),
+              Menu_ToggleTacticalsOnEdge);
+          options->AddItem(
+              DICT("toggledrawwvwnames") +
+                  (GetConfigValue("DrawWvWNames") ? " [x]" : " [ ]"),
+              Menu_DrawWvWNames);
+          options->AddItem(
+              DICT("togglefadeoutbubble") +
+                  (GetConfigValue("FadeoutBubble") ? " [x]" : " [ ]"),
+              Menu_ToggleFadeoutBubble);
+          options->AddItem(
+              DICT("togglemetricsystem") +
+                  (GetConfigValue("UseMetricDisplay") ? " [x]" : " [ ]"),
+              Menu_ToggleMetricSystem);
+          options->AddItem(
+              DICT("toggletacticalinfotext") +
+                  (GetConfigValue("TacticalInfoTextVisible") ? " [x]" : " [ ]"),
+              Menu_TogglePOIInfoText);
+
+          auto opacityMenu = options->AddItem(DICT("markeropacity"), 0);
+          auto opacityInGame = opacityMenu->AddItem(DICT("ingameopacity"), 0);
+          opacityInGame->AddItem(
+              DICT("opacitysolid") +
+                  (GetConfigValue("OpacityIngame") == 0 ? " [x]" : " [ ]"),
+              Menu_OpacityIngame_Solid);
+          opacityInGame->AddItem(
+              DICT("opacitytransparent") +
+                  (GetConfigValue("OpacityIngame") == 2 ? " [x]" : " [ ]"),
+              Menu_OpacityIngame_Transparent);
+          opacityInGame->AddItem(
+              DICT("opacityfaded") +
+                  (GetConfigValue("OpacityIngame") == 1 ? " [x]" : " [ ]"),
+              Menu_OpacityIngame_Faded);
+          auto opacityMiniMap = opacityMenu->AddItem(DICT("mapopacity"), 0);
+          opacityMiniMap->AddItem(
+              DICT("opacitysolid") +
+                  (GetConfigValue("OpacityMap") == 0 ? " [x]" : " [ ]"),
+              Menu_OpacityMap_Solid);
+          opacityMiniMap->AddItem(
+              DICT("opacitytransparent") +
+                  (GetConfigValue("OpacityMap") == 2 ? " [x]" : " [ ]"),
+              Menu_OpacityMap_Transparent);
+          opacityMiniMap->AddItem(
+              DICT("opacityfaded") +
+                  (GetConfigValue("OpacityMap") == 1 ? " [x]" : " [ ]"),
+              Menu_OpacityMap_Faded);
+
+          auto visibilityMenu = options->AddItem(DICT("visibilitymenu"), 0);
+          auto markerSubMenu =
+              visibilityMenu->AddItem(DICT("markervisibilitymenu"), 0);
+          auto markerInGameSubMenu =
+              markerSubMenu->AddItem(DICT("ingamevisibility"), 0);
+          markerInGameSubMenu->AddItem(
+              DICT("defaultvisibility") +
+                  (GetConfigValue("ShowInGameMarkers") == 1 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_InGameMap_Default);
+          markerInGameSubMenu->AddItem(
+              DICT("forceonvisibility") +
+                  (GetConfigValue("ShowInGameMarkers") == 2 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_InGameMap_Force);
+          markerInGameSubMenu->AddItem(
+              DICT("forceoffvisibility") +
+                  (GetConfigValue("ShowInGameMarkers") == 0 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_InGameMap_Off);
+          auto markerMiniMapSubMenu =
+              markerSubMenu->AddItem(DICT("minimapvisibility"), 0);
+          markerMiniMapSubMenu->AddItem(
+              DICT("defaultvisibility") +
+                  (GetConfigValue("ShowMinimapMarkers") == 1 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_MiniMap_Default);
+          markerMiniMapSubMenu->AddItem(
+              DICT("forceonvisibility") +
+                  (GetConfigValue("ShowMinimapMarkers") == 2 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_MiniMap_Force);
+          markerMiniMapSubMenu->AddItem(
+              DICT("forceoffvisibility") +
+                  (GetConfigValue("ShowMinimapMarkers") == 0 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_MiniMap_Off);
+          auto markerMapSubMenu =
+              markerSubMenu->AddItem(DICT("mapvisibility"), 0);
+          markerMapSubMenu->AddItem(
+              DICT("defaultvisibility") +
+                  (GetConfigValue("ShowBigmapMarkers") == 1 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_BigMap_Default);
+          markerMapSubMenu->AddItem(
+              DICT("forceonvisibility") +
+                  (GetConfigValue("ShowBigmapMarkers") == 2 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_BigMap_Force);
+          markerMapSubMenu->AddItem(
+              DICT("forceoffvisibility") +
+                  (GetConfigValue("ShowBigmapMarkers") == 0 ? " [x]" : " [ ]"),
+              Menu_MarkerVisibility_BigMap_Off);
+          auto trailSubMenu =
+              visibilityMenu->AddItem(DICT("trailvisibilitymenu"), 0);
+          auto trailInGameSubMenu =
+              trailSubMenu->AddItem(DICT("ingamevisibility"), 0);
+          trailInGameSubMenu->AddItem(
+              DICT("defaultvisibility") +
+                  (GetConfigValue("ShowInGameTrails") == 1 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_InGameMap_Default);
+          trailInGameSubMenu->AddItem(
+              DICT("forceonvisibility") +
+                  (GetConfigValue("ShowInGameTrails") == 2 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_InGameMap_Force);
+          trailInGameSubMenu->AddItem(
+              DICT("forceoffvisibility") +
+                  (GetConfigValue("ShowInGameTrails") == 0 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_InGameMap_Off);
+          auto trailMiniMapSubMenu =
+              trailSubMenu->AddItem(DICT("minimapvisibility"), 0);
+          trailMiniMapSubMenu->AddItem(
+              DICT("defaultvisibility") +
+                  (GetConfigValue("ShowMinimapTrails") == 1 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_MiniMap_Default);
+          trailMiniMapSubMenu->AddItem(
+              DICT("forceonvisibility") +
+                  (GetConfigValue("ShowMinimapTrails") == 2 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_MiniMap_Force);
+          trailMiniMapSubMenu->AddItem(
+              DICT("forceoffvisibility") +
+                  (GetConfigValue("ShowMinimapTrails") == 0 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_MiniMap_Off);
+          auto trailMapSubMenu =
+              trailSubMenu->AddItem(DICT("mapvisibility"), 0);
+          trailMapSubMenu->AddItem(
+              DICT("defaultvisibility") +
+                  (GetConfigValue("ShowBigmapTrails") == 1 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_BigMap_Default);
+          trailMapSubMenu->AddItem(
+              DICT("forceonvisibility") +
+                  (GetConfigValue("ShowBigmapTrails") == 2 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_BigMap_Force);
+          trailMapSubMenu->AddItem(
+              DICT("forceoffvisibility") +
+                  (GetConfigValue("ShowBigmapTrails") == 0 ? " [x]" : " [ ]"),
+              Menu_TrailVisibility_BigMap_Off);
+
+          auto utils = ctx->AddItem(DICT("tacticalutilities"), 0);
+          utils->AddItem(DICT("reloadmarkers"), Menu_ReloadMarkers);
+          utils->AddItem(DICT("removemymarkers"), 0)
+              ->AddItem(DICT("reallyremovemarkers"), Menu_DeleteMyMarkers);
         }
-      }
-
-      ctx->AddSeparator();
-
-      ctx->AddItem(
-          DICT("togglecompass") +
-              (GetConfigValue("TacticalCompassVisible") ? " [x]" : " [ ]") +
-              GetKeybindString(TacOKeyAction::Toggle_tactical_compass),
-          Menu_ToggleTacticalCompass);
-      ctx->AddItem(
-          DICT("toggleloctimers") +
-              (GetConfigValue("LocationalTimersVisible") ? " [x]" : " [ ]") +
-              GetKeybindString(TacOKeyAction::Toggle_locational_timers),
-          Menu_ToggleLocationalTimers);
-      ctx->AddItem(DICT("togglehpgrid") +
-                       (GetConfigValue("HPGridVisible") ? " [x]" : " [ ]") +
-                       GetKeybindString(TacOKeyAction::Toggle_hp_grids),
-                   Menu_ToggleHPGrid);
-      // ctx->AddItem( GetConfigValue( "Vsync" ) ? "Toggle TacO Vsync [x]" :
-      // "Toggle TacO Vsync [ ]", Menu_ToggleVsync );
-      ctx->AddSeparator();
-      ctx->AddItem(
-          DICT("togglemousehighlight") +
-              (GetConfigValue("MouseHighlightVisible") ? " [x]" : " [ ]") +
-              GetKeybindString(TacOKeyAction::Toggle_mouse_highlight),
-          Menu_ToggleHighLight);
-      if (GetConfigValue("MouseHighlightVisible")) {
         ctx->AddItem(
-            DICT("togglemouseoutline") +
-                (GetConfigValue("MouseHighlightOutline") ? " [x]" : " [ ]"),
-            Menu_ToggleMouseHighlightOutline);
-        auto cols = ctx->AddItem(DICT("mousecolor"), 0);
+            DICT("toggletactical") +
+                (GetConfigValue("TacticalLayerVisible") ? " [x]" : " [ ]") +
+                GetKeybindString(TacOKeyAction::Toggle_tactical_layer),
+            Menu_ToggleTactical);
 
-        extern std::vector<std::string_view> CGAPaletteNames;
+        ctx->AddSeparator();
 
-        int mouseColor = 0;
-        if (HasConfigValue("MouseHighlightColor"))
-          mouseColor = GetConfigValue("MouseHighlightColor");
-
-        for (int x = 0; x < CGAPaletteNames.size(); x++) {
-          if (mouseColor == x)
-            cols->AddItem(("[x] " + DICT(CGAPaletteNames[x])),
-                          Menu_MouseHighlightColor0 + x, true);
-          else
-            cols->AddItem(("[ ] " + DICT(CGAPaletteNames[x])),
-                          Menu_MouseHighlightColor0 + x, false);
-        }
-      }
-      ctx->AddSeparator();
-      // auto it = ctx->AddItem("Windows", 0);
-      ctx->AddItem((IsWindowOpen("MapTimer") ? DICT("closemaptimer")
-                                             : DICT("openmaptimer")) +
-                       GetKeybindString(TacOKeyAction::Toggle_map_timer),
-                   Menu_ToggleMapTimer);
-      if (IsWindowOpen("MapTimer")) {
-        ctx->AddItem(DICT("compactmaptimer") +
-                         (GetConfigValue("MapTimerCompact") ? " [x]" : " [ ]"),
-                     Menu_ToggleCompactMapTimer);
-
-        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
-            App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
-
-        if (timer) {
-          auto itm = ctx->AddItem(DICT("configmaptimer"), 0);
-
-          for (size_t x = 0; x < timer->maps.size(); x++) {
-            bool open = true;
-            auto str = "maptimer_mapopen_" + timer->maps[x].id;
-
-            if (HasConfigValue(str))
-              open = GetConfigValue(str);
-
-            itm->AddItem(open ? (timer->maps[x].name + " [x]")
-                              : (timer->maps[x].name + " [ ]"),
-                         Menu_ToggleMapTimerMap + x, open, false);
+        if (mumbleLink.isPvp) {
+          ctx->AddItem(DICT("rangecirclesnotavailable"), 0);
+        } else {
+          ctx->AddItem(
+              DICT("togglerangecircles") +
+                  (GetConfigValue("RangeCirclesVisible") ? " [x]" : " [ ]") +
+                  GetKeybindString(TacOKeyAction::Toggle_range_circles),
+              Menu_ToggleRangeCircles);
+          if (GetConfigValue("RangeCirclesVisible")) {
+            auto trns = ctx->AddItem(DICT("rangevisibility"), 0);
+            trns->AddItem("40%", Menu_RangeCircleTransparency40);
+            trns->AddItem("60%", Menu_RangeCircleTransparency60);
+            trns->AddItem("100%", Menu_RangeCircleTransparency100);
+            auto ranges = ctx->AddItem(DICT("toggleranges"), 0);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle90") ? "90 [x]" : "90 [ ]",
+                Menu_ToggleRangeCircle90, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle120") ? "120 [x]" : "120 [ ]",
+                Menu_ToggleRangeCircle120, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle180") ? "180 [x]" : "180 [ ]",
+                Menu_ToggleRangeCircle180, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle240") ? "240 [x]" : "240 [ ]",
+                Menu_ToggleRangeCircle240, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle300") ? "300 [x]" : "300 [ ]",
+                Menu_ToggleRangeCircle300, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle400") ? "400 [x]" : "400 [ ]",
+                Menu_ToggleRangeCircle400, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle600") ? "600 [x]" : "600 [ ]",
+                Menu_ToggleRangeCircle600, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle900") ? "900 [x]" : "900 [ ]",
+                Menu_ToggleRangeCircle900, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle1200") ? "1200 [x]" : "1200 [ ]",
+                Menu_ToggleRangeCircle1200, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle1500") ? "1500 [x]" : "1500 [ ]",
+                Menu_ToggleRangeCircle1500, false, false);
+            ranges->AddItem(
+                GetConfigValue("RangeCircle1600") ? "1600 [x]" : "1600 [ ]",
+                Menu_ToggleRangeCircle1600, false, false);
           }
         }
-      }
-      ctx->AddSeparator();
-      ctx->AddItem((IsWindowOpen("TS3Control") ? DICT("closetswindow")
-                                               : DICT("opentswindow")) +
-                       GetKeybindString(TacOKeyAction::Toggle_ts3_window),
-                   Menu_ToggleTS3Control);
-      auto markerEditor = ctx->AddItem(
-          (IsWindowOpen("MarkerEditor") ? DICT("closemarkereditor")
-                                        : DICT("openmarkereditor")) +
-              GetKeybindString(TacOKeyAction::Toggle_marker_editor),
-          Menu_ToggleMarkerEditor);
-      if (IsWindowOpen("MarkerEditor")) {
-        markerEditor->AddItem(
-            DICT("autohidemarkereditor") +
-                (GetConfigValue("AutoHideMarkerEditor") ? " [x]" : " [ ]"),
-            Menu_ToggleAutoHideMarkerEditor);
-        markerEditor->AddSeparator();
+
+        ctx->AddSeparator();
+
+        ctx->AddItem(
+            DICT("togglecompass") +
+                (GetConfigValue("TacticalCompassVisible") ? " [x]" : " [ ]") +
+                GetKeybindString(TacOKeyAction::Toggle_tactical_compass),
+            Menu_ToggleTacticalCompass);
+        ctx->AddItem(
+            DICT("toggleloctimers") +
+                (GetConfigValue("LocationalTimersVisible") ? " [x]" : " [ ]") +
+                GetKeybindString(TacOKeyAction::Toggle_locational_timers),
+            Menu_ToggleLocationalTimers);
+        ctx->AddItem(DICT("togglehpgrid") +
+                         (GetConfigValue("HPGridVisible") ? " [x]" : " [ ]") +
+                         GetKeybindString(TacOKeyAction::Toggle_hp_grids),
+                     Menu_ToggleHPGrid);
+        // ctx->AddItem( GetConfigValue( "Vsync" ) ? "Toggle TacO Vsync [x]" :
+        // "Toggle TacO Vsync [ ]", Menu_ToggleVsync );
+        ctx->AddSeparator();
+        ctx->AddItem(
+            DICT("togglemousehighlight") +
+                (GetConfigValue("MouseHighlightVisible") ? " [x]" : " [ ]") +
+                GetKeybindString(TacOKeyAction::Toggle_mouse_highlight),
+            Menu_ToggleHighLight);
+        if (GetConfigValue("MouseHighlightVisible")) {
+          ctx->AddItem(
+              DICT("togglemouseoutline") +
+                  (GetConfigValue("MouseHighlightOutline") ? " [x]" : " [ ]"),
+              Menu_ToggleMouseHighlightOutline);
+          auto cols = ctx->AddItem(DICT("mousecolor"), 0);
+
+          extern std::vector<std::string_view> CGAPaletteNames;
+
+          int mouseColor = 0;
+          if (HasConfigValue("MouseHighlightColor"))
+            mouseColor = GetConfigValue("MouseHighlightColor");
+
+          for (int x = 0; x < CGAPaletteNames.size(); x++) {
+            if (mouseColor == x)
+              cols->AddItem(("[x] " + DICT(CGAPaletteNames[x])),
+                            Menu_MouseHighlightColor0 + x, true);
+            else
+              cols->AddItem(("[ ] " + DICT(CGAPaletteNames[x])),
+                            Menu_MouseHighlightColor0 + x, false);
+          }
+        }
+        ctx->AddSeparator();
+        // auto it = ctx->AddItem("Windows", 0);
+        ctx->AddItem((IsWindowOpen("MapTimer") ? DICT("closemaptimer")
+                                               : DICT("openmaptimer")) +
+                         GetKeybindString(TacOKeyAction::Toggle_map_timer),
+                     Menu_ToggleMapTimer);
+        if (IsWindowOpen("MapTimer")) {
+          ctx->AddItem(
+              DICT("compactmaptimer") +
+                  (GetConfigValue("MapTimerCompact") ? " [x]" : " [ ]"),
+              Menu_ToggleCompactMapTimer);
+
+          GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+              App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
+
+          if (timer) {
+            auto itm = ctx->AddItem(DICT("configmaptimer"), 0);
+
+            for (size_t x = 0; x < timer->maps.size(); x++) {
+              bool open = true;
+              auto str = "maptimer_mapopen_" + timer->maps[x].id;
+
+              if (HasConfigValue(str)) open = GetConfigValue(str);
+
+              itm->AddItem(open ? (timer->maps[x].name + " [x]")
+                                : (timer->maps[x].name + " [ ]"),
+                           Menu_ToggleMapTimerMap + x, open, false);
+            }
+          }
+        }
+        ctx->AddSeparator();
+        ctx->AddItem((IsWindowOpen("TS3Control") ? DICT("closetswindow")
+                                                 : DICT("opentswindow")) +
+                         GetKeybindString(TacOKeyAction::Toggle_ts3_window),
+                     Menu_ToggleTS3Control);
+        auto markerEditor = ctx->AddItem(
+            (IsWindowOpen("MarkerEditor") ? DICT("closemarkereditor")
+                                          : DICT("openmarkereditor")) +
+                GetKeybindString(TacOKeyAction::Toggle_marker_editor),
+            Menu_ToggleMarkerEditor);
+        if (IsWindowOpen("MarkerEditor")) {
+          markerEditor->AddItem(
+              DICT("autohidemarkereditor") +
+                  (GetConfigValue("AutoHideMarkerEditor") ? " [x]" : " [ ]"),
+              Menu_ToggleAutoHideMarkerEditor);
+          markerEditor->AddSeparator();
+          int cnt = 1;
+          for (int32_t x = 1; x < ActionNames.size(); x++) {
+            auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
+            for (auto& kb : KeyBindings)
+              if (static_cast<int32_t>(kb.second) == x) {
+                str = DICT(ActionNames[x]) + FormatString(" [%c]", kb.first);
+                break;
+              }
+
+            if (ActionNames[x][0] == '*')
+              markerEditor->AddItem(str, Menu_RebindKey_Base + x);
+            cnt++;
+          }
+        }
+
+        ctx->AddItem((IsWindowOpen("Notepad") ? DICT("closenotepad")
+                                              : DICT("opennotepad")) +
+                         GetKeybindString(TacOKeyAction::Toggle_notepad),
+                     Menu_ToggleNotepad);
+        ctx->AddSeparator();
+
+        auto raid = ctx->AddItem(
+            (IsWindowOpen("RaidProgress") ? DICT("closeraidprogress")
+                                          : DICT("openraidprogress")) +
+                GetKeybindString(TacOKeyAction::Toggle_raid_progress),
+            Menu_ToggleRaidProgress);
+
+        if (IsWindowOpen("RaidProgress")) {
+          raid->AddItem(
+              DICT("raidwindow_compact") +
+                  (GetConfigValue("CompactRaidWindow") ? " [x]" : " [ ]"),
+              Menu_ToggleCompactRaids);
+          auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
+          if (rp) {
+            auto& raids = rp->GetRaids();
+            if (!raids.empty()) raid->AddSeparator();
+            for (int32_t x = 0; x < raids.size(); x++) {
+              auto& r = raids[x];
+              raid->AddItem(((HasConfigValue(r.configName) &&
+                              !GetConfigValue(r.configName))
+                                 ? "[ ] "
+                                 : "[x] ") +
+                                DICT(r.configName.c_str(), r.name.c_str()),
+                            Menu_RaidToggles + x, false, false);
+            }
+          }
+        }
+
+        ctx->AddItem(
+            (IsWindowOpen("DungeonProgress") ? DICT("closedungeonprogress")
+                                             : DICT("opendungeonprogress")) +
+                GetKeybindString(TacOKeyAction::Toggle_dungeon_progress),
+            Menu_ToggleDungeonProgress);
+        auto tpTracker =
+            ctx->AddItem((IsWindowOpen("TPTracker") ? DICT("closetptracker")
+                                                    : DICT("opentptracker")) +
+                             GetKeybindString(TacOKeyAction::Toggle_tp_tracker),
+                         Menu_ToggleTPTracker);
+        if (IsWindowOpen("TPTracker")) {
+          tpTracker->AddItem(
+              DICT("tptracker_onlyoutbid") +
+                  (GetConfigValue("TPTrackerOnlyShowOutbid") ? " [x]" : " [ ]"),
+              Menu_ToggleTPTracker_OnlyOutbid);
+          tpTracker->AddItem(
+              DICT("tptracker_showbuys") +
+                  (GetConfigValue("TPTrackerShowBuys") ? " [x]" : " [ ]"),
+              Menu_ToggleTPTracker_ShowBuys);
+          tpTracker->AddItem(
+              DICT("tptracker_showsells") +
+                  (GetConfigValue("TPTrackerShowSells") ? " [x]" : " [ ]"),
+              Menu_ToggleTPTracker_ShowSells);
+          tpTracker->AddItem(
+              DICT("tptracker_nextsellonly") +
+                  (GetConfigValue("TPTrackerNextSellOnly") ? " [x]" : " [ ]"),
+              Menu_ToggleTPTracker_OnlyNextFulfilled);
+        }
+        ctx->AddSeparator();
+
+        auto settings = ctx->AddItem(DICT("tacosettings"), Menu_TacOSettings);
+        settings->AddItem(
+            DICT("togglewindoweditmode") +
+                (GetConfigValue("EditMode") ? " [x]" : " [ ]") +
+                GetKeybindString(TacOKeyAction::Toggle_window_edit_mode),
+            Menu_ToggleEditMode);
+        settings->AddSeparator();
+
+        settings->AddItem(
+            DICT("toggleupdatecheck") +
+                (GetConfigValue("CheckForUpdates") ? " [x]" : " [ ]"),
+            Menu_ToggleVersionCheck);
+
+        settings->AddItem(
+            DICT("hideonload") +
+                (GetConfigValue("HideOnLoadingScreens") ? " [x]" : " [ ]"),
+            Menu_HideOnLoadingScreens);
+        settings->AddItem(
+            DICT("closewithgw2") +
+                (GetConfigValue("CloseWithGW2") ? " [x]" : " [ ]"),
+            Menu_ToggleGW2ExitMode);
+        settings->AddItem(
+            DICT("toggleinfoline") +
+                (GetConfigValue("InfoLineVisible") ? " [x]" : " [ ]"),
+            Menu_ToggleInfoLine);
+        settings->AddItem(
+            DICT("toggleforcedpiaware") +
+                (GetConfigValue("ForceDPIAware") ? " [x]" : " [ ]"),
+            Menu_ToggleForceDPIAware);
+        settings->AddItem(
+            DICT("enabletpnotificationicon") +
+                (GetConfigValue("EnableTPNotificationIcon") ? " [x]" : " [ ]"),
+            Menu_ToggleShowNotificationIcon);
+
+        settings->AddSeparator();
+        settings->AddItem(
+            DICT("togglekeybinds") +
+                (GetConfigValue("KeybindsEnabled") ? " [x]" : " [ ]"),
+            Menu_KeyBindsEnabled);
+        auto bind = settings->AddItem(DICT("rebindkeys"), 0);
         int cnt = 1;
         for (int32_t x = 1; x < ActionNames.size(); x++) {
           auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
@@ -578,856 +702,745 @@ bool GW2TacO::MessageProc(CWBMessage& Message) {
               break;
             }
 
-          if (ActionNames[x][0] == '*')
-            markerEditor->AddItem(str, Menu_RebindKey_Base + x);
+          if (ActionNames[x][0] != '*')
+            bind->AddItem(str, Menu_RebindKey_Base + x);
           cnt++;
         }
+        settings->AddSeparator();
+
+        auto apiKeys = settings->AddItem(DICT("apikeys"), 0);
+        auto gw2keys = apiKeys->AddItem(DICT("gw2apikey"), 0);
+
+        auto currKey = GW2::apiKeyManager.GetIdentifiedAPIKey();
+
+        for (int32_t x = 0; x < GW2::apiKeyManager.size(); x++) {
+          auto key = GW2::apiKeyManager.GetKey(x);
+          auto keyMenu = gw2keys->AddItem(
+              (!key->accountName.empty()) ? key->accountName.c_str()
+                                          : key->apiKey.c_str(),
+              Menu_GW2APIKey_Base + x, key == currKey);
+          keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
+        }
+
+        if (GW2::apiKeyManager.empty()) {
+          gw2keys->AddSeparator();
+        }
+
+        gw2keys->AddItem(DICT("addgw2apikey"), Menu_AddGW2ApiKey);
+
+        apiKeys->AddItem(DICT("ts3controlplugin"), Menu_TS3APIKey);
+
+        settings->AddSeparator();
+
+        auto languages = localization->GetLanguages();
+        auto langs = settings->AddItem(DICT("language"), Menu_Language);
+        for (int x = 0; x < languages.size(); x++)
+          langs->AddItem(
+              (x == localization->GetActiveLanguageIndex() ? "[x] " : "[ ] ") +
+                  languages[x],
+              Menu_Language_Base + x,
+              x == localization->GetActiveLanguageIndex());
+
+        ctx->AddSeparator();
+        ctx->AddItem(DICT("abouttaco"), Menu_About);
+        ctx->AddSeparator();
+        ctx->AddItem(DICT("exittaco"), Menu_Exit);
+        return true;
       }
+      if (b->GetID() == _T( "GoToWebsite" )) {
+        ShellExecute((HWND)App->GetHandle(), "open",
+                     "https://github.com/therjak/GW2TacO/", nullptr, nullptr,
+                     SW_SHOW);
+        return true;
+      }
+    } break;
+    case WBM_REBUILDCONTEXTITEM:
 
-      ctx->AddItem((IsWindowOpen("Notepad") ? DICT("closenotepad")
-                                            : DICT("opennotepad")) +
-                       GetKeybindString(TacOKeyAction::Toggle_notepad),
-                   Menu_ToggleNotepad);
-      ctx->AddSeparator();
+      if (Message.Data >= Menu_RaidToggles &&
+          Message.Data < Menu_RaidToggles_End) {
+        int32_t raidToggle = Message.Data - Menu_RaidToggles;
 
-      auto raid = ctx->AddItem(
-          (IsWindowOpen("RaidProgress") ? DICT("closeraidprogress")
-                                        : DICT("openraidprogress")) +
-              GetKeybindString(TacOKeyAction::Toggle_raid_progress),
-          Menu_ToggleRaidProgress);
-
-      if (IsWindowOpen("RaidProgress")) {
-        raid->AddItem(
-            DICT("raidwindow_compact") +
-                (GetConfigValue("CompactRaidWindow") ? " [x]" : " [ ]"),
-            Menu_ToggleCompactRaids);
         auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
         if (rp) {
           auto& raids = rp->GetRaids();
-          if (!raids.empty())
-            raid->AddSeparator();
-          for (int32_t x = 0; x < raids.size(); x++) {
-            auto& r = raids[x];
-            raid->AddItem(
+          if (raidToggle < raids.size()) {
+            CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+                App->FindItemByGuid(Message.Position[1]));
+            auto itm = ctxMenu->GetItem(Message.Data);
+            auto& r = raids[raidToggle];
+            itm->SetText(
                 ((HasConfigValue(r.configName) && !GetConfigValue(r.configName))
                      ? "[ ] "
                      : "[x] ") +
-                    DICT(r.configName.c_str(), r.name.c_str()),
-                Menu_RaidToggles + x, false, false);
+                DICT(r.configName.c_str(), r.name.c_str()));
           }
         }
       }
 
-      ctx->AddItem((IsWindowOpen("DungeonProgress")
-                        ? DICT("closedungeonprogress")
-                        : DICT("opendungeonprogress")) +
-                       GetKeybindString(TacOKeyAction::Toggle_dungeon_progress),
-                   Menu_ToggleDungeonProgress);
-      auto tpTracker =
-          ctx->AddItem((IsWindowOpen("TPTracker") ? DICT("closetptracker")
-                                                  : DICT("opentptracker")) +
-                           GetKeybindString(TacOKeyAction::Toggle_tp_tracker),
-                       Menu_ToggleTPTracker);
-      if (IsWindowOpen("TPTracker")) {
-        tpTracker->AddItem(
-            DICT("tptracker_onlyoutbid") +
-                (GetConfigValue("TPTrackerOnlyShowOutbid") ? " [x]" : " [ ]"),
-            Menu_ToggleTPTracker_OnlyOutbid);
-        tpTracker->AddItem(
-            DICT("tptracker_showbuys") +
-                (GetConfigValue("TPTrackerShowBuys") ? " [x]" : " [ ]"),
-            Menu_ToggleTPTracker_ShowBuys);
-        tpTracker->AddItem(
-            DICT("tptracker_showsells") +
-                (GetConfigValue("TPTrackerShowSells") ? " [x]" : " [ ]"),
-            Menu_ToggleTPTracker_ShowSells);
-        tpTracker->AddItem(
-            DICT("tptracker_nextsellonly") +
-                (GetConfigValue("TPTrackerNextSellOnly") ? " [x]" : " [ ]"),
-            Menu_ToggleTPTracker_OnlyNextFulfilled);
-      }
-      ctx->AddSeparator();
+      if (Message.Data >= Menu_MarkerFilter_Base &&
+          Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
+        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            App->FindItemByGuid(Message.Position[1]));
+        auto itm = ctxMenu->GetItem(Message.Data);
 
-      auto settings = ctx->AddItem(DICT("tacosettings"), Menu_TacOSettings);
-      settings->AddItem(
-          DICT("togglewindoweditmode") +
-              (GetConfigValue("EditMode") ? " [x]" : " [ ]") +
-              GetKeybindString(TacOKeyAction::Toggle_window_edit_mode),
-          Menu_ToggleEditMode);
-      settings->AddSeparator();
+        auto& dta = CategoryList[Message.Data - Menu_MarkerFilter_Base];
 
-      settings->AddItem(
-          DICT("toggleupdatecheck") +
-              (GetConfigValue("CheckForUpdates") ? " [x]" : " [ ]"),
-          Menu_ToggleVersionCheck);
-
-      settings->AddItem(
-          DICT("hideonload") +
-              (GetConfigValue("HideOnLoadingScreens") ? " [x]" : " [ ]"),
-          Menu_HideOnLoadingScreens);
-      settings->AddItem(DICT("closewithgw2") +
-                            (GetConfigValue("CloseWithGW2") ? " [x]" : " [ ]"),
-                        Menu_ToggleGW2ExitMode);
-      settings->AddItem(
-          DICT("toggleinfoline") +
-              (GetConfigValue("InfoLineVisible") ? " [x]" : " [ ]"),
-          Menu_ToggleInfoLine);
-      settings->AddItem(DICT("toggleforcedpiaware") +
-                            (GetConfigValue("ForceDPIAware") ? " [x]" : " [ ]"),
-                        Menu_ToggleForceDPIAware);
-      settings->AddItem(
-          DICT("enabletpnotificationicon") +
-              (GetConfigValue("EnableTPNotificationIcon") ? " [x]" : " [ ]"),
-          Menu_ToggleShowNotificationIcon);
-
-      settings->AddSeparator();
-      settings->AddItem(
-          DICT("togglekeybinds") +
-              (GetConfigValue("KeybindsEnabled") ? " [x]" : " [ ]"),
-          Menu_KeyBindsEnabled);
-      auto bind = settings->AddItem(DICT("rebindkeys"), 0);
-      int cnt = 1;
-      for (int32_t x = 1; x < ActionNames.size(); x++) {
-        auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
-        for (auto& kb : KeyBindings)
-          if (static_cast<int32_t>(kb.second) == x) {
-            str = DICT(ActionNames[x]) + FormatString(" [%c]", kb.first);
-            break;
-          }
-
-        if (ActionNames[x][0] != '*')
-          bind->AddItem(str, Menu_RebindKey_Base + x);
-        cnt++;
-      }
-      settings->AddSeparator();
-
-      auto apiKeys = settings->AddItem(DICT("apikeys"), 0);
-      auto gw2keys = apiKeys->AddItem(DICT("gw2apikey"), 0);
-
-      auto currKey = GW2::apiKeyManager.GetIdentifiedAPIKey();
-
-      for (int32_t x = 0; x < GW2::apiKeyManager.size(); x++) {
-        auto key = GW2::apiKeyManager.GetKey(x);
-        auto keyMenu = gw2keys->AddItem(
-            (!key->accountName.empty()) ? key->accountName.c_str()
-                                        : key->apiKey.c_str(),
-            Menu_GW2APIKey_Base + x, key == currKey);
-        keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
-      }
-
-      if (GW2::apiKeyManager.empty()) {
-        gw2keys->AddSeparator();
-      }
-
-      gw2keys->AddItem(DICT("addgw2apikey"), Menu_AddGW2ApiKey);
-
-      apiKeys->AddItem(DICT("ts3controlplugin"), Menu_TS3APIKey);
-
-      settings->AddSeparator();
-
-      auto languages = localization->GetLanguages();
-      auto langs = settings->AddItem(DICT("language"), Menu_Language);
-      for (int x = 0; x < languages.size(); x++)
-        langs->AddItem(
-            (x == localization->GetActiveLanguageIndex() ? "[x] " : "[ ] ") +
-                languages[x],
-            Menu_Language_Base + x,
-            x == localization->GetActiveLanguageIndex());
-
-      ctx->AddSeparator();
-      ctx->AddItem(DICT("abouttaco"), Menu_About);
-      ctx->AddSeparator();
-      ctx->AddItem(DICT("exittaco"), Menu_Exit);
-      return true;
-    }
-    if (b->GetID() == _T( "GoToWebsite" )) {
-      ShellExecute((HWND)App->GetHandle(), "open",
-                   "https://github.com/therjak/GW2TacO/", nullptr, nullptr,
-                   SW_SHOW);
-      return true;
-    }
-  } break;
-  case WBM_REBUILDCONTEXTITEM:
-
-    if (Message.Data >= Menu_RaidToggles &&
-        Message.Data < Menu_RaidToggles_End) {
-      int32_t raidToggle = Message.Data - Menu_RaidToggles;
-
-      auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
-      if (rp) {
-        auto& raids = rp->GetRaids();
-        if (raidToggle < raids.size()) {
-          CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
-              App->FindItemByGuid(Message.Position[1]));
-          auto itm = ctxMenu->GetItem(Message.Data);
-          auto& r = raids[raidToggle];
-          itm->SetText(
-              ((HasConfigValue(r.configName) && !GetConfigValue(r.configName))
-                   ? "[ ] "
-                   : "[x] ") +
-              DICT(r.configName.c_str(), r.name.c_str()));
-        }
-      }
-    }
-
-    if (Message.Data >= Menu_MarkerFilter_Base &&
-        Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
-      CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
-          App->FindItemByGuid(Message.Position[1]));
-      auto itm = ctxMenu->GetItem(Message.Data);
-
-      auto& dta = CategoryList[Message.Data - Menu_MarkerFilter_Base];
-
-      if (!dta->IsOnlySeparator) {
-        auto txt = "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
-        if (!dta->displayName.empty())
-          txt += dta->displayName;
-        else
-          txt += dta->name;
-
-        itm->SetText(txt);
-        itm->SetHighlight(dta->IsDisplayed);
-      }
-
-      break;
-    }
-    if (Message.Data >= Menu_ToggleMapTimerMap) {
-      CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
-          App->FindItemByGuid(Message.Position[1]));
-      auto itm = ctxMenu->GetItem(Message.Data);
-      int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
-
-      GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
-          App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
-      if (!timer)
-        break;
-
-      bool open = true;
-      auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
-
-      if (HasConfigValue(str))
-        open = GetConfigValue(str);
-
-      itm->SetText(open ? (timer->maps[mapIdx].name + " [x]")
-                        : (timer->maps[mapIdx].name + " [ ]"));
-      itm->SetHighlight(open);
-      break;
-    }
-
-    {
-      CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
-          App->FindItemByGuid(Message.Position[1]));
-      auto itm = ctxMenu->GetItem(Message.Data);
-
-      switch (Message.Data) {
-      case Menu_ToggleRangeCircle90:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle90") ? "90 [x]" : "90 [ ]");
-        break;
-      case Menu_ToggleRangeCircle120:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle120") ? "120 [x]"
-                                                        : "120 [ ]");
-        break;
-      case Menu_ToggleRangeCircle180:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle180") ? "180 [x]"
-                                                        : "180 [ ]");
-        break;
-      case Menu_ToggleRangeCircle240:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle240") ? "240 [x]"
-                                                        : "240 [ ]");
-        break;
-      case Menu_ToggleRangeCircle300:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle300") ? "300 [x]"
-                                                        : "300 [ ]");
-        break;
-      case Menu_ToggleRangeCircle400:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle400") ? "400 [x]"
-                                                        : "400 [ ]");
-        break;
-      case Menu_ToggleRangeCircle600:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle600") ? "600 [x]"
-                                                        : "600 [ ]");
-        break;
-      case Menu_ToggleRangeCircle900:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle900") ? "900 [x]"
-                                                        : "900 [ ]");
-        break;
-      case Menu_ToggleRangeCircle1200:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle1200") ? "1200 [x]"
-                                                         : "1200 [ ]");
-        break;
-      case Menu_ToggleRangeCircle1500:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle1500") ? "1500 [x]"
-                                                         : "1500 [ ]");
-        break;
-      case Menu_ToggleRangeCircle1600:
-        if (itm)
-          itm->SetText(GetConfigValue("RangeCircle1600") ? "1600 [x]"
-                                                         : "1600 [ ]");
-        break;
-      }
-    }
-
-    break;
-
-  case WBM_CONTEXTMESSAGE:
-    if (Message.Data >= Menu_GW2APIKey_Base &&
-        Message.Data < Menu_GW2APIKey_End) {
-      int32_t idx = Message.Data - Menu_GW2APIKey_Base;
-      ApiKeyInputAction(APIKeys::GW2APIKey, idx);
-      return true;
-    }
-
-    if (Message.Data >= Menu_DeleteGW2APIKey_Base &&
-        Message.Data < Menu_DeleteGW2APIKey_End) {
-      int32_t idx = Message.Data - Menu_DeleteGW2APIKey_Base;
-      GW2::apiKeyManager.RemoveKey(idx);
-      GW2::apiKeyManager.RebuildConfigValues();
-      return true;
-    }
-
-    if (Message.Data >= Menu_RaidToggles &&
-        Message.Data < Menu_RaidToggles_End) {
-      int32_t raidToggle = Message.Data - Menu_RaidToggles;
-
-      auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
-      if (rp) {
-        auto& raids = rp->GetRaids();
-        if (raidToggle < raids.size()) {
-          if (!HasConfigValue(raids[raidToggle].configName))
-            SetConfigValue(raids[raidToggle].configName, 0);
+        if (!dta->IsOnlySeparator) {
+          auto txt = "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
+          if (!dta->displayName.empty())
+            txt += dta->displayName;
           else
-            ToggleConfigValue(raids[raidToggle].configName);
+            txt += dta->name;
+
+          itm->SetText(txt);
+          itm->SetHighlight(dta->IsDisplayed);
         }
-      }
-      break;
-    }
 
-    if (Message.Data >= Menu_RebindKey_Base &&
-        Message.Data < Menu_RebindKey_Base + ActionNames.size()) {
-      RebindAction(
-          static_cast<TacOKeyAction>(Message.Data - Menu_RebindKey_Base));
-      break;
-    }
-
-    {
-      auto languages = localization->GetLanguages();
-
-      if (Message.Data >= Menu_Language_Base &&
-          Message.Data < Menu_Language_Base + languages.size()) {
-        localization->SetActiveLanguage(
-            languages[Message.Data - Menu_Language_Base]);
         break;
       }
-    }
+      if (Message.Data >= Menu_ToggleMapTimerMap) {
+        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            App->FindItemByGuid(Message.Position[1]));
+        auto itm = ctxMenu->GetItem(Message.Data);
+        int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
 
-    if (Message.Data >= Menu_MarkerFilter_Base &&
-        Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
-      bool displayed =
-          !CategoryList[Message.Data - Menu_MarkerFilter_Base]->IsDisplayed;
-      CategoryList[Message.Data - Menu_MarkerFilter_Base]->IsDisplayed =
-          displayed;
-      SetConfigValue(("CategoryVisible_" +
-                      CategoryList[Message.Data - Menu_MarkerFilter_Base]
-                          ->GetFullTypeName()),
-                     displayed);
+        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+            App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
+        if (!timer) break;
+
+        bool open = true;
+        auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
+
+        if (HasConfigValue(str)) open = GetConfigValue(str);
+
+        itm->SetText(open ? (timer->maps[mapIdx].name + " [x]")
+                          : (timer->maps[mapIdx].name + " [ ]"));
+        itm->SetHighlight(open);
+        break;
+      }
+
+      {
+        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            App->FindItemByGuid(Message.Position[1]));
+        auto itm = ctxMenu->GetItem(Message.Data);
+
+        switch (Message.Data) {
+          case Menu_ToggleRangeCircle90:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle90") ? "90 [x]"
+                                                           : "90 [ ]");
+            break;
+          case Menu_ToggleRangeCircle120:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle120") ? "120 [x]"
+                                                            : "120 [ ]");
+            break;
+          case Menu_ToggleRangeCircle180:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle180") ? "180 [x]"
+                                                            : "180 [ ]");
+            break;
+          case Menu_ToggleRangeCircle240:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle240") ? "240 [x]"
+                                                            : "240 [ ]");
+            break;
+          case Menu_ToggleRangeCircle300:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle300") ? "300 [x]"
+                                                            : "300 [ ]");
+            break;
+          case Menu_ToggleRangeCircle400:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle400") ? "400 [x]"
+                                                            : "400 [ ]");
+            break;
+          case Menu_ToggleRangeCircle600:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle600") ? "600 [x]"
+                                                            : "600 [ ]");
+            break;
+          case Menu_ToggleRangeCircle900:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle900") ? "900 [x]"
+                                                            : "900 [ ]");
+            break;
+          case Menu_ToggleRangeCircle1200:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle1200") ? "1200 [x]"
+                                                             : "1200 [ ]");
+            break;
+          case Menu_ToggleRangeCircle1500:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle1500") ? "1500 [x]"
+                                                             : "1500 [ ]");
+            break;
+          case Menu_ToggleRangeCircle1600:
+            if (itm)
+              itm->SetText(GetConfigValue("RangeCircle1600") ? "1600 [x]"
+                                                             : "1600 [ ]");
+            break;
+        }
+      }
+
       break;
-    }
 
-    if (Message.Data >= Menu_ToggleMapTimerMap) {
-      GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
-          App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
+    case WBM_CONTEXTMESSAGE:
+      if (Message.Data >= Menu_GW2APIKey_Base &&
+          Message.Data < Menu_GW2APIKey_End) {
+        int32_t idx = Message.Data - Menu_GW2APIKey_Base;
+        ApiKeyInputAction(APIKeys::GW2APIKey, idx);
+        return true;
+      }
 
-      if (timer) {
-        if (Message.Data < Menu_ToggleMapTimerMap + timer->maps.size()) {
-          int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
-          auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
-          timer->maps[mapIdx].display = !timer->maps[mapIdx].display;
-          SetConfigValue(str, timer->maps[mapIdx].display);
+      if (Message.Data >= Menu_DeleteGW2APIKey_Base &&
+          Message.Data < Menu_DeleteGW2APIKey_End) {
+        int32_t idx = Message.Data - Menu_DeleteGW2APIKey_Base;
+        GW2::apiKeyManager.RemoveKey(idx);
+        GW2::apiKeyManager.RebuildConfigValues();
+        return true;
+      }
+
+      if (Message.Data >= Menu_RaidToggles &&
+          Message.Data < Menu_RaidToggles_End) {
+        int32_t raidToggle = Message.Data - Menu_RaidToggles;
+
+        auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
+        if (rp) {
+          auto& raids = rp->GetRaids();
+          if (raidToggle < raids.size()) {
+            if (!HasConfigValue(raids[raidToggle].configName))
+              SetConfigValue(raids[raidToggle].configName, 0);
+            else
+              ToggleConfigValue(raids[raidToggle].configName);
+          }
+        }
+        break;
+      }
+
+      if (Message.Data >= Menu_RebindKey_Base &&
+          Message.Data < Menu_RebindKey_Base + ActionNames.size()) {
+        RebindAction(
+            static_cast<TacOKeyAction>(Message.Data - Menu_RebindKey_Base));
+        break;
+      }
+
+      {
+        auto languages = localization->GetLanguages();
+
+        if (Message.Data >= Menu_Language_Base &&
+            Message.Data < Menu_Language_Base + languages.size()) {
+          localization->SetActiveLanguage(
+              languages[Message.Data - Menu_Language_Base]);
           break;
         }
       }
-    }
 
-    switch (Message.Data) {
-    case Menu_Exit:
-      GetApplication()->SetDone(true);
-      return true;
-    case Menu_About:
-      OpenAboutWindow();
-      return true;
-    case Menu_ToggleInfoLine:
-      ToggleConfigValue("InfoLineVisible");
-      return true;
-    case Menu_ToggleHighLight:
-      ToggleConfigValue("MouseHighlightVisible");
-      return true;
-    case Menu_ToggleTactical:
-      ToggleConfigValue("TacticalLayerVisible");
-      return true;
-    case Menu_ToggleTacticalsOnEdge:
-      ToggleConfigValue("TacticalIconsOnEdge");
-      return true;
-    case Menu_ToggleDrawDistance:
-      ToggleConfigValue("TacticalDrawDistance");
-      return true;
-    case Menu_DrawWvWNames:
-      ToggleConfigValue("DrawWvWNames");
-      return true;
-    case Menu_ToggleLocationalTimers:
-      ToggleConfigValue("LocationalTimersVisible");
-      return true;
-    case Menu_ToggleGW2ExitMode:
-      ToggleConfigValue("CloseWithGW2");
-      return true;
-    case Menu_ToggleVersionCheck:
-      ToggleConfigValue("CheckForUpdates");
-      return true;
-    case Menu_ToggleMapTimer:
-      OpenWindow("MapTimer");
-      return true;
-    case Menu_ToggleTS3Control:
-      OpenWindow("TS3Control");
-      return true;
-    case Menu_ToggleMarkerEditor:
-      OpenWindow("MarkerEditor");
-      return true;
-    case Menu_ToggleNotepad:
-      OpenWindow("Notepad");
-      return true;
-    case Menu_ToggleRaidProgress:
-      OpenWindow("RaidProgress");
-      return true;
-    case Menu_ToggleDungeonProgress:
-      OpenWindow("DungeonProgress");
-      return true;
-    case Menu_ToggleTPTracker:
-      OpenWindow("TPTracker");
-      return true;
-    case Menu_ToggleEditMode:
-      ToggleConfigValue("EditMode");
-      return true;
-    case Menu_HideOnLoadingScreens:
-      ToggleConfigValue("HideOnLoadingScreens");
-      return true;
-      // case Menu_Interface_Small:
-    // case Menu_Interface_Normal:
-    // case Menu_Interface_Large:
-    // case Menu_Interface_Larger:
-    //  if ( App->LoadCSSFromFile( UIFileNames[ Message.Data -
-    //  Menu_Interface_Small ], true ) )
-    //    SetConfigValue( "InterfaceSize", Message.Data -
-    //    Menu_Interface_Small );
-    //  App->ReApplyStyle();
-    //  return true;
-    //  break;
-    case Menu_DownloadNewBuild:
-      ShellExecute((HWND)App->GetHandle(), "open", "http://www.gw2taco.com",
-                   nullptr, nullptr, SW_SHOW);
-      return true;
-      break;
-    case Menu_ToggleRangeCircles:
-      ToggleConfigValue("RangeCirclesVisible");
-      return true;
-      break;
-    case Menu_RangeCircleTransparency40:
-      SetConfigValue("RangeCircleTransparency", 40);
-      return true;
-      break;
-    case Menu_RangeCircleTransparency60:
-      SetConfigValue("RangeCircleTransparency", 60);
-      return true;
-      break;
-    case Menu_RangeCircleTransparency100:
-      SetConfigValue("RangeCircleTransparency", 100);
-      return true;
-      break;
-    case Menu_ToggleRangeCircle90:
-      ToggleConfigValue("RangeCircle90");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle120:
-      ToggleConfigValue("RangeCircle120");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle180:
-      ToggleConfigValue("RangeCircle180");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle240:
-      ToggleConfigValue("RangeCircle240");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle300:
-      ToggleConfigValue("RangeCircle300");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle400:
-      ToggleConfigValue("RangeCircle400");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle600:
-      ToggleConfigValue("RangeCircle600");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle900:
-      ToggleConfigValue("RangeCircle900");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle1200:
-      ToggleConfigValue("RangeCircle1200");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle1500:
-      ToggleConfigValue("RangeCircle1500");
-      return true;
-      break;
-    case Menu_ToggleRangeCircle1600:
-      ToggleConfigValue("RangeCircle1600");
-      return true;
-      break;
-    case Menu_ToggleTacticalCompass:
-      ToggleConfigValue("TacticalCompassVisible");
-      return true;
-    case Menu_ToggleVsync:
-      ToggleConfigValue("Vsync");
-      App->SetVSync(GetConfigValue("Vsync"));
-      return true;
-    case Menu_ToggleHPGrid:
-      ToggleConfigValue("HPGridVisible");
-      return true;
-    case Menu_ToggleCompactMapTimer:
-      ToggleConfigValue("MapTimerCompact");
-      return true;
-    case Menu_ToggleMouseHighlightOutline:
-      ToggleConfigValue("MouseHighlightOutline");
-      return true;
-    case Menu_ToggleTPTracker_OnlyOutbid:
-      ToggleConfigValue("TPTrackerOnlyShowOutbid");
-      return true;
-    case Menu_ToggleTPTracker_ShowBuys:
-      ToggleConfigValue("TPTrackerShowBuys");
-      return true;
-    case Menu_ToggleTPTracker_ShowSells:
-      ToggleConfigValue("TPTrackerShowSells");
-      return true;
-    case Menu_ToggleTPTracker_OnlyNextFulfilled:
-      ToggleConfigValue("TPTrackerNextSellOnly");
-      return true;
-    case Menu_ToggleCompactRaids:
-      ToggleConfigValue("CompactRaidWindow");
-      return true;
-    case Menu_TogglePOIInfoText:
-      ToggleConfigValue("TacticalInfoTextVisible");
-      return true;
-    case Menu_MouseHighlightColor0:
-    case Menu_MouseHighlightColor1:
-    case Menu_MouseHighlightColor2:
-    case Menu_MouseHighlightColor3:
-    case Menu_MouseHighlightColor4:
-    case Menu_MouseHighlightColor5:
-    case Menu_MouseHighlightColor6:
-    case Menu_MouseHighlightColor7:
-    case Menu_MouseHighlightColor8:
-    case Menu_MouseHighlightColor9:
-    case Menu_MouseHighlightColora:
-    case Menu_MouseHighlightColorb:
-    case Menu_MouseHighlightColorc:
-    case Menu_MouseHighlightColord:
-    case Menu_MouseHighlightColore:
-    case Menu_MouseHighlightColorf:
-      SetConfigValue("MouseHighlightColor",
-                     Message.Data - Menu_MouseHighlightColor0);
-      return true;
-    case Menu_TS3APIKey:
-      ApiKeyInputAction(APIKeys::TS3APIKey, 0);
-      return true;
-    case Menu_ToggleTrailLogging:
-      ToggleConfigValue("LogTrails");
-      return true;
+      if (Message.Data >= Menu_MarkerFilter_Base &&
+          Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
+        bool displayed =
+            !CategoryList[Message.Data - Menu_MarkerFilter_Base]->IsDisplayed;
+        CategoryList[Message.Data - Menu_MarkerFilter_Base]->IsDisplayed =
+            displayed;
+        SetConfigValue(("CategoryVisible_" +
+                        CategoryList[Message.Data - Menu_MarkerFilter_Base]
+                            ->GetFullTypeName()),
+                       displayed);
+        break;
+      }
 
-    case Menu_ToggleAutoHideMarkerEditor:
-      ToggleConfigValue("AutoHideMarkerEditor");
-      return true;
-    case Menu_ToggleFadeoutBubble:
-      ToggleConfigValue("FadeoutBubble");
-      return true;
-    case Menu_ToggleMetricSystem:
-      ToggleConfigValue("UseMetricDisplay");
-      return true;
-    case Menu_ToggleForceDPIAware:
-      ToggleConfigValue("ForceDPIAware");
-      return true;
-    case Menu_ToggleShowNotificationIcon:
-      ToggleConfigValue("EnableTPNotificationIcon");
-      return true;
-    case Menu_MarkerVisibility_MiniMap_Off:
-      SetConfigValue("ShowMinimapMarkers", 0);
-      return true;
-    case Menu_MarkerVisibility_MiniMap_Default:
-      SetConfigValue("ShowMinimapMarkers", 1);
-      return true;
-    case Menu_MarkerVisibility_MiniMap_Force:
-      SetConfigValue("ShowMinimapMarkers", 2);
-      return true;
-    case Menu_MarkerVisibility_BigMap_Off:
-      SetConfigValue("ShowBigmapMarkers", 0);
-      return true;
-    case Menu_MarkerVisibility_BigMap_Default:
-      SetConfigValue("ShowBigmapMarkers", 1);
-      return true;
-    case Menu_MarkerVisibility_BigMap_Force:
-      SetConfigValue("ShowBigmapMarkers", 2);
-      return true;
-    case Menu_MarkerVisibility_InGameMap_Off:
-      SetConfigValue("ShowInGameMarkers", 0);
-      return true;
-    case Menu_MarkerVisibility_InGameMap_Default:
-      SetConfigValue("ShowInGameMarkers", 1);
-      return true;
-    case Menu_MarkerVisibility_InGameMap_Force:
-      SetConfigValue("ShowInGameMarkers", 2);
-      return true;
-    case Menu_TrailVisibility_MiniMap_Off:
-      SetConfigValue("ShowMinimapTrails", 0);
-      return true;
-    case Menu_TrailVisibility_MiniMap_Default:
-      SetConfigValue("ShowMinimapTrails", 1);
-      return true;
-    case Menu_TrailVisibility_MiniMap_Force:
-      SetConfigValue("ShowMinimapTrails", 2);
-      return true;
-    case Menu_TrailVisibility_BigMap_Off:
-      SetConfigValue("ShowBigmapTrails", 0);
-      return true;
-    case Menu_TrailVisibility_BigMap_Default:
-      SetConfigValue("ShowBigmapTrails", 1);
-      return true;
-    case Menu_TrailVisibility_BigMap_Force:
-      SetConfigValue("ShowBigmapTrails", 2);
-      return true;
-    case Menu_TrailVisibility_InGameMap_Off:
-      SetConfigValue("ShowInGameTrails", 0);
-      return true;
-    case Menu_TrailVisibility_InGameMap_Default:
-      SetConfigValue("ShowInGameTrails", 1);
-      return true;
-    case Menu_TrailVisibility_InGameMap_Force:
-      SetConfigValue("ShowInGameTrails", 2);
-      return true;
-    case Menu_ReloadMarkers:
-      ImportPOIS(GetApplication());
-      return true;
+      if (Message.Data >= Menu_ToggleMapTimerMap) {
+        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+            App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
-    case Menu_OpacityIngame_Solid:
-      SetConfigValue("OpacityIngame", 0);
-      return true;
-    case Menu_OpacityIngame_Transparent:
-      SetConfigValue("OpacityIngame", 2);
-      return true;
-    case Menu_OpacityIngame_Faded:
-      SetConfigValue("OpacityIngame", 1);
-      return true;
-    case Menu_OpacityMap_Solid:
-      SetConfigValue("OpacityMap", 0);
-      return true;
-    case Menu_OpacityMap_Transparent:
-      SetConfigValue("OpacityMap", 2);
-      return true;
-    case Menu_OpacityMap_Faded:
-      SetConfigValue("OpacityMap", 1);
-      return true;
-    case Menu_DeleteMyMarkers: {
-      GW2TacticalDisplay* tactical = dynamic_cast<GW2TacticalDisplay*>(
-          GetApplication()->GetRoot()->FindChildByID("tactical",
-                                                     "gw2tactical"));
-      if (tactical)
-        tactical->RemoveUserMarkersFromMap();
-      return true;
-    }
-    case Menu_KeyBindsEnabled:
-      ToggleConfigValue("KeybindsEnabled");
-      return true;
+        if (timer) {
+          if (Message.Data < Menu_ToggleMapTimerMap + timer->maps.size()) {
+            int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
+            auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
+            timer->maps[mapIdx].display = !timer->maps[mapIdx].display;
+            SetConfigValue(str, timer->maps[mapIdx].display);
+            break;
+          }
+        }
+      }
 
-    case Menu_AddGW2ApiKey: {
-      GW2::apiKeyManager.AddKey(std::make_unique<GW2::APIKey>());
-      ApiKeyInputAction(APIKeys::GW2APIKey, GW2::apiKeyManager.size() - 1);
-      return true;
-    } break;
-    default:
+      switch (Message.Data) {
+        case Menu_Exit:
+          GetApplication()->SetDone(true);
+          return true;
+        case Menu_About:
+          OpenAboutWindow();
+          return true;
+        case Menu_ToggleInfoLine:
+          ToggleConfigValue("InfoLineVisible");
+          return true;
+        case Menu_ToggleHighLight:
+          ToggleConfigValue("MouseHighlightVisible");
+          return true;
+        case Menu_ToggleTactical:
+          ToggleConfigValue("TacticalLayerVisible");
+          return true;
+        case Menu_ToggleTacticalsOnEdge:
+          ToggleConfigValue("TacticalIconsOnEdge");
+          return true;
+        case Menu_ToggleDrawDistance:
+          ToggleConfigValue("TacticalDrawDistance");
+          return true;
+        case Menu_DrawWvWNames:
+          ToggleConfigValue("DrawWvWNames");
+          return true;
+        case Menu_ToggleLocationalTimers:
+          ToggleConfigValue("LocationalTimersVisible");
+          return true;
+        case Menu_ToggleGW2ExitMode:
+          ToggleConfigValue("CloseWithGW2");
+          return true;
+        case Menu_ToggleVersionCheck:
+          ToggleConfigValue("CheckForUpdates");
+          return true;
+        case Menu_ToggleMapTimer:
+          OpenWindow("MapTimer");
+          return true;
+        case Menu_ToggleTS3Control:
+          OpenWindow("TS3Control");
+          return true;
+        case Menu_ToggleMarkerEditor:
+          OpenWindow("MarkerEditor");
+          return true;
+        case Menu_ToggleNotepad:
+          OpenWindow("Notepad");
+          return true;
+        case Menu_ToggleRaidProgress:
+          OpenWindow("RaidProgress");
+          return true;
+        case Menu_ToggleDungeonProgress:
+          OpenWindow("DungeonProgress");
+          return true;
+        case Menu_ToggleTPTracker:
+          OpenWindow("TPTracker");
+          return true;
+        case Menu_ToggleEditMode:
+          ToggleConfigValue("EditMode");
+          return true;
+        case Menu_HideOnLoadingScreens:
+          ToggleConfigValue("HideOnLoadingScreens");
+          return true;
+          // case Menu_Interface_Small:
+        // case Menu_Interface_Normal:
+        // case Menu_Interface_Large:
+        // case Menu_Interface_Larger:
+        //  if ( App->LoadCSSFromFile( UIFileNames[ Message.Data -
+        //  Menu_Interface_Small ], true ) )
+        //    SetConfigValue( "InterfaceSize", Message.Data -
+        //    Menu_Interface_Small );
+        //  App->ReApplyStyle();
+        //  return true;
+        //  break;
+        case Menu_DownloadNewBuild:
+          ShellExecute((HWND)App->GetHandle(), "open", "http://www.gw2taco.com",
+                       nullptr, nullptr, SW_SHOW);
+          return true;
+          break;
+        case Menu_ToggleRangeCircles:
+          ToggleConfigValue("RangeCirclesVisible");
+          return true;
+          break;
+        case Menu_RangeCircleTransparency40:
+          SetConfigValue("RangeCircleTransparency", 40);
+          return true;
+          break;
+        case Menu_RangeCircleTransparency60:
+          SetConfigValue("RangeCircleTransparency", 60);
+          return true;
+          break;
+        case Menu_RangeCircleTransparency100:
+          SetConfigValue("RangeCircleTransparency", 100);
+          return true;
+          break;
+        case Menu_ToggleRangeCircle90:
+          ToggleConfigValue("RangeCircle90");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle120:
+          ToggleConfigValue("RangeCircle120");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle180:
+          ToggleConfigValue("RangeCircle180");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle240:
+          ToggleConfigValue("RangeCircle240");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle300:
+          ToggleConfigValue("RangeCircle300");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle400:
+          ToggleConfigValue("RangeCircle400");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle600:
+          ToggleConfigValue("RangeCircle600");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle900:
+          ToggleConfigValue("RangeCircle900");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle1200:
+          ToggleConfigValue("RangeCircle1200");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle1500:
+          ToggleConfigValue("RangeCircle1500");
+          return true;
+          break;
+        case Menu_ToggleRangeCircle1600:
+          ToggleConfigValue("RangeCircle1600");
+          return true;
+          break;
+        case Menu_ToggleTacticalCompass:
+          ToggleConfigValue("TacticalCompassVisible");
+          return true;
+        case Menu_ToggleVsync:
+          ToggleConfigValue("Vsync");
+          App->SetVSync(GetConfigValue("Vsync"));
+          return true;
+        case Menu_ToggleHPGrid:
+          ToggleConfigValue("HPGridVisible");
+          return true;
+        case Menu_ToggleCompactMapTimer:
+          ToggleConfigValue("MapTimerCompact");
+          return true;
+        case Menu_ToggleMouseHighlightOutline:
+          ToggleConfigValue("MouseHighlightOutline");
+          return true;
+        case Menu_ToggleTPTracker_OnlyOutbid:
+          ToggleConfigValue("TPTrackerOnlyShowOutbid");
+          return true;
+        case Menu_ToggleTPTracker_ShowBuys:
+          ToggleConfigValue("TPTrackerShowBuys");
+          return true;
+        case Menu_ToggleTPTracker_ShowSells:
+          ToggleConfigValue("TPTrackerShowSells");
+          return true;
+        case Menu_ToggleTPTracker_OnlyNextFulfilled:
+          ToggleConfigValue("TPTrackerNextSellOnly");
+          return true;
+        case Menu_ToggleCompactRaids:
+          ToggleConfigValue("CompactRaidWindow");
+          return true;
+        case Menu_TogglePOIInfoText:
+          ToggleConfigValue("TacticalInfoTextVisible");
+          return true;
+        case Menu_MouseHighlightColor0:
+        case Menu_MouseHighlightColor1:
+        case Menu_MouseHighlightColor2:
+        case Menu_MouseHighlightColor3:
+        case Menu_MouseHighlightColor4:
+        case Menu_MouseHighlightColor5:
+        case Menu_MouseHighlightColor6:
+        case Menu_MouseHighlightColor7:
+        case Menu_MouseHighlightColor8:
+        case Menu_MouseHighlightColor9:
+        case Menu_MouseHighlightColora:
+        case Menu_MouseHighlightColorb:
+        case Menu_MouseHighlightColorc:
+        case Menu_MouseHighlightColord:
+        case Menu_MouseHighlightColore:
+        case Menu_MouseHighlightColorf:
+          SetConfigValue("MouseHighlightColor",
+                         Message.Data - Menu_MouseHighlightColor0);
+          return true;
+        case Menu_TS3APIKey:
+          ApiKeyInputAction(APIKeys::TS3APIKey, 0);
+          return true;
+        case Menu_ToggleTrailLogging:
+          ToggleConfigValue("LogTrails");
+          return true;
+
+        case Menu_ToggleAutoHideMarkerEditor:
+          ToggleConfigValue("AutoHideMarkerEditor");
+          return true;
+        case Menu_ToggleFadeoutBubble:
+          ToggleConfigValue("FadeoutBubble");
+          return true;
+        case Menu_ToggleMetricSystem:
+          ToggleConfigValue("UseMetricDisplay");
+          return true;
+        case Menu_ToggleForceDPIAware:
+          ToggleConfigValue("ForceDPIAware");
+          return true;
+        case Menu_ToggleShowNotificationIcon:
+          ToggleConfigValue("EnableTPNotificationIcon");
+          return true;
+        case Menu_MarkerVisibility_MiniMap_Off:
+          SetConfigValue("ShowMinimapMarkers", 0);
+          return true;
+        case Menu_MarkerVisibility_MiniMap_Default:
+          SetConfigValue("ShowMinimapMarkers", 1);
+          return true;
+        case Menu_MarkerVisibility_MiniMap_Force:
+          SetConfigValue("ShowMinimapMarkers", 2);
+          return true;
+        case Menu_MarkerVisibility_BigMap_Off:
+          SetConfigValue("ShowBigmapMarkers", 0);
+          return true;
+        case Menu_MarkerVisibility_BigMap_Default:
+          SetConfigValue("ShowBigmapMarkers", 1);
+          return true;
+        case Menu_MarkerVisibility_BigMap_Force:
+          SetConfigValue("ShowBigmapMarkers", 2);
+          return true;
+        case Menu_MarkerVisibility_InGameMap_Off:
+          SetConfigValue("ShowInGameMarkers", 0);
+          return true;
+        case Menu_MarkerVisibility_InGameMap_Default:
+          SetConfigValue("ShowInGameMarkers", 1);
+          return true;
+        case Menu_MarkerVisibility_InGameMap_Force:
+          SetConfigValue("ShowInGameMarkers", 2);
+          return true;
+        case Menu_TrailVisibility_MiniMap_Off:
+          SetConfigValue("ShowMinimapTrails", 0);
+          return true;
+        case Menu_TrailVisibility_MiniMap_Default:
+          SetConfigValue("ShowMinimapTrails", 1);
+          return true;
+        case Menu_TrailVisibility_MiniMap_Force:
+          SetConfigValue("ShowMinimapTrails", 2);
+          return true;
+        case Menu_TrailVisibility_BigMap_Off:
+          SetConfigValue("ShowBigmapTrails", 0);
+          return true;
+        case Menu_TrailVisibility_BigMap_Default:
+          SetConfigValue("ShowBigmapTrails", 1);
+          return true;
+        case Menu_TrailVisibility_BigMap_Force:
+          SetConfigValue("ShowBigmapTrails", 2);
+          return true;
+        case Menu_TrailVisibility_InGameMap_Off:
+          SetConfigValue("ShowInGameTrails", 0);
+          return true;
+        case Menu_TrailVisibility_InGameMap_Default:
+          SetConfigValue("ShowInGameTrails", 1);
+          return true;
+        case Menu_TrailVisibility_InGameMap_Force:
+          SetConfigValue("ShowInGameTrails", 2);
+          return true;
+        case Menu_ReloadMarkers:
+          ImportPOIS(GetApplication());
+          return true;
+
+        case Menu_OpacityIngame_Solid:
+          SetConfigValue("OpacityIngame", 0);
+          return true;
+        case Menu_OpacityIngame_Transparent:
+          SetConfigValue("OpacityIngame", 2);
+          return true;
+        case Menu_OpacityIngame_Faded:
+          SetConfigValue("OpacityIngame", 1);
+          return true;
+        case Menu_OpacityMap_Solid:
+          SetConfigValue("OpacityMap", 0);
+          return true;
+        case Menu_OpacityMap_Transparent:
+          SetConfigValue("OpacityMap", 2);
+          return true;
+        case Menu_OpacityMap_Faded:
+          SetConfigValue("OpacityMap", 1);
+          return true;
+        case Menu_DeleteMyMarkers: {
+          GW2TacticalDisplay* tactical = dynamic_cast<GW2TacticalDisplay*>(
+              GetApplication()->GetRoot()->FindChildByID("tactical",
+                                                         "gw2tactical"));
+          if (tactical) tactical->RemoveUserMarkersFromMap();
+          return true;
+        }
+        case Menu_KeyBindsEnabled:
+          ToggleConfigValue("KeybindsEnabled");
+          return true;
+
+        case Menu_AddGW2ApiKey: {
+          GW2::apiKeyManager.AddKey(std::make_unique<GW2::APIKey>());
+          ApiKeyInputAction(APIKeys::GW2APIKey, GW2::apiKeyManager.size() - 1);
+          return true;
+        } break;
+        default:
+          break;
+      }
       break;
-    }
-    break;
-  case WBM_CHAR:
-    if (RebindMode) {
-      if (!ScriptRebindMode) {
-        auto it = KeyBindings.begin();
-        while (it != KeyBindings.end()) {
-          if (it->second == ActionToRebind) {
-            DeleteKeyBinding(it->first);
-            it = KeyBindings.erase(it);
-          } else {
-            ++it;
+    case WBM_CHAR:
+      if (RebindMode) {
+        if (!ScriptRebindMode) {
+          auto it = KeyBindings.begin();
+          while (it != KeyBindings.end()) {
+            if (it->second == ActionToRebind) {
+              DeleteKeyBinding(it->first);
+              it = KeyBindings.erase(it);
+            } else {
+              ++it;
+            }
+          }
+
+          if (Message.Key != VK_ESCAPE) {
+            KeyBindings[Message.Key] = ActionToRebind;
+            SetKeyBinding(ActionToRebind, Message.Key);
           }
         }
 
-        if (Message.Key != VK_ESCAPE) {
-          KeyBindings[Message.Key] = ActionToRebind;
-          SetKeyBinding(ActionToRebind, Message.Key);
+        RebindMode = false;
+        ScriptRebindMode = false;
+        return true;
+      }
+
+      if (GetConfigValue("KeybindsEnabled") &&
+          KeyBindings.find(Message.Key) != KeyBindings.end()) {
+        switch (KeyBindings[Message.Key]) {
+          case TacOKeyAction::AddPOI:
+            AddPOI(App);
+            return true;
+          case TacOKeyAction::RemovePOI:
+            DeletePOI();
+            return true;
+          case TacOKeyAction::ActivatePOI: {
+            UpdatePOI();
+            return true;
+          }
+          case TacOKeyAction::EditNotepad: {
+            GW2Notepad* d = dynamic_cast<GW2Notepad*>(
+                FindChildByID(_T( "notepad" ), _T( "notepad" )));
+            if (d) {
+              d->StartEdit();
+              return true;
+            }
+            return true;
+          }
+          case TacOKeyAction::StartTrailRec: {
+            CWBButton* startTrail =
+                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
+                    _T( "starttrail" ), _T( "button" )));
+            GW2TrailDisplay* trails =
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
+            if (startTrail && trails) {
+              // startTrail->Push( !startTrail->IsPushed() );
+              App->SendMessage(
+                  CWBMessage(App, WBM_COMMAND, startTrail->GetGuid()));
+            }
+          }
+            return true;
+          case TacOKeyAction::PauseTrailRec: {
+            CWBButton* pauseTrail =
+                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
+                    _T( "pausetrail" ), _T( "button" )));
+            GW2TrailDisplay* trails =
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
+            if (pauseTrail && trails) {
+              // pauseTrail->Push( !pauseTrail->IsPushed() );
+              App->SendMessage(
+                  CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
+            }
+          }
+            return true;
+          case TacOKeyAction::DeleteLastTrailSegment: {
+            GW2TrailDisplay* trails =
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
+            if (trails) trails->DeleteLastTrailSegment();
+          }
+            return true;
+          case TacOKeyAction::ResumeTrailAndCreateNewSection: {
+            CWBButton* pauseTrail =
+                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
+                    _T( "startnewsection" ), _T( "button" )));
+            GW2TrailDisplay* trails =
+                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
+                    _T( "trail" ), _T( "gw2Trails" )));
+            if (pauseTrail && !pauseTrail->IsHidden() && trails)
+              App->SendMessage(
+                  CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
+          }
+            return true;
+          case TacOKeyAction::Toggle_tactical_layer:
+            ToggleConfigValue("TacticalLayerVisible");
+            return true;
+          case TacOKeyAction::Toggle_range_circles:
+            ToggleConfigValue("RangeCirclesVisible");
+            return true;
+          case TacOKeyAction::Toggle_tactical_compass:
+            ToggleConfigValue("TacticalCompassVisible");
+            return true;
+          case TacOKeyAction::Toggle_locational_timers:
+            ToggleConfigValue("LocationalTimersVisible");
+            return true;
+          case TacOKeyAction::Toggle_hp_grids:
+            ToggleConfigValue("HPGridVisible");
+            return true;
+          case TacOKeyAction::Toggle_mouse_highlight:
+            ToggleConfigValue("MouseHighlightVisible");
+            return true;
+          case TacOKeyAction::Toggle_map_timer:
+            OpenWindow("MapTimer");
+            return true;
+          case TacOKeyAction::Toggle_ts3_window:
+            OpenWindow("TS3Control");
+            return true;
+          case TacOKeyAction::Toggle_marker_editor:
+            OpenWindow("MarkerEditor");
+            return true;
+          case TacOKeyAction::Toggle_notepad:
+            OpenWindow("Notepad");
+            return true;
+          case TacOKeyAction::Toggle_raid_progress:
+            OpenWindow("RaidProgress");
+            return true;
+          case TacOKeyAction::Toggle_dungeon_progress:
+            OpenWindow("DungeonProgress");
+            return true;
+          case TacOKeyAction::Toggle_tp_tracker:
+            OpenWindow("TPTracker");
+            return true;
+          case TacOKeyAction::Toggle_window_edit_mode:
+            ToggleConfigValue("EditMode");
+            return true;
         }
       }
 
-      RebindMode = false;
-      ScriptRebindMode = false;
-      return true;
-    }
+      if (ScriptKeyBindings.find(Message.Key) != ScriptKeyBindings.end())
+        TriggerScriptEngineKeyEvent(ScriptKeyBindings[Message.Key]);
 
-    if (GetConfigValue("KeybindsEnabled") &&
-        KeyBindings.find(Message.Key) != KeyBindings.end()) {
-      switch (KeyBindings[Message.Key]) {
-      case TacOKeyAction::AddPOI:
-        AddPOI(App);
-        return true;
-      case TacOKeyAction::RemovePOI:
-        DeletePOI();
-        return true;
-      case TacOKeyAction::ActivatePOI: {
-        UpdatePOI();
-        return true;
+      break;
+    case WBM_FOCUSLOST:
+      if (Message.GetTarget() == GetGuid()) {
+        RebindMode = false;
+        ScriptRebindMode = false;
       }
-      case TacOKeyAction::EditNotepad: {
-        GW2Notepad* d = dynamic_cast<GW2Notepad*>(
-            FindChildByID(_T( "notepad" ), _T( "notepad" )));
-        if (d) {
-          d->StartEdit();
-          return true;
+      if (APIKeyInput && Message.GetTarget() == APIKeyInput->GetGuid()) {
+        ApiKeyInputMode = false;
+        switch (ApiKeyToSet) {
+          case APIKeys::None:
+            break;
+          case APIKeys::TS3APIKey:
+            SetConfigString("TS3APIKey", APIKeyInput->GetText());
+            break;
+          case APIKeys::GW2APIKey: {
+            auto key = GW2::apiKeyManager.GetKey(ApiKeyIndex);
+            key->SetKey(APIKeyInput->GetText());
+            GW2::apiKeyManager.RebuildConfigValues();
+          } break;
+          default:
+            break;
         }
+        APIKeyInput->MarkForDeletion();
         return true;
       }
-      case TacOKeyAction::StartTrailRec: {
-        CWBButton* startTrail = dynamic_cast<CWBButton*>(
-            App->GetRoot()->FindChildByID(_T( "starttrail" ), _T( "button" )));
-        GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
-        if (startTrail && trails) {
-          // startTrail->Push( !startTrail->IsPushed() );
-          App->SendMessage(CWBMessage(App, WBM_COMMAND, startTrail->GetGuid()));
-        }
-      }
-        return true;
-      case TacOKeyAction::PauseTrailRec: {
-        CWBButton* pauseTrail = dynamic_cast<CWBButton*>(
-            App->GetRoot()->FindChildByID(_T( "pausetrail" ), _T( "button" )));
-        GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
-        if (pauseTrail && trails) {
-          // pauseTrail->Push( !pauseTrail->IsPushed() );
-          App->SendMessage(CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
-        }
-      }
-        return true;
-      case TacOKeyAction::DeleteLastTrailSegment: {
-        GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
-        if (trails)
-          trails->DeleteLastTrailSegment();
-      }
-        return true;
-      case TacOKeyAction::ResumeTrailAndCreateNewSection: {
-        CWBButton* pauseTrail =
-            dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
-                _T( "startnewsection" ), _T( "button" )));
-        GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
-        if (pauseTrail && !pauseTrail->IsHidden() && trails)
-          App->SendMessage(CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
-      }
-        return true;
-      case TacOKeyAction::Toggle_tactical_layer:
-        ToggleConfigValue("TacticalLayerVisible");
-        return true;
-      case TacOKeyAction::Toggle_range_circles:
-        ToggleConfigValue("RangeCirclesVisible");
-        return true;
-      case TacOKeyAction::Toggle_tactical_compass:
-        ToggleConfigValue("TacticalCompassVisible");
-        return true;
-      case TacOKeyAction::Toggle_locational_timers:
-        ToggleConfigValue("LocationalTimersVisible");
-        return true;
-      case TacOKeyAction::Toggle_hp_grids:
-        ToggleConfigValue("HPGridVisible");
-        return true;
-      case TacOKeyAction::Toggle_mouse_highlight:
-        ToggleConfigValue("MouseHighlightVisible");
-        return true;
-      case TacOKeyAction::Toggle_map_timer:
-        OpenWindow("MapTimer");
-        return true;
-      case TacOKeyAction::Toggle_ts3_window:
-        OpenWindow("TS3Control");
-        return true;
-      case TacOKeyAction::Toggle_marker_editor:
-        OpenWindow("MarkerEditor");
-        return true;
-      case TacOKeyAction::Toggle_notepad:
-        OpenWindow("Notepad");
-        return true;
-      case TacOKeyAction::Toggle_raid_progress:
-        OpenWindow("RaidProgress");
-        return true;
-      case TacOKeyAction::Toggle_dungeon_progress:
-        OpenWindow("DungeonProgress");
-        return true;
-      case TacOKeyAction::Toggle_tp_tracker:
-        OpenWindow("TPTracker");
-        return true;
-      case TacOKeyAction::Toggle_window_edit_mode:
-        ToggleConfigValue("EditMode");
-        return true;
-      }
-    }
-
-    if (ScriptKeyBindings.find(Message.Key) != ScriptKeyBindings.end())
-      TriggerScriptEngineKeyEvent(ScriptKeyBindings[Message.Key]);
-
-    break;
-  case WBM_FOCUSLOST:
-    if (Message.GetTarget() == GetGuid()) {
-      RebindMode = false;
-      ScriptRebindMode = false;
-    }
-    if (APIKeyInput && Message.GetTarget() == APIKeyInput->GetGuid()) {
-      ApiKeyInputMode = false;
-      switch (ApiKeyToSet) {
-      case APIKeys::None:
-        break;
-      case APIKeys::TS3APIKey:
-        SetConfigString("TS3APIKey", APIKeyInput->GetText());
-        break;
-      case APIKeys::GW2APIKey: {
-        auto key = GW2::apiKeyManager.GetKey(ApiKeyIndex);
-        key->SetKey(APIKeyInput->GetText());
-        GW2::apiKeyManager.RebuildConfigValues();
-      } break;
-      default:
-        break;
-      }
-      APIKeyInput->MarkForDeletion();
-      return true;
-    }
-    break;
-  default:
-    break;
+      break;
+    default:
+      break;
   }
 
   return CWBItem::MessageProc(Message);
@@ -1475,8 +1488,7 @@ void GW2TacO::TriggerScriptEngineKeyEvent(std::string_view eventID) {
 
 void GW2TacO::OpenAboutWindow() {
   auto child = FindChildByID("About", "window");
-  if (child)
-    return;
+  if (child) return;
 
   CPoint cl = GetClientRect().Center();
 
@@ -1510,8 +1522,8 @@ void GW2TacO::OpenAboutWindow() {
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
 
-  auto TacoIcon = CWBButton::Create(w.get(), CRect(-50, -40 + 16, 50, 72 + 16) +
-                                                 w->GetClientRect().Center());
+  auto TacoIcon = CWBButton::Create(
+      w.get(), CRect(-50, -40 + 16, 50, 72 + 16) + w->GetClientRect().Center());
   TacoIcon->ApplyStyleDeclarations(
       "background-color:none;background: skin(TacoIcon) center middle;");
 
@@ -1527,8 +1539,7 @@ void GW2TacO::OpenAboutWindow() {
 float GetWindowTooSmallScale() {
   extern CWBApplication* App;
 
-  if (!App || !App->GetRoot())
-    return 1.0f;
+  if (!App || !App->GetRoot()) return 1.0f;
 
   CRect rect = App->GetRoot()->GetClientRect();
 
@@ -1584,8 +1595,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       }
 
       float col = 1 - delta * 0.5f;
-      if (hover)
-        col = 0.5f + delta * 0.5f;
+      if (hover) col = 0.5f + delta * 0.5f;
 
       int32_t o = static_cast<int32_t> max(0, min(255, col * 255));
 
@@ -1615,21 +1625,17 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     }
   }
 
-  if (!HasConfigValue("LogTrails"))
-    SetConfigValue("LogTrails", 0);
+  if (!HasConfigValue("LogTrails")) SetConfigValue("LogTrails", 0);
 
-  if (!HasConfigValue("CloseWithGW2"))
-    SetConfigValue("CloseWithGW2", 1);
+  if (!HasConfigValue("CloseWithGW2")) SetConfigValue("CloseWithGW2", 1);
 
-  if (!HasConfigValue("InfoLineVisible"))
-    SetConfigValue("InfoLineVisible", 0);
+  if (!HasConfigValue("InfoLineVisible")) SetConfigValue("InfoLineVisible", 0);
 
   int ypos = 0;
 
   if (GetConfigValue("InfoLineVisible")) {
     auto font = App->GetFont("ProFont");
-    if (!font)
-      return;
+    if (!font) return;
 
     auto infoline = lastInfoLine;
 
@@ -1717,8 +1723,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   extern int gw2WindowCount;
   if (gw2WindowCount > 1) {
     auto font = App->GetFont("UniFont");
-    if (!font)
-      return;
+    if (!font) return;
 
     auto infoline = DICT("multiclientwarning");
     CPoint spos2 = font->GetTextPosition(
@@ -1831,13 +1836,11 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 void SetMouseToolTip(std::string_view toolTip) {
   extern CWBApplication* App;
 
-  if (!App)
-    return;
+  if (!App) return;
 
   GW2TacO* tacoRoot = dynamic_cast<GW2TacO*>(
       App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
-  if (!tacoRoot)
-    return;
+  if (!tacoRoot) return;
 
   tacoRoot->SetMouseToolTip(toolTip);
 }
@@ -1845,11 +1848,9 @@ void SetMouseToolTip(std::string_view toolTip) {
 void GW2TacO::OnPostDraw(CWBDrawAPI* API) {
   CWBFont* font = GetApplication()->GetRoot()->GetFont(WB_STATE_NORMAL);
 
-  if (!font)
-    return;
+  if (!font) return;
 
-  if (mouseToolTip.empty())
-    return;
+  if (mouseToolTip.empty()) return;
 
   int32_t width = font->GetWidth(mouseToolTip);
 
@@ -1873,8 +1874,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
   if (itm) {
     bool openState = false;
 
-    if (itm->IsHidden())
-      openState = true;
+    if (itm->IsHidden()) openState = true;
 
     itm->Hide(openState);
 
@@ -1947,8 +1947,7 @@ void GW2TacO::BuildChannelTree(TS3Connection::TS3Schandler& h,
     const TS3Connection::TS3Channel& chn = x.second;
     if (chn.parentid == ParentID) {
       auto newitm = parentitm->AddItem(chn.name, 0);
-      if (chn.id != chn.parentid)
-        BuildChannelTree(h, newitm, chn.id);
+      if (chn.id != chn.parentid) BuildChannelTree(h, newitm, chn.id);
     }
   }
 }
@@ -1983,18 +1982,18 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   ApiKeyIndex = idx;
 
   switch (keyType) {
-  case APIKeys::None:
-    break;
-  case APIKeys::TS3APIKey:
-    if (HasConfigString("TS3APIKey"))
-      APIKeyInput->SetText(GetConfigString("TS3APIKey"));
-    break;
-  case APIKeys::GW2APIKey: {
-    auto key = GW2::apiKeyManager.GetKey(idx);
-    APIKeyInput->SetText(key->apiKey.c_str());
-  } break;
-  default:
-    break;
+    case APIKeys::None:
+      break;
+    case APIKeys::TS3APIKey:
+      if (HasConfigString("TS3APIKey"))
+        APIKeyInput->SetText(GetConfigString("TS3APIKey"));
+      break;
+    case APIKeys::GW2APIKey: {
+      auto key = GW2::apiKeyManager.GetKey(idx);
+      APIKeyInput->SetText(key->apiKey.c_str());
+    } break;
+    default:
+      break;
   }
 
   APIKeyInput->SetFocus();
@@ -2005,8 +2004,7 @@ void GW2TacO::TurnOnTPLight() { showPickupHighlight = true; }
 void GW2TacO::TurnOffTPLight() { showPickupHighlight = false; }
 
 void GW2TacO::CheckItemPickup() {
-  if (GW2::apiKeyManager.GetStatus() != GW2::APIKeyManager::Status::OK)
-    return;
+  if (GW2::apiKeyManager.GetStatus() != GW2::APIKeyManager::Status::OK) return;
 
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
@@ -2031,8 +2029,7 @@ void GW2TacO::CheckItemPickup() {
 
           if ((!coins && !itemCount) || lastItemPickup.empty()) {
             TurnOffTPLight();
-            if (lastItemPickup.empty())
-              lastItemPickup = query;
+            if (lastItemPickup.empty()) lastItemPickup = query;
           } else {
             if (query != lastItemPickup) {
               TurnOnTPLight();
@@ -2055,32 +2052,26 @@ void GW2TacO::CheckItemPickup() {
 }
 
 void GW2TacO::StoreIconSizes() {
-  if (iconSizesStored || !App)
-    return;
+  if (iconSizesStored || !App) return;
 
   CWBItem* v1 = App->GetRoot()->FindChildByID("MenuButton");
   CWBItem* v2 = App->GetRoot()->FindChildByID("MenuHoverBox");
   CWBItem* v3 = App->GetRoot()->FindChildByID("TPButton");
   CWBItem* v4 = App->GetRoot()->FindChildByID("RedCircle");
 
-  if (v1)
-    tacoIconRect = v1->GetPosition();
+  if (v1) tacoIconRect = v1->GetPosition();
 
-  if (v2)
-    menuHoverRect = v2->GetPosition();
+  if (v2) menuHoverRect = v2->GetPosition();
 
-  if (v3)
-    tpButtonRect = v3->GetPosition();
+  if (v3) tpButtonRect = v3->GetPosition();
 
-  if (v4)
-    tpHighlightRect = v4->GetPosition();
+  if (v4) tpHighlightRect = v4->GetPosition();
 
   iconSizesStored = true;
 }
 
 void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
-  if (!iconSizesStored || !App)
-    return;
+  if (!iconSizesStored || !App) return;
 
   CWBItem* v1 = App->GetRoot()->FindChildByID("MenuButton");
   CWBItem* v2 = App->GetRoot()->FindChildByID("MenuHoverBox");

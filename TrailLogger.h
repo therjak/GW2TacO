@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Bedrock/BaseLib/hasher.h"
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 #include "MumbleLink.h"
 #include "gw2tactical.h"
 
@@ -28,7 +28,7 @@ class GW2Trail {
 
   bool SaveToFile(std::string_view fname);
 
-public:
+ public:
   virtual ~GW2Trail();
 
   int32_t length = 0;
@@ -92,7 +92,7 @@ class GW2TrailDisplay : public CWBItem {
 
   std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 
-public:
+ public:
   GW2TrailDisplay(CWBItem* Parent, CRect Position);
   static inline std::shared_ptr<GW2TrailDisplay> Create(CWBItem* Parent,
                                                         CRect Position) {

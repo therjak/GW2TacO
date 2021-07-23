@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "Bedrock/BaseLib/Sphere.h"
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 class GW2HPGrid : public CWBItem {
   CPoint lastpos;

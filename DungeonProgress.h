@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 class DungeonPath {
  public:

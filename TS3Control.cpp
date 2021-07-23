@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Bedrock/BaseLib/string_format.h"
+#include "Bedrock/Whiteboard/Application.h"
 #include "Language.h"
 #include "OverlayConfig.h"
 #include "TS3Connection.h"
@@ -44,8 +45,7 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
         CPoint p = f->GetTextPosition(
             handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
             LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
-        if (cnt)
-          f->Write(API, handler.name, p);
+        if (cnt) f->Write(API, handler.name, p);
         ypos += f->GetLineHeight();
 
         int32_t mychannelid = handler.Clients[handler.myclientid].channelid;
@@ -54,8 +54,7 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
           int32_t participants = 0;
           for (auto& y : handler.Clients) {
             const TS3Connection::TS3Client& cl = y.second;
-            if (cl.channelid == mychannelid)
-              participants++;
+            if (cl.channelid == mychannelid) participants++;
           }
 
           auto channelText = FormatString(
@@ -65,8 +64,7 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
           CPoint p = f->GetTextPosition(
               channelText, GetClientRect() - CRect(size / 2, ypos, 0, 0),
               LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
-          if (cnt)
-            f->Write(API, channelText, p);
+          if (cnt) f->Write(API, channelText, p);
           ypos += f->GetLineHeight();
         }
 
@@ -82,17 +80,13 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
                   });
 
         for (const auto cl : clients) {
-          if ((ypos + f->GetLineHeight()) > displayrect.y2)
-            break;
+          if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
           if (cl->channelid == mychannelid) {
             WBSKINELEMENTID id = playeroff;
-            if (cl->inputmuted)
-              id = inputoff;
-            if (cl->outputmuted)
-              id = outputoff;
-            if (cl->talkStatus)
-              id = playeron;
+            if (cl->inputmuted) id = inputoff;
+            if (cl->outputmuted) id = outputoff;
+            if (cl->talkStatus) id = playeron;
 
             App->GetSkin()->RenderElement(
                 API, id,
@@ -106,8 +100,7 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
                 cl->name, GetClientRect() - CRect(2 * size, ypos, 2 * size, 0),
                 LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
 
-            if (cnt)
-              f->Write(API, cl->name, p);
+            if (cnt) f->Write(API, cl->name, p);
 
             ypos += f->GetLineHeight();
           }

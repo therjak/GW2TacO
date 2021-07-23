@@ -1,5 +1,6 @@
 ﻿#include "MouseHighlight.h"
 
+#include "Bedrock/Whiteboard/Application.h"
 #include "OverlayConfig.h"
 
 CColor CGAPalette[] = {0xffaa0000, 0xffff5555, 0xff000000, 0xff555555,

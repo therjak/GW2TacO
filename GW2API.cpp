@@ -1,12 +1,13 @@
 ﻿#include "GW2API.h"
-#include "Language.h"
-#include "MumbleLink.h"
-#include "OverlayConfig.h"
 
 #include <algorithm>
 #include <string>
 
 #include "Bedrock/UtilLib/jsonxx.h"
+#include "Bedrock/Whiteboard/Application.h"
+#include "Language.h"
+#include "MumbleLink.h"
+#include "OverlayConfig.h"
 using namespace jsonxx;
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);
@@ -35,13 +36,11 @@ APIKeyManager apiKeyManager;
 APIKey::APIKey(std::string_view key) : apiKey(key) {}
 
 APIKey::~APIKey() {
-  if (fetcherThread.joinable())
-    fetcherThread.join();
+  if (fetcherThread.joinable()) fetcherThread.join();
 }
 
 void APIKey::FetchData() {
-  if (beingInitialized)
-    return;
+  if (beingInitialized) return;
 
   valid = true;
   initialized = false;
@@ -63,8 +62,7 @@ void APIKey::FetchData() {
     if (json.has<Array>("permissions")) {
       auto& values = json.get<Array>("permissions").values();
       for (auto v : values) {
-        if (v->is<String>())
-          caps[v->get<String>()] = true;
+        if (v->is<String>()) caps[v->get<String>()] = true;
       }
     } else
       valid = false;
@@ -73,8 +71,7 @@ void APIKey::FetchData() {
       auto accountData = QueryAPI("/v2/account");
       json.parse(accountData);
 
-      if (json.has<String>("name"))
-        accountName = json.get<String>("name");
+      if (json.has<String>("name")) accountName = json.get<String>("name");
 
       if (json.has<Number>("world"))
         worldId = static_cast<int32_t>(json.get<Number>("world"));
@@ -86,8 +83,7 @@ void APIKey::FetchData() {
 }
 
 bool APIKey::HasCaps(std::string_view cap) {
-  if (caps.find(std::string(cap)) != caps.end())
-    return caps[cap.data()];
+  if (caps.find(std::string(cap)) != caps.end()) return caps[cap.data()];
 
   return false;
 }
@@ -99,8 +95,7 @@ std::string APIKey::QueryAPI(std::string_view path) {
 }
 
 void APIKey::SetKey(std::string_view key) {
-  if (fetcherThread.joinable())
-    fetcherThread.join();
+  if (fetcherThread.joinable()) fetcherThread.join();
   apiKey = key;
   caps.clear();
   initialized = false;
@@ -172,38 +167,37 @@ APIKeyManager::Status APIKeyManager::DisplayStatusText(CWBDrawAPI* API,
   APIKeyManager::Status status = GetStatus();
 
   switch (status) {
-  case Status::Loading:
-    font->Write(API, DICT("waitingforapi"), CPoint(0, 0));
-    break;
-  case Status::KeyNotSet:
-    font->Write(API, DICT("apikeynotset1"), CPoint(0, 0),
-                CColor(0xff, 0x40, 0x40, 0xff));
-    font->Write(API, DICT("apikeynotset2"), CPoint(0, font->GetLineHeight()),
-                CColor(0xff, 0x40, 0x40, 0xff));
-    break;
-  case Status::CouldNotIdentifyAccount:
-    font->Write(API, DICT("couldntidentifyaccount1"), CPoint(0, 0),
-                CColor(0xff, 0x40, 0x40, 0xff));
-    font->Write(API, DICT("couldntidentifyaccount2"),
-                CPoint(0, font->GetLineHeight()),
-                CColor(0xff, 0x40, 0x40, 0xff));
-    break;
-  case Status::WaitingForMumbleCharacterName:
-    font->Write(API, DICT("waitingforcharactername1"), CPoint(0, 0));
-    break;
-  case Status::AllKeysInvalid:
-    font->Write(API, DICT("apierror1"), CPoint(0, 0),
-                CColor(0xff, 0x40, 0x40, 0xff));
-    font->Write(API, DICT("apierror2"), CPoint(0, font->GetLineHeight()),
-                CColor(0xff, 0x40, 0x40, 0xff));
-    break;
+    case Status::Loading:
+      font->Write(API, DICT("waitingforapi"), CPoint(0, 0));
+      break;
+    case Status::KeyNotSet:
+      font->Write(API, DICT("apikeynotset1"), CPoint(0, 0),
+                  CColor(0xff, 0x40, 0x40, 0xff));
+      font->Write(API, DICT("apikeynotset2"), CPoint(0, font->GetLineHeight()),
+                  CColor(0xff, 0x40, 0x40, 0xff));
+      break;
+    case Status::CouldNotIdentifyAccount:
+      font->Write(API, DICT("couldntidentifyaccount1"), CPoint(0, 0),
+                  CColor(0xff, 0x40, 0x40, 0xff));
+      font->Write(API, DICT("couldntidentifyaccount2"),
+                  CPoint(0, font->GetLineHeight()),
+                  CColor(0xff, 0x40, 0x40, 0xff));
+      break;
+    case Status::WaitingForMumbleCharacterName:
+      font->Write(API, DICT("waitingforcharactername1"), CPoint(0, 0));
+      break;
+    case Status::AllKeysInvalid:
+      font->Write(API, DICT("apierror1"), CPoint(0, 0),
+                  CColor(0xff, 0x40, 0x40, 0xff));
+      font->Write(API, DICT("apierror2"), CPoint(0, font->GetLineHeight()),
+                  CColor(0xff, 0x40, 0x40, 0xff));
+      break;
   }
   return status;
 }
 
 void APIKeyManager::Initialize() {
-  if (initialized)
-    return;
+  if (initialized) return;
 
   if (HasConfigString("GW2APIKey")) {
     auto key = std::make_unique<APIKey>(GetConfigString("GW2APIKey"));
@@ -276,4 +270,4 @@ void APIKeyManager::RebuildConfigValues() {
 
   SaveConfig();
 }
-} // namespace GW2
+}  // namespace GW2

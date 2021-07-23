@@ -3,7 +3,7 @@
 
 #include "Bedrock/BaseLib/BaseLib.h"
 #include "Bedrock/BaseLib/Sphere.h"
-#include "Bedrock/Whiteboard/WhiteBoard.h"
+#include "Bedrock/Whiteboard/Application.h"
 
 class LocationalTimer {
  public:
