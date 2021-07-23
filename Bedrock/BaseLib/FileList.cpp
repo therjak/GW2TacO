@@ -4,12 +4,12 @@
 
 #include <utility>
 
-const bool operator==(const CFileListEntry &f1, const CFileListEntry &f2) {
+const bool operator==(const CFileListEntry& f1, const CFileListEntry& f2) {
   return f1.Path == f2.Path && f1.FileName == f2.FileName;
 }
 
 bool exists(std::string_view fname) {
-  FILE *f = nullptr;
+  FILE* f = nullptr;
   if (fopen_s(&f, fname.data(), "rb")) return false;
   if (!f) return false;
   fclose(f);
@@ -79,7 +79,7 @@ void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
 
 CFileList::~CFileList() = default;
 
-CFileListEntry::CFileListEntry(std::string &&pth, std::string &&fn)
+CFileListEntry::CFileListEntry(std::string&& pth, std::string&& fn)
     :
 
       Path(std::move(pth)),

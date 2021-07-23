@@ -1,8 +1,9 @@
 #include "Timer.h"
 
 #include <Windows.h>
-#include <timeapi.h>
+// Windows needs to be on the top.
 #include <MMSystem.h>
+#include <timeapi.h>
 #pragma comment(lib, "winmm.lib")
 
 CTimer globalTimer;

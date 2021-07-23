@@ -7,8 +7,8 @@
 
 #define HIMETRIC_INCH 2540
 
-uint8_t *DecompressImage(const uint8_t *ImageData, int32_t ImageDataSize,
-                         int32_t &XSize, int32_t &YSize) {
+uint8_t* DecompressImage(const uint8_t* ImageData, int32_t ImageDataSize,
+                         int32_t& XSize, int32_t& YSize) {
   if (!ImageData || !ImageDataSize) return nullptr;
 
   XSize = YSize = 0;
@@ -44,7 +44,7 @@ uint8_t *DecompressImage(const uint8_t *ImageData, int32_t ImageDataSize,
   }
 
   res = OleLoadPicture(pstm, ImageDataSize, FALSE, IID_IPicture,
-                       reinterpret_cast<LPVOID *>(&gpPicture));
+                       reinterpret_cast<LPVOID*>(&gpPicture));
 
   if (res != S_OK) {
     if (res != 0x800A01E1)  // this is given when a png is loaded through
@@ -76,7 +76,7 @@ uint8_t *DecompressImage(const uint8_t *ImageData, int32_t ImageDataSize,
   XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), HIMETRIC_INCH);
   YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), HIMETRIC_INCH);
 
-  uint8_t *Image = new uint8_t[XSize * YSize * 4];
+  uint8_t* Image = new uint8_t[XSize * YSize * 4];
   memset(Image, 0, XSize * YSize * 4);
 
   HBITMAP bm = CreateCompatibleBitmap(hdc, XSize, YSize);

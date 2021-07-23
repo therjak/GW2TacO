@@ -17,13 +17,13 @@ CStreamReader::CStreamReader() {
 
 CStreamReader::~CStreamReader() = default;
 
-int32_t CStreamReader::Read(void *lpBuf, uint32_t nCount) {
+int32_t CStreamReader::Read(void* lpBuf, uint32_t nCount) {
   if (readerBitOffset == 0)  // non bitstream mode
     return ReadStream(lpBuf, nCount);
 
   // bitstream mode
   for (uint32_t x = 0; x < nCount; x++)
-    (static_cast<uint8_t *>(lpBuf))[x] = ReadBits(8);
+    (static_cast<uint8_t*>(lpBuf))[x] = ReadBits(8);
 
   return nCount;
 }
@@ -93,14 +93,14 @@ CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {
 
 CStreamReaderMemory::~CStreamReaderMemory() { SAFEDELETEA(Data); }
 
-int32_t CStreamReaderMemory::ReadStream(void *lpBuf, uint32_t nCount) {
+int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
   int64_t bytestoread = max(0, min(nCount, DataSize - Offset));
   memcpy(lpBuf, Data + Offset, static_cast<size_t>(bytestoread));
   Offset += bytestoread;
   return static_cast<int32_t>(bytestoread);
 }
 
-int32_t CStreamReaderMemory::Open(uint8_t *data, uint32_t size) {
+int32_t CStreamReaderMemory::Open(uint8_t* data, uint32_t size) {
   if (!data || !size) return 0;
 
   SAFEDELETEA(Data);
@@ -121,7 +121,7 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
 
   int32_t tDataSize = GetFileSize(hFile, nullptr);
 
-  uint8_t *tData = new uint8_t[tDataSize];
+  uint8_t* tData = new uint8_t[tDataSize];
   DWORD nRead = 0;
   BOOL b = ReadFile(hFile, tData, tDataSize, &nRead, nullptr);
 
@@ -139,7 +139,7 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
   return nRead == tDataSize;
 }
 
-uint8_t *CStreamReaderMemory::GetData() const { return Data; }
+uint8_t* CStreamReaderMemory::GetData() const { return Data; }
 
 int64_t CStreamReaderMemory::GetLength() const { return DataSize; }
 

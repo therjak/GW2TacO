@@ -4,16 +4,16 @@
 
 #include "Plane.h"
 
-const bool CSphere::Intersect(const CPlane &p) const {
+const bool CSphere::Intersect(const CPlane& p) const {
   return abs(p.Distance(Position)) < Radius;
 }
 
-CSphere::CSphere(const CVector3 &p, const float r) : Position(p), Radius(r) {}
+CSphere::CSphere(const CVector3& p, const float r) : Position(p), Radius(r) {}
 
 CSphere::CSphere() = default;
 
 CSphere::~CSphere() = default;
 
-const bool CSphere::Contains(const CVector3 &p) const {
+const bool CSphere::Contains(const CVector3& p) const {
   return (Position - p).Length() < Radius;
 }

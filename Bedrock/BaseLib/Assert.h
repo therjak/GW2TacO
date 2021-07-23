@@ -17,7 +17,7 @@
     if (!(v)) {                                                        \
       _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, ASSERTMODULENAME, \
                     #v "\n");                                          \
-      __debugbreak();                                                    \
+      __debugbreak();                                                  \
     }                                                                  \
   } while (0)
 #define BASEASSERTR(v, r)                                              \
@@ -25,7 +25,7 @@
     if (!(v)) {                                                        \
       _CrtDbgReport(_CRT_ASSERT, __FILE__, __LINE__, ASSERTMODULENAME, \
                     #v "\n");                                          \
-      __debugbreak();                                                    \
+      __debugbreak();                                                  \
       return r;                                                        \
     }                                                                  \
   } while (0)
@@ -47,13 +47,13 @@
 #define BASEASSERT(v) \
   do {                \
     if (!(v)) {       \
-      __debugbreak();   \
+      __debugbreak(); \
     }                 \
   } while (0)
 #define BASEASSERTR(v, r) \
   do {                    \
     if (!(v)) {           \
-      __debugbreak();       \
+      __debugbreak();     \
       return r;           \
     }                     \
   } while (0)

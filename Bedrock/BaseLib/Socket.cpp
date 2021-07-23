@@ -19,9 +19,9 @@ CSocket::~CSocket() {
   }
 }
 
-int32_t CSocket::ReadStream(void *lpBuf, uint32_t nCount) {
+int32_t CSocket::ReadStream(void* lpBuf, uint32_t nCount) {
   if (Socket == INVALID_SOCKET) return 0;
-  int32_t r = recv(Socket, static_cast<char *>(lpBuf), nCount, NULL);
+  int32_t r = recv(Socket, static_cast<char*>(lpBuf), nCount, NULL);
   if (r != 0) LastActivity = GetTickCount64();
   return r;
 }
@@ -70,7 +70,7 @@ uint32_t CSocket::Resolve(std::string_view a) {
   }
 
   if (addr == INADDR_NONE) {
-    hostent *hostEntry = gethostbyname(Address.c_str());
+    hostent* hostEntry = gethostbyname(Address.c_str());
     if (hostEntry) {
       LPIN_ADDR pa = reinterpret_cast<LPIN_ADDR>(hostEntry->h_addr);
       addr = pa->S_un.S_addr;
@@ -92,10 +92,10 @@ int64_t CSocket::GetLength() const {
 
 int64_t CSocket::GetOffset() const { return 0; }
 
-int32_t CSocket::ReadFull(void *data, uint32_t size) {
+int32_t CSocket::ReadFull(void* data, uint32_t size) {
   int32_t progress = 0;
   while (true) {
-    int32_t n = Read((static_cast<char *>(data)) + progress, size - progress);
+    int32_t n = Read((static_cast<char*>(data)) + progress, size - progress);
     if (n == SOCKET_ERROR) return SOCKET_ERROR;
     progress += n;
     if (progress == size) break;
@@ -103,9 +103,9 @@ int32_t CSocket::ReadFull(void *data, uint32_t size) {
   return size;
 }
 
-bool CSocket::Peek(void *lpBuf, uint32_t nCount) {
+bool CSocket::Peek(void* lpBuf, uint32_t nCount) {
   if (Socket == INVALID_SOCKET) return false;
-  int32_t r = recv(Socket, static_cast<char *>(lpBuf), nCount, MSG_PEEK);
+  int32_t r = recv(Socket, static_cast<char*>(lpBuf), nCount, MSG_PEEK);
   if (r != 0) LastActivity = GetTickCount64();
   if (r == SOCKET_ERROR) Socket = INVALID_SOCKET;
   return r != SOCKET_ERROR;
@@ -117,7 +117,7 @@ bool CSocket::IsConnected() {
   int error = 0;
   int len = sizeof(error);
   int retval = getsockopt(Socket, SOL_SOCKET, SO_ERROR,
-                          reinterpret_cast<char *>(&error), &len);
+                          reinterpret_cast<char*>(&error), &len);
 
   if (retval || error) {
     Socket = INVALID_SOCKET;
@@ -132,7 +132,7 @@ bool CSocket::IsConnected() {
   return true;
 }
 
-const bool CSocket::operator==(const CSocket &b) { return Socket == b.Socket; }
+const bool CSocket::operator==(const CSocket& b) { return Socket == b.Socket; }
 
 std::string CSocket::ReadLine() {
   std::string result;

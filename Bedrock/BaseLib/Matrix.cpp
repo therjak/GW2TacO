@@ -8,9 +8,9 @@
 #include "Quaternion.h"
 #include "Vector.h"
 
-void CMatrix4x4::SetTransformation(const CVector3 &scaling,
-                                   const CQuaternion &rotation,
-                                   const CVector3 &translation) {
+void CMatrix4x4::SetTransformation(const CVector3& scaling,
+                                   const CQuaternion& rotation,
+                                   const CVector3& translation) {
   *this = CMatrix4x4::Scaling(scaling) * CMatrix4x4::Rotation(rotation) *
           CMatrix4x4::Translation(translation);
 }
@@ -22,9 +22,9 @@ CVector3 CMatrix4x4::GetScaling() const {
 
 CVector3 CMatrix4x4::GetTranslation() const { return Row(3); }
 
-CMatrix4x4 CMatrix4x4::Rotation(const CQuaternion &q) { return CMatrix4x4(q); }
+CMatrix4x4 CMatrix4x4::Rotation(const CQuaternion& q) { return CMatrix4x4(q); }
 
-CMatrix4x4 CMatrix4x4::Scaling(const CVector3 &v) {
+CMatrix4x4 CMatrix4x4::Scaling(const CVector3& v) {
   CMatrix4x4 mx;
   mx.SetIdentity();
   mx._11 = v.x;
@@ -33,7 +33,7 @@ CMatrix4x4 CMatrix4x4::Scaling(const CVector3 &v) {
   return mx;
 }
 
-CMatrix4x4 CMatrix4x4::Translation(const CVector3 &v) {
+CMatrix4x4 CMatrix4x4::Translation(const CVector3& v) {
   CMatrix4x4 mx;
   mx.SetIdentity();
   mx._41 = v.x;
@@ -82,8 +82,8 @@ void CMatrix4x4::SetOrthoLH(const float w, const float h, const float zn,
   _43 = zn / (zn - zf);
 }
 
-void CMatrix4x4::SetLookAtRH(const CVector3 &Eye, const CVector3 &Target,
-                             const CVector3 &Up) {
+void CMatrix4x4::SetLookAtRH(const CVector3& Eye, const CVector3& Target,
+                             const CVector3& Up) {
   CVector3 Z = Target - Eye;
   Z.Normalize();
   CVector3 X = Up % Z;
@@ -109,8 +109,8 @@ void CMatrix4x4::SetLookAtRH(const CVector3 &Eye, const CVector3 &Target,
   _44 = 1.0f;
 }
 
-void CMatrix4x4::SetLookAtLH(const CVector3 &Eye, const CVector3 &Target,
-                             const CVector3 &Up) {
+void CMatrix4x4::SetLookAtLH(const CVector3& Eye, const CVector3& Target,
+                             const CVector3& Up) {
   CVector3 Z = Target - Eye;
   Z.Normalize();
   CVector3 X = Up % Z;
@@ -166,7 +166,7 @@ float CMatrix4x4::Determinant() const {
   return -Col(3) * CVector4::Cross(Col(0), Col(1), Col(2));
 }
 
-CVector4 CMatrix4x4::Apply(const CVector4 &v) const {
+CVector4 CMatrix4x4::Apply(const CVector4& v) const {
   CVector4 r;
   r.x = _11 * v.x + _21 * v.y + _31 * v.z + _41 * v.w;
   r.y = _12 * v.x + _22 * v.y + _32 * v.z + _42 * v.w;
@@ -175,7 +175,7 @@ CVector4 CMatrix4x4::Apply(const CVector4 &v) const {
   return r;
 }
 
-CVector4 CMatrix4x4::Apply(const CVector3 &v) const {
+CVector4 CMatrix4x4::Apply(const CVector3& v) const {
   CVector4 r;
   r.x = _11 * v.x + _21 * v.y + _31 * v.z + _41;
   r.y = _12 * v.x + _22 * v.y + _32 * v.z + _42;
@@ -184,7 +184,7 @@ CVector4 CMatrix4x4::Apply(const CVector3 &v) const {
   return r;
 }
 
-CMatrix4x4 &CMatrix4x4::SetIdentity() {
+CMatrix4x4& CMatrix4x4::SetIdentity() {
   _11 = _22 = _33 = _44 = 1;
   _21 = _31 = _41 = _12 = _32 = _42 = _13 = _23 = _43 = _14 = _24 = _34 = 0;
   return *this;
@@ -219,11 +219,11 @@ CMatrix4x4::CMatrix4x4(float f11, float f12, float f13, float f14, float f21,
   _44 = f44;
 }
 
-CMatrix4x4::CMatrix4x4(const CMatrix4x4 &mx) {
+CMatrix4x4::CMatrix4x4(const CMatrix4x4& mx) {
   memcpy(&_11, &mx._11, 16 * sizeof(float));
 }
 
-CMatrix4x4::CMatrix4x4(const float *f) {
+CMatrix4x4::CMatrix4x4(const float* f) {
   BASEASSERT(f);
   if (!f) return;
   memcpy(&_11, f, 16 * sizeof(float));
@@ -231,7 +231,7 @@ CMatrix4x4::CMatrix4x4(const float *f) {
 
 CMatrix4x4::CMatrix4x4() = default;
 
-float &CMatrix4x4::operator()(uint32_t Row, uint32_t Col) {
+float& CMatrix4x4::operator()(uint32_t Row, uint32_t Col) {
   BASEASSERTR(Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[0][0]);
   return m[Row & 3][Col & 3];
 }
@@ -241,9 +241,9 @@ float CMatrix4x4::operator()(uint32_t Row, uint32_t Col) const {
   return m[Row & 3][Col & 3];
 }
 
-CMatrix4x4::operator float *() { return &_11; }
+CMatrix4x4::operator float*() { return &_11; }
 
-CMatrix4x4::operator const float *() const { return &_11; }
+CMatrix4x4::operator const float*() const { return &_11; }
 
 CVector4 CMatrix4x4::Row(int32_t x) const {
   BASEASSERTR(x >= 0 && x < 4, m[0]);
@@ -255,11 +255,11 @@ CVector4 CMatrix4x4::Col(int32_t x) const {
   return CVector4(m[0][x & 3], m[1][x & 3], m[2][x & 3], m[3][x & 3]);
 }
 
-CMatrix4x4 &CMatrix4x4::operator*=(const CMatrix4x4 &mat) {
+CMatrix4x4& CMatrix4x4::operator*=(const CMatrix4x4& mat) {
   return *this = (*this) * mat;
 }
 
-CMatrix4x4 &CMatrix4x4::operator+=(const CMatrix4x4 &mat) {
+CMatrix4x4& CMatrix4x4::operator+=(const CMatrix4x4& mat) {
   _11 += mat._11;
   _12 += mat._12;
   _13 += mat._13;
@@ -279,7 +279,7 @@ CMatrix4x4 &CMatrix4x4::operator+=(const CMatrix4x4 &mat) {
   return *this;
 }
 
-CMatrix4x4 &CMatrix4x4::operator-=(const CMatrix4x4 &mat) {
+CMatrix4x4& CMatrix4x4::operator-=(const CMatrix4x4& mat) {
   _11 -= mat._11;
   _12 -= mat._12;
   _13 -= mat._13;
@@ -299,7 +299,7 @@ CMatrix4x4 &CMatrix4x4::operator-=(const CMatrix4x4 &mat) {
   return *this;
 }
 
-CMatrix4x4 &CMatrix4x4::operator*=(const float f) {
+CMatrix4x4& CMatrix4x4::operator*=(const float f) {
   _11 *= f;
   _12 *= f;
   _13 *= f;
@@ -319,7 +319,7 @@ CMatrix4x4 &CMatrix4x4::operator*=(const float f) {
   return *this;
 }
 
-CMatrix4x4 &CMatrix4x4::operator/=(const float f) {
+CMatrix4x4& CMatrix4x4::operator/=(const float f) {
   float fInv = 1.0f / f;
   _11 *= fInv;
   _12 *= fInv;
@@ -347,7 +347,7 @@ CMatrix4x4 CMatrix4x4::operator-() const {
                     -_33, -_34, -_41, -_42, -_43, -_44);
 }
 
-CMatrix4x4 CMatrix4x4::operator*(const CMatrix4x4 &mat) const {
+CMatrix4x4 CMatrix4x4::operator*(const CMatrix4x4& mat) const {
   CMatrix4x4 matT;
   for (int32_t i = 0; i < 4; i++)
     for (int32_t j = 0; j < 4; j++)
@@ -356,14 +356,14 @@ CMatrix4x4 CMatrix4x4::operator*(const CMatrix4x4 &mat) const {
   return matT;
 }
 
-CMatrix4x4 CMatrix4x4::operator+(const CMatrix4x4 &mat) const {
+CMatrix4x4 CMatrix4x4::operator+(const CMatrix4x4& mat) const {
   return CMatrix4x4(_11 + mat._11, _12 + mat._12, _13 + mat._13, _14 + mat._14,
                     _21 + mat._21, _22 + mat._22, _23 + mat._23, _24 + mat._24,
                     _31 + mat._31, _32 + mat._32, _33 + mat._33, _34 + mat._34,
                     _41 + mat._41, _42 + mat._42, _43 + mat._43, _44 + mat._44);
 }
 
-CMatrix4x4 CMatrix4x4::operator-(const CMatrix4x4 &mat) const {
+CMatrix4x4 CMatrix4x4::operator-(const CMatrix4x4& mat) const {
   return CMatrix4x4(_11 - mat._11, _12 - mat._12, _13 - mat._13, _14 - mat._14,
                     _21 - mat._21, _22 - mat._22, _23 - mat._23, _24 - mat._24,
                     _31 - mat._31, _32 - mat._32, _33 - mat._33, _34 - mat._34,
@@ -384,22 +384,22 @@ CMatrix4x4 CMatrix4x4::operator/(const float f) const {
                     _44 * fInv);
 }
 
-CMatrix4x4 operator*(const float f, const CMatrix4x4 &mat) {
+CMatrix4x4 operator*(const float f, const CMatrix4x4& mat) {
   return CMatrix4x4(f * mat._11, f * mat._12, f * mat._13, f * mat._14,
                     f * mat._21, f * mat._22, f * mat._23, f * mat._24,
                     f * mat._31, f * mat._32, f * mat._33, f * mat._34,
                     f * mat._41, f * mat._42, f * mat._43, f * mat._44);
 }
 
-bool CMatrix4x4::operator==(const CMatrix4x4 &mat) const {
+bool CMatrix4x4::operator==(const CMatrix4x4& mat) const {
   return 0 == memcmp(&_11, &mat._11, 16 * sizeof(float));
 }
 
-bool CMatrix4x4::operator!=(const CMatrix4x4 &mat) const {
+bool CMatrix4x4::operator!=(const CMatrix4x4& mat) const {
   return 0 != memcmp(&_11, &mat._11, 16 * sizeof(float));
 }
 
-CMatrix4x4::CMatrix4x4(const CQuaternion &q) {
+CMatrix4x4::CMatrix4x4(const CQuaternion& q) {
   _11 = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
   _12 = 2.0f * (q.x * q.y + q.z * q.s);
   _13 = 2.0f * (q.x * q.z - q.y * q.s);
@@ -416,8 +416,8 @@ CMatrix4x4::CMatrix4x4(const CQuaternion &q) {
   _44 = 1;
 }
 
-void CMatrix4x4::Decompose(CVector3 &Scale, CQuaternion &Rotation,
-                           CVector3 &Translation) const {
+void CMatrix4x4::Decompose(CVector3& Scale, CQuaternion& Rotation,
+                           CVector3& Translation) const {
   CMatrix4x4 normalized;
 
   Scale = CVector3(CVector3(Row(0)).Length(), CVector3(Row(1)).Length(),

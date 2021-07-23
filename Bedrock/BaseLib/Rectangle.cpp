@@ -108,7 +108,7 @@ CRect CRect::operator*(const int32_t a) const {
   return CRect(x1 * a, y1 * a, x2 * a, y2 * a);
 }
 
-CRect& CRect::operator+=(const CRect& a) // inflate by rect
+CRect& CRect::operator+=(const CRect& a)  // inflate by rect
 {
   x1 -= a.x1;
   y1 -= a.y1;
@@ -144,8 +144,7 @@ const bool CRect::operator!=(const CRect& r) const {
 }
 
 CRect CRect::operator|(const CRect& r) const {
-  if (!Intersects(r))
-    return CRect(1, 1, -1, -1);
+  if (!Intersects(r)) return CRect(1, 1, -1, -1);
   return GetIntersection(r);
 }
 

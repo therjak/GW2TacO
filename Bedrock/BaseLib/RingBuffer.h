@@ -16,12 +16,12 @@ class CRingBuffer {
     Array = std::make_unique<ItemType[]>(Size);
   }
 
-  void Add(const ItemType &Item) {
+  void Add(const ItemType& Item) {
     Array[Count % Capacity] = Item;
     Count++;
   }
 
-  CRingBuffer<ItemType> &operator+=(const ItemType &i) {
+  CRingBuffer<ItemType>& operator+=(const ItemType& i) {
     Add(i);
     return *this;
   }
@@ -34,7 +34,7 @@ class CRingBuffer {
     return (const ItemType)Array[realindex % Capacity];
   }
 
-  ItemType &operator[](const int32_t idx) {
+  ItemType& operator[](const int32_t idx) {
     int32_t start = Count - Capacity;
     if (start < 0) start = 0;
     int32_t realindex = start + idx;

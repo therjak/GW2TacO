@@ -1,6 +1,6 @@
 #pragma once
 
-//Call stack tracker class for tracking resource allocations
+// Call stack tracker class for tracking resource allocations
 
 #include <string>
 
@@ -10,16 +10,15 @@ enum LOGVERBOSITY;
 
 #ifdef ENABLE_STACKTRACKER_CLASS
 
-class CStackTracker
-{
+class CStackTracker {
   static bool DbgInitialized;
 
-public:
-  void *Stack[ STACK_TRACE_DEPTH ];
+ public:
+  void* Stack[STACK_TRACE_DEPTH];
 
   CStackTracker();
-  CStackTracker( void *Context );
-  void DumpToLog( LOGVERBOSITY v );
+  CStackTracker(void* Context);
+  void DumpToLog(LOGVERBOSITY v);
   void DumpToDebugOutput();
   std::string DumpToString();
 
@@ -28,13 +27,12 @@ public:
 
 #else
 
-class CStackTracker
-{
-public:
-  CStackTracker( ) {};
-  CStackTracker( void *Context ) {}
+class CStackTracker {
+ public:
+  CStackTracker(){};
+  CStackTracker(void* Context) {}
   virtual ~CStackTracker() {}
-  void DumpToLog( LOGVERBOSITY v ) {}
+  void DumpToLog(LOGVERBOSITY v) {}
   void DumpToDebugOutput() {}
   std::string DumpToString() { return {}; }
 };

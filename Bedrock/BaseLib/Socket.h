@@ -13,20 +13,20 @@ class CSocket : public CStreamReader, public CStreamWriter {
   int64_t LastActivity;
   SOCKET Socket;
 
-  int32_t ReadStream(void *lpBuf, uint32_t nCount) override;
+  int32_t ReadStream(void* lpBuf, uint32_t nCount) override;
   int32_t WriteStream(std::string_view) override;
   static uint32_t Resolve(std::string_view Address);
 
  public:
   CSocket();
-  CSocket(const CSocket &) = delete;
+  CSocket(const CSocket&) = delete;
   ~CSocket() override;
 
   //////////////////////////////////////////////////////////////////////////
   // socket functions
 
   virtual int32_t Connect(std::string_view Server, const uint32_t Port);
-  int32_t ReadFull(void *lpBuf, uint32_t nCount);
+  int32_t ReadFull(void* lpBuf, uint32_t nCount);
 
   virtual int32_t Close();
 
@@ -39,11 +39,11 @@ class CSocket : public CStreamReader, public CStreamWriter {
 
   std::string ReadLine();
 
-  bool Peek(void *lpBuf, uint32_t nCount);
+  bool Peek(void* lpBuf, uint32_t nCount);
 
   bool IsConnected();
 
-  const bool operator==(const CSocket &b);
+  const bool operator==(const CSocket& b);
 
   //////////////////////////////////////////////////////////////////////////
   // streamwriter functions

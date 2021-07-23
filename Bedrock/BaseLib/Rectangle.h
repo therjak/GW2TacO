@@ -5,7 +5,7 @@
 #include "Vector.h"
 
 class CRect {
-public:
+ public:
   int32_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
   CRect();
@@ -23,7 +23,7 @@ public:
   CRect operator+(const CRect& a) const;
   CRect operator-(const CRect& a) const;
   CRect operator*(const int32_t a) const;
-  CRect& operator+=(const CRect& a); // inflate by rect
+  CRect& operator+=(const CRect& a);  // inflate by rect
   CRect operator+(const CPoint& p) const;
   CRect& operator+=(const CPoint& p);
   CRect operator-(const CPoint& p) const;

@@ -5,11 +5,11 @@
 
 #include "SpecMath.h"
 
-CQuaternion Lerp(const CQuaternion &v1, const CQuaternion &v2, const float t) {
+CQuaternion Lerp(const CQuaternion& v1, const CQuaternion& v2, const float t) {
   return ((v2 - v1) * t + v1).Normalized();
 }
 
-CQuaternion Slerp(const CQuaternion &v1, const CQuaternion &v2, const float t) {
+CQuaternion Slerp(const CQuaternion& v1, const CQuaternion& v2, const float t) {
   float multiplier = 1;
   float dot = CQuaternion::Dot(v1, v2);
 
@@ -21,7 +21,7 @@ CQuaternion Slerp(const CQuaternion &v1, const CQuaternion &v2, const float t) {
          sinf(angle);
 }
 
-CQuaternion SlerpFast(const CQuaternion &v1, const CQuaternion &v2,
+CQuaternion SlerpFast(const CQuaternion& v1, const CQuaternion& v2,
                       const float t) {
   float multiplier = 1;
   float dot = CQuaternion::Dot(v1, v2);
@@ -32,31 +32,31 @@ CQuaternion SlerpFast(const CQuaternion &v1, const CQuaternion &v2,
   return Lerp(v1, v2 * multiplier, t);
 }
 
-CQuaternion Squad(const CQuaternion &q1, const CQuaternion &S1,
-                  const CQuaternion &S2, const CQuaternion &q2, const float t) {
+CQuaternion Squad(const CQuaternion& q1, const CQuaternion& S1,
+                  const CQuaternion& S2, const CQuaternion& q2, const float t) {
   CQuaternion c = Slerp(q1, q2, t);
   CQuaternion d = Slerp(S1, S2, t);
   return Slerp(c, d, 2 * t * (1 - t));
 }
 
-CQuaternion SquadC2Point(const CQuaternion &q0, const CQuaternion &q1,
-                         const CQuaternion &q2) {
+CQuaternion SquadC2Point(const CQuaternion& q0, const CQuaternion& q1,
+                         const CQuaternion& q2) {
   CQuaternion invq1 = q1.Inverted();
   return q1 * (((invq1 * q2).Log() + (invq1 * q0).Log()) * -0.25f).Exp();
 }
 
-void SquadSetup(CQuaternion &OutA, CQuaternion &OutB, CQuaternion &OutC,
-                const CQuaternion &Q0, const CQuaternion &Q1,
-                const CQuaternion &Q2, const CQuaternion &Q3) {
-  const CQuaternion &q0 = CQuaternion::Dot(Q0, Q1) < 0 ? -Q0 : Q0;
+void SquadSetup(CQuaternion& OutA, CQuaternion& OutB, CQuaternion& OutC,
+                const CQuaternion& Q0, const CQuaternion& Q1,
+                const CQuaternion& Q2, const CQuaternion& Q3) {
+  const CQuaternion& q0 = CQuaternion::Dot(Q0, Q1) < 0 ? -Q0 : Q0;
   OutC = CQuaternion::Dot(Q1, Q2) < 0 ? -Q2 : Q2;
-  const CQuaternion &q3 = CQuaternion::Dot(Q2, Q3) < 0 ? -Q3 : Q3;
+  const CQuaternion& q3 = CQuaternion::Dot(Q2, Q3) < 0 ? -Q3 : Q3;
 
   OutA = SquadC2Point(q0, Q1, OutC);
   OutB = SquadC2Point(Q1, OutC, q3);
 }
 
-float CQuaternion::Dot(const CQuaternion &v1, const CQuaternion &v2) {
+float CQuaternion::Dot(const CQuaternion& v1, const CQuaternion& v2) {
   return v1.s * v2.s + v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 
@@ -103,7 +103,7 @@ float CQuaternion::LengthSquared() const {
 
 float CQuaternion::Length() const { return sqrtf(LengthSquared()); }
 
-CQuaternion::CQuaternion(const CVector3 &v)  // from euler angles
+CQuaternion::CQuaternion(const CVector3& v)  // from euler angles
 {
   FromEuler(v.x, v.y, v.z);
 }
@@ -114,11 +114,11 @@ CQuaternion::CQuaternion(const float _x, const float _y,
   FromEuler(_x, _y, _z);
 }
 
-CQuaternion::CQuaternion(const CQuaternion &v) = default;
+CQuaternion::CQuaternion(const CQuaternion& v) = default;
 
-CQuaternion::CQuaternion(const float *v) : x(v[0]), y(v[1]), z(v[2]), s(v[3]) {}
+CQuaternion::CQuaternion(const float* v) : x(v[0]), y(v[1]), z(v[2]), s(v[3]) {}
 
-CQuaternion::CQuaternion(const float _s, const CVector3 &v)
+CQuaternion::CQuaternion(const float _s, const CVector3& v)
     : x(v.x), y(v.y), z(v.z), s(_s) {}
 
 CQuaternion::CQuaternion(const float _x, const float _y, const float _z,
@@ -127,7 +127,7 @@ CQuaternion::CQuaternion(const float _x, const float _y, const float _z,
 
 CQuaternion::CQuaternion() = default;
 
-void CQuaternion::FromRotationMatrix(const CMatrix4x4 &m) {
+void CQuaternion::FromRotationMatrix(const CMatrix4x4& m) {
   float diag = m(0, 0) + m(1, 1) + m(2, 2) + 1.0f;
   if (diag > 1.0f) {
     float sqd = sqrtf(diag);
@@ -176,12 +176,12 @@ void CQuaternion::FromRotationMatrix(const CMatrix4x4 &m) {
   }
 }
 
-void CQuaternion::ToAxisAngle(CVector3 &Axis, float &Angle) const {
+void CQuaternion::ToAxisAngle(CVector3& Axis, float& Angle) const {
   Angle = acosf(s) / 2.0f;
   Axis = CVector3(x, y, z) / sinf(Angle * 2.0f);
 }
 
-CQuaternion CQuaternion::FromAxisAngle(const CVector3 &Axis,
+CQuaternion CQuaternion::FromAxisAngle(const CVector3& Axis,
                                        const float Angle) {
   return CQuaternion(cosf(Angle / 2.0f), Axis * sinf(Angle / 2.0f));
 }
@@ -212,20 +212,20 @@ void CQuaternion::FromEuler(const float _x, const float _y, const float _z) {
 }
 
 float const CQuaternion::operator[](int32_t idx) const {
-  return (reinterpret_cast<const float *>(this))[idx];
+  return (reinterpret_cast<const float*>(this))[idx];
 }
 
-float &CQuaternion::operator[](int32_t idx) {
-  return (reinterpret_cast<float *>(this))[idx];
+float& CQuaternion::operator[](int32_t idx) {
+  return (reinterpret_cast<float*>(this))[idx];
 }
 
-CQuaternion::operator float *() { return &x; }
+CQuaternion::operator float*() { return &x; }
 
-CQuaternion::operator const float *() const { return &x; }
+CQuaternion::operator const float*() const { return &x; }
 
-CQuaternion &CQuaternion::operator=(const CQuaternion &q) = default;
+CQuaternion& CQuaternion::operator=(const CQuaternion& q) = default;
 
-CQuaternion &CQuaternion::operator+=(const CQuaternion &v) {
+CQuaternion& CQuaternion::operator+=(const CQuaternion& v) {
   x += v.x;
   y += v.y;
   z += v.z;
@@ -233,7 +233,7 @@ CQuaternion &CQuaternion::operator+=(const CQuaternion &v) {
   return *this;
 }
 
-CQuaternion &CQuaternion::operator-=(const CQuaternion &v) {
+CQuaternion& CQuaternion::operator-=(const CQuaternion& v) {
   x -= v.x;
   y -= v.y;
   z -= v.z;
@@ -241,11 +241,11 @@ CQuaternion &CQuaternion::operator-=(const CQuaternion &v) {
   return *this;
 }
 
-const CQuaternion &CQuaternion::operator*=(const CQuaternion &v) {
+const CQuaternion& CQuaternion::operator*=(const CQuaternion& v) {
   return *this = *this * v;
 }
 
-CQuaternion &CQuaternion::operator*=(const float f) {
+CQuaternion& CQuaternion::operator*=(const float f) {
   x *= f;
   y *= f;
   z *= f;
@@ -253,7 +253,7 @@ CQuaternion &CQuaternion::operator*=(const float f) {
   return *this;
 }
 
-CQuaternion &CQuaternion::operator/=(const float f) {
+CQuaternion& CQuaternion::operator/=(const float f) {
   float fi = 1 / f;
   x *= fi;
   y *= fi;
@@ -268,11 +268,11 @@ CQuaternion CQuaternion::operator-() const {
   return CQuaternion(-x, -y, -z, -s);
 }
 
-CQuaternion CQuaternion::operator+(const CQuaternion &v) const {
+CQuaternion CQuaternion::operator+(const CQuaternion& v) const {
   return CQuaternion(x + v.x, y + v.y, z + v.z, s + v.s);
 }
 
-CQuaternion CQuaternion::operator-(const CQuaternion &v) const {
+CQuaternion CQuaternion::operator-(const CQuaternion& v) const {
   return CQuaternion(x - v.x, y - v.y, z - v.z, s - v.s);
 }
 
@@ -285,15 +285,15 @@ CQuaternion CQuaternion::operator/(const float f) const {
   return CQuaternion(x * fi, y * fi, z * fi, s * fi);
 }
 
-bool CQuaternion::operator==(const CQuaternion &v) const {
+bool CQuaternion::operator==(const CQuaternion& v) const {
   return x == v.x && y == v.y && z == v.z && s == v.s;
 }
 
-bool CQuaternion::operator!=(const CQuaternion &v) const {
+bool CQuaternion::operator!=(const CQuaternion& v) const {
   return x != v.x || y != v.y || z != v.z || s != v.s;
 }
 
-CQuaternion CQuaternion::operator*(const CQuaternion &q) const {
+CQuaternion CQuaternion::operator*(const CQuaternion& q) const {
   return CQuaternion(y * q.z - z * q.y + s * q.x + x * q.s,
                      z * q.x - x * q.z + s * q.y + y * q.s,
                      x * q.y - y * q.x + s * q.z + z * q.s,

@@ -12,7 +12,7 @@
 
 std::string BuildVersion;
 
-LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
+LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS* excpInfo) {
   if (IsDebuggerPresent()) return EXCEPTION_CONTINUE_SEARCH;
 
   int nMoreDetail = 1;
@@ -49,7 +49,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
 
   CloseHandle(hFile);
 
-  CStackTracker Stack((void *)excpInfo->ContextRecord);
+  CStackTracker Stack((void*)excpInfo->ContextRecord);
   auto Result = Stack.DumpToString();
 
   time_t rawtime;
@@ -69,7 +69,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
 
   bool Saved = false;
 
-  FILE *f = nullptr;
+  FILE* f = nullptr;
   if (!fopen_s(&f, "crash.log", "at")) {
     if (f) {
       fputs(CrashString, f);
@@ -97,7 +97,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
   return EXCEPTION_EXECUTE_HANDLER;
 }
 
-LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS *excpInfo) {
+LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS* excpInfo) {
   if (IsDebuggerPresent()) return EXCEPTION_CONTINUE_SEARCH;
 
   int nMoreDetail = 0;

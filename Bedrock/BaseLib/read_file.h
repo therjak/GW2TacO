@@ -7,6 +7,4 @@ namespace baselib {
 
 std::string ReadFile(std::string_view name);
 
-} // namespace baselib
-
-
+}  // namespace baselib

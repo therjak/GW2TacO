@@ -1,6 +1,6 @@
 #pragma once
 
-//base library config
+// base library config
 
 //////////////////////////////////////////////////////////////////////////
 // global tracking enabler macro
@@ -10,7 +10,8 @@
 #ifdef ENABLE_TRACKING
 //////////////////////////////////////////////////////////////////////////
 // call stack tracker class
-// stack tracing requires the "omit frame pointer" optimization to be DISABLED <- !!!
+// stack tracing requires the "omit frame pointer" optimization to be DISABLED
+// <- !!!
 
 #define ENABLE_STACKTRACKER_CLASS
 
@@ -32,7 +33,7 @@
 //////////////////////////////////////////////////////////////////////////
 // global config
 
-#define INLINE 
+#define INLINE
 #define ASSERTMODULENAME "Perpetuum"
 
 #define HASHED_STRINGS
