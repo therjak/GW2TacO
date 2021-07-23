@@ -390,14 +390,14 @@ bool CWBApplication::HandleMessages() {
   if (!CCoreWindowHandlerWin::HandleMessages()) return false;
 
   // handle gui messages here
-
-  std::scoped_lock l(MessageBufferMutex);
-  for (const auto& m : MessageBuffer) {
-    CWBMessage currentMessage = m;
-    ProcessMessage(currentMessage);
+  std::vector<CWBMessage> mc;
+  {
+    std::scoped_lock l(MessageBufferMutex);
+    std::swap(mc, MessageBuffer);
   }
-
-  MessageBuffer.clear();
+  for (auto& m : mc) {
+    ProcessMessage(m);
+  }
 
   return true;
 }
