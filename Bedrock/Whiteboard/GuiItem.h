@@ -38,7 +38,7 @@ enum WBITEMSTATE {
   WB_STATE_DISABLED = 3,
   WB_STATE_DISABLED_ACTIVE = 4,
 
-  WB_STATE_COUNT, // don't remove this, used as array size
+  WB_STATE_COUNT,  // don't remove this, used as array size
 };
 
 enum WBITEMVISUALCOMPONENT {
@@ -65,7 +65,7 @@ enum WBITEMVISUALCOMPONENT {
   WB_ITEM_SCROLL_HTHUMB,
   WB_ITEM_SCROLL_VTHUMB,
 
-  WB_ITEM_COUNT, // don't remove this, used as array size
+  WB_ITEM_COUNT,  // don't remove this, used as array size
 };
 
 enum WBSCROLLDRAGMODE {
@@ -78,11 +78,11 @@ enum WBSCROLLDRAGMODE {
 };
 
 class CWBScrollbarParams {
-public:
-  bool Enabled; // determines whether the scrollbar will be displayed at all
-  bool Dynamic; // if true the scrollbar disappears when not needed
-  bool Visible; // if true the client area has been adjusted so the scrollbar
-                // can fit
+ public:
+  bool Enabled;  // determines whether the scrollbar will be displayed at all
+  bool Dynamic;  // if true the scrollbar disappears when not needed
+  bool Visible;  // if true the client area has been adjusted so the scrollbar
+                 // can fit
 
   // position data
   int32_t MinScroll, MaxScroll;
@@ -106,7 +106,7 @@ class CWBDisplayState {
   int32_t Visuals[WB_ITEM_COUNT];
   bool VisualSet[WB_ITEM_COUNT];
 
-public:
+ public:
   CWBDisplayState();
   virtual ~CWBDisplayState();
 
@@ -120,7 +120,7 @@ public:
 class CWBDisplayProperties {
   CWBDisplayState States[WB_STATE_COUNT];
 
-public:
+ public:
   CWBDisplayProperties();
   virtual ~CWBDisplayProperties();
 
@@ -131,7 +131,7 @@ public:
 };
 
 class CWBCSSPropertyBatch {
-public:
+ public:
   CRect BorderSizes;
   WBTEXTALIGNMENTX TextAlignX;
   WBTEXTALIGNMENTY TextAlignY;
@@ -146,19 +146,19 @@ public:
 };
 
 class CWBItem : public IWBCSS {
-  friend CWBApplication; // so we don't directly expose the message handling
-                         // functions to the user
+  friend CWBApplication;  // so we don't directly expose the message handling
+                          // functions to the user
 
   const WBGUID Guid;
 
-  CRect Position;   // stored in parent space
-  CRect ClientRect; // stored in window space
-  CRect ScreenRect; // calculated automatically, stores the position in screen
-                    // space
+  CRect Position;    // stored in parent space
+  CRect ClientRect;  // stored in window space
+  CRect ScreenRect;  // calculated automatically, stores the position in screen
+                     // space
   CRect StoredPosition;
-  CPoint ContentOffset; // describes how much the content is moved relative to
-                        // the item. used for easily sliding content around by
-                        // scrollbars
+  CPoint ContentOffset;  // describes how much the content is moved relative to
+                         // the item. used for easily sliding content around by
+                         // scrollbars
 
   CSize StoredContentSize;
 
@@ -201,11 +201,10 @@ class CWBItem : public IWBCSS {
   virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
                                            int32_t& a2, int32_t& thumbsize,
                                            int32_t& thumbpos);
-  virtual bool
-  GetHScrollbarRectangles(CRect& button1, CRect& Scrollup, CRect& Thumb,
-                          CRect& Scrolldown,
-                          CRect& button2); // returns the highlight areas of the
-                                           // scrollbar in client space
+  // returns the highlight areas of the scrollbar in client space
+  virtual bool GetHScrollbarRectangles(CRect& button1, CRect& Scrollup,
+                                       CRect& Thumb, CRect& Scrolldown,
+                                       CRect& button2);
   virtual bool GetVScrollbarRectangles(CRect& button1, CRect& Scrollup,
                                        CRect& Thumb, CRect& Scrolldown,
                                        CRect& button2);
@@ -237,7 +236,7 @@ class CWBItem : public IWBCSS {
     return type;
   }
 
-protected:
+ protected:
   std::weak_ptr<CWBItem> SelfRef;
   CWBApplication* App;
   CWBItem* ChildInFocus;
@@ -263,10 +262,9 @@ protected:
 
   virtual bool ScrollbarDragged();
 
-  virtual void
-  DrawBackgroundItem(CWBDrawAPI* API, CWBDisplayProperties& Descriptor,
-                     CRect& Pos, WBITEMSTATE i,
-                     WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
+  virtual void DrawBackgroundItem(
+      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, CRect& Pos,
+      WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
   virtual void DrawBackground(CWBDrawAPI* API, WBITEMSTATE State);
   virtual void DrawBackground(CWBDrawAPI* API);
   virtual void DrawBorder(CWBDrawAPI* API);
@@ -277,8 +275,8 @@ protected:
   virtual void DrawBorder(CWBDrawAPI* API, CRect& rect,
                           CWBCSSPropertyBatch& cssProps);
 
-  virtual std::vector<std::string>
-  ExplodeValueWithoutSplittingParameters(std::string_view String);
+  virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
+      std::string_view String);
   virtual bool ParseRGBA(std::string_view description, CColor& output);
 
   static void PositionApplicator(CWBPositionDescriptor& pos,
@@ -302,7 +300,7 @@ protected:
   CWBItem();
   CWBItem(CWBItem* Parent, const CRect& Position);
 
-public:
+ public:
   ~CWBItem() override;
 
   virtual void AddChild(const std::shared_ptr<CWBItem>& Item);
@@ -316,9 +314,9 @@ public:
   INLINE CWBApplication* GetApplication() const { return App; }
   INLINE CWBItem* GetParent() const { return Parent; }
 
-  virtual CRect GetClientRect() const; // returns value in client space
-  virtual CRect GetWindowRect() const; // returns value in client space
-  virtual CRect GetScreenRect() const; // returns value in screen space
+  virtual CRect GetClientRect() const;  // returns value in client space
+  virtual CRect GetWindowRect() const;  // returns value in client space
+  virtual CRect GetScreenRect() const;  // returns value in screen space
 
   virtual CPoint ScreenToClient(const CPoint& p) const;
   virtual CRect ScreenToClient(const CRect& p) const;
@@ -327,22 +325,18 @@ public:
 
   virtual void SetPosition(const CRect& Pos);
   virtual void ApplyRelativePosition();
-  virtual void
-  ApplyPosition(const CRect& Pos); // only to be used by the parent item when
-                                   // moving the item around
+  // only to be used by the parent item when moving the item around
+  virtual void ApplyPosition(const CRect& Pos);
   virtual void SetClientPadding(int32_t left, int32_t top, int32_t right,
                                 int32_t bottom);
-
-  bool IsWidthSet();  // tells if the width has been specified in the style of
-                      // the item
-  bool IsHeightSet(); // tells if the height has been specified in the style
-                      // of the item
-  int32_t
-  GetCalculatedWidth(CSize ParentSize); // tells if the width has been specified
-                                        // in the style of the item
-  int32_t
-  GetCalculatedHeight(CSize ParentSize); // tells if the height has been
-                                         // specified in the style of the item
+  // tells if the width has been specified in the style of the item
+  bool IsWidthSet();
+  // tells if the height has been specified in the style of the item
+  bool IsHeightSet();
+  // tells if the width has been specified in the style of the item
+  int32_t GetCalculatedWidth(CSize ParentSize);
+  // tells if the height has been specified in the style of the item
+  int32_t GetCalculatedHeight(CSize ParentSize);
 
   CRect GetPosition();
 
@@ -409,10 +403,10 @@ public:
   CWBItem* FindChildByID(std::string_view value,
                          std::string_view type = _T( "" ));
 
-  template <typename t> t* FindChildByID(std::string_view value) {
+  template <typename t>
+  t* FindChildByID(std::string_view value) {
     CWBItem* it = FindChildByID(value, t::GetClassName());
-    if (!it)
-      return nullptr;
+    if (!it) return nullptr;
     return static_cast<t*>(it);
   }
 
@@ -421,13 +415,11 @@ public:
     int len = sizeof...(Args);
     const TCHAR* vals[] = {args...};
 
-    if (!len)
-      return FindChildByID(value);
+    if (!len) return FindChildByID(value);
 
     for (int x = 0; x < len; x++) {
       auto child = FindChildByID(value, vals[x]);
-      if (child)
-        return child;
+      if (child) return child;
     }
 
     return nullptr;
@@ -467,9 +459,8 @@ public:
                                    std::string_view prop,
                                    std::string_view value,
                                    const std::vector<std::string>& pseudo);
-
-  virtual void
-  SetTreeOpacityMultiplier(float OpacityMul); // for fading out whole subtrees
+  // for fading out whole subtrees
+  virtual void SetTreeOpacityMultiplier(float OpacityMul);
   virtual float GetTreeOpacityMultiplier();
 
   virtual void ReapplyStyles();
@@ -483,46 +474,44 @@ public:
 // class is the typename we're comparing against if not we traverse up the
 // hierarchy by directly calling the InstanceOf() of the parent class
 
-#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)                         \
-  virtual const std::string& GetType() const {                                 \
-    static const std::string type = TYPE;                                      \
-    return type;                                                               \
-  }                                                                            \
-                                                                               \
-  friend CWBItem;                                                              \
-                                                                               \
-private:                                                                       \
-  static const std::string& GetClassName() {                                   \
-    static const std::string type = TYPE;                                      \
-    return type;                                                               \
-  }                                                                            \
-                                                                               \
-public:                                                                        \
-  virtual bool InstanceOf(std::string_view name) const {                       \
-    if (name == GetClassName())                                                \
-      return true;                                                             \
-    return PARENTCLASS::InstanceOf(name);                                      \
+#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)   \
+  virtual const std::string& GetType() const {           \
+    static const std::string type = TYPE;                \
+    return type;                                         \
+  }                                                      \
+                                                         \
+  friend CWBItem;                                        \
+                                                         \
+ private:                                                \
+  static const std::string& GetClassName() {             \
+    static const std::string type = TYPE;                \
+    return type;                                         \
+  }                                                      \
+                                                         \
+ public:                                                 \
+  virtual bool InstanceOf(std::string_view name) const { \
+    if (name == GetClassName()) return true;             \
+    return PARENTCLASS::InstanceOf(name);                \
   }
 
-#define WB_DECLARE_GUIITEM_2PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2)          \
-  virtual const std::string& GetType() const {                                 \
-    static const std::string type = TYPE;                                      \
-    return type;                                                               \
-  }                                                                            \
-                                                                               \
-  friend CWBItem;                                                              \
-                                                                               \
-private:                                                                       \
-  static const std::string& GetClassName() {                                   \
-    static const std::string type = TYPE;                                      \
-    return type;                                                               \
-  }                                                                            \
-                                                                               \
-public:                                                                        \
-  virtual bool InstanceOf(std::string_view name) const {                       \
-    if (name == GetClassName())                                                \
-      return true;                                                             \
-    return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name);   \
+#define WB_DECLARE_GUIITEM_2PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2)        \
+  virtual const std::string& GetType() const {                               \
+    static const std::string type = TYPE;                                    \
+    return type;                                                             \
+  }                                                                          \
+                                                                             \
+  friend CWBItem;                                                            \
+                                                                             \
+ private:                                                                    \
+  static const std::string& GetClassName() {                                 \
+    static const std::string type = TYPE;                                    \
+    return type;                                                             \
+  }                                                                          \
+                                                                             \
+ public:                                                                     \
+  virtual bool InstanceOf(std::string_view name) const {                     \
+    if (name == GetClassName()) return true;                                 \
+    return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name); \
   }
 
 #define WB_DECLARE_GUIITEM_3PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2,          \
@@ -534,23 +523,22 @@ public:                                                                        \
                                                                                \
   friend CWBItem;                                                              \
                                                                                \
-private:                                                                       \
+ private:                                                                      \
   static const std::string& GetClassName() {                                   \
     static const std::string type = TYPE;                                      \
     return type;                                                               \
   }                                                                            \
                                                                                \
-public:                                                                        \
+ public:                                                                       \
   virtual bool InstanceOf(std::string_view name) const {                       \
-    if (name == GetClassName())                                                \
-      return true;                                                             \
+    if (name == GetClassName()) return true;                                   \
     return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name) || \
            PARENTCLASS3::InstanceOf(name);                                     \
   }
 
 #define EXPAND(x) x
 #define WB_DECLARE_MACRO_SELECTOR(_1, _2, _3, NAME, ...) NAME
-#define WB_DECLARE_GUIITEM(TYPE, ...)                                          \
-  EXPAND(EXPAND(WB_DECLARE_MACRO_SELECTOR(                                     \
-      __VA_ARGS__, WB_DECLARE_GUIITEM_3PARENTS, WB_DECLARE_GUIITEM_2PARENTS,   \
+#define WB_DECLARE_GUIITEM(TYPE, ...)                                        \
+  EXPAND(EXPAND(WB_DECLARE_MACRO_SELECTOR(                                   \
+      __VA_ARGS__, WB_DECLARE_GUIITEM_3PARENTS, WB_DECLARE_GUIITEM_2PARENTS, \
       WB_DECLARE_GUIITEM_1PARENTS))(TYPE, __VA_ARGS__))

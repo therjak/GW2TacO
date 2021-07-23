@@ -70,18 +70,18 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
       const int32_t width =
           Font->Write(API, Items[x]->Text, Offset, textColor, TextTransform);
 
-      if (!Items[x]->Children.empty()) // draw sub arrow
-      {
+      // draw sub arrow
+      if (!Items[x]->Children.empty()) {
         if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
             0xffffffff) {
         } else {
           const int32_t wi = Font->GetWidth(_T( ">" ));
-          Font->Write(API, _T( ">" ),
-                      CPoint(GetWindowRect().x2 - wi -
-                                 CSSProperties.BorderSizes.x2 -
-                                 (Client.x2 - padding.x2),
-                             Offset.y),
-                      textColor);
+          Font->Write(
+              API, _T( ">" ),
+              CPoint(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
+                         (Client.x2 - padding.x2),
+                     Offset.y),
+              textColor);
         }
       }
 
@@ -137,8 +137,8 @@ void CWBContextMenu::ResizeToContentSize() {
     } else if (Font) {
       int32_t arrowPadding = 0;
 
-      if (!item->Children.empty()) // account for sub arrow
-      {
+      // account for sub arrow
+      if (!item->Children.empty()) {
         if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
             0xffffffff) {
         } else {
@@ -166,8 +166,7 @@ bool CWBContextMenu::Initialize(CWBItem* Parent, const CRect& Position,
   SubMenu = nullptr;
   Pushed = false;
   Target = trg;
-  if (!CWBItem::Initialize(Parent, Position))
-    return false;
+  if (!CWBItem::Initialize(Parent, Position)) return false;
 
   SetClientPadding(2, 0, 2, 0);
   SetBorderSizes(1, 1, 1, 1);
@@ -205,97 +204,90 @@ void CWBContextMenu::AddSeparator() {
 
 bool CWBContextMenu::MessageProc(CWBMessage& Message) {
   switch (Message.GetMessage()) {
-  case WBM_REPOSITION:
-    if (Message.GetTarget() == GetGuid()) {
-      // push position inside of parent
-      CRect p = Message.Rectangle;
-      const CRect r = GetParent()->GetClientRect();
-      if (p.x1 < 0)
-        p += CPoint(-p.x1, 0);
-      if (p.y1 < 0)
-        p += CPoint(0, -p.y1);
-      if (p.x2 > r.x2)
-        p -= CPoint(p.x2 - r.x2, 0);
-      if (p.y2 > r.y2)
-        p -= CPoint(0, p.y2 - r.y2);
-      Message.Rectangle = p;
-    }
-    break;
-  case WBM_MOUSEMOVE:
-    if (MouseOver()) {
+    case WBM_REPOSITION:
+      if (Message.GetTarget() == GetGuid()) {
+        // push position inside of parent
+        CRect p = Message.Rectangle;
+        const CRect r = GetParent()->GetClientRect();
+        if (p.x1 < 0) p += CPoint(-p.x1, 0);
+        if (p.y1 < 0) p += CPoint(0, -p.y1);
+        if (p.x2 > r.x2) p -= CPoint(p.x2 - r.x2, 0);
+        if (p.y2 > r.y2) p -= CPoint(0, p.y2 - r.y2);
+        Message.Rectangle = p;
+      }
+      break;
+    case WBM_MOUSEMOVE:
+      if (MouseOver()) {
+        for (int32_t x = 0; x < Items.size(); x++)
+          if (!Items[x]->Separator) {
+            const CRect EntryPos = GetItemRect(x);
+            if (EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
+              SpawnSubMenu(x);
+              return true;
+            }
+          }
+      }
+      if (SubMenu) SubMenu->MessageProc(Message);
+      return true;
+
+    case WBM_RIGHTBUTTONDOWN:
+    case WBM_LEFTBUTTONDOWN:
+    case WBM_MIDDLEBUTTONDOWN:
+      // need to close the context menu and resend the click
+      if (!MouseInContextHierarchy() && !MarkedForDeletion()) {
+        MarkForDeletion();
+        MarkParentForDeletion();
+        App->ReleaseCapture();
+        // resend message
+        App->SendMessage(Message);
+        return true;
+      }
+
+      Pushed = true;
+      App->SetCapture(GetContextRoot());
+      if (!MouseOver())
+        if (SubMenu) SubMenu->MessageProc(Message);
+      return true;
+
+    case WBM_RIGHTBUTTONUP:
+    case WBM_LEFTBUTTONUP:
+
+      if (!Pushed) {
+        // original click doesn't count
+        return true;
+      }
+
+      // check if any of the items are clicked on
       for (int32_t x = 0; x < Items.size(); x++)
         if (!Items[x]->Separator) {
           const CRect EntryPos = GetItemRect(x);
-          if (EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
-            SpawnSubMenu(x);
+          if (MouseOver() &&
+              EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
+            App->SendMessage(CWBMessage(App, WBM_CONTEXTMESSAGE, Target,
+                                        Items[x]->ReturnID));
+            if (Items[x]->closesContext) {
+              MarkForDeletion();
+              MarkParentForDeletion();
+              App->ReleaseCapture();
+            } else
+              App->SendMessage(CWBMessage(App, WBM_REBUILDCONTEXTITEM, Target,
+                                          Items[x]->ReturnID, GetGuid()));
+
             return true;
           }
         }
-    }
-    if (SubMenu)
-      SubMenu->MessageProc(Message);
-    return true;
 
-  case WBM_RIGHTBUTTONDOWN:
-  case WBM_LEFTBUTTONDOWN:
-  case WBM_MIDDLEBUTTONDOWN:
+      if (MouseInContextHierarchy())
+        if (SubMenu) SubMenu->MessageProc(Message);
 
-    if (!MouseInContextHierarchy() &&
-        !MarkedForDeletion()) // need to close the context menu and resend
-                              // the click
-    {
-      MarkForDeletion();
-      MarkParentForDeletion();
-      App->ReleaseCapture();
-      App->SendMessage(Message); // resend message
-      return true;
-    }
-
-    Pushed = true;
-    App->SetCapture(GetContextRoot());
-    if (!MouseOver())
-      if (SubMenu)
-        SubMenu->MessageProc(Message);
-    return true;
-
-  case WBM_RIGHTBUTTONUP:
-  case WBM_LEFTBUTTONUP:
-
-    if (!Pushed)
-      return true; // original click doesn't count
-
-    // check if any of the items are clicked on
-    for (int32_t x = 0; x < Items.size(); x++)
-      if (!Items[x]->Separator) {
-        const CRect EntryPos = GetItemRect(x);
-        if (MouseOver() &&
-            EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
-          App->SendMessage(
-              CWBMessage(App, WBM_CONTEXTMESSAGE, Target, Items[x]->ReturnID));
-          if (Items[x]->closesContext) {
-            MarkForDeletion();
-            MarkParentForDeletion();
-            App->ReleaseCapture();
-          } else
-            App->SendMessage(CWBMessage(App, WBM_REBUILDCONTEXTITEM, Target,
-                                        Items[x]->ReturnID, GetGuid()));
-
-          return true;
-        }
+      // check for off item mouse releases
+      if (!MouseInContextHierarchy() && Pushed) {
+        MarkForDeletion();
+        MarkParentForDeletion();
+        App->ReleaseCapture();
       }
 
-    if (MouseInContextHierarchy())
-      if (SubMenu)
-        SubMenu->MessageProc(Message);
-
-    // check for off item mouse releases
-    if (!MouseInContextHierarchy() && Pushed) {
-      MarkForDeletion();
-      MarkParentForDeletion();
-      App->ReleaseCapture();
-    }
-
-    return true;
+      return true;
   }
 
   return CWBItem::MessageProc(Message);
@@ -314,8 +306,7 @@ void CWBContextMenu::MarkForDeletion() {
 }
 
 void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
-  if (itemidx < 0 || itemidx >= Items.size())
-    return;
+  if (itemidx < 0 || itemidx >= Items.size()) return;
   if (itemidx == SubMenuIdx) {
     return;
   }
@@ -324,8 +315,7 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
     SubMenu = nullptr;
     SubMenuIdx = -1;
   }
-  if (Items[itemidx]->Children.size() <= 0)
-    return;
+  if (Items[itemidx]->Children.size() <= 0) return;
 
   const CRect p = GetItemRect(itemidx) + GetPosition().TopLeft();
   const CRect w = GetPosition();
@@ -378,8 +368,7 @@ CRect CWBContextMenu::GetItemRect(int32_t idx) {
     } else if (Font) {
       const CRect EntryPos(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
                            Offset.y + Font->GetLineHeight());
-      if (x == idx)
-        return EntryPos;
+      if (x == idx) return EntryPos;
       Offset.y += Font->GetLineHeight();
     }
   }
@@ -395,14 +384,12 @@ void CWBContextMenu::MarkParentForDeletion() {
 }
 
 bool CWBContextMenu::MouseInContextHierarchy() {
-  if (!SubMenu)
-    return MouseOver();
+  if (!SubMenu) return MouseOver();
   return MouseOver() || SubMenu->MouseInContextHierarchy();
 }
 
 CWBContextMenu* CWBContextMenu::GetContextRoot() {
-  if (!ParentMenu)
-    return this;
+  if (!ParentMenu) return this;
   return ParentMenu->GetContextRoot();
 }
 
@@ -444,14 +431,12 @@ void CWBContextItem::AddSeparator() {
 
 void CWBContextItem::SetText(std::string_view text) {
   Text = text;
-  if (CopyOf)
-    CopyOf->SetText(text);
+  if (CopyOf) CopyOf->SetText(text);
 }
 
 void CWBContextItem::SetHighlight(bool highlighted) {
   Highlighted = highlighted;
-  if (CopyOf)
-    CopyOf->SetHighlight(highlighted);
+  if (CopyOf) CopyOf->SetHighlight(highlighted);
 }
 
 bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
@@ -466,10 +451,8 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   }
 
   // apply font styling to list item anyway
-  if (!ElementTarget)
-    InterpretFontString(CSSProperties, prop, value, pseudo);
-  if (!ElementTarget)
-    return CWBItem::ApplyStyle(prop, value, pseudo);
+  if (!ElementTarget) InterpretFontString(CSSProperties, prop, value, pseudo);
+  if (!ElementTarget) return CWBItem::ApplyStyle(prop, value, pseudo);
 
   bool Handled = false;
 
@@ -485,7 +468,6 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
 
 CWBContextItem* CWBContextMenu::GetItem(int32_t ID) {
   for (const auto& item : Items)
-    if (item->ReturnID == ID)
-      return item.get();
+    if (item->ReturnID == ID) return item.get();
   return nullptr;
 }

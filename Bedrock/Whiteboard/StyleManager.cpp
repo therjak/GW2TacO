@@ -12,8 +12,7 @@ void CStyleManager::ParseDeclarations(
   auto propertiesArr = Split(s, _T( ";" ));
   for (const auto& p : propertiesArr) {
     auto prop = Split(p, _T( ":" ));
-    if (prop.size() != 2)
-      continue;
+    if (prop.size() != 2) continue;
     std::string key(Trim(prop[0]));
     std::string value(Trim(prop[1]));
     dRuleset[key] = value;
@@ -25,8 +24,7 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
   std::string style(s);
   while ((nPos = style.find(_T( "/*" ))) != std::string::npos) {
     int nEnd = style.find(_T( "*/" ), nPos);
-    if (nEnd == std::string::npos)
-      nEnd = style.size();
+    if (nEnd == std::string::npos) nEnd = style.size();
 
     style = style.substr(0, nPos) + style.substr(nEnd + 2);
   }
@@ -34,8 +32,7 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
   auto rules = Split(style, _T( "}" ));
   for (const auto& r : rules) {
     auto properties = Split(r, _T( "{" ));
-    if (properties.size() != 2)
-      continue;
+    if (properties.size() != 2) continue;
 
     std::unordered_map<std::string, std::string> dRuleset;
     ParseDeclarations(properties[1], dRuleset);
@@ -66,15 +63,13 @@ void CStyleManager::CollectElementsBySimpleSelector(
   }
 }
 
-std::vector<CWBItem*>
-CStyleManager::GetElementsBySelector(CWBItem* pRootItem,
-                                     std::string_view selector) {
+std::vector<CWBItem*> CStyleManager::GetElementsBySelector(
+    CWBItem* pRootItem, std::string_view selector) {
   std::vector<CWBItem*> result;
   result.emplace_back((CWBItem*)pRootItem);
   auto components = Split(selector, _T( " " ));
   for (size_t i = 0; i < components.size(); i++) {
-    if (components[i].size() < 1)
-      continue;
+    if (components[i].size() < 1) continue;
     std::vector<CWBItem*> narrowResult;
     for (const auto& r : result) {
       CollectElementsBySimpleSelector(r, narrowResult, components[i], i == 0);
@@ -87,7 +82,6 @@ CStyleManager::GetElementsBySelector(CWBItem* pRootItem,
 
 void CStyleManager::ApplyStyles(CWBItem* pRootItem) {
   for (auto& r : dRules) {
-
     std::string selector = r.first;
     std::unordered_map<std::string, std::string>& rules = r.second;
 

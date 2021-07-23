@@ -1,21 +1,21 @@
 #pragma once
-#include "GuiItem.h"
-
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+#include "GuiItem.h"
 
 class CStyleManager {
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>>
       dRules;
 
-public:
+ public:
   CStyleManager();
   ~CStyleManager();
   void Reset();
-  static void
-  ParseDeclarations(std::string_view s,
-                    std::unordered_map<std::string, std::string>& dRuleset);
+  static void ParseDeclarations(
+      std::string_view s,
+      std::unordered_map<std::string, std::string>& dRuleset);
   bool ParseStyleData(std::string_view s);
 
   void ApplyStyles(CWBItem* pRootItem);

@@ -12,10 +12,8 @@ CAtlasNode::CAtlasNode() {
 }
 
 CAtlasNode::~CAtlasNode() {
-  if (Children[0])
-    SAFEDELETE(Children[0]);
-  if (Children[1])
-    SAFEDELETE(Children[1]);
+  if (Children[0]) SAFEDELETE(Children[0]);
+  if (Children[1]) SAFEDELETE(Children[1]);
 }
 
 CRect& CAtlasNode::GetArea() { return Area; }
@@ -149,8 +147,7 @@ CAtlas::~CAtlas() {
 }
 
 bool CAtlas::PackImage(CAtlasImage* img) {
-  if (!img)
-    return false;
+  if (!img) return false;
 
   // LOG(LOG_DEBUG,_T("Packing Image %d"),img->GetHandle());
 
@@ -184,16 +181,14 @@ bool CAtlas::PackImage(CAtlasImage* img) {
 }
 
 bool CAtlas::InitializeTexture(CCoreDevice* Device) {
-  if (!Device)
-    return false;
+  if (!Device) return false;
   Atlas.swap(Device->CreateTexture2D(XRes, YRes, Image));
   return Atlas.operator bool();
 }
 
 WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
                                const CRect& a) {
-  if (a.Width() == 0 || a.Height() == 0)
-    return 0;
+  if (a.Width() == 0 || a.Height() == 0) return 0;
 
   CLightweightCriticalSection cs(&critsec);
 
@@ -206,13 +201,11 @@ WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
 bool CAtlas::UpdateTexture() {
   // LOG_DBG("Atlas Texture Update Request");
 
-  if (!TextureUpdateNeeded)
-    return true;
+  if (!TextureUpdateNeeded) return true;
 
   // LOG(LOG_DEBUG,_T("Updating Atlas Texture"));
 
-  if (!Atlas || !Atlas->Update(Image, XRes, YRes, 4))
-    return false;
+  if (!Atlas || !Atlas->Update(Image, XRes, YRes, 4)) return false;
 
   TextureUpdateNeeded = false;
   return true;
@@ -225,8 +218,7 @@ int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
   int32_t w = rb.x - ra.x;
   int32_t h = rb.y - ra.y;
 
-  if (w != 0)
-    return w;
+  if (w != 0) return w;
   return h;
 }
 
@@ -274,8 +266,7 @@ bool CAtlas::Optimize(bool DebugMode) {
                   CSize rb = b->GetSize();
                   // As sort creates an ascending order and we want the largest
                   // first, return true if a > b.
-                  if (ra.x != rb.x)
-                    return ra.x > rb.x;
+                  if (ra.x != rb.x) return ra.x > rb.x;
                   return ra.y > rb.y;
                 });
 
@@ -287,8 +278,7 @@ bool CAtlas::Optimize(bool DebugMode) {
         }
       }
     } else {
-      if (!PackImage(WhitePixel))
-        return false;
+      if (!PackImage(WhitePixel)) return false;
     }
   }
 
@@ -307,8 +297,7 @@ void CAtlas::DeleteImage(const WBATLASHANDLE h) {
   }
 
   CAtlasNode* n = GetNodeCached(h);
-  if (!n)
-    return;
+  if (!n) return;
   n->Image = nullptr;
   Dictionary.erase(h);
   FlushCache();
@@ -319,14 +308,12 @@ CCoreTexture2D* CAtlas::GetTexture() { return Atlas.get(); }
 
 CSize CAtlas::GetSize(WBATLASHANDLE h) {
   CAtlasNode* n = GetNodeCached(h);
-  if (n)
-    return n->GetArea().Size();
+  if (n) return n->GetArea().Size();
 
   {
     CLightweightCriticalSection cs(&critsec);
     auto it = ImageStorage.find(h);
-    if (it != ImageStorage.end())
-      return it->second->GetSize();
+    if (it != ImageStorage.end()) return it->second->GetSize();
   }
 
   return CSize(0, 0);
@@ -371,8 +358,7 @@ CPoint CAtlas::GetWhitePixelUV() { return WhitePixelPosition; }
 
 void CAtlas::ClearImageUsageflags() {
   CLightweightCriticalSection cs(&critsec);
-  for (auto& x : ImageStorage)
-    x.second->ClearRequired();
+  for (auto& x : ImageStorage) x.second->ClearRequired();
 }
 
 void CAtlas::FlushCache() { memset(AtlasCache, 0, sizeof(AtlasCache)); }
@@ -380,8 +366,7 @@ void CAtlas::FlushCache() { memset(AtlasCache, 0, sizeof(AtlasCache)); }
 CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
   int32_t idx = Handle & (ATLASCACHESIZE - 1);
 
-  if (AtlasCache[idx].Handle == Handle)
-    return AtlasCache[idx].Node;
+  if (AtlasCache[idx].Handle == Handle) return AtlasCache[idx].Node;
 
   CAtlasNode* n = nullptr;
   auto it = Dictionary.find(Handle);
@@ -405,8 +390,7 @@ bool CAtlas::Reset() {
   FlushCache();
   WhitePixel->TagRequired();
 
-  if (!PackImage(WhitePixel))
-    return false;
+  if (!PackImage(WhitePixel)) return false;
 
   CRect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
@@ -435,11 +419,9 @@ bool CAtlas::Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize) {
   Dictionary.clear();
   WhitePixel->TagRequired();
 
-  if (!InitializeTexture(Device))
-    return false;
+  if (!InitializeTexture(Device)) return false;
 
-  if (!PackImage(WhitePixel))
-    return false;
+  if (!PackImage(WhitePixel)) return false;
 
   CRect r;
   RequestImageUse(WhitePixel->GetHandle(), r);

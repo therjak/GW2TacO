@@ -10,8 +10,8 @@ typedef int32_t WBATLASHANDLE;
 
 class CAtlasImage;
 
-class CAtlasNode // stores a node for the rectpacker
-{
+// stores a node for the rectpacker
+class CAtlasNode {
   friend class CAtlas;
   CRect Area;
   CAtlasNode* Children[2];
@@ -19,7 +19,7 @@ class CAtlasNode // stores a node for the rectpacker
 
   CAtlasImage* Image;
 
-public:
+ public:
   CAtlasNode();
   virtual ~CAtlasNode();
   CAtlasNode* AddNode(int32_t width, int32_t height);
@@ -27,15 +27,15 @@ public:
   CAtlasImage* GetImage();
 };
 
-class CAtlasImage // stores image data not currently in the atlas
-{
+// stores image data not currently in the atlas
+class CAtlasImage {
   uint8_t* Image;
   int32_t XRes, YRes;
   WBATLASHANDLE Handle;
 
   bool Required;
 
-public:
+ public:
   CAtlasImage();
   CAtlasImage(uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
               const CRect& Source);
@@ -70,7 +70,8 @@ class CAtlas {
   CAtlasNode* Root;
 
   CAtlasImage* WhitePixel;
-  CPoint WhitePixelPosition; // recalculated on each optimization and reset
+  // recalculated on each optimization and reset
+  CPoint WhitePixelPosition;
 
   bool PackImage(CAtlasImage* img);
 
@@ -79,7 +80,7 @@ class CAtlas {
 
   LIGHTWEIGHT_CRITICALSECTION critsec;
 
-public:
+ public:
   CAtlas(int32_t XSize, int32_t YSize);
   virtual ~CAtlas();
 
@@ -89,17 +90,16 @@ public:
 
   WBATLASHANDLE AddImage(uint8_t* Image, int32_t XRes, int32_t YRes,
                          const CRect& SourceArea);
-  void
-  DeleteImage(WBATLASHANDLE h); // doesn't immediately remove image from atlas
+  // doesn't immediately remove image from atlas
+  void DeleteImage(WBATLASHANDLE h);
 
   bool Optimize(bool DebugMode = false);
   bool Reset();
 
   CSize GetSize(WBATLASHANDLE h);
-  bool
-  RequestImageUse(WBATLASHANDLE h,
-                  CRect& UV); // returns false only if there was not enough room
-                              // in the atlas to add the requested image
+  // returns false only if there was not enough room
+  // in the atlas to add the requested image
+  bool RequestImageUse(WBATLASHANDLE h, CRect& UV);
   CPoint GetWhitePixelUV();
 
   void ClearImageUsageflags();

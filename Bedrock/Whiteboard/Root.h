@@ -7,7 +7,7 @@ class CWBRoot : public CWBItem {
   bool MessageProc(CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
 
-public:
+ public:
   CWBRoot(CWBItem* Parent, const CRect& Pos);
   static inline std::unique_ptr<CWBRoot> Create(const CRect& Pos) {
     return std::unique_ptr<CWBRoot>(new CWBRoot(nullptr, Pos));
