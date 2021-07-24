@@ -52,7 +52,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       if (!hasFullRaidInfo) {
         Object json;
 
-        auto globalRaidInfo = "{\"raids\":" + key->QueryAPI("v2/raids") + "}";
+        auto globalRaidInfo = "{\"raids\":" + key->QueryAPI("/v2/raids") + "}";
         json.parse(globalRaidInfo);
 
         if (json.has<Array>("raids")) {
@@ -89,7 +89,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
               else
                 y = std::tolower(y);
 
-            auto raidInfo = key->QueryAPI("v2/raids/" + r.name);
+            auto raidInfo = key->QueryAPI("/v2/raids/" + r.name);
             Object raidJson;
             raidJson.parse(raidInfo);
 
@@ -126,7 +126,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       }
 
       auto lastRaidStatus =
-          "{\"raids\":" + key->QueryAPI("v2/account/raids") + "}";
+          "{\"raids\":" + key->QueryAPI("/v2/account/raids") + "}";
       Object json;
       json.parse(lastRaidStatus);
 

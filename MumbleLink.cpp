@@ -282,7 +282,7 @@ CMumbleLink::CMumbleLink() {
 
 CMumbleLink::~CMumbleLink() { SAFEDELETE(FrameTimes); }
 
-bool CMumbleLink::IsValid() { return lm != nullptr; }
+bool CMumbleLink::IsValid() { return lm; }
 
 CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
                                                   bool ignoreRotation) {

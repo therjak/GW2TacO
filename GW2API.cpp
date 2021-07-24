@@ -35,7 +35,9 @@ APIKeyManager apiKeyManager;
 APIKey::APIKey(std::string_view key) : apiKey(key) {}
 
 APIKey::~APIKey() {
-  if (fetcherThread.joinable()) fetcherThread.join();
+  if (fetcherThread.joinable()) {
+    fetcherThread.join();
+  }
 }
 
 void APIKey::FetchData() {
@@ -55,25 +57,45 @@ void APIKey::FetchData() {
 
     if (json.has<String>("name"))
       keyName = json.get<String>("name");
-    else
+    else {
       valid = false;
+    }
 
     if (json.has<Array>("permissions")) {
       auto& values = json.get<Array>("permissions").values();
       for (auto v : values) {
         if (v->is<String>()) caps[v->get<String>()] = true;
       }
-    } else
+    } else {
       valid = false;
+    }
 
     if (HasCaps("account")) {
       auto accountData = QueryAPI("/v2/account");
       json.parse(accountData);
 
-      if (json.has<String>("name")) accountName = json.get<String>("name");
+      if (json.has<String>("name")) {
+        accountName = json.get<String>("name");
+      }
 
-      if (json.has<Number>("world"))
+      if (json.has<Number>("world")) {
         worldId = static_cast<int32_t>(json.get<Number>("world"));
+      }
+    }
+    if (HasCaps("characters")) {
+      auto characterData =
+          "{\"characters\":" + QueryAPI("/v2/characters") + "}";
+      json.parse(characterData);
+      if (json.has<Array>("characters")) {
+        auto m = json.get<Array>("characters").values();
+        for (auto& x : m) {
+          if (!x->is<String>()) {
+            continue;
+          }
+          auto name = x->get<String>();
+          charNames.emplace_back(name);
+        }
+      }
     }
 
     initialized = true;
@@ -82,7 +104,9 @@ void APIKey::FetchData() {
 }
 
 bool APIKey::HasCaps(std::string_view cap) {
-  if (caps.find(std::string(cap)) != caps.end()) return caps[cap.data()];
+  if (caps.find(std::string(cap)) != caps.end()) {
+    return caps[cap.data()];
+  }
 
   return false;
 }
@@ -94,7 +118,9 @@ std::string APIKey::QueryAPI(std::string_view path) {
 }
 
 void APIKey::SetKey(std::string_view key) {
-  if (fetcherThread.joinable()) fetcherThread.join();
+  if (fetcherThread.joinable()) {
+    fetcherThread.join();
+  }
   apiKey = key;
   caps.clear();
   initialized = false;
@@ -103,8 +129,15 @@ void APIKey::SetKey(std::string_view key) {
 
 APIKey* APIKeyManager::GetIdentifiedAPIKey() {
   std::scoped_lock l(keyMutex);
-  if (mumbleLink.IsValid() || mumbleLink.charName.empty() || keys.empty())
+  if (!mumbleLink.IsValid()) {
     return nullptr;
+  }
+  if (mumbleLink.charName.empty()) {
+    return nullptr;
+  }
+  if (keys.empty()) {
+    return nullptr;
+  }
 
   if (!initialized) {
     Initialize();
@@ -212,8 +245,9 @@ void APIKeyManager::Initialize() {
       auto key = std::make_unique<APIKey>(GetConfigString(cfgName));
       std::scoped_lock l(keyMutex);
       keys.emplace_back(std::move(key));
-    } else
+    } else {
       break;
+    }
   }
 
   RebuildConfigValues();

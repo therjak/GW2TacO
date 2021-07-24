@@ -85,10 +85,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       !fetchThread.joinable()) {
     beingFetched = true;
     fetchThread = std::thread([this, key]() {
-      auto qbuys =
-          "{\"buys\":" + key->QueryAPI("v2/commerce/transactions/current/buys");
+      auto qbuys = "{\"buys\":" +
+                   key->QueryAPI("/v2/commerce/transactions/current/buys");
       auto qsells = "{\"sells\":" +
-                    key->QueryAPI("v2/commerce/transactions/current/sells");
+                    key->QueryAPI("/v2/commerce/transactions/current/sells");
 
       Object json;
       Object json2;
@@ -154,7 +154,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
         // https://api.guildwars2.com/v2/items?ids=28445,12452
         auto items =
-            "{\"items\":" + key->QueryAPI("v2/items?ids=" + itemIds) + "}";
+            "{\"items\":" + key->QueryAPI("/v2/items?ids=" + itemIds) + "}";
 
         Object itemjson;
         itemjson.parse(items);
@@ -201,7 +201,8 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
         // https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
         auto items = "{\"items\":" +
-                     key->QueryAPI(("v2/commerce/prices?ids=" + itemIds)) + "}";
+                     key->QueryAPI(("/v2/commerce/prices?ids=" + itemIds)) +
+                     "}";
 
         Object itemjson;
         itemjson.parse(items);

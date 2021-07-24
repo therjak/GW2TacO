@@ -35,7 +35,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         Object json;
 
         auto lastDungeonStatus =
-            "{\"worldbosses\":" + key->QueryAPI("v2/account/worldbosses") + "}";
+            "{\"worldbosses\":" + key->QueryAPI("/v2/account/worldbosses") +
+            "}";
         json.parse(lastDungeonStatus);
 
         if (json.has<Array>("worldbosses")) {
@@ -54,7 +55,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         }
 
         lastDungeonStatus =
-            "{\"mapchests\":" + key->QueryAPI("v2/account/mapchests") + "}";
+            "{\"mapchests\":" + key->QueryAPI("/v2/account/mapchests") + "}";
         json.parse(lastDungeonStatus);
 
         if (json.has<Array>("mapchests")) {

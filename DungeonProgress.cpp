@@ -31,7 +31,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
         Object json;
 
         auto globalRaidInfo =
-            "{\"dungeons\":" + key->QueryAPI("v2/dungeons") + "}";
+            "{\"dungeons\":" + key->QueryAPI("/v2/dungeons") + "}";
         json.parse(globalRaidInfo);
 
         if (json.has<Array>("dungeons")) {
@@ -43,7 +43,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
             Dungeon d;
             d.name = x->get<String>();
 
-            auto raidInfo = key->QueryAPI("v2/dungeons/" + d.name);
+            auto raidInfo = key->QueryAPI("/v2/dungeons/" + d.name);
             Object dungeonJson;
             dungeonJson.parse(raidInfo);
 
@@ -92,10 +92,10 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       }
 
       auto lastDungeonStatus =
-          "{\"dungeons\":" + key->QueryAPI("v2/account/dungeons") + "}";
+          "{\"dungeons\":" + key->QueryAPI("/v2/account/dungeons") + "}";
       auto dungeonFrequenterStatus =
-          "{\"dungeons\":" + key->QueryAPI("v2/account/achievements?ids=2963") +
-          "}";
+          "{\"dungeons\":" +
+          key->QueryAPI("/v2/account/achievements?ids=2963") + "}";
       Object json;
       Object json2;
       json.parse(lastDungeonStatus);
@@ -199,8 +199,9 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       }
       posy += f->GetLineHeight();
     }
-  } else
+  } else {
     f->Write(API, DICT("waitingforapi"), CPoint(0, 0), 0xffffffff);
+  }
 
   DrawBorder(API);
 }

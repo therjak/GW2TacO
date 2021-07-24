@@ -384,7 +384,8 @@ void GW2TacticalDisplay::FetchAchievements() {
     beingFetched = true;
     fetchThread = std::thread([this, key]() {
       auto dungeonFrequenterStatus =
-          "{\"achievements\":" + key->QueryAPI("v2/account/achievements") + "}";
+          "{\"achievements\":" + key->QueryAPI("/v2/account/achievements") +
+          "}";
       Object json;
       json.parse(dungeonFrequenterStatus);
 

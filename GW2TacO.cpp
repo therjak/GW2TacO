@@ -716,13 +716,12 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         for (int32_t x = 0; x < GW2::apiKeyManager.size(); x++) {
           auto key = GW2::apiKeyManager.GetKey(x);
           auto keyMenu = gw2keys->AddItem(
-              (!key->accountName.empty()) ? key->accountName.c_str()
-                                          : key->apiKey.c_str(),
+              (!key->accountName.empty()) ? key->accountName : key->apiKey,
               Menu_GW2APIKey_Base + x, key == currKey);
           keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
         }
 
-        if (GW2::apiKeyManager.empty()) {
+        if (!GW2::apiKeyManager.empty()) {
           gw2keys->AddSeparator();
         }
 
