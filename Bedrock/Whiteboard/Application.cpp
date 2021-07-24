@@ -390,15 +390,16 @@ bool CWBApplication::HandleMessages() {
   if (!CCoreWindowHandlerWin::HandleMessages()) return false;
 
   // handle gui messages here
-  std::vector<CWBMessage> mc;
   {
     std::scoped_lock l(MessageBufferMutex);
-    std::swap(mc, MessageBuffer);
+    // This stuff is very brittle. It even depends on Messages added during this
+    // loop to be executed at the end of this loop. So even changing the for
+    // loop to a range loop causes bugs.
+    for (size_t i = 0; i < MessageBuffer.size(); i++) {
+      ProcessMessage(MessageBuffer[i]);
+    }
+    MessageBuffer.clear();
   }
-  for (auto& m : mc) {
-    ProcessMessage(m);
-  }
-
   return true;
 }
 
