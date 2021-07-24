@@ -1975,8 +1975,7 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   APIKeyInput->ReapplyStyles();
   APIKeyInput->EnableHScrollbar(false, false);
   APIKeyInput->EnableVScrollbar(false, false);
-  CWBMessage m;
-  BuildPositionMessage(GetClientRect(), m);
+  CWBMessage m = BuildPositionMessage(GetClientRect());
   m.Resized = true;
   App->SendMessage(m);
   ApiKeyIndex = idx;

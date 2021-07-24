@@ -429,7 +429,7 @@ class CWBItem : public IWBCSS {
                           std::string_view type = _T( "" ));
   virtual void CalculateWindowPosition(const CSize& s);
 
-  void BuildPositionMessage(const CRect& Pos, CWBMessage& m);
+  CWBMessage BuildPositionMessage(const CRect& Pos);
   void ApplyStyleDeclarations(std::string_view String);
 
   virtual WBITEMSTATE GetState();

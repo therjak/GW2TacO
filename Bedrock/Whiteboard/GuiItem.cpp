@@ -737,17 +737,17 @@ CRect CWBItem::ScreenToClient(const CRect& p) const {
   return p - ScreenRect.TopLeft() - ClientRect.TopLeft();
 }
 
-void CWBItem::BuildPositionMessage(const CRect& Pos, CWBMessage& m) {
-  m = CWBMessage(App, WBM_REPOSITION, Guid);
+CWBMessage CWBItem::BuildPositionMessage(const CRect& Pos) {
+  CWBMessage m(App, WBM_REPOSITION, Guid);
   m.Rectangle = Pos;
   m.Moved = Pos.x1 != Position.x1 || Pos.y1 != Position.y1;
   m.Resized =
       Pos.Width() != Position.Width() || Pos.Height() != Position.Height();
+  return m;
 }
 
 void CWBItem::SetPosition(const CRect& Pos) {
-  CWBMessage m;
-  BuildPositionMessage(Pos, m);
+  CWBMessage m = BuildPositionMessage(Pos);
   App->SendMessage(m);
 }
 
@@ -2192,10 +2192,8 @@ void CWBItem::ContentChanged() {
           .Size();
 
   StoredContentSize = GetContentSize() + ParentSize - ClientSize;
-  CWBMessage m;
-  BuildPositionMessage(CRect(GetPosition().TopLeft(),
-                             GetPosition().TopLeft() + StoredContentSize),
-                       m);
+  CWBMessage m = BuildPositionMessage(CRect(
+      GetPosition().TopLeft(), GetPosition().TopLeft() + StoredContentSize));
   m.Resized = true;
   m.Moved = true;
   App->SendMessage(m);
@@ -2232,8 +2230,7 @@ float CWBItem::GetTreeOpacityMultiplier() { return OpacityMultiplier; }
 
 void CWBItem::ReapplyStyles() {
   App->StyleManager.ApplyStyles(this);
-  CWBMessage m;
-  BuildPositionMessage(GetPosition(), m);
+  CWBMessage m = BuildPositionMessage(GetPosition());
   m.Resized = true;
   MessageProc(m);
 }

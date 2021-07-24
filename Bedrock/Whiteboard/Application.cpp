@@ -634,8 +634,7 @@ bool CWBApplication::GenerateGUI(CWBItem* Root, std::string_view Layout) {
   if (!b) return false;
 
   StyleManager.ApplyStyles(Root);
-  CWBMessage m;
-  Root->BuildPositionMessage(Root->GetPosition(), m);
+  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition());
   m.Resized = true;
   Root->MessageProc(m);
   return true;
@@ -655,8 +654,7 @@ bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
   if (!b) return false;
 
   StyleManager.ApplyStyles(Root);
-  CWBMessage m;
-  Root->BuildPositionMessage(Root->GetPosition(), m);
+  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition());
   m.Resized = true;
   Root->MessageProc(m);
 
@@ -665,8 +663,7 @@ bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
 
 void CWBApplication::ApplyStyle(CWBItem* Target) {
   StyleManager.ApplyStyles(Target);
-  CWBMessage m;
-  Target->BuildPositionMessage(Target->GetPosition(), m);
+  CWBMessage m = Target->BuildPositionMessage(Target->GetPosition());
   m.Resized = true;
   Target->MessageProc(m);
 }
@@ -674,8 +671,7 @@ void CWBApplication::ApplyStyle(CWBItem* Target) {
 void CWBApplication::ReApplyStyle() {
   CWBItem* Root = GetRoot();
   StyleManager.ApplyStyles(Root);
-  CWBMessage m;
-  Root->BuildPositionMessage(Root->GetPosition(), m);
+  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition());
   m.Resized = true;
   Root->MessageProc(m);
 }

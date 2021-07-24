@@ -174,8 +174,7 @@ void CWBBox::RearrangeHorizontal() {
                      off + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
-      CWBMessage m;
-      GetChild(x)->BuildPositionMessage(np, m);
+      CWBMessage m = GetChild(x)->BuildPositionMessage(np);
       GetChild(x)->MessageProc(m);
     }
 
@@ -248,8 +247,7 @@ void CWBBox::RearrangeVertical() {
                      pos + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
-      CWBMessage m;
-      GetChild(x)->BuildPositionMessage(np, m);
+      CWBMessage m = GetChild(x)->BuildPositionMessage(np);
       GetChild(x)->MessageProc(m);
     }
 
