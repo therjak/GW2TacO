@@ -254,10 +254,15 @@ void LoadWvWObjectives() {
 
         auto coord = obj.get<Array>("coord").values();
         if (coord.size() == 3) {
-          CVector3 v(0, 0, 0);
-          for (int x = 0; x < 3; x++)
-            if (coord[x]->is<Number>())
-              v[x] = static_cast<float>(coord[x]->get<Number>());
+          CVector3 v(coord[0]->is<Number>()
+                         ? static_cast<float>(coord[0]->get<Number>())
+                         : 0,
+                     coord[1]->is<Number>()
+                         ? static_cast<float>(coord[1]->get<Number>())
+                         : 0,
+                     coord[2]->is<Number>()
+                         ? static_cast<float>(coord[2]->get<Number>())
+                         : 0);
 
           CRect& r = wvwContinentRects[mapID];
           CVector3 offset =

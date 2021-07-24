@@ -87,7 +87,7 @@ class CWBTextBox : public CWBItem {
   std::string OriginalText;  // for escape cancel
 
   void OnDraw(CWBDrawAPI* API) override;
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
   void InsertText(int32_t Position, std::string_view Text, int32_t Length,
                   int32_t CursorPosAfter, bool ChangeHistory = true);
   void RemoveText(int32_t Position, int32_t Length, int32_t CursorPosAfter,

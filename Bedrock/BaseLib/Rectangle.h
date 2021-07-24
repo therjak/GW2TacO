@@ -8,10 +8,9 @@ class CRect {
  public:
   int32_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 
-  CRect();
+  CRect() = default;
   CRect(const int32_t a, const int32_t b, const int32_t c, const int32_t d);
   CRect(const CPoint p1, const CPoint p2);
-  CRect(const CRect& r) = default;
   const bool Contains(const int32_t x, const int32_t y) const;
   const bool Contains(CPoint& p) const;
   const bool Contains(const CPoint& p) const;

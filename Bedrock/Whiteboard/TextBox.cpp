@@ -562,7 +562,7 @@ int32_t CWBTextBox::GetCursorPosMouse() {
   return Text.size();
 }
 
-bool CWBTextBox::MessageProc(CWBMessage& Message) {
+bool CWBTextBox::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_FOCUSGAINED:
       if (Message.GetTarget() == GetGuid()) {

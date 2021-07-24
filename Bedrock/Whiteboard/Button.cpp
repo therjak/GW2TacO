@@ -74,7 +74,7 @@ bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position,
   return true;
 }
 
-bool CWBButton::MessageProc(CWBMessage& Message) {
+bool CWBButton::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
     case WBM_RIGHTBUTTONDOWN:

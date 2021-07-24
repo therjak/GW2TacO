@@ -4,7 +4,7 @@
 #include "GuiItem.h"
 
 class CWBRoot : public CWBItem {
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
 
  public:

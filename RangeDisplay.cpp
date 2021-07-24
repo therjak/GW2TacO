@@ -50,7 +50,7 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
       CVector2(camSpaceChar.x - campos.x, camSpaceChar.z - campos.z)
           .Normalized();
 
-  CVector3 toChar = CVector3(charpos - campos);
+  CVector3 toChar(charpos - campos);
   float dist = toChar.Length();
 
   for (int x = 0; x < resolution; x++) {
@@ -61,7 +61,7 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
     CVector4 p1 = CVector4(rworld * sinf(f1), 0, rworld * cosf(f1), 0.0f);
     CVector4 p2 = CVector4(rworld * sinf(f2), 0, rworld * cosf(f2), 0.0f);
 
-    CVector3 toPoint = CVector3(p1 - campos);
+    CVector3 toPoint(p1 - campos);
 
     if (!zoomedin) {
       a1 = 1 - powf(max(0, camDir * CVector2(p1.x, p1.z).Normalized()), 10.0f);

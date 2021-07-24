@@ -8,8 +8,7 @@ class CSphere {
   float Radius = 0;
   CVector3 Position = {0, 0, 0};
 
-  CSphere();
-  ~CSphere();
+  CSphere() = default;
   CSphere(const CVector3& p, const float r);
 
   const bool Intersect(const CPlane& p) const;

@@ -23,7 +23,7 @@ bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
   return true;
 }
 
-bool CWBBox::MessageProc(CWBMessage& Message) {
+bool CWBBox::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_CLIENTAREACHANGED:
       if (Message.GetTarget() == GetGuid()) {
@@ -93,12 +93,12 @@ bool CWBBox::MessageProc(CWBMessage& Message) {
           r.y1 = o.y1;
           r.y2 = o.y2;
         }
+        auto m = Message;
+        m.Rectangle = r;
+        m.Resized = true;
+        m.Moved = r.TopLeft() == o.TopLeft();
 
-        Message.Rectangle = r;
-        Message.Resized = true;
-        Message.Moved = r.TopLeft() == o.TopLeft();
-
-        i->MessageProc(Message);  // do the resize as the item sees fit
+        i->MessageProc(m);  // do the resize as the item sees fit
 
         RearrangeChildren();
         return true;

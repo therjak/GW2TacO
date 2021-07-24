@@ -24,7 +24,7 @@ void OverlayWindow::OnDraw(CWBDrawAPI* API) {
   CWBWindow::OnDraw(API);
 }
 
-bool OverlayWindow::MessageProc(CWBMessage& Message) {
+bool OverlayWindow::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
       if (CWBItem::MessageProc(Message)) return true;

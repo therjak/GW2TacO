@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "Message.h"
 
-bool CWBRoot::MessageProc(CWBMessage& Message) {
+bool CWBRoot::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_REPOSITION: {
       if (Message.GetTarget() == GetGuid() || Message.GetTarget() == 0) {

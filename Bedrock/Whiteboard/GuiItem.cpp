@@ -164,7 +164,7 @@ void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
   }
 }
 
-bool CWBItem::MessageProc(CWBMessage& Message) {
+bool CWBItem::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_NONE:
       LOG(LOG_ERROR,

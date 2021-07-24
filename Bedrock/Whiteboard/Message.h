@@ -72,7 +72,7 @@ enum WBMESSAGE {
 #define WB_KBSTATE_CTRL 0x00000002
 #define WB_KBSTATE_SHIFT 0x00000004
 
-class CWBMessage {
+class CWBMessage final {
   CWBApplication* App;
   WBMESSAGE Message;
   WBGUID Target;
@@ -102,7 +102,11 @@ class CWBMessage {
   CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x);
   CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x,
              int32_t y);
-  virtual ~CWBMessage();
+  CWBMessage(const CWBMessage&) = default;
+  CWBMessage(CWBMessage&&) = default;
+  CWBMessage& operator=(const CWBMessage&) = default;
+  CWBMessage& operator=(CWBMessage&&) = default;
+  ~CWBMessage() = default;
 
   INLINE WBMESSAGE GetMessage() const { return Message; }
   INLINE WBGUID GetTarget() const { return Target; }

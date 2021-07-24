@@ -45,7 +45,7 @@ class CWBContextMenu : public CWBItem {
   CWBContextMenu* ParentMenu = nullptr;
   std::vector<std::unique_ptr<CWBContextItem>> Items;
 
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
   virtual void ResizeToContentSize();
   void OnDraw(CWBDrawAPI* API) override;
   void SpawnSubMenu(int32_t itemidx);

@@ -25,7 +25,7 @@ class CMatrix4x4 {
              float f21, float f22, float f23, float f24,  //
              float f31, float f32, float f33, float f34,  //
              float f41, float f42, float f43, float f44);
-  CMatrix4x4(const CQuaternion& q);
+  explicit CMatrix4x4(const CQuaternion& q);
 
   float& operator()(uint32_t Row, uint32_t Col);
   float operator()(uint32_t Row, uint32_t Col) const;

@@ -9,14 +9,13 @@ class CQuaternion {
  public:
   float x = 0, y = 0, z = 0, s = 0;
 
-  CQuaternion();
+  CQuaternion() = default;
   CQuaternion(const float _x, const float _y, const float _z, const float _s);
   CQuaternion(const float _s, const CVector3& v);
-  CQuaternion(const float* v);
-  CQuaternion(const CQuaternion& v);
+  explicit CQuaternion(const float* v);
   CQuaternion(const float _x, const float _y,
-              const float _z);     // from euler angles
-  CQuaternion(const CVector3& v);  // from euler angles
+              const float _z);              // from euler angles
+  explicit CQuaternion(const CVector3& v);  // from euler angles
 
   void FromEuler(const float _x, const float _y, const float _z);
   CVector3 ToEuler() const;

@@ -82,7 +82,7 @@ void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
   }
 }
 
-bool GW2MarkerEditor::MessageProc(CWBMessage& Message) {
+bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_COMMAND: {
       if (Hidden) break;

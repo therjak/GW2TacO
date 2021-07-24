@@ -4,7 +4,7 @@
 #include "gw2tactical.h"
 
 class GW2Notepad : public CWBItem {
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
   bool Hidden = false;
   GUID CurrentPOI;

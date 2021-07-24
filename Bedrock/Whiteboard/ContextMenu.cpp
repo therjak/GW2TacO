@@ -202,7 +202,7 @@ void CWBContextMenu::AddSeparator() {
   Items.back()->Separator = true;
 }
 
-bool CWBContextMenu::MessageProc(CWBMessage& Message) {
+bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_REPOSITION:
       if (Message.GetTarget() == GetGuid()) {
@@ -213,7 +213,9 @@ bool CWBContextMenu::MessageProc(CWBMessage& Message) {
         if (p.y1 < 0) p += CPoint(0, -p.y1);
         if (p.x2 > r.x2) p -= CPoint(p.x2 - r.x2, 0);
         if (p.y2 > r.y2) p -= CPoint(0, p.y2 - r.y2);
-        Message.Rectangle = p;
+        auto m = Message;
+        m.Rectangle = p;
+        return CWBItem::MessageProc(m);
       }
       break;
     case WBM_MOUSEMOVE:

@@ -57,7 +57,7 @@ void GW2Notepad::StartEdit() {
 
 void GW2Notepad::OnDraw(CWBDrawAPI* API) {}
 
-bool GW2Notepad::MessageProc(CWBMessage& Message) {
+bool GW2Notepad::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_FOCUSGAINED: {
       CWBItem* tb = FindChildByID("notepad", "textbox");

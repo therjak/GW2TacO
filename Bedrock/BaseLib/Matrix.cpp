@@ -20,7 +20,7 @@ CVector3 CMatrix4x4::GetScaling() const {
                   CVector3(Row(2)).Length());
 }
 
-CVector3 CMatrix4x4::GetTranslation() const { return Row(3); }
+CVector3 CMatrix4x4::GetTranslation() const { return CVector3(Row(3)); }
 
 CMatrix4x4 CMatrix4x4::Rotation(const CQuaternion& q) { return CMatrix4x4(q); }
 
@@ -246,12 +246,12 @@ CMatrix4x4::operator float*() { return &_11; }
 CMatrix4x4::operator const float*() const { return &_11; }
 
 CVector4 CMatrix4x4::Row(int32_t x) const {
-  BASEASSERTR(x >= 0 && x < 4, m[0]);
-  return m[x & 3];
+  BASEASSERTR(x >= 0 && x < 4, CVector4(m[0]));
+  return CVector4(m[x & 3]);
 }
 
 CVector4 CMatrix4x4::Col(int32_t x) const {
-  BASEASSERTR(x >= 0 && x < 4, m[0]);
+  BASEASSERTR(x >= 0 && x < 4, CVector4(m[0]));
   return CVector4(m[0][x & 3], m[1][x & 3], m[2][x & 3], m[3][x & 3]);
 }
 
@@ -423,7 +423,7 @@ void CMatrix4x4::Decompose(CVector3& Scale, CQuaternion& Rotation,
   Scale = CVector3(CVector3(Row(0)).Length(), CVector3(Row(1)).Length(),
                    CVector3(Row(2)).Length());
 
-  Translation = Row(3);
+  Translation = CVector3(Row(3));
 
   BASEASSERT(Scale.x != 0.0f || Scale.y != 0.0f || Scale.z != 0.0f);
 

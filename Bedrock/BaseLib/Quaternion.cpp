@@ -114,8 +114,6 @@ CQuaternion::CQuaternion(const float _x, const float _y,
   FromEuler(_x, _y, _z);
 }
 
-CQuaternion::CQuaternion(const CQuaternion& v) = default;
-
 CQuaternion::CQuaternion(const float* v) : x(v[0]), y(v[1]), z(v[2]), s(v[3]) {}
 
 CQuaternion::CQuaternion(const float _s, const CVector3& v)
@@ -124,8 +122,6 @@ CQuaternion::CQuaternion(const float _s, const CVector3& v)
 CQuaternion::CQuaternion(const float _x, const float _y, const float _z,
                          const float _s)
     : x(_x), y(_y), z(_z), s(_s) {}
-
-CQuaternion::CQuaternion() = default;
 
 void CQuaternion::FromRotationMatrix(const CMatrix4x4& m) {
   float diag = m(0, 0) + m(1, 1) + m(2, 2) + 1.0f;

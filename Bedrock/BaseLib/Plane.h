@@ -11,7 +11,7 @@ class CPlane {
   CVector3 Normal = {0, 0, 0};
   float D = 0;
 
-  CPlane();
+  CPlane() = default;
   CPlane(const CVector3& Point, const CVector3& n);
   CPlane(const CVector3& a, const CVector3& b, const CVector3& c);
 

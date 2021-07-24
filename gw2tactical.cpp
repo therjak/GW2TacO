@@ -304,16 +304,16 @@ CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
 
   rotm = CMatrix4x4::Rotation(
       CQuaternion::FromAxisAngle(CVector3(0, 1, 0), -xfov));
-  fln = CVector3(-1, 0, 0) * rotm;
+  fln = CVector3(CVector3(-1, 0, 0) * rotm);
   rotm =
       CMatrix4x4::Rotation(CQuaternion::FromAxisAngle(CVector3(0, 1, 0), xfov));
-  frn = CVector3(1, 0, 0) * rotm;
+  frn = CVector3(CVector3(1, 0, 0) * rotm);
   rotm = CMatrix4x4::Rotation(
       CQuaternion::FromAxisAngle(CVector3(1, 0, 0), -yfov));
-  fun = CVector3(0, 1, 0) * rotm;
+  fun = CVector3(CVector3(0, 1, 0) * rotm);
   rotm =
       CMatrix4x4::Rotation(CQuaternion::FromAxisAngle(CVector3(1, 0, 0), yfov));
-  fdn = CVector3(0, -1, 0) * rotm;
+  fdn = CVector3(CVector3(0, -1, 0) * rotm);
 
   CPlane fplanes[4];
   fplanes[0] = CPlane(CVector3(0, 0, 0), fln);
@@ -563,7 +563,8 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
 
   if (TacticalIconsOnEdge) {
     screenpos /= screenpos.w;
-    CVector3 projpos = ProjectTacticalPos(screenpos, mumbleLink.fov, asp);
+    CVector3 projpos =
+        ProjectTacticalPos(CVector3(screenpos), mumbleLink.fov, asp);
     screenpos.x = projpos.x;
     screenpos.y = projpos.y;
     screenpos.z = projpos.z;
@@ -602,8 +603,8 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
           abs((camspacex - camspace).x) * drawrect.Width()));
 
   if (poi.typeData.behavior == POIBehavior::WvWObjective) {
-    alphaMultiplier =
-        max(0, min(1, powf(CVector2(screenpos).Length(), 2) + 0.3f));
+    alphaMultiplier = max(
+        0, min(1, powf(CVector2(screenpos.x, screenpos.y).Length(), 2) + 0.3f));
   }
 
   screenpos = screenpos * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
@@ -953,7 +954,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
                           dataWriteCritSec))
         continue;
 
-      CVector3 poiPos = mmp->position * miniMapTrafo;
+      CVector3 poiPos(mmp->position * miniMapTrafo);
       DrawPOIMinimap(API, miniRect, CVector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, mapFade, mumbleLink.miniMap.mapScale);
     }
@@ -969,7 +970,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
                           dataWriteCritSec))
         continue;
 
-      CVector3 poiPos = mmp->position * miniMapTrafo;
+      CVector3 poiPos(mmp->position * miniMapTrafo);
       DrawPOIMinimap(API, miniRect, CVector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, 1.0f - mapFade, mumbleLink.bigMap.mapScale);
     }

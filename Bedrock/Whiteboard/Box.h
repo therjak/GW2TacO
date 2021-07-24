@@ -23,7 +23,7 @@ enum WBBOXSIZING {
 class CWBBox : public CWBItem {
  protected:
   void AddChild(const std::shared_ptr<CWBItem>& Item) override;
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
   virtual void RearrangeChildren();
 
   void OnDraw(CWBDrawAPI* API) override;

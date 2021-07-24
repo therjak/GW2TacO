@@ -8,8 +8,6 @@ CWBMessage::CWBMessage() {
   Target = 0;
 }
 
-CWBMessage::~CWBMessage() = default;
-
 CWBMessage::CWBMessage(CWBApplication* app, WBMESSAGE message, WBGUID target) {
   App = app;
   Message = message;

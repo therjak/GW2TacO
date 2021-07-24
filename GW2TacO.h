@@ -115,7 +115,7 @@ class GW2TacO : public CWBItem {
   void OpenWindow(std::string_view s);
 
   // return true if this item handled the message
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
 
   void SetInfoLine(std::string_view string);
   void SetMouseToolTip(std::string_view toolTip);

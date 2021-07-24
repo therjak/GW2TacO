@@ -10,7 +10,7 @@ class CWBButton : public CWBItem {
   bool Pushed;
 
   void OnDraw(CWBDrawAPI* API) override;
-  bool MessageProc(CWBMessage& Message) override;
+  bool MessageProc(const CWBMessage& Message) override;
 
  public:
   CWBButton(CWBItem* Parent, const CRect& Pos, std::string_view txt);

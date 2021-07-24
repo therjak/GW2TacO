@@ -94,8 +94,6 @@ CRect::CRect(const CPoint p1, const CPoint p2)
 CRect::CRect(const int32_t a, const int32_t b, const int32_t c, const int32_t d)
     : x1(a), y1(b), x2(c), y2(d) {}
 
-CRect::CRect() = default;
-
 CRect CRect::operator+(const CRect& a) const {
   return CRect(x1 - a.x1, y1 - a.y1, x2 + a.x2, y2 + a.y2);
 }

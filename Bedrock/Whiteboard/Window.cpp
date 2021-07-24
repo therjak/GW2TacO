@@ -189,7 +189,7 @@ bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position,
   return true;
 }
 
-bool CWBWindow::MessageProc(CWBMessage& Message) {
+bool CWBWindow::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
       if (CWBItem::MessageProc(Message)) return true;

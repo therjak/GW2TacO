@@ -253,7 +253,7 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
   return "";
 }
 
-bool GW2TacO::MessageProc(CWBMessage& Message) {
+bool GW2TacO::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_COMMAND: {
       CWBButton* cb = dynamic_cast<CWBButton*>(

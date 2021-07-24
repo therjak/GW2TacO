@@ -32,7 +32,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   int32_t LastFrameTime;
 
   std::unordered_map<WBGUID, CWBItem*> Items;
-  std::recursive_mutex MessageBufferMutex;
+  std::mutex MessageBufferMutex;
   std::vector<CWBMessage> MessageBuffer;
   std::recursive_mutex TrashMutex;
   std::vector<std::shared_ptr<CWBItem>> Trash;

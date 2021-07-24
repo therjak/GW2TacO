@@ -9,15 +9,16 @@ class CVector2 {
  public:
   float x = 0, y = 0;
 
-  CVector2();
+  CVector2() = default;
   CVector2(const float _x, const float _y);
-  CVector2(const float* v);
-  CVector2(const CVector2& v);
+  explicit CVector2(const float* v);
 
-  float const operator[](int32_t idx) const;
-  float& operator[](int32_t idx);
-  operator float*();
-  operator const float*() const;
+  CVector2(const CVector2&) = default;
+  CVector2(CVector2&&) = default;
+  CVector2& operator=(const CVector2&) = default;
+  CVector2& operator=(CVector2&&) = default;
+  ~CVector2() = default;
+
   CVector2& operator+=(const CVector2& v);
   CVector2& operator-=(const CVector2& v);
   CVector2& operator*=(const float f);
@@ -45,15 +46,16 @@ class CVector2I {
  public:
   int32_t x = 0, y = 0;
 
-  CVector2I();
+  CVector2I() = default;
   CVector2I(const int32_t _x, const int32_t _y);
-  CVector2I(const int32_t* v);
-  CVector2I(const CVector2I& v);
+  explicit CVector2I(const int32_t* v);
 
-  int32_t const operator[](int32_t idx) const;
-  int32_t& operator[](int32_t idx);
-  operator int32_t*();
-  operator const int32_t*() const;
+  CVector2I(const CVector2I&) = default;
+  CVector2I(CVector2I&&) = default;
+  CVector2I& operator=(const CVector2I&) = default;
+  CVector2I& operator=(CVector2I&&) = default;
+  ~CVector2I() = default;
+
   CVector2I& operator+=(const CVector2I& v);
   CVector2I& operator-=(const CVector2I& v);
   CVector2I& operator*=(const float f);
@@ -84,15 +86,17 @@ class CVector3 {
  public:
   float x = 0, y = 0, z = 0;
 
-  CVector3();
+  CVector3() = default;
   CVector3(const float _x, const float _y, const float _z);
-  CVector3(const float* v);
-  CVector3(const CVector3& v);
+  explicit CVector3(const float* v);
+  explicit CVector3(const CVector4& v);
 
-  float const operator[](int32_t idx) const;
-  float& operator[](int32_t idx);
-  operator float*();
-  operator const float*() const;
+  CVector3(const CVector3&) = default;
+  CVector3(CVector3&&) = default;
+  CVector3& operator=(const CVector3&) = default;
+  CVector3& operator=(CVector3&&) = default;
+  ~CVector3() = default;
+
   CVector3& operator+=(const CVector3& v);
   CVector3& operator-=(const CVector3& v);
   CVector3& operator*=(const float f);
@@ -125,17 +129,16 @@ class CVector4 {
  public:
   float x = 0, y = 0, z = 0, w = 0;
 
-  CVector4();
+  CVector4() = default;
   CVector4(const float _x, const float _y, const float _z, const float _w);
-  CVector4(const float* v);
-  CVector4(const CVector4& v);
+  explicit CVector4(const float* v);
 
-  float const operator[](int32_t idx) const;
-  float& operator[](int32_t idx);
-  operator float*();
-  operator const float*() const;
-  operator CVector3();
-  operator const CVector3() const;
+  CVector4(const CVector4&) = default;
+  CVector4(CVector4&&) = default;
+  CVector4& operator=(const CVector4&) = default;
+  CVector4& operator=(CVector4&&) = default;
+  ~CVector4() = default;
+
   CVector4& operator+=(const CVector4& v);
   CVector4& operator-=(const CVector4& v);
   CVector4& operator*=(const float f);

@@ -307,7 +307,7 @@ class CWBItem : public IWBCSS {
   virtual void RemoveChild(const std::shared_ptr<CWBItem>& Item);
   virtual bool Initialize(CWBItem* Parent, const CRect& Position);
   // return true if this item handled the message
-  virtual bool MessageProc(CWBMessage& Message);
+  virtual bool MessageProc(const CWBMessage& Message);
   bool FindItemInParentTree(CWBItem* Item);
 
   INLINE const WBGUID GetGuid() const { return Guid; }
