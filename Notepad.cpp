@@ -6,7 +6,7 @@
 #include "OverlayConfig.h"
 #include "gw2tactical.h"
 
-bool GW2Notepad::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2Notepad::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                     WBMESSAGE MessageType) {
   return true;
 }

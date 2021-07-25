@@ -15,9 +15,9 @@ class CAtlasNode {
   friend class CAtlas;
   CRect Area;
   std::unique_ptr<CAtlasNode> Children[2];
-  bool Occupied;
+  bool Occupied = false;
 
-  CAtlasImage* Image;
+  CAtlasImage* Image = nullptr;
 
  public:
   CAtlasNode();

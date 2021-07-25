@@ -388,14 +388,14 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   Atlas = atlas;
   if (!Device || !Atlas) return false;
 
-  VertexBuffer.swap(Device->CreateVertexBufferDynamic(
-      sizeof(WBGUIVERTEX) * VERTEXBUFFERRECTCOUNT * 4));
+  VertexBuffer = Device->CreateVertexBufferDynamic(sizeof(WBGUIVERTEX) *
+                                                   VERTEXBUFFERRECTCOUNT * 4);
   if (!VertexBuffer) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Vertex Buffer" ));
     return false;
   }
 
-  rectIndexBuffer.swap(Device->CreateIndexBuffer(VERTEXBUFFERRECTCOUNT * 6));
+  rectIndexBuffer = Device->CreateIndexBuffer(VERTEXBUFFERRECTCOUNT * 6);
   if (!rectIndexBuffer) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Index Buffer" ));
     return false;
@@ -556,16 +556,16 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
 
   constexpr int raw_ui_pxshader_size = 672;
 
-  VxShader.swap(Device->CreateVertexShaderFromBlob(raw_ui_vxshader,
-                                                   raw_ui_vxshader_size));
+  VxShader =
+      Device->CreateVertexShaderFromBlob(raw_ui_vxshader, raw_ui_vxshader_size);
   if (!VxShader) {
     LOG(LOG_WARNING,
         _T( "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 functionality" ));
     if (Device->GetAPIType() == COREAPI_DX11) return false;
   }
 
-  PxShader.swap(
-      Device->CreatePixelShaderFromBlob(raw_ui_pxshader, raw_ui_pxshader_size));
+  PxShader =
+      Device->CreatePixelShaderFromBlob(raw_ui_pxshader, raw_ui_pxshader_size);
   if (!PxShader) {
     LOG(LOG_WARNING,
         _T( "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 functionality" ));
@@ -576,14 +576,14 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   std::vector<COREVERTEXATTRIBUTE> Att;
   while (*vx != COREVXATTR_STOP) Att.emplace_back(*vx++);
 
-  VertexFormat.swap(Device->CreateVertexFormat(Att, VxShader.get()));
+  VertexFormat = Device->CreateVertexFormat(Att, VxShader.get());
   if (!VertexFormat) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Vertex Format" ));
     return false;
   }
 
-  GuiSampler.swap(Device->CreateSamplerState());
-  GuiBlendState.swap(Device->CreateBlendState());
+  GuiSampler = Device->CreateSamplerState();
+  GuiBlendState = Device->CreateBlendState();
   if (!GuiBlendState) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Blend State" ));
     return false;

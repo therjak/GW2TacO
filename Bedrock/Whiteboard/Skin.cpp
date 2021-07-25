@@ -227,12 +227,7 @@ FORCEINLINE CRect CWBPositionDescriptorPixels::GetPosition(CSize ParentSize) {
   return r;
 }
 
-CWBMosaicImage::CWBMosaicImage() {
-  Tiling[0] = Tiling[1] = false;
-  Stretching[0] = Stretching[1] = false;
-  Handle = 0;
-  Color = CColor{0xffffffff};
-}
+CWBMosaicImage::CWBMosaicImage() = default;
 
 void CWBMosaicImage::SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels) {
   Position.SetValue(p, Pixels);
@@ -246,7 +241,7 @@ void CWBMosaicImage::SetStretching(int32_t Axis, bool y) {
 
 void CWBMosaicImage::SetHandle(WBATLASHANDLE handle) { Handle = handle; }
 
-FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI* API, CRect& Pos) {
+FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI* API, const CRect& Pos) {
   CRect Croprect = API->GetCropRect();
   API->SetCropRect(Pos + API->GetOffset());
 
@@ -300,7 +295,7 @@ void CWBSkinElement::SetName(std::string_view name) { Name = name; }
 
 std::string& CWBSkinElement::GetName() { return Name; }
 
-FORCEINLINE void CWBSkinElement::Render(CWBDrawAPI* API, CRect& Pos) {
+FORCEINLINE void CWBSkinElement::Render(CWBDrawAPI* API, const CRect& Pos) {
   API->DrawAtlasElement(Handle, Pos, DefaultBehavior[0] == WB_SKINBEHAVIOR_TILE,
                         DefaultBehavior[1] == WB_SKINBEHAVIOR_TILE,
                         DefaultBehavior[0] == WB_SKINBEHAVIOR_STRETCH,
@@ -345,7 +340,8 @@ CSize CWBSkinElement::GetElementSize(CWBDrawAPI* API) {
   return API->GetAtlasElementSize(Handle);
 }
 
-void CWBSkin::RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID, CRect& Pos) {
+void CWBSkin::RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID,
+                            const CRect& Pos) {
   if (ID == 0xffffffff) return;
 
   const uint32_t idx = ID & 0x7fffffff;
@@ -363,7 +359,7 @@ void CWBSkin::RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID, CRect& Pos) {
 }
 
 void CWBSkin::RenderElement(CWBDrawAPI* API, std::string_view Name,
-                            CRect& Pos) {
+                            const CRect& Pos) {
   RenderElement(API, GetElementID(Name), Pos);
 }
 

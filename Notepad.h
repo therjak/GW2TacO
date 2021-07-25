@@ -13,7 +13,7 @@ class GW2Notepad : public CWBItem {
   bool canSetFocus = false;
 
  public:
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   GW2Notepad(CWBItem* Parent, CRect Position);

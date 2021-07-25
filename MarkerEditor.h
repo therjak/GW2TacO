@@ -15,7 +15,7 @@ class GW2MarkerEditor : public CWBItem {
   bool ChangeDefault = false;
 
  public:
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   GW2MarkerEditor(CWBItem* Parent, CRect Position);

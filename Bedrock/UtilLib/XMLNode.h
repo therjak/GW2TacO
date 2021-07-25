@@ -17,8 +17,8 @@ class CXMLNode {
 
   CXMLNode operator=(const CXMLNode Original);
 
-  int32_t GetChildCount();
-  int32_t GetChildCount(const char*);
+  int32_t GetChildCount() const;
+  int32_t GetChildCount(const char*) const;
   CXMLNode GetChild(int32_t) const;
   CXMLNode GetChild(const char*) const;
   CXMLNode GetChild(const char*, int32_t) const;
@@ -55,8 +55,8 @@ class CXMLNode {
   void SetAttributeFromFloat(std::string_view szAttributeName, float nValue);
 
  private:
-  int32_t childCount = -1;
-  std::unordered_map<int32_t, int32_t> childCounts;
+  mutable int32_t childCount = -1;
+  mutable std::unordered_map<int32_t, int32_t> childCounts;
   std::vector<std::unique_ptr<std::string>> stringStore;
   std::vector<std::unique_ptr<CXMLNode>> children;
 

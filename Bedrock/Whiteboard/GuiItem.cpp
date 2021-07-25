@@ -8,10 +8,7 @@ static WBGUID WB_GUID_COUNTER = 1337;
 //////////////////////////////////////////////////////////////////////////
 // Display Descriptor
 
-CWBDisplayState::CWBDisplayState() {
-  memset(Visuals, 0, sizeof(int32_t) * WB_ITEM_COUNT);
-  memset(VisualSet, 0, sizeof(bool) * WB_ITEM_COUNT);
-}
+CWBDisplayState::CWBDisplayState() = default;
 
 CWBDisplayState::~CWBDisplayState() = default;
 
@@ -362,8 +359,9 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
 }
 
 void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
-                                 CWBDisplayProperties& Descriptor, CRect& Pos,
-                                 WBITEMSTATE i, WBITEMVISUALCOMPONENT v) {
+                                 CWBDisplayProperties& Descriptor,
+                                 const CRect& Pos, WBITEMSTATE i,
+                                 WBITEMVISUALCOMPONENT v) {
   CColor bck = Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR);
   if (bck.A()) {
     // API->SetCropRect(ClientToScreen(Pos));
@@ -421,8 +419,8 @@ void CWBItem::DrawBackground(CWBDrawAPI* API) {
   DrawBackground(API, GetState());
 }
 
-void CWBItem::DrawBackground(CWBDrawAPI* API, CRect& rect, WBITEMSTATE State,
-                             CWBCSSPropertyBatch& cssProps) {
+void CWBItem::DrawBackground(CWBDrawAPI* API, const CRect& rect,
+                             WBITEMSTATE State, CWBCSSPropertyBatch& cssProps) {
   DrawBackgroundItem(API, cssProps.DisplayDescriptor, rect, State);
 }
 
@@ -430,7 +428,7 @@ void CWBItem::DrawBorder(CWBDrawAPI* API) {
   DrawBorder(API, GetWindowRect(), CSSProperties);
 }
 
-void CWBItem::DrawBorder(CWBDrawAPI* API, CRect& r,
+void CWBItem::DrawBorder(CWBDrawAPI* API, const CRect& r,
                          CWBCSSPropertyBatch& cssProps) {
   const auto& crop = API->GetCropRect();
 
@@ -479,7 +477,6 @@ void CWBItem::OnMouseLeave() {
 }
 
 void CWBItem::CalculateClientPosition() {
-  CRect OldClient = ClientRect;
   CPoint p = ClientToScreen(CPoint(0, 0));
 
   ClientRect = CSSProperties.PositionDescriptor.GetPadding(
@@ -555,7 +552,7 @@ CWBItem* CWBItem::SetCapture() { return App->SetCapture(this); }
 
 bool CWBItem::ReleaseCapture() const { return App->ReleaseCapture(); }
 
-bool CWBItem::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool CWBItem::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                  WBMESSAGE MessageType) {
   if (ForceMouseTransparent) return true;
   if (Hidden) return true;
@@ -913,14 +910,16 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams& s,
   if (a2 - thumbsize - a1 == 0) {
     newscrollpos = s.ScrollPos;
 
-    if (s.ScrollPos < s.MinScroll && s.ScrollPos + s.ViewSize > s.MaxScroll)
+    if (s.ScrollPos < s.MinScroll && s.ScrollPos + s.ViewSize > s.MaxScroll) {
       newscrollpos = s.MinScroll;
-    else if (s.ScrollPos < s.MinScroll)
+    } else if (s.ScrollPos < s.MinScroll) {
       newscrollpos = s.MinScroll;
-    else if (s.ScrollPos + s.ViewSize > s.MaxScroll)
+    } else if (s.ScrollPos + s.ViewSize > s.MaxScroll) {
       newscrollpos = s.MaxScroll - s.ViewSize;
-
-    if (newscrollpos < s.MinScroll) newscrollpos = s.MinScroll;
+    }
+    if (newscrollpos < s.MinScroll) {
+      newscrollpos = s.MinScroll;
+    }
   }
 
   return newscrollpos;
@@ -1452,7 +1451,6 @@ std::vector<std::string> CWBItem::ExplodeValueWithoutSplittingParameters(
     std::string_view String) {
   std::vector<std::string> aOut;
   int nPrevious = 0;
-  int nNext = 0;
 
 #ifndef UNICODE
 #define SPACE isspace
@@ -1607,8 +1605,6 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     auto Attribs = SplitByWhitespace(value);
 
     for (const auto& attrib : Attribs) {
-      uint32_t dw = 0;
-
       if (attrib == (_T( "left" )))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
@@ -1642,8 +1638,6 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
-      uint32_t dw = 0;
-
       if (attrib == (_T( "none" )))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
                               0xffffffff, pseudo);
@@ -1942,8 +1936,8 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
     return;
   }
 
-  bool px = value.find(_T( "px" )) != std::string_view::npos;
-  bool pc = value.find(_T( "%" )) != std::string_view::npos;
+  bool px = value.find("px") != std::string_view::npos;
+  bool pc = value.find('%') != std::string_view::npos;
 
   float pxv = 0;
   float pcv = 0;
@@ -2156,7 +2150,7 @@ bool CWBItem::ScanPXValue(std::string_view Value, int32_t& Result,
 bool CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
                             std::string_view PropName) {
   if (Value.find(_T( "skin(" )) == 0) {
-    int32_t i = Value.find(_T( ")" ));
+    int32_t i = Value.find(')');
     if (i != std::string_view::npos) {
       // Value.GetPointer()[ i ] = 0;
       Result = App->GetSkin()->GetElementID(Value.substr(5, i - 5));

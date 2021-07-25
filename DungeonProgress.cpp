@@ -251,7 +251,7 @@ CWBItem* DungeonProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return DungeonProgress::Create(Root, Pos).get();
 }
 
-bool DungeonProgress::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool DungeonProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                          WBMESSAGE MessageType) {
   return true;
 }

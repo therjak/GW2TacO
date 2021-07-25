@@ -51,7 +51,7 @@ CXMLNode CXMLNode::operator=(const CXMLNode Original) {
 
 CXMLNode::~CXMLNode() = default;
 
-int32_t CXMLNode::GetChildCount() {
+int32_t CXMLNode::GetChildCount() const {
   if (!pNode) return 0;
 
   if (childCount != -1) return childCount;
@@ -71,7 +71,7 @@ int32_t CXMLNode::GetChildCount() {
   return count;
 }
 
-int32_t CXMLNode::GetChildCount(const char* szNodeName) {
+int32_t CXMLNode::GetChildCount(const char* szNodeName) const {
   int32_t hash = GetStringHash(szNodeName);
 
   if (childCounts.find(hash) != childCounts.end()) return childCounts[hash];

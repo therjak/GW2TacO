@@ -107,7 +107,7 @@ void Localization::ImportLanguage(CXMLDocument& d) {
   int tokenCount = root.GetChildCount("token");
 
   for (int x = 0; x < tokenCount; x++) {
-    auto& token = root.GetChild("token", x);
+    const auto& token = root.GetChild("token", x);
     if (!token.HasAttribute("key") || !token.HasAttribute("value")) continue;
 
     std::string key = token.GetAttributeAsString("key");

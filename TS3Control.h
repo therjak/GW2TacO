@@ -23,6 +23,6 @@ class TS3Control : public CWBItem {
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "ts3control" ), CWBItem);
 
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

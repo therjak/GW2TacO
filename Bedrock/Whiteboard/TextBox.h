@@ -32,22 +32,22 @@ class CWBTextBoxHistoryEntry {
 
 class CWBTextBox : public CWBItem {
   std::vector<std::unique_ptr<CWBTextBoxHistoryEntry>> History;
-  uint32_t HistoryPosition;
+  uint32_t HistoryPosition = 0;
 
-  int32_t HiglightStartTime;
-  int32_t CursorBlinkStartTime;
+  int32_t HiglightStartTime = 0;
+  int32_t CursorBlinkStartTime = 0;
 
-  int32_t Flags;
+  int32_t Flags = 0;
   const char PasswordStar = '*';  // character to display instead of characters
 
-  int32_t CursorPos;
-  int32_t DesiredCursorPosXinPixels;  // used when moving up and down
+  int32_t CursorPos = 0;
+  int32_t DesiredCursorPosXinPixels = 0;  // used when moving up and down
 
-  int32_t SelectionStart, SelectionEnd, SelectionOrigin;
+  int32_t SelectionStart = 0, SelectionEnd = 0, SelectionOrigin = 0;
 
   CWBCSSPropertyBatch Selection;
 
-  INLINE void DrawCursor(CWBDrawAPI* API, CPoint& p);
+  INLINE void DrawCursor(CWBDrawAPI* API, const CPoint& p);
   void SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting);
   void RemoveSelectedText();
   void Copy();

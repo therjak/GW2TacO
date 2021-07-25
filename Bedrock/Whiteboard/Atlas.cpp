@@ -4,12 +4,9 @@
 
 static WBATLASHANDLE AtlasHandle = 1;
 
-CAtlasNode::CAtlasNode() {
-  Occupied = false;
-  Image = nullptr;
-}
+CAtlasNode::CAtlasNode() = default;
 
-CAtlasNode::~CAtlasNode() {}
+CAtlasNode::~CAtlasNode() = default;
 
 CRect& CAtlasNode::GetArea() { return Area; }
 
@@ -176,7 +173,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
 
 bool CAtlas::InitializeTexture(CCoreDevice* Device) {
   if (!Device) return false;
-  Atlas.swap(Device->CreateTexture2D(XRes, YRes, Image));
+  Atlas = Device->CreateTexture2D(XRes, YRes, Image);
   return Atlas.operator bool();
 }
 

@@ -5,7 +5,7 @@
 
 #include "../BaseLib/Timer.h"
 
-INLINE void CWBTextBox::DrawCursor(CWBDrawAPI* API, CPoint& p) {
+INLINE void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2))
     API->DrawRect(
@@ -239,7 +239,6 @@ void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting) {
     }
   }
 
-  int32_t pd = p;
   int32_t xp = 0;
   while (xp < x) {
     if (p == Text.size() || Text[p] == '\n') {
@@ -261,8 +260,6 @@ void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting) {
     if (xp > x) break;
     p++;
   }
-
-  // LOG(LOG_DEBUG,_T("[gui] Set Cursor Pos: %d (%d)"),xp,p-pd);
 
   SetCursorPos(p, Selecting);
 }
@@ -612,7 +609,6 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
 
     case WBM_MOUSEWHEEL: {
       CWBFont* Font = GetFont(GetState());
-      int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
       SetVScrollbarPos(
           GetVScrollbarPos() - Message.Data * 3 * Font->GetLineHeight(), true);
     }
@@ -630,7 +626,6 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
         break;  // altgr
 
       CWBFont* Font = GetFont(GetState());
-      int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
 
       // handle cursor movement keys
       switch (Message.Key) {

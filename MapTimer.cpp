@@ -307,7 +307,7 @@ CWBItem* GW2MapTimer::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2MapTimer::Create(Root, Pos).get();
 }
 
-bool GW2MapTimer::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2MapTimer::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                      WBMESSAGE MessageType) {
   return true;
 }

@@ -27,7 +27,7 @@ class GW2MouseHighlight : public CWBItem {
   void OnDraw(CWBDrawAPI* API) override;
 
  public:
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   GW2MouseHighlight(CWBItem* Parent, CRect Position);

@@ -8,7 +8,7 @@ class OverlayWindow : public CWBWindow {
  public:
   bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   OverlayWindow(CWBItem* Parent, CRect Position);

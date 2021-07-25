@@ -126,7 +126,7 @@ class CWBFont {
                                          WBTEXTTRANSFORM Transform);
 
  public:
-  CWBFont(CAtlas* Atlas);
+  explicit CWBFont(CAtlas* Atlas);
   virtual ~CWBFont();
   bool Initialize(CWBFontDescription* Description, TCHAR MissingChar = _T('o'));
 

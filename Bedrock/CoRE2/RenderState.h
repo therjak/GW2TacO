@@ -33,14 +33,14 @@ union CORERENDERSTATEVALUE {
 typedef uint32_t CORERENDERSTATEID;
 
 struct COREBLENDDESCRIPTOR {
-  bool BlendEnable;
-  COREBLENDFACTOR SrcBlend;
-  COREBLENDFACTOR DestBlend;
-  COREBLENDOP BlendOp;
-  COREBLENDFACTOR SrcBlendAlpha;
-  COREBLENDFACTOR DestBlendAlpha;
-  COREBLENDOP BlendOpAlpha;
-  uint8_t RenderTargetWriteMask;
+  bool BlendEnable = false;
+  COREBLENDFACTOR SrcBlend = COREBLEND_ZERO;
+  COREBLENDFACTOR DestBlend = COREBLEND_ZERO;
+  COREBLENDOP BlendOp = COREBLENDOP_ADD;
+  COREBLENDFACTOR SrcBlendAlpha = COREBLEND_ZERO;
+  COREBLENDFACTOR DestBlendAlpha = COREBLEND_ZERO;
+  COREBLENDOP BlendOpAlpha = COREBLENDOP_ADD;
+  uint8_t RenderTargetWriteMask = 0;
 };
 
 class CCoreRenderStateBatch : public CCoreResource {
@@ -58,7 +58,7 @@ class CCoreBlendState : public CCoreRenderStateBatch {
  protected:
   bool AlphaToCoverage;
   bool IndependentBlend;
-  COREBLENDDESCRIPTOR RenderTargetBlendStates[8] = {0};
+  COREBLENDDESCRIPTOR RenderTargetBlendStates[8];
 
  public:
   explicit CCoreBlendState(CCoreDevice* Device);

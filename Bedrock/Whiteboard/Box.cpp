@@ -394,7 +394,7 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
   return false;
 }
 
-bool CWBBox::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool CWBBox::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                 WBMESSAGE MessageType) {
   return ClickThrough;
 }

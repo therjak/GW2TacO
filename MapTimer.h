@@ -58,6 +58,6 @@ class GW2MapTimer : public CWBItem {
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "maptimer" ), CWBItem);
 
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

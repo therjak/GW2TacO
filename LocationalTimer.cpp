@@ -48,7 +48,7 @@ void LocationalTimer::Update() {
   }
 }
 
-void LocationalTimer::ImportData(CXMLNode& node) {
+void LocationalTimer::ImportData(const CXMLNode& node) {
   if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &MapID);
   if (node.HasAttribute("length"))
     node.GetAttributeAsInteger("length", &TimerLength);
@@ -128,7 +128,7 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
   }
 }
 
-bool TimerDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool TimerDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                       WBMESSAGE MessageType) {
   return true;
 }

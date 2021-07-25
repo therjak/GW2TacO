@@ -63,6 +63,6 @@ class CWBBox : public CWBItem {
   virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

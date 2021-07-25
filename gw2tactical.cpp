@@ -993,7 +993,7 @@ CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, CXMLNode& node,
   return GW2TacticalDisplay::Create(Root, Pos).get();
 }
 
-bool GW2TacticalDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2TacticalDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                             WBMESSAGE MessageType) {
   return true;
 }

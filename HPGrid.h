@@ -24,7 +24,7 @@ class GW2HPGrid : public CWBItem {
   std::vector<GridData> Grids;
 
  public:
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   virtual void LoadGrids();

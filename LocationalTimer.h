@@ -10,9 +10,9 @@ class LocationalTimer {
  public:
   struct TimerEvent {
     std::string Text;
-    int32_t Time;
-    int32_t CountdownLength;
-    int32_t OnScreenLength;
+    int32_t Time = 0;
+    int32_t CountdownLength = 0;
+    int32_t OnScreenLength = 0;
   };
 
   int32_t MapID = 0;
@@ -31,13 +31,13 @@ class LocationalTimer {
   virtual ~LocationalTimer();
 
   void Update();
-  void ImportData(CXMLNode& node);
+  void ImportData(const CXMLNode& node);
 };
 
 class TimerDisplay : public CWBItem {
  public:
   void OnDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   TimerDisplay(CWBItem* Parent, CRect Position);

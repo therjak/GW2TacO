@@ -203,7 +203,7 @@ void CMumbleLink::Update() {
 
   id = ident.find(L"\"name\":");
   if (id != ident.npos) {
-    int end = ident.substr(id + 8).find(L"\"");
+    int end = ident.substr(id + 8).find(L'\"');
     if (end != ident.npos) {
       charName = wstring2string(ident.substr(id + 8, end));
       charIDHash = CalculateHash(charName);
@@ -214,7 +214,7 @@ void CMumbleLink::Update() {
   } else {
     id = ident.find(L"\"name\": ");
     if (id >= 0) {
-      int end = ident.substr(id + 9).find(L"\"");
+      int end = ident.substr(id + 9).find(L'\"');
       if (end != ident.npos) {
         charName = wstring2string(ident.substr(id + 9, end));
         charIDHash = CalculateHash(charName);
@@ -280,7 +280,7 @@ CMumbleLink::CMumbleLink() {
   FrameTimes = std::make_unique<CRingBuffer<int32_t>>(60);
 }
 
-CMumbleLink::~CMumbleLink() {}
+CMumbleLink::~CMumbleLink() = default;
 
 bool CMumbleLink::IsValid() { return lm; }
 

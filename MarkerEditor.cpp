@@ -8,7 +8,7 @@
 #include "TrailLogger.h"
 #include "gw2tactical.h"
 
-bool GW2MarkerEditor::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2MarkerEditor::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                          WBMESSAGE MessageType) {
   return true;
 }

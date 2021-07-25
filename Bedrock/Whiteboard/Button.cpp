@@ -8,10 +8,11 @@ WBITEMSTATE CWBButton::GetState() {
     if (App->GetMouseCaptureItem() == this && MouseOver())
       i = WB_STATE_ACTIVE;
     else {
-      if (IsEnabled())
+      if (IsEnabled()) {
         i = MouseOver() ? WB_STATE_HOVER : WB_STATE_NORMAL;
-      else
+      } else {
         i = WB_STATE_DISABLED;
+      }
     }
   }
 

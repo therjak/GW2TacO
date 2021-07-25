@@ -105,7 +105,7 @@ CWBItem* GW2TacticalCompass::Factory(CWBItem* Root, CXMLNode& node,
   return GW2TacticalCompass::Create(Root, Pos).get();
 }
 
-bool GW2TacticalCompass::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2TacticalCompass::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                             WBMESSAGE MessageType) {
   return true;
 }

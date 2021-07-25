@@ -62,7 +62,7 @@ class GW2Trail {
 };
 
 class GW2TrailDisplay : public CWBItem {
-  float asp;
+  float asp = 0;
   CMatrix4x4 cam;
   CMatrix4x4 persp;
   CRect drawrect;
@@ -109,7 +109,7 @@ class GW2TrailDisplay : public CWBItem {
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "gw2Trails" ), CWBItem);
 
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   void DoTrailLogging(int32_t mapID, CVector3 charPos);

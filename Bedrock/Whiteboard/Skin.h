@@ -60,8 +60,8 @@ class CWBPositionDescriptor {
 };
 
 class CWBPositionDescriptorPixels {
-  bool Set[6];
-  int32_t Positions[6];
+  bool Set[6] = {false};
+  int32_t Positions[6] = {0};
 
  public:
   CWBPositionDescriptorPixels();
@@ -99,16 +99,16 @@ class CWBSkinElement {
   WBATLASHANDLE GetHandle();
   std::string& GetName();
 
-  FORCEINLINE void Render(CWBDrawAPI* API, CRect& Pos);
+  FORCEINLINE void Render(CWBDrawAPI* API, const CRect& Pos);
   CSize GetElementSize(CWBDrawAPI* API);
 };
 
 class CWBMosaicImage {
   CWBPositionDescriptorPixels Position;
-  bool Tiling[2];
-  bool Stretching[2];
-  WBATLASHANDLE Handle;
-  CColor Color;
+  bool Tiling[2] = {false};
+  bool Stretching[2]{false};
+  WBATLASHANDLE Handle = 0;
+  CColor Color = CColor(0xffffffff);
 
  public:
   CWBMosaicImage();
@@ -118,13 +118,13 @@ class CWBMosaicImage {
   void SetHandle(WBATLASHANDLE handle);
   void SetColor(CColor color);
 
-  FORCEINLINE void Render(CWBDrawAPI* API, CRect& Pos);
+  FORCEINLINE void Render(CWBDrawAPI* API, const CRect& Pos);
 };
 
 class CWBMosaic {
   std::string Name;
   std::vector<CWBMosaicImage> Images;
-  int32_t Overshoot[4];
+  int32_t Overshoot[4] = {0};
 
  public:
   CWBMosaic();
@@ -154,8 +154,8 @@ class CWBSkin {
                        int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
                        int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
 
-  void RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID, CRect& Pos);
-  void RenderElement(CWBDrawAPI* API, std::string_view Name, CRect& Pos);
+  void RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID, const CRect& Pos);
+  void RenderElement(CWBDrawAPI* API, std::string_view Name, const CRect& Pos);
   WBSKINELEMENTID GetElementID(std::string_view Name);
   CWBSkinElement* GetElement(WBSKINELEMENTID id);
   CSize GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID id);

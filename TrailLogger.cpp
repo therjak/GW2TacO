@@ -499,7 +499,7 @@ CWBItem* GW2TrailDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos).get();
 }
 
-bool GW2TrailDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2TrailDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                          WBMESSAGE MessageType) {
   return true;
 }
@@ -683,8 +683,6 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
   memset(vertices, 0, sizeof(GW2TrailVertex) * pointCount * 2);
   int vertexCount = 0;
   int32_t* indices = new int32_t[(pointCount - 1) * 6];
-
-  float width = GameToWorldCoords(20);
 
   CVector3 lastPos = CVector3(points);
   CVector3 lastOrt = CVector3(0, 0, 0);

@@ -26,41 +26,41 @@ struct MumbleContext {
 };
 
 struct CompassData {
-  int compassWidth;       // pixels
-  int compassHeight;      // pixels
-  float compassRotation;  // guessing... radians? :-P
-  float playerX;          // continentCoords
-  float playerY;          // continentCoords
-  float mapCenterX;       // continentCoords
-  float mapCenterY;       // continentCoords
-  float mapScale;         // not even sure TBH :-P};
+  int compassWidth = 0;       // pixels
+  int compassHeight = 0;      // pixels
+  float compassRotation = 0;  // guessing... radians? :-P
+  float playerX = 0;          // continentCoords
+  float playerY = 0;          // continentCoords
+  float mapCenterX = 0;       // continentCoords
+  float mapCenterY = 0;       // continentCoords
+  float mapScale = 0;         // not even sure TBH :-P};
   CMatrix4x4 BuildTransformationMatrix(const CRect& miniRect,
                                        bool ignoreRotation);
 };
 
 struct LinkedMem {
 #ifdef WIN32
-  UINT32 uiVersion;
-  DWORD uiTick;
+  UINT32 uiVersion = 0;
+  DWORD uiTick = 0;
 #else
-  uint32_t uiVersion;
-  uint32_t uiTick;
+  uint32_t uiVersion = 0;
+  uint32_t uiTick = 0;
 #endif
-  float fAvatarPosition[3];
-  float fAvatarFront[3];
-  float fAvatarTop[3];
-  wchar_t name[256];
-  float fCameraPosition[3];
-  float fCameraFront[3];
-  float fCameraTop[3];
-  wchar_t identity[256];
+  float fAvatarPosition[3] = {0};
+  float fAvatarFront[3] = {0};
+  float fAvatarTop[3] = {0};
+  wchar_t name[256] = {0};
+  float fCameraPosition[3] = {0};
+  float fCameraFront[3] = {0};
+  float fCameraTop[3] = {0};
+  wchar_t identity[256] = {0};
 #ifdef WIN32
-  UINT32 context_len;
+  UINT32 context_len = 0;
 #else
-  uint32_t context_len;
+  uint32_t context_len = 0;
 #endif
-  unsigned char context[256];
-  wchar_t description[2048];
+  unsigned char context[256] = {0};
+  wchar_t description[2048] = {0};
 };
 
 #define AVGCAMCOUNTER 6
@@ -73,15 +73,15 @@ class CMumbleLink {
   LinkedMem lastData;
   LinkedMem prevData;
 
-  int tick;
-  double interpolation;
+  int tick = 0;
+  double interpolation = 0;
 
   CVector3 charPosition;
   CVector3 charEye;
   CVector3 camPosition;
   CVector3 camDir;
   CVector3 camUp;
-  float fov;
+  float fov = 0;
   int32_t mapID = 0;
   int32_t worldID = 0;
   int32_t mapType = 0;
@@ -89,14 +89,14 @@ class CMumbleLink {
   int32_t charIDHash = 0;
 
   int32_t lastMapChangeTime = 0;
-  bool isMapOpen;  // bit 1: IsMapOpen, bit2: IsCompassTopRight, bit3:
-                   // DoesCompassHaveRotationEnabled
-  bool isMinimapTopRight;
-  bool isMinimapRotating;
-  bool gameHasFocus;
-  bool isPvp;
-  bool textboxHasFocus;
-  bool isInCombat;
+  bool isMapOpen = false;  // bit 1: IsMapOpen, bit2: IsCompassTopRight, bit3:
+                           // DoesCompassHaveRotationEnabled
+  bool isMinimapTopRight = false;
+  bool isMinimapRotating = false;
+  bool gameHasFocus = false;
+  bool isPvp = false;
+  bool textboxHasFocus = false;
+  bool isInCombat = false;
 
   CompassData miniMap;
   CompassData bigMap;
@@ -127,7 +127,7 @@ class CMumbleLink {
   bool camUpChanged = false;
 
   std::string mumblePath = "MumbleLink";
-  uint32_t pID;
+  uint32_t pID = 0;
 };
 
 extern CMumbleLink mumbleLink;

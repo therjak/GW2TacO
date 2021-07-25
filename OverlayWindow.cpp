@@ -4,7 +4,7 @@
 #include "Bedrock/Whiteboard/Window.h"
 #include "OverlayConfig.h"
 
-bool OverlayWindow::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool OverlayWindow::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                        WBMESSAGE MessageType) {
   if (GetConfigValue("EditMode")) return false;
   return true;

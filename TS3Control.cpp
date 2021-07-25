@@ -130,7 +130,7 @@ CWBItem* TS3Control::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return TS3Control::Create(Root, Pos).get();
 }
 
-bool TS3Control::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool TS3Control::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                     WBMESSAGE MessageType) {
   return true;
 }

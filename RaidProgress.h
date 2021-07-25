@@ -55,7 +55,7 @@ class RaidProgress : public CWBItem {
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "raidprogress" ), CWBItem);
 
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
   std::vector<Raid>& GetRaids();
 };

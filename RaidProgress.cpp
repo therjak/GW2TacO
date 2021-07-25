@@ -235,7 +235,7 @@ CWBItem* RaidProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return RaidProgress::Create(Root, Pos).get();
 }
 
-bool RaidProgress::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool RaidProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                       WBMESSAGE MessageType) {
   return true;
 }

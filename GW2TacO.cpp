@@ -194,7 +194,7 @@ enum MainMenuItems {
   Menu_MarkerFilter_Base = 0x65535,
 };
 
-bool GW2TacO::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2TacO::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                  WBMESSAGE MessageType) {
   return true;
 }

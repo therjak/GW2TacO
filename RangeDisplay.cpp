@@ -51,7 +51,6 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
           .Normalized();
 
   CVector3 toChar(charpos - campos);
-  float dist = toChar.Length();
 
   for (int x = 0; x < resolution; x++) {
     float a1 = 1.0f;
@@ -168,7 +167,7 @@ CWBItem* GW2RangeDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2RangeDisplay::Create(Root, Pos).get();
 }
 
-bool GW2RangeDisplay::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2RangeDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                          WBMESSAGE MessageType) {
   return true;
 }

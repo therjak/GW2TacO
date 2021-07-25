@@ -23,8 +23,8 @@ class CFileList {
 
   CFileList();
   ~CFileList();
-  CFileList(std::string_view Mask, std::string_view Path = "",
-            bool Recursive = false);
+  explicit CFileList(std::string_view Mask, std::string_view Path = "",
+                     bool Recursive = false);
 
   void ExpandSearch(std::string_view Mask, std::string_view Path,
                     bool Recursive, bool getDirectories = false);

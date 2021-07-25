@@ -95,7 +95,7 @@ class GW2TacO : public CWBItem {
  public:
   void OnDraw(CWBDrawAPI* API) override;
   void OnPostDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   GW2TacO(CWBItem* Parent, CRect Position);

@@ -43,7 +43,7 @@ CWBItem* GW2HPGrid::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return GW2HPGrid::Create(Root, Pos).get();
 }
 
-bool GW2HPGrid::IsMouseTransparent(CPoint& ClientSpacePoint,
+bool GW2HPGrid::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                    WBMESSAGE MessageType) {
   return true;
 }

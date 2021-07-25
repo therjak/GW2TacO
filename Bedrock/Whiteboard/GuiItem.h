@@ -103,8 +103,8 @@ class CWBScrollbarParams {
 };
 
 class CWBDisplayState {
-  uint32_t Visuals[WB_ITEM_COUNT];
-  bool VisualSet[WB_ITEM_COUNT];
+  uint32_t Visuals[WB_ITEM_COUNT] = {0};
+  bool VisualSet[WB_ITEM_COUNT] = {false};
 
  public:
   CWBDisplayState();
@@ -252,7 +252,7 @@ class CWBItem : public IWBCSS {
                                      WBMESSAGE MessageType);
   virtual void SetChildAsTopmost(int32_t Index);
   virtual void SetChildAsBottommost(int32_t Index);
-  virtual bool IsMouseTransparent(CPoint& ClientSpacePoint,
+  virtual bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                                   WBMESSAGE MessageType);
 
   CWBItem* SetCapture();
@@ -262,16 +262,16 @@ class CWBItem : public IWBCSS {
   virtual bool ScrollbarDragged();
 
   virtual void DrawBackgroundItem(
-      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, CRect& Pos,
+      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, const CRect& Pos,
       WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
   virtual void DrawBackground(CWBDrawAPI* API, WBITEMSTATE State);
   virtual void DrawBackground(CWBDrawAPI* API);
   virtual void DrawBorder(CWBDrawAPI* API);
   virtual void ApplyOpacity(CWBDrawAPI* API);
 
-  virtual void DrawBackground(CWBDrawAPI* API, CRect& rect, WBITEMSTATE State,
-                              CWBCSSPropertyBatch& cssProps);
-  virtual void DrawBorder(CWBDrawAPI* API, CRect& rect,
+  virtual void DrawBackground(CWBDrawAPI* API, const CRect& rect,
+                              WBITEMSTATE State, CWBCSSPropertyBatch& cssProps);
+  virtual void DrawBorder(CWBDrawAPI* API, const CRect& rect,
                           CWBCSSPropertyBatch& cssProps);
 
   virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
@@ -473,28 +473,28 @@ class CWBItem : public IWBCSS {
 // class is the typename we're comparing against if not we traverse up the
 // hierarchy by directly calling the InstanceOf() of the parent class
 
-#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)   \
-  virtual const std::string& GetType() const {           \
-    static const std::string type = TYPE;                \
-    return type;                                         \
-  }                                                      \
-                                                         \
-  friend CWBItem;                                        \
-                                                         \
- private:                                                \
-  static const std::string& GetClassName() {             \
-    static const std::string type = TYPE;                \
-    return type;                                         \
-  }                                                      \
-                                                         \
- public:                                                 \
-  virtual bool InstanceOf(std::string_view name) const { \
-    if (name == GetClassName()) return true;             \
-    return PARENTCLASS::InstanceOf(name);                \
+#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)    \
+  const std::string& GetType() const override {           \
+    static const std::string type = TYPE;                 \
+    return type;                                          \
+  }                                                       \
+                                                          \
+  friend CWBItem;                                         \
+                                                          \
+ private:                                                 \
+  static const std::string& GetClassName() {              \
+    static const std::string type = TYPE;                 \
+    return type;                                          \
+  }                                                       \
+                                                          \
+ public:                                                  \
+  bool InstanceOf(std::string_view name) const override { \
+    if (name == GetClassName()) return true;              \
+    return PARENTCLASS::InstanceOf(name);                 \
   }
 
 #define WB_DECLARE_GUIITEM_2PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2)        \
-  virtual const std::string& GetType() const {                               \
+  const std::string& GetType() const override {                              \
     static const std::string type = TYPE;                                    \
     return type;                                                             \
   }                                                                          \
@@ -508,14 +508,14 @@ class CWBItem : public IWBCSS {
   }                                                                          \
                                                                              \
  public:                                                                     \
-  virtual bool InstanceOf(std::string_view name) const {                     \
+  bool InstanceOf(std::string_view name) const override {                    \
     if (name == GetClassName()) return true;                                 \
     return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name); \
   }
 
 #define WB_DECLARE_GUIITEM_3PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2,          \
                                     PARENTCLASS3)                              \
-  virtual const std::string& GetType() const override {                        \
+  const std::string& GetType() const override {                                \
     static const std::string type = TYPE;                                      \
     return type;                                                               \
   }                                                                            \
@@ -529,7 +529,7 @@ class CWBItem : public IWBCSS {
   }                                                                            \
                                                                                \
  public:                                                                       \
-  virtual bool InstanceOf(std::string_view name) const {                       \
+  bool InstanceOf(std::string_view name) const override {                      \
     if (name == GetClassName()) return true;                                   \
     return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name) || \
            PARENTCLASS3::InstanceOf(name);                                     \
