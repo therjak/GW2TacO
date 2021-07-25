@@ -1708,7 +1708,7 @@ bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
 
   int32_t xr, yr;
 
-  uint8_t* img = DecompressImage(image, ImageSize, xr, yr);
+  auto img = DecompressImage(image, ImageSize, xr, yr);
   if (!img) {
     LOG(LOG_ERROR,
         _T( "[gui] Error loading font data: font img could not be loaded" ));
@@ -1718,8 +1718,7 @@ bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
   for (int32_t x = 0; x < xr * yr; x++)
     img[x * 4 + 1] = img[x * 4 + 2] = img[x * 4 + 3] = img[x * 4];
 
-  bool res = fd->LoadBMFontBinary(Binary, BinarySize, img, xr, yr);
-  SAFEDELETEA(img);
+  bool res = fd->LoadBMFontBinary(Binary, BinarySize, img.get(), xr, yr);
   return res;
 }
 

@@ -126,7 +126,7 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
 #else
 
   int32_t xr, yr;
-  uint8_t* Img = DecompressImage(Data, Size, xr, yr);
+  auto Img = DecompressImage(Data, Size, xr, yr);
 
   if (!Img) {
     if (!DecompressPNG(Data, Size, Img, xr, yr)) {
@@ -139,17 +139,18 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
             _T( "Texture Creation From Image failed: d3dx not linked" ));
 #endif
         return false;
-      } else
+      } else {
         ViewCreated = true;
+      }
     } else {
       if (!Img) return false;
-      ARGBtoABGR(Img, xr, yr);
+      ARGBtoABGR(Img.get(), xr, yr);
     }
   }
 
   if (!ViewCreated) {
-    Create(xr, yr, Img);
-    SAFEDELETE(Img);
+    Create(xr, yr, Img.get());
+    Img.reset();
   }
 
 #endif

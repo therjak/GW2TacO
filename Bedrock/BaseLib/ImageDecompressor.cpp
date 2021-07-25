@@ -7,8 +7,9 @@
 
 #define HIMETRIC_INCH 2540
 
-uint8_t* DecompressImage(const uint8_t* ImageData, int32_t ImageDataSize,
-                         int32_t& XSize, int32_t& YSize) {
+std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
+                                           int32_t ImageDataSize,
+                                           int32_t& XSize, int32_t& YSize) {
   if (!ImageData || !ImageDataSize) return nullptr;
 
   XSize = YSize = 0;
@@ -76,8 +77,8 @@ uint8_t* DecompressImage(const uint8_t* ImageData, int32_t ImageDataSize,
   XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), HIMETRIC_INCH);
   YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), HIMETRIC_INCH);
 
-  uint8_t* Image = new uint8_t[XSize * YSize * 4];
-  memset(Image, 0, XSize * YSize * 4);
+  auto Image = std::make_unique<uint8_t[]>(XSize * YSize * 4);
+  memset(Image.get(), 0, XSize * YSize * 4);
 
   HBITMAP bm = CreateCompatibleBitmap(hdc, XSize, YSize);
   BITMAPINFO bmi;
@@ -102,9 +103,9 @@ uint8_t* DecompressImage(const uint8_t* ImageData, int32_t ImageDataSize,
     _com_error err(res);
     LOG(LOG_ERROR, _T( "[base] gpPicture->Render failed (%s)" ),
         err.ErrorMessage());
-    SAFEDELETEA(Image);
+    Image.reset();
   } else {
-    GetDIBits(mdc, bm, 0, YSize, Image, &bmi, DIB_RGB_COLORS);
+    GetDIBits(mdc, bm, 0, YSize, Image.get(), &bmi, DIB_RGB_COLORS);
   }
 
   SelectObject(mdc, oldbm);

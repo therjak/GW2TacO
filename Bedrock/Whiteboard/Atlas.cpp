@@ -48,8 +48,8 @@ CAtlasImage::CAtlasImage() {
   Required = false;
 }
 
-CAtlasImage::CAtlasImage(uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
-                         const CRect& Source) {
+CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
+                         int32_t SrcYRes, const CRect& Source) {
   Image = nullptr;
   XRes = Source.Width();
   YRes = Source.Height();
@@ -57,10 +57,10 @@ CAtlasImage::CAtlasImage(uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
   Required = false;
 
   if (Source.Area() > 0) {
-    Image = new uint8_t[XRes * YRes * 4];
-    memset(Image, 0, XRes * YRes * 4);
+    Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
+    memset(Image.get(), 0, XRes * YRes * 4);
 
-    uint8_t* i = Image;
+    uint8_t* i = Image.get();
 
     for (int32_t y = 0; y < YRes; y++) {
       if (y + Source.y1 < 0 || y + Source.y1 >= SrcYRes) {
@@ -87,11 +87,11 @@ CAtlasImage::CAtlasImage(uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
   }
 }
 
-CAtlasImage::~CAtlasImage() { SAFEDELETEA(Image); }
+CAtlasImage::~CAtlasImage() = default;
 
 WBATLASHANDLE CAtlasImage::GetHandle() { return Handle; }
 
-uint8_t* CAtlasImage::GetImage() { return Image; }
+uint8_t* CAtlasImage::GetImage() { return Image.get(); }
 
 CSize CAtlasImage::GetSize() const { return CSize(XRes, YRes); }
 
@@ -105,8 +105,8 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
   FlushCache();
   XRes = XSize;
   YRes = YSize;
-  Image = new uint8_t[XRes * YRes * 4];
-  memset(Image, 0, XRes * YRes * 4);
+  Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
+  memset(Image.get(), 0, XRes * YRes * 4);
   Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
@@ -134,7 +134,6 @@ CAtlas::~CAtlas() {
     CLightweightCriticalSection cs(&critsec);
     ImageStorage.clear();
   }
-  SAFEDELETEA(Image);
 }
 
 bool CAtlas::PackImage(CAtlasImage* img) {
@@ -151,7 +150,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
     return 0;
   }
 
-  uint8_t* target = Image + (n->Area.x1 + n->Area.y1 * XRes) * 4;
+  uint8_t* target = Image.get() + (n->Area.x1 + n->Area.y1 * XRes) * 4;
   uint8_t* source = img->GetImage();
 
   for (int32_t y = 0; y < s.y; y++) {
@@ -173,7 +172,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
 
 bool CAtlas::InitializeTexture(CCoreDevice* Device) {
   if (!Device) return false;
-  Atlas = Device->CreateTexture2D(XRes, YRes, Image);
+  Atlas = Device->CreateTexture2D(XRes, YRes, Image.get());
   return Atlas.operator bool();
 }
 
@@ -196,7 +195,7 @@ bool CAtlas::UpdateTexture() {
 
   // LOG(LOG_DEBUG,_T("Updating Atlas Texture"));
 
-  if (!Atlas || !Atlas->Update(Image, XRes, YRes, 4)) return false;
+  if (!Atlas || !Atlas->Update(Image.get(), XRes, YRes, 4)) return false;
 
   TextureUpdateNeeded = false;
   return true;
@@ -218,7 +217,7 @@ bool CAtlas::Optimize(bool DebugMode) {
 
   LOG(LOG_DEBUG, _T( "[gui] Optimizing Atlas" ));
 
-  memset(Image, 0, XRes * YRes * 4);
+  memset(Image.get(), 0, XRes * YRes * 4);
 
   if (DebugMode) {
     CLightweightCriticalSection cs(&critsec);
@@ -391,15 +390,15 @@ bool CAtlas::Reset() {
 
 bool CAtlas::Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize) {
   Root.reset();
-  SAFEDELETEA(Image);
+  Image.reset();
   Atlas.reset();
 
   FlushCache();
   XRes = XSize;
   YRes = YSize;
 
-  Image = new uint8_t[XRes * YRes * 4];
-  memset(Image, 0, XRes * YRes * 4);
+  Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
+  memset(Image.get(), 0, XRes * YRes * 4);
 
   Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);

@@ -419,16 +419,15 @@ void GetFileName(CHAR pfname[MAX_PATH]) {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());
 
   HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  PROCESSENTRY32* processInfo = new PROCESSENTRY32;
+  auto processInfo = std::make_unique<PROCESSENTRY32>();
   processInfo->dwSize = sizeof(PROCESSENTRY32);
-  while (Process32Next(hSnapShot, processInfo) != FALSE) {
+  while (Process32Next(hSnapShot, processInfo.get()) != FALSE) {
     if (processInfo->th32ProcessID == dwOwnPID) {
       memcpy(pfname, processInfo->szExeFile, MAX_PATH);
       break;
     }
   }
   CloseHandle(hSnapShot);
-  delete processInfo;
 }
 
 BOOL AppIsAllreadyRunning() {
@@ -441,9 +440,9 @@ BOOL AppIsAllreadyRunning() {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());
 
   HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-  PROCESSENTRY32* processInfo = new PROCESSENTRY32;
+  auto processInfo = std::make_unique<PROCESSENTRY32>();
   processInfo->dwSize = sizeof(PROCESSENTRY32);
-  while (Process32Next(hSnapShot, processInfo) != FALSE) {
+  while (Process32Next(hSnapShot, processInfo.get()) != FALSE) {
     if (!strcmp(processInfo->szExeFile, pfname)) {
       if (processInfo->th32ProcessID != dwOwnPID) {
         bRunning = TRUE;
@@ -452,7 +451,6 @@ BOOL AppIsAllreadyRunning() {
     }
   }
   CloseHandle(hSnapShot);
-  delete processInfo;
   return bRunning;
 }
 

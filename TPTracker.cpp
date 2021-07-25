@@ -177,14 +177,14 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
                 auto png =
                     FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
 
-                uint8_t* imageData = nullptr;
+                std::unique_ptr<uint8_t[]> imageData = nullptr;
                 int32_t xres, yres;
                 if (DecompressPNG((uint8_t*)png.c_str(), png.size(), imageData,
                                   xres, yres)) {
-                  ARGBtoABGR(imageData, xres, yres);
+                  ARGBtoABGR(imageData.get(), xres, yres);
                   CRect area = CRect(0, 0, xres, yres);
                   itemData.icon = GetApplication()->GetAtlas()->AddImage(
-                      imageData, xres, yres, area);
+                      imageData.get(), xres, yres, area);
                 }
               }
             }

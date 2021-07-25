@@ -185,25 +185,25 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
             if (mz_zip_reader_extract_to_mem(
                     zip, idx, data.get(),
                     static_cast<int32_t>(stat.m_uncomp_size), 0)) {
-              uint8_t* imageData = nullptr;
+              std::unique_ptr<uint8_t[]> imageData;
               int32_t xres, yres;
               if (DecompressPNG(data.get(),
                                 static_cast<int32_t>(stat.m_uncomp_size),
                                 imageData, xres, yres)) {
-                ARGBtoABGR(imageData, xres, yres);
+                ARGBtoABGR(imageData.get(), xres, yres);
 
                 auto handle = App->GetAtlas()->AddImage(
-                    imageData, xres, yres, CRect(0, 0, xres, yres));
+                    imageData.get(), xres, yres, CRect(0, 0, xres, yres));
 
-                SAFEDELETEA(imageData);
                 MapIcons[s] = handle;
 
                 return handle;
-              } else
+              } else {
                 LOG_ERR("[GWTacO] Failed to decompress png %s form archive %s",
                         filename.c_str(),
                         x == 0 ? std::string(zipFile).c_str()
                                : std::string(categoryZip).c_str());
+              }
             }
           }
         }
@@ -223,7 +223,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
     return DefaultIconHandle;
   }
 
-  uint8_t* imageData = nullptr;
+  std::unique_ptr<uint8_t[]> imageData;
   int32_t xres, yres;
   if (!DecompressPNG(f.GetData(), static_cast<int32_t>(f.GetLength()),
                      imageData, xres, yres)) {
@@ -231,12 +231,11 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
     return DefaultIconHandle;
   }
 
-  ARGBtoABGR(imageData, xres, yres);
+  ARGBtoABGR(imageData.get(), xres, yres);
 
-  auto handle =
-      App->GetAtlas()->AddImage(imageData, xres, yres, CRect(0, 0, xres, yres));
+  auto handle = App->GetAtlas()->AddImage(imageData.get(), xres, yres,
+                                          CRect(0, 0, xres, yres));
 
-  SAFEDELETEA(imageData);
   MapIcons[s] = handle;
   return handle;
 }

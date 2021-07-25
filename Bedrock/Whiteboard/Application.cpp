@@ -718,12 +718,12 @@ bool CWBApplication::LoadSkin(std::string_view XML,
 
     auto data = B64Decode(img);
 
-    uint8_t* Image = nullptr;
+    std::unique_ptr<uint8_t[]> Image;
     int32_t XRes, YRes;
     if (DecompressPNG((unsigned char*)data.c_str(), data.size(), Image, XRes,
                       YRes)) {
-      ARGBtoABGR(Image, XRes, YRes);
-      ClearZeroAlpha(Image, XRes, YRes);
+      ARGBtoABGR(Image.get(), XRes, YRes);
+      ClearZeroAlpha(Image.get(), XRes, YRes);
 
       for (int32_t y = 0; y < n.GetChildCount(_T( "element" )); y++) {
         CXMLNode e = n.GetChild(_T( "element" ), y);
@@ -738,12 +738,11 @@ bool CWBApplication::LoadSkin(std::string_view XML,
         e.GetAttributeAsInteger(_T( "x-behavior" ), &b.x);
         e.GetAttributeAsInteger(_T( "y-behavior" ), &b.y);
 
-        WBATLASHANDLE h = Atlas->AddImage(Image, XRes, YRes, r2);
+        WBATLASHANDLE h = Atlas->AddImage(Image.get(), XRes, YRes, r2);
         Skin->AddElement(e.GetAttributeAsString(_T( "name" )), h,
                          static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
                          static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
       }
-      SAFEDELETEA(Image);
     }
   }
 
@@ -777,22 +776,21 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     auto databin = B64Decode(bin);
 
     int32_t XRes, YRes;
-    uint8_t* Image;
+    std::unique_ptr<uint8_t[]> Image;
     if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), Image,
                       XRes, YRes)) {
-      ARGBtoABGR(Image, XRes, YRes);
+      ARGBtoABGR(Image.get(), XRes, YRes);
       auto fd = std::make_unique<CWBFontDescription>();
       if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
-                               Image, XRes, YRes, enabledGlyphs)) {
+                               Image.get(), XRes, YRes, enabledGlyphs)) {
         bool f = CreateFont(Name, fd.get());
       } else if (fd->LoadBMFontText((unsigned char*)databin.c_str(),
-                                    databin.size(), Image, XRes, YRes,
+                                    databin.size(), Image.get(), XRes, YRes,
                                     enabledGlyphs)) {
         bool f = CreateFont(Name, fd.get());
       }
 
       fd.reset();
-      SAFEDELETE(Image);
     }
   }
 

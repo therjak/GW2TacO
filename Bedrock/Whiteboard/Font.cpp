@@ -79,9 +79,9 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
   while (!m.eof()) {
     int32_t BlockType = m.ReadByte();
     int32_t BlockSize = m.ReadDWord();
-    uint8_t* BlockData = new uint8_t[BlockSize];
+    auto BlockData = std::make_unique<uint8_t[]>(BlockSize);
 
-    if (m.Read(BlockData, BlockSize) != BlockSize) {
+    if (m.Read(BlockData.get(), BlockSize) != BlockSize) {
       LOG(LOG_ERROR,
           _T( "[gui] Error loading font data: unable to read block data" ));
       return false;
@@ -97,7 +97,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
               _T( "[gui] Error loading font data: common block size doesn't match" ));
           return false;
         }
-        BMCOMMON* cmn = reinterpret_cast<BMCOMMON*>(BlockData);
+        BMCOMMON* cmn = reinterpret_cast<BMCOMMON*>(BlockData.get());
         if (cmn->pages > 1) {
           LOG(LOG_ERROR,
               _T( "[gui] Error loading font data: only single page fonts are supported" ));
@@ -116,7 +116,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
           return false;
         }
 
-        BMCHAR* c = reinterpret_cast<BMCHAR*>(BlockData);
+        BMCHAR* c = reinterpret_cast<BMCHAR*>(BlockData.get());
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMCHAR); x++) {
           if (enabledGlyphs.empty() ||
@@ -141,7 +141,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
           return false;
         }
 
-        BMKERNINGDATA* k = reinterpret_cast<BMKERNINGDATA*>(BlockData);
+        BMKERNINGDATA* k = reinterpret_cast<BMKERNINGDATA*>(BlockData.get());
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMKERNINGDATA); x++) {
           WBKERNINGDATA d;
@@ -157,8 +157,6 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
             _T( "[gui] Error loading font data: unknown block type" ));
         return false;
     }
-
-    SAFEDELETEA(BlockData);
   }
 
   return true;

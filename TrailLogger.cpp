@@ -679,10 +679,10 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
 
   if (pointCount <= 1) return;
 
-  GW2TrailVertex* vertices = new GW2TrailVertex[pointCount * 2];
-  memset(vertices, 0, sizeof(GW2TrailVertex) * pointCount * 2);
+  auto vertices = std::make_unique<GW2TrailVertex[]>(pointCount * 2);
+  memset(vertices.get(), 0, sizeof(GW2TrailVertex) * pointCount * 2);
   int vertexCount = 0;
-  int32_t* indices = new int32_t[(pointCount - 1) * 6];
+  auto indices = std::make_unique<int32_t[]>((pointCount - 1) * 6);
 
   CVector3 lastPos = CVector3(points);
   CVector3 lastOrt = CVector3(0, 0, 0);
@@ -758,15 +758,16 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
     vertexCount += 2;
   }
 
-  trailMesh = dev->CreateVertexBuffer(reinterpret_cast<uint8_t*>(vertices),
-                                      vertexCount * sizeof(GW2TrailVertex));
+  trailMesh =
+      dev->CreateVertexBuffer(reinterpret_cast<uint8_t*>(vertices.get()),
+                              vertexCount * sizeof(GW2TrailVertex));
   length = pointCount * 2;
   idxBuf = dev->CreateIndexBuffer((pointCount - 1) * 6, 4);
 
   int32_t* idxData;
 
   if (idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
-    memcpy(idxData, indices, sizeof(int32_t) * 6 * (pointCount - 1));
+    memcpy(idxData, indices.get(), sizeof(int32_t) * 6 * (pointCount - 1));
     // int cnt = 0;
     // for ( int32_t x = 0; x < pointCount - 1; x++ )
     //{
@@ -779,9 +780,6 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
     //}
     idxBuf->UnLock();
   }
-
-  SAFEDELETEA(indices);
-  SAFEDELETEA(vertices);
 }
 
 void GW2Trail::Draw() {

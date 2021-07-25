@@ -10,7 +10,7 @@ class CWBRoot : public CWBItem {
  public:
   CWBRoot(CWBItem* Parent, const CRect& Pos);
   static inline std::unique_ptr<CWBRoot> Create(const CRect& Pos) {
-    return std::unique_ptr<CWBRoot>(new CWBRoot(nullptr, Pos));
+    return std::make_unique<CWBRoot>(nullptr, Pos);
   }
   ~CWBRoot() override;
 

@@ -29,7 +29,7 @@ class CAtlasNode {
 
 // stores image data not currently in the atlas
 class CAtlasImage {
-  uint8_t* Image;
+  std::unique_ptr<uint8_t[]> Image;
   int32_t XRes, YRes;
   WBATLASHANDLE Handle;
 
@@ -37,7 +37,7 @@ class CAtlasImage {
 
  public:
   CAtlasImage();
-  CAtlasImage(uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
+  CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
               const CRect& Source);
   virtual ~CAtlasImage();
 
@@ -57,7 +57,7 @@ struct CAtlasCacheElement {
 class CAtlas {
   friend class CWBDrawAPI;
   int32_t XRes, YRes;
-  uint8_t* Image;
+  std::unique_ptr<uint8_t[]> Image;
   std::unique_ptr<CCoreTexture2D> Atlas;
 
   bool TextureUpdateNeeded;
