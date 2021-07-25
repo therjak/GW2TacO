@@ -956,7 +956,7 @@ void CWBApplication::TakeScreenshot() {
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
   DrawAPI->SetCropRect(CRect(0, 0, XRes, YRes));
-  DrawAPI->DrawRect(CRect(0, 0, XRes, YRes), 0xff000000);
+  DrawAPI->DrawRect(CRect(0, 0, XRes, YRes), CColor{0xff000000});
   DrawAPI->FlushDrawBuffer();
 
   auto fname = FormatString(_T( "Screenshots\\%s_%04d.png" ),

@@ -687,7 +687,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
     CPoint p;
     if (poi.typeData.behavior == POIBehavior::WvWObjective) {
       if (forbiddenIconHandle != -1) {
-        CColor col = 0xffffffff;
+        CColor col(0xffffffff);
         if (icon != DefaultIconHandle)
           col.A() = uint8_t(col.A() * Alpha * alphaMultiplier * mapFade *
                             globalOpacity);
@@ -1642,7 +1642,7 @@ void MarkerTypeData::Read(CXMLNode& n, bool StoreSaveState) {
   }
   if (_colorSaved) {
     auto colorStr = n.GetAttributeAsString("color");
-    int32_t colHex = 0xffffffff;
+    uint32_t colHex = 0xffffffff;
     std::sscanf(colorStr.c_str(), "%x", &colHex);
     color = CColor(colHex);
   }

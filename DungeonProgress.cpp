@@ -161,7 +161,8 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       textwidth = max(textwidth, f->GetWidth(d.shortName, false));
 
     for (auto& d : dungeons) {
-      f->Write(API, (d.shortName + ":"), CPoint(0, posy + 1), 0xffffffff);
+      f->Write(API, (d.shortName + ":"), CPoint(0, posy + 1),
+               CColor{0xffffffff});
       int32_t posx = textwidth + f->GetLineHeight() / 2;
       for (int y = 0; y < d.paths.size(); y++) {
         auto& p = d.paths[y];
@@ -172,7 +173,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
         API->SetCropRect(ClientToScreen(r));
         posx += f->GetLineHeight() * 2 + 1;
         if (y == 0) posx += f->GetLineHeight() / 2;
-        API->DrawRect(r, p.finished ? 0x8033cc11 : 0x80cc3322);
+        API->DrawRect(r, p.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
         std::string s = y == 0 ? "S" : FormatString("P%d", y);
 
         if (d.shortName == "TA") {
@@ -192,14 +193,15 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
         CPoint tp = f->GetTextPosition(s, r + CRect(-3, 0, 0, 0), WBTA_CENTERX,
                                        WBTA_CENTERY, WBTT_NONE);
         tp.y = posy + 1;
-        f->Write(API, s, tp, 0xffffffff);
-        API->DrawRectBorder(r, p.frequenter ? 0xffffcc00 : 0x80000000);
+        f->Write(API, s, tp, CColor{0xffffffff});
+        API->DrawRectBorder(
+            r, p.frequenter ? CColor{0xffffcc00} : CColor{0x80000000});
         API->SetCropRect(cr);
       }
       posy += f->GetLineHeight();
     }
   } else {
-    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), 0xffffffff);
+    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), CColor{0xffffffff});
   }
 
   DrawBorder(API);

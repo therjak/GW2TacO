@@ -926,8 +926,8 @@ bool CCoreDX11Device::Clear(const bool clearPixels, const bool clearDepth,
                             const int32_t Stencil) {
   int32_t Flags = 0;
 
-  float col[4] = {Color[0] / 255.0f, Color[1] / 255.0f, Color[2] / 255.0f,
-                  Color[3] / 255.0f};
+  float col[4] = {Color.R() / 255.0f, Color.G() / 255.0f, Color.B() / 255.0f,
+                  Color.A() / 255.0f};
 
   if (clearPixels) {
     DeviceContext->ClearRenderTargetView(BackBufferView, col);

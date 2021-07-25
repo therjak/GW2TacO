@@ -171,10 +171,11 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
 
       if (!compact) {
         f->Write(API, DICT(r.configName.c_str(), r.name.c_str()),
-                 CPoint(0, posy + 1), 0xffffffff);
+                 CPoint(0, posy + 1), CColor{0xffffffff});
         posy += f->GetLineHeight();
       } else {
-        f->Write(API, r.shortName.c_str(), CPoint(0, posy + 1), 0xffffffff);
+        f->Write(API, r.shortName.c_str(), CPoint(0, posy + 1),
+                 CColor{0xffffffff});
       }
       for (int y = 0; y < r.wings.size(); y++) {
         auto& w = r.wings[y];
@@ -186,7 +187,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
 
         if (!compact)
           f->Write(API, DICT("raid_wing") + FormatString("%d:", y + 1),
-                   CPoint(posx, posy + 1), 0xffffffff);
+                   CPoint(posx, posy + 1), CColor{0xffffffff});
 
         if (!compact) posx = f->GetLineHeight() * 3;
 
@@ -198,7 +199,8 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
           CRect cr = API->GetCropRect();
           API->SetCropRect(ClientToScreen(r));
           posx += f->GetLineHeight() * 2 + 1;
-          API->DrawRect(r, e.finished ? 0x8033cc11 : 0x80cc3322);
+          API->DrawRect(r,
+                        e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
           auto s = e.type[0] == 'B'
                        ? (DICT("raid_boss") + FormatString("%d", cnt))
                        : DICT("raid_event");
@@ -208,8 +210,8 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
           CPoint tp = f->GetTextPosition(s, r + CRect(-3, 0, 0, 0),
                                          WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE);
           tp.y = posy + 1;
-          f->Write(API, s, tp, 0xffffffff);
-          API->DrawRectBorder(r, 0x80000000);
+          f->Write(API, s, tp, CColor{0xffffffff});
+          API->DrawRectBorder(r, CColor{0x80000000});
           API->SetCropRect(cr);
         }
 
@@ -217,7 +219,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       }
     }
   } else
-    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), 0xffffffff);
+    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), CColor{0xffffffff});
 
   DrawBorder(API);
 }

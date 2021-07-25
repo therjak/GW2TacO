@@ -3,10 +3,13 @@
 #include "Bedrock/Whiteboard/Application.h"
 #include "OverlayConfig.h"
 
-CColor CGAPalette[] = {0xffaa0000, 0xffff5555, 0xff000000, 0xff555555,
-                       0xff0000aa, 0xff5555ff, 0xff00aa00, 0xff55ff55,
-                       0xff00aaaa, 0xff55ffff, 0xffaa00aa, 0xffff55ff,
-                       0xffaa5500, 0xffffff55, 0xffaaaaaa, 0xffffffff};
+CColor CGAPalette[] = {
+    CColor{0xffaa0000}, CColor{0xffff5555}, CColor{0xff000000},
+    CColor{0xff555555}, CColor{0xff0000aa}, CColor{0xff5555ff},
+    CColor{0xff00aa00}, CColor{0xff55ff55}, CColor{0xff00aaaa},
+    CColor{0xff55ffff}, CColor{0xffaa00aa}, CColor{0xffff55ff},
+    CColor{0xffaa5500}, CColor{0xffffff55}, CColor{0xffaaaaaa},
+    CColor{0xffffffff}};
 
 std::vector<std::string_view> CGAPaletteNames = {
     "red",   "lightred",   "black",     "gray",      "blue",    "lightblue",
@@ -49,8 +52,8 @@ void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
   int Color = GetConfigValue("MouseHighlightColor");
 
   if (GetConfigValue("MouseHighlightOutline")) {
-    API->DrawRect(CRect(cp.x - 1, cl.y1, cp.x + 2, cl.y2), 0xff000000);
-    API->DrawRect(CRect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), 0xff000000);
+    API->DrawRect(CRect(cp.x - 1, cl.y1, cp.x + 2, cl.y2), CColor{0xff000000});
+    API->DrawRect(CRect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), CColor{0xff000000});
   }
 
   API->DrawRect(CRect(cp.x, cl.y1, cp.x + 1, cl.y2), CGAPalette[Color]);

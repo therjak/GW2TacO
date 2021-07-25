@@ -103,7 +103,7 @@ class CWBScrollbarParams {
 };
 
 class CWBDisplayState {
-  int32_t Visuals[WB_ITEM_COUNT];
+  uint32_t Visuals[WB_ITEM_COUNT];
   bool VisualSet[WB_ITEM_COUNT];
 
  public:

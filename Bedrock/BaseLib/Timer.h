@@ -9,7 +9,7 @@ class CTimer {
   double TimeExtension = 0;
   bool Paused = false;
 
-  unsigned long Time;
+  unsigned long Time = 0;
 
  public:
   CTimer();

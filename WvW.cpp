@@ -408,17 +408,17 @@ void UpdateWvWStatus() {
           if (wvwPOIs.find(id) == wvwPOIs.end()) continue;
 
           auto& poi = wvwPOIs[id];
-          poi.typeData.color = 0xffffffff;
+          poi.typeData.color = CColor{0xffffffff};
 
           std::string owner;
           if (objective.has<String>("owner"))
             owner = objective.get<String>("owner");
 
-          if (owner == "Red") poi.typeData.color = 0xffe53b3b;
+          if (owner == "Red") poi.typeData.color = CColor{0xffe53b3b};
 
-          if (owner == "Green") poi.typeData.color = 0xff3dca67;
+          if (owner == "Green") poi.typeData.color = CColor{0xff3dca67};
 
-          if (owner == "Blue") poi.typeData.color = 0xff3aa2fa;
+          if (owner == "Blue") poi.typeData.color = CColor{0xff3aa2fa};
 
           std::string lastFlipped;
           if (objective.has<String>("last_flipped"))

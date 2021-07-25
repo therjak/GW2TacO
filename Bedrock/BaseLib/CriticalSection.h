@@ -16,6 +16,6 @@ class CLightweightCriticalSection {
   LIGHTWEIGHT_CRITICALSECTION* cs;
 
  public:
-  CLightweightCriticalSection(LIGHTWEIGHT_CRITICALSECTION* cs);
+  explicit CLightweightCriticalSection(LIGHTWEIGHT_CRITICALSECTION* cs);
   ~CLightweightCriticalSection();
 };

@@ -280,7 +280,7 @@ void GW2TrailDisplay::OnDraw(CWBDrawAPI* API) {
         s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
         WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true);
     ypos += f->GetLineHeight();
-    f->Write(API, s, pos, 0xffff0000);
+    f->Write(API, s, pos, CColor{0xffff0000});
   }
 }
 
@@ -728,8 +728,8 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
     vertices[cnt * 2 + 1].Pos = CVector4(p2.x, p2.y, p2.z, 1);
     vertices[cnt * 2].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
     vertices[cnt * 2 + 1].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
-    vertices[cnt * 2].Color = 0xffffffff;
-    vertices[cnt * 2 + 1].Color = 0xffffffff;
+    vertices[cnt * 2].Color = CColor{0xffffffff};
+    vertices[cnt * 2 + 1].Color = CColor{0xffffffff};
     vertices[cnt * 2].UV = CVector2(0, -uvStretch);
     vertices[cnt * 2 + 1].UV = CVector2(1, -uvStretch);
 

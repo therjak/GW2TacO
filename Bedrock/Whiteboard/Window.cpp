@@ -165,12 +165,9 @@ bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position,
   pdescriptor.SetMetric(WB_WIDTH, WB_PIXELS, 11);
   pdescriptor.SetMetric(WB_HEIGHT, WB_PIXELS, 11);
   auto& ddescriptor = element.DisplayDescriptor;
-  ddescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
-                       CColor::FromARGB(0xff2d2d30));
-  ddescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
-                       CColor::FromARGB(0xff1c97ea));
-  ddescriptor.SetValue(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR,
-                       CColor::FromARGB(0xff3e3e40));
+  ddescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR, 0xff2d2d30);
+  ddescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR, 0xff1c97ea);
+  ddescriptor.SetValue(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR, 0xff3e3e40);
 
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL,
                                            WB_ITEM_BACKGROUNDCOLOR, 0xff2d2d30);
@@ -180,7 +177,6 @@ bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position,
                                            0xff424245);
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BORDERCOLOR,
                                            0xff007acc);
-  // DisplayDescriptor.SetValue(WB_STATE_NORMAL,WB_ITEM_CLIENTCOLOR,0xff252526);
 
   if (!CWBItem::Initialize(Parent, Position)) return false;
   SetBorderSizes(1, 1, 1, 1);

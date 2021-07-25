@@ -10,7 +10,7 @@ INLINE void CWBTextBox::DrawCursor(CWBDrawAPI* API, CPoint& p) {
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2))
     API->DrawRect(
         CRect(p + CPoint(0, 1), p + CPoint(1, GetFont(s)->GetLineHeight() - 1)),
-        0xffffffff);
+        CColor{0xffffffff});
 }
 
 void CWBTextBox::OnDraw(CWBDrawAPI* API) {
@@ -31,7 +31,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
   API->SetCropToClient(this);
 
   CColor Color = CSSProperties.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR);
-  CColor BackgroundColor = CColor::FromARGB(0x00000000);
+  CColor BackgroundColor(0x00000000);
   CColor SelectionColor =
       Lerp(Selection.DisplayDescriptor.GetColor(WB_STATE_HOVER,
                                                 WB_ITEM_BACKGROUNDCOLOR),
@@ -128,20 +128,16 @@ bool CWBTextBox::Initialize(CWBItem* Parent, const CRect& Position,
   Selection.DisplayDescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
                                        0);
   Selection.DisplayDescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
-                                       CColor::FromARGB(0xff2b537d));
+                                       0xff2b537d);
   Selection.DisplayDescriptor.SetValue(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR,
-                                       CColor::FromARGB(0xff3399ff));
+                                       0xff3399ff);
 
-  SetDisplayProperty(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
-                     CColor::FromARGB(0xff1e1e1e));
-  SetDisplayProperty(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
-                     CColor::FromARGB(0xff1e1e1e));
-  SetDisplayProperty(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR,
-                     CColor::FromARGB(0xff1e1e1e));
-  SetDisplayProperty(WB_STATE_DISABLED, WB_ITEM_BACKGROUNDCOLOR,
-                     CColor::FromARGB(0xff1e1e1e));
+  SetDisplayProperty(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR, 0xff1e1e1e);
+  SetDisplayProperty(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR, 0xff1e1e1e);
+  SetDisplayProperty(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR, 0xff1e1e1e);
+  SetDisplayProperty(WB_STATE_DISABLED, WB_ITEM_BACKGROUNDCOLOR, 0xff1e1e1e);
   SetDisplayProperty(WB_STATE_DISABLED_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
-                     CColor::FromARGB(0xff1e1e1e));
+                     0xff1e1e1e);
 
   CursorBlinkStartTime = globalTimer.GetTime();
   HiglightStartTime = 0;

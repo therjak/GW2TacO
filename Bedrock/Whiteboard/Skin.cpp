@@ -231,7 +231,7 @@ CWBMosaicImage::CWBMosaicImage() {
   Tiling[0] = Tiling[1] = false;
   Stretching[0] = Stretching[1] = false;
   Handle = 0;
-  Color = 0xffffffff;
+  Color = CColor{0xffffffff};
 }
 
 void CWBMosaicImage::SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels) {
@@ -461,9 +461,9 @@ CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
             if (key == _T( "stretch-x" )) i.SetStretching(0, true);
             if (key == _T( "stretch-y" )) i.SetStretching(1, true);
             if (key == _T( "color" )) {
-              auto v = std::stoi(value, nullptr, 16);
+              uint32_t v = std::stoi(value, nullptr, 16);
               if (value.size() <= 6) v = v | 0xff000000;
-              i.SetColor(v);
+              i.SetColor(CColor(v));
             }
           }
         }

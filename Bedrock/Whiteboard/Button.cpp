@@ -57,18 +57,17 @@ bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position,
 
   if (!CWBItem::Initialize(Parent, Position)) return false;
 
-  CSSProperties.DisplayDescriptor.SetValue(
-      WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB(0xff2d2d30));
-  CSSProperties.DisplayDescriptor.SetValue(
-      WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB(0xff3e3e40));
-  CSSProperties.DisplayDescriptor.SetValue(
-      WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR, CColor::FromARGB(0xff007acc));
+  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL,
+                                           WB_ITEM_BACKGROUNDCOLOR, 0xff2d2d30);
+  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_HOVER,
+                                           WB_ITEM_BACKGROUNDCOLOR, 0xff3e3e40);
+  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_ACTIVE,
+                                           WB_ITEM_BACKGROUNDCOLOR, 0xff007acc);
 
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_DISABLED, WB_ITEM_FONTCOLOR,
-                                           CColor::FromARGB(0xff656565));
+                                           0xff656565);
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_DISABLED_ACTIVE,
-                                           WB_ITEM_FONTCOLOR,
-                                           CColor::FromARGB(0xff656565));
+                                           WB_ITEM_FONTCOLOR, 0xff656565);
 
   ContentChanged();
   return true;

@@ -1596,14 +1596,13 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       float col = 1 - delta * 0.5f;
       if (hover) col = 0.5f + delta * 0.5f;
 
-      int32_t o = static_cast<int32_t> max(0, min(255, col * 255));
+      uint32_t o = static_cast<uint32_t> max(0, min(255, col * 255));
 
       taco->SetDisplayProperty(WB_STATE_NORMAL, WB_ITEM_OPACITY,
-                               CColor::FromARGB(o * 0x01010101));
+                               o * 0x01010101);
       taco->SetDisplayProperty(WB_STATE_ACTIVE, WB_ITEM_OPACITY,
-                               CColor::FromARGB(o * 0x01010101));
-      taco->SetDisplayProperty(WB_STATE_HOVER, WB_ITEM_OPACITY,
-                               CColor::FromARGB(o * 0x01010101));
+                               o * 0x01010101);
+      taco->SetDisplayProperty(WB_STATE_HOVER, WB_ITEM_OPACITY, o * 0x01010101);
 
       menuHoverLastFrame = hover;
     }
@@ -1617,9 +1616,9 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     auto skin = dd.GetSkin(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
     CWBSkinElement* e = App->GetSkin()->GetElement(skin);
     if (e) {
-      API->DrawAtlasElementRotated(e->GetHandle(), r, 0x80ffffff,
+      API->DrawAtlasElementRotated(e->GetHandle(), r, CColor{0x80ffffff},
                                    GetTime() / 1000.0f);
-      API->DrawAtlasElementRotated(e->GetHandle(), r, 0x80ffffff,
+      API->DrawAtlasElementRotated(e->GetHandle(), r, CColor{0x80ffffff},
                                    -GetTime() / 1000.0f);
     }
   }
@@ -1712,10 +1711,11 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
     for (int x = 0; x < 3; x++)
       for (int y = 0; y < 3; y++)
-        font->Write(API, infoline, startpos + CPoint(x - 1, y - 1), 0xff000000,
-                    WBTT_UPPERCASE, true);
+        font->Write(API, infoline, startpos + CPoint(x - 1, y - 1),
+                    CColor{0xff000000}, WBTT_UPPERCASE, true);
 
-    font->Write(API, infoline, startpos, 0xffffffff, WBTT_UPPERCASE, true);
+    font->Write(API, infoline, startpos, CColor{0xffffffff}, WBTT_UPPERCASE,
+                true);
     ypos += font->GetLineHeight();
   }
 
@@ -1731,15 +1731,15 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     for (int x = 0; x < 3; x++)
       for (int y = 0; y < 3; y++)
         font->Write(API, infoline, CPoint(spos2.x + x - 1, ypos + y - 1),
-                    0xff000000, WBTT_UPPERCASE, true);
+                    CColor{0xff000000}, WBTT_UPPERCASE, true);
 
-    font->Write(API, infoline, CPoint(spos2.x, ypos), 0xffff4040,
+    font->Write(API, infoline, CPoint(spos2.x, ypos), CColor{0xffff4040},
                 WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
   }
 
   if (RebindMode) {
-    API->DrawRect(GetClientRect(), 0x60000000);
+    API->DrawRect(GetClientRect(), CColor{0x60000000});
     CWBFont* f = GetFont(GetState());
 
     std::string line1;
@@ -1787,7 +1787,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   }
 
   if (ApiKeyInputMode) {
-    API->DrawRect(GetClientRect(), 0x60000000);
+    API->DrawRect(GetClientRect(), CColor{0x60000000});
     CWBFont* f = GetFont(GetState());
 
     auto line1 = DICT("enter_api") + " " +

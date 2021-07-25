@@ -137,7 +137,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         TextTransform);
     // p.y -= 3;
     if (!compact)
-      f->Write(API, map.name, CPoint(p.x, ypos + 2), 0xffffffff, TextTransform);
+      f->Write(API, map.name, CPoint(p.x, ypos + 2), CColor{0xffffffff},
+               TextTransform);
 
     int32_t toppos = ypos + mapheight - barheight;
     int32_t bottompos = ypos + mapheight + 1;
@@ -188,7 +189,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
         CPoint p = f->GetCenter(text, r, TextTransform);
         // p.y -= 3;
-        f->Write(API, text, CPoint(p.x, r.y1 + 2), 0xffffffff, TextTransform);
+        f->Write(API, text, CPoint(p.x, r.y1 + 2), CColor{0xffffffff},
+                 TextTransform);
 
         API->SetCropRect(cr);
 
@@ -208,7 +210,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         }
 
         if (!isHighlighted)
-          API->DrawRectBorder(r, 0x80000000);
+          API->DrawRectBorder(r, CColor{0x80000000});
         else
           highlightRects.push_back(r);
       }
@@ -220,9 +222,11 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
     ypos += mapheight;
   }
 
-  for (const auto& r : highlightRects) API->DrawRectBorder(r, 0xffffcc00);
+  for (const auto& r : highlightRects)
+    API->DrawRectBorder(r, CColor{0xffffcc00});
 
-  API->DrawRect(CRect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos), 0x80ffffff);
+  API->DrawRect(CRect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
+                CColor{0x80ffffff});
   SetMouseToolTip(mouseToolTip);
 }
 
@@ -273,7 +277,7 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
 
       if (eventNode.HasAttribute("Color")) {
         auto s = eventNode.GetAttributeAsString("Color");
-        int c = 0;
+        uint32_t c = 0;
         std::sscanf(s.c_str(), "%x", &c);
         event.color = CColor(c);
       }

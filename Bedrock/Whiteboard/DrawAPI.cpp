@@ -648,7 +648,7 @@ void CWBDrawAPI::DrawRectRotated(const CRect& r, float u1, float v1, float u2,
 
 void CWBDrawAPI::DrawRect(const CRect& r, float u1, float v1, float u2,
                           float v2) {
-  AddDisplayRect(r, u1, v1, u2, v2, 0xffffffff);
+  AddDisplayRect(r, u1, v1, u2, v2, CColor{0xffffffff});
 }
 
 void CWBDrawAPI::DrawRect(const CRect& r, float u1, float v1, float u2,
@@ -705,8 +705,8 @@ void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
 void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
                               const CPoint& p3, float u1, float v1, float u2,
                               float v2, float u3, float v3) {
-  AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, 0xffffffff, 0xffffffff,
-                0xffffffff);
+  AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, CColor{0xffffffff},
+                CColor{0xffffffff}, CColor{0xffffffff});
 }
 
 void CWBDrawAPI::SetUIRenderState() {

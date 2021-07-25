@@ -125,10 +125,10 @@ class CWBDrawAPI {
 
   CSize GetAtlasElementSize(WBATLASHANDLE h);
   void DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
-                        CColor Color = 0xffffffff);
+                        CColor Color = CColor(0xffffffff));
   void DrawAtlasElement(WBATLASHANDLE h, const CRect& Position, bool TileX,
                         bool TileY, bool StretchX, bool StretchY,
-                        CColor Color = 0xffffffff);
+                        CColor Color = CColor(0xffffffff));
   void DrawAtlasElementRotated(WBATLASHANDLE h, const CRect& Position,
                                CColor Color, float rotation);
   void SetCropToClient(const CWBItem* i);

@@ -14,14 +14,17 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
 
   if (!teamSpeakConnection.authenticated) {
     if (HasConfigString("TS3APIKey")) {
-      f->Write(API, DICT("ts3authfail1"), CPoint(0, 0), 0xffffffff);
-      f->Write(API, DICT("ts3authfail2"), CPoint(0, size), 0xffffffff);
-      f->Write(API, DICT("ts3authfail3"), CPoint(0, size * 2), 0xffffffff);
-      f->Write(API, DICT("ts3authfail4"), CPoint(0, size * 3), 0xffffffff);
+      f->Write(API, DICT("ts3authfail1"), CPoint(0, 0), CColor{0xffffffff});
+      f->Write(API, DICT("ts3authfail2"), CPoint(0, size), CColor{0xffffffff});
+      f->Write(API, DICT("ts3authfail3"), CPoint(0, size * 2),
+               CColor{0xffffffff});
+      f->Write(API, DICT("ts3authfail4"), CPoint(0, size * 3),
+               CColor{0xfffffff});
     } else {
-      f->Write(API, DICT("ts3nokeyset1"), CPoint(0, 0), 0xffffffff);
-      f->Write(API, DICT("ts3nokeyset2"), CPoint(0, size), 0xffffffff);
-      f->Write(API, DICT("ts3nokeyset3"), CPoint(0, size * 2), 0xffffffff);
+      f->Write(API, DICT("ts3nokeyset1"), CPoint(0, 0), CColor{0xffffffff});
+      f->Write(API, DICT("ts3nokeyset2"), CPoint(0, size), CColor{0xffffffff});
+      f->Write(API, DICT("ts3nokeyset3"), CPoint(0, size * 2),
+               CColor{0xffffffff});
     }
   }
 

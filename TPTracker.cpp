@@ -288,12 +288,12 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (itemData.icon)
             API->DrawAtlasElement(itemData.icon,
                                   CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
-                                  false, false, true, true, 0xffffffff);
+                                  false, false, true, true, CColor{0xffffffff});
           auto text = itemData.name + " " + ToGold(price);
           if (buys[x].quantity > 1)
             text = FormatString("%d ", buys[x].quantity) + text;
           f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
-                   !outbid ? 0xffffffff : 0xffee6655);
+                   !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
           posy += lh + 6;
           if (nextSellOnly) {
@@ -308,7 +308,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
       if (writtenCount)
         f->Write(API, DICT(onlyShowOutbid ? "outbidbuys" : "buylist"),
-                 CPoint(0, textPosy), 0xffffffff);
+                 CPoint(0, textPosy), CColor{0xffffffff});
       else
         posy -= lh + 4;
     }
@@ -343,12 +343,12 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (itemData.icon)
             API->DrawAtlasElement(itemData.icon,
                                   CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
-                                  false, false, true, true, 0xffffffff);
+                                  false, false, true, true, CColor{0xffffffff});
           auto text = itemData.name + " " + ToGold(price);
           if (sells[x].quantity > 1)
             text = FormatString("%d ", sells[x].quantity) + text;
           f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
-                   !outbid ? 0xffffffff : 0xffee6655);
+                   !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
           posy += lh + 6;
           if (nextSellOnly) {
@@ -362,7 +362,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
       if (writtenCount)
         f->Write(API, DICT(onlyShowOutbid ? "outbidsells" : "selllist"),
-                 CPoint(0, textPosy), 0xffffffff);
+                 CPoint(0, textPosy), CColor{0xffffffff});
     }
   }
 

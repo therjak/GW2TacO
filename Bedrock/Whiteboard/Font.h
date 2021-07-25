@@ -142,14 +142,14 @@ class CWBFont {
   int32_t GetMedian();
 
   int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
-                    CColor Color = 0xffffffff);
+                    CColor Color = CColor(0xffffffff));
   int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
-                int32_t y, CColor Color = 0xffffffff,
+                int32_t y, CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
   int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const CPoint& p,
-                    CColor Color = 0xffffffff);
+                    CColor Color = CColor(0xffffffff));
   int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, const CPoint& p,
-                CColor Color = 0xffffffff,
+                CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
   int32_t GetWidth(
       uint16_t Char,

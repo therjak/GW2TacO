@@ -23,7 +23,7 @@ class CCoreDevice {
   void AddResource(CCoreResource* Resource);
   std::vector<CCoreResource*> Resources;
 
-protected:
+ protected:
   //////////////////////////////////////////////////////////////////////////
   // device management
 
@@ -70,7 +70,7 @@ protected:
   virtual bool CommitRenderStates() = 0;
   bool CreateDefaultRenderStates();
 
-public:
+ public:
   CCoreDevice();
   virtual ~CCoreDevice();
   virtual COREDEVICEAPI GetAPIType() = 0;
@@ -91,35 +91,34 @@ public:
   //////////////////////////////////////////////////////////////////////////
   // texture functions
 
-  virtual std::unique_ptr<CCoreTexture2D>
-  CreateTexture2D(const int32_t XRes, const int32_t YRes, const uint8_t* Data,
-                  const char BytesPerPixel = 4,
-                  const COREFORMAT Format = COREFMT_A8R8G8B8,
-                  const bool RenderTarget = false) = 0;
-  virtual std::unique_ptr<CCoreTexture2D>
-  CreateTexture2D(const uint8_t* Data, const int32_t Size) = 0;
+  virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
+      const int32_t XRes, const int32_t YRes, const uint8_t* Data,
+      const char BytesPerPixel = 4, const COREFORMAT Format = COREFMT_A8R8G8B8,
+      const bool RenderTarget = false) = 0;
+  virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
+      const uint8_t* Data, const int32_t Size) = 0;
   virtual CCoreTexture2D* CopyTexture(CCoreTexture2D* Texture) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexbuffer functions
 
-  virtual std::unique_ptr<CCoreVertexBuffer>
-  CreateVertexBuffer(const uint8_t* Data, const int32_t Size) = 0;
-  virtual std::unique_ptr<CCoreVertexBuffer>
-  CreateVertexBufferDynamic(const int32_t Size) = 0;
+  virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(
+      const uint8_t* Data, const int32_t Size) = 0;
+  virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(
+      const int32_t Size) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // indexbuffer functions
 
-  virtual std::unique_ptr<CCoreIndexBuffer>
-  CreateIndexBuffer(const int32_t IndexCount, const int32_t IndexSize = 2) = 0;
+  virtual std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(
+      const int32_t IndexCount, const int32_t IndexSize = 2) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexformat functions
 
-  virtual std::unique_ptr<CCoreVertexFormat>
-  CreateVertexFormat(const std::vector<COREVERTEXATTRIBUTE>& Attributes,
-                     CCoreVertexShader* vs = nullptr) = 0;
+  virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
+      const std::vector<COREVERTEXATTRIBUTE>& Attributes,
+      CCoreVertexShader* vs = nullptr) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // renderstate functions
@@ -146,19 +145,19 @@ public:
   //////////////////////////////////////////////////////////////////////////
   // shader functions
 
-  virtual std::unique_ptr<CCoreVertexShader>
-  CreateVertexShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
-                     LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
-  virtual std::unique_ptr<CCorePixelShader>
-  CreatePixelShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
-                    LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
-  virtual std::unique_ptr<CCoreVertexShader>
-  CreateVertexShaderFromBlob(uint8_t* Code, int32_t CodeSize) = 0;
-  virtual std::unique_ptr<CCorePixelShader>
-  CreatePixelShaderFromBlob(uint8_t* Code, int32_t CodeSize) = 0;
-  virtual CCoreGeometryShader*
-  CreateGeometryShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
-                       LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCorePixelShader> CreatePixelShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
+      uint8_t* Code, int32_t CodeSize) = 0;
+  virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
+      uint8_t* Code, int32_t CodeSize) = 0;
+  virtual CCoreGeometryShader* CreateGeometryShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) = 0;
   virtual CCoreDomainShader* CreateDomainShader(LPCSTR Code, int32_t CodeSize,
                                                 LPCSTR EntryFunction,
                                                 LPCSTR ShaderVersion,
@@ -167,9 +166,9 @@ public:
                                             LPCSTR EntryFunction,
                                             LPCSTR ShaderVersion,
                                             std::string* Err = nullptr) = 0;
-  virtual CCoreComputeShader*
-  CreateComputeShader(LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction,
-                      LPCSTR ShaderVersion, std::string* Err = nullptr) = 0;
+  virtual CCoreComputeShader* CreateComputeShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) = 0;
   virtual CCoreVertexShader* CreateVertexShader() = 0;
   virtual CCorePixelShader* CreatePixelShader() = 0;
   virtual CCoreGeometryShader* CreateGeometryShader() = 0;
@@ -191,8 +190,8 @@ public:
   virtual bool EndScene() = 0;
   virtual bool Clear(const bool clearPixels = true,
                      const bool clearDepth = true,
-                     const CColor& Color = CColor(static_cast<uint32_t>(0)),
-                     const float Depth = 1, const int32_t Stencil = 0) = 0;
+                     const CColor& Color = CColor(), const float Depth = 1,
+                     const int32_t Stencil = 0) = 0;
   virtual bool Flip(bool Vsync = true) = 0;
   virtual bool DrawIndexedTriangles(int32_t Count, int32_t NumVertices) = 0;
   virtual bool DrawIndexedLines(int32_t Count, int32_t NumVertices) = 0;

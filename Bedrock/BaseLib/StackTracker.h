@@ -17,7 +17,7 @@ class CStackTracker {
   void* Stack[STACK_TRACE_DEPTH];
 
   CStackTracker();
-  CStackTracker(void* Context);
+  explicit CStackTracker(void* Context);
   void DumpToLog(LOGVERBOSITY v);
   void DumpToDebugOutput();
   std::string DumpToString();

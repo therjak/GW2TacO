@@ -15,7 +15,9 @@ CWBDisplayState::CWBDisplayState() {
 
 CWBDisplayState::~CWBDisplayState() = default;
 
-CColor CWBDisplayState::GetColor(WBITEMVISUALCOMPONENT v) { return Visuals[v]; }
+CColor CWBDisplayState::GetColor(WBITEMVISUALCOMPONENT v) {
+  return CColor(Visuals[v]);
+}
 
 bool CWBDisplayState::IsSet(WBITEMVISUALCOMPONENT v) { return VisualSet[v]; }
 
@@ -64,16 +66,16 @@ CColor CWBDisplayProperties::GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
 
   switch (v) {
     case WB_ITEM_BACKGROUNDCOLOR:
-      return CColor::FromARGB(0);
+      return CColor{0};
     case WB_ITEM_FOREGROUNDCOLOR:
-      return CColor::FromARGB(0);
+      return CColor{0};
     case WB_ITEM_BORDERCOLOR:
-      return CColor::FromARGB(0xff434346);
+      return CColor{0xff434346};
     case WB_ITEM_FONTCOLOR:
-      return 0xffffffff;
+      return CColor{0xffffffff};
   }
 
-  return 0xffffffff;
+  return CColor{0xffffffff};
 }
 
 void CWBDisplayProperties::SetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
@@ -1026,10 +1028,10 @@ void CWBItem::DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
       CSSProperties.DisplayDescriptor.GetSkin(State, Button);
 
   if (ButtonSkin == 0xffffffff) {
-    CColor color = CColor::FromARGB(0xff999999);
-    if (State == WB_STATE_HOVER) color = CColor::FromARGB(0xff1c97ea);
-    if (State == WB_STATE_ACTIVE) color = CColor::FromARGB(0xff007acc);
-    if (!ScrollbarRequired(s)) color = CColor::FromARGB(0xff555558);
+    CColor color{0xff999999};
+    if (State == WB_STATE_HOVER) color = CColor{0xff1c97ea};
+    if (State == WB_STATE_ACTIVE) color = CColor{0xff007acc};
+    if (!ScrollbarRequired(s)) color = CColor{0xff555558};
 
     CPoint margin = CPoint(4, 4);
     API->DrawRect(CRect(r.TopLeft() + margin, r.BottomRight() - margin), color);
@@ -1060,7 +1062,7 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
       BackgroundState, WB_ITEM_SCROLL_HBAR);
 
   if (Background == 0xffffffff)
-    API->DrawRect(BackgroundRect, CColor::FromARGB(0xff3e3e42));
+    API->DrawRect(BackgroundRect, CColor{0xff3e3e42});
   else
     App->GetSkin()->RenderElement(API, Background, BackgroundRect);
 
@@ -1070,9 +1072,9 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
       ThumbState, WB_ITEM_SCROLL_HTHUMB);
 
   if (Thumb == 0xffffffff) {
-    CColor color = CColor::FromARGB(0xff686868);
-    if (ThumbState == WB_STATE_HOVER) color = CColor::FromARGB(0xff9e9e9e);
-    if (ThumbState == WB_STATE_ACTIVE) color = CColor::FromARGB(0xffefebef);
+    CColor color = CColor{0xff686868};
+    if (ThumbState == WB_STATE_HOVER) color = CColor{0xff9e9e9e};
+    if (ThumbState == WB_STATE_ACTIVE) color = CColor{0xffefebef};
 
     CPoint thumbmargin = CPoint(0, 4);
     API->DrawRect(
@@ -1134,7 +1136,7 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
       BackgroundState, WB_ITEM_SCROLL_VBAR);
 
   if (Background == 0xffffffff)
-    API->DrawRect(BackgroundRect, CColor::FromARGB(0xff3e3e42));
+    API->DrawRect(BackgroundRect, CColor{0xff3e3e42});
   else
     App->GetSkin()->RenderElement(API, Background, BackgroundRect);
 
@@ -1144,9 +1146,9 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
       ThumbState, WB_ITEM_SCROLL_VTHUMB);
 
   if (Thumb == 0xffffffff) {
-    CColor color = CColor::FromARGB(0xff686868);
-    if (ThumbState == WB_STATE_HOVER) color = CColor::FromARGB(0xff9e9e9e);
-    if (ThumbState == WB_STATE_ACTIVE) color = CColor::FromARGB(0xffefebef);
+    CColor color = CColor{0xff686868};
+    if (ThumbState == WB_STATE_HOVER) color = CColor{0xff9e9e9e};
+    if (ThumbState == WB_STATE_ACTIVE) color = CColor{0xffefebef};
 
     CPoint thumbmargin = CPoint(4, 0);
     API->DrawRect(
@@ -1494,7 +1496,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
-                              CColor::FromARGB(dw | 0xff000000), pseudo);
+                              dw | 0xff000000, pseudo);
       if (attrib == (_T( "none" ))) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               0, pseudo);
@@ -1535,7 +1537,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
           continue;
         }
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
-                              col, pseudo);
+                              col.argb(), pseudo);
       }
 
       WBSKINELEMENTID id;
@@ -1554,7 +1556,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
-                              CColor::FromARGB(dw | 0xff000000), pseudo);
+                              dw | 0xff000000, pseudo);
       if (attrib == (_T( "none" )))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               0, pseudo);
@@ -1567,7 +1569,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
           continue;
         }
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
-                              col, pseudo);
+                              col.argb(), pseudo);
       }
     }
 
@@ -1581,7 +1583,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
-                              CColor::FromARGB(dw | 0xff000000), pseudo);
+                              dw | 0xff000000, pseudo);
       if (attrib == (_T( "none" )))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
                               0, pseudo);
@@ -1594,7 +1596,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
           continue;
         }
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
-                              col, pseudo);
+                              col.argb(), pseudo);
       }
     }
 
@@ -1660,7 +1662,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     std::string v(value);
     std::sscanf(v.c_str(), _T( "#%x" ), &dw);
     VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BORDERCOLOR,
-                          CColor::FromARGB(dw | 0xff000000), pseudo);
+                          dw | 0xff000000, pseudo);
     return true;
   }
 
@@ -1672,7 +1674,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     int32_t o = static_cast<int32_t> max(0, min(255, dw * 255));
 
     VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_OPACITY,
-                          CColor::FromARGB(o * 0x01010101), pseudo);
+                          o * 0x01010101, pseudo);
     return true;
   }
 
@@ -1743,14 +1745,14 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
     std::string v(value);
     if (std::sscanf(v.c_str(), _T( "#%x" ), &dw) == 1) {
       VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
-                            CColor::FromARGB(dw | 0xff000000), pseudo);
+                            dw | 0xff000000, pseudo);
       return true;
     }
 
     CColor col;
     if (ParseRGBA(value, col))
-      VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR, col,
-                            pseudo);
+      VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
+                            col.argb(), pseudo);
 
     return true;
   }
@@ -1780,14 +1782,14 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
       uint32_t dw = 0;
       if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
-                              CColor::FromARGB(dw | 0xff000000), pseudo);
+                              dw | 0xff000000, pseudo);
         continue;
       }
 
       CColor col;
       if (ParseRGBA(attrib, col)) {
-        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR, col,
-                              pseudo);
+        VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
+                              col.argb(), pseudo);
         continue;
       }
 
@@ -2098,12 +2100,11 @@ bool CWBItem::ParseRGBA(std::string_view description, CColor& output) {
   if (Params.size() == 4)
     if (std::sscanf(Params[3].c_str(), _T( "%f" ), &a) != 1) return false;
 
-  int32_t Colors[3];
+  uint8_t Colors[3];
   for (int32_t y = 0; y < 3; y++) Colors[y] = max(0, min(255, c[y]));
-  int32_t Alpha = static_cast<int32_t>(max(0, min(1, a)) * 255);
+  uint8_t Alpha = static_cast<int32_t>(max(0, min(1, a)) * 255);
 
-  output = CColor::FromARGB((Alpha << 24) + (Colors[0] << 16) +
-                            (Colors[1] << 8) + Colors[2]);
+  output = CColor(Colors[0], Colors[1], Colors[2], Alpha);
   return true;
 }
 
