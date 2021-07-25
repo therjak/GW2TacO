@@ -127,12 +127,12 @@ class CCoreDX11Device : public CCoreDevice {
                                           LPCSTR EntryFunction,
                                           LPCSTR ShaderVersion,
                                           std::string* Err = nullptr) override;
-  CCoreVertexShader* CreateVertexShader() override;
-  CCorePixelShader* CreatePixelShader() override;
-  CCoreGeometryShader* CreateGeometryShader() override;
-  CCoreDomainShader* CreateDomainShader() override;
-  CCoreHullShader* CreateHullShader() override;
-  CCoreComputeShader* CreateComputeShader() override;
+  std::unique_ptr<CCoreVertexShader> CreateVertexShader() override;
+  std::unique_ptr<CCorePixelShader> CreatePixelShader() override;
+  std::unique_ptr<CCoreGeometryShader> CreateGeometryShader() override;
+  std::unique_ptr<CCoreDomainShader> CreateDomainShader() override;
+  std::unique_ptr<CCoreHullShader> CreateHullShader() override;
+  std::unique_ptr<CCoreComputeShader> CreateComputeShader() override;
   void SetShaderConstants(const CCoreConstantBuffer* Buffers) override;
   std::unique_ptr<CCoreConstantBuffer> CreateConstantBuffer() override;
 

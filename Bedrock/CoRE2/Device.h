@@ -169,12 +169,12 @@ class CCoreDevice {
   virtual CCoreComputeShader* CreateComputeShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
       std::string* Err = nullptr) = 0;
-  virtual CCoreVertexShader* CreateVertexShader() = 0;
-  virtual CCorePixelShader* CreatePixelShader() = 0;
-  virtual CCoreGeometryShader* CreateGeometryShader() = 0;
-  virtual CCoreDomainShader* CreateDomainShader() = 0;
-  virtual CCoreHullShader* CreateHullShader() = 0;
-  virtual CCoreComputeShader* CreateComputeShader() = 0;
+  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader() = 0;
+  virtual std::unique_ptr<CCorePixelShader> CreatePixelShader() = 0;
+  virtual std::unique_ptr<CCoreGeometryShader> CreateGeometryShader() = 0;
+  virtual std::unique_ptr<CCoreDomainShader> CreateDomainShader() = 0;
+  virtual std::unique_ptr<CCoreHullShader> CreateHullShader() = 0;
+  virtual std::unique_ptr<CCoreComputeShader> CreateComputeShader() = 0;
   virtual void SetShaderConstants(const CCoreConstantBuffer* Buffers) = 0;
   virtual std::unique_ptr<CCoreConstantBuffer> CreateConstantBuffer() = 0;
 

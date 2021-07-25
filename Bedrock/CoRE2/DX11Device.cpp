@@ -767,28 +767,28 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
   return s;
 }
 
-CCoreVertexShader* CCoreDX11Device::CreateVertexShader() {
-  return new CCoreDX11VertexShader(this);
+std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader() {
+  return std::make_unique<CCoreDX11VertexShader>(this);
 }
 
-CCorePixelShader* CCoreDX11Device::CreatePixelShader() {
-  return new CCoreDX11PixelShader(this);
+std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader() {
+  return std::make_unique<CCoreDX11PixelShader>(this);
 }
 
-CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader() {
-  return new CCoreDX11GeometryShader(this);
+std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader() {
+  return std::make_unique<CCoreDX11GeometryShader>(this);
 }
 
-CCoreHullShader* CCoreDX11Device::CreateHullShader() {
-  return new CCoreDX11HullShader(this);
+std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader() {
+  return std::make_unique<CCoreDX11HullShader>(this);
 }
 
-CCoreDomainShader* CCoreDX11Device::CreateDomainShader() {
-  return new CCoreDX11DomainShader(this);
+std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader() {
+  return std::make_unique<CCoreDX11DomainShader>(this);
 }
 
-CCoreComputeShader* CCoreDX11Device::CreateComputeShader() {
-  return new CCoreDX11ComputeShader(this);
+std::unique_ptr<CCoreComputeShader> CCoreDX11Device::CreateComputeShader() {
+  return std::make_unique<CCoreDX11ComputeShader>(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
