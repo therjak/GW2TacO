@@ -280,9 +280,7 @@ CWBMosaic::CWBMosaic(const CWBMosaic& Copy) {
   for (int32_t x = 0; x < 4; x++) Overshoot[x] = Copy.Overshoot[x];
 }
 
-CWBMosaic::CWBMosaic() {
-  for (int& x : Overshoot) x = 0;
-}
+CWBMosaic::CWBMosaic() : Overshoot{0} {}
 
 CWBMosaic& CWBMosaic::operator=(const CWBMosaic& Copy) {
   if (&Copy == this) return *this;

@@ -26,18 +26,18 @@ enum WBTEXTTRANSFORM {
 };
 
 struct WBSYMBOLINPUT {
-  uint16_t Char;
+  uint16_t Char = 0;
   CRect UV;
   CPoint Offset;
-  int32_t Advance;
+  int32_t Advance = 0;
 };
 
 struct WBSYMBOL {
-  WBATLASHANDLE Handle;
-  int16_t OffsetX, OffsetY;
-  uint16_t SizeX, SizeY;
-  int16_t Advance;
-  uint16_t Char;
+  WBATLASHANDLE Handle = 0;
+  int16_t OffsetX = 0, OffsetY = 0;
+  uint16_t SizeX = 0, SizeY = 0;
+  int16_t Advance = 0;
+  uint16_t Char = 0;
 
   CRect calculatedContentRect;
 };
@@ -72,14 +72,14 @@ class CWBDrawAPI;
 class CWBFontDescription {
   friend class CWBFont;
 
-  uint8_t* Image;
-  int32_t XRes, YRes;
+  std::unique_ptr<uint8_t[]> Image;
+  int32_t XRes = 0, YRes = 0;
 
   std::vector<WBSYMBOLINPUT> Alphabet;
   std::vector<WBKERNINGDATA> KerningData;
 
-  int32_t LineHeight;
-  int32_t Base;
+  int32_t LineHeight = 0;
+  int32_t Base = 0;
 
  public:
   CWBFontDescription();
@@ -108,16 +108,16 @@ class CWBFontDescription {
 class CWBFont {
   CAtlas* Atlas;
   int32_t AlphabetSize = 0;
-  WBSYMBOL* Alphabet;
+  std::unique_ptr<WBSYMBOL[]> Alphabet;
   std::unordered_map<CWBKerningPair, int16_t, DHash> Kerning;
 
-  int32_t LineHeight;
-  int32_t Base;
+  int32_t LineHeight = 0;
+  int32_t Base = 0;
 
-  int32_t Offset_X_Char;
-  int32_t Height_X_Char;
+  int32_t Offset_X_Char = 0;
+  int32_t Height_X_Char = 0;
 
-  TCHAR MissingChar;
+  TCHAR MissingChar = 0;
 
   void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize& Size,
                  const CPoint& Offset, int32_t Advance, CRect contentRect);
@@ -146,9 +146,9 @@ class CWBFont {
   int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
                 int32_t y, CColor Color = 0xffffffff,
                 WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
-  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, CPoint& p,
+  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const CPoint& p,
                     CColor Color = 0xffffffff);
-  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, CPoint& p,
+  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, const CPoint& p,
                 CColor Color = 0xffffffff,
                 WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
   int32_t GetWidth(
@@ -162,7 +162,7 @@ class CWBFont {
   int32_t GetHeight(uint16_t Char);
   int32_t GetHeight(std::string_view String);
 
-  CPoint GetTextPosition(std::string_view String, CRect& Container,
+  CPoint GetTextPosition(std::string_view String, const CRect& Container,
                          WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
                          WBTEXTTRANSFORM Transform, bool DoKerning = true);
 

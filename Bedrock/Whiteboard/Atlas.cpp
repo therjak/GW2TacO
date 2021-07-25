@@ -5,16 +5,11 @@
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() {
-  Children[0] = nullptr;
-  Children[1] = nullptr;
   Occupied = false;
   Image = nullptr;
 }
 
-CAtlasNode::~CAtlasNode() {
-  if (Children[0]) SAFEDELETE(Children[0]);
-  if (Children[1]) SAFEDELETE(Children[1]);
-}
+CAtlasNode::~CAtlasNode() {}
 
 CRect& CAtlasNode::GetArea() { return Area; }
 
@@ -33,8 +28,8 @@ CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
     return this;
   }
 
-  Children[0] = new CAtlasNode();
-  Children[1] = new CAtlasNode();
+  Children[0] = std::make_unique<CAtlasNode>();
+  Children[1] = std::make_unique<CAtlasNode>();
 
   if (Area.Width() - width > Area.Height() - height) {
     Children[0]->Area = CRect(Area.x1, Area.y1, Area.x1 + width, Area.y2);
@@ -115,7 +110,7 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
   YRes = YSize;
   Image = new uint8_t[XRes * YRes * 4];
   memset(Image, 0, XRes * YRes * 4);
-  Root = new CAtlasNode();
+  Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
   Atlas = nullptr;
@@ -142,7 +137,6 @@ CAtlas::~CAtlas() {
     CLightweightCriticalSection cs(&critsec);
     ImageStorage.clear();
   }
-  SAFEDELETE(Root);
   SAFEDELETEA(Image);
 }
 
@@ -239,8 +233,7 @@ bool CAtlas::Optimize(bool DebugMode) {
     }
   }
 
-  SAFEDELETE(Root);
-  Root = new CAtlasNode();
+  Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
 
@@ -381,8 +374,7 @@ CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
 }
 
 bool CAtlas::Reset() {
-  SAFEDELETE(Root);
-  Root = new CAtlasNode();
+  Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
 
@@ -401,7 +393,7 @@ bool CAtlas::Reset() {
 }
 
 bool CAtlas::Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize) {
-  SAFEDELETE(Root);
+  Root.reset();
   SAFEDELETEA(Image);
   Atlas.reset();
 
@@ -412,7 +404,7 @@ bool CAtlas::Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize) {
   Image = new uint8_t[XRes * YRes * 4];
   memset(Image, 0, XRes * YRes * 4);
 
-  Root = new CAtlasNode();
+  Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
 

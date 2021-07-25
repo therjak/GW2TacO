@@ -35,15 +35,19 @@ CCoreDX11Device::CCoreDX11Device() {
 }
 
 CCoreDX11Device::~CCoreDX11Device() {
-  if (OcclusionQuery)
+  if (OcclusionQuery) {
     OcclusionQuery->Release();
+  }
 
-  if (BackBufferView)
+  if (BackBufferView) {
     BackBufferView->Release();
-  if (DepthBufferView)
+  }
+  if (DepthBufferView) {
     DepthBufferView->Release();
-  if (DepthBuffer)
+  }
+  if (DepthBuffer) {
     DepthBuffer->Release();
+  }
   if (SwapChain) {
     SwapChain->SetFullscreenState(false, nullptr);
     SwapChain->Release();
@@ -65,8 +69,7 @@ CCoreDX11Device::~CCoreDX11Device() {
       dbg->Release();
     }
   }
-  if (Device)
-    Device->Release();
+  if (Device) Device->Release();
 }
 
 void CCoreDX11Device::ResetPrivateResources() {}
@@ -74,8 +77,7 @@ void CCoreDX11Device::ResetPrivateResources() {}
 #define BACKBUFFERFORMAT D3DFMT_A8R8G8B8
 
 bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
-  if (BackBufferView)
-    BackBufferView->Release();
+  if (BackBufferView) BackBufferView->Release();
 
   FORCEDDEBUGLOG("creating backbuffer");
 
@@ -120,10 +122,12 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
 }
 
 bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
-  if (DepthBufferView)
+  if (DepthBufferView) {
     DepthBufferView->Release();
-  if (DepthBuffer)
+  }
+  if (DepthBuffer) {
     DepthBuffer->Release();
+  }
 
   FORCEDDEBUGLOG("creating depthbuffer");
 
@@ -223,11 +227,13 @@ bool CCoreDX11Device::CreateClassicSwapChain(
   }
 #endif
 
-  if (!CreateBackBuffer(XRes, YRes))
+  if (!CreateBackBuffer(XRes, YRes)) {
     return false;
+  }
   FORCEDDEBUGLOG("Backbuffer created");
-  if (!CreateDepthBuffer(XRes, YRes))
+  if (!CreateDepthBuffer(XRes, YRes)) {
     return false;
+  }
   FORCEDDEBUGLOG("Depthbuffer created");
   DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
 
@@ -383,11 +389,13 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   dxgiFactory->Release();
 
-  if (!CreateBackBuffer(XRes, YRes))
+  if (!CreateBackBuffer(XRes, YRes)) {
     return false;
+  }
   FORCEDDEBUGLOG("Backbuffer created");
-  if (!CreateDepthBuffer(XRes, YRes))
+  if (!CreateDepthBuffer(XRes, YRes)) {
     return false;
+  }
   FORCEDDEBUGLOG("Depthbuffer created");
   DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
 
@@ -429,8 +437,9 @@ bool CCoreDX11Device::InitAPI(const uint32_t hWnd, const bool FullScreen,
     return CreateDirectCompositionSwapchain(hWnd, FullScreen, XRes, YRes,
                                             AALevel, RefreshRate);
 
-  if (dcomp)
+  if (dcomp) {
     FreeLibrary(dcomp);
+  }
 }
 
 bool CCoreDX11Device::Initialize(CCoreWindowHandler* window,
@@ -464,8 +473,9 @@ bool CCoreDX11Device::IsWindowed() {
     return false;
   }
 
-  if (i)
+  if (i) {
     i->Release();
+  }
   return fs;
 }
 
@@ -484,15 +494,19 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
     return;
   }
 
-  if (desc.BufferDesc.Width == xr && desc.BufferDesc.Height == yr)
+  if (desc.BufferDesc.Width == xr && desc.BufferDesc.Height == yr) {
     return;
+  }
 
-  if (BackBufferView)
+  if (BackBufferView) {
     BackBufferView->Release();
-  if (DepthBufferView)
+  }
+  if (DepthBufferView) {
     DepthBufferView->Release();
-  if (DepthBuffer)
+  }
+  if (DepthBuffer) {
     DepthBuffer->Release();
+  }
   BackBufferView = nullptr;
   DepthBufferView = nullptr;
   DepthBuffer = nullptr;
@@ -507,10 +521,12 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
     return;
   }
 
-  if (!CreateBackBuffer(xr, yr))
+  if (!CreateBackBuffer(xr, yr)) {
     return;
-  if (!CreateDepthBuffer(xr, yr))
+  }
+  if (!CreateDepthBuffer(xr, yr)) {
     return;
+  }
 
   DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
   SetViewport(CRect(0, 0, xr, yr));
@@ -544,42 +560,45 @@ std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
   return Result;
 }
 
-std::unique_ptr<CCoreTexture2D>
-CCoreDX11Device::CreateTexture2D(const uint8_t* Data, const int32_t Size) {
+std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
+    const uint8_t* Data, const int32_t Size) {
   auto Result = std::make_unique<CCoreDX11Texture2D>(this);
-  if (!Result->Create(Data, Size))
+  if (!Result->Create(Data, Size)) {
     Result.reset();
+  }
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // vertexbuffer functions
 
-std::unique_ptr<CCoreVertexBuffer>
-CCoreDX11Device::CreateVertexBuffer(const uint8_t* Data, const int32_t Size) {
+std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBuffer(
+    const uint8_t* Data, const int32_t Size) {
   auto Result = std::make_unique<CCoreDX11VertexBuffer>(this);
-  if (!Result->Create(Data, Size))
+  if (!Result->Create(Data, Size)) {
     Result.reset();
+  }
   return Result;
 }
 
-std::unique_ptr<CCoreVertexBuffer>
-CCoreDX11Device::CreateVertexBufferDynamic(const int32_t Size) {
+std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBufferDynamic(
+    const int32_t Size) {
   auto Result = std::make_unique<CCoreDX11VertexBuffer>(this);
-  if (!Result->CreateDynamic(Size))
+  if (!Result->CreateDynamic(Size)) {
     Result.reset();
+  }
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // indexbuffer functions
 
-std::unique_ptr<CCoreIndexBuffer>
-CCoreDX11Device::CreateIndexBuffer(const int32_t IndexCount,
-                                   const int32_t IndexSize) {
+std::unique_ptr<CCoreIndexBuffer> CCoreDX11Device::CreateIndexBuffer(
+    const int32_t IndexCount, const int32_t IndexSize) {
   auto Result = std::make_unique<CCoreDX11IndexBuffer>(this);
-  if (!Result->Create(IndexCount, IndexSize))
+  if (!Result->Create(IndexCount, IndexSize)) {
     Result.reset();
+  }
   return Result;
 }
 
@@ -589,22 +608,22 @@ CCoreDX11Device::CreateIndexBuffer(const int32_t IndexCount,
 std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat(
     const std::vector<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs) {
   auto Result = std::make_unique<CCoreDX11VertexFormat>(this);
-  if (!Result->Create(Attributes, vs))
+  if (!Result->Create(Attributes, vs)) {
     Result.reset();
+  }
   return Result;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // shader functions
 
-std::unique_ptr<CCoreVertexShader>
-CCoreDX11Device::CreateVertexShader(LPCSTR Code, int32_t CodeSize,
-                                    LPCSTR EntryFunction, LPCSTR ShaderVersion,
-                                    std::string* Err) {
-  if (Err)
-    *Err = _T( "" );
-  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion)
+std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
+  if (Err) *Err = _T( "" );
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return {};
+  }
 
   auto s = std::make_unique<CCoreDX11VertexShader>(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
@@ -616,14 +635,15 @@ CCoreDX11Device::CreateVertexShader(LPCSTR Code, int32_t CodeSize,
   return s;
 }
 
-std::unique_ptr<CCorePixelShader>
-CCoreDX11Device::CreatePixelShader(LPCSTR Code, int32_t CodeSize,
-                                   LPCSTR EntryFunction, LPCSTR ShaderVersion,
-                                   std::string* Err) {
-  if (Err)
+std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
+  if (Err) {
     *Err = _T( "" );
-  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion)
+  }
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return {};
+  }
 
   auto s = std::make_unique<CCoreDX11PixelShader>(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
@@ -635,8 +655,8 @@ CCoreDX11Device::CreatePixelShader(LPCSTR Code, int32_t CodeSize,
   return s;
 }
 
-std::unique_ptr<CCoreVertexShader>
-CCoreDX11Device::CreateVertexShaderFromBlob(uint8_t* Code, int32_t CodeSize) {
+std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShaderFromBlob(
+    uint8_t* Code, int32_t CodeSize) {
   auto s = std::make_unique<CCoreDX11VertexShader>(this);
   if (!s->CreateFromBlob(Code, CodeSize)) {
     s.reset();
@@ -645,8 +665,8 @@ CCoreDX11Device::CreateVertexShaderFromBlob(uint8_t* Code, int32_t CodeSize) {
   return s;
 }
 
-std::unique_ptr<CCorePixelShader>
-CCoreDX11Device::CreatePixelShaderFromBlob(uint8_t* Code, int32_t CodeSize) {
+std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShaderFromBlob(
+    uint8_t* Code, int32_t CodeSize) {
   auto s = std::make_unique<CCoreDX11PixelShader>(this);
   if (!s->CreateFromBlob(Code, CodeSize)) {
     s.reset();
@@ -660,10 +680,12 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
                                                            LPCSTR EntryFunction,
                                                            LPCSTR ShaderVersion,
                                                            std::string* Err) {
-  if (Err)
+  if (Err) {
     *Err = _T( "" );
-  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion)
+  }
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
+  }
 
   CCoreDX11GeometryShader* s = new CCoreDX11GeometryShader(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
@@ -681,10 +703,12 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
                                                        LPCSTR EntryFunction,
                                                        LPCSTR ShaderVersion,
                                                        std::string* Err) {
-  if (Err)
+  if (Err) {
     *Err = _T( "" );
-  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion)
+  }
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
+  }
 
   CCoreDX11DomainShader* s = new CCoreDX11DomainShader(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
@@ -702,10 +726,12 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
                                                    LPCSTR EntryFunction,
                                                    LPCSTR ShaderVersion,
                                                    std::string* Err) {
-  if (Err)
+  if (Err) {
     *Err = _T( "" );
-  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion)
+  }
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
+  }
 
   CCoreDX11HullShader* s = new CCoreDX11HullShader(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
@@ -723,10 +749,12 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
                                                          LPCSTR EntryFunction,
                                                          LPCSTR ShaderVersion,
                                                          std::string* Err) {
-  if (Err)
+  if (Err) {
     *Err = _T( "" );
-  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion)
+  }
+  if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
+  }
 
   CCoreDX11ComputeShader* s = new CCoreDX11ComputeShader(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
@@ -770,111 +798,112 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
                                        const CORERENDERSTATE RenderState,
                                        const CORERENDERSTATEVALUE Value) {
   switch (RenderState) {
-  case CORERS_BLENDSTATE: {
-    if (!Value.BlendState) {
-      DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
-      CurrentBlendState = nullptr;
-      return true;
-    }
-    return Value.BlendState->Apply();
-  } break;
-  case CORERS_RASTERIZERSTATE: {
-    if (!Value.RasterizerState) {
-      DeviceContext->RSSetState(nullptr);
-      CurrentRasterizerState = nullptr;
-      return true;
-    }
-    return Value.RasterizerState->Apply();
-  } break;
-  case CORERS_DEPTHSTENCILSTATE: {
-    if (!Value.DepthStencilState) {
-      DeviceContext->OMSetDepthStencilState(nullptr, 0);
-      CurrentDepthStencilState = nullptr;
-      return true;
-    }
-    return Value.DepthStencilState->Apply();
-  } break;
-  case CORERS_SAMPLERSTATE: {
-    if (!Value.SamplerState)
-      return false;
-    return Value.SamplerState->Apply(Sampler);
-  } break;
-  case CORERS_TEXTURE: {
-    if (!Value.Texture) {
-      ID3D11ShaderResourceView* null[1];
-      null[0] = nullptr;
+    case CORERS_BLENDSTATE: {
+      if (!Value.BlendState) {
+        DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+        CurrentBlendState = nullptr;
+        return true;
+      }
+      return Value.BlendState->Apply();
+    } break;
+    case CORERS_RASTERIZERSTATE: {
+      if (!Value.RasterizerState) {
+        DeviceContext->RSSetState(nullptr);
+        CurrentRasterizerState = nullptr;
+        return true;
+      }
+      return Value.RasterizerState->Apply();
+    } break;
+    case CORERS_DEPTHSTENCILSTATE: {
+      if (!Value.DepthStencilState) {
+        DeviceContext->OMSetDepthStencilState(nullptr, 0);
+        CurrentDepthStencilState = nullptr;
+        return true;
+      }
+      return Value.DepthStencilState->Apply();
+    } break;
+    case CORERS_SAMPLERSTATE: {
+      if (!Value.SamplerState) {
+        return false;
+      }
+      return Value.SamplerState->Apply(Sampler);
+    } break;
+    case CORERS_TEXTURE: {
+      if (!Value.Texture) {
+        ID3D11ShaderResourceView* null[1];
+        null[0] = nullptr;
 
-      if (Sampler >= CORESMP_PS0 && Sampler <= CORESMP_PS15)
-        DeviceContext->PSSetShaderResources(Sampler, 1, null);
-      if (Sampler >= CORESMP_VS0 && Sampler <= CORESMP_VS3)
-        DeviceContext->VSSetShaderResources(Sampler - CORESMP_VS0, 1, null);
-      if (Sampler >= CORESMP_GS0 && Sampler <= CORESMP_GS3)
-        DeviceContext->GSSetShaderResources(Sampler - CORESMP_GS0, 1, null);
-      return true;
-    }
-    return ApplyTextureToSampler(Sampler, Value.Texture);
-  } break;
-  case CORERS_VERTEXFORMAT: {
-    if (!Value.VertexFormat) {
-      CurrentVertexFormatSize = 0;
-      DeviceContext->IASetInputLayout(nullptr);
-      return true;
-    }
+        if (Sampler >= CORESMP_PS0 && Sampler <= CORESMP_PS15)
+          DeviceContext->PSSetShaderResources(Sampler, 1, null);
+        if (Sampler >= CORESMP_VS0 && Sampler <= CORESMP_VS3)
+          DeviceContext->VSSetShaderResources(Sampler - CORESMP_VS0, 1, null);
+        if (Sampler >= CORESMP_GS0 && Sampler <= CORESMP_GS3)
+          DeviceContext->GSSetShaderResources(Sampler - CORESMP_GS0, 1, null);
+        return true;
+      }
+      return ApplyTextureToSampler(Sampler, Value.Texture);
+    } break;
+    case CORERS_VERTEXFORMAT: {
+      if (!Value.VertexFormat) {
+        CurrentVertexFormatSize = 0;
+        DeviceContext->IASetInputLayout(nullptr);
+        return true;
+      }
 
-    CurrentVertexFormatSize = Value.VertexFormat->GetSize();
-    return ApplyVertexFormat(Value.VertexFormat);
-  } break;
-  case CORERS_INDEXBUFFER: {
-    if (!Value.IndexBuffer) {
-      DeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
+      CurrentVertexFormatSize = Value.VertexFormat->GetSize();
+      return ApplyVertexFormat(Value.VertexFormat);
+    } break;
+    case CORERS_INDEXBUFFER: {
+      if (!Value.IndexBuffer) {
+        DeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
+        return true;
+      }
+      return ApplyIndexBuffer(Value.IndexBuffer);
+    } break;
+    case CORERS_VERTEXSHADER: {
+      if (!Value.VertexShader) {
+        DeviceContext->VSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyVertexShader(Value.VertexShader);
+    } break;
+    case CORERS_GEOMETRYSHADER: {
+      if (!Value.GeometryShader) {
+        DeviceContext->GSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyGeometryShader(Value.GeometryShader);
+    } break;
+    case CORERS_HULLSHADER: {
+      if (!Value.GeometryShader) {
+        DeviceContext->HSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyHullShader(Value.HullShader);
+    } break;
+    case CORERS_DOMAINSHADER: {
+      if (!Value.DomainShader) {
+        DeviceContext->DSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyDomainShader(Value.DomainShader);
+    } break;
+    case CORERS_COMPUTESHADER: {
+      if (!Value.ComputeShader) {
+        DeviceContext->DSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyComputeShader(Value.ComputeShader);
+    } break;
+    case CORERS_PIXELSHADER: {
+      if (!Value.PixelShader) {
+        DeviceContext->PSSetShader(nullptr, nullptr, 0);
+        return true;
+      }
+      return ApplyPixelShader(Value.PixelShader);
+    } break;
+    default:
       return true;
-    }
-    return ApplyIndexBuffer(Value.IndexBuffer);
-  } break;
-  case CORERS_VERTEXSHADER: {
-    if (!Value.VertexShader) {
-      DeviceContext->VSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyVertexShader(Value.VertexShader);
-  } break;
-  case CORERS_GEOMETRYSHADER: {
-    if (!Value.GeometryShader) {
-      DeviceContext->GSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyGeometryShader(Value.GeometryShader);
-  } break;
-  case CORERS_HULLSHADER: {
-    if (!Value.GeometryShader) {
-      DeviceContext->HSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyHullShader(Value.HullShader);
-  } break;
-  case CORERS_DOMAINSHADER: {
-    if (!Value.DomainShader) {
-      DeviceContext->DSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyDomainShader(Value.DomainShader);
-  } break;
-  case CORERS_COMPUTESHADER: {
-    if (!Value.ComputeShader) {
-      DeviceContext->DSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyComputeShader(Value.ComputeShader);
-  } break;
-  case CORERS_PIXELSHADER: {
-    if (!Value.PixelShader) {
-      DeviceContext->PSSetShader(nullptr, nullptr, 0);
-      return true;
-    }
-    return ApplyPixelShader(Value.PixelShader);
-  } break;
-  default:
-    return true;
   }
 }
 
@@ -900,8 +929,9 @@ bool CCoreDX11Device::Clear(const bool clearPixels, const bool clearDepth,
   float col[4] = {Color[0] / 255.0f, Color[1] / 255.0f, Color[2] / 255.0f,
                   Color[3] / 255.0f};
 
-  if (clearPixels)
+  if (clearPixels) {
     DeviceContext->ClearRenderTargetView(BackBufferView, col);
+  }
 
   if (clearDepth)
     DeviceContext->ClearDepthStencilView(
@@ -924,32 +954,36 @@ bool CCoreDX11Device::Flip(bool Vsync) {
 
 bool CCoreDX11Device::DrawIndexedTriangles(int32_t Count, int32_t NumVertices) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  if (!ApplyRequestedRenderState())
+  if (!ApplyRequestedRenderState()) {
     return false;
+  }
   DeviceContext->DrawIndexed(Count * 3, 0, 0);
   return true;
 }
 
 bool CCoreDX11Device::DrawLines(int32_t Count) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-  if (!ApplyRequestedRenderState())
+  if (!ApplyRequestedRenderState()) {
     return false;
+  }
   DeviceContext->Draw(Count * 2, 0);
   return true;
 }
 
 bool CCoreDX11Device::DrawIndexedLines(int32_t Count, int32_t NumVertices) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-  if (!ApplyRequestedRenderState())
+  if (!ApplyRequestedRenderState()) {
     return false;
+  }
   DeviceContext->DrawIndexed(Count * 2, 0, 0);
   return true;
 }
 
 bool CCoreDX11Device::DrawTriangles(int32_t Count) {
   DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  if (!ApplyRequestedRenderState())
+  if (!ApplyRequestedRenderState()) {
     return false;
+  }
   DeviceContext->Draw(Count * 3, 0);
   return true;
 }
@@ -1065,14 +1099,14 @@ void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
     return;
   }
 
-  CCoreDX11Texture2D* dummy = new CCoreDX11Texture2D(this);
+  auto dummy = std::make_unique<CCoreDX11Texture2D>(this);
   dummy->SetTextureHandle(bb);
 
   dummy->ExportToImage(Filename, true, CORE_PNG, false);
 
   dummy->SetTextureHandle(nullptr);
   dummy->SetView(nullptr);
-  SAFEDELETE(dummy);
+  dummy.reset();
 
   bb->Release();
 
@@ -1097,8 +1131,9 @@ void CCoreDX11Device::CaptureCurrentFrame() {
 }
 
 void CCoreDX11Device::BeginOcclusionQuery() {
-  if (OcclusionQuery)
+  if (OcclusionQuery) {
     DeviceContext->Begin(OcclusionQuery);
+  }
 }
 
 bool CCoreDX11Device::EndOcclusionQuery() {
@@ -1106,7 +1141,7 @@ bool CCoreDX11Device::EndOcclusionQuery() {
     DeviceContext->End(OcclusionQuery);
 
     UINT64
-    queryData; // This data type is different depending on the query type
+    queryData;  // This data type is different depending on the query type
     while (S_OK != DeviceContext->GetData(OcclusionQuery, &queryData,
                                           sizeof(UINT64), 0)) {
     }

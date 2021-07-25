@@ -158,11 +158,10 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
 
     int32_t textwidth = 0;
     for (const auto& d : dungeons)
-      textwidth = max(textwidth, f->GetWidth(d.shortName.c_str(), false));
+      textwidth = max(textwidth, f->GetWidth(d.shortName, false));
 
     for (auto& d : dungeons) {
-      f->Write(API, (d.shortName + ":").c_str(), CPoint(0, posy + 1),
-               0xffffffff);
+      f->Write(API, (d.shortName + ":"), CPoint(0, posy + 1), 0xffffffff);
       int32_t posx = textwidth + f->GetLineHeight() / 2;
       for (int y = 0; y < d.paths.size(); y++) {
         auto& p = d.paths[y];

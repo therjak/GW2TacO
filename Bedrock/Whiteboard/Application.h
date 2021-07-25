@@ -28,7 +28,7 @@ typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root, CXMLNode& node,
 class CWBApplication : public CCoreWindowHandlerWin {
   friend class CWBItem;
 
-  CRingBuffer<int32_t>* FrameTimes;
+  std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
   int32_t LastFrameTime;
 
   std::unordered_map<WBGUID, CWBItem*> Items;
@@ -40,7 +40,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   CWBItem* MouseCaptureItem;
   CWBItem* MouseItem;
 
-  CWBSkin* Skin;
+  std::unique_ptr<CWBSkin> Skin;
   std::unordered_map<std::string, std::unique_ptr<CWBFont>> Fonts;
   CWBFont* DefaultFont;
 
@@ -83,10 +83,10 @@ class CWBApplication : public CCoreWindowHandlerWin {
   CColor ClearColor = CColor(0, 0, 0, 255);
 
  protected:
-  CAtlas* Atlas;
+  std::unique_ptr<CAtlas> Atlas;
   std::unique_ptr<CWBRoot> Root;
 
-  CWBDrawAPI* DrawAPI;
+  std::unique_ptr<CWBDrawAPI> DrawAPI;
 
   LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
   bool GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc);

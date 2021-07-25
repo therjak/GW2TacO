@@ -162,19 +162,18 @@ class CWBItem : public IWBCSS {
 
   CSize StoredContentSize;
 
-  CWBItem* Parent;
+  CWBItem* Parent = nullptr;
   std::vector<std::shared_ptr<CWBItem>> Children;
 
-  int32_t SortLayer;
-  int32_t ZIndex;
+  int32_t SortLayer = 0;
   float OpacityMultiplier = 1;
 
-  bool Hidden;
-  bool Disabled;
+  bool Hidden = false;
+  bool Disabled = false;
   bool ForceMouseTransparent = false;
-  int32_t Scrollbar_Size;
-  int32_t Scrollbar_ButtonSize;
-  int32_t Scrollbar_ThumbMinimalSize;
+  int32_t Scrollbar_Size = 16;
+  int32_t Scrollbar_ButtonSize = 16;
+  int32_t Scrollbar_ThumbMinimalSize = 4;
   CWBScrollbarParams HScrollbar, VScrollbar;
 
   //////////////////////////////////////////////////////////////////////////
@@ -193,7 +192,7 @@ class CWBItem : public IWBCSS {
 
   virtual bool Focusable() const;
 
-  void* Data;
+  void* Data = nullptr;
 
   virtual void AdjustClientAreaToFitScrollbars();
   virtual void ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t& r,
@@ -238,8 +237,8 @@ class CWBItem : public IWBCSS {
 
  protected:
   std::weak_ptr<CWBItem> SelfRef;
-  CWBApplication* App;
-  CWBItem* ChildInFocus;
+  CWBApplication* App = nullptr;
+  CWBItem* ChildInFocus = nullptr;
 
   virtual void OnDraw(CWBDrawAPI* API);
   virtual void OnPostDraw(CWBDrawAPI* API);

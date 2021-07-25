@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <vector>
 
 #include "../BaseLib/BaseLib.h"
@@ -22,12 +23,12 @@ enum COREMOUSECURSOR {
 
 class CCoreWindowParameters {
  public:
-  CCoreDevice *Device = nullptr;
+  CCoreDevice* Device = nullptr;
   HINSTANCE hInstance;
   bool FullScreen;
   int32_t XRes;
   int32_t YRes;
-  TCHAR *WindowTitle;
+  TCHAR* WindowTitle;
   HICON Icon;
   bool Maximized;
   bool ResizeDisabled;
@@ -37,11 +38,11 @@ class CCoreWindowParameters {
 
   CCoreWindowParameters();
   CCoreWindowParameters(HINSTANCE hinst, bool FullScreen, int32_t XRes,
-                        int32_t YRes, TCHAR *WindowTitle, HICON Icon = nullptr,
+                        int32_t YRes, TCHAR* WindowTitle, HICON Icon = nullptr,
                         bool Maximized = false, bool ResizeDisabled = false);
 
-  virtual void Initialize(CCoreDevice *device, HINSTANCE hinst, bool FullScreen,
-                          int32_t XRes, int32_t YRes, TCHAR *WindowTitle,
+  virtual void Initialize(CCoreDevice* device, HINSTANCE hinst, bool FullScreen,
+                          int32_t XRes, int32_t YRes, TCHAR* WindowTitle,
                           HICON Icon = nullptr, bool Maximized = false,
                           bool ResizeDisabled = false);
 };
@@ -51,22 +52,22 @@ class CCoreWindowParameters {
 
 class CCoreWindowHandler {
  protected:
-  bool Done;
-  CCoreDevice *Device;
-  bool Active;
-  bool Maximized;
-  bool Minimized;
+  bool Done = false;
+  CCoreDevice* Device = nullptr;
+  bool Active = false;
+  bool Maximized = false;
+  bool Minimized = false;
   CRect ClientRect;
 
-  bool InactiveFrameLimiter;
-  int32_t LimitedFPS;
-  int32_t LastRenderedFrame;
+  bool InactiveFrameLimiter = true;
+  int32_t LimitedFPS = 20;
+  int32_t LastRenderedFrame = 0;
 
-  int32_t XRes, YRes;
+  int32_t XRes = 0, YRes = 0;
 
   CCoreWindowParameters InitParameters;
 
-  COREMOUSECURSOR CurrentMouseCursor;
+  COREMOUSECURSOR CurrentMouseCursor = CM_ARROW;
 
   CPoint MousePos, LeftDownPos, RightDownPos, MidDownPos;
 
@@ -79,7 +80,7 @@ class CCoreWindowHandler {
 
   // this initializer will change to accommodate multiple platforms at once once
   // we get to that point:
-  virtual bool Initialize(const CCoreWindowParameters &WindowParams) = 0;
+  virtual bool Initialize(const CCoreWindowParameters& WindowParams) = 0;
 
   virtual void Destroy();
   virtual bool HandleMessages() = 0;
@@ -91,7 +92,7 @@ class CCoreWindowHandler {
 
   virtual int32_t GetXRes();
   virtual int32_t GetYRes();
-  virtual CCoreWindowParameters &GetInitParameters();
+  virtual CCoreWindowParameters& GetInitParameters();
 
   virtual void SelectMouseCursor(COREMOUSECURSOR Cursor);
   virtual void FinalizeMouseCursor() = 0;
@@ -100,7 +101,7 @@ class CCoreWindowHandler {
   CPoint GetRightDownPos();
   CPoint GetMidDownPos();
 
-  INLINE CCoreDevice *GetDevice() { return Device; }
+  INLINE CCoreDevice* GetDevice() { return Device; }
 
   virtual void SetWindowTitle(std::string_view Title) = 0;
   virtual void SetInactiveFrameLimiter(bool set);
@@ -129,7 +130,7 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   CCoreWindowHandlerWin();
   ~CCoreWindowHandlerWin() override;
 
-  bool Initialize(const CCoreWindowParameters &WindowParams) override;
+  bool Initialize(const CCoreWindowParameters& WindowParams) override;
   void Destroy() override;
   bool HandleMessages() override;
   bool HandleOSMessages() override;

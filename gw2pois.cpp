@@ -443,7 +443,6 @@ BOOL AppIsAllreadyRunning() {
   HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
   PROCESSENTRY32* processInfo = new PROCESSENTRY32;
   processInfo->dwSize = sizeof(PROCESSENTRY32);
-  int index = 0;
   while (Process32Next(hSnapShot, processInfo) != FALSE) {
     if (!strcmp(processInfo->szExeFile, pfname)) {
       if (processInfo->th32ProcessID != dwOwnPID) {
@@ -774,7 +773,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FORCEDDEBUGLOG("Config Loaded.");
 
-  localization = new Localization();
+  localization = std::make_unique<Localization>();
   localization->Import();
 
   LOG_NFO("[GW2TacO] build ID: %s", ("GW2 TacO " + TacOBuild).c_str());
@@ -1173,7 +1172,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   SAFEDELETE(App);
 
   FORCEDDEBUGLOG("app deleted, returning from main()");
-  SAFEDELETE(localization);
+  localization.reset();
 
   return true;
 }

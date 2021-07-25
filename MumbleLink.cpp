@@ -277,10 +277,10 @@ float CMumbleLink::GetFrameRate() {
 
 CMumbleLink::CMumbleLink() {
   LastFrameTime = GetTime();
-  FrameTimes = new CRingBuffer<int32_t>(60);
+  FrameTimes = std::make_unique<CRingBuffer<int32_t>>(60);
 }
 
-CMumbleLink::~CMumbleLink() { SAFEDELETE(FrameTimes); }
+CMumbleLink::~CMumbleLink() {}
 
 bool CMumbleLink::IsValid() { return lm; }
 

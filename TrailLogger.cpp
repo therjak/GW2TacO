@@ -294,7 +294,7 @@ void GW2TrailDisplay::DoTrailLogging(int32_t mapID, CVector3 charPos) {
   if (mapID != lastMap) ClearEditedTrail();
 
   if (!editedTrail) {
-    editedTrail = new GW2Trail();
+    editedTrail = std::make_unique<GW2Trail>();
     editedTrail->Reset(mapID);
   }
 
@@ -308,7 +308,7 @@ void GW2TrailDisplay::DoTrailLogging(int32_t mapID, CVector3 charPos) {
   editedTrail->Update();
 }
 
-void GW2TrailDisplay::ClearEditedTrail() { SAFEDELETE(editedTrail); }
+void GW2TrailDisplay::ClearEditedTrail() { editedTrail.reset(); }
 
 #define MINIZ_HEADER_FILE_ONLY
 #include "Bedrock/UtilLib/miniz.c"
@@ -391,37 +391,37 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(std::string_view fname,
 
 GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {
-  constBuffer.swap(App->GetDevice()->CreateConstantBuffer());
+  constBuffer = App->GetDevice()->CreateConstantBuffer();
 
   CStreamReaderMemory tex;
   if (tex.Open("Data\\trail.png")) {
-    trailTexture.swap(App->GetDevice()->CreateTexture2D(
-        tex.GetData(), int32_t(tex.GetLength())));
+    trailTexture = App->GetDevice()->CreateTexture2D(tex.GetData(),
+                                                     int32_t(tex.GetLength()));
     if (!trailTexture)
       LOG_ERR("[GW2TacO] Failed to decompress trail texture image!");
   } else
     LOG_ERR("[GW2TacO] Failed to open trail texture!");
 
   App->GetDevice()->SetShaderConstants(constBuffer.get());
-  trailSampler.swap(App->GetDevice()->CreateSamplerState());
+  trailSampler = App->GetDevice()->CreateSamplerState();
   trailSampler->SetAddressU(CORETEXADDRESS_WRAP);
   trailSampler->SetAddressV(CORETEXADDRESS_WRAP);
   trailSampler->SetFilter(COREFILTER_ANISOTROPIC);
   trailSampler->Update();
 
-  trailRasterizer1.swap(App->GetDevice()->CreateRasterizerState());
+  trailRasterizer1 = App->GetDevice()->CreateRasterizerState();
   trailRasterizer1->SetCullMode(CORECULL_CCW);
   trailRasterizer1->Update();
 
-  trailRasterizer2.swap(App->GetDevice()->CreateRasterizerState());
+  trailRasterizer2 = App->GetDevice()->CreateRasterizerState();
   trailRasterizer2->SetCullMode(CORECULL_CW);
   trailRasterizer2->Update();
 
-  trailRasterizer3.swap(App->GetDevice()->CreateRasterizerState());
+  trailRasterizer3 = App->GetDevice()->CreateRasterizerState();
   trailRasterizer3->SetCullMode(CORECULL_NONE);
   trailRasterizer3->Update();
 
-  trailDepthStencil.swap(App->GetDevice()->CreateDepthStencilState());
+  trailDepthStencil = App->GetDevice()->CreateDepthStencilState();
   trailDepthStencil->SetDepthEnable(false);
   trailDepthStencil->Update();
 
@@ -471,10 +471,10 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
       "x.Color*GuiTexture.Sample(Sampler,x.UV + "
       "float2(0,data.x))*color*float4(1,1,1,a); }";
 
-  vxShader.swap(App->GetDevice()->CreateVertexShader(
-      code, static_cast<int32_t>(strlen(code)), "vsmain", "vs_4_0"));
-  pxShader.swap(App->GetDevice()->CreatePixelShader(
-      code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0"));
+  vxShader = App->GetDevice()->CreateVertexShader(
+      code, static_cast<int32_t>(strlen(code)), "vsmain", "vs_4_0");
+  pxShader = App->GetDevice()->CreatePixelShader(
+      code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
 
   COREVERTEXATTRIBUTE TrailVertexFormat[] = {
       COREVXATTR_POSITIONT4, COREVXATTR_TEXCOORD2,
@@ -487,7 +487,7 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
   std::vector<COREVERTEXATTRIBUTE> Att;
   while (*vx != COREVXATTR_STOP) Att.emplace_back(*vx++);
 
-  vertexFormat.swap(App->GetDevice()->CreateVertexFormat(Att, vxShader.get()));
+  vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
   if (!vertexFormat) {
     LOG(LOG_ERROR, _T( "[GW2TacO]  Error creating Trail Vertex Format" ));
   }
@@ -633,7 +633,7 @@ void GW2TrailDisplay::ImportTrail() {
       if (btn) btn->Push(true);
 
       if (!editedTrail) {
-        editedTrail = new GW2Trail();
+        editedTrail = std::make_unique<GW2Trail>();
         editedTrail->Import(file, true);
       }
 

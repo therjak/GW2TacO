@@ -9,7 +9,7 @@
 
 struct WBDISPLAYLINE {
   CPoint p1, p2;
-  float u1, v1, u2, v2;
+  float u1 = 0, v1 = 0, u2 = 0, v2 = 0;
   CColor c1, c2;
 };
 
@@ -126,7 +126,7 @@ class CWBDrawAPI {
   CSize GetAtlasElementSize(WBATLASHANDLE h);
   void DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
                         CColor Color = 0xffffffff);
-  void DrawAtlasElement(WBATLASHANDLE h, CRect& Position, bool TileX,
+  void DrawAtlasElement(WBATLASHANDLE h, const CRect& Position, bool TileX,
                         bool TileY, bool StretchX, bool StretchY,
                         CColor Color = 0xffffffff);
   void DrawAtlasElementRotated(WBATLASHANDLE h, const CRect& Position,

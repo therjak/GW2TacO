@@ -47,13 +47,6 @@ void CCoreWindowParameters::Initialize(CCoreDevice* device, HINSTANCE hinst,
 // windowhandler baseclass
 
 CCoreWindowHandler::CCoreWindowHandler() {
-  Device = nullptr;
-  Done = false;
-  XRes = YRes = 0;
-  CurrentMouseCursor = CM_ARROW;
-
-  InactiveFrameLimiter = true;
-  LimitedFPS = 20;
   LastRenderedFrame = globalTimer.GetTime();
 }
 

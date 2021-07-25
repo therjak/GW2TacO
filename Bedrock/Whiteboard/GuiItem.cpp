@@ -430,7 +430,7 @@ void CWBItem::DrawBorder(CWBDrawAPI* API) {
 
 void CWBItem::DrawBorder(CWBDrawAPI* API, CRect& r,
                          CWBCSSPropertyBatch& cssProps) {
-  auto crop = API->GetCropRect();
+  const auto& crop = API->GetCropRect();
 
   CColor color =
       cssProps.DisplayDescriptor.GetColor(GetState(), WB_ITEM_BORDERCOLOR);
@@ -618,14 +618,7 @@ void CWBItem::SetBottommost() {
   Parent->SetChildAsBottommost(x);
 }
 
-CWBItem::CWBItem() : Guid(WB_GUID_COUNTER++) {
-  Parent = nullptr;
-  App = nullptr;
-  ChildInFocus = nullptr;
-  Hidden = false;
-  Disabled = false;
-  Data = nullptr;
-}
+CWBItem::CWBItem() : Guid(WB_GUID_COUNTER++) {}
 
 CWBItem::CWBItem(CWBItem* parent, const CRect& position)
     : Guid(WB_GUID_COUNTER++) {

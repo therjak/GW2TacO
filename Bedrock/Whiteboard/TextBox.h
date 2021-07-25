@@ -17,11 +17,13 @@
 class CWBTextBoxHistoryEntry {
   friend class CWBTextBox;
 
-  bool Remove;
-  int32_t StartPosition;
+  bool Remove = false;
+  int32_t StartPosition = 0;
   std::string Data;
 
-  int32_t CursorPos_Before, SelectionStart_Before, SelectionEnd_Before;
+  int32_t CursorPos_Before = 0;
+  int32_t SelectionStart_Before = 0;
+  int32_t SelectionEnd_Before = 0;
 
  public:
   CWBTextBoxHistoryEntry();

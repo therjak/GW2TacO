@@ -110,7 +110,7 @@ class CMumbleLink {
   void Update();
   bool IsValid();
 
-  CRingBuffer<int32_t>* FrameTimes;
+  std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
   float GetFrameRate();
 
   int32_t LastFrameTime = 0;

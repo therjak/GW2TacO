@@ -18,13 +18,12 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
   Root = nullptr;
   MouseCaptureItem = nullptr;
   MouseItem = nullptr;
-  DrawAPI = new CWBDrawAPI();
-  Skin = new CWBSkin();
-  Atlas = nullptr;
+  DrawAPI = std::make_unique<CWBDrawAPI>();
+  Skin = std::make_unique<CWBSkin>();
   DefaultFont = nullptr;
   Alt = Ctrl = Shift = Left = Middle = Right = false;
   Vsync = true;
-  FrameTimes = new CRingBuffer<int32_t>(60);
+  FrameTimes = std::make_unique<CRingBuffer<int32_t>>(60);
   LastFrameTime = 0;
 
   // initialize default factory calls
@@ -38,10 +37,9 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
 
 CWBApplication::~CWBApplication() {
   Fonts.clear();
-  SAFEDELETE(Skin);
-  SAFEDELETE(Atlas);
-  SAFEDELETE(DrawAPI);
-  SAFEDELETE(FrameTimes);
+  Skin.reset();
+  Atlas.reset();
+  DrawAPI.reset();
   LayoutRepository.clear();
 }
 
@@ -209,7 +207,8 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         SendMessage(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
 
       ClickRepeaterMode = WB_MCR_LEFT;
-      NextRepeatedClickTime = globalTimer.GetTime() + GetInitialKeyboardDelay();
+      NextRepeatedClickTime =
+          int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
     } break;
     case WM_LBUTTONUP: {
       Left = false;
@@ -233,7 +232,8 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         SendMessage(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
 
       ClickRepeaterMode = WB_MCR_RIGHT;
-      NextRepeatedClickTime = globalTimer.GetTime() + GetInitialKeyboardDelay();
+      NextRepeatedClickTime =
+          int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
     } break;
     case WM_RBUTTONUP: {
       Right = false;
@@ -257,7 +257,8 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
 
       ClickRepeaterMode = WB_MCR_MIDDLE;
-      NextRepeatedClickTime = globalTimer.GetTime() + GetInitialKeyboardDelay();
+      NextRepeatedClickTime =
+          int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
     } break;
     case WM_MBUTTONUP: {
       Middle = false;
@@ -326,13 +327,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 
 bool CWBApplication::Initialize() {
-  Atlas = new CAtlas(2048, 2048);
+  Atlas = std::make_unique<CAtlas>(2048, 2048);
   if (!Atlas->InitializeTexture(Device)) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Texture Atlas" ));
     return false;
   }
 
-  if (!DrawAPI->Initialize(this, Device, Atlas)) return false;
+  if (!DrawAPI->Initialize(this, Device, Atlas.get())) return false;
 
   Root = CWBRoot::Create(CRect(0, 0, XRes, YRes));
   Root->SetApplication(this);
@@ -426,7 +427,7 @@ void CWBApplication::UnRegisterItem(CWBItem* Item) {
 
 void CWBApplication::SetDone(bool d) { Done = d; }
 
-void CWBApplication::Display() { Display(DrawAPI); }
+void CWBApplication::Display() { Display(DrawAPI.get()); }
 
 void CWBApplication::Display(CWBDrawAPI* API) {
   // LOG_DBG("Begin Frame");
@@ -537,7 +538,7 @@ bool CWBApplication::CreateFont(std::string_view FontName,
                                 CWBFontDescription* Font) {
   if (!Font) return false;
 
-  auto f = std::make_unique<CWBFont>(Atlas);
+  auto f = std::make_unique<CWBFont>(Atlas.get());
 
   if (!f->Initialize(Font)) {
     return false;
@@ -698,9 +699,9 @@ bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
   return b;
 }
 
-CAtlas* CWBApplication::GetAtlas() { return Atlas; }
+CAtlas* CWBApplication::GetAtlas() { return Atlas.get(); }
 
-CWBSkin* CWBApplication::GetSkin() { return Skin; }
+CWBSkin* CWBApplication::GetSkin() { return Skin.get(); }
 
 bool CWBApplication::LoadSkin(std::string_view XML,
                               std::vector<int>& enabledGlyphs) {
@@ -780,17 +781,17 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), Image,
                       XRes, YRes)) {
       ARGBtoABGR(Image, XRes, YRes);
-      CWBFontDescription* fd = new CWBFontDescription();
+      auto fd = std::make_unique<CWBFontDescription>();
       if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
                                Image, XRes, YRes, enabledGlyphs)) {
-        bool f = CreateFont(Name, fd);
+        bool f = CreateFont(Name, fd.get());
       } else if (fd->LoadBMFontText((unsigned char*)databin.c_str(),
                                     databin.size(), Image, XRes, YRes,
                                     enabledGlyphs)) {
-        bool f = CreateFont(Name, fd);
+        bool f = CreateFont(Name, fd.get());
       }
 
-      SAFEDELETE(fd);
+      fd.reset();
       SAFEDELETE(Image);
     }
   }

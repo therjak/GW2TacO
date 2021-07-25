@@ -80,7 +80,7 @@ class GW2TrailDisplay : public CWBItem {
   std::unique_ptr<CCoreRasterizerState> trailRasterizer3;
   std::unique_ptr<CCoreDepthStencilState> trailDepthStencil;
 
-  GW2Trail* editedTrail = nullptr;
+  std::unique_ptr<GW2Trail> editedTrail;
 
   void ClearEditedTrail();
   bool trailBeingRecorded = false;

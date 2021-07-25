@@ -14,7 +14,7 @@ class CAtlasImage;
 class CAtlasNode {
   friend class CAtlas;
   CRect Area;
-  CAtlasNode* Children[2];
+  std::unique_ptr<CAtlasNode> Children[2];
   bool Occupied;
 
   CAtlasImage* Image;
@@ -67,7 +67,7 @@ class CAtlas {
   std::unordered_map<WBATLASHANDLE, CAtlasNode*> Dictionary;
   std::unordered_map<WBATLASHANDLE, std::unique_ptr<CAtlasImage>> ImageStorage;
 
-  CAtlasNode* Root;
+  std::unique_ptr<CAtlasNode> Root;
 
   CAtlasImage* WhitePixel;
   // recalculated on each optimization and reset

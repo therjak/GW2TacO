@@ -18,10 +18,10 @@ class CXMLNode {
   CXMLNode operator=(const CXMLNode Original);
 
   int32_t GetChildCount();
-  int32_t GetChildCount(char*);
-  CXMLNode GetChild(int32_t);
-  CXMLNode GetChild(char*);
-  CXMLNode GetChild(char*, int32_t);
+  int32_t GetChildCount(const char*);
+  CXMLNode GetChild(int32_t) const;
+  CXMLNode GetChild(const char*) const;
+  CXMLNode GetChild(const char*, int32_t) const;
 
   bool Next(CXMLNode& out, char*);
 
@@ -36,12 +36,14 @@ class CXMLNode {
   bool GetValue(bool& Int);
   bool GetValue(float& Float);
 
-  bool GetAttribute(char* szAttribute, char* szBuffer, int32_t nBufferSize);
-  std::string GetAttribute(std::string_view szAttribute);
-  void GetAttributeAsInteger(char* szAttribute, int32_t* nValue);
-  void GetAttributeAsFloat(char* szAttribute, float* fValue);
-  std::string GetAttributeAsString(std::string_view szAttribute);
-  bool HasAttribute(std::string_view szAttribute);
+  bool GetAttribute(std::string_view szAttribute, char* szBuffer,
+                    int32_t nBufferSize) const;
+  std::string GetAttribute(std::string_view szAttribute) const;
+  void GetAttributeAsInteger(std::string_view szAttribute,
+                             int32_t* nValue) const;
+  void GetAttributeAsFloat(std::string_view szAttribute, float* fValue) const;
+  std::string GetAttributeAsString(std::string_view szAttribute) const;
+  bool HasAttribute(std::string_view szAttribute) const;
 
   CXMLNode& AddChild(std::string_view);
   void SetText(std::string_view s);

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -36,5 +37,5 @@ class Localization {
   void ProcessStringForUsedGlyphs(std::string_view string);
 };
 
-extern Localization* localization;
+extern std::unique_ptr<Localization> localization;
 #define DICT(token, ...) localization->Localize(token, __VA_ARGS__)

@@ -16,9 +16,9 @@ CWBKerningPair::CWBKerningPair(uint16_t a, uint16_t b) {
   Second = b;
 }
 
-CWBFontDescription::CWBFontDescription() { Image = nullptr; }
+CWBFontDescription::CWBFontDescription() {}
 
-CWBFontDescription::~CWBFontDescription() { SAFEDELETE(Image); }
+CWBFontDescription::~CWBFontDescription() {}
 
 bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
                                           uint8_t* img, int32_t xr, int32_t yr,
@@ -27,8 +27,8 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
 
   XRes = xr;
   YRes = yr;
-  Image = new uint8_t[xr * yr * 4];
-  memcpy(Image, img, xr * yr * 4);
+  Image = std::make_unique<uint8_t[]>(xr * yr * 4);
+  memcpy(Image.get(), img, xr * yr * 4);
 
 #pragma pack(push, 1)
 
@@ -177,8 +177,8 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
 
   XRes = xr;
   YRes = yr;
-  Image = new uint8_t[xr * yr * 4];
-  memcpy(Image, img, xr * yr * 4);
+  Image = std::make_unique<uint8_t[]>(xr * yr * 4);
+  memcpy(Image.get(), img, xr * yr * 4);
 
   CStreamReaderMemory m;
   m.Open(Binary, BinarySize);
@@ -268,17 +268,11 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
   return true;
 }
 
-CWBFont::CWBFont(CAtlas* atlas) {
-  Atlas = atlas;
-  LineHeight = 0;
-  Base = 0;
-  Offset_X_Char = 0;
-}
+CWBFont::CWBFont(CAtlas* atlas) { Atlas = atlas; }
 
 CWBFont::~CWBFont() {
   for (int32_t x = 0; x < AlphabetSize; x++)
     if (Alphabet[x].Char == x) Atlas->DeleteImage(Alphabet[x].Handle);
-  SAFEDELETEA(Alphabet);
 }
 
 void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize& Size,
@@ -425,13 +419,13 @@ int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
   return xp - x;
 }
 
-int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, CPoint& p,
+int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, const CPoint& p,
                            CColor Color) {
   return WriteChar(DrawApi, Char, p.x, p.y, Color);
 }
 
-int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String, CPoint& p,
-                       CColor Color, WBTEXTTRANSFORM Transform,
+int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String,
+                       const CPoint& p, CColor Color, WBTEXTTRANSFORM Transform,
                        bool DoKerning) {
   return Write(DrawApi, String, p.x, p.y, Color, Transform, DoKerning);
 }
@@ -510,15 +504,16 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
   for (const auto& abc : Description->Alphabet)
     AlphabetSize = max(AlphabetSize, abc.Char) + 1;
 
-  Alphabet = new WBSYMBOL[AlphabetSize];
-  memset(Alphabet, 0, AlphabetSize * sizeof(WBSYMBOL));
+  Alphabet = std::make_unique<WBSYMBOL[]>(AlphabetSize);
+  memset(Alphabet.get(), 0, AlphabetSize * sizeof(WBSYMBOL));
   for (int32_t x = 0; x < AlphabetSize; x++)
     Alphabet[x].Char = static_cast<int16_t>(x - 1);
 
   for (const auto& abc : Description->Alphabet)
     if (abc.UV.Area() > 0) {
-      WBATLASHANDLE h = Atlas->AddImage(Description->Image, Description->XRes,
-                                        Description->YRes, abc.UV);
+      WBATLASHANDLE h =
+          Atlas->AddImage(Description->Image.get(), Description->XRes,
+                          Description->YRes, abc.UV);
 
       if (!h) {
         LOG(LOG_ERROR, _T( "[gui] Atlas Error while creating font!" ));
@@ -530,7 +525,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
 
       for (int j = abc.UV.y1; j < abc.UV.y2; j++)
         for (int i = abc.UV.x1; i < abc.UV.x2; i++) {
-          uint8_t* c = Description->Image + (j * Description->XRes + i) * 4;
+          uint8_t* c = &Description->Image[(j * Description->XRes + i) * 4];
 
           if (c[3] > 10) {
             hadContent = true;
@@ -687,7 +682,7 @@ int32_t CWBFont::GetHeight(std::string_view String) {
   return LineHeight * lineCount;
 }
 
-CPoint CWBFont::GetTextPosition(std::string_view String, CRect& Container,
+CPoint CWBFont::GetTextPosition(std::string_view String, const CRect& Container,
                                 WBTEXTALIGNMENTX XAlign,
                                 WBTEXTALIGNMENTY YAlign,
                                 WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,

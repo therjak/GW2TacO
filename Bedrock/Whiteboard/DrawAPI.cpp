@@ -817,9 +817,9 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
            UVTRANSLATION(UV.y2, Atlas->GetYRes()), Color);
 }
 
-void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, CRect& Position, bool TileX,
-                                  bool TileY, bool StretchX, bool StretchY,
-                                  CColor Color /*=0xffffffff*/) {
+void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
+                                  bool TileX, bool TileY, bool StretchX,
+                                  bool StretchY, CColor Color /*=0xffffffff*/) {
   if (!Atlas) return;
 
   const CRect rect = CropRect | (Position + Offset);

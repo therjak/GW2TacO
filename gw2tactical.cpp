@@ -321,9 +321,6 @@ CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
   fplanes[2] = CPlane(CVector3(0, 0, 0), fun);
   fplanes[3] = CPlane(CVector3(0, 0, 0), fdn);
 
-  float ax = atan2(p.x, p.z);
-  float ay = atan2(p.y, p.z);
-
   if (!testfrustum(p, fplanes, -1)) {
     CVector3 o = p;
     CVector3 res[4];

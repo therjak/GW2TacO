@@ -100,8 +100,6 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS* excpInfo) {
 LONG WINAPI FullDumpCrashTracker(struct _EXCEPTION_POINTERS* excpInfo) {
   if (IsDebuggerPresent()) return EXCEPTION_CONTINUE_SEARCH;
 
-  int nMoreDetail = 0;
-
   SYSTEMTIME st;
   GetLocalTime(&st);
 

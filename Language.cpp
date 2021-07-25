@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -64,7 +65,7 @@ void DecodeUtf8(std::string_view Input, UTF8CHARCALLBACK callback) {
   }
 }
 
-Localization* localization = nullptr;
+std::unique_ptr<Localization> localization;
 
 void Localization::ImportFile(std::string_view s) {
   CXMLDocument d;

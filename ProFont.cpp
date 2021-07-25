@@ -1724,26 +1724,22 @@ bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
 }
 
 bool CreateProFont(CWBApplication* App, std::string_view FontName) {
-  CWBFontDescription* fd = new CWBFontDescription();
-  if (!LoadBMFontBinaryMonochrome(fd, raw_profont_bin, raw_profont_bin_size,
-                                  raw_profontgifsmall,
+  auto fd = std::make_unique<CWBFontDescription>();
+  if (!LoadBMFontBinaryMonochrome(fd.get(), raw_profont_bin,
+                                  raw_profont_bin_size, raw_profontgifsmall,
                                   raw_profontgifsmall_size)) {
-    SAFEDELETE(fd);
     return NULL;
   }
-  bool f = App->CreateFont(FontName, fd);
-  SAFEDELETE(fd);
+  bool f = App->CreateFont(FontName, fd.get());
   return f;
 }
 
 bool CreateUniFont(CWBApplication* App, std::string_view FontName) {
-  CWBFontDescription* fd = new CWBFontDescription();
-  if (!LoadBMFontBinaryMonochrome(fd, raw_uni_fnt, raw_uni_fnt_size,
+  auto fd = std::make_unique<CWBFontDescription>();
+  if (!LoadBMFontBinaryMonochrome(fd.get(), raw_uni_fnt, raw_uni_fnt_size,
                                   raw_uni_png, raw_uni_png_size)) {
-    SAFEDELETE(fd);
     return NULL;
   }
-  bool f = App->CreateFont(FontName, fd);
-  SAFEDELETE(fd);
+  bool f = App->CreateFont(FontName, fd.get());
   return f;
 }

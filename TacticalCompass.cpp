@@ -20,8 +20,6 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 1000.0f);
 
-  int32_t resolution = 60;
-
   CVector4 charpos = CVector4(mumbleLink.averagedCharPosition.x,
                               mumbleLink.averagedCharPosition.y,
                               mumbleLink.averagedCharPosition.z, 1.0f);
@@ -47,9 +45,6 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
       CVector2(camSpaceChar.x - campos.x, camSpaceChar.z - campos.z)
           .Normalized();
 
-  CVector3 toChar = CVector3(charpos - campos);
-  float dist = toChar.Length();
-
   CWBFont* f = GetFont(GetState());
 
   std::string txt[4] = {DICT("compassnorth"), DICT("compasseast"),
@@ -59,8 +54,6 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
     float a1 = 1.0f;
     float f1 = x / static_cast<float>(4) * PI * 2;
     CVector4 p1 = CVector4(rworld * sinf(f1), 1.0f, rworld * cosf(f1), 0.0f);
-
-    CVector3 toPoint = CVector3(p1 - campos);
 
     if (!zoomedin)
       a1 = 1 - powf(max(0, camDir * CVector2(p1.x, p1.z).Normalized()), 10.0f);
