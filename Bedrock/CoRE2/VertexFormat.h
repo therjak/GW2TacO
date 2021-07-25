@@ -11,8 +11,8 @@ class CCoreVertexFormat : public CCoreResource {
   friend class CCoreDevice;
   virtual bool Apply() = 0;
 
-public:
-  CCoreVertexFormat(CCoreDevice* Device) : CCoreResource(Device) {}
+ public:
+  explicit CCoreVertexFormat(CCoreDevice* Device) : CCoreResource(Device) {}
 
   virtual bool Create(const std::vector<COREVERTEXATTRIBUTE>& Attributes,
                       CCoreVertexShader* VxShader = nullptr) = 0;

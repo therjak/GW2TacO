@@ -48,7 +48,7 @@ class CCoreRenderStateBatch : public CCoreResource {
   bool Dirty;
 
  public:
-  CCoreRenderStateBatch(CCoreDevice* Device);
+  explicit CCoreRenderStateBatch(CCoreDevice* Device);
   ~CCoreRenderStateBatch() override;
   virtual bool Import(CXMLNode* n) = 0;
   virtual void Export(CXMLNode* n) = 0;
@@ -58,10 +58,10 @@ class CCoreBlendState : public CCoreRenderStateBatch {
  protected:
   bool AlphaToCoverage;
   bool IndependentBlend;
-  COREBLENDDESCRIPTOR RenderTargetBlendStates[8];
+  COREBLENDDESCRIPTOR RenderTargetBlendStates[8] = {0};
 
  public:
-  CCoreBlendState(CCoreDevice* Device);
+  explicit CCoreBlendState(CCoreDevice* Device);
   ~CCoreBlendState() override;
 
   virtual bool Update() = 0;
@@ -90,7 +90,7 @@ class CCoreDepthStencilState : public CCoreRenderStateBatch {
   CORECOMPARISONFUNCTION DepthFunc;
 
  public:
-  CCoreDepthStencilState(CCoreDevice* Device);
+  explicit CCoreDepthStencilState(CCoreDevice* Device);
   ~CCoreDepthStencilState() override;
 
   virtual bool Update() = 0;
@@ -120,7 +120,7 @@ class CCoreRasterizerState : public CCoreRenderStateBatch {
   bool AntialiasedLineEnable;
 
  public:
-  CCoreRasterizerState(CCoreDevice* Device);
+  explicit CCoreRasterizerState(CCoreDevice* Device);
   ~CCoreRasterizerState() override;
 
   virtual bool Update() = 0;
@@ -151,12 +151,12 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
   float MipLODBias;
   int32_t MaxAnisotropy;
   CORECOMPARISONFUNCTION ComparisonFunc;
-  float BorderColor[4];
+  float BorderColor[4] = {0};
   float MinLOD;
   float MaxLOD;
 
  public:
-  CCoreSamplerState(CCoreDevice* Device);
+  explicit CCoreSamplerState(CCoreDevice* Device);
   ~CCoreSamplerState() override;
 
   virtual bool Update() = 0;

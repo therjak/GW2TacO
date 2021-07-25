@@ -26,7 +26,7 @@ protected:
 public:
 
 	CCoreResource();
-	CCoreResource(CCoreDevice *Device);
+	explicit CCoreResource(CCoreDevice *Device);
 	virtual ~CCoreResource();
 
 	virtual void OnDeviceLost();

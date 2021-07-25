@@ -12,7 +12,7 @@ class CRingBuffer {
   int32_t Count = 0;
 
  public:
-  CRingBuffer(const uint32_t Size = 500) : Capacity(Size) {
+  explicit CRingBuffer(const uint32_t Size = 500) : Capacity(Size) {
     Array = std::make_unique<ItemType[]>(Size);
   }
 

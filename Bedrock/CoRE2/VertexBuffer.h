@@ -6,7 +6,8 @@ class CCoreVertexBuffer : public CCoreResource {
   virtual bool Apply(const uint32_t Offset) = 0;
 
  public:
-  INLINE CCoreVertexBuffer(CCoreDevice* Device) : CCoreResource(Device) {}
+  INLINE explicit CCoreVertexBuffer(CCoreDevice* Device)
+      : CCoreResource(Device) {}
 
   virtual bool Create(const uint8_t* Data, const uint32_t Size) = 0;
   virtual bool CreateDynamic(const uint32_t Size) = 0;

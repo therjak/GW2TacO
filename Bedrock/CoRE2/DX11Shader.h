@@ -13,7 +13,7 @@ class CCoreDX11VertexShader : public CCoreVertexShader {
   bool Apply() override;
 
  public:
-  CCoreDX11VertexShader(CCoreDX11Device* Device);
+  explicit CCoreDX11VertexShader(CCoreDX11Device* Device);
   ~CCoreDX11VertexShader() override;
 
   bool Create(void* Binary, int32_t Length) override;
@@ -31,7 +31,7 @@ class CCoreDX11PixelShader : public CCorePixelShader {
   bool Apply() override;
 
  public:
-  CCoreDX11PixelShader(CCoreDX11Device* Device);
+  explicit CCoreDX11PixelShader(CCoreDX11Device* Device);
   ~CCoreDX11PixelShader() override;
 
   bool Create(void* Binary, int32_t Length) override;
@@ -49,7 +49,7 @@ class CCoreDX11GeometryShader : public CCoreGeometryShader {
   bool Apply() override;
 
  public:
-  CCoreDX11GeometryShader(CCoreDX11Device* Device);
+  explicit CCoreDX11GeometryShader(CCoreDX11Device* Device);
   ~CCoreDX11GeometryShader() override;
 
   bool Create(void* Binary, int32_t Length) override;
@@ -67,7 +67,7 @@ class CCoreDX11HullShader : public CCoreHullShader {
   bool Apply() override;
 
  public:
-  CCoreDX11HullShader(CCoreDX11Device* Device);
+  explicit CCoreDX11HullShader(CCoreDX11Device* Device);
   ~CCoreDX11HullShader() override;
 
   bool Create(void* Binary, int32_t Length) override;
@@ -85,7 +85,7 @@ class CCoreDX11DomainShader : public CCoreDomainShader {
   bool Apply() override;
 
  public:
-  CCoreDX11DomainShader(CCoreDX11Device* Device);
+  explicit CCoreDX11DomainShader(CCoreDX11Device* Device);
   ~CCoreDX11DomainShader() override;
 
   bool Create(void* Binary, int32_t Length) override;
@@ -103,7 +103,7 @@ class CCoreDX11ComputeShader : public CCoreComputeShader {
   bool Apply() override;
 
  public:
-  CCoreDX11ComputeShader(CCoreDX11Device* Device);
+  explicit CCoreDX11ComputeShader(CCoreDX11Device* Device);
   ~CCoreDX11ComputeShader() override;
 
   bool Create(void* Binary, int32_t Length) override;

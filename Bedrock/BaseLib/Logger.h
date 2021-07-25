@@ -54,7 +54,7 @@ class CLoggerOutput_File : public CLoggerOutput {
 
  public:
   CLoggerOutput_File();
-  CLoggerOutput_File(std::string_view Filename, bool append = true);
+  explicit CLoggerOutput_File(std::string_view Filename, bool append = true);
   ~CLoggerOutput_File() override;
   bool OpenLogFile(std::string_view Filename, bool Append = true);
   void Process(LOGVERBOSITY v, const std::string& String) override;

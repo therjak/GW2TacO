@@ -6,7 +6,8 @@ class CCoreIndexBuffer : public CCoreResource {
   virtual bool Apply() = 0;
 
  public:
-  INLINE CCoreIndexBuffer(CCoreDevice* Device) : CCoreResource(Device) {}
+  INLINE explicit CCoreIndexBuffer(CCoreDevice* Device)
+      : CCoreResource(Device) {}
 
   virtual bool Create(const uint32_t IndexCount,
                       const uint32_t IndexSize = 2) = 0;

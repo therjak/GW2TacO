@@ -11,7 +11,7 @@ class CCoreDX11BlendState : public CCoreBlendState {
   ID3D11BlendState* State;
 
  public:
-  CCoreDX11BlendState(CCoreDX11Device* Device);
+  explicit CCoreDX11BlendState(CCoreDX11Device* Device);
   ~CCoreDX11BlendState() override;
 
   bool Update() override;
@@ -26,7 +26,7 @@ class CCoreDX11DepthStencilState : public CCoreDepthStencilState {
   ID3D11DepthStencilState* State;
 
  public:
-  CCoreDX11DepthStencilState(CCoreDX11Device* Device);
+  explicit CCoreDX11DepthStencilState(CCoreDX11Device* Device);
   ~CCoreDX11DepthStencilState() override;
 
   bool Update() override;
@@ -41,7 +41,7 @@ class CCoreDX11RasterizerState : public CCoreRasterizerState {
   ID3D11RasterizerState* State;
 
  public:
-  CCoreDX11RasterizerState(CCoreDX11Device* Device);
+  explicit CCoreDX11RasterizerState(CCoreDX11Device* Device);
   ~CCoreDX11RasterizerState() override;
 
   bool Update() override;
@@ -56,7 +56,7 @@ class CCoreDX11SamplerState : public CCoreSamplerState {
   ID3D11SamplerState* State;
 
  public:
-  CCoreDX11SamplerState(CCoreDX11Device* Device);
+  explicit CCoreDX11SamplerState(CCoreDX11Device* Device);
   ~CCoreDX11SamplerState() override;
 
   bool Update() override;

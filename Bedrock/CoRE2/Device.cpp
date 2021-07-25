@@ -103,8 +103,10 @@ bool CCoreDevice::ApplyRequestedRenderState() {
       if (!ApplyVertexBuffer(RequestedVertexBuffer,
                              RequestedVertexBufferOffset))
         return false;
-      RequestedVertexBuffer = RequestedVertexBuffer;
-      RequestedVertexBufferOffset = RequestedVertexBufferOffset;
+      // therjak: WTF? was there some reason for this? was this just a bug?
+      //          should this be something with CurrentVertexBuffer*?
+      // RequestedVertexBuffer = RequestedVertexBuffer;
+      // RequestedVertexBufferOffset = RequestedVertexBufferOffset;
     }
   }
 
@@ -272,19 +274,19 @@ CCoreTexture* CCoreDevice::GetTexture(CORESAMPLER Sampler) {
 bool CCoreDevice::CreateDefaultRenderStates() {
   bool Success = true;
 
-  DefaultBlendState.swap(CreateBlendState());
+  DefaultBlendState = CreateBlendState();
   DefaultBlendState->SetBlendEnable(0, true);
   DefaultBlendState->SetSrcBlend(0, COREBLEND_SRCALPHA);
   DefaultBlendState->SetDestBlend(0, COREBLEND_INVSRCALPHA);
   Success |= DefaultBlendState->Apply();
 
-  DefaultDepthStencilState.swap(CreateDepthStencilState());
+  DefaultDepthStencilState = CreateDepthStencilState();
   DefaultDepthStencilState->SetDepthEnable(true);
   DefaultDepthStencilState->SetZWriteEnable(true);
   DefaultDepthStencilState->SetDepthFunc(CORECMP_LEQUAL);
   Success |= DefaultDepthStencilState->Apply();
 
-  DefaultRasterizerState.swap(CreateRasterizerState());
+  DefaultRasterizerState = CreateRasterizerState();
   Success |= DefaultRasterizerState->Apply();
 
   return Success;

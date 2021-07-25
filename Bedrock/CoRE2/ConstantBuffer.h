@@ -22,11 +22,11 @@ class CCoreConstantBuffer : public CCoreResource {
   int32_t DataLength = 0;
 
  public:
-  CCoreConstantBuffer(CCoreDevice *Device);
+  explicit CCoreConstantBuffer(CCoreDevice* Device);
   ~CCoreConstantBuffer() override;
 
   void Reset();
-  void AddData(void *Data, int32_t Length);
+  void AddData(void* Data, int32_t Length);
   virtual void Upload();
-  virtual void *GetBufferPointer() const = 0;
+  virtual void* GetBufferPointer() const = 0;
 };
