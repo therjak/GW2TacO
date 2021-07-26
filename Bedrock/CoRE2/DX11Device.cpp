@@ -631,7 +631,6 @@ std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
   if (!s->CompileAndCreate(Err)) {
     s.reset();
   }
-
   return s;
 }
 
@@ -651,7 +650,6 @@ std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
   if (!s->CompileAndCreate(Err)) {
     s.reset();
   }
-
   return s;
 }
 
@@ -661,7 +659,6 @@ std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShaderFromBlob(
   if (!s->CreateFromBlob(Code, CodeSize)) {
     s.reset();
   }
-
   return s;
 }
 
@@ -671,15 +668,12 @@ std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShaderFromBlob(
   if (!s->CreateFromBlob(Code, CodeSize)) {
     s.reset();
   }
-
   return s;
 }
 
-CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
-                                                           int32_t CodeSize,
-                                                           LPCSTR EntryFunction,
-                                                           LPCSTR ShaderVersion,
-                                                           std::string* Err) {
+std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
   if (Err) {
     *Err = _T( "" );
   }
@@ -687,22 +681,18 @@ CCoreGeometryShader* CCoreDX11Device::CreateGeometryShader(LPCSTR Code,
     return nullptr;
   }
 
-  CCoreDX11GeometryShader* s = new CCoreDX11GeometryShader(this);
+  auto s = std::make_unique<CCoreDX11GeometryShader>(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
 
   if (!s->CompileAndCreate(Err)) {
-    SAFEDELETE(s);
     return nullptr;
   }
-
   return s;
 }
 
-CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
-                                                       int32_t CodeSize,
-                                                       LPCSTR EntryFunction,
-                                                       LPCSTR ShaderVersion,
-                                                       std::string* Err) {
+std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
   if (Err) {
     *Err = _T( "" );
   }
@@ -710,22 +700,18 @@ CCoreDomainShader* CCoreDX11Device::CreateDomainShader(LPCSTR Code,
     return nullptr;
   }
 
-  CCoreDX11DomainShader* s = new CCoreDX11DomainShader(this);
+  auto s = std::make_unique<CCoreDX11DomainShader>(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
 
   if (!s->CompileAndCreate(Err)) {
-    SAFEDELETE(s);
     return nullptr;
   }
-
   return s;
 }
 
-CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
-                                                   int32_t CodeSize,
-                                                   LPCSTR EntryFunction,
-                                                   LPCSTR ShaderVersion,
-                                                   std::string* Err) {
+std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
   if (Err) {
     *Err = _T( "" );
   }
@@ -733,22 +719,18 @@ CCoreHullShader* CCoreDX11Device::CreateHullShader(LPCSTR Code,
     return nullptr;
   }
 
-  CCoreDX11HullShader* s = new CCoreDX11HullShader(this);
+  auto s = std::make_unique<CCoreDX11HullShader>(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
 
   if (!s->CompileAndCreate(Err)) {
-    SAFEDELETE(s);
     return nullptr;
   }
-
   return s;
 }
 
-CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
-                                                         int32_t CodeSize,
-                                                         LPCSTR EntryFunction,
-                                                         LPCSTR ShaderVersion,
-                                                         std::string* Err) {
+std::unique_ptr<CCoreComputeShader> CCoreDX11Device::CreateComputeShader(
+    LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+    std::string* Err) {
   if (Err) {
     *Err = _T( "" );
   }
@@ -756,14 +738,12 @@ CCoreComputeShader* CCoreDX11Device::CreateComputeShader(LPCSTR Code,
     return nullptr;
   }
 
-  CCoreDX11ComputeShader* s = new CCoreDX11ComputeShader(this);
+  auto s = std::make_unique<CCoreDX11ComputeShader>(this);
   s->SetCode(Code, EntryFunction, ShaderVersion);
 
   if (!s->CompileAndCreate(Err)) {
-    SAFEDELETE(s);
     return nullptr;
   }
-
   return s;
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <string_view>
 
 class CStreamReader {
@@ -27,7 +28,7 @@ class CStreamReader {
 };
 
 class CStreamReaderMemory : public CStreamReader {
-  uint8_t* Data;
+  std::unique_ptr<uint8_t[]> Data;
   uint64_t DataSize;
   uint64_t Offset;
 

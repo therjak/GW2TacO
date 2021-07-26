@@ -86,16 +86,15 @@ bool CStreamReader::eof() { return GetOffset() >= GetLength(); }
 // streamreader memory
 
 CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {
-  Data = nullptr;
   DataSize = 0;
   Offset = 0;
 }
 
-CStreamReaderMemory::~CStreamReaderMemory() { SAFEDELETEA(Data); }
+CStreamReaderMemory::~CStreamReaderMemory() {}
 
 int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
   int64_t bytestoread = max(0, min(nCount, DataSize - Offset));
-  memcpy(lpBuf, Data + Offset, static_cast<size_t>(bytestoread));
+  memcpy(lpBuf, Data.get() + Offset, static_cast<size_t>(bytestoread));
   Offset += bytestoread;
   return static_cast<int32_t>(bytestoread);
 }
@@ -103,12 +102,11 @@ int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
 int32_t CStreamReaderMemory::Open(uint8_t* data, uint32_t size) {
   if (!data || !size) return 0;
 
-  SAFEDELETEA(Data);
   DataSize = size;
   Offset = 0;
 
-  Data = new uint8_t[size];
-  memcpy(Data, data, size);
+  Data = std::make_unique<uint8_t[]>(size);
+  memcpy(Data.get(), data, size);
 
   return 1;
 }
@@ -121,25 +119,22 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
 
   int32_t tDataSize = GetFileSize(hFile, nullptr);
 
-  uint8_t* tData = new uint8_t[tDataSize];
+  auto tData = std::make_unique<uint8_t[]>(tDataSize);
   DWORD nRead = 0;
-  BOOL b = ReadFile(hFile, tData, tDataSize, &nRead, nullptr);
+  BOOL b = ReadFile(hFile, tData.get(), tDataSize, &nRead, nullptr);
 
-  if (b && nRead == tDataSize)  // all ok
-  {
-    SAFEDELETEA(Data);
-    Data = tData;
+  if (b && nRead == tDataSize) {
+    // all ok
+    Data = std::move(tData);
     DataSize = tDataSize;
     Offset = 0;
-  } else {
-    SAFEDELETEA(tData);  // couldn't read complete file - fail.
   }
 
   CloseHandle(hFile);
   return nRead == tDataSize;
 }
 
-uint8_t* CStreamReaderMemory::GetData() const { return Data; }
+uint8_t* CStreamReaderMemory::GetData() const { return Data.get(); }
 
 int64_t CStreamReaderMemory::GetLength() const { return DataSize; }
 

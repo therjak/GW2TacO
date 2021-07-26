@@ -311,13 +311,13 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
   memcpy(&head, Data, sizeof(DDSHEAD));
   Data += head.dwSize + 4;
 
-  uint8_t* image = new uint8_t[head.dwWidth * head.dwHeight * 4];
+  auto image = std::make_unique<uint8_t[]>(head.dwWidth * head.dwHeight * 4);
 
   switch (head.dwFourCC) {
     case 0:
       if (head._dwFlags == 0x041) {
         // rgba
-        memcpy(image, Data, head.dwWidth * head.dwHeight * 4);
+        memcpy(image.get(), Data, head.dwWidth * head.dwHeight * 4);
 
         if (head.dwRBitMask == 0x00ff0000 && head.dwBBitMask == 0x000000ff)
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
@@ -331,7 +331,6 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       } else {
         LOG_ERR("[core] Failed to export texture: unknown FourCC format (%x)",
                 head.dwFourCC);
-        SAFEDELETEA(image);
         return;
       }
       break;
@@ -342,10 +341,11 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     } break;
     case 113: {
       // D3DXFloat16To32Array()
-      float* img2 = new float[head.dwWidth * head.dwHeight * 4];
+      auto img2 = std::make_unique<float[]>(head.dwWidth * head.dwHeight * 4);
       DirectX::PackedVector::XMConvertHalfToFloatStream(
-          img2, 4, reinterpret_cast<const DirectX::PackedVector::HALF*>(Data),
-          2, head.dwWidth * head.dwHeight * 4);
+          img2.get(), 4,
+          reinterpret_cast<const DirectX::PackedVector::HALF*>(Data), 2,
+          head.dwWidth * head.dwHeight * 4);
 
       if (!degamma) {
         for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++)
@@ -360,8 +360,6 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
           image[x] = static_cast<uint8_t> max(0, min(255, img2[x] * 255));
         }
       }
-
-      SAFEDELETEA(img2);
     } break;
     case '01XD':  // DX10
     {
@@ -369,7 +367,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       Data += sizeof(DDS_HEADER_DXT10);
       switch (Head->dxgiFormat) {
         case DXGI_FORMAT_B8G8R8A8_UNORM:
-          memcpy(image, Data, head.dwWidth * head.dwHeight * 4);
+          memcpy(image.get(), Data, head.dwWidth * head.dwHeight * 4);
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
             int32_t p = x * 4;
             int32_t t = image[p];
@@ -380,7 +378,6 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
         default:
           LOG_ERR("[core] Failed to export texture: unknown DXGI format (%d)",
                   Head->dxgiFormat);
-          SAFEDELETEA(image);
           break;
       }
       break;
@@ -388,26 +385,23 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     default:
       LOG_ERR("[core] Failed to export texture: unknown FourCC format (%x)",
               head.dwFourCC);
-      SAFEDELETEA(image);
       return;
       break;
   }
 
   switch (Format) {
     case CORE_PNG:
-      ExportPNG(image, head.dwWidth, head.dwHeight, ClearAlpha, Filename);
+      ExportPNG(image.get(), head.dwWidth, head.dwHeight, ClearAlpha, Filename);
       break;
     case CORE_TGA:
-      ExportTga(image, head.dwWidth, head.dwHeight, ClearAlpha, Filename);
+      ExportTga(image.get(), head.dwWidth, head.dwHeight, ClearAlpha, Filename);
       break;
     case CORE_BMP:
-      ExportBmp(image, head.dwWidth, head.dwHeight, Filename);
+      ExportBmp(image.get(), head.dwWidth, head.dwHeight, Filename);
       break;
     default:
       break;
   }
-
-  SAFEDELETEA(image);
 }
 
 bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,

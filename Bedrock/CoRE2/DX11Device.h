@@ -113,20 +113,18 @@ class CCoreDX11Device : public CCoreDevice {
       uint8_t* Code, int32_t CodeSize) override;
   std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
       uint8_t* Code, int32_t CodeSize) override;
-  CCoreGeometryShader* CreateGeometryShader(
+  std::unique_ptr<CCoreGeometryShader> CreateGeometryShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
       std::string* Err = nullptr) override;
-  CCoreDomainShader* CreateDomainShader(LPCSTR Code, int32_t CodeSize,
-                                        LPCSTR EntryFunction,
-                                        LPCSTR ShaderVersion,
-                                        std::string* Err = nullptr) override;
-  CCoreHullShader* CreateHullShader(LPCSTR Code, int32_t CodeSize,
-                                    LPCSTR EntryFunction, LPCSTR ShaderVersion,
-                                    std::string* Err = nullptr) override;
-  CCoreComputeShader* CreateComputeShader(LPCSTR Code, int32_t CodeSize,
-                                          LPCSTR EntryFunction,
-                                          LPCSTR ShaderVersion,
-                                          std::string* Err = nullptr) override;
+  std::unique_ptr<CCoreDomainShader> CreateDomainShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) override;
+  std::unique_ptr<CCoreHullShader> CreateHullShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) override;
+  std::unique_ptr<CCoreComputeShader> CreateComputeShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) override;
   std::unique_ptr<CCoreVertexShader> CreateVertexShader() override;
   std::unique_ptr<CCorePixelShader> CreatePixelShader() override;
   std::unique_ptr<CCoreGeometryShader> CreateGeometryShader() override;

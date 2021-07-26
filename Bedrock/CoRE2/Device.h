@@ -155,18 +155,16 @@ class CCoreDevice {
       uint8_t* Code, int32_t CodeSize) = 0;
   virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
       uint8_t* Code, int32_t CodeSize) = 0;
-  virtual CCoreGeometryShader* CreateGeometryShader(
+  virtual std::unique_ptr<CCoreGeometryShader> CreateGeometryShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
       std::string* Err = nullptr) = 0;
-  virtual CCoreDomainShader* CreateDomainShader(LPCSTR Code, int32_t CodeSize,
-                                                LPCSTR EntryFunction,
-                                                LPCSTR ShaderVersion,
-                                                std::string* Err = nullptr) = 0;
-  virtual CCoreHullShader* CreateHullShader(LPCSTR Code, int32_t CodeSize,
-                                            LPCSTR EntryFunction,
-                                            LPCSTR ShaderVersion,
-                                            std::string* Err = nullptr) = 0;
-  virtual CCoreComputeShader* CreateComputeShader(
+  virtual std::unique_ptr<CCoreDomainShader> CreateDomainShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCoreHullShader> CreateHullShader(
+      LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
+      std::string* Err = nullptr) = 0;
+  virtual std::unique_ptr<CCoreComputeShader> CreateComputeShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
       std::string* Err = nullptr) = 0;
   virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader() = 0;
