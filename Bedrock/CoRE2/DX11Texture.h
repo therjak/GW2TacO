@@ -45,7 +45,6 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
   ID3D11ShaderResourceView* GetShaderResourceView() { return View; }
   ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
 
-  CCoreTexture2D* Copy() override;
   void ExportToImage(std::string_view Filename, bool ClearAlpha,
                      EXPORTIMAGEFORMAT Format, bool degamma) override;
 };

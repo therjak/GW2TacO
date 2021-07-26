@@ -1451,39 +1451,13 @@ void GW2TacO::SetMouseToolTip(std::string_view toolTip) {
   mouseToolTip = toolTip;
 }
 
-void GW2TacO::InitScriptEngines() {
-  /*
-    AngelWrapper* scriptEngine = new AngelWrapper();
+void GW2TacO::InitScriptEngines() {}
 
-    scriptEngines.Add( scriptEngine );
-    scriptEngines[ 0 ]->AddScriptSection( "test.angel" );
-    scriptEngines[ 0 ]->BuildScript();
+void GW2TacO::TickScriptEngine() {}
 
-    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
-      scriptEngines[ x ]->InitScript();
-  */
-}
+void GW2TacO::TriggerScriptEngineAction(GUID& guid) {}
 
-void GW2TacO::TickScriptEngine() {
-  /*
-    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
-      scriptEngines[ x ]->CallScriptTick();
-  */
-}
-
-void GW2TacO::TriggerScriptEngineAction(GUID& guid) {
-  /*
-    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
-      scriptEngines[ x ]->TriggerAction( guid );
-  */
-}
-
-void GW2TacO::TriggerScriptEngineKeyEvent(std::string_view eventID) {
-  /*
-    for ( int32_t x = 0; x < scriptEngines.NumItems(); x++ )
-      scriptEngines[ x ]->TriggerKeyPress( eventID );
-  */
-}
+void GW2TacO::TriggerScriptEngineKeyEvent(std::string_view eventID) {}
 
 void GW2TacO::OpenAboutWindow() {
   auto child = FindChildByID("About", "window");

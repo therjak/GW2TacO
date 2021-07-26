@@ -97,7 +97,6 @@ class CCoreDevice {
       const bool RenderTarget = false) = 0;
   virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const uint8_t* Data, const int32_t Size) = 0;
-  virtual CCoreTexture2D* CopyTexture(CCoreTexture2D* Texture) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexbuffer functions

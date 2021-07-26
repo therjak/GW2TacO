@@ -45,8 +45,6 @@ class CCoreTexture2D : public CCoreTexture {
   virtual int32_t GetXRes() { return XRes; }
   virtual int32_t GetYRes() { return YRes; }
 
-  virtual CCoreTexture2D* Copy() = 0;
-
   virtual void ExportToImage(std::string_view Filename, bool ClearAlpha,
                              EXPORTIMAGEFORMAT Format, bool degamma) = 0;
 };

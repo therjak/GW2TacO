@@ -200,47 +200,6 @@ bool CCoreDX11Texture2D::Update(const uint8_t* Data, const int32_t XRes,
   return true;
 }
 
-CCoreTexture2D* CCoreDX11Texture2D::Copy() {
-  if (!TextureHandle) return nullptr;
-  if (!View) return nullptr;
-
-  D3D11_TEXTURE2D_DESC desc;
-  TextureHandle->GetDesc(&desc);
-  desc.Usage = D3D11_USAGE_DEFAULT;
-
-  ID3D11Texture2D* d2;
-
-  HRESULT res;
-  res = Dev->CreateTexture2D(&desc, nullptr, &d2);
-
-  // delete[] data.pSysMem;
-
-  if (res != S_OK) {
-    _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] Failed to create copy of texture 2d (%s)" ),
-        err.ErrorMessage());
-    return nullptr;
-  }
-
-  ID3D11ShaderResourceView* v2;
-
-  res = Dev->CreateShaderResourceView(d2, nullptr, &v2);
-  if (res != S_OK) {
-    _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] CreateShaderResourceView failed (%s)" ),
-        err.ErrorMessage());
-    return nullptr;
-  }
-
-  DeviceContext->CopyResource(d2, TextureHandle);
-
-  CCoreDX11Texture2D* nt =
-      new CCoreDX11Texture2D(dynamic_cast<CCoreDX11Device*>(Device));
-  nt->SetTextureHandle(d2);
-  nt->SetView(v2);
-  return nt;
-}
-
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 

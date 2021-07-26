@@ -1062,10 +1062,6 @@ void CCoreDX11Device::ForceStateReset() {
   CurrentRasterizerState = nullptr;
 }
 
-CCoreTexture2D* CCoreDX11Device::CopyTexture(CCoreTexture2D* Texture) {
-  return Texture->Copy();
-}
-
 void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
   ID3D11Texture2D* bb;
 

@@ -77,7 +77,6 @@ class CCoreDX11Device : public CCoreDevice {
       const bool RenderTarget = false) override;
   std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t* Data,
                                                   const int32_t Size) override;
-  CCoreTexture2D* CopyTexture(CCoreTexture2D* Texture) override;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexbuffer functions
