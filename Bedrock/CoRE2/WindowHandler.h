@@ -23,7 +23,6 @@ enum COREMOUSECURSOR {
 
 class CCoreWindowParameters {
  public:
-  CCoreDevice* Device = nullptr;
   HINSTANCE hInstance;
   bool FullScreen;
   int32_t XRes;
@@ -41,10 +40,7 @@ class CCoreWindowParameters {
                         int32_t YRes, TCHAR* WindowTitle, HICON Icon = nullptr,
                         bool Maximized = false, bool ResizeDisabled = false);
 
-  virtual void Initialize(CCoreDevice* device, HINSTANCE hinst, bool FullScreen,
-                          int32_t XRes, int32_t YRes, TCHAR* WindowTitle,
-                          HICON Icon = nullptr, bool Maximized = false,
-                          bool ResizeDisabled = false);
+  std::unique_ptr<CCoreDevice> CreateDevice() const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -53,7 +49,7 @@ class CCoreWindowParameters {
 class CCoreWindowHandler {
  protected:
   bool Done = false;
-  CCoreDevice* Device = nullptr;
+  std::unique_ptr<CCoreDevice> Device;
   bool Active = false;
   bool Maximized = false;
   bool Minimized = false;
@@ -101,7 +97,7 @@ class CCoreWindowHandler {
   CPoint GetRightDownPos();
   CPoint GetMidDownPos();
 
-  INLINE CCoreDevice* GetDevice() { return Device; }
+  INLINE CCoreDevice* GetDevice() { return Device.get(); }
 
   virtual void SetWindowTitle(std::string_view Title) = 0;
   virtual void SetInactiveFrameLimiter(bool set);

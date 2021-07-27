@@ -10,7 +10,6 @@ typedef CCoreDX11Device CCore;
 // window init parameter structure
 
 CCoreWindowParameters::CCoreWindowParameters() {
-  Device = nullptr;
   hInstance = nullptr;
   FullScreen = false;
   XRes = 800;
@@ -24,23 +23,18 @@ CCoreWindowParameters::CCoreWindowParameters() {
 CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, bool fs,
                                              int32_t x, int32_t y, TCHAR* title,
                                              HICON icon, bool maximize,
-                                             bool noresize) {
-  Initialize(new CCore(), hinst, fs, x, y, title, icon, maximize, noresize);
-}
+                                             bool noresize)
+    : hInstance(hinst),
+      FullScreen(fs),
+      XRes(x),
+      YRes(y),
+      WindowTitle(title),
+      Icon(icon),
+      Maximized(maximize),
+      ResizeDisabled(noresize) {}
 
-void CCoreWindowParameters::Initialize(CCoreDevice* device, HINSTANCE hinst,
-                                       bool fs, int32_t x, int32_t y,
-                                       TCHAR* title, HICON icon, bool maximize,
-                                       bool noresize) {
-  Device = device;
-  hInstance = hinst;
-  FullScreen = fs;
-  XRes = x;
-  YRes = y;
-  WindowTitle = title;
-  Icon = icon;
-  Maximized = maximize;
-  ResizeDisabled = noresize;
+std::unique_ptr<CCoreDevice> CCoreWindowParameters::CreateDevice() const {
+  return std::make_unique<CCore>();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -50,10 +44,7 @@ CCoreWindowHandler::CCoreWindowHandler() {
   LastRenderedFrame = globalTimer.GetTime();
 }
 
-CCoreWindowHandler::~CCoreWindowHandler() {
-  Destroy();
-  SAFEDELETE(Device);
-}
+CCoreWindowHandler::~CCoreWindowHandler() { Destroy(); }
 
 void CCoreWindowHandler::Destroy() { Done = true; }
 
@@ -155,7 +146,7 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
 
   FORCEDDEBUGLOG("Window created");
 
-  Device = wp.Device;
+  Device = wp.CreateDevice();
 
   if (!Device) {
     LOG_ERR("[init] Device object is NULL during init.");
@@ -163,7 +154,7 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   }
 
   if (!Device->Initialize(this)) {
-    SAFEDELETE(Device);
+    Device.reset();
     return false;
   }
 

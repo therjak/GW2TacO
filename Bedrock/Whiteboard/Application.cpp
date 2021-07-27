@@ -328,12 +328,12 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 bool CWBApplication::Initialize() {
   Atlas = std::make_unique<CAtlas>(2048, 2048);
-  if (!Atlas->InitializeTexture(Device)) {
+  if (!Atlas->InitializeTexture(Device.get())) {
     LOG(LOG_ERROR, _T( "[gui] Error creating UI Texture Atlas" ));
     return false;
   }
 
-  if (!DrawAPI->Initialize(this, Device, Atlas.get())) return false;
+  if (!DrawAPI->Initialize(this, Device.get(), Atlas.get())) return false;
 
   Root = CWBRoot::Create(CRect(0, 0, XRes, YRes));
   Root->SetApplication(this);
