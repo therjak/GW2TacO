@@ -6,6 +6,7 @@
 #include <mutex>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <vector>
 
 #include "Bedrock/BaseLib/Timer.h"
@@ -543,23 +544,13 @@ void FetchMarkerPackOnline(std::string_view ourl) {
   LOG_NFO("[GW2TacO] Trying to fetch marker pack %s",
           std::string(ourl.substr(pos)).c_str());
 
-  auto url = ourl.substr(pos + 21);
-  uint8_t* urlPtr = new uint8_t[url.size() + 1];
-  memset(urlPtr, 0, url.size() + 1);
-  memcpy(urlPtr, url.data(), url.size());
-
-  DWORD downloadThreadID = 0;
-
-  auto downloadThread = CreateThread(
-      nullptr, 0,
-      [](LPVOID data) {
-        std::string url(static_cast<char*>(data));
-        delete[] data;
-
+  std::string url(ourl.substr(pos + 21));
+  std::thread downloadThread(
+      [](std::string url) {
         CStreamWriterMemory mem;
         if (!DownloadFile(url, mem)) {
           LOG_ERR("[GW2TacO] Failed to download package %s", url.c_str());
-          return static_cast<DWORD>(0);
+          return;
         }
 
         mz_zip_archive zip;
@@ -568,7 +559,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
           LOG_ERR(
               "[GW2TacO] Package %s doesn't seem to be a well formed zip file",
               url.c_str());
-          return static_cast<DWORD>(0);
+          return;
         }
 
         mz_zip_reader_end(&zip);
@@ -583,7 +574,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
         auto fileName = url.substr(cnt + 1);
         if (fileName.empty()) {
           LOG_ERR("[GW2TacO] Package %s has a malformed name", url.c_str());
-          return static_cast<DWORD>(0);
+          return;
         }
 
         if (fileName.find(".zip") == fileName.size() - 4)
@@ -604,21 +595,21 @@ void FetchMarkerPackOnline(std::string_view ourl) {
         if (!out.Open(fileName)) {
           LOG_ERR("[GW2TacO] Failed to open file for writing: %s",
                   fileName.c_str());
-          return static_cast<DWORD>(0);
+          return;
         }
 
         if (!out.Write(uint8_view(mem.GetData(), mem.GetLength()))) {
           LOG_ERR("[GW2TacO] Failed to write out data to file: %s",
                   fileName.c_str());
           remove(fileName.c_str());
-          return static_cast<DWORD>(0);
+          return;
         }
         std::scoped_lock l(loadListMutex);
         loadList.emplace_back(std::move(fileName));
-
-        return static_cast<DWORD>(0);
       },
-      urlPtr, 0, &downloadThreadID);
+      url);
+  // TODO(therjak): this needs a fix
+  downloadThread.detach();
 }
 
 void ImportMarkerPack(CWBApplication* App, std::string_view zipFile);
