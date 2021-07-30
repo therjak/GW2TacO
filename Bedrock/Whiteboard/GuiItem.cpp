@@ -625,10 +625,6 @@ CWBItem::CWBItem(CWBItem* parent, const CRect& position)
 }
 
 CWBItem::~CWBItem() {
-  if (App) {
-    App->UnRegisterItem(this);
-  }
-
   for (auto& c : Children) {
     c->Parent = nullptr;
   }
@@ -649,6 +645,10 @@ CWBItem::~CWBItem() {
     if (Parent->ChildInFocus == this) {
       Parent->ChildInFocus = nullptr;
     }
+  }
+
+  if (App) {
+    App->UnRegisterItem(this);
   }
 
   c.clear();

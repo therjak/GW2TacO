@@ -36,6 +36,8 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
 }
 
 CWBApplication::~CWBApplication() {
+  Items.clear();
+  Trash.clear();
   Fonts.clear();
   Skin.reset();
   Atlas.reset();
