@@ -37,7 +37,7 @@ CCoreDevice::~CCoreDevice() {
 #ifdef ENABLE_STACKTRACKER_CLASS
   if (!Resources.empty()) {
 #ifdef _DEBUG
-    LOG(LOG_ERROR, _T("[core] ---Leaked graphical resources start here---"));
+    LOG_ERR("[core] ---Leaked graphical resources start here---");
 #endif  // _DEBUG
   }
   int32_t Counter = 0;
@@ -47,9 +47,8 @@ CCoreDevice::~CCoreDevice() {
   for (auto r : Resources) {
 #ifdef ENABLE_STACKTRACKER_CLASS
 #ifdef _DEBUG
-    LOG(LOG_ERROR,
-        _T("[core] Unfreed graphical resource found. Allocation stack:"));
-    r->StackInfo.DumpToLog(LOG_ERROR);
+    LOG_ERR("[core] Unfreed graphical resource found. Allocation stack:");
+    r->StackInfo.DumpToLog(LOGVERBOSITY::LOG_ERROR);
 #endif  // _DEBUG
     Counter++;
 #endif
@@ -59,7 +58,7 @@ CCoreDevice::~CCoreDevice() {
 
 #ifdef ENABLE_STACKTRACKER_CLASS
   if (Counter > 0)
-    LOG(LOG_INFO,
+    LOG_NFO(
         _T("[core] %d unfreed graphical resources found on exit. This is ")
         _T("fine."),
         Counter);

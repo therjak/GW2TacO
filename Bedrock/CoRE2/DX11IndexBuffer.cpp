@@ -46,8 +46,8 @@ bool CCoreDX11IndexBuffer::Create(const uint32_t idxcount,
   HRESULT res = Dev->CreateBuffer(&bd, nullptr, &IndexBufferHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] CreateBuffer for indexbuffer failed (%s)"),
-        err.ErrorMessage());
+    LOG_ERR("[core] CreateBuffer for indexbuffer failed (%s)",
+            err.ErrorMessage());
     return false;
   }
 
@@ -66,8 +66,8 @@ bool CCoreDX11IndexBuffer::Lock(void** Result, const uint32_t idxoffset,
                                    D3D11_MAP_WRITE_DISCARD, NULL, &ms);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] Failed to lock indexbuffer failed (%s)"),
-        err.ErrorMessage());
+    LOG_ERR("[core] Failed to lock indexbuffer failed (%s)",
+            err.ErrorMessage());
     return false;
   }
 

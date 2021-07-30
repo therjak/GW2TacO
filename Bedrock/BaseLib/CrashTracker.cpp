@@ -78,7 +78,7 @@ LONG WINAPI baseCrashTracker(struct _EXCEPTION_POINTERS* excpInfo) {
     }
   }
 
-  LOG(LOG_ERROR, std::string(CrashString).c_str());
+  LOG_ERR(std::string(CrashString).c_str());
   Stack.DumpToDebugOutput();
 
   Logger.Close();

@@ -662,11 +662,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   FORCEDDEBUGLOG("Crash tracker initialized.");
 
   Logger.AddOutput(std::make_unique<CLoggerOutput_File>(_T("GW2TacO.log")));
-  Logger.SetVerbosity(LOG_DEBUG);
+  Logger.SetVerbosity(LOGVERBOSITY::LOG_DEBUG);
   FORCEDDEBUGLOG("Logger set up.");
 
-  Logger.Log(LOG_INFO, false, false, "");
-  Logger.Log(LOG_INFO, false, false,
+  Logger.Log(LOGVERBOSITY::LOG_INFO, false, false, "");
+  Logger.Log(LOGVERBOSITY::LOG_INFO, false, false,
              "----------------------------------------------");
   std::string cmdLine(GetCommandLineA());
   LOG_NFO("[GW2TacO] CommandLine: %s", cmdLine.c_str());

@@ -166,9 +166,8 @@ void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
 bool CWBItem::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_NONE:
-      LOG(LOG_ERROR,
-          _T( "[gui] Message Type 0 Encountered. Message Target is %d" ),
-          Message.GetTarget());
+      LOG_ERR("[gui] Message Type 0 Encountered. Message Target is %d",
+              Message.GetTarget());
       return true;
 
     case WBM_LEFTBUTTONDOWN:

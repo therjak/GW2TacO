@@ -331,7 +331,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 bool CWBApplication::Initialize() {
   Atlas = std::make_unique<CAtlas>(2048, 2048);
   if (!Atlas->InitializeTexture(Device.get())) {
-    LOG(LOG_ERROR, _T( "[gui] Error creating UI Texture Atlas" ));
+    LOG_ERR("[gui] Error creating UI Texture Atlas");
     return false;
   }
 
@@ -915,8 +915,7 @@ CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, CXMLNode& node,
     return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);
   }
 
-  LOG(LOG_ERROR, _T( "[xml2gui] Unknown tag: '%s'" ),
-      node.GetNodeName().c_str());
+  LOG_ERR("[xml2gui] Unknown tag: '%s'", node.GetNodeName().c_str());
   return nullptr;
 }
 

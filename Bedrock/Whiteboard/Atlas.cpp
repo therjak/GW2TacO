@@ -64,15 +64,14 @@ CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
 
     for (int32_t y = 0; y < YRes; y++) {
       if (y + Source.y1 < 0 || y + Source.y1 >= SrcYRes) {
-        LOG(LOG_ERROR,
-            _T( "[gui] Atlas source image out of bounds, failed to add image" ));
+        LOG_ERR("[gui] Atlas source image out of bounds, failed to add image");
         return;
       }
 
       for (int32_t x = 0; x < XRes; x++) {
         if (x + Source.x1 < 0 || x + Source.x1 >= SrcXRes) {
-          LOG(LOG_ERROR,
-              _T( "[gui] Atlas source image out of bounds, failed to add image" ));
+          LOG_ERR(
+              "[gui] Atlas source image out of bounds, failed to add image");
           return;
         }
 
@@ -146,7 +145,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
 
   CAtlasNode* n = Root->AddNode(s.x, s.y);
   if (!n) {
-    LOG(LOG_WARNING, _T( "[gui] Atlas full. Image can't be added." ));
+    LOG_WARN("[gui] Atlas full. Image can't be added.");
     return 0;
   }
 
@@ -215,7 +214,7 @@ int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
 bool CAtlas::Optimize(bool DebugMode) {
   // rearranges the atlas in a more optimal fashion and removes unused
 
-  LOG(LOG_DEBUG, _T( "[gui] Optimizing Atlas" ));
+  LOG_DBG("[gui] Optimizing Atlas");
 
   memset(Image.get(), 0, XRes * YRes * 4);
 

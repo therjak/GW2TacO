@@ -10,21 +10,22 @@
 
 #define ENABLE_LOGGING
 
-// base verbosity for the log:
-#define LOGGER_BASE_OUTPUT_VERBOSITY 0x400
-
-// logged items with a verbosity above this value are killed compile time:
-#define LOGGER_DROPPED_OUTPUT_VERBOSITY 0x200
-
 #define LOG_TO_DEBUGOUTPUT
 //#define LOG_TO_STDOUT
 
-enum LOGVERBOSITY {
+enum class LOGVERBOSITY : uint16_t {
   LOG_ERROR = 0x100,
   LOG_WARNING = 0x200,
   LOG_INFO = 0x300,
   LOG_DEBUG = 0x400,
+  LOG_NONE = 0x500,
 };
+
+// base verbosity for the log:
+constexpr auto LOGGER_BASE_OUTPUT_VERBOSITY = LOGVERBOSITY::LOG_DEBUG;
+
+// logged items with a verbosity above this value are killed compile time:
+constexpr auto LOGGER_DROPPED_OUTPUT_VERBOSITY = LOGVERBOSITY::LOG_WARNING;
 
 class CLoggerOutput {
  public:
@@ -72,7 +73,7 @@ class CLoggerOutput_RingBuffer : public CLoggerOutput {
 
 class CLogger {
   std::vector<std::unique_ptr<CLoggerOutput>> Outputs;
-  int32_t Verbosity = 0;
+  LOGVERBOSITY Verbosity = LOGVERBOSITY::LOG_NONE;
   int32_t NewEntryCount = 0;
 
  public:
@@ -105,10 +106,10 @@ extern CLogger Logger;
   } while (0)
 #endif
 
-#define LOG_WARN(s, ...) LOG(LOG_WARNING, s, __VA_ARGS__)
-#define LOG_ERR(s, ...) LOG(LOG_ERROR, s, __VA_ARGS__)
-#define LOG_DBG(s, ...) LOG(LOG_DEBUG, s, __VA_ARGS__)
-#define LOG_NFO(s, ...) LOG(LOG_INFO, s, __VA_ARGS__)
+#define LOG_WARN(s, ...) LOG(LOGVERBOSITY::LOG_WARNING, s, __VA_ARGS__)
+#define LOG_ERR(s, ...) LOG(LOGVERBOSITY::LOG_ERROR, s, __VA_ARGS__)
+#define LOG_DBG(s, ...) LOG(LOGVERBOSITY::LOG_DEBUG, s, __VA_ARGS__)
+#define LOG_NFO(s, ...) LOG(LOGVERBOSITY::LOG_INFO, s, __VA_ARGS__)
 
 #define LOG_SETVERBOSITY(v) Logger.SetVerbosity(v)
 #define LOG_ADDOUTPUT(v) Logger.AddOutput(v)

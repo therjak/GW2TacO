@@ -74,16 +74,14 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
       Dev->CreateTexture2D(&tex, Data ? &data : nullptr, &TextureHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] CreateTexture2D failed (%s)" ),
-        err.ErrorMessage());
+    LOG_ERR("[core] CreateTexture2D failed (%s)", err.ErrorMessage());
     return false;
   }
 
   res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] CreateShaderResourceView failed (%s)" ),
-        err.ErrorMessage());
+    LOG_ERR("[core] CreateShaderResourceView failed (%s)", err.ErrorMessage());
     return false;
   }
 
@@ -95,8 +93,7 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
     res = Dev->CreateRenderTargetView(TextureHandle, &rt, &RTView);
     if (res != S_OK) {
       _com_error err(res);
-      LOG(LOG_ERROR, _T( "[core] Failed to rendertarget view (%s)" ),
-          err.ErrorMessage());
+      LOG_ERR("[core] Failed to rendertarget view (%s)", err.ErrorMessage());
       return false;
     }
   }
@@ -135,8 +132,7 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
               reinterpret_cast<ID3D11Resource**>(&TextureHandle), &View)) {
 
 #ifdef CORE_VERBOSE_LOG
-        LOG(LOG_ERROR,
-            _T( "Texture Creation From Image failed: d3dx not linked" ));
+        LOG_ERR("Texture Creation From Image failed: d3dx not linked");
 #endif
         return false;
       } else {
@@ -159,8 +155,8 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
     HRESULT res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
     if (res != S_OK) {
       _com_error err(res);
-      LOG(LOG_ERROR, _T( "[core] CreateShaderResourceView failed (%s)" ),
-          err.ErrorMessage());
+      LOG_ERR("[core] CreateShaderResourceView failed (%s)",
+              err.ErrorMessage());
       return false;
     }
   }
@@ -225,8 +221,8 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
   HRESULT res = SaveDDSTexture(DeviceContext, TextureHandle, Writer);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] Failed to export texture to '%s' (%x: %s)" ),
-        std::string(Filename).c_str(), res, err.ErrorMessage());
+    LOG_ERR("[core] Failed to export texture to '%s' (%x: %s)",
+            std::string(Filename).c_str(), res, err.ErrorMessage());
     return;
   }
 
@@ -383,8 +379,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
   HRESULT res = Dev->CreateTexture2D(&tex, nullptr, &TextureHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] CreateTexture2D failed (%s)" ),
-        err.ErrorMessage());
+    LOG_ERR("[core] CreateTexture2D failed (%s)", err.ErrorMessage());
     return false;
   }
 
@@ -400,8 +395,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
   res = Dev->CreateDepthStencilView(TextureHandle, &deptdesc, &DepthView);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] CreateDepthStencilView failed (%s)" ),
-        err.ErrorMessage());
+    LOG_ERR("[core] CreateDepthStencilView failed (%s)", err.ErrorMessage());
     return false;
   }
 
@@ -415,8 +409,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
   res = Dev->CreateShaderResourceView(TextureHandle, &resdesc, &View);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T( "[core] CreateShaderResourceView failed (%s)" ),
-        err.ErrorMessage());
+    LOG_ERR("[core] CreateShaderResourceView failed (%s)", err.ErrorMessage());
     return false;
   }
 

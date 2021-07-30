@@ -489,7 +489,7 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
 
   vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
   if (!vertexFormat) {
-    LOG(LOG_ERROR, _T( "[GW2TacO]  Error creating Trail Vertex Format" ));
+    LOG_ERR("[GW2TacO]  Error creating Trail Vertex Format");
   }
 }
 

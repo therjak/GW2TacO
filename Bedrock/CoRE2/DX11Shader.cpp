@@ -105,8 +105,7 @@ bool CCoreDX11VertexShader::Create(void* Binary, int32_t Length) {
       Dev->CreateVertexShader(Binary, Length, nullptr, &VertexShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] VertexShader Creation error (%s)"),
-        err.ErrorMessage());
+    LOG_ERR(_T("[core] VertexShader Creation error (%s)"), err.ErrorMessage());
   }
   return res == S_OK;
 }
@@ -147,8 +146,8 @@ bool CCoreDX11VertexShader::CompileAndCreate(std::string* Err) {
 #endif
   {
     if (!Err)
-      LOG(LOG_ERROR, _T("[core] VertexShader compilation error: %s"),
-          (char*)Error->GetBufferPointer());
+      LOG_ERR(_T("[core] VertexShader compilation error: %s"),
+              (char*)Error->GetBufferPointer());
     Success = false;
   }
 
@@ -201,8 +200,7 @@ bool CCoreDX11PixelShader::Create(void* Binary, int32_t Length) {
       Dev->CreatePixelShader(Binary, Length, nullptr, &PixelShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] PixelShader Creation error (%s)"),
-        err.ErrorMessage());
+    LOG_ERR(_T("[core] PixelShader Creation error (%s)"), err.ErrorMessage());
   }
   return res == S_OK;
 }
@@ -243,8 +241,8 @@ bool CCoreDX11PixelShader::CompileAndCreate(std::string* Err) {
 #endif
   {
     if (!Err)
-      LOG(LOG_ERROR, _T("[core] PixelShader compilation error: %s"),
-          (char*)Error->GetBufferPointer());
+      LOG_ERR(_T("[core] PixelShader compilation error: %s"),
+              (char*)Error->GetBufferPointer());
     Success = false;
   }
 
@@ -297,8 +295,8 @@ bool CCoreDX11GeometryShader::Create(void* Binary, int32_t Length) {
       Dev->CreateGeometryShader(Binary, Length, nullptr, &GeometryShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] GeometryShader Creation error (%s)"),
-        err.ErrorMessage());
+    LOG_ERR(_T("[core] GeometryShader Creation error (%s)"),
+            err.ErrorMessage());
   }
   return res == S_OK;
 }
@@ -339,8 +337,8 @@ bool CCoreDX11GeometryShader::CompileAndCreate(std::string* Err) {
 #endif
   {
     if (!Err)
-      LOG(LOG_ERROR, _T("[core] GeometryShader compilation error: %s"),
-          (char*)Error->GetBufferPointer());
+      LOG_ERR(_T("[core] GeometryShader compilation error: %s"),
+              (char*)Error->GetBufferPointer());
     Success = false;
   }
 
@@ -393,8 +391,7 @@ bool CCoreDX11DomainShader::Create(void* Binary, int32_t Length) {
       Dev->CreateDomainShader(Binary, Length, nullptr, &DomainShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] DomainShader Creation error (%s)"),
-        err.ErrorMessage());
+    LOG_ERR(_T("[core] DomainShader Creation error (%s)"), err.ErrorMessage());
   }
   return res == S_OK;
 }
@@ -435,8 +432,8 @@ bool CCoreDX11DomainShader::CompileAndCreate(std::string* Err) {
 #endif
   {
     if (!Err)
-      LOG(LOG_ERROR, _T("[core] DomainShader compilation error: %s"),
-          (char*)Error->GetBufferPointer());
+      LOG_ERR(_T("[core] DomainShader compilation error: %s"),
+              (char*)Error->GetBufferPointer());
     Success = false;
   }
 
@@ -489,8 +486,7 @@ bool CCoreDX11HullShader::Create(void* Binary, int32_t Length) {
       Dev->CreateHullShader(Binary, Length, nullptr, &HullShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] HullShader Creation error (%s)"),
-        err.ErrorMessage());
+    LOG_ERR(_T("[core] HullShader Creation error (%s)"), err.ErrorMessage());
   }
   return res == S_OK;
 }
@@ -532,8 +528,8 @@ bool CCoreDX11HullShader::CompileAndCreate(std::string* Err) {
 
   {
     if (!Err)
-      LOG(LOG_ERROR, _T("[core] HullShader compilation error: %s"),
-          (char*)Error->GetBufferPointer());
+      LOG_ERR(_T("[core] HullShader compilation error: %s"),
+              (char*)Error->GetBufferPointer());
     Success = false;
   }
 
@@ -585,8 +581,7 @@ bool CCoreDX11ComputeShader::Create(void* Binary, int32_t Length) {
       Dev->CreateComputeShader(Binary, Length, nullptr, &ComputeShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG(LOG_ERROR, _T("[core] ComputeShader Creation error (%s)"),
-        err.ErrorMessage());
+    LOG_ERR(_T("[core] ComputeShader Creation error (%s)"), err.ErrorMessage());
   }
   return res == S_OK;
 }
@@ -628,8 +623,8 @@ bool CCoreDX11ComputeShader::CompileAndCreate(std::string* Err) {
 
   {
     if (!Err)
-      LOG(LOG_ERROR, _T("[core] ComputeShader compilation error: %s"),
-          (char*)Error->GetBufferPointer());
+      LOG_ERR(_T("[core] ComputeShader compilation error: %s"),
+              (char*)Error->GetBufferPointer());
     Success = false;
   }
 

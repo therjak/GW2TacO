@@ -131,11 +131,11 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
                                 timeinfo.tm_min, timeinfo.tm_sec);
 
   if (Prefix) {
-    if (v < LOG_WARNING)
+    if (v < LOGVERBOSITY::LOG_WARNING)
       LogString = _T( "(Err)  " ) + LogString;
-    else if (v < LOG_INFO)
+    else if (v < LOGVERBOSITY::LOG_INFO)
       LogString = _T( "(Warn) " ) + LogString;
-    else if (v < LOG_DEBUG)
+    else if (v < LOGVERBOSITY::LOG_DEBUG)
       LogString = _T( "(Info) " ) + LogString;
     else
       LogString = _T( "(Dbg)  " ) + LogString;

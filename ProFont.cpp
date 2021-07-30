@@ -1710,8 +1710,7 @@ bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
 
   auto img = DecompressImage(image, ImageSize, xr, yr);
   if (!img) {
-    LOG(LOG_ERROR,
-        _T( "[gui] Error loading font data: font img could not be loaded" ));
+    LOG_ERR("[gui] Error loading font data: font img could not be loaded");
     return false;
   }
 

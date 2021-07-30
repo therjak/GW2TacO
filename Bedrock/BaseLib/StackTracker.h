@@ -5,8 +5,7 @@
 #include <string>
 
 #include "BaseConfig.h"
-
-enum LOGVERBOSITY;
+#include "Logger.h"
 
 #ifdef ENABLE_STACKTRACKER_CLASS
 

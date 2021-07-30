@@ -325,7 +325,7 @@ void CWBTextBox::Copy() {
 
     HiglightStartTime = globalTimer.GetTime();
   } else
-    LOG(LOG_WARNING, _T( "[gui] Failed to open clipboard" ));
+    LOG_WARN("[gui] Failed to open clipboard");
 }
 
 void CWBTextBox::Paste() {
@@ -355,14 +355,13 @@ void CWBTextBox::Paste() {
       GlobalUnlock(Handle);
       DesiredCursorPosXinPixels = GetCursorXinPixels();
     } else {
-      LOG(LOG_WARNING, _T( "[gui] Failed to retrieve clipboard data (%x)" ),
-          GetLastError());
+      LOG_WARN("[gui] Failed to retrieve clipboard data (%x)", GetLastError());
     }
 
     CloseClipboard();
     OnTextChange();
   } else
-    LOG(LOG_WARNING, _T( "[gui] Failed to open clipboard" ));
+    LOG_WARN("[gui] Failed to open clipboard");
 }
 
 CWBTextBoxHistoryEntry* CWBTextBox::CreateNewHistoryEntry(bool Remove,

@@ -71,8 +71,8 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
 
   if (m.ReadByte() != 'B' || m.ReadByte() != 'M' || m.ReadByte() != 'F' ||
       m.ReadByte() != 3) {
-    LOG(LOG_ERROR,
-        _T( "[gui] Error loading font data: bad fileformat or unsupported version" ));
+    LOG_ERR(
+        "[gui] Error loading font data: bad fileformat or unsupported version");
     return false;
   }
 
@@ -82,8 +82,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
     auto BlockData = std::make_unique<uint8_t[]>(BlockSize);
 
     if (m.Read(BlockData.get(), BlockSize) != BlockSize) {
-      LOG(LOG_ERROR,
-          _T( "[gui] Error loading font data: unable to read block data" ));
+      LOG_ERR("[gui] Error loading font data: unable to read block data");
       return false;
     }
 
@@ -93,14 +92,15 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       case 2:  // common data
       {
         if (BlockSize != sizeof(BMCOMMON)) {
-          LOG(LOG_ERROR,
-              _T( "[gui] Error loading font data: common block size doesn't match" ));
+          LOG_ERR(
+              "[gui] Error loading font data: common block size doesn't match");
           return false;
         }
         BMCOMMON* cmn = reinterpret_cast<BMCOMMON*>(BlockData.get());
         if (cmn->pages > 1) {
-          LOG(LOG_ERROR,
-              _T( "[gui] Error loading font data: only single page fonts are supported" ));
+          LOG_ERR(
+              "[gui] Error loading font data: only single page fonts are "
+              "supported");
           return false;
         }
         LineHeight = cmn->lineHeight;
@@ -111,8 +111,9 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       case 4:  // characters
       {
         if (BlockSize % sizeof(BMCHAR) != 0) {
-          LOG(LOG_ERROR,
-              _T( "[gui] Error loading font data: character block size doesn't match" ));
+          LOG_ERR(
+              "[gui] Error loading font data: character block size doesn't "
+              "match");
           return false;
         }
 
@@ -136,8 +137,9 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       case 5:  // kerning data
       {
         if (BlockSize % sizeof(BMKERNINGDATA) != 0) {
-          LOG(LOG_ERROR,
-              _T( "[gui] Error loading font data: kerning block size doesn't match" ));
+          LOG_ERR(
+              "[gui] Error loading font data: kerning block size doesn't "
+              "match");
           return false;
         }
 
@@ -153,8 +155,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       } break;
 
       default:
-        LOG(LOG_ERROR,
-            _T( "[gui] Error loading font data: unknown block type" ));
+        LOG_ERR("[gui] Error loading font data: unknown block type");
         return false;
     }
   }
@@ -183,8 +184,8 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
 
   if (m.ReadByte() != 'i' || m.ReadByte() != 'n' || m.ReadByte() != 'f' ||
       m.ReadByte() != 'o') {
-    LOG(LOG_ERROR,
-        _T( "[gui] Error loading font data: bad fileformat or unsupported version" ));
+    LOG_ERR(
+        "[gui] Error loading font data: bad fileformat or unsupported version");
     return false;
   }
 
@@ -356,8 +357,9 @@ int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
           Char)  // missing character replaced by a simple rectangle
   {
     if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar) {
-      LOG(LOG_WARNING,
-          _T( "[font] Used character %d and fallback character %d also missing from font." ),
+      LOG_WARN(
+          "[font] Used character %d and fallback character %d also missing "
+          "from font.",
           Char, MissingChar);
       return 0;
     }
@@ -514,7 +516,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
                           Description->YRes, abc.UV);
 
       if (!h) {
-        LOG(LOG_ERROR, _T( "[gui] Atlas Error while creating font!" ));
+        LOG_ERR("[gui] Atlas Error while creating font!");
         return false;
       };
 
