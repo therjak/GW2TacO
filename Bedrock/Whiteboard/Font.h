@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -6,19 +7,19 @@
 #include "../BaseLib/Color.h"
 #include "Atlas.h"
 
-enum WBTEXTALIGNMENTX {
+enum class WBTEXTALIGNMENTX : uint8_t {
   WBTA_CENTERX,
   WBTA_LEFT,
   WBTA_RIGHT,
 };
 
-enum WBTEXTALIGNMENTY {
+enum class WBTEXTALIGNMENTY : uint8_t {
   WBTA_CENTERY,
   WBTA_TOP,
   WBTA_BOTTOM,
 };
 
-enum WBTEXTTRANSFORM {
+enum class WBTEXTTRANSFORM : uint8_t {
   WBTT_NONE = 0,
   WBTT_CAPITALIZE,
   WBTT_UPPERCASE,
@@ -134,30 +135,33 @@ class CWBFont {
   int32_t GetBase();
   int32_t GetOffsetX(TCHAR Char);
   int32_t GetOffsetY(TCHAR Char);
-  int32_t GetCenterWidth(int32_t x1, int32_t x2, std::string_view Text,
-                         WBTEXTTRANSFORM Transform = WBTT_NONE);
+  int32_t GetCenterWidth(
+      int32_t x1, int32_t x2, std::string_view Text,
+      WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetCenterHeight(int32_t y1, int32_t y2);
   CPoint GetCenter(std::string_view Text, CRect Rect,
-                   WBTEXTTRANSFORM Transform = WBTT_NONE);
+                   WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetMedian();
 
   int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
                     CColor Color = CColor(0xffffffff));
   int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
                 int32_t y, CColor Color = CColor(0xffffffff),
-                WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
+                WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
+                bool DoKerning = true);
   int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const CPoint& p,
                     CColor Color = CColor(0xffffffff));
   int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, const CPoint& p,
                 CColor Color = CColor(0xffffffff),
-                WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true);
+                WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
+                bool DoKerning = true);
   int32_t GetWidth(
       uint16_t Char,
       bool Advance = true);  // if Advance is set to false this returns the
                              // width of the image in pixels
   int32_t GetWidth(std::string_view String, bool AdvanceLastChar = true,
-                   WBTEXTTRANSFORM Transform = WBTT_NONE, bool DoKerning = true,
-                   bool firstCharHack = false);
+                   WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
+                   bool DoKerning = true, bool firstCharHack = false);
 
   int32_t GetHeight(uint16_t Char);
   int32_t GetHeight(std::string_view String);

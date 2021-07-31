@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <vector>
 
 #include "../BaseLib/Color.h"
@@ -28,7 +29,7 @@ struct WBGUIVERTEX {
       : Pos(pos.x, pos.y, 0, 1), UV(uv.x, uv.y), Color(color) {}
 };
 
-enum WBDRAWMODE { WBD_RECTANGLES, WBD_LINES, WBD_TRIANGLES };
+enum class WBDRAWMODE : uint8_t { WBD_RECTANGLES, WBD_LINES, WBD_TRIANGLES };
 
 class CWBDrawAPI {
   friend class CWBApplication;

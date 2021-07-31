@@ -208,7 +208,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       if (uMsg == WM_LBUTTONDBLCLK)
         SendMessage(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
 
-      ClickRepeaterMode = WB_MCR_LEFT;
+      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_LEFT;
       NextRepeatedClickTime =
           int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
     } break;
@@ -219,7 +219,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
       SendMessage(CWBMessage(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
-      ClickRepeaterMode = WB_MCR_OFF;
+      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK: {
@@ -233,7 +233,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       if (uMsg == WM_RBUTTONDBLCLK)
         SendMessage(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
 
-      ClickRepeaterMode = WB_MCR_RIGHT;
+      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT;
       NextRepeatedClickTime =
           int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
     } break;
@@ -244,7 +244,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
       SendMessage(CWBMessage(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
-      ClickRepeaterMode = WB_MCR_OFF;
+      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK: {
@@ -258,7 +258,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       if (uMsg == WM_MBUTTONDBLCLK)
         SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
 
-      ClickRepeaterMode = WB_MCR_MIDDLE;
+      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE;
       NextRepeatedClickTime =
           int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
     } break;
@@ -269,7 +269,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
       SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
-      ClickRepeaterMode = WB_MCR_OFF;
+      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MOUSEWHEEL: {
       SendMessage(CWBMessage(this, WBM_MOUSEWHEEL, 0,
@@ -369,20 +369,20 @@ bool CWBApplication::HandleMessages() {
   globalTimer.Update();
 
   // mouse click repeater
-  if (ClickRepeaterMode != WB_MCR_OFF) {
+  if (ClickRepeaterMode != WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
     if (globalTimer.GetTime() > NextRepeatedClickTime) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
 
       switch (ClickRepeaterMode) {
-        case WB_MCR_LEFT:
+        case WBMOUSECLICKREPEATMODE::WB_MCR_LEFT:
           SendMessage(CWBMessage(this, WBM_LEFTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
-        case WB_MCR_RIGHT:
+        case WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT:
           SendMessage(CWBMessage(this, WBM_RIGHTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
-        case WB_MCR_MIDDLE:
+        case WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE:
           SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONREPEAT, 0, ap.x, ap.y));
           break;
       }
@@ -437,7 +437,7 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   CleanTrash();
 
   FinalizeMouseCursor();
-  SelectMouseCursor(CM_ARROW);
+  SelectMouseCursor(COREMOUSECURSOR::CM_ARROW);
 
   DrawAPI->SetUIRenderState();
   Device->Clear(true, true, ClearColor);

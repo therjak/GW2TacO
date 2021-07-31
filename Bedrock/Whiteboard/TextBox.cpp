@@ -111,7 +111,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
   if (App->GetMouseCaptureItem() && App->GetMouseCaptureItem() != this) return;
   if (App->GetMouseItem() == this &&
       ClientToScreen(GetClientRect()).Contains(App->GetMousePos()))
-    App->SelectMouseCursor(CM_TEXT);
+    App->SelectMouseCursor(COREMOUSECURSOR::CM_TEXT);
 }
 
 CWBTextBox::CWBTextBox(CWBItem* Parent, const CRect& Pos, int32_t flags,

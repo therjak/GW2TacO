@@ -176,9 +176,12 @@ bool CWBContextMenu::Initialize(CWBItem* Parent, const CRect& Position,
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_HOVER,
                                            WB_ITEM_BACKGROUNDCOLOR, 0xff434346);
 
-  SeparatorElements.PositionDescriptor.SetValue(WB_PADDING_TOP, 0, 1);
-  SeparatorElements.PositionDescriptor.SetValue(WB_HEIGHT, 0, 1);
-  SeparatorElements.PositionDescriptor.SetValue(WB_PADDING_BOTTOM, 0, 1);
+  SeparatorElements.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_TOP,
+                                                0, 1);
+  SeparatorElements.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_HEIGHT, 0,
+                                                1);
+  SeparatorElements.PositionDescriptor.SetValue(
+      WBPOSITIONTYPE::WB_PADDING_BOTTOM, 0, 1);
 
   App->SetCapture(this);
   return true;

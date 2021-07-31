@@ -5,14 +5,6 @@
 
 #define CORESHADERTYPECOUNT 5
 
-enum CORESHADERTYPE {
-  CORE_SHADER_VERTEX = 0,
-  CORE_SHADER_PIXEL = 1,
-  CORE_SHADER_GEOMETRY = 2,
-  CORE_SHADER_HULL = 3,
-  CORE_SHADER_DOMAIN = 4,
-};
-
 class CCoreShader : public CCoreResource {
   friend class CCoreDevice;
   virtual bool Apply() = 0;

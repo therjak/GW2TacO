@@ -1,8 +1,10 @@
 #pragma once
+#include <cstdint>
+
 #include "Enums.h"
 #include "Resource.h"
 
-enum EXPORTIMAGEFORMAT {
+enum class EXPORTIMAGEFORMAT : uint8_t {
   CORE_PNG = 0,
   CORE_TGA = 1,
   CORE_BMP = 2,

@@ -31,7 +31,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
         !beingFetched && !fetchThread.joinable()) {
       beingFetched = true;
-      fetchThread = std::thread([&]() {
+      fetchThread = std::thread([key, this]() {
         Object json;
 
         auto lastDungeonStatus =

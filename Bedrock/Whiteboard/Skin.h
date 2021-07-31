@@ -1,21 +1,25 @@
 #pragma once
+#include <array>
+#include <cstdint>
 #include <unordered_map>
 #include <vector>
 
 #include "../BaseLib/Color.h"
 #include "DrawAPI.h"
 
-enum WBMETRICTYPE {
+enum class WBMETRICTYPE : uint8_t {
   WB_UNDEFINED = 0,
   WB_PIXELS,
   WB_RELATIVE,
-
-  WB_METRIC_COUNT,  // used as array size, don't remove
 };
 
 class CWBMetricValue {
-  float Metrics[WB_METRIC_COUNT]{0};
-  bool MetricsUsed[WB_METRIC_COUNT]{false};
+  std::array<float, 3> Metrics{0};
+  std::array<bool, 3> MetricsUsed{false};
+  float& MetricsAt(WBMETRICTYPE t) { return Metrics[static_cast<uint8_t>(t)]; }
+  bool& MetricsUsedAt(WBMETRICTYPE t) {
+    return MetricsUsed[static_cast<uint8_t>(t)];
+  }
   bool AutoSize = false;
 
  public:
@@ -27,7 +31,7 @@ class CWBMetricValue {
   bool IsAutoResizer();
 };
 
-enum WBPOSITIONTYPE {
+enum class WBPOSITIONTYPE : uint16_t {
   WB_MARGIN_LEFT = 0,
   WB_MARGIN_RIGHT = 1,
   WB_MARGIN_TOP = 2,
@@ -60,8 +64,12 @@ class CWBPositionDescriptor {
 };
 
 class CWBPositionDescriptorPixels {
-  bool Set[6] = {false};
-  int32_t Positions[6] = {0};
+  std::array<bool, 6> Set = {false};
+  std::array<int32_t, 6> Positions = {0};
+  bool& SetAt(WBPOSITIONTYPE p) { return Set[static_cast<uint16_t>(p)]; }
+  int32_t& PositionsAt(WBPOSITIONTYPE p) {
+    return Positions[static_cast<uint16_t>(p)];
+  }
 
  public:
   CWBPositionDescriptorPixels();

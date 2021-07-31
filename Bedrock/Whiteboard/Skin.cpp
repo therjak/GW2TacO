@@ -10,22 +10,24 @@
 CWBMetricValue::CWBMetricValue() = default;
 
 void CWBMetricValue::SetMetric(WBMETRICTYPE w, float Value) {
-  Metrics[w] = Value;
-  MetricsUsed[w] = true;
+  MetricsAt(w) = Value;
+  MetricsUsedAt(w) = true;
 }
 
 void CWBMetricValue::SetValue(float Relative, float Pixels) {
-  Metrics[WB_RELATIVE] = Relative;
-  Metrics[WB_PIXELS] = Pixels;
-  MetricsUsed[WB_RELATIVE] = true;
-  MetricsUsed[WB_PIXELS] = true;
+  MetricsAt(WBMETRICTYPE::WB_RELATIVE) = Relative;
+  MetricsAt(WBMETRICTYPE::WB_PIXELS) = Pixels;
+  MetricsUsedAt(WBMETRICTYPE::WB_RELATIVE) = true;
+  MetricsUsedAt(WBMETRICTYPE::WB_PIXELS) = true;
 }
 
 float CWBMetricValue::GetValue(float ParentSize, int32_t ContentSize) {
   if (AutoSize) return ContentSize + 0.5f;
   float v = 0;
-  if (MetricsUsed[WB_PIXELS]) v += Metrics[WB_PIXELS];
-  if (MetricsUsed[WB_RELATIVE]) v += Metrics[WB_RELATIVE] * ParentSize;
+  if (MetricsUsedAt(WBMETRICTYPE::WB_PIXELS))
+    v += MetricsAt(WBMETRICTYPE::WB_PIXELS);
+  if (MetricsUsedAt(WBMETRICTYPE::WB_RELATIVE))
+    v += MetricsAt(WBMETRICTYPE::WB_RELATIVE) * ParentSize;
   return v;
 }
 
@@ -47,36 +49,46 @@ CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
   int32_t Right = 0;
   int32_t Bottom = 0;
 
-  const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
-  const bool HeightSet = Positions.find(WB_HEIGHT) != Positions.end();
-  const bool TopSet = Positions.find(WB_MARGIN_TOP) != Positions.end();
-  const bool LeftSet = Positions.find(WB_MARGIN_LEFT) != Positions.end();
-  const bool RightSet = Positions.find(WB_MARGIN_RIGHT) != Positions.end();
-  const bool BottomSet = Positions.find(WB_MARGIN_BOTTOM) != Positions.end();
+  const bool WidthSet =
+      Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
+  const bool HeightSet =
+      Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
+  const bool TopSet =
+      Positions.find(WBPOSITIONTYPE::WB_MARGIN_TOP) != Positions.end();
+  const bool LeftSet =
+      Positions.find(WBPOSITIONTYPE::WB_MARGIN_LEFT) != Positions.end();
+  const bool RightSet =
+      Positions.find(WBPOSITIONTYPE::WB_MARGIN_RIGHT) != Positions.end();
+  const bool BottomSet =
+      Positions.find(WBPOSITIONTYPE::WB_MARGIN_BOTTOM) != Positions.end();
 
   if (WidthSet) {
-    Width = static_cast<int32_t>(Positions[WB_WIDTH].GetValue(
+    Width = static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_WIDTH].GetValue(
         static_cast<float>(ParentSize.x), ContentSize.x));
   }
   if (HeightSet) {
-    Height = static_cast<int32_t>(Positions[WB_HEIGHT].GetValue(
+    Height = static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_HEIGHT].GetValue(
         static_cast<float>(ParentSize.y), ContentSize.y));
   }
   if (TopSet) {
-    Top = static_cast<int32_t>(
-        Positions[WB_MARGIN_TOP].GetValue(static_cast<float>(ParentSize.y), 0));
+    Top =
+        static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_MARGIN_TOP].GetValue(
+            static_cast<float>(ParentSize.y), 0));
   }
   if (LeftSet) {
-    Left = static_cast<int32_t>(Positions[WB_MARGIN_LEFT].GetValue(
-        static_cast<float>(ParentSize.x), 0));
+    Left =
+        static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_MARGIN_LEFT].GetValue(
+            static_cast<float>(ParentSize.x), 0));
   }
   if (RightSet) {
-    Right = static_cast<int32_t>(Positions[WB_MARGIN_RIGHT].GetValue(
-        static_cast<float>(ParentSize.x), 0));
+    Right = static_cast<int32_t>(
+        Positions[WBPOSITIONTYPE::WB_MARGIN_RIGHT].GetValue(
+            static_cast<float>(ParentSize.x), 0));
   }
   if (BottomSet) {
-    Bottom = static_cast<int32_t>(Positions[WB_MARGIN_BOTTOM].GetValue(
-        static_cast<float>(ParentSize.y), 0));
+    Bottom = static_cast<int32_t>(
+        Positions[WBPOSITIONTYPE::WB_MARGIN_BOTTOM].GetValue(
+            static_cast<float>(ParentSize.y), 0));
   }
 
   r.x1 = LeftSet ? Left : (ParentSize.x - (Right + Width));
@@ -111,19 +123,23 @@ CRect CWBPositionDescriptor::GetPadding(CSize ParentSize,
                                         const CRect& BorderSizes) {
   CRect r(0, 0, 0, 0);
 
-  r.x1 = static_cast<int32_t>(Positions[WB_PADDING_LEFT].GetValue(
-             static_cast<float>(ParentSize.x), 0)) +
-         BorderSizes.x1;
-  r.y1 = static_cast<int32_t>(Positions[WB_PADDING_TOP].GetValue(
-             static_cast<float>(ParentSize.y), 0)) +
-         BorderSizes.y1;
-  r.x2 = ParentSize.x -
-         static_cast<int32_t>(Positions[WB_PADDING_RIGHT].GetValue(
-             static_cast<float>(ParentSize.x), 0)) -
-         BorderSizes.x2;
+  r.x1 =
+      static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_PADDING_LEFT].GetValue(
+          static_cast<float>(ParentSize.x), 0)) +
+      BorderSizes.x1;
+  r.y1 =
+      static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_PADDING_TOP].GetValue(
+          static_cast<float>(ParentSize.y), 0)) +
+      BorderSizes.y1;
+  r.x2 =
+      ParentSize.x -
+      static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_PADDING_RIGHT].GetValue(
+          static_cast<float>(ParentSize.x), 0)) -
+      BorderSizes.x2;
   r.y2 = ParentSize.y -
-         static_cast<int32_t>(Positions[WB_PADDING_BOTTOM].GetValue(
-             static_cast<float>(ParentSize.y), 0)) -
+         static_cast<int32_t>(
+             Positions[WBPOSITIONTYPE::WB_PADDING_BOTTOM].GetValue(
+                 static_cast<float>(ParentSize.y), 0)) -
          BorderSizes.y2;
 
   return r;
@@ -144,35 +160,41 @@ void CWBPositionDescriptor::ClearMetrics(WBPOSITIONTYPE p) {
 }
 
 bool CWBPositionDescriptor::IsWidthSet() {
-  return Positions.find(WB_WIDTH) != Positions.end();
+  return Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
 }
 
 bool CWBPositionDescriptor::IsHeightSet() {
-  return Positions.find(WB_HEIGHT) != Positions.end();
+  return Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
 }
 
 int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize, CSize ContentSize) {
-  const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
+  const bool WidthSet =
+      Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
   if (WidthSet)
-    return static_cast<int32_t>(Positions[WB_WIDTH].GetValue(
+    return static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_WIDTH].GetValue(
         static_cast<float>(ParentSize.x), ContentSize.x));
   return 0;
 }
 
 int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
-  const bool HeightSet = Positions.find(WB_HEIGHT) != Positions.end();
+  const bool HeightSet =
+      Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
   if (HeightSet)
-    return static_cast<int32_t>(Positions[WB_HEIGHT].GetValue(
+    return static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_HEIGHT].GetValue(
         static_cast<float>(ParentSize.y), ContentSize.y));
   return 0;
 }
 
 bool CWBPositionDescriptor::IsAutoResizer() {
-  const bool WidthSet = Positions.find(WB_WIDTH) != Positions.end();
-  if (WidthSet && Positions[WB_WIDTH].IsAutoResizer()) return true;
+  const bool WidthSet =
+      Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
+  if (WidthSet && Positions[WBPOSITIONTYPE::WB_WIDTH].IsAutoResizer())
+    return true;
 
-  const bool HeightSet = Positions.find(WB_HEIGHT) != Positions.end();
-  if (HeightSet && Positions[WB_HEIGHT].IsAutoResizer()) return true;
+  const bool HeightSet =
+      Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
+  if (HeightSet && Positions[WBPOSITIONTYPE::WB_HEIGHT].IsAutoResizer())
+    return true;
 
   return false;
 }
@@ -192,36 +214,41 @@ CWBPositionDescriptorPixels::CWBPositionDescriptorPixels() {
 }
 
 void CWBPositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
-  if (static_cast<int32_t>(p) < 0 || p > WB_HEIGHT) return;
-  Positions[p] = Pixels;
-  Set[p] = true;
+  if (static_cast<int32_t>(p) < 0 || p > WBPOSITIONTYPE::WB_HEIGHT) return;
+  PositionsAt(p) = Pixels;
+  SetAt(p) = true;
 }
 
 FORCEINLINE CRect CWBPositionDescriptorPixels::GetPosition(CSize ParentSize) {
   CRect r(0, 0, 0, 0);
 
-  r.x1 =
-      Set[WB_MARGIN_LEFT]
-          ? Positions[WB_MARGIN_LEFT]
-          : (ParentSize.x - (Positions[WB_MARGIN_RIGHT] + Positions[WB_WIDTH]));
-  r.y1 = Set[WB_MARGIN_TOP] ? Positions[WB_MARGIN_TOP]
-                            : (ParentSize.y - (Positions[WB_MARGIN_BOTTOM] +
-                                               Positions[WB_HEIGHT]));
-  r.x2 = Set[WB_MARGIN_RIGHT]
-             ? (ParentSize.x - Positions[WB_MARGIN_RIGHT])
-             : (Positions[WB_MARGIN_LEFT] + Positions[WB_WIDTH]);
-  r.y2 = Set[WB_MARGIN_BOTTOM]
-             ? (ParentSize.y - Positions[WB_MARGIN_BOTTOM])
-             : (Positions[WB_MARGIN_TOP] + Positions[WB_HEIGHT]);
+  r.x1 = SetAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
+             ? PositionsAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
+             : (ParentSize.x - (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT) +
+                                PositionsAt(WBPOSITIONTYPE::WB_WIDTH)));
+  r.y1 = SetAt(WBPOSITIONTYPE::WB_MARGIN_TOP)
+             ? PositionsAt(WBPOSITIONTYPE::WB_MARGIN_TOP)
+             : (ParentSize.y - (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM) +
+                                PositionsAt(WBPOSITIONTYPE::WB_HEIGHT)));
+  r.x2 = SetAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT)
+             ? (ParentSize.x - PositionsAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT))
+             : (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_LEFT) +
+                PositionsAt(WBPOSITIONTYPE::WB_WIDTH));
+  r.y2 = SetAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM)
+             ? (ParentSize.y - PositionsAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM))
+             : (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_TOP) +
+                PositionsAt(WBPOSITIONTYPE::WB_HEIGHT));
 
-  if (!Set[WB_MARGIN_LEFT] && !Set[WB_MARGIN_RIGHT]) {
-    r.x1 = (ParentSize.x - Positions[WB_WIDTH]) / 2;
-    r.x2 = r.x1 + Positions[WB_WIDTH];
+  if (!SetAt(WBPOSITIONTYPE::WB_MARGIN_LEFT) &&
+      !SetAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT)) {
+    r.x1 = (ParentSize.x - PositionsAt(WBPOSITIONTYPE::WB_WIDTH)) / 2;
+    r.x2 = r.x1 + PositionsAt(WBPOSITIONTYPE::WB_WIDTH);
   }
 
-  if (!Set[WB_MARGIN_TOP] && !Set[WB_MARGIN_BOTTOM]) {
-    r.y1 = (ParentSize.y - Positions[WB_HEIGHT]) / 2;
-    r.y2 = r.y1 + Positions[WB_HEIGHT];
+  if (!SetAt(WBPOSITIONTYPE::WB_MARGIN_TOP) &&
+      !SetAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM)) {
+    r.y1 = (ParentSize.y - PositionsAt(WBPOSITIONTYPE::WB_HEIGHT)) / 2;
+    r.y2 = r.y1 + PositionsAt(WBPOSITIONTYPE::WB_HEIGHT);
   }
 
   return r;
@@ -434,22 +461,26 @@ CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
             if (keyvalue.size() > 1) value = Trim(keyvalue[1]);
 
             if (key == _T( "top" )) {
-              i.SetPositionValue(WB_MARGIN_TOP, std::stoi(value));
+              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_TOP,
+                                 std::stoi(value));
             }
             if (key == _T( "left" )) {
-              i.SetPositionValue(WB_MARGIN_LEFT, std::stoi(value));
+              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_LEFT,
+                                 std::stoi(value));
             }
             if (key == _T( "right" )) {
-              i.SetPositionValue(WB_MARGIN_RIGHT, std::stoi(value));
+              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_RIGHT,
+                                 std::stoi(value));
             }
             if (key == _T( "bottom" )) {
-              i.SetPositionValue(WB_MARGIN_BOTTOM, std::stoi(value));
+              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_BOTTOM,
+                                 std::stoi(value));
             }
             if (key == _T( "width" )) {
-              i.SetPositionValue(WB_WIDTH, std::stoi(value));
+              i.SetPositionValue(WBPOSITIONTYPE::WB_WIDTH, std::stoi(value));
             }
             if (key == _T( "height" )) {
-              i.SetPositionValue(WB_HEIGHT, std::stoi(value));
+              i.SetPositionValue(WBPOSITIONTYPE::WB_HEIGHT, std::stoi(value));
             }
 
             if (key == _T( "repeat-x" )) i.SetTiling(0, true);

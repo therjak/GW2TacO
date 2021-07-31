@@ -620,23 +620,21 @@ void CWBFont::ConvertToUppercase() {
 
 INLINE char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
                                         WBTEXTTRANSFORM Transform) {
-  if (Transform <= 0) return *CurrPos;
   switch (Transform) {
-    case WBTT_NONE:
+    default:
+    case WBTEXTTRANSFORM::WBTT_NONE:
       return *CurrPos;
       break;
-    case WBTT_CAPITALIZE:
+    case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
       if (Text == CurrPos || (CurrPos > Text && _istspace(*(CurrPos - 1))))
         return _totupper(*CurrPos);
       return _totlower(*CurrPos);
       break;
-    case WBTT_UPPERCASE:
+    case WBTEXTTRANSFORM::WBTT_UPPERCASE:
       return _totupper(*CurrPos);
       break;
-    case WBTT_LOWERCASE:
+    case WBTEXTTRANSFORM::WBTT_LOWERCASE:
       return _totlower(*CurrPos);
-      break;
-    default:
       break;
   }
   return 0;
@@ -648,24 +646,21 @@ INLINE uint16_t CWBFont::ApplyTextTransformUtf8(const char* Text,
                                                 WBTEXTTRANSFORM Transform) {
   uint32_t decoded = ReadUTF8Char(CurrPos);
 
-  if (Transform <= 0) return decoded;
-
   switch (Transform) {
-    case WBTT_NONE:
+    default:
+    case WBTEXTTRANSFORM::WBTT_NONE:
       return decoded;
       break;
-    case WBTT_CAPITALIZE:
+    case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
       if (Text == CurrPos || (CurrPos > Text && _istspace(*(CurrPos - 1))))
         return _totupper(decoded);
       return _totlower(decoded);
       break;
-    case WBTT_UPPERCASE:
+    case WBTEXTTRANSFORM::WBTT_UPPERCASE:
       return _totupper(decoded);
       break;
-    case WBTT_LOWERCASE:
+    case WBTEXTTRANSFORM::WBTT_LOWERCASE:
       return _totlower(decoded);
-      break;
-    default:
       break;
   }
   return 0;
@@ -692,11 +687,12 @@ CPoint CWBFont::GetTextPosition(std::string_view String, const CRect& Container,
   int32_t Width = GetWidth(String, false, Transform, DoKerning);
   int32_t Height = GetLineHeight();
 
-  if (XAlign == WBTA_CENTERX)
+  if (XAlign == WBTEXTALIGNMENTX::WBTA_CENTERX)
     p.x = GetCenterWidth(Container.x1, Container.x2, String, Transform);
-  if (XAlign == WBTA_RIGHT) p.x = Container.x2 - Width;
-  if (YAlign == WBTA_CENTERY) p.y = GetCenterHeight(Container.y1, Container.y2);
-  if (YAlign == WBTA_BOTTOM) p.y = Container.y2 - Height;
+  if (XAlign == WBTEXTALIGNMENTX::WBTA_RIGHT) p.x = Container.x2 - Width;
+  if (YAlign == WBTEXTALIGNMENTY::WBTA_CENTERY)
+    p.y = GetCenterHeight(Container.y1, Container.y2);
+  if (YAlign == WBTEXTALIGNMENTY::WBTA_BOTTOM) p.y = Container.y2 - Height;
 
   return p;
 }

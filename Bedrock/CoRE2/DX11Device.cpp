@@ -1073,7 +1073,7 @@ void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
   auto dummy = std::make_unique<CCoreDX11Texture2D>(this);
   dummy->SetTextureHandle(bb);
 
-  dummy->ExportToImage(Filename, true, CORE_PNG, false);
+  dummy->ExportToImage(Filename, true, EXPORTIMAGEFORMAT::CORE_PNG, false);
 
   dummy->SetTextureHandle(nullptr);
   dummy->SetView(nullptr);

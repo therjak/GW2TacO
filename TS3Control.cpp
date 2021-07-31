@@ -47,7 +47,9 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
           handler.Clients.find(handler.myclientid) != handler.Clients.end()) {
         CPoint p = f->GetTextPosition(
             handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
-            LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
+            LeftAlign ? WBTEXTALIGNMENTX::WBTA_LEFT
+                      : WBTEXTALIGNMENTX::WBTA_RIGHT,
+            WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_NONE, true);
         if (cnt) f->Write(API, handler.name, p);
         ypos += f->GetLineHeight();
 
@@ -66,7 +68,9 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
 
           CPoint p = f->GetTextPosition(
               channelText, GetClientRect() - CRect(size / 2, ypos, 0, 0),
-              LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
+              LeftAlign ? WBTEXTALIGNMENTX::WBTA_LEFT
+                        : WBTEXTALIGNMENTX::WBTA_RIGHT,
+              WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_NONE, true);
           if (cnt) f->Write(API, channelText, p);
           ypos += f->GetLineHeight();
         }
@@ -101,7 +105,9 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
 
             CPoint p = f->GetTextPosition(
                 cl->name, GetClientRect() - CRect(2 * size, ypos, 2 * size, 0),
-                LeftAlign ? WBTA_LEFT : WBTA_RIGHT, WBTA_TOP, WBTT_NONE, true);
+                LeftAlign ? WBTEXTALIGNMENTX::WBTA_LEFT
+                          : WBTEXTALIGNMENTX::WBTA_RIGHT,
+                WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_NONE, true);
 
             if (cnt) f->Write(API, cl->name, p);
 

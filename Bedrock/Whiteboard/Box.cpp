@@ -12,12 +12,12 @@ CWBBox::CWBBox(CWBItem* Parent, const CRect& Pos) : CWBItem() {
 CWBBox::~CWBBox() = default;
 
 bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
-  Arrangement = WB_ARRANGE_NONE;
+  Arrangement = WBBOXARRANGEMENT::WB_ARRANGE_NONE;
   Spacing = 0;
   AlignmentX = WB_ALIGN_LEFT;
   AlignmentY = WB_ALIGN_TOP;
-  SizingX = WB_SIZING_KEEP;
-  SizingY = WB_SIZING_KEEP;
+  SizingX = WBBOXSIZING::WB_SIZING_KEEP;
+  SizingY = WBBOXSIZING::WB_SIZING_KEEP;
 
   if (!CWBItem::Initialize(Parent, Position)) return false;
   return true;
@@ -79,17 +79,19 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
       CWBItem* i = App->FindItemByGuid(Message.GetTarget());
 
       if (i && i->GetParent() == this) {
-        if (Arrangement == WB_ARRANGE_NONE) break;  // do nothing here
+        if (Arrangement == WBBOXARRANGEMENT::WB_ARRANGE_NONE) {
+          break;  // do nothing here
+        }
 
         CRect r = Message.Rectangle;
         CRect o = i->GetPosition();
 
-        if (SizingX == WB_SIZING_FILL) {
+        if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
           r.x1 = o.x1;
           r.x2 = o.x2;
         }
 
-        if (SizingY == WB_SIZING_FILL) {
+        if (SizingY == WBBOXSIZING::WB_SIZING_FILL) {
           r.y1 = o.y1;
           r.y2 = o.y2;
         }
@@ -140,7 +142,7 @@ void CWBBox::RearrangeHorizontal() {
   for (uint32_t x = 0; x < NumChildren(); x++) {
     CRect ChildPosition = GetChild(x)->GetPosition();
 
-    if (SizingX == WB_SIZING_FILL) {
+    if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
       if (!GetChild(x)->IsWidthSet()) {
         ChildPosition.x1 = pos;
         Excess += itemsizes;
@@ -159,7 +161,7 @@ void CWBBox::RearrangeHorizontal() {
       ChildPosition.x2 = pos + posw;
     }
 
-    if (SizingY == WB_SIZING_FILL) {
+    if (SizingY == WBBOXSIZING::WB_SIZING_FILL) {
       ChildPosition.y1 = 0;
       ChildPosition.y2 = GetClientRect().Height();
     }
@@ -213,12 +215,12 @@ void CWBBox::RearrangeVertical() {
   for (uint32_t x = 0; x < NumChildren(); x++) {
     CRect ChildPosition = GetChild(x)->GetPosition();
 
-    if (SizingX == WB_SIZING_FILL) {
+    if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
       ChildPosition.x1 = 0;
       ChildPosition.x2 = GetClientRect().Width();
     }
 
-    if (SizingY == WB_SIZING_FILL) {
+    if (SizingY == WBBOXSIZING::WB_SIZING_FILL) {
       if (!GetChild(x)->IsHeightSet()) {
         ChildPosition.y1 = pos;
         Excess += itemsizes;
@@ -257,12 +259,12 @@ void CWBBox::RearrangeVertical() {
 
 void CWBBox::RearrangeChildren() {
   switch (Arrangement) {
-    case WB_ARRANGE_NONE:
+    case WBBOXARRANGEMENT::WB_ARRANGE_NONE:
       break;
-    case WB_ARRANGE_HORIZONTAL:
+    case WBBOXARRANGEMENT::WB_ARRANGE_HORIZONTAL:
       RearrangeHorizontal();
       break;
-    case WB_ARRANGE_VERTICAL:
+    case WBBOXARRANGEMENT::WB_ARRANGE_VERTICAL:
       RearrangeVertical();
       break;
   }
@@ -293,15 +295,15 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == _T( "child-layout" )) {
     if (value == _T( "none" )) {
-      SetArrangement(WB_ARRANGE_NONE);
+      SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_NONE);
       return true;
     }
     if (value == _T( "horizontal" )) {
-      SetArrangement(WB_ARRANGE_HORIZONTAL);
+      SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_HORIZONTAL);
       return true;
     }
     if (value == _T( "vertical" )) {
-      SetArrangement(WB_ARRANGE_VERTICAL);
+      SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_VERTICAL);
       return true;
     }
     LOG_WARN(
@@ -319,15 +321,15 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == _T( "child-align-x" )) {
     if (value == _T( "left" )) {
-      SetAlignment(WB_HORIZONTAL, WB_ALIGN_LEFT);
+      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_LEFT);
       return true;
     }
     if (value == _T( "right" )) {
-      SetAlignment(WB_HORIZONTAL, WB_ALIGN_RIGHT);
+      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_RIGHT);
       return true;
     }
     if (value == _T( "center" )) {
-      SetAlignment(WB_HORIZONTAL, WB_ALIGN_CENTER);
+      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_CENTER);
       return true;
     }
 
@@ -340,15 +342,15 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == _T( "child-align-y" )) {
     if (value == _T( "top" )) {
-      SetAlignment(WB_VERTICAL, WB_ALIGN_TOP);
+      SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_TOP);
       return true;
     }
     if (value == _T( "bottom" )) {
-      SetAlignment(WB_VERTICAL, WB_ALIGN_BOTTOM);
+      SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_BOTTOM);
       return true;
     }
     if (value == _T( "center" )) {
-      SetAlignment(WB_VERTICAL, WB_ALIGN_CENTER);
+      SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_CENTER);
       return true;
     }
 
@@ -361,11 +363,11 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == _T( "child-fill-x" )) {
     if (value == _T( "false" )) {
-      SetSizing(WB_HORIZONTAL, WB_SIZING_KEEP);
+      SetSizing(WBBOXAXIS::WB_HORIZONTAL, WBBOXSIZING::WB_SIZING_KEEP);
       return true;
     }
     if (value == _T( "true" )) {
-      SetSizing(WB_HORIZONTAL, WB_SIZING_FILL);
+      SetSizing(WBBOXAXIS::WB_HORIZONTAL, WBBOXSIZING::WB_SIZING_FILL);
       return true;
     }
 
@@ -377,11 +379,11 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == _T( "child-fill-y" )) {
     if (value == _T( "false" )) {
-      SetSizing(WB_VERTICAL, WB_SIZING_KEEP);
+      SetSizing(WBBOXAXIS::WB_VERTICAL, WBBOXSIZING::WB_SIZING_KEEP);
       return true;
     }
     if (value == _T( "true" )) {
-      SetSizing(WB_VERTICAL, WB_SIZING_FILL);
+      SetSizing(WBBOXAXIS::WB_VERTICAL, WBBOXSIZING::WB_SIZING_FILL);
       return true;
     }
 
@@ -400,14 +402,14 @@ bool CWBBox::IsMouseTransparent(const CPoint& ClientSpacePoint,
 }
 
 void CWBBox::SetAlignment(WBBOXAXIS axis, WBALIGNMENT align) {
-  if (axis == WB_HORIZONTAL) AlignmentX = align;
-  if (axis == WB_VERTICAL) AlignmentY = align;
+  if (axis == WBBOXAXIS::WB_HORIZONTAL) AlignmentX = align;
+  if (axis == WBBOXAXIS::WB_VERTICAL) AlignmentY = align;
   RearrangeChildren();
 }
 
 void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
-  if (axis == WB_HORIZONTAL) SizingX = siz;
-  if (axis == WB_VERTICAL) SizingY = siz;
+  if (axis == WBBOXAXIS::WB_HORIZONTAL) SizingX = siz;
+  if (axis == WBBOXAXIS::WB_VERTICAL) SizingY = siz;
   RearrangeChildren();
 }
 

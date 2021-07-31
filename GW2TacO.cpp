@@ -1681,15 +1681,16 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     }
 
     CPoint startpos = font->GetTextPosition(
-        infoline, GetClientRect(), WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE);
+        infoline, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+        WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_UPPERCASE);
 
     for (int x = 0; x < 3; x++)
       for (int y = 0; y < 3; y++)
         font->Write(API, infoline, startpos + CPoint(x - 1, y - 1),
-                    CColor{0xff000000}, WBTT_UPPERCASE, true);
+                    CColor{0xff000000}, WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
 
-    font->Write(API, infoline, startpos, CColor{0xffffffff}, WBTT_UPPERCASE,
-                true);
+    font->Write(API, infoline, startpos, CColor{0xffffffff},
+                WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
   }
 
@@ -1700,15 +1701,16 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
     auto infoline = DICT("multiclientwarning");
     CPoint spos2 = font->GetTextPosition(
-        infoline, GetClientRect(), WBTA_CENTERX, WBTA_TOP, WBTT_UPPERCASE);
+        infoline, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+        WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_UPPERCASE);
 
     for (int x = 0; x < 3; x++)
       for (int y = 0; y < 3; y++)
         font->Write(API, infoline, CPoint(spos2.x + x - 1, ypos + y - 1),
-                    CColor{0xff000000}, WBTT_UPPERCASE, true);
+                    CColor{0xff000000}, WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
 
     font->Write(API, infoline, CPoint(spos2.x, ypos), CColor{0xffff4040},
-                WBTT_UPPERCASE, true);
+                WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
   }
 
@@ -1745,12 +1747,15 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     }
     auto line2 = DICT("press_to_bind");
     auto line3 = DICT("escape_to_unbind");
-    CPoint line1p = f->GetTextPosition(line1, GetClientRect(), WBTA_CENTERX,
-                                       WBTA_CENTERY, WBTT_NONE, true);
-    CPoint line2p = f->GetTextPosition(line2, GetClientRect(), WBTA_CENTERX,
-                                       WBTA_CENTERY, WBTT_NONE, true);
-    CPoint line3p = f->GetTextPosition(line3, GetClientRect(), WBTA_CENTERX,
-                                       WBTA_CENTERY, WBTT_NONE, true);
+    CPoint line1p = f->GetTextPosition(
+        line1, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+        WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
+    CPoint line2p = f->GetTextPosition(
+        line2, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+        WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
+    CPoint line3p = f->GetTextPosition(
+        line3, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+        WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
     f->Write(API, line1, line1p - CPoint(0, f->GetLineHeight() / 2));
     f->Write(API, line2,
              line2p - CPoint(0, f->GetLineHeight() / 2) +
@@ -1767,16 +1772,19 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     auto line1 = DICT("enter_api") + " " +
                  DICT(APIKeyNames[(int32_t)ApiKeyToSet]) + " " +
                  DICT("below_and_press");
-    CPoint line1p = f->GetTextPosition(line1, GetClientRect(), WBTA_CENTERX,
-                                       WBTA_CENTERY, WBTT_NONE, true);
+    CPoint line1p = f->GetTextPosition(
+        line1, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+        WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
 
     if (ApiKeyToSet == APIKeys::TS3APIKey) {
       auto line2 = DICT("ts3_help_1");
       auto line3 = DICT("ts3_help_2");
-      CPoint line2p = f->GetTextPosition(line2, GetClientRect(), WBTA_CENTERX,
-                                         WBTA_CENTERY, WBTT_NONE, true);
-      CPoint line3p = f->GetTextPosition(line3, GetClientRect(), WBTA_CENTERX,
-                                         WBTA_CENTERY, WBTT_NONE, true);
+      CPoint line2p = f->GetTextPosition(
+          line2, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+          WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
+      CPoint line3p = f->GetTextPosition(
+          line3, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+          WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
 
       f->Write(API, line2,
                line2p - CPoint(0, f->GetLineHeight() / 2) +
@@ -1789,10 +1797,12 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     if (ApiKeyToSet == APIKeys::GW2APIKey) {
       auto line2 = DICT("gw2_api_help_1");
       std::string_view line3("https://account.arena.net/applications");
-      CPoint line2p = f->GetTextPosition(line2, GetClientRect(), WBTA_CENTERX,
-                                         WBTA_CENTERY, WBTT_NONE, true);
-      CPoint line3p = f->GetTextPosition(line3, GetClientRect(), WBTA_CENTERX,
-                                         WBTA_CENTERY, WBTT_NONE, true);
+      CPoint line2p = f->GetTextPosition(
+          line2, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+          WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
+      CPoint line3p = f->GetTextPosition(
+          line3, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
+          WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE, true);
 
       f->Write(API, line2,
                line2p - CPoint(0, f->GetLineHeight() / 2) +

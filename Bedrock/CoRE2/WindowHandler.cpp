@@ -166,14 +166,18 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
 
   FORCEDDEBUGLOG("window set to foreground etc");
 
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_ARROW));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_CROSS));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZEWE));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZENS));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZENESW));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_SIZENWSE));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_IBEAM));
-  MouseCursors.push_back(LoadCursor(nullptr, IDC_WAIT));
+  MouseCursorsAt(COREMOUSECURSOR::CM_ARROW) = (LoadCursor(nullptr, IDC_ARROW));
+  MouseCursorsAt(COREMOUSECURSOR::CM_CROSS) = (LoadCursor(nullptr, IDC_CROSS));
+  MouseCursorsAt(COREMOUSECURSOR::CM_SIZEWE) =
+      (LoadCursor(nullptr, IDC_SIZEWE));
+  MouseCursorsAt(COREMOUSECURSOR::CM_SIZENS) =
+      (LoadCursor(nullptr, IDC_SIZENS));
+  MouseCursorsAt(COREMOUSECURSOR::CM_SIZENESW) =
+      (LoadCursor(nullptr, IDC_SIZENESW));
+  MouseCursorsAt(COREMOUSECURSOR::CM_SIZENWSE) =
+      (LoadCursor(nullptr, IDC_SIZENWSE));
+  MouseCursorsAt(COREMOUSECURSOR::CM_TEXT) = (LoadCursor(nullptr, IDC_IBEAM));
+  MouseCursorsAt(COREMOUSECURSOR::CM_WAIT) = (LoadCursor(nullptr, IDC_WAIT));
 
   FORCEDDEBUGLOG("mouse cursors loaded");
 
@@ -412,7 +416,7 @@ void CCoreWindowHandlerWin::FinalizeMouseCursor() {
   GetClientRect(hWnd, &ClientRect);
 
   if (CRect(0, 0, ClientRect.right, ClientRect.bottom).Contains(mp))
-    SetCursor(MouseCursors[CurrentMouseCursor]);
+    SetCursor(MouseCursorsAt(CurrentMouseCursor));
 }
 
 void CCoreWindowHandlerWin::SetWindowTitle(std::string_view Title) {

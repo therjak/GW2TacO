@@ -121,7 +121,8 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
 
       CPoint pos = f->GetTextPosition(
           s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
-          WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE, true);
+          WBTEXTALIGNMENTX::WBTA_CENTERX, WBTEXTALIGNMENTY::WBTA_CENTERY,
+          WBTEXTTRANSFORM::WBTT_NONE, true);
       ypos += f->GetLineHeight();
       f->Write(API, s, pos);
     }

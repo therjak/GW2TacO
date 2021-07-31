@@ -26,8 +26,8 @@ void CWBDrawAPI::AddDisplayRect(
 
   if (!CropRect.Intersects(rect)) return;
 
-  if (DrawMode != WBD_RECTANGLES) RenderDisplayList();
-  DrawMode = WBD_RECTANGLES;
+  if (DrawMode != WBDRAWMODE::WBD_RECTANGLES) RenderDisplayList();
+  DrawMode = WBDRAWMODE::WBD_RECTANGLES;
 
   float u1f = u1;
   float v1f = v1;
@@ -79,9 +79,9 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
   Area.Normalize();
   const CRect rArea = CropRect | Area;
   if (rArea.Width() < 0 || rArea.Height() < 0) return;
-  if (DrawMode != WBD_LINES) RenderDisplayList();
+  if (DrawMode != WBDRAWMODE::WBD_LINES) RenderDisplayList();
 
-  DrawMode = WBD_LINES;
+  DrawMode = WBDRAWMODE::WBD_LINES;
 
   float t1 = 0;
   float t2 = 0;
@@ -132,8 +132,8 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
 
   if (!CropRect.Intersects(rect)) return;
 
-  if (DrawMode != WBD_RECTANGLES) RenderDisplayList();
-  DrawMode = WBD_RECTANGLES;
+  if (DrawMode != WBDRAWMODE::WBD_RECTANGLES) RenderDisplayList();
+  DrawMode = WBDRAWMODE::WBD_RECTANGLES;
 
   float u1f = u1;
   float v1f = v1;
@@ -266,8 +266,8 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
   Bound |= CropRect | Bound;
   if (Bound.Width() <= 0 || Bound.Height() <= 0) return;
 
-  if (DrawMode != WBD_TRIANGLES) RenderDisplayList();
-  DrawMode = WBD_TRIANGLES;
+  if (DrawMode != WBDRAWMODE::WBD_TRIANGLES) RenderDisplayList();
+  DrawMode = WBDRAWMODE::WBD_TRIANGLES;
 
   // max vertex count is 6, when all triangle edges are cut
   WBGUIVERTEX Vertices[6];
@@ -336,19 +336,19 @@ void CWBDrawAPI::RenderDisplayList() {
     }
 
     switch (DrawMode) {
-      case WBD_RECTANGLES:
+      case WBDRAWMODE::WBD_RECTANGLES:
         if (!Device->DrawIndexedTriangles(Count / 2, Count)) {
           LOG_ERR("[gui] Error drawing UI Triangles (%d %d)", Count / 2, Count);
           return;
         }
         break;
-      case WBD_LINES:
+      case WBDRAWMODE::WBD_LINES:
         if (!Device->DrawLines(Count / 2)) {
           LOG_ERR("[gui] Error drawing UI Lines (%d)", Count / 2);
           return;
         }
         break;
-      case WBD_TRIANGLES:
+      case WBDRAWMODE::WBD_TRIANGLES:
         if (!Device->DrawTriangles(Count / 3)) {
           LOG_ERR("[gui] Error drawing UI Triangles (%d)", Count / 3);
           return;
@@ -367,7 +367,7 @@ void CWBDrawAPI::RenderDisplayList() {
 CWBDrawAPI::CWBDrawAPI() {
   Offset = CPoint(0, 0);
   CropRect = CRect(0, 0, 0, 0);
-  DrawMode = WBD_RECTANGLES;
+  DrawMode = WBDRAWMODE::WBD_RECTANGLES;
   Atlas = nullptr;
 
   App = nullptr;

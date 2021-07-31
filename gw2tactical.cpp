@@ -645,8 +645,10 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                wvwObjectives[poi.wvwObjectiveID].name.c_str());
 
     if (!wvwObjectiveName.empty()) {
-      p = f->GetTextPosition(wvwObjectiveName, rect, WBTA_CENTERX, WBTA_TOP,
-                             WBTT_UPPERCASE, false) -
+      p = f->GetTextPosition(wvwObjectiveName, rect,
+                             WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             WBTEXTALIGNMENTY::WBTA_TOP,
+                             WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
           CPoint(0, f->GetLineHeight());
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
@@ -654,11 +656,11 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
-                   WBTT_UPPERCASE, false);
+                   WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
       f->Write(API, wvwObjectiveName, p,
                CColor(255, 255, 0,
                       uint8_t(255 * alphaMultiplier * mapFade * globalOpacity)),
-               WBTT_UPPERCASE, false);
+               WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
     }
   }
 
@@ -696,8 +698,9 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                               true, col);
       }
 
-      p = f->GetTextPosition(txt, rect, WBTA_CENTERX, WBTA_BOTTOM, WBTT_NONE,
-                             false) +
+      p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             WBTEXTALIGNMENTY::WBTA_BOTTOM,
+                             WBTEXTTRANSFORM::WBTT_NONE, false) +
           CPoint(0, f->GetLineHeight() + offset);
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
@@ -705,18 +708,19 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
-                   WBTT_NONE, false);
+                   WBTEXTTRANSFORM::WBTT_NONE, false);
       f->Write(API, txt, p,
                CColor(255, 255, 0,
                       uint8_t(255 * alphaMultiplier * mapFade * globalOpacity)),
-               WBTT_NONE, false);
+               WBTEXTTRANSFORM::WBTT_NONE, false);
     } else {
-      p = f->GetTextPosition(txt, rect, WBTA_CENTERX, WBTA_CENTERY, WBTT_NONE,
-                             false);
+      p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             WBTEXTALIGNMENTY::WBTA_CENTERY,
+                             WBTEXTTRANSFORM::WBTT_NONE, false);
       p.y += offset;
       f->Write(API, txt, p,
                CColor(255, 255, 0, uint8_t(255 * mapFade * globalOpacity)),
-               WBTT_NONE, false);
+               WBTEXTTRANSFORM::WBTT_NONE, false);
     }
   }
 
@@ -737,8 +741,9 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
         txt = FormatString("%.1fm", charDist);
       }
 
-      p = f->GetTextPosition(txt, rect, WBTA_CENTERX, WBTA_BOTTOM, WBTT_NONE,
-                             false) +
+      p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             WBTEXTALIGNMENTY::WBTA_BOTTOM,
+                             WBTEXTTRANSFORM::WBTT_NONE, false) +
           CPoint(0, f->GetLineHeight());
 
       for (int32_t x = 0; x < 3; x++)
@@ -747,12 +752,12 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                    CColor(0, 0, 0,
                           uint8_t(255 * Alpha * alphaMultiplier *
                                   globalOpacity * mapFade / 2.0f)),
-                   WBTT_NONE, false);
+                   WBTEXTTRANSFORM::WBTT_NONE, false);
       f->Write(API, txt, p,
                CColor(255, 255, 255,
                       uint8_t(255 * Alpha * alphaMultiplier * mapFade *
                               globalOpacity)),
-               WBTT_NONE, false);
+               WBTEXTTRANSFORM::WBTT_NONE, false);
     }
   }
 }

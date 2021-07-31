@@ -345,13 +345,13 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
   }
 
   switch (Format) {
-    case CORE_PNG:
+    case EXPORTIMAGEFORMAT::CORE_PNG:
       ExportPNG(image.get(), head.dwWidth, head.dwHeight, ClearAlpha, Filename);
       break;
-    case CORE_TGA:
+    case EXPORTIMAGEFORMAT::CORE_TGA:
       ExportTga(image.get(), head.dwWidth, head.dwHeight, ClearAlpha, Filename);
       break;
-    case CORE_BMP:
+    case EXPORTIMAGEFORMAT::CORE_BMP:
       ExportBmp(image.get(), head.dwWidth, head.dwHeight, Filename);
       break;
     default:

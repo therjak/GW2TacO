@@ -1,21 +1,22 @@
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 #include "Application.h"
 
-enum WBBOXAXIS {
+enum class WBBOXAXIS : uint8_t {
   WB_HORIZONTAL = 0,
   WB_VERTICAL,
 };
 
-enum WBBOXARRANGEMENT {
+enum class WBBOXARRANGEMENT : uint8_t {
   WB_ARRANGE_NONE = 0,
   WB_ARRANGE_HORIZONTAL,
   WB_ARRANGE_VERTICAL
 };
 
-enum WBBOXSIZING {
+enum class WBBOXSIZING : uint8_t {
   WB_SIZING_KEEP = 0,
   WB_SIZING_FILL,
 };

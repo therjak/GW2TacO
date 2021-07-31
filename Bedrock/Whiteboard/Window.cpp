@@ -128,15 +128,15 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
   if (!border) border = GetBorderSelectionArea(App->GetMousePos());
 
   if ((border & WB_DRAGMODE_LEFT) || (border & WB_DRAGMODE_RIGHT))
-    App->SelectMouseCursor(CM_SIZEWE);
+    App->SelectMouseCursor(COREMOUSECURSOR::CM_SIZEWE);
   if ((border & WB_DRAGMODE_TOP) || (border & WB_DRAGMODE_BOTTOM))
-    App->SelectMouseCursor(CM_SIZENS);
+    App->SelectMouseCursor(COREMOUSECURSOR::CM_SIZENS);
   if (((border & WB_DRAGMODE_LEFT) && (border & WB_DRAGMODE_TOP)) ||
       ((border & WB_DRAGMODE_RIGHT) && (border & WB_DRAGMODE_BOTTOM)))
-    App->SelectMouseCursor(CM_SIZENWSE);
+    App->SelectMouseCursor(COREMOUSECURSOR::CM_SIZENWSE);
   if (((border & WB_DRAGMODE_LEFT) && (border & WB_DRAGMODE_BOTTOM)) ||
       ((border & WB_DRAGMODE_RIGHT) && (border & WB_DRAGMODE_TOP)))
-    App->SelectMouseCursor(CM_SIZENESW);
+    App->SelectMouseCursor(COREMOUSECURSOR::CM_SIZENESW);
 }
 
 CWBWindow::CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt,
@@ -160,10 +160,12 @@ bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position,
   MinSize = CSize(CornerSelectionSize * 2 + 1, CornerSelectionSize * 2 + 1);
   auto& element = Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
   auto& pdescriptor = element.PositionDescriptor;
-  pdescriptor.SetMetric(WB_MARGIN_TOP, WB_PIXELS, 3);
-  pdescriptor.SetMetric(WB_MARGIN_RIGHT, WB_PIXELS, 3);
-  pdescriptor.SetMetric(WB_WIDTH, WB_PIXELS, 11);
-  pdescriptor.SetMetric(WB_HEIGHT, WB_PIXELS, 11);
+  pdescriptor.SetMetric(WBPOSITIONTYPE::WB_MARGIN_TOP, WBMETRICTYPE::WB_PIXELS,
+                        3);
+  pdescriptor.SetMetric(WBPOSITIONTYPE::WB_MARGIN_RIGHT,
+                        WBMETRICTYPE::WB_PIXELS, 3);
+  pdescriptor.SetMetric(WBPOSITIONTYPE::WB_WIDTH, WBMETRICTYPE::WB_PIXELS, 11);
+  pdescriptor.SetMetric(WBPOSITIONTYPE::WB_HEIGHT, WBMETRICTYPE::WB_PIXELS, 11);
   auto& ddescriptor = element.DisplayDescriptor;
   ddescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR, 0xff2d2d30);
   ddescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR, 0xff1c97ea);

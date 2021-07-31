@@ -87,8 +87,8 @@ int32_t CWBDisplayProperties::GetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
 
 CWBCSSPropertyBatch::CWBCSSPropertyBatch() {
   BorderSizes = CRect(0, 0, 0, 0);
-  TextAlignX = WBTA_CENTERX;
-  TextAlignY = WBTA_CENTERY;
+  TextAlignX = WBTEXTALIGNMENTX::WBTA_CENTERX;
+  TextAlignY = WBTEXTALIGNMENTY::WBTA_CENTERY;
 }
 
 CWBFont* CWBCSSPropertyBatch::GetFont(CWBApplication* App, WBITEMSTATE State) {
@@ -745,17 +745,17 @@ void CWBItem::SetPosition(const CRect& Pos) {
 void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
                                int32_t bottom) {
   if (left != WBMARGIN_KEEP)
-    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_LEFT, 0,
-                                              static_cast<float>(left));
+    CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_LEFT,
+                                              0, static_cast<float>(left));
   if (right != WBMARGIN_KEEP)
-    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_RIGHT, 0,
-                                              static_cast<float>(right));
+    CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_RIGHT,
+                                              0, static_cast<float>(right));
   if (top != WBMARGIN_KEEP)
-    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_TOP, 0,
+    CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_TOP, 0,
                                               static_cast<float>(top));
   if (bottom != WBMARGIN_KEEP)
-    CSSProperties.PositionDescriptor.SetValue(WB_PADDING_BOTTOM, 0,
-                                              static_cast<float>(bottom));
+    CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_BOTTOM,
+                                              0, static_cast<float>(bottom));
 
   CalculateClientPosition();
 }
@@ -1351,68 +1351,86 @@ bool CWBItem::InterpretPositionString(CWBCSSPropertyBatch& props,
                                       std::string_view value,
                                       const std::vector<std::string>& pseudo) {
   if (prop == _T( "left" )) {
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_LEFT, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_LEFT,
+                       value);
     return true;
   }
 
   if (prop == _T( "right" )) {
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_RIGHT, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_MARGIN_RIGHT, value);
     return true;
   }
 
   if (prop == _T( "top" )) {
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_TOP, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_TOP,
+                       value);
     return true;
   }
 
   if (prop == _T( "bottom" )) {
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_BOTTOM, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_MARGIN_BOTTOM, value);
     return true;
   }
 
   if (prop == _T( "width" )) {
-    PositionApplicator(props.PositionDescriptor, WB_WIDTH, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_WIDTH,
+                       value);
     return true;
   }
 
   if (prop == _T( "height" )) {
-    PositionApplicator(props.PositionDescriptor, WB_HEIGHT, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_HEIGHT,
+                       value);
     return true;
   }
 
   if (prop == _T( "padding-left" )) {
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_LEFT, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_PADDING_LEFT, value);
     return true;
   }
 
   if (prop == _T( "padding-right" )) {
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_RIGHT, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_PADDING_RIGHT, value);
     return true;
   }
 
   if (prop == _T( "padding-top" )) {
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_TOP, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_PADDING_TOP,
+                       value);
     return true;
   }
 
   if (prop == _T( "padding-bottom" )) {
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_BOTTOM, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_PADDING_BOTTOM, value);
     return true;
   }
 
   if (prop == _T( "margin" )) {
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_LEFT, value);
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_RIGHT, value);
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_TOP, value);
-    PositionApplicator(props.PositionDescriptor, WB_MARGIN_BOTTOM, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_LEFT,
+                       value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_MARGIN_RIGHT, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_TOP,
+                       value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_MARGIN_BOTTOM, value);
     return true;
   }
 
   if (prop == _T( "padding" )) {
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_LEFT, value);
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_RIGHT, value);
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_TOP, value);
-    PositionApplicator(props.PositionDescriptor, WB_PADDING_BOTTOM, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_PADDING_LEFT, value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_PADDING_RIGHT, value);
+    PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_PADDING_TOP,
+                       value);
+    PositionApplicator(props.PositionDescriptor,
+                       WBPOSITIONTYPE::WB_PADDING_BOTTOM, value);
     return true;
   }
 
@@ -1753,16 +1771,20 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
   if (prop == _T( "text-transform" )) {
     if (value == (_T( "none" )))
       VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
-                            WBTT_NONE, pseudo);
+                            static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_NONE),
+                            pseudo);
     if (value == (_T( "capitalize" )))
-      VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
-                            WBTT_CAPITALIZE, pseudo);
+      VisualStyleApplicator(
+          props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
+          static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_CAPITALIZE), pseudo);
     if (value == (_T( "uppercase" )))
-      VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
-                            WBTT_UPPERCASE, pseudo);
+      VisualStyleApplicator(
+          props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
+          static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_UPPERCASE), pseudo);
     if (value == (_T( "lowercase" )))
-      VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
-                            WBTT_LOWERCASE, pseudo);
+      VisualStyleApplicator(
+          props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
+          static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_LOWERCASE), pseudo);
 
     return true;
   }
@@ -1799,16 +1821,19 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
   }
 
   if (prop == _T( "text-align" )) {
-    if (value == _T( "left" )) props.TextAlignX = WBTA_LEFT;
-    if (value == _T( "center" )) props.TextAlignX = WBTA_CENTERX;
-    if (value == _T( "right" )) props.TextAlignX = WBTA_RIGHT;
+    if (value == _T( "left" )) props.TextAlignX = WBTEXTALIGNMENTX::WBTA_LEFT;
+    if (value == _T( "center" ))
+      props.TextAlignX = WBTEXTALIGNMENTX::WBTA_CENTERX;
+    if (value == _T( "right" )) props.TextAlignX = WBTEXTALIGNMENTX::WBTA_RIGHT;
     return true;
   }
 
   if (prop == _T( "vertical-align" )) {
-    if (value == _T( "top" )) props.TextAlignY = WBTA_TOP;
-    if (value == _T( "middle" )) props.TextAlignY = WBTA_CENTERY;
-    if (value == _T( "bottom" )) props.TextAlignY = WBTA_BOTTOM;
+    if (value == _T( "top" )) props.TextAlignY = WBTEXTALIGNMENTY::WBTA_TOP;
+    if (value == _T( "middle" ))
+      props.TextAlignY = WBTEXTALIGNMENTY::WBTA_CENTERY;
+    if (value == _T( "bottom" ))
+      props.TextAlignY = WBTEXTALIGNMENTY::WBTA_BOTTOM;
     return true;
   }
 
@@ -1919,7 +1944,7 @@ bool CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
 
 void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
                                  WBPOSITIONTYPE Type, std::string_view value) {
-  if (Type == WB_WIDTH || Type == WB_HEIGHT) {
+  if (Type == WBPOSITIONTYPE::WB_WIDTH || Type == WBPOSITIONTYPE::WB_HEIGHT) {
     if (value == _T( "none" )) {
       pos.ClearMetrics(Type);
       return;
@@ -1955,7 +1980,7 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
       return;
     }
     pos.ClearMetrics(Type);
-    pos.SetMetric(Type, WB_PIXELS, pxv);
+    pos.SetMetric(Type, WBMETRICTYPE::WB_PIXELS, pxv);
     return;
   }
 
@@ -1966,7 +1991,7 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
       return;
     }
     pos.ClearMetrics(Type);
-    pos.SetMetric(Type, WB_RELATIVE, pcv / 100.0f);
+    pos.SetMetric(Type, WBMETRICTYPE::WB_RELATIVE, pcv / 100.0f);
     return;
   }
 
@@ -1978,8 +2003,8 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
     }
 
   pos.ClearMetrics(Type);
-  pos.SetMetric(Type, WB_PIXELS, pxv);
-  pos.SetMetric(Type, WB_RELATIVE, pcv / 100.0f);
+  pos.SetMetric(Type, WBMETRICTYPE::WB_PIXELS, pxv);
+  pos.SetMetric(Type, WBMETRICTYPE::WB_RELATIVE, pcv / 100.0f);
 }
 
 CWBItem* CWBItem::FindChildByID(std::string_view value, std::string_view type) {

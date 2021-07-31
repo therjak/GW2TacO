@@ -1,4 +1,6 @@
 #pragma once
+#include <array>
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -7,7 +9,7 @@
 
 class CCoreDevice;
 
-enum COREMOUSECURSOR {
+enum class COREMOUSECURSOR : uint16_t {
   CM_ARROW,
   CM_CROSS,
   CM_SIZEWE,
@@ -63,7 +65,7 @@ class CCoreWindowHandler {
 
   CCoreWindowParameters InitParameters;
 
-  COREMOUSECURSOR CurrentMouseCursor = CM_ARROW;
+  COREMOUSECURSOR CurrentMouseCursor = COREMOUSECURSOR::CM_ARROW;
 
   CPoint MousePos, LeftDownPos, RightDownPos, MidDownPos;
 
@@ -107,7 +109,10 @@ class CCoreWindowHandler {
 // windows implementation
 
 class CCoreWindowHandlerWin : public CCoreWindowHandler {
-  std::vector<HCURSOR> MouseCursors;
+  std::array<HCURSOR, 8> MouseCursors;
+  HCURSOR& MouseCursorsAt(COREMOUSECURSOR c) {
+    return MouseCursors[static_cast<uint16_t>(c)];
+  }
 
  protected:
   HWND hWnd;

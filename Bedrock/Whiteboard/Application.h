@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <unordered_map>
@@ -15,7 +16,7 @@
 #include "Root.h"
 #include "StyleManager.h"
 
-enum WBMOUSECLICKREPEATMODE {
+enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_OFF = 0,
   WB_MCR_LEFT = 1,
   WB_MCR_RIGHT = 2,

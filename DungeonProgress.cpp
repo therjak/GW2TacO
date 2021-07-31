@@ -190,8 +190,9 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
           }
         }
 
-        CPoint tp = f->GetTextPosition(s, r + CRect(-3, 0, 0, 0), WBTA_CENTERX,
-                                       WBTA_CENTERY, WBTT_NONE);
+        CPoint tp = f->GetTextPosition(
+            s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
+            WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
         tp.y = posy + 1;
         f->Write(API, s, tp, CColor{0xffffffff});
         API->DrawRectBorder(
