@@ -125,12 +125,16 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
   int x = 0;
   for (const auto& map : maps)  // int x = 0; x < maps.NumItems(); x++ )
   {
-    if (!map.display) continue;
+    if (!map.display) {
+      continue;
+    }
 
     int32_t currtime = -48 * 60 + map.Length + map.Start - lefttime;
     int32_t currevent = 0;
 
-    if ((ypos > cl.y2) || (ypos < cl.y1 - mapheight)) continue;
+    if ((ypos > cl.y2) || (ypos < cl.y1 - mapheight)) {
+      continue;
+    }
 
     CPoint p = f->GetCenter(
         map.name, CRect(cl.x1, ypos, cl.x2, ypos + mapheight - barheight + 1),
@@ -178,9 +182,10 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
               map.events[currevent].length *
                   60;  // (currtime + maps[x].events[currevent].length) * 60 -
                        // (minutes * 60 + systime.wSecond);
-          if (timeleft >= 0 && timeleft <= map.events[currevent].length * 60)
+          if (timeleft >= 0 && timeleft <= map.events[currevent].length * 60) {
             text = FormatString("%s %d:%.2d", text.c_str(), timeleft / 60,
                                 timeleft % 60);
+          }
         }
 
         if (ClientToScreen(r).Contains(GetApplication()->GetMousePos())) {
@@ -201,18 +206,21 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
           const auto& bossId = map.events[currevent].worldBossId;
           if (!map.events[currevent].worldBossId.empty() &&
               std::find(worldBosses.begin(), worldBosses.end(), bossId) !=
-                  worldBosses.end())
+                  worldBosses.end()) {
             isHighlighted = true;
+          }
           if (!map.events[currevent].worldBossId.empty() &&
               std::find(mapchests.begin(), mapchests.end(), bossId) !=
-                  mapchests.end())
+                  mapchests.end()) {
             isHighlighted = true;
+          }
         }
 
-        if (!isHighlighted)
+        if (!isHighlighted) {
           API->DrawRectBorder(r, CColor{0x80000000});
-        else
+        } else {
           highlightRects.push_back(r);
+        }
       }
 
       currtime += map.events[currevent].length;
@@ -222,8 +230,9 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
     ypos += mapheight;
   }
 
-  for (const auto& r : highlightRects)
+  for (const auto& r : highlightRects) {
     API->DrawRectBorder(r, CColor{0xffffcc00});
+  }
 
   API->DrawRect(CRect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
                 CColor{0x80ffffff});
@@ -292,9 +301,13 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
 GW2MapTimer::GW2MapTimer(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {
   CXMLDocument d;
-  if (!d.LoadFromFile("maptimer.xml")) return;
+  if (!d.LoadFromFile("maptimer.xml")) {
+    return;
+  }
 
-  if (!d.GetDocumentNode().GetChildCount("GW2MapTimer")) return;
+  if (!d.GetDocumentNode().GetChildCount("GW2MapTimer")) {
+    return;
+  }
   CXMLNode root = d.GetDocumentNode().GetChild("GW2MapTimer");
   SetLayout(root);
 
