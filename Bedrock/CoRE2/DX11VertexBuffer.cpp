@@ -22,7 +22,7 @@ void CCoreDX11VertexBuffer::Release() {
 
 bool CCoreDX11VertexBuffer::Apply(const uint32_t Offset) {
   if (!VertexBufferHandle) return false;
-  uint32_t stride = Device->GetVertexFormatSize();
+  const uint32_t stride = Device->GetVertexFormatSize();
   DeviceContext->IASetVertexBuffers(0, 1, &VertexBufferHandle, &stride,
                                     &Offset);
   return true;
@@ -45,7 +45,7 @@ bool CCoreDX11VertexBuffer::Create(const uint8_t* Data, const uint32_t size) {
   vxData.SysMemPitch = 0;
   vxData.SysMemSlicePitch = 0;
 
-  HRESULT res = Dev->CreateBuffer(&bd, &vxData, &VertexBufferHandle);
+  const HRESULT res = Dev->CreateBuffer(&bd, &vxData, &VertexBufferHandle);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] CreateBuffer for vertexbuffer failed (%s)",
@@ -69,7 +69,7 @@ bool CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size) {
   bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
   bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-  HRESULT res = Dev->CreateBuffer(&bd, nullptr, &VertexBufferHandle);
+  const HRESULT res = Dev->CreateBuffer(&bd, nullptr, &VertexBufferHandle);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] CreateBuffer for vertexbuffer failed (%s)",

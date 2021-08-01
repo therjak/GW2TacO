@@ -23,7 +23,7 @@ class CXMLNode {
   CXMLNode GetChild(const char*) const;
   CXMLNode GetChild(const char*, int32_t) const;
 
-  bool Next(CXMLNode& out, char*);
+  bool Next(CXMLNode& out, const char*);
 
   int32_t IsValid();
 

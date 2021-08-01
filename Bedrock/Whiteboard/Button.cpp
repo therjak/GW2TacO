@@ -27,15 +27,15 @@ WBITEMSTATE CWBButton::GetState() {
 void CWBButton::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
 
-  WBITEMSTATE i = GetState();
+  const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
-    CColor TextColor =
+    const CColor TextColor =
         CSSProperties.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR);
-    CPoint TextPos =
+    const CPoint TextPos =
         Font->GetTextPosition(Text, GetClientRect(), CSSProperties.TextAlignX,
                               CSSProperties.TextAlignY, TextTransform);
     Font->Write(API, Text, TextPos, TextColor, TextTransform);
@@ -101,9 +101,9 @@ bool CWBButton::MessageProc(const CWBMessage& Message) {
 }
 
 CSize CWBButton::GetContentSize() {
-  WBITEMSTATE i = GetState();
+  const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return CSize(0, 0);
@@ -122,7 +122,7 @@ std::string CWBButton::GetText() const { return Text; }
 
 bool CWBButton::IsPushed() { return Pushed; }
 
-CWBItem* CWBButton::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* CWBButton::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto button = CWBButton::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     button->SetText(node.GetAttribute(_T( "text" )));

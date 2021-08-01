@@ -124,6 +124,7 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>..\BaseLib\full.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Unicode|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>

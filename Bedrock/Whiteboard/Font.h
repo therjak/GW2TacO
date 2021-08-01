@@ -87,19 +87,19 @@ class CWBFontDescription {
   ~CWBFontDescription();
 
   bool LoadBMFontBinary(
-      uint8_t* Binary, int32_t BinarySize, uint8_t* Image, int32_t XRes,
+      uint8_t* Binary, int32_t BinarySize, const uint8_t* Image, int32_t XRes,
       int32_t YRes,
       std::vector<int>& enabledGlyphs);  // 32 bit raw image data
-  bool LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize, uint8_t* Image,
-                        int32_t XRes, int32_t YRes) {
+  bool LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
+                        const uint8_t* Image, int32_t XRes, int32_t YRes) {
     std::vector<int> eg;
     return LoadBMFontBinary(Binary, BinarySize, Image, XRes, YRes, eg);
   }
   bool LoadBMFontText(
-      uint8_t* Binary, int32_t BinarySize, uint8_t* Image, int32_t XRes,
+      uint8_t* Binary, int32_t BinarySize, const uint8_t* Image, int32_t XRes,
       int32_t YRes,
       std::vector<int>& enabledGlyphs);  // 32 bit raw image data
-  bool LoadBMFontText(uint8_t* Binary, int32_t BinarySize, uint8_t* Image,
+  bool LoadBMFontText(uint8_t* Binary, int32_t BinarySize, const uint8_t* Image,
                       int32_t XRes, int32_t YRes) {
     std::vector<int> eg;
     return LoadBMFontText(Binary, BinarySize, Image, XRes, YRes, eg);
@@ -120,7 +120,7 @@ class CWBFont {
 
   TCHAR MissingChar = 0;
 
-  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, CSize& Size,
+  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const CSize& Size,
                  const CPoint& Offset, int32_t Advance, CRect contentRect);
   void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
   INLINE uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,

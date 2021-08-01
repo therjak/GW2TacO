@@ -25,14 +25,14 @@ enum class COREMOUSECURSOR : uint16_t {
 
 class CCoreWindowParameters {
  public:
-  HINSTANCE hInstance;
-  bool FullScreen;
-  int32_t XRes;
-  int32_t YRes;
-  TCHAR* WindowTitle;
-  HICON Icon;
-  bool Maximized;
-  bool ResizeDisabled;
+  HINSTANCE hInstance = nullptr;
+  bool FullScreen = false;
+  int32_t XRes = 800;
+  int32_t YRes = 600;
+  TCHAR* WindowTitle = nullptr;
+  HICON Icon = nullptr;
+  bool Maximized = false;
+  bool ResizeDisabled = false;
 
   DWORD OverrideWindowStyle = 0;
   DWORD OverrideWindowStyleEx = 0;
@@ -115,10 +115,10 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   }
 
  protected:
-  HWND hWnd;
+  HWND hWnd = nullptr;
   WINDOWPLACEMENT WindowPlacement;
-  int32_t dwStyle;
-  int32_t FullScreenX, FullScreenY;
+  int32_t dwStyle = 0;
+  int32_t FullScreenX = 0, FullScreenY = 0;
 
   static LRESULT CALLBACK WndProcProxy(HWND hWnd, UINT uMsg, WPARAM wParam,
                                        LPARAM lParam);

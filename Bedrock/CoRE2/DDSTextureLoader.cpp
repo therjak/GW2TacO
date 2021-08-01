@@ -131,7 +131,7 @@ typedef struct {
 //--------------------------------------------------------------------------------------
 // Return the BPP for a particular format
 //--------------------------------------------------------------------------------------
-static size_t BitsPerPixel(_In_ DXGI_FORMAT fmt) {
+constexpr static size_t BitsPerPixel(_In_ DXGI_FORMAT fmt) noexcept {
   switch (fmt) {
     case DXGI_FORMAT_R32G32B32A32_TYPELESS:
     case DXGI_FORMAT_R32G32B32A32_FLOAT:
@@ -321,7 +321,7 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
     rowBytes = ((width + 1) >> 1) * 4;
     numRows = height;
   } else {
-    size_t bpp = BitsPerPixel(fmt);
+    const size_t bpp = BitsPerPixel(fmt);
     rowBytes = (width * bpp + 7) / 8;  // round up to nearest byte
     numRows = height;
   }
@@ -762,7 +762,7 @@ static bool CreateTextureFromDDS(
     _Out_opt_ ID3D11ShaderResourceView** textureView, _In_ size_t maxsize) {
   HRESULT hr = S_OK;
 
-  size_t width = header->width;
+  const size_t width = header->width;
   size_t height = header->height;
   size_t depth = header->depth;
 
@@ -950,7 +950,7 @@ bool CreateDDSTextureFromMemory(
   // Validate DDS file in memory
   if (ddsDataSize < (sizeof(uint32_t) + sizeof(DDS_HEADER))) return false;
 
-  uint32_t dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
+  const uint32_t dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
   if (dwMagicNumber != DDS_MAGIC) return false;
 
   const DDS_HEADER* header =
@@ -973,8 +973,8 @@ bool CreateDDSTextureFromMemory(
     bDXT10Header = true;
   }
 
-  ptrdiff_t offset = sizeof(uint32_t) + sizeof(DDS_HEADER) +
-                     (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
+  const ptrdiff_t offset = sizeof(uint32_t) + sizeof(DDS_HEADER) +
+                           (bDXT10Header ? sizeof(DDS_HEADER_DXT10) : 0);
 
   return CreateTextureFromDDS(d3dDevice, header, ddsData + offset,
                               ddsDataSize - offset, texture, textureView,

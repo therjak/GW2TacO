@@ -3,7 +3,7 @@
 uint32_t CWBWindow::GetBorderSelectionArea(CPoint& mousepos) {
   if (App->GetMouseItem() != this) return 0;
 
-  CRect r = GetScreenRect();
+  const CRect r = GetScreenRect();
 
   if ((r + CRect(-BorderWidth, -BorderWidth, -BorderWidth, -BorderWidth))
           .Contains(mousepos))
@@ -49,8 +49,8 @@ CRect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
 }
 
 void CWBWindow::OnDraw(CWBDrawAPI* API) {
-  WBITEMSTATE i = GetState();
-  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const WBITEMSTATE i = GetState();
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API);
@@ -66,10 +66,10 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
       titlepos = TitleProps.PositionDescriptor.GetPadding(titlepos.Size(),
                                                           CRect(0, 0, 0, 0)) +
                  titlepos.TopLeft();
-      CRect r = API->GetCropRect();
+      const CRect r = API->GetCropRect();
       API->SetCropRect(ClientToScreen(titlepos));
 
-      CPoint TitlePos = Font->GetTextPosition(
+      const CPoint TitlePos = Font->GetTextPosition(
           WindowTitle, titlepos, TitleProps.TextAlignX, TitleProps.TextAlignY,
           static_cast<WBTEXTTRANSFORM>(
               TitleProps.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM)));
@@ -84,7 +84,8 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
 
   // close button
   if (Style & WB_WINDOW_CLOSEABLE) {
-    CRect closebuttonpos = GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE);
+    const CRect closebuttonpos =
+        GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE);
 
     WBITEMSTATE buttonstate = WB_STATE_NORMAL;
     if (App->GetMouseItem() == this)
@@ -100,7 +101,7 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
       if (Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
               .DisplayDescriptor.GetSkin(
                   buttonstate, WB_ITEM_BACKGROUNDIMAGE) != 0xffffffff) {
-        int x = 0;
+        const int x = 0;
       }
 
       DrawBackgroundItem(
@@ -230,7 +231,7 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
         }
         if ((DragMode & WB_DRAGMASK) && (Style & WB_WINDOW_RESIZABLE)) {
           CRect r = GetSavedPosition();
-          CPoint md = Message.GetPosition() - App->GetLeftDownPos();
+          const CPoint md = Message.GetPosition() - App->GetLeftDownPos();
           if (DragMode & WB_DRAGMODE_LEFT)
             r.x1 = min(r.x1 + md.x, r.x2 - MinSize.x);
           if (DragMode & WB_DRAGMODE_TOP)
@@ -253,7 +254,7 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
                   .Contains(ScreenToClient(Message.GetPosition())))
             App->SendMessage(CWBMessage(App, WBM_CLOSE, GetGuid()));
 
-        bool b = ReleaseCapture();
+        const bool b = ReleaseCapture();
         if (DragMode) {
           DragMode = 0;
           App->SendMessage(CWBMessage(App, WBM_WINDOWDRAGSTOPPED, GetGuid()));
@@ -323,7 +324,7 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem* CWBWindow::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto window = CWBWindow::Create(Root, Pos);
   if (node.HasAttribute(_T( "title" )))
     window->SetTitle(node.GetAttribute(_T( "title" )));

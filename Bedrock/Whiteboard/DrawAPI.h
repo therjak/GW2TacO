@@ -116,7 +116,7 @@ class CWBDrawAPI {
 
   void SetOffset(const CPoint& p);
   void SetCropRect(const CRect& r);
-  void SetParentCropRect(CRect& r) { ParentCropRect = r; };
+  void SetParentCropRect(const CRect& r) { ParentCropRect = r; };
   INLINE CRect& GetCropRect() { return CropRect; }
   INLINE CRect& GetParentCropRect() { return ParentCropRect; }
   INLINE CPoint& GetOffset() { return Offset; }

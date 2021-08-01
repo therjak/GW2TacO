@@ -269,10 +269,10 @@ void CWBMosaicImage::SetStretching(int32_t Axis, bool y) {
 void CWBMosaicImage::SetHandle(WBATLASHANDLE handle) { Handle = handle; }
 
 FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI* API, const CRect& Pos) {
-  CRect Croprect = API->GetCropRect();
+  const CRect Croprect = API->GetCropRect();
   API->SetCropRect(Pos + API->GetOffset());
 
-  CRect displaypos = Position.GetPosition(Pos.Size()) + Pos.TopLeft();
+  const CRect displaypos = Position.GetPosition(Pos.Size()) + Pos.TopLeft();
 
   API->DrawAtlasElement(Handle, displaypos, Tiling[0], Tiling[1], Stretching[0],
                         Stretching[1], Color);

@@ -122,7 +122,7 @@ class CWBTextBox : public CWBItem {
      // of the windows '\r\n')
   void SetText(std::string_view val, bool EnableUndo = false);
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "textbox" ), CWBItem);
 
   virtual void SetSelection(int32_t start, int32_t end);

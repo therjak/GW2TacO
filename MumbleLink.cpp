@@ -7,7 +7,7 @@
 
 CMumbleLink mumbleLink;
 bool frameTriggered = false;
-extern CWBApplication* App;
+extern std::unique_ptr<CWBApplication> App;
 
 void ChangeUIScale(int size);
 

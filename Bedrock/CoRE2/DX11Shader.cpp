@@ -3,6 +3,8 @@
 
 #include <comdef.h>
 
+#include <array>
+
 typedef HRESULT(__stdcall d3d_compile_func)(
     LPCVOID pSrcData, SIZE_T SrcDataSize, LPCSTR pSourceName,
     const D3D_SHADER_MACRO* pDefines, ID3DInclude* pInclude, LPCSTR pEntrypoint,
@@ -24,7 +26,7 @@ D3DXCompileShader* D3DXCompileFunc = nullptr;
 void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;
 
-  std::string_view CompilerDLLs[] = {
+  constexpr std::array<std::string_view, 34> CompilerDLLs = {
       "d3dx11_47.dll", "d3dx11_46.dll", "d3dx11_45.dll", "d3dx11_44.dll",
       "d3dx11_43.dll", "d3dx11_42.dll", "d3dx11_41.dll", "d3dx11_40.dll",
       "d3dx11_39.dll", "d3dx11_38.dll", "d3dx11_37.dll", "d3dx11_36.dll",
@@ -36,7 +38,7 @@ void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
       "d3dx10_32.dll", "d3dx10_31.dll",
   };
 
-  for (auto& cd : CompilerDLLs) {
+  for (const auto& cd : CompilerDLLs) {
     dll = LoadLibraryA(cd.data());
     if (dll) {
       void* func = GetProcAddress(dll, FunctName.c_str());
@@ -55,14 +57,14 @@ void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
 void* GetFunctionFromD3DCompileDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;
 
-  std::string_view CompilerDLLs[] = {
+  constexpr std::array<std::string_view, 15> CompilerDLLs = {
       "d3dcompiler_47.dll", "d3dcompiler_46.dll", "d3dcompiler_45.dll",
       "d3dcompiler_44.dll", "d3dcompiler_43.dll", "d3dcompiler_42.dll",
       "d3dcompiler_41.dll", "d3dcompiler_40.dll", "d3dcompiler_39.dll",
       "d3dcompiler_38.dll", "d3dcompiler_37.dll", "d3dcompiler_36.dll",
       "d3dcompiler_35.dll", "d3dcompiler_34.dll", "d3dcompiler_33.dll"};
 
-  for (auto& cd : CompilerDLLs) {
+  for (const auto& cd : CompilerDLLs) {
     dll = LoadLibraryA(cd.data());
     if (dll) {
       void* func = GetProcAddress(dll, FunctName.c_str());
@@ -101,7 +103,7 @@ CCoreDX11VertexShader::~CCoreDX11VertexShader() { Release(); }
 bool CCoreDX11VertexShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
-  HRESULT res =
+  const HRESULT res =
       Dev->CreateVertexShader(Binary, Length, nullptr, &VertexShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
@@ -196,7 +198,7 @@ CCoreDX11PixelShader::~CCoreDX11PixelShader() { Release(); }
 bool CCoreDX11PixelShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
-  HRESULT res =
+  const HRESULT res =
       Dev->CreatePixelShader(Binary, Length, nullptr, &PixelShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
@@ -291,7 +293,7 @@ CCoreDX11GeometryShader::~CCoreDX11GeometryShader() { Release(); }
 bool CCoreDX11GeometryShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
-  HRESULT res =
+  const HRESULT res =
       Dev->CreateGeometryShader(Binary, Length, nullptr, &GeometryShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
@@ -387,7 +389,7 @@ CCoreDX11DomainShader::~CCoreDX11DomainShader() { Release(); }
 bool CCoreDX11DomainShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
-  HRESULT res =
+  const HRESULT res =
       Dev->CreateDomainShader(Binary, Length, nullptr, &DomainShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
@@ -482,7 +484,7 @@ CCoreDX11HullShader::~CCoreDX11HullShader() { Release(); }
 bool CCoreDX11HullShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
-  HRESULT res =
+  const HRESULT res =
       Dev->CreateHullShader(Binary, Length, nullptr, &HullShaderHandle);
   if (res != S_OK) {
     _com_error err(res);
@@ -577,7 +579,7 @@ CCoreDX11ComputeShader::~CCoreDX11ComputeShader() { Release(); }
 bool CCoreDX11ComputeShader::Create(void* Binary, int32_t Length) {
   if (!Binary || Length <= 0) return false;
   FetchBinary(Binary, Length);
-  HRESULT res =
+  const HRESULT res =
       Dev->CreateComputeShader(Binary, Length, nullptr, &ComputeShaderHandle);
   if (res != S_OK) {
     _com_error err(res);

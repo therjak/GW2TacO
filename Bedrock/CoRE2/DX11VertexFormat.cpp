@@ -108,7 +108,7 @@ bool CCoreDX11VertexFormat::Create(
     }
   }
 
-  HRESULT res =
+  const HRESULT res =
       Dev->CreateInputLayout(vxdecl.get(), Attributes.size(), vs->GetBinary(),
                              vs->GetBinaryLength(), &VertexFormatHandle);
   if (res != S_OK) {

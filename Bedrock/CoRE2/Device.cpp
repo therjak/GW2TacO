@@ -22,12 +22,7 @@ void CCoreDevice::RemoveResource(CCoreResource* Resource) {
                   Resources.end());
 }
 
-CCoreDevice::CCoreDevice() {
-  Window = nullptr;
-  CurrentVertexBuffer = RequestedVertexBuffer = nullptr;
-  CurrentVertexBufferOffset = RequestedVertexBufferOffset = 0;
-  CurrentVertexFormatSize = 0;
-}
+CCoreDevice::CCoreDevice() = default;
 
 CCoreDevice::~CCoreDevice() {
   DefaultRasterizerState.reset();
@@ -79,7 +74,7 @@ void CCoreDevice::ResetDevice() {
 
 bool CCoreDevice::ApplyRequestedRenderState() {
   for (const auto& x : RequestedRenderState) {
-    CORERENDERSTATEID ID = x.first;
+    const CORERENDERSTATEID ID = x.first;
     CORERENDERSTATEVALUE Value = x.second;
 
     if (CurrentRenderState.find(ID) == CurrentRenderState.end() ||

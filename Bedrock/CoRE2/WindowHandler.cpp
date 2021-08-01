@@ -9,16 +9,7 @@ typedef CCoreDX11Device CCore;
 //////////////////////////////////////////////////////////////////////////
 // window init parameter structure
 
-CCoreWindowParameters::CCoreWindowParameters() {
-  hInstance = nullptr;
-  FullScreen = false;
-  XRes = 800;
-  YRes = 600;
-  WindowTitle = nullptr;
-  Icon = nullptr;
-  Maximized = false;
-  ResizeDisabled = false;
-}
+CCoreWindowParameters::CCoreWindowParameters() = default;
 
 CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, bool fs,
                                              int32_t x, int32_t y, TCHAR* title,
@@ -76,10 +67,7 @@ void CCoreWindowHandler::SetInactiveFrameLimiter(bool set) {
 // windows windowhandler
 
 CCoreWindowHandlerWin::CCoreWindowHandlerWin() : CCoreWindowHandler() {
-  hWnd = nullptr;
   WindowPlacement.length = sizeof(WINDOWPLACEMENT);
-  dwStyle = 0;
-  FullScreenX = FullScreenY = 0;
 }
 
 CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
@@ -217,7 +205,7 @@ bool CCoreWindowHandlerWin::DeviceOK() {
   if (!Active) {
     if (!InactiveFrameLimiter) return Device && Device->DeviceOk();
 
-    int32_t time = globalTimer.GetTime();
+    const int32_t time = globalTimer.GetTime();
     if (time - LastRenderedFrame >= 1000 / LimitedFPS) {
       LastRenderedFrame = time;
       return true;
@@ -393,7 +381,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
 }
 
 void CCoreWindowHandlerWin::HandleResize() {
-  CRect old = ClientRect;
+  const CRect old = ClientRect;
 
   RECT r;
   GetClientRect(hWnd, &r);

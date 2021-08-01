@@ -33,7 +33,7 @@
 
 #pragma comment(lib, "Dwmapi.lib")
 
-CWBApplication* App = nullptr;
+std::unique_ptr<CWBApplication> App;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 
@@ -774,7 +774,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     FreeLibrary(dComp);
   }
 
-  App = new COverlayApp();
+  App = std::make_unique<COverlayApp>();
 
   FORCEDDEBUGLOG("App instance created.");
 
@@ -799,9 +799,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     MessageBox(
         nullptr,
         "Failed to initialize GW2 TacO!\nIf you want this error fixed,\nplease "
-        "send the generated GW2TacO.log and a dxdiag log to boyc@scene.hu",
+        "report the generated GW2TacO.log and a dxdiag log at "
+        "https://github.com/therjak/GW2TacO",
         "Fail.", MB_ICONERROR);
-    SAFEDELETE(App);
+    App.reset();
     return false;
   }
 
@@ -820,10 +821,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FORCEDDEBUGLOG("screenshot name and clear color set");
 
-  ImportPOIS(App);
+  ImportPOIS(App.get());
   FORCEDDEBUGLOG("markers imported");
 
-  InitGUI(App);
+  InitGUI(App.get());
   FORCEDDEBUGLOG("gui initialized");
 
   extern WBATLASHANDLE DefaultIconHandle;
@@ -839,7 +840,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   LoadWvWObjectives();
 
-  OpenWindows(App);
+  OpenWindows(App.get());
 
   FORCEDDEBUGLOG("taco windows opened");
 
@@ -920,7 +921,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       if (!loadList.empty()) {
         auto file = loadList[0];
         loadList.erase(loadList.begin());
-        ImportMarkerPack(App, file);
+        ImportMarkerPack(App.get(), file);
       }
     }
 
@@ -1158,7 +1159,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   trails.clear();
 
   // cleanup
-  SAFEDELETE(App);
+  App.reset();
 
   FORCEDDEBUGLOG("app deleted, returning from main()");
   localization.reset();

@@ -43,7 +43,7 @@ bool CCoreDX11IndexBuffer::Create(const uint32_t idxcount,
   bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
   bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-  HRESULT res = Dev->CreateBuffer(&bd, nullptr, &IndexBufferHandle);
+  const HRESULT res = Dev->CreateBuffer(&bd, nullptr, &IndexBufferHandle);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] CreateBuffer for indexbuffer failed (%s)",
@@ -62,8 +62,8 @@ bool CCoreDX11IndexBuffer::Lock(void** Result, const uint32_t idxoffset,
   if (!IndexBufferHandle) return false;
 
   D3D11_MAPPED_SUBRESOURCE ms;
-  HRESULT res = DeviceContext->Map(IndexBufferHandle, NULL,
-                                   D3D11_MAP_WRITE_DISCARD, NULL, &ms);
+  const HRESULT res = DeviceContext->Map(IndexBufferHandle, NULL,
+                                         D3D11_MAP_WRITE_DISCARD, NULL, &ms);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] Failed to lock indexbuffer failed (%s)",

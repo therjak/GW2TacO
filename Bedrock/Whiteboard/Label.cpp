@@ -3,15 +3,15 @@
 void CWBLabel::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
 
-  WBITEMSTATE i = GetState();
+  const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
-    CColor TextColor =
+    const CColor TextColor =
         CSSProperties.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR);
-    CPoint TextPos =
+    const CPoint TextPos =
         Font->GetTextPosition(Text, GetClientRect(), CSSProperties.TextAlignX,
                               CSSProperties.TextAlignY, TextTransform);
     Font->Write(API, Text, TextPos, TextColor, TextTransform);
@@ -36,7 +36,7 @@ bool CWBLabel::Initialize(CWBItem* Parent, const CRect& Position,
   return true;
 }
 
-CWBItem* CWBLabel::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* CWBLabel::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto label = CWBLabel::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))
     label->SetText(node.GetAttribute(_T( "text" )));
@@ -49,9 +49,9 @@ void CWBLabel::SetText(std::string_view val) {
 }
 
 CSize CWBLabel::GetContentSize() {
-  WBITEMSTATE i = GetState();
+  const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return CSize(0, 0);

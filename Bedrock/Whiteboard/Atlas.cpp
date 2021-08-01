@@ -75,7 +75,7 @@ CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
           return;
         }
 
-        int32_t k = (x + Source.x1 + (y + Source.y1) * SrcXRes) * 4;
+        const int32_t k = (x + Source.x1 + (y + Source.y1) * SrcXRes) * 4;
         i[0] = SourceImage[k + 0];
         i[1] = SourceImage[k + 1];
         i[2] = SourceImage[k + 2];
@@ -141,7 +141,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
   // LOG(LOG_DEBUG,_T("Packing Image %d"),img->GetHandle());
 
   FlushCache();
-  CSize s = img->GetSize();
+  const CSize s = img->GetSize();
 
   CAtlasNode* n = Root->AddNode(s.x, s.y);
   if (!n) {
@@ -158,7 +158,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
     source += img->GetSize().x * 4;
   }
 
-  WBATLASHANDLE Handle = img->GetHandle();
+  const WBATLASHANDLE Handle = img->GetHandle();
 
   n->Image = img;
   Dictionary[Handle] = n;
@@ -182,7 +182,7 @@ WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
   CLightweightCriticalSection cs(&critsec);
 
   auto img = std::make_unique<CAtlasImage>(i, xs, ys, a);
-  auto h = img->GetHandle();
+  const auto h = img->GetHandle();
   ImageStorage[img->GetHandle()] = std::move(img);
   return h;
 }
@@ -201,11 +201,11 @@ bool CAtlas::UpdateTexture() {
 }
 
 int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
-  CSize ra = a->GetSize();
-  CSize rb = b->GetSize();
+  const CSize ra = a->GetSize();
+  const CSize rb = b->GetSize();
 
-  int32_t w = rb.x - ra.x;
-  int32_t h = rb.y - ra.y;
+  const int32_t w = rb.x - ra.x;
+  const int32_t h = rb.y - ra.y;
 
   if (w != 0) return w;
   return h;
@@ -221,7 +221,7 @@ bool CAtlas::Optimize(bool DebugMode) {
   if (DebugMode) {
     CLightweightCriticalSection cs(&critsec);
     for (auto& x : ImageStorage) {
-      auto handle = x.second->GetHandle();
+      const auto handle = x.second->GetHandle();
       if (Dictionary.find(handle) != Dictionary.end()) {
         x.second->TagRequired();
       }
@@ -250,8 +250,8 @@ bool CAtlas::Optimize(bool DebugMode) {
       }
       std::sort(images.begin(), images.end(),
                 [](const CAtlasImage* a, const CAtlasImage* b) {
-                  CSize ra = a->GetSize();
-                  CSize rb = b->GetSize();
+                  const CSize ra = a->GetSize();
+                  const CSize rb = b->GetSize();
                   // As sort creates an ascending order and we want the largest
                   // first, return true if a > b.
                   if (ra.x != rb.x) return ra.x > rb.x;
@@ -356,7 +356,7 @@ void CAtlas::FlushCache() {
 }
 
 CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
-  int32_t idx = Handle & (ATLASCACHESIZE - 1);
+  const int32_t idx = Handle & (ATLASCACHESIZE - 1);
 
   if (AtlasCache[idx].Handle == Handle) return AtlasCache[idx].Node;
 

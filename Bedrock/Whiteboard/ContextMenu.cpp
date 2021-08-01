@@ -28,7 +28,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
       const int height = SeparatorElements.PositionDescriptor.GetHeight(
           CSize(0, 0), CSize(0, 0));
 
-      CRect separatorRect =
+      const CRect separatorRect =
           CRect(GetWindowRect().x1 + padding.x1, Offset.y,
                 GetWindowRect().x1 + padding.x2, Offset.y + height);
 
@@ -325,7 +325,7 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
   const CRect p = GetItemRect(itemidx) + GetPosition().TopLeft();
   const CRect w = GetPosition();
 
-  CRect newpos = CRect(w.x2 - 1, p.y1, w.x2 + 10, p.y1 + 10);
+  const CRect newpos = CRect(w.x2 - 1, p.y1, w.x2 + 10, p.y1 + 10);
 
   // We need to select the parent as we are restricted to draw within the parent
   // rect.

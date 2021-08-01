@@ -19,7 +19,7 @@ extern float minimapOpacity;
 
 std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;
 
-extern CWBApplication* App;
+extern std::unique_ptr<CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
@@ -492,7 +492,8 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
 
 GW2TrailDisplay::~GW2TrailDisplay() { textureCache.clear(); }
 
-CWBItem* GW2TrailDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* GW2TrailDisplay::Factory(CWBItem* Root, const CXMLNode& node,
+                                  CRect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos).get();
 }
 

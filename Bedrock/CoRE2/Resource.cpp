@@ -2,9 +2,9 @@
 
 #include "Device.h"
 
-CCoreResource::CCoreResource() { Device = nullptr; }
+CCoreResource::CCoreResource() = default;
 
-CCoreResource::CCoreResource(CCoreDevice *h) {
+CCoreResource::CCoreResource(CCoreDevice* h) {
   Device = h;
   Device->AddResource(this);
 }

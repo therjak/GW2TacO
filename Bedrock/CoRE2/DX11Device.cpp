@@ -22,17 +22,7 @@ DCompositionCreateDeviceCallback DCompositionCreateDeviceFunc = nullptr;
 
 #ifdef CORE_API_DX11
 
-CCoreDX11Device::CCoreDX11Device() {
-  Device = nullptr;
-  DeviceContext = nullptr;
-  SwapChain = nullptr;
-  BackBufferView = nullptr;
-  DepthBufferView = nullptr;
-  DepthBuffer = nullptr;
-  CurrentBlendState = nullptr;
-  CurrentDepthStencilState = nullptr;
-  CurrentRasterizerState = nullptr;
-}
+CCoreDX11Device::CCoreDX11Device() = default;
 
 CCoreDX11Device::~CCoreDX11Device() {
   if (OcclusionQuery) {
@@ -301,7 +291,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   }
 #endif
 
-  unsigned int backBufferCount = 2;
+  constexpr unsigned int backBufferCount = 2;
   DXGI_SWAP_CHAIN_DESC1 swapChainDesc{static_cast<UINT>(XRes),
                                       static_cast<UINT>(YRes),
                                       DXGI_FORMAT_R8G8B8A8_UNORM,
@@ -532,7 +522,7 @@ void CCoreDX11Device::SetFullScreenMode(const bool FullScreen, const int32_t xr,
                                         const int32_t yr) {
   LOG_NFO("[core] Switching fullscreen mode to %d", FullScreen);
 
-  HRESULT res = SwapChain->SetFullscreenState(FullScreen, nullptr);
+  const HRESULT res = SwapChain->SetFullscreenState(FullScreen, nullptr);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] Failed to set FullScreen mode to %d. (%s)", FullScreen,
@@ -900,10 +890,8 @@ bool CCoreDX11Device::EndScene() { return true; }
 bool CCoreDX11Device::Clear(const bool clearPixels, const bool clearDepth,
                             const CColor& Color, const float Depth,
                             const int32_t Stencil) {
-  int32_t Flags = 0;
-
-  float col[4] = {Color.R() / 255.0f, Color.G() / 255.0f, Color.B() / 255.0f,
-                  Color.A() / 255.0f};
+  const float col[4] = {Color.R() / 255.0f, Color.G() / 255.0f,
+                        Color.B() / 255.0f, Color.A() / 255.0f};
 
   if (clearPixels) {
     DeviceContext->ClearRenderTargetView(BackBufferView, col);
@@ -1061,8 +1049,8 @@ void CCoreDX11Device::ForceStateReset() {
 void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
   ID3D11Texture2D* bb;
 
-  HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
-                                     reinterpret_cast<LPVOID*>(&bb));
+  const HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                           reinterpret_cast<LPVOID*>(&bb));
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] DirectX11 Swapchain buffer acquisition failed (%s)",
@@ -1126,8 +1114,8 @@ bool CCoreDX11Device::EndOcclusionQuery() {
 ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
   ID3D11Texture2D* bb;
 
-  HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
-                                     reinterpret_cast<LPVOID*>(&bb));
+  const HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
+                                           reinterpret_cast<LPVOID*>(&bb));
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] DirectX11 Swapchain buffer acquisition failed (%s)",

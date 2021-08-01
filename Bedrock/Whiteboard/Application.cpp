@@ -45,7 +45,8 @@ CWBApplication::~CWBApplication() {
   LayoutRepository.clear();
 }
 
-bool CWBApplication::SendMessageToItem(CWBMessage& Message, CWBItem* Target) {
+bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
+                                       CWBItem* Target) {
   if (Root && Message.GetTarget() == Root->GetGuid()) {
     Target = Root.get();
   }
@@ -461,7 +462,7 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   Logger.ResetEntryCounter();
 
   // update frame time
-  int32_t frametime = globalTimer.GetTime();
+  const int32_t frametime = globalTimer.GetTime();
   FrameTimes->Add(frametime - LastFrameTime);
   LastFrameTime = frametime;
 }
@@ -622,8 +623,8 @@ bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
     return false;
   }
 
-  std::string_view s(reinterpret_cast<char*>(f.GetData()),
-                     static_cast<int32_t>(f.GetLength()));
+  const std::string_view s(reinterpret_cast<char*>(f.GetData()),
+                           static_cast<int32_t>(f.GetLength()));
   return LoadXMLLayout(s);
 }
 
@@ -634,7 +635,7 @@ bool CWBApplication::GenerateGUI(CWBItem* Root, std::string_view Layout) {
     return false;
   }
 
-  bool b = GenerateGUIFromXML(Root, LayoutRepository[l].get());
+  const bool b = GenerateGUIFromXML(Root, LayoutRepository[l].get());
   if (!b) return false;
 
   StyleManager.ApplyStyles(Root);
@@ -653,7 +654,7 @@ bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
     return false;
   }
 
-  bool b =
+  const bool b =
       GenerateGUITemplateFromXML(Root, LayoutRepository[l].get(), TemplateID);
   if (!b) return false;
 
@@ -694,9 +695,9 @@ bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
     return false;
   }
 
-  std::string_view s(reinterpret_cast<char*>(f.GetData()),
-                     static_cast<int32_t>(f.GetLength()));
-  bool b = LoadCSS(s, ResetStyleManager);
+  const std::string_view s(reinterpret_cast<char*>(f.GetData()),
+                           static_cast<int32_t>(f.GetLength()));
+  const bool b = LoadCSS(s, ResetStyleManager);
 
   return b;
 }
@@ -740,7 +741,7 @@ bool CWBApplication::LoadSkin(std::string_view XML,
         e.GetAttributeAsInteger(_T( "x-behavior" ), &b.x);
         e.GetAttributeAsInteger(_T( "y-behavior" ), &b.y);
 
-        WBATLASHANDLE h = Atlas->AddImage(Image.get(), XRes, YRes, r2);
+        const WBATLASHANDLE h = Atlas->AddImage(Image.get(), XRes, YRes, r2);
         Skin->AddElement(e.GetAttributeAsString(_T( "name" )), h,
                          static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
                          static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
@@ -770,10 +771,10 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     auto img = n.GetAttributeAsString(_T( "image" ));
     auto bin = n.GetAttributeAsString(_T( "binary" ));
 
-    uint8_t* Dataimg = nullptr;
-    uint8_t* Databin = nullptr;
-    int32_t Sizeimg = 0;
-    int32_t Sizebin = 0;
+    // uint8_t* Dataimg = nullptr;
+    // uint8_t* Databin = nullptr;
+    const int32_t Sizeimg = 0;
+    const int32_t Sizebin = 0;
     auto dataimg = B64Decode(img);
     auto databin = B64Decode(bin);
 
@@ -785,11 +786,11 @@ bool CWBApplication::LoadSkin(std::string_view XML,
       auto fd = std::make_unique<CWBFontDescription>();
       if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
                                Image.get(), XRes, YRes, enabledGlyphs)) {
-        bool f = CreateFont(Name, fd.get());
+        const bool f = CreateFont(Name, fd.get());
       } else if (fd->LoadBMFontText((unsigned char*)databin.c_str(),
                                     databin.size(), Image.get(), XRes, YRes,
                                     enabledGlyphs)) {
-        bool f = CreateFont(Name, fd.get());
+        const bool f = CreateFont(Name, fd.get());
       }
 
       fd.reset();
@@ -808,9 +809,9 @@ bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
     return false;
   }
 
-  std::string_view s(reinterpret_cast<char*>(f.GetData()),
-                     static_cast<int32_t>(f.GetLength()));
-  bool b = LoadSkin(s, enabledGlyphs);
+  const std::string_view s(reinterpret_cast<char*>(f.GetData()),
+                           static_cast<int32_t>(f.GetLength()));
+  const bool b = LoadSkin(s, enabledGlyphs);
   if (b)
     LOG_NFO("[gui] Successfully loaded Skin '%s'",
             std::string(FileName).c_str());
@@ -859,7 +860,7 @@ bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
   return false;
 }
 
-bool CWBApplication::ProcessGUIXML(CWBItem* Root, CXMLNode& node) {
+bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
   CRect Pos(5, 5, 25, 25);
 
   bool b = true;
@@ -937,7 +938,7 @@ void CWBApplication::TakeScreenshot() {
         auto s2 = ScreenShotName + _T( "_%d" );
 
         int32_t no = -1;
-        int32_t i = sscanf(File.FileName.c_str(), s2.c_str(), &no);
+        const int32_t i = sscanf(File.FileName.c_str(), s2.c_str(), &no);
         maxcnt = max(maxcnt, no);
       }
     }

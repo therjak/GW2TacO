@@ -13,7 +13,7 @@ bool ClickThroughButton::Initialize(CWBItem* Parent, const CRect& Position,
   return CWBButton::Initialize(Parent, Position, txt);
 }
 
-CWBItem* ClickThroughButton::Factory(CWBItem* Root, CXMLNode& node,
+CWBItem* ClickThroughButton::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
   auto button = ClickThroughButton::Create(Root, Pos);
   if (node.HasAttribute(_T( "text" )))

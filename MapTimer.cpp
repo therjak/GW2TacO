@@ -316,7 +316,7 @@ GW2MapTimer::GW2MapTimer(CWBItem* Parent, CRect Position)
 
 GW2MapTimer::~GW2MapTimer() = default;
 
-CWBItem* GW2MapTimer::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* GW2MapTimer::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   return GW2MapTimer::Create(Root, Pos).get();
 }
 

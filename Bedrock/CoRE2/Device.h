@@ -27,7 +27,7 @@ class CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // device management
 
-  CCoreWindowHandler* Window;
+  CCoreWindowHandler* Window = nullptr;
 
   void ResetDevice();
   virtual void ResetPrivateResources() = 0;
@@ -44,9 +44,10 @@ class CCoreDevice {
   std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
       RequestedRenderState;
 
-  CCoreVertexBuffer *CurrentVertexBuffer, *RequestedVertexBuffer;
-  uint32_t CurrentVertexBufferOffset, RequestedVertexBufferOffset;
-  int32_t CurrentVertexFormatSize;
+  CCoreVertexBuffer *CurrentVertexBuffer = nullptr,
+                    *RequestedVertexBuffer = nullptr;
+  uint32_t CurrentVertexBufferOffset = 0, RequestedVertexBufferOffset = 0;
+  int32_t CurrentVertexFormatSize = 0;
 
   std::unique_ptr<CCoreBlendState> DefaultBlendState;
   std::unique_ptr<CCoreDepthStencilState> DefaultDepthStencilState;

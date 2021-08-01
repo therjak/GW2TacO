@@ -44,7 +44,7 @@ bool CCoreDX11BlendState::Update() {
 
   Dirty = false;
 
-  HRESULT res = Dev->CreateBlendState(&desc, &State);
+  const HRESULT res = Dev->CreateBlendState(&desc, &State);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] DirectX11 Blend state creation failed (%s)",
@@ -92,7 +92,7 @@ bool CCoreDX11DepthStencilState::Update() {
 
   Dirty = false;
 
-  HRESULT res = Dev->CreateDepthStencilState(&desc, &State);
+  const HRESULT res = Dev->CreateDepthStencilState(&desc, &State);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] DirectX11 Depth Stencil state creation failed (%s)",
@@ -142,7 +142,7 @@ bool CCoreDX11RasterizerState::Update() {
 
   Dirty = false;
 
-  HRESULT res = Dev->CreateRasterizerState(&desc, &State);
+  const HRESULT res = Dev->CreateRasterizerState(&desc, &State);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] DirectX11 Rasterizer state creation failed (%s)",
@@ -197,7 +197,7 @@ bool CCoreDX11SamplerState::Update() {
 
   Dirty = false;
 
-  HRESULT res = Dev->CreateSamplerState(&desc, &State);
+  const HRESULT res = Dev->CreateSamplerState(&desc, &State);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] DirectX11 Sampler state creation failed (%s)",

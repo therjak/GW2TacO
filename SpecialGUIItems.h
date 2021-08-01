@@ -21,6 +21,6 @@ class ClickThroughButton : public CWBButton {
   bool Initialize(CWBItem* Parent, const CRect& Position,
                   std::string_view txt = _T( "" )) override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "clickthroughbutton" ), CWBItem);
 };

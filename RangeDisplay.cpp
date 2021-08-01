@@ -163,7 +163,8 @@ GW2RangeDisplay::GW2RangeDisplay(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
-CWBItem* GW2RangeDisplay::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* GW2RangeDisplay::Factory(CWBItem* Root, const CXMLNode& node,
+                                  CRect& Pos) {
   return GW2RangeDisplay::Create(Root, Pos).get();
 }
 

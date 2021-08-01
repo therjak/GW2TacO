@@ -57,7 +57,7 @@ class GW2MouseHighlight : public CWBItem {
   }
   ~GW2MouseHighlight() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "mousehighlight" ), CWBItem);
 
   CPoint lastchangedpos;

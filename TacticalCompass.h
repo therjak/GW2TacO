@@ -19,7 +19,7 @@ class GW2TacticalCompass : public CWBItem {
   }
   ~GW2TacticalCompass() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "gw2rangecircles" ), CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,

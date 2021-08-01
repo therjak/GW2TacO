@@ -33,8 +33,8 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
 
     case WBM_MOUSEWHEEL:
       if (App->GetCtrlState() && IsVScrollbarEnabled()) {
-        CPoint content = GetContentSize();
-        CRect client = GetClientRect();
+        const CPoint content = GetContentSize();
+        const CRect client = GetClientRect();
         if (content.y < client.Height()) break;
 
         CRect BRect = CRect(0, 0, 0, 0);
@@ -53,7 +53,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
       break;
 
     case WBM_HSCROLL: {
-      bool Result = CWBItem::MessageProc(Message);
+      const bool Result = CWBItem::MessageProc(Message);
       if (Message.GetTarget() == GetGuid()) {
         ChangeContentOffsetX(-Message.Data);
         return true;
@@ -61,7 +61,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
       return Result;
     } break;
     case WBM_VSCROLL: {
-      bool Result = CWBItem::MessageProc(Message);
+      const bool Result = CWBItem::MessageProc(Message);
       if (Message.GetTarget() == GetGuid()) {
         ChangeContentOffsetY(-Message.Data);
         return true;
@@ -84,7 +84,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
         }
 
         CRect r = Message.Rectangle;
-        CRect o = i->GetPosition();
+        const CRect o = i->GetPosition();
 
         if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
           r.x1 = o.x1;
@@ -112,7 +112,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
 }
 
 void CWBBox::RearrangeHorizontal() {
-  CRect ClientRect = GetClientRect();
+  const CRect ClientRect = GetClientRect();
   int32_t pos = 0;
   float Excess = 0;
 
@@ -129,8 +129,9 @@ void CWBBox::RearrangeHorizontal() {
   }
 
   int32_t width = (NumChildren() - 1) * Spacing;
-  int32_t DynamicWidth = GetClientRect().Width() - NonDynamicWidth - width;
-  float itemsizes = DynamicWidth / static_cast<float>(NumDynamicChildren);
+  const int32_t DynamicWidth =
+      GetClientRect().Width() - NonDynamicWidth - width;
+  const float itemsizes = DynamicWidth / static_cast<float>(NumDynamicChildren);
 
   for (uint32_t x = 0; x < NumChildren(); x++)
     width += GetChild(x)->GetPosition().Width();
@@ -156,7 +157,7 @@ void CWBBox::RearrangeHorizontal() {
                            GetChild(x)->GetCalculatedWidth(ClientRect.Size());
       }
     } else {
-      int32_t posw = ChildPosition.Width();
+      const int32_t posw = ChildPosition.Width();
       ChildPosition.x1 = pos;
       ChildPosition.x2 = pos + posw;
     }
@@ -172,11 +173,11 @@ void CWBBox::RearrangeHorizontal() {
     if (AlignmentY == WB_ALIGN_CENTER)
       off = (ClientRect.Height() - ChildPosition.Height()) / 2;
 
-    CRect np = CRect(pos, off, pos + ChildPosition.Width(),
-                     off + ChildPosition.Height());
+    const CRect np = CRect(pos, off, pos + ChildPosition.Width(),
+                           off + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
-      CWBMessage m = GetChild(x)->BuildPositionMessage(np);
+      const CWBMessage m = GetChild(x)->BuildPositionMessage(np);
       GetChild(x)->MessageProc(m);
     }
 
@@ -185,7 +186,7 @@ void CWBBox::RearrangeHorizontal() {
 }
 
 void CWBBox::RearrangeVertical() {
-  CRect ClientRect = GetClientRect();
+  const CRect ClientRect = GetClientRect();
   int32_t pos = 0;
   float Excess = 0;
 
@@ -202,8 +203,10 @@ void CWBBox::RearrangeVertical() {
   }
 
   int32_t height = (NumChildren() - 1) * Spacing;
-  int32_t DynamicHeight = GetClientRect().Height() - NonDynamicHeight - height;
-  float itemsizes = DynamicHeight / static_cast<float>(NumDynamicChildren);
+  const int32_t DynamicHeight =
+      GetClientRect().Height() - NonDynamicHeight - height;
+  const float itemsizes =
+      DynamicHeight / static_cast<float>(NumDynamicChildren);
 
   for (uint32_t x = 0; x < NumChildren(); x++)
     height += GetChild(x)->GetPosition().Height();
@@ -234,7 +237,7 @@ void CWBBox::RearrangeVertical() {
                            GetChild(x)->GetCalculatedHeight(ClientRect.Size());
       }
     } else {
-      int32_t posh = ChildPosition.Height();
+      const int32_t posh = ChildPosition.Height();
       ChildPosition.y1 = pos;
       ChildPosition.y2 = pos + posh;
     }
@@ -245,11 +248,11 @@ void CWBBox::RearrangeVertical() {
     if (AlignmentX == WB_ALIGN_CENTER)
       off = (ClientRect.Width() - ChildPosition.Width()) / 2;
 
-    CRect np = CRect(off, pos, off + ChildPosition.Width(),
-                     pos + ChildPosition.Height());
+    const CRect np = CRect(off, pos, off + ChildPosition.Width(),
+                           pos + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
-      CWBMessage m = GetChild(x)->BuildPositionMessage(np);
+      const CWBMessage m = GetChild(x)->BuildPositionMessage(np);
       GetChild(x)->MessageProc(m);
     }
 
@@ -413,7 +416,7 @@ void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
   RearrangeChildren();
 }
 
-CWBItem* CWBBox::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto box = CWBBox::Create(Root, Pos);
 
   if (node.HasAttribute(_T( "clickthrough" ))) {

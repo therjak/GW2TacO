@@ -141,7 +141,7 @@ class CWBCSSPropertyBatch {
   std::unordered_map<WBITEMSTATE, std::string> Fonts;
 
   CWBCSSPropertyBatch();
-  virtual CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
+  CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
   bool ApplyStyle(CWBItem* Owner, std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo);
 };
@@ -308,7 +308,7 @@ class CWBItem : public IWBCSS {
   virtual bool Initialize(CWBItem* Parent, const CRect& Position);
   // return true if this item handled the message
   virtual bool MessageProc(const CWBMessage& Message);
-  bool FindItemInParentTree(CWBItem* Item);
+  bool FindItemInParentTree(const CWBItem* Item);
 
   INLINE const WBGUID GetGuid() const { return Guid; }
   INLINE CWBApplication* GetApplication() const { return App; }
@@ -352,7 +352,7 @@ class CWBItem : public IWBCSS {
 
   void SavePosition();
   CRect GetSavedPosition() const;
-  void SetSavedPosition(CRect& savedPos);
+  void SetSavedPosition(const CRect& savedPos);
 
   void Hide(bool Hide);
   bool IsHidden();

@@ -54,7 +54,7 @@ class CWBBox : public CWBItem {
 
   bool Initialize(CWBItem* Parent, const CRect& Position) override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "box" ), CWBItem);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);

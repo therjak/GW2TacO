@@ -30,10 +30,10 @@ class CColor {
   }
   uint32_t argb() const;
 
-  uint8_t& R() { return r; }
-  uint8_t& G() { return g; }
-  uint8_t& B() { return b; }
-  uint8_t& A() { return a; }
+  uint8_t& R() noexcept { return r; }
+  uint8_t& G() noexcept { return g; }
+  uint8_t& B() noexcept { return b; }
+  uint8_t& A() noexcept { return a; }
   constexpr uint8_t R() const { return r; }
   constexpr uint8_t G() const { return g; }
   constexpr uint8_t B() const { return b; }

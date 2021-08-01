@@ -320,9 +320,9 @@ void LoadWvWObjectives() {
 
       auto cat = GetCategory("Tactical.WvW." + o.type);
 
-      extern CWBApplication* App;
+      extern std::unique_ptr<CWBApplication> App;
 
-      if (cat) poi.SetCategory(App, cat);
+      if (cat) poi.SetCategory(App.get(), cat);
 
       poi.typeData.behavior = POIBehavior::WvWObjective;
 

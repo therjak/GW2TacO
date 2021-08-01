@@ -113,7 +113,7 @@ bool CWBCSSPropertyBatch::ApplyStyle(CWBItem* Owner, std::string_view prop,
 // CWBItem
 
 void CWBItem::UpdateScreenRect() {
-  CRect sr = ScreenRect;
+  const CRect sr = ScreenRect;
 
   if (Parent) {
     ScreenRect =
@@ -271,16 +271,16 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
       if (App->GetMouseCaptureItem() == this)
         if (ScrollbarDragged()) {
           // mouse delta
-          CPoint md = Message.GetPosition() - App->GetLeftDownPos();
+          const CPoint md = Message.GetPosition() - App->GetLeftDownPos();
 
           if (HScrollbar.Dragmode == WB_SCROLLDRAG_THUMB) {
-            int32_t newpos = CalculateScrollbarMovement(
+            const int32_t newpos = CalculateScrollbarMovement(
                 HScrollbar, GetClientRect().Width(), md.x);
             HScrollbar.ScrollPos = newpos;
             App->SendMessage(CWBMessage(App, WBM_HSCROLL, GetGuid(), newpos));
           }
           if (VScrollbar.Dragmode == WB_SCROLLDRAG_THUMB) {
-            int32_t newpos = CalculateScrollbarMovement(
+            const int32_t newpos = CalculateScrollbarMovement(
                 VScrollbar, GetClientRect().Height(), md.y);
             VScrollbar.ScrollPos = newpos;
             App->SendMessage(CWBMessage(App, WBM_VSCROLL, GetGuid(), newpos));
@@ -367,18 +367,18 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
     API->DrawRect(Pos, Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR));
   }
 
-  WBSKINELEMENTID id = Descriptor.GetSkin(i, v);
+  const WBSKINELEMENTID id = Descriptor.GetSkin(i, v);
 
   if (id != 0xffffffff) {
     if (id & 0x80000000) {
       // skin element
       CWBSkinElement* e = App->GetSkin()->GetElement(id);
       if (e) {
-        WBALIGNMENT AlignX = static_cast<WBALIGNMENT>(
+        const WBALIGNMENT AlignX = static_cast<WBALIGNMENT>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_X));
-        WBALIGNMENT AlignY = static_cast<WBALIGNMENT>(
+        const WBALIGNMENT AlignY = static_cast<WBALIGNMENT>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_Y));
-        CSize elementsize = e->GetElementSize(API);
+        const CSize elementsize = e->GetElementSize(API);
         CPoint offset = CPoint(0, 0);
         CSize size = Pos.Size();
 
@@ -399,7 +399,7 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
           size.y = elementsize.y;
         }
 
-        CRect DisplayRect =
+        const CRect DisplayRect =
             CRect(Pos.TopLeft() + offset, Pos.TopLeft() + offset + size);
 
         App->GetSkin()->RenderElement(API, id, DisplayRect);
@@ -433,7 +433,7 @@ void CWBItem::DrawBorder(CWBDrawAPI* API, const CRect& r,
                          CWBCSSPropertyBatch& cssProps) {
   const auto& crop = API->GetCropRect();
 
-  CColor color =
+  const CColor color =
       cssProps.DisplayDescriptor.GetColor(GetState(), WB_ITEM_BORDERCOLOR);
 
   API->SetCropRect(ClientToScreen(r));
@@ -478,7 +478,7 @@ void CWBItem::OnMouseLeave() {
 }
 
 void CWBItem::CalculateClientPosition() {
-  CPoint p = ClientToScreen(CPoint(0, 0));
+  const CPoint p = ClientToScreen(CPoint(0, 0));
 
   ClientRect = CSSProperties.PositionDescriptor.GetPadding(
       GetWindowRect().Size(), CSSProperties.BorderSizes);
@@ -504,7 +504,7 @@ void CWBItem::DrawTree(CWBDrawAPI* API) {
   CRect PCrop = API->GetParentCropRect();
   CRect Crop = API->GetCropRect();
   API->SetParentCropRect(Crop);
-  CPoint Offset = API->GetOffset();
+  const CPoint Offset = API->GetOffset();
 
   API->SetCropRect(ScreenRect);
   API->SetOffset(ClientToScreen(CPoint(0, 0)));
@@ -533,13 +533,13 @@ void CWBItem::DrawTree(CWBDrawAPI* API) {
 }
 
 void CWBItem::ApplyPosition(const CRect& Pos) {
-  CRect r = GetScreenRect();
+  const CRect r = GetScreenRect();
 
   Position = Pos;
   CalculateClientPosition();
   UpdateScreenRect();
 
-  CRect r2 = GetScreenRect();
+  const CRect r2 = GetScreenRect();
 
   if (App && r.Contains(App->GetMousePos()) != r2.Contains(App->GetMousePos()))
     App->UpdateMouseItem();
@@ -560,7 +560,7 @@ bool CWBItem::IsMouseTransparent(const CPoint& ClientSpacePoint,
   return false;
 }
 
-bool CWBItem::FindItemInParentTree(CWBItem* Item) {
+bool CWBItem::FindItemInParentTree(const CWBItem* Item) {
   CWBItem* i = this;
   while (i) {
     if (i == Item) return true;
@@ -606,14 +606,14 @@ void CWBItem::SetChildAsBottommost(int32_t Index) {
 
 void CWBItem::SetTopmost() {
   if (!GetParent()) return;
-  int32_t x = GetParent()->GetChildIndex(this);
+  const int32_t x = GetParent()->GetChildIndex(this);
   if (x < 0) return;
   Parent->SetChildAsTopmost(x);
 }
 
 void CWBItem::SetBottommost() {
   if (!GetParent()) return;
-  int32_t x = GetParent()->GetChildIndex(this);
+  const int32_t x = GetParent()->GetChildIndex(this);
   if (x < 0) return;
   Parent->SetChildAsBottommost(x);
 }
@@ -740,7 +740,7 @@ CWBMessage CWBItem::BuildPositionMessage(const CRect& Pos) {
 }
 
 void CWBItem::SetPosition(const CRect& Pos) {
-  CWBMessage m = BuildPositionMessage(Pos);
+  const CWBMessage m = BuildPositionMessage(Pos);
   App->SendMessage(m);
 }
 
@@ -799,7 +799,7 @@ bool CWBItem::InLocalFocus() {
 }
 
 void CWBItem::SetFocus() {
-  CWBItem* fi = App->GetFocusItem();
+  const CWBItem* fi = App->GetFocusItem();
   if (fi != this) {
     App->SendMessage(CWBMessage(App, WBM_FOCUSGAINED, GetGuid()));
     if (fi) App->SendMessage(CWBMessage(App, WBM_FOCUSLOST, fi->GetGuid()));
@@ -832,7 +832,9 @@ void CWBItem::SavePosition() { StoredPosition = Position; }
 
 CRect CWBItem::GetSavedPosition() const { return StoredPosition; }
 
-void CWBItem::SetSavedPosition(CRect& savedPos) { StoredPosition = savedPos; }
+void CWBItem::SetSavedPosition(const CRect& savedPos) {
+  StoredPosition = savedPos;
+}
 
 uint32_t CWBItem::NumChildren() { return Children.size(); }
 
@@ -869,11 +871,11 @@ void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
   a1 += Scrollbar_ButtonSize;
   a2 -= Scrollbar_ButtonSize;
 
-  int32_t mi = s.MinScroll;
-  int32_t ma = s.MaxScroll;
+  const int32_t mi = s.MinScroll;
+  const int32_t ma = s.MaxScroll;
 
-  float scrollsize = static_cast<float>(ma - mi);
-  float rs = max(0.0f, min(1.0f, s.ViewSize / scrollsize));
+  const float scrollsize = static_cast<float>(ma - mi);
+  const float rs = max(0.0f, min(1.0f, s.ViewSize / scrollsize));
   float rp =
       max(0.0f, min(1.0f, (s.ScrollPos - mi) / (scrollsize - s.ViewSize)));
 
@@ -891,15 +893,16 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams& s,
   int32_t thumbpos = 0;
   ScrollbardisplayHelperFunct(s, a1, a2, thumbsize, thumbpos);
 
-  int32_t mi = s.MinScroll;
-  int32_t ma = s.MaxScroll;
-  float scrollsize = static_cast<float>(ma - mi);
+  const int32_t mi = s.MinScroll;
+  const int32_t ma = s.MaxScroll;
+  const float scrollsize = static_cast<float>(ma - mi);
 
-  float sp = max(
+  const float sp = max(
       0.0f, min(1.0f, (s.DragStartPosition - mi) / (scrollsize - s.ViewSize)));
-  int32_t thumbposstart = static_cast<int32_t>((a2 - thumbsize - a1) * sp);
+  const int32_t thumbposstart =
+      static_cast<int32_t>((a2 - thumbsize - a1) * sp);
 
-  int32_t thumbposdelta =
+  const int32_t thumbposdelta =
       max(0, min(a2 - thumbsize - a1, thumbposstart + delta));
   int32_t newscrollpos =
       static_cast<int32_t>(
@@ -929,7 +932,7 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams& s,
 WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
                                        CRect r) {
   // mouse not over item, early exit if dragging is not in effect
-  bool HBar =
+  const bool HBar =
       Component == WB_ITEM_SCROLL_HBAR || Component == WB_ITEM_SCROLL_HTHUMB ||
       Component == WB_ITEM_SCROLL_LEFT || Component == WB_ITEM_SCROLL_RIGHT;
   if (!MouseOver() && ((HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE) ||
@@ -938,8 +941,8 @@ WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
 
   CPoint MousePos = App->GetMousePos();
 
-  CRect ScreenRect = ClientToScreen(r);
-  bool Hover = ScreenRect.Contains(MousePos);
+  const CRect ScreenRect = ClientToScreen(r);
+  const bool Hover = ScreenRect.Contains(MousePos);
 
   // don't highlight if something else uses the mouse (including this item)
   if (App->GetMouseCaptureItem())
@@ -1023,8 +1026,8 @@ bool CWBItem::GetHScrollbarRectangles(CRect& button1, CRect& Scrollup,
 
 void CWBItem::DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
                                   CRect& r, WBITEMVISUALCOMPONENT Button) {
-  WBITEMSTATE State = GetScrollbarState(Button, r);
-  WBSKINELEMENTID ButtonSkin =
+  const WBITEMSTATE State = GetScrollbarState(Button, r);
+  const WBSKINELEMENTID ButtonSkin =
       CSSProperties.DisplayDescriptor.GetSkin(State, Button);
 
   if (ButtonSkin == 0xffffffff) {
@@ -1033,7 +1036,7 @@ void CWBItem::DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
     if (State == WB_STATE_ACTIVE) color = CColor{0xff007acc};
     if (!ScrollbarRequired(s)) color = CColor{0xff555558};
 
-    CPoint margin = CPoint(4, 4);
+    const CPoint margin = CPoint(4, 4);
     API->DrawRect(CRect(r.TopLeft() + margin, r.BottomRight() - margin), color);
   } else
     App->GetSkin()->RenderElement(API, ButtonSkin, r);
@@ -1045,7 +1048,7 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
   GetHScrollbarRectangles(b1, su, th, sd, b2);
 
   CRect pr = API->GetParentCropRect();
-  CSize RealClientRectSize =
+  const CSize RealClientRectSize =
       CSSProperties.PositionDescriptor
           .GetPadding(GetWindowRect().Size(), CSSProperties.BorderSizes)
           .Size();
@@ -1056,9 +1059,10 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
   API->SetCropRect(RealClientRect);
 
   // draw background
-  WBITEMSTATE BackgroundState = GetScrollbarState(WB_ITEM_SCROLL_HBAR, th);
-  CRect BackgroundRect = CRect(b1.TopLeft(), b2.BottomRight());
-  WBSKINELEMENTID Background = CSSProperties.DisplayDescriptor.GetSkin(
+  const WBITEMSTATE BackgroundState =
+      GetScrollbarState(WB_ITEM_SCROLL_HBAR, th);
+  const CRect BackgroundRect = CRect(b1.TopLeft(), b2.BottomRight());
+  const WBSKINELEMENTID Background = CSSProperties.DisplayDescriptor.GetSkin(
       BackgroundState, WB_ITEM_SCROLL_HBAR);
 
   if (Background == 0xffffffff)
@@ -1067,8 +1071,8 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
     App->GetSkin()->RenderElement(API, Background, BackgroundRect);
 
   // draw thumb
-  WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_HTHUMB, th);
-  WBSKINELEMENTID Thumb = CSSProperties.DisplayDescriptor.GetSkin(
+  const WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_HTHUMB, th);
+  const WBSKINELEMENTID Thumb = CSSProperties.DisplayDescriptor.GetSkin(
       ThumbState, WB_ITEM_SCROLL_HTHUMB);
 
   if (Thumb == 0xffffffff) {
@@ -1076,7 +1080,7 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
     if (ThumbState == WB_STATE_HOVER) color = CColor{0xff9e9e9e};
     if (ThumbState == WB_STATE_ACTIVE) color = CColor{0xffefebef};
 
-    CPoint thumbmargin = CPoint(0, 4);
+    const CPoint thumbmargin = CPoint(0, 4);
     API->DrawRect(
         CRect(th.TopLeft() + thumbmargin, th.BottomRight() - thumbmargin),
         color);
@@ -1119,7 +1123,7 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
   GetVScrollbarRectangles(b1, su, th, sd, b2);
 
   CRect pr = API->GetParentCropRect();
-  CSize RealClientRectSize =
+  const CSize RealClientRectSize =
       CSSProperties.PositionDescriptor
           .GetPadding(GetWindowRect().Size(), CSSProperties.BorderSizes)
           .Size();
@@ -1130,9 +1134,10 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
   API->SetCropRect(RealClientRect);
 
   // draw background
-  WBITEMSTATE BackgroundState = GetScrollbarState(WB_ITEM_SCROLL_VBAR, th);
-  CRect BackgroundRect = CRect(b1.TopLeft(), b2.BottomRight());
-  WBSKINELEMENTID Background = CSSProperties.DisplayDescriptor.GetSkin(
+  const WBITEMSTATE BackgroundState =
+      GetScrollbarState(WB_ITEM_SCROLL_VBAR, th);
+  const CRect BackgroundRect = CRect(b1.TopLeft(), b2.BottomRight());
+  const WBSKINELEMENTID Background = CSSProperties.DisplayDescriptor.GetSkin(
       BackgroundState, WB_ITEM_SCROLL_VBAR);
 
   if (Background == 0xffffffff)
@@ -1141,8 +1146,8 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
     App->GetSkin()->RenderElement(API, Background, BackgroundRect);
 
   // draw thumb
-  WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_VTHUMB, th);
-  WBSKINELEMENTID Thumb = CSSProperties.DisplayDescriptor.GetSkin(
+  const WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_VTHUMB, th);
+  const WBSKINELEMENTID Thumb = CSSProperties.DisplayDescriptor.GetSkin(
       ThumbState, WB_ITEM_SCROLL_VTHUMB);
 
   if (Thumb == 0xffffffff) {
@@ -1150,7 +1155,7 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
     if (ThumbState == WB_STATE_HOVER) color = CColor{0xff9e9e9e};
     if (ThumbState == WB_STATE_ACTIVE) color = CColor{0xffefebef};
 
-    CPoint thumbmargin = CPoint(4, 0);
+    const CPoint thumbmargin = CPoint(4, 0);
     API->DrawRect(
         CRect(th.TopLeft() + thumbmargin, th.BottomRight() - thumbmargin),
         color);
@@ -1239,9 +1244,9 @@ bool CWBItem::IsVScrollbarEnabled() { return VScrollbar.Enabled; }
 
 void CWBItem::SetHScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                       int32_t ViewSize) {
-  bool Changed = HScrollbar.MinScroll != MinScroll ||
-                 HScrollbar.MaxScroll != MaxScroll ||
-                 HScrollbar.ViewSize != ViewSize;
+  const bool Changed = HScrollbar.MinScroll != MinScroll ||
+                       HScrollbar.MaxScroll != MaxScroll ||
+                       HScrollbar.ViewSize != ViewSize;
   HScrollbar.MinScroll = MinScroll;
   HScrollbar.MaxScroll = MaxScroll;
   HScrollbar.ViewSize = ViewSize;
@@ -1250,9 +1255,9 @@ void CWBItem::SetHScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
 
 void CWBItem::SetVScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                       int32_t ViewSize) {
-  bool Changed = VScrollbar.MinScroll != MinScroll ||
-                 VScrollbar.MaxScroll != MaxScroll ||
-                 VScrollbar.ViewSize != ViewSize;
+  const bool Changed = VScrollbar.MinScroll != MinScroll ||
+                       VScrollbar.MaxScroll != MaxScroll ||
+                       VScrollbar.ViewSize != ViewSize;
   VScrollbar.MinScroll = MinScroll;
   VScrollbar.MaxScroll = MaxScroll;
   VScrollbar.ViewSize = ViewSize;
@@ -1309,7 +1314,7 @@ void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
                                     const std::vector<std::string>& pseudo) {
   int32_t StateCount = 0;
   for (size_t x = 1; x < pseudo.size(); x++) {
-    auto p = Trim(pseudo[x]);
+    const auto p = Trim(pseudo[x]);
     if (p == _T( "active" ) || p == _T( "hover" ) || p == _T( "disabled" ) ||
         p == _T( "disabled-active" ) || p == _T( "normal" ))
       StateCount++;
@@ -1323,7 +1328,7 @@ void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
     desc.SetValue(WB_STATE_DISABLED_ACTIVE, TargetComponent, Value);
   } else {
     for (size_t x = 1; x < pseudo.size(); x++) {
-      auto p = Trim(pseudo[x]);
+      const auto p = Trim(pseudo[x]);
       if (p == _T( "active" )) {
         desc.SetValue(WB_STATE_ACTIVE, TargetComponent, Value);
         continue;
@@ -1684,7 +1689,7 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     std::string v(value);
     std::sscanf(v.c_str(), _T( "%f" ), &dw);
 
-    int32_t o = static_cast<int32_t> max(0, min(255, dw * 255));
+    const int32_t o = static_cast<int32_t> max(0, min(255, dw * 255));
 
     VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_OPACITY,
                           o * 0x01010101, pseudo);
@@ -1962,8 +1967,8 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
     return;
   }
 
-  bool px = value.find("px") != std::string_view::npos;
-  bool pc = value.find('%') != std::string_view::npos;
+  const bool px = value.find("px") != std::string_view::npos;
+  const bool pc = value.find('%') != std::string_view::npos;
 
   float pxv = 0;
   float pcv = 0;
@@ -2085,8 +2090,8 @@ CWBPositionDescriptor& CWBItem::GetPositionDescriptor() {
 }
 
 CSize CWBItem::GetClientWindowSizeDifference() {
-  CRect w = GetWindowRect();
-  CRect c = GetClientRect();
+  const CRect w = GetWindowRect();
+  const CRect c = GetClientRect();
 
   return CSize(w.Width() - c.Width(), w.Height() - c.Height());
 }
@@ -2122,7 +2127,7 @@ bool CWBItem::ParseRGBA(std::string_view description, CColor& output) {
 
   uint8_t Colors[3];
   for (int32_t y = 0; y < 3; y++) Colors[y] = max(0, min(255, c[y]));
-  uint8_t Alpha = static_cast<int32_t>(max(0, min(1, a)) * 255);
+  const uint8_t Alpha = static_cast<int32_t>(max(0, min(1, a)) * 255);
 
   output = CColor(Colors[0], Colors[1], Colors[2], Alpha);
   return true;
@@ -2136,7 +2141,7 @@ void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch& desc,
     desc.Fonts[WB_STATE_NORMAL] = name;
   } else {
     for (size_t y = 1; y < pseudo.size(); y++) {
-      auto p = Trim(pseudo[y]);
+      const auto p = Trim(pseudo[y]);
       if (p == _T( "active" )) {
         desc.Fonts[WB_STATE_ACTIVE] = name;
         continue;
@@ -2176,7 +2181,7 @@ bool CWBItem::ScanPXValue(std::string_view Value, int32_t& Result,
 bool CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
                             std::string_view PropName) {
   if (Value.find(_T( "skin(" )) == 0) {
-    int32_t i = Value.find(')');
+    const int32_t i = Value.find(')');
     if (i != std::string_view::npos) {
       // Value.GetPointer()[ i ] = 0;
       Result = App->GetSkin()->GetElementID(Value.substr(5, i - 5));
@@ -2199,8 +2204,8 @@ void CWBItem::SetFont(WBITEMSTATE State, std::string_view Font) {
 void CWBItem::ContentChanged() {
   if (!CSSProperties.PositionDescriptor.IsAutoResizer()) return;
 
-  CSize ParentSize = GetWindowRect().Size();
-  CSize ClientSize =
+  const CSize ParentSize = GetWindowRect().Size();
+  const CSize ClientSize =
       CSSProperties.PositionDescriptor
           .GetPadding(GetWindowRect().Size(), CSSProperties.BorderSizes)
           .Size();

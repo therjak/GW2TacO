@@ -21,7 +21,7 @@ class CCoreResource
 	CStackTracker StackInfo; //debug stack information
 
 protected:
-	CCoreDevice *Device;
+	CCoreDevice *Device = nullptr;
 
 public:
 

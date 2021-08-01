@@ -153,7 +153,8 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
 #endif
 
   if (!ViewCreated) {
-    HRESULT res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
+    const HRESULT res =
+        Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
     if (res != S_OK) {
       _com_error err(res);
       LOG_ERR("[core] CreateShaderResourceView failed (%s)",
@@ -209,7 +210,7 @@ float degammafloat(float f) {
 }
 
 uint16_t degammaint16(uint16_t f) {
-  float tf = f / 65535.0f;
+  const float tf = f / 65535.0f;
 
   return static_cast<uint16_t>(degammafloat(tf) * 65535);
 }
@@ -220,7 +221,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
   if (!TextureHandle) return;
 
   CStreamWriterMemory Writer;
-  HRESULT res = SaveDDSTexture(DeviceContext, TextureHandle, Writer);
+  const HRESULT res = SaveDDSTexture(DeviceContext, TextureHandle, Writer);
   if (res != S_OK) {
     _com_error err(res);
     LOG_ERR("[core] Failed to export texture to '%s' (%x: %s)",
@@ -278,8 +279,8 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
 
         if (head.dwRBitMask == 0x00ff0000 && head.dwBBitMask == 0x000000ff)
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
-            int32_t p = x * 4;
-            int32_t t = image[p];
+            const int32_t p = x * 4;
+            const int32_t t = image[p];
             image[p] = image[p + 2];
             image[p + 2] = t;
           }
@@ -292,7 +293,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       }
       break;
     case 36: {
-      uint16_t* inimg = reinterpret_cast<uint16_t*>(Data);
+      const uint16_t* inimg = reinterpret_cast<uint16_t*>(Data);
       for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++)
         image[x] = (!degamma ? inimg[x] : degammaint16(inimg[x])) / 256;
     } break;
@@ -320,14 +321,14 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     } break;
     case '01XD':  // DX10
     {
-      DDS_HEADER_DXT10* Head = reinterpret_cast<DDS_HEADER_DXT10*>(Data);
+      const DDS_HEADER_DXT10* Head = reinterpret_cast<DDS_HEADER_DXT10*>(Data);
       Data += sizeof(DDS_HEADER_DXT10);
       switch (Head->dxgiFormat) {
         case DXGI_FORMAT_B8G8R8A8_UNORM:
           memcpy(image.get(), Data, head.dwWidth * head.dwHeight * 4);
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
-            int32_t p = x * 4;
-            int32_t t = image[p];
+            const int32_t p = x * 4;
+            const int32_t t = image[p];
             image[p] = image[p + 2];
             image[p + 2] = t;
           }
@@ -474,7 +475,7 @@ static DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt) {
   }
 }
 
-static size_t BitsPerPixel(_In_ DXGI_FORMAT fmt) {
+constexpr static size_t BitsPerPixel(_In_ DXGI_FORMAT fmt) noexcept {
   switch (fmt) {
     case DXGI_FORMAT_R32G32B32A32_TYPELESS:
     case DXGI_FORMAT_R32G32B32A32_FLOAT:
@@ -736,7 +737,7 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
     numBytes = (rowBytes * height) + ((rowBytes * height + 1) >> 1);
     numRows = height + ((height + 1) >> 1);
   } else {
-    size_t bpp = BitsPerPixel(fmt);
+    const size_t bpp = BitsPerPixel(fmt);
     rowBytes = (width * bpp + 7) / 8;  // round up to nearest byte
     numRows = height;
     numBytes = rowBytes * height;
@@ -817,7 +818,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
 
     if (!pTemp) LOG_ERR("[Core2] Error creating temp texture");
 
-    DXGI_FORMAT fmt = EnsureNotTypeless(desc.Format);
+    const DXGI_FORMAT fmt = EnsureNotTypeless(desc.Format);
 
     UINT support = 0;
     hr = d3dDevice->CheckFormatSupport(fmt, &support);
@@ -835,7 +836,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
 
     for (UINT item = 0; item < desc.ArraySize; ++item) {
       for (UINT level = 0; level < desc.MipLevels; ++level) {
-        UINT index = D3D11CalcSubresource(level, item, desc.MipLevels);
+        const UINT index = D3D11CalcSubresource(level, item, desc.MipLevels);
         pContext->ResolveSubresource(pTemp, index, pSource, index, fmt);
       }
     }
@@ -886,7 +887,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
                        _In_ ID3D11Resource* pSource, CStreamWriter& Writer) {
-  const uint32_t DDS_MAGIC = 0x20534444;  // "DDS "
+  constexpr uint32_t DDS_MAGIC = 0x20534444;  // "DDS "
 
   struct DDS_PIXELFORMAT {
     uint32_t size;
@@ -1205,7 +1206,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
   }
 
   // Setup header
-  const size_t MAX_HEADER_SIZE =
+  constexpr size_t MAX_HEADER_SIZE =
       sizeof(uint32_t) + sizeof(DDS_HEADER) + sizeof(DDS_HEADER_DXT10);
   uint8_t fileHeader[MAX_HEADER_SIZE];
 
@@ -1410,7 +1411,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
 
   uint8_t* dptr = pixels.get();
 
-  size_t msize = min(rowPitch, mapped.RowPitch);
+  const size_t msize = min(rowPitch, mapped.RowPitch);
   for (size_t h = 0; h < rowCount; ++h) {
     memcpy_s(dptr, rowPitch, sptr, msize);
     sptr += mapped.RowPitch;

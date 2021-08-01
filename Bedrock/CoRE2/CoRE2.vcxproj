@@ -259,6 +259,7 @@
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>..\BaseLib\full.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MultiByte|x64'">
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>

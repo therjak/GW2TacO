@@ -73,7 +73,7 @@ class CWBWindow : public CWBItem {
   void SetTitle(std::string_view val) { WindowTitle = val; }
 
   uint32_t GetDragMode();
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
 
   CRect GetElementPos(WBWINDOWELEMENT Element);
   uint32_t GetBorderSelectionArea(CPoint& mousepos);

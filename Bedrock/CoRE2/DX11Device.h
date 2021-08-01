@@ -12,17 +12,17 @@
 #ifdef CORE_API_DX11
 
 class CCoreDX11Device : public CCoreDevice {
-  IDXGISwapChain1* SwapChain;
-  ID3D11Device* Device;
-  ID3D11DeviceContext* DeviceContext;
+  IDXGISwapChain1* SwapChain = nullptr;
+  ID3D11Device* Device = nullptr;
+  ID3D11DeviceContext* DeviceContext = nullptr;
 
-  ID3D11RenderTargetView* BackBufferView;
-  ID3D11Texture2D* DepthBuffer;
-  ID3D11DepthStencilView* DepthBufferView;
+  ID3D11RenderTargetView* BackBufferView = nullptr;
+  ID3D11Texture2D* DepthBuffer = nullptr;
+  ID3D11DepthStencilView* DepthBufferView = nullptr;
 
-  ID3D11BlendState* CurrentBlendState;
-  ID3D11DepthStencilState* CurrentDepthStencilState;
-  ID3D11RasterizerState* CurrentRasterizerState;
+  ID3D11BlendState* CurrentBlendState = nullptr;
+  ID3D11DepthStencilState* CurrentDepthStencilState = nullptr;
+  ID3D11RasterizerState* CurrentRasterizerState = nullptr;
 
   ID3D11Query* OcclusionQuery = nullptr;
 

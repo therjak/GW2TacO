@@ -15,7 +15,8 @@ OverlayWindow::OverlayWindow(CWBItem* Parent, CRect Position)
 
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
-CWBItem* OverlayWindow::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* OverlayWindow::Factory(CWBItem* Root, const CXMLNode& node,
+                                CRect& Pos) {
   return OverlayWindow::Create(Root, Pos).get();
 }
 

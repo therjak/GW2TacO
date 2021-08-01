@@ -141,7 +141,7 @@ CXMLNode CXMLNode::GetChild(const char* szNodeName, int32_t n) const {
   return CXMLNode();
 }
 
-bool CXMLNode::Next(CXMLNode& out, char* szNodeName) {
+bool CXMLNode::Next(CXMLNode& out, const char* szNodeName) {
   if (!pNode) return false;
 
   auto node = pNode->next_sibling(szNodeName);

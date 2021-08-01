@@ -250,7 +250,7 @@
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>full.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug64|Win32'">
     <OutDir>$(ProjectDir)$(Configuration)\</OutDir>

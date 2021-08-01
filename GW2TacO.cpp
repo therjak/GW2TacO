@@ -211,7 +211,7 @@ GW2TacO::~GW2TacO() {
   // scriptEngines.FreeArray();
 }
 
-CWBItem* GW2TacO::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+CWBItem* GW2TacO::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();
 
@@ -234,7 +234,7 @@ void ChangeUIScale(int size) {
     return;
   }
 
-  extern CWBApplication* App;
+  extern std::unique_ptr<CWBApplication> App;
   if (!App) return;
 
   if (App->LoadCSSFromFile(UIFileNames[size], true))
@@ -1509,7 +1509,7 @@ void GW2TacO::OpenAboutWindow() {
 }
 
 float GetWindowTooSmallScale() {
-  extern CWBApplication* App;
+  extern std::unique_ptr<CWBApplication> App;
 
   if (!App || !App->GetRoot()) return 1.0f;
 
@@ -1816,7 +1816,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 }
 
 void SetMouseToolTip(std::string_view toolTip) {
-  extern CWBApplication* App;
+  extern std::unique_ptr<CWBApplication> App;
 
   if (!App) return;
 

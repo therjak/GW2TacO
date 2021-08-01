@@ -51,7 +51,7 @@ class CMemTracker {
   void RemovePointer(void* p);
   bool SetMissingIgnore(bool b) {
     CLightweightCriticalSection cs(&critsec);
-    bool old = IgnoreMissing;
+    const bool old = IgnoreMissing;
     IgnoreMissing = b;
     return old;
   }

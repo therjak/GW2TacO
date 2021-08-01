@@ -37,7 +37,7 @@ class CRingBuffer {
   ItemType& operator[](const int32_t idx) {
     int32_t start = Count - Capacity;
     if (start < 0) start = 0;
-    int32_t realindex = start + idx;
+    const int32_t realindex = start + idx;
     BASEASSERT(realindex < Count);
     return Array[realindex % Capacity];
   }

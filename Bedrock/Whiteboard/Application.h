@@ -23,8 +23,8 @@ enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_MIDDLE = 3
 };
 
-typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root, CXMLNode& node,
-                                             CRect& Pos);
+typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
+                                             const CXMLNode& node, CRect& Pos);
 
 class CWBApplication : public CCoreWindowHandlerWin {
   friend class CWBItem;
@@ -51,7 +51,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   std::string ScreenShotName;
 
-  bool SendMessageToItem(CWBMessage& Message, CWBItem* Target);
+  bool SendMessageToItem(const CWBMessage& Message, CWBItem* Target);
   void ProcessMessage(CWBMessage& Message);
   CWBItem* GetItemUnderMouse(CPoint& Point, WBMESSAGE w);
 
@@ -75,7 +75,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
 
-  bool ProcessGUIXML(CWBItem* Root, CXMLNode& node);
+  bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
   bool GenerateGUIFromXMLNode(CWBItem* Root, CXMLNode& node, CRect& Pos);
   bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
                                   std::string_view TemplateID);

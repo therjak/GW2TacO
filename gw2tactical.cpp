@@ -988,7 +988,7 @@ GW2TacticalDisplay::GW2TacticalDisplay(CWBItem* Parent, CRect Position)
 
 GW2TacticalDisplay::~GW2TacticalDisplay() = default;
 
-CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, CXMLNode& node,
+CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos).get();
 }

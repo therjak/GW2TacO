@@ -100,7 +100,7 @@ GW2TacticalCompass::GW2TacticalCompass(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 GW2TacticalCompass::~GW2TacticalCompass() = default;
 
-CWBItem* GW2TacticalCompass::Factory(CWBItem* Root, CXMLNode& node,
+CWBItem* GW2TacticalCompass::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
   return GW2TacticalCompass::Create(Root, Pos).get();
 }
