@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -103,8 +104,8 @@ class CWBScrollbarParams {
 };
 
 class CWBDisplayState {
-  uint32_t Visuals[WB_ITEM_COUNT] = {0};
-  bool VisualSet[WB_ITEM_COUNT] = {false};
+  std::array<uint32_t, WB_ITEM_COUNT> Visuals = {0};
+  std::array<bool, WB_ITEM_COUNT> VisualSet = {false};
 
  public:
   CWBDisplayState();
@@ -118,7 +119,7 @@ class CWBDisplayState {
 };
 
 class CWBDisplayProperties {
-  CWBDisplayState States[WB_STATE_COUNT];
+  std::array<CWBDisplayState, WB_STATE_COUNT> States;
 
  public:
   CWBDisplayProperties();

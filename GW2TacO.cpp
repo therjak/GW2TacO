@@ -18,6 +18,7 @@
 #include "Language.h"
 #include "MapTimer.h"
 #include "MarkerEditor.h"
+#include "MouseHighlight.h"
 #include "MumbleLink.h"
 #include "Notepad.h"
 #include "OverlayConfig.h"
@@ -513,8 +514,6 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                   (GetConfigValue("MouseHighlightOutline") ? " [x]" : " [ ]"),
               Menu_ToggleMouseHighlightOutline);
           auto cols = ctx->AddItem(DICT("mousecolor"), 0);
-
-          extern std::vector<std::string_view> CGAPaletteNames;
 
           int mouseColor = 0;
           if (HasConfigValue("MouseHighlightColor"))

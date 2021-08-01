@@ -3,19 +3,6 @@
 #include "Bedrock/Whiteboard/Application.h"
 #include "OverlayConfig.h"
 
-CColor CGAPalette[] = {
-    CColor{0xffaa0000}, CColor{0xffff5555}, CColor{0xff000000},
-    CColor{0xff555555}, CColor{0xff0000aa}, CColor{0xff5555ff},
-    CColor{0xff00aa00}, CColor{0xff55ff55}, CColor{0xff00aaaa},
-    CColor{0xff55ffff}, CColor{0xffaa00aa}, CColor{0xffff55ff},
-    CColor{0xffaa5500}, CColor{0xffffff55}, CColor{0xffaaaaaa},
-    CColor{0xffffffff}};
-
-std::vector<std::string_view> CGAPaletteNames = {
-    "red",   "lightred",   "black",     "gray",      "blue",    "lightblue",
-    "green", "lightgreen", "cyan",      "lightcyan", "magenta", "lightmagenta",
-    "brown", "yellow",     "lightgray", "white"};
-
 void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("MouseHighlightVisible"))
     SetConfigValue("MouseHighlightVisible", 0);

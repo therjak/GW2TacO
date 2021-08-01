@@ -68,9 +68,9 @@ enum WBMESSAGE {
 
 };
 
-#define WB_KBSTATE_ALT 0x00000001
-#define WB_KBSTATE_CTRL 0x00000002
-#define WB_KBSTATE_SHIFT 0x00000004
+constexpr int32_t WB_KBSTATE_ALT = 0x00000001;
+constexpr int32_t WB_KBSTATE_CTRL = 0x00000002;
+constexpr int32_t WB_KBSTATE_SHIFT = 0x00000004;
 
 class CWBMessage final {
   CWBApplication* App;

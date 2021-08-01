@@ -77,13 +77,13 @@ class CWBPositionDescriptorPixels {
   FORCEINLINE CRect GetPosition(CSize ParentSize);
 };
 
-enum WBSKINELEMENTBEHAVIOR {
+enum class WBSKINELEMENTBEHAVIOR : uint8_t {
   WB_SKINBEHAVIOR_PIXELCORRECT = 0,
   WB_SKINBEHAVIOR_STRETCH,
   WB_SKINBEHAVIOR_TILE,
 };
 
-enum WBRECTSIDE {
+enum class WBRECTSIDE : uint8_t {
   WB_RECTSIDE_LEFT = 0,
   WB_RECTSIDE_TOP = 1,
   WB_RECTSIDE_RIGHT = 2,
@@ -93,7 +93,8 @@ enum WBRECTSIDE {
 class CWBSkinElement {
   std::string Name;
   WBATLASHANDLE Handle;
-  WBSKINELEMENTBEHAVIOR DefaultBehavior[2];  // x-y stretching behaviors
+  // x-y stretching behaviors
+  std::array<WBSKINELEMENTBEHAVIOR, 2> DefaultBehavior;
 
  public:
   CWBSkinElement();
@@ -113,8 +114,8 @@ class CWBSkinElement {
 
 class CWBMosaicImage {
   CWBPositionDescriptorPixels Position;
-  bool Tiling[2] = {false};
-  bool Stretching[2]{false};
+  std::array<bool, 2> Tiling = {false};
+  std::array<bool, 2> Stretching = {false};
   WBATLASHANDLE Handle = 0;
   CColor Color = CColor(0xffffffff);
 
@@ -132,7 +133,10 @@ class CWBMosaicImage {
 class CWBMosaic {
   std::string Name;
   std::vector<CWBMosaicImage> Images;
-  int32_t Overshoot[4] = {0};
+  std::array<int32_t, 4> Overshoot = {0};
+  int32_t& OvershootAt(WBRECTSIDE s) {
+    return Overshoot[static_cast<uint8_t>(s)];
+  }
 
  public:
   CWBMosaic();

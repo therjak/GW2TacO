@@ -71,7 +71,7 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
   int showIngameTrails = GetConfigValue("ShowInGameTrails");
 
   float one = 1;
-  float data[8];
+  std::array<float, 8> data;
 
   if (!miniMaprender && showIngameTrails > 0)
     for (int x = 0; x < 2; x++) {
@@ -115,7 +115,7 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
           constBuffer->AddData(persp, 16 * 4);
           constBuffer->AddData(&mumbleLink.charPosition, 12);
           constBuffer->AddData(&one, 4);
-          constBuffer->AddData(data, 16);
+          constBuffer->AddData(data.data(), 16);
           // color
 
           data[0] = 0.2f;
@@ -129,14 +129,14 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
             data[2] *= 0.5f;
           }
 
-          constBuffer->AddData(data, 16);
+          constBuffer->AddData(data.data(), 16);
           data[0] = 1000;
           data[1] = 1200;
           data[2] = float(fadeoutBubble);
           data[3] = GameToWorldCoords(20);
           data[4] = GameToWorldCoords(20);
           data[5] = 1.0f;
-          constBuffer->AddData(data, 32);
+          constBuffer->AddData(data.data(), 32);
 
           constBuffer->Upload();
           App->GetDevice()->SetShaderConstants(constBuffer.get());
@@ -801,8 +801,9 @@ void GW2Trail::Update() {
 void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
                             CCoreTexture* texture, CMatrix4x4& cam,
                             CMatrix4x4& persp, float& one, bool scaleData,
-                            int32_t fadeoutBubble, float* data, float fadeAlpha,
-                            float width, float uvScale, float width2d) {
+                            int32_t fadeoutBubble, std::array<float, 8>& data,
+                            float fadeAlpha, float width, float uvScale,
+                            float width2d) {
   if (category && !category->IsVisible()) return;
 
   if (map != mumbleLink.mapID) return;
@@ -818,7 +819,7 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
   constBuffer->AddData(persp, 16 * 4);
   constBuffer->AddData(&mumbleLink.charPosition, 12);
   constBuffer->AddData(&one, 4);
-  constBuffer->AddData(data, 16);
+  constBuffer->AddData(data.data(), 16);
   // color
 
   data[0] = typeData.color.R() / 255.0f;
@@ -832,7 +833,7 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
     data[2] *= 0.5;
   }
 
-  constBuffer->AddData(data, 16);
+  constBuffer->AddData(data.data(), 16);
 
   data[0] = GameToWorldCoords(typeData.fadeNear);
   data[1] = GameToWorldCoords(typeData.fadeFar);
@@ -841,7 +842,7 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
   data[4] = uvScale;
   data[5] = width2d;
 
-  constBuffer->AddData(data, 32);
+  constBuffer->AddData(data.data(), 32);
 
   constBuffer->Upload();
   App->GetDevice()->SetShaderConstants(constBuffer);

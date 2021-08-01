@@ -15,7 +15,7 @@ class CXMLNode {
   CXMLNode(rapidxml::xml_node<char>*, CXMLDocument*, int32_t);
   virtual ~CXMLNode();
 
-  CXMLNode operator=(const CXMLNode Original);
+  CXMLNode& operator=(const CXMLNode Original);
 
   int32_t GetChildCount() const;
   int32_t GetChildCount(const char*) const;

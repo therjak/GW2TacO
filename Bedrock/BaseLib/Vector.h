@@ -9,8 +9,8 @@ class CVector2 {
  public:
   float x = 0, y = 0;
 
-  CVector2() = default;
-  CVector2(const float _x, const float _y);
+  constexpr CVector2() = default;
+  constexpr CVector2(const float _x, const float _y) : x(_x), y(_y) {}
   explicit CVector2(const float* v);
 
   CVector2(const CVector2&) = default;
@@ -46,8 +46,8 @@ class CVector2I {
  public:
   int32_t x = 0, y = 0;
 
-  CVector2I() = default;
-  CVector2I(const int32_t _x, const int32_t _y);
+  constexpr CVector2I() = default;
+  constexpr CVector2I(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
   explicit CVector2I(const int32_t* v);
 
   CVector2I(const CVector2I&) = default;
@@ -86,8 +86,9 @@ class CVector3 {
  public:
   float x = 0, y = 0, z = 0;
 
-  CVector3() = default;
-  CVector3(const float _x, const float _y, const float _z);
+  constexpr CVector3() = default;
+  constexpr CVector3(const float _x, const float _y, const float _z)
+      : x(_x), y(_y), z(_z) {}
   explicit CVector3(const float* v);
   explicit CVector3(const CVector4& v);
 
@@ -129,8 +130,10 @@ class CVector4 {
  public:
   float x = 0, y = 0, z = 0, w = 0;
 
-  CVector4() = default;
-  CVector4(const float _x, const float _y, const float _z, const float _w);
+  constexpr CVector4() = default;
+  constexpr CVector4(const float _x, const float _y, const float _z,
+                     const float _w)
+      : x(_x), y(_y), z(_z), w(_w) {}
   explicit CVector4(const float* v);
 
   CVector4(const CVector4&) = default;

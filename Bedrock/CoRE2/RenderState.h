@@ -1,4 +1,7 @@
 #pragma once
+
+#include <array>
+
 #include "IndexBuffer.h"
 #include "Shader.h"
 #include "Texture.h"
@@ -58,7 +61,7 @@ class CCoreBlendState : public CCoreRenderStateBatch {
  protected:
   bool AlphaToCoverage;
   bool IndependentBlend;
-  COREBLENDDESCRIPTOR RenderTargetBlendStates[8];
+  std::array<COREBLENDDESCRIPTOR, 8> RenderTargetBlendStates;
 
  public:
   explicit CCoreBlendState(CCoreDevice* Device);
@@ -151,7 +154,7 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
   float MipLODBias;
   int32_t MaxAnisotropy;
   CORECOMPARISONFUNCTION ComparisonFunc;
-  float BorderColor[4] = {0};
+  std::array<float, 4> BorderColor = {0};
   float MinLOD;
   float MaxLOD;
 

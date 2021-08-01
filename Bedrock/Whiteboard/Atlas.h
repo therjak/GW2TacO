@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 #include <unordered_map>
 
 #include "../CoRE2/Core2.h"
@@ -14,7 +15,7 @@ class CAtlasImage;
 class CAtlasNode {
   friend class CAtlas;
   CRect Area;
-  std::unique_ptr<CAtlasNode> Children[2];
+  std::array<std::unique_ptr<CAtlasNode>, 2> Children;
   bool Occupied = false;
 
   CAtlasImage* Image = nullptr;
@@ -50,8 +51,8 @@ class CAtlasImage {
 };
 
 struct CAtlasCacheElement {
-  WBATLASHANDLE Handle;
-  CAtlasNode* Node;
+  WBATLASHANDLE Handle = 0;
+  CAtlasNode* Node = nullptr;
 };
 
 class CAtlas {
@@ -62,7 +63,7 @@ class CAtlas {
 
   bool TextureUpdateNeeded;
 
-  CAtlasCacheElement AtlasCache[ATLASCACHESIZE];
+  std::array<CAtlasCacheElement, ATLASCACHESIZE> AtlasCache;
 
   std::unordered_map<WBATLASHANDLE, CAtlasNode*> Dictionary;
   std::unordered_map<WBATLASHANDLE, std::unique_ptr<CAtlasImage>> ImageStorage;

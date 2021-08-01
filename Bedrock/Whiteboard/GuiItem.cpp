@@ -382,14 +382,16 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
         CPoint offset = CPoint(0, 0);
         CSize size = Pos.Size();
 
-        if (e->GetBehavior(0) == WB_SKINBEHAVIOR_PIXELCORRECT) {
+        if (e->GetBehavior(0) ==
+            WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
           if (AlignX == WB_ALIGN_RIGHT) offset.x = Pos.Width() - elementsize.x;
           if (AlignX == WB_ALIGN_CENTER)
             offset.x = (Pos.Width() - elementsize.x) / 2;
           size.x = elementsize.x;
         }
 
-        if (e->GetBehavior(1) == WB_SKINBEHAVIOR_PIXELCORRECT) {
+        if (e->GetBehavior(1) ==
+            WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
           if (AlignY == WB_ALIGN_BOTTOM)
             offset.y = Pos.Height() - elementsize.y;
           if (AlignY == WB_ALIGN_MIDDLE)

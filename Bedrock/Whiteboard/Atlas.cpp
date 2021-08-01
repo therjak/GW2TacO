@@ -349,7 +349,11 @@ void CAtlas::ClearImageUsageflags() {
   for (auto& x : ImageStorage) x.second->ClearRequired();
 }
 
-void CAtlas::FlushCache() { memset(AtlasCache, 0, sizeof(AtlasCache)); }
+void CAtlas::FlushCache() {
+  for (auto& x : AtlasCache) {
+    x = CAtlasCacheElement{};
+  }
+}
 
 CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
   int32_t idx = Handle & (ATLASCACHESIZE - 1);

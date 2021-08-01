@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <vector>
 
@@ -77,10 +78,10 @@ class CWBDrawAPI {
                      const float u1, const float v1, const float u2,
                      const float v2, const float u3, const float v3,
                      const CColor a, const CColor b, const CColor c);
-  void ClipTriX(int32_t x, bool KeepRight, WBGUIVERTEX Vertices[6],
+  void ClipTriX(int32_t x, bool KeepRight, std::array<WBGUIVERTEX, 6>& Vertices,
                 int32_t& VertexCount);
-  void ClipTriY(int32_t y, bool KeepBottom, WBGUIVERTEX Vertices[6],
-                int32_t& VertexCount);
+  void ClipTriY(int32_t y, bool KeepBottom,
+                std::array<WBGUIVERTEX, 6>& Vertices, int32_t& VertexCount);
   void RenderDisplayList();
 
   bool RequestAtlasImageUse(WBATLASHANDLE h, CRect& r);

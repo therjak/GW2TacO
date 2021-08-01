@@ -109,7 +109,7 @@ class CCoreWindowHandler {
 // windows implementation
 
 class CCoreWindowHandlerWin : public CCoreWindowHandler {
-  std::array<HCURSOR, 8> MouseCursors;
+  std::array<HCURSOR, 8> MouseCursors = {0};
   HCURSOR& MouseCursorsAt(COREMOUSECURSOR c) {
     return MouseCursors[static_cast<uint16_t>(c)];
   }

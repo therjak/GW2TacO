@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -44,8 +45,9 @@ class GW2Trail {
   void Update();
   void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
                     CMatrix4x4& cam, CMatrix4x4& persp, float& one,
-                    bool scaleData, int32_t fadeoutBubble, float* data,
-                    float fadeAlpha, float width, float uvScale, float width2d);
+                    bool scaleData, int32_t fadeoutBubble,
+                    std::array<float, 8>& data, float fadeAlpha, float width,
+                    float uvScale, float width2d);
 
   MarkerTypeData typeData;
   std::string Type;

@@ -186,7 +186,8 @@ WBGUIVERTEX Lerp(const WBGUIVERTEX& a, const WBGUIVERTEX& b, float t) {
   return r;
 }
 
-void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight, WBGUIVERTEX Vertices[6],
+void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight,
+                          std::array<WBGUIVERTEX, 6>& Vertices,
                           int32_t& VertexCount) {
   WBGUIVERTEX NewVertices[6];
   int32_t NewVertexCount = 0;
@@ -219,7 +220,8 @@ void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight, WBGUIVERTEX Vertices[6],
   VertexCount = NewVertexCount;
 }
 
-void CWBDrawAPI::ClipTriY(int32_t y, bool KeepBottom, WBGUIVERTEX Vertices[6],
+void CWBDrawAPI::ClipTriY(int32_t y, bool KeepBottom,
+                          std::array<WBGUIVERTEX, 6>& Vertices,
                           int32_t& VertexCount) {
   WBGUIVERTEX NewVertices[6];
   int32_t NewVertexCount = 0;
@@ -270,7 +272,7 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
   DrawMode = WBDRAWMODE::WBD_TRIANGLES;
 
   // max vertex count is 6, when all triangle edges are cut
-  WBGUIVERTEX Vertices[6];
+  std::array<WBGUIVERTEX, 6> Vertices;
   int32_t VertexCount = 3;
   Vertices[0].Pos =
       CVector4(static_cast<float>(p1.x), static_cast<float>(p1.y), 0, 1);

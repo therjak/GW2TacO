@@ -288,8 +288,11 @@ void CWBMosaic::AddImage(const CWBMosaicImage& Image) {
 
 void CWBMosaic::Render(CWBDrawAPI* API, const CRect& Position) {
   for (auto& image : Images)
-    image.Render(API, Position + CRect(Overshoot[0], Overshoot[1], Overshoot[2],
-                                       Overshoot[3]));
+    image.Render(API,
+                 Position + CRect(OvershootAt(WBRECTSIDE::WB_RECTSIDE_LEFT),
+                                  OvershootAt(WBRECTSIDE::WB_RECTSIDE_TOP),
+                                  OvershootAt(WBRECTSIDE::WB_RECTSIDE_RIGHT),
+                                  OvershootAt(WBRECTSIDE::WB_RECTSIDE_BOTTOM)));
 }
 
 void CWBMosaic::SetName(std::string_view name) { Name = name; }
@@ -299,23 +302,23 @@ std::string& CWBMosaic::GetName() { return Name; }
 CWBMosaic::CWBMosaic(const CWBMosaic& Copy) {
   Name = Copy.Name;
   Images = Copy.Images;
-  for (int32_t x = 0; x < 4; x++) Overshoot[x] = Copy.Overshoot[x];
+  Overshoot = Copy.Overshoot;
 }
 
-CWBMosaic::CWBMosaic() : Overshoot{0} {}
+CWBMosaic::CWBMosaic() = default;
 
 CWBMosaic& CWBMosaic::operator=(const CWBMosaic& Copy) {
   if (&Copy == this) return *this;
   Name = Copy.Name;
   Images = Copy.Images;
-  for (int32_t x = 0; x < 4; x++) Overshoot[x] = Copy.Overshoot[x];
+  Overshoot = Copy.Overshoot;
   return *this;
 }
 
 void CWBMosaic::Flush() { Images.clear(); }
 
 void CWBMosaic::SetOverShoot(WBRECTSIDE side, int32_t val) {
-  Overshoot[side] = val;
+  OvershootAt(side) = val;
 }
 
 void CWBSkinElement::SetName(std::string_view name) { Name = name; }
@@ -323,10 +326,12 @@ void CWBSkinElement::SetName(std::string_view name) { Name = name; }
 std::string& CWBSkinElement::GetName() { return Name; }
 
 FORCEINLINE void CWBSkinElement::Render(CWBDrawAPI* API, const CRect& Pos) {
-  API->DrawAtlasElement(Handle, Pos, DefaultBehavior[0] == WB_SKINBEHAVIOR_TILE,
-                        DefaultBehavior[1] == WB_SKINBEHAVIOR_TILE,
-                        DefaultBehavior[0] == WB_SKINBEHAVIOR_STRETCH,
-                        DefaultBehavior[1] == WB_SKINBEHAVIOR_STRETCH);
+  API->DrawAtlasElement(
+      Handle, Pos,
+      DefaultBehavior[0] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE,
+      DefaultBehavior[1] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE,
+      DefaultBehavior[0] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH,
+      DefaultBehavior[1] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
 }
 
 void CWBSkinElement::SetHandle(WBATLASHANDLE h) { Handle = h; }
@@ -357,8 +362,8 @@ CWBSkinElement::CWBSkinElement(const CWBSkinElement& Copy) {
 
 CWBSkinElement::CWBSkinElement() {
   Handle = 0;
-  DefaultBehavior[0] = WB_SKINBEHAVIOR_PIXELCORRECT;
-  DefaultBehavior[1] = WB_SKINBEHAVIOR_PIXELCORRECT;
+  DefaultBehavior[0] = WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT;
+  DefaultBehavior[1] = WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT;
 }
 
 WBATLASHANDLE CWBSkinElement::GetHandle() { return Handle; }
@@ -431,10 +436,10 @@ CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
   Mosaics.emplace_back(CWBMosaic());
   Mosaics.back().SetName(Name);
 
-  Mosaics.back().SetOverShoot(WB_RECTSIDE_LEFT, OverShootLeft);
-  Mosaics.back().SetOverShoot(WB_RECTSIDE_TOP, OverShootTop);
-  Mosaics.back().SetOverShoot(WB_RECTSIDE_RIGHT, OverShootRight);
-  Mosaics.back().SetOverShoot(WB_RECTSIDE_BOTTOM, OverShootBottom);
+  Mosaics.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_LEFT, OverShootLeft);
+  Mosaics.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_TOP, OverShootTop);
+  Mosaics.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_RIGHT, OverShootRight);
+  Mosaics.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_BOTTOM, OverShootBottom);
 
   auto Lines = Split(Description, _T( ")" ));
   for (const auto& l : Lines) {
@@ -445,10 +450,14 @@ CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
       CWBSkinElement* e = GetElement(Trim(Data[0]));
       if (e) {
         i.SetHandle(e->GetHandle());
-        i.SetTiling(0, e->GetBehavior(0) == WB_SKINBEHAVIOR_TILE);
-        i.SetTiling(1, e->GetBehavior(1) == WB_SKINBEHAVIOR_TILE);
-        i.SetStretching(0, e->GetBehavior(0) == WB_SKINBEHAVIOR_STRETCH);
-        i.SetStretching(1, e->GetBehavior(1) == WB_SKINBEHAVIOR_STRETCH);
+        i.SetTiling(0, e->GetBehavior(0) ==
+                           WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE);
+        i.SetTiling(1, e->GetBehavior(1) ==
+                           WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE);
+        i.SetStretching(0, e->GetBehavior(0) ==
+                               WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
+        i.SetStretching(1, e->GetBehavior(1) ==
+                               WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
 
         auto Data2 = Split(Data[1], _T( ";" ));
 

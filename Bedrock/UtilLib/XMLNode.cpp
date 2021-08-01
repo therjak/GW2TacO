@@ -42,7 +42,7 @@ CXMLNode::CXMLNode(xml_node<char>* p, CXMLDocument* d, int32_t l) {
   nLevel = l;
 }
 
-CXMLNode CXMLNode::operator=(const CXMLNode Original) {
+CXMLNode& CXMLNode::operator=(const CXMLNode Original) {
   nLevel = Original.nLevel;
   pNode = Original.pNode;
   pDoc = Original.pDoc;

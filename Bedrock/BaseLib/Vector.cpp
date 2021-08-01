@@ -97,10 +97,6 @@ float CVector4::Length() const { return sqrtf(LengthSquared()); }
 
 CVector4::CVector4(const float* v) : x(v[0]), y(v[1]), z(v[2]), w(v[3]) {}
 
-CVector4::CVector4(const float _x, const float _y, const float _z,
-                   const float _w)
-    : x(_x), y(_y), z(_z), w(_w) {}
-
 CVector3 CVector3::Cross(const CVector3& v1, const CVector3& v2) {
   return v1 % v2;
 }
@@ -119,9 +115,6 @@ float CVector3::Length() const { return sqrtf(LengthSquared()); }
 
 CVector3::CVector3(const float* v) : x(v[0]), y(v[1]), z(v[2]) {}
 
-CVector3::CVector3(const float _x, const float _y, const float _z)
-    : x(_x), y(_y), z(_z) {}
-
 CVector3::CVector3(const CVector4& v) : x(v.x), y(v.y), z(v.z) {}
 
 float CVector2::Dot(const CVector2& v1, const CVector2& v2) { return v1 * v2; }
@@ -137,8 +130,6 @@ float CVector2::LengthSquared() const { return x * x + y * y; }
 float CVector2::Length() const { return sqrtf(LengthSquared()); }
 
 CVector2::CVector2(const float* v) : x(v[0]), y(v[1]) {}
-
-CVector2::CVector2(const float _x, const float _y) : x(_x), y(_y) {}
 
 CVector2& CVector2::operator+=(const CVector2& v) {
   x += v.x;
@@ -223,8 +214,6 @@ float CVector2I::LengthSquared() const {
 float CVector2I::Length() const { return sqrtf(LengthSquared()); }
 
 CVector2I::CVector2I(const int32_t* v) : x(v[0]), y(v[1]) {}
-
-CVector2I::CVector2I(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
 
 CVector2I& CVector2I::operator+=(const CVector2I& v) {
   x += v.x;
