@@ -8,14 +8,6 @@
 #define VERTEXBUFFERRECTCOUNT 4096
 #define VERTEXBUFFERVERTEXCOUNT (VERTEXBUFFERRECTCOUNT * 4)
 
-COREVERTEXATTRIBUTE WBGuiVertexFormat[] = {
-    COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4,
-    COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2,
-    COREVERTEXATTRIBUTE::COREVXATTR_COLOR4,
-
-    COREVERTEXATTRIBUTE::COREVXATTR_STOP,
-};
-
 void CWBDrawAPI::AddDisplayRect(
     const CRect& Rect, const float u1, const float v1, const float u2,
     const float v2,
@@ -582,9 +574,11 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     }
   }
 
-  COREVERTEXATTRIBUTE* vx = WBGuiVertexFormat;
-  std::vector<COREVERTEXATTRIBUTE> Att;
-  while (*vx != COREVERTEXATTRIBUTE::COREVXATTR_STOP) Att.emplace_back(*vx++);
+  std::vector<COREVERTEXATTRIBUTE> Att = {
+      COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4,
+      COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2,
+      COREVERTEXATTRIBUTE::COREVXATTR_COLOR4,
+  };
 
   VertexFormat = Device->CreateVertexFormat(Att, VxShader.get());
   if (!VertexFormat) {

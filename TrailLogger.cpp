@@ -477,18 +477,12 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
   pxShader = App->GetDevice()->CreatePixelShader(
       code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
 
-  COREVERTEXATTRIBUTE TrailVertexFormat[] = {
+  std::vector<COREVERTEXATTRIBUTE> Att{
       COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4,
       COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2,
       COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD4,
       COREVERTEXATTRIBUTE::COREVXATTR_COLOR4,
-
-      COREVERTEXATTRIBUTE::COREVXATTR_STOP,
   };
-
-  COREVERTEXATTRIBUTE* vx = TrailVertexFormat;
-  std::vector<COREVERTEXATTRIBUTE> Att;
-  while (*vx != COREVERTEXATTRIBUTE::COREVXATTR_STOP) Att.emplace_back(*vx++);
 
   vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
   if (!vertexFormat) {
