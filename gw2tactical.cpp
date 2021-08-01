@@ -285,10 +285,6 @@ bool testfrustum(CVector3 c, CPlane planes[4], int skip) {
   return v;
 }
 
-void SetRotate(CMatrix4x4& m, float x, float y, float z, float phi) {
-  m.Rotation(CQuaternion::FromAxisAngle(CVector3(x, y, z), phi));
-}
-
 CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
                                                 float asp) {
   CVector3 p = pos;

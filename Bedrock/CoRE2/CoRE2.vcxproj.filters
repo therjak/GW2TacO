@@ -145,9 +145,6 @@
     <ClCompile Include="DX11RenderState.cpp">
       <Filter>Source Files\DX11</Filter>
     </ClCompile>
-    <ClCompile Include="Enums.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
     <ClCompile Include="DDSTextureLoader.cpp">
       <Filter>Source Files\DX11</Filter>
     </ClCompile>

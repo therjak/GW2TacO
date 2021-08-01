@@ -28,12 +28,12 @@ class CCoreTexture2D : public CCoreTexture {
  public:
   INLINE explicit CCoreTexture2D(CCoreDevice* Device) : CCoreTexture(Device) {
     XRes = YRes = 0;
-    Format = COREFMT_UNKNOWN;
+    Format = COREFORMAT::COREFMT_UNKNOWN;
   }
 
   virtual bool Create(const int32_t XRes, const int32_t YRes,
                       const uint8_t* Data, const char BytesPerPixel = 4,
-                      const COREFORMAT Format = COREFMT_A8R8G8B8,
+                      const COREFORMAT Format = COREFORMAT::COREFMT_A8R8G8B8,
                       const bool RenderTarget = false) = 0;
   virtual bool Create(const uint8_t* Data, int32_t const Size) = 0;
   virtual bool CreateDepthBuffer(const int32_t XRes, const int32_t YRes,

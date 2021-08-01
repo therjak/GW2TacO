@@ -263,13 +263,13 @@ void CCoreWindowHandlerWin::ToggleFullScreen() {
 
 void CCoreWindowHandlerWin::HandleAltEnter() {
   switch (Device->GetAPIType()) {
-    case COREAPI_DX9:
+    case COREDEVICEAPI::COREAPI_DX9:
       ToggleFullScreen();
       break;
-    case COREAPI_DX11:
+    case COREDEVICEAPI::COREAPI_DX11:
       // handled by dxgi <3
       break;
-    case COREAPI_OPENGL:
+    case COREDEVICEAPI::COREAPI_OPENGL:
       break;
     default:
       break;

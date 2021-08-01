@@ -275,14 +275,15 @@ bool CCoreDevice::CreateDefaultRenderStates() {
 
   DefaultBlendState = CreateBlendState();
   DefaultBlendState->SetBlendEnable(0, true);
-  DefaultBlendState->SetSrcBlend(0, COREBLEND_SRCALPHA);
-  DefaultBlendState->SetDestBlend(0, COREBLEND_INVSRCALPHA);
+  DefaultBlendState->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_SRCALPHA);
+  DefaultBlendState->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
   Success |= DefaultBlendState->Apply();
 
   DefaultDepthStencilState = CreateDepthStencilState();
   DefaultDepthStencilState->SetDepthEnable(true);
   DefaultDepthStencilState->SetZWriteEnable(true);
-  DefaultDepthStencilState->SetDepthFunc(CORECMP_LEQUAL);
+  DefaultDepthStencilState->SetDepthFunc(
+      CORECOMPARISONFUNCTION::CORECMP_LEQUAL);
   Success |= DefaultDepthStencilState->Apply();
 
   DefaultRasterizerState = CreateRasterizerState();

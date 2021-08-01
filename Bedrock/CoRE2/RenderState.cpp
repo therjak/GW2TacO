@@ -16,12 +16,12 @@ CCoreBlendState::CCoreBlendState(CCoreDevice* Device)
 
   for (auto& RenderTargetBlendState : RenderTargetBlendStates) {
     RenderTargetBlendState.BlendEnable = false;
-    RenderTargetBlendState.SrcBlend = COREBLEND_ONE;
-    RenderTargetBlendState.DestBlend = COREBLEND_ZERO;
-    RenderTargetBlendState.BlendOp = COREBLENDOP_ADD;
-    RenderTargetBlendState.SrcBlendAlpha = COREBLEND_ONE;
-    RenderTargetBlendState.DestBlendAlpha = COREBLEND_ZERO;
-    RenderTargetBlendState.BlendOpAlpha = COREBLENDOP_ADD;
+    RenderTargetBlendState.SrcBlend = COREBLENDFACTOR::COREBLEND_ONE;
+    RenderTargetBlendState.DestBlend = COREBLENDFACTOR::COREBLEND_ZERO;
+    RenderTargetBlendState.BlendOp = COREBLENDOP::COREBLENDOP_ADD;
+    RenderTargetBlendState.SrcBlendAlpha = COREBLENDFACTOR::COREBLEND_ONE;
+    RenderTargetBlendState.DestBlendAlpha = COREBLENDFACTOR::COREBLEND_ZERO;
+    RenderTargetBlendState.BlendOpAlpha = COREBLENDOP::COREBLENDOP_ADD;
     RenderTargetBlendState.RenderTargetWriteMask = 0x0f;
   }
 }
@@ -99,34 +99,31 @@ bool CCoreBlendState::Import(CXMLNode* n) {
     }
     if (c.GetChildCount(_T("SrcBlend"))) {
       s = c.GetChild(_T("SrcBlend")).GetText();
-      FindEnumByName(BlendFactorNames, s,
-                     (int32_t&)RenderTargetBlendStates[id].SrcBlend);
+      FindEnumByName(BlendFactorNames, s, RenderTargetBlendStates[id].SrcBlend);
     }
     if (c.GetChildCount(_T("DestBlend"))) {
       s = c.GetChild(_T("DestBlend")).GetText();
       FindEnumByName(BlendFactorNames, s,
-                     (int32_t&)RenderTargetBlendStates[id].DestBlend);
+                     RenderTargetBlendStates[id].DestBlend);
     }
     if (c.GetChildCount(_T("BlendOp"))) {
       s = c.GetChild(_T("BlendOp")).GetText();
-      FindEnumByName(BlendOpNames, s,
-                     (int32_t&)RenderTargetBlendStates[id].BlendOp);
+      FindEnumByName(BlendOpNames, s, RenderTargetBlendStates[id].BlendOp);
     }
 
     if (c.GetChildCount(_T("SrcBlendAlpha"))) {
       s = c.GetChild(_T("SrcBlendAlpha")).GetText();
       FindEnumByName(BlendFactorNames, s,
-                     (int32_t&)RenderTargetBlendStates[id].SrcBlendAlpha);
+                     RenderTargetBlendStates[id].SrcBlendAlpha);
     }
     if (c.GetChildCount(_T("DestBlendAlpha"))) {
       s = c.GetChild(_T("DestBlendAlpha")).GetText();
       FindEnumByName(BlendFactorNames, s,
-                     (int32_t&)RenderTargetBlendStates[id].DestBlendAlpha);
+                     RenderTargetBlendStates[id].DestBlendAlpha);
     }
     if (c.GetChildCount(_T("BlendOpAlpha"))) {
       s = c.GetChild(_T("BlendOpAlpha")).GetText();
-      FindEnumByName(BlendOpNames, s,
-                     (int32_t&)RenderTargetBlendStates[id].BlendOpAlpha);
+      FindEnumByName(BlendOpNames, s, RenderTargetBlendStates[id].BlendOpAlpha);
     }
 
     if (c.GetChildCount(_T("RenderTargetWriteMask"))) {
@@ -184,7 +181,7 @@ CCoreDepthStencilState::CCoreDepthStencilState(CCoreDevice* Device)
     : CCoreRenderStateBatch(Device) {
   DepthEnable = true;
   ZWriteEnable = true;
-  DepthFunc = CORECMP_LESS;
+  DepthFunc = CORECOMPARISONFUNCTION::CORECMP_LESS;
 }
 
 CCoreDepthStencilState::~CCoreDepthStencilState() = default;
@@ -213,7 +210,7 @@ bool CCoreDepthStencilState::Import(CXMLNode* n) {
   }
   if (n->GetChildCount(_T("DepthFunc"))) {
     auto s = n->GetChild(_T("DepthFunc")).GetText();
-    FindEnumByName(ComparisonFunctionNames, s, (int32_t&)DepthFunc);
+    FindEnumByName(ComparisonFunctionNames, s, DepthFunc);
   }
 
   Dirty = true;
@@ -296,11 +293,11 @@ void CCoreRasterizerState::SetFillMode(COREFILLMODE e) {
 bool CCoreRasterizerState::Import(CXMLNode* n) {
   if (n->GetChildCount(_T("FillMode"))) {
     auto s = n->GetChild(_T("FillMode")).GetText();
-    FindEnumByName(FillModeNames, s, (int32_t&)FillMode);
+    FindEnumByName(FillModeNames, s, FillMode);
   }
   if (n->GetChildCount(_T("CullMode"))) {
     auto s = n->GetChild(_T("CullMode")).GetText();
-    FindEnumByName(CullModeNames, s, (int32_t&)CullMode);
+    FindEnumByName(CullModeNames, s, CullMode);
   }
 
   if (n->GetChildCount(_T("DepthBias"))) {
@@ -359,7 +356,7 @@ CCoreSamplerState::CCoreSamplerState(CCoreDevice* Device)
   MaxLOD = FLT_MAX;
   MipLODBias = 0;
   MaxAnisotropy = 1;
-  ComparisonFunc = CORECMP_NEVER;
+  ComparisonFunc = CORECOMPARISONFUNCTION::CORECMP_NEVER;
   BorderColor[0] = BorderColor[1] = BorderColor[2] = BorderColor[3] = 1;
 }
 
@@ -423,24 +420,24 @@ void CCoreSamplerState::SetFilter(COREFILTER e) {
 bool CCoreSamplerState::Import(CXMLNode* n) {
   if (n->GetChildCount(_T("Filter"))) {
     auto s = n->GetChild(_T("Filter")).GetText();
-    FindEnumByName(FilterNames, s, (int32_t&)Filter);
+    FindEnumByName(FilterNames, s, Filter);
   }
   if (n->GetChildCount(_T("AddressU"))) {
     auto s = n->GetChild(_T("AddressU")).GetText();
-    FindEnumByName(AddressModeNames, s, (int32_t&)AddressU);
+    FindEnumByName(AddressModeNames, s, AddressU);
   }
   if (n->GetChildCount(_T("AddressV"))) {
     auto s = n->GetChild(_T("AddressV")).GetText();
-    FindEnumByName(AddressModeNames, s, (int32_t&)AddressV);
+    FindEnumByName(AddressModeNames, s, AddressV);
   }
   if (n->GetChildCount(_T("AddressW"))) {
     auto s = n->GetChild(_T("AddressW")).GetText();
-    FindEnumByName(AddressModeNames, s, (int32_t&)AddressW);
+    FindEnumByName(AddressModeNames, s, AddressW);
   }
 
   if (n->GetChildCount(_T("ComparisonFunc"))) {
     auto s = n->GetChild(_T("ComparisonFunc")).GetText();
-    FindEnumByName(ComparisonFunctionNames, s, (int32_t&)ComparisonFunc);
+    FindEnumByName(ComparisonFunctionNames, s, ComparisonFunc);
   }
 
   if (n->GetChildCount(_T("MipLODBias"))) {
@@ -462,15 +459,15 @@ bool CCoreSamplerState::Import(CXMLNode* n) {
 }
 
 void CCoreSamplerState::Export(CXMLNode* n) {
-  n->AddChild(_T("Filter")).SetText(FindNameByEnum(FilterNames, Filter).data());
+  n->AddChild(_T("Filter")).SetText(FindNameByEnum(FilterNames, Filter));
   n->AddChild(_T("AddressU"))
-      .SetText(FindNameByEnum(AddressModeNames, AddressU).data());
+      .SetText(FindNameByEnum(AddressModeNames, AddressU));
   n->AddChild(_T("AddressV"))
-      .SetText(FindNameByEnum(AddressModeNames, AddressV).data());
+      .SetText(FindNameByEnum(AddressModeNames, AddressV));
   n->AddChild(_T("AddressW"))
-      .SetText(FindNameByEnum(AddressModeNames, AddressW).data());
+      .SetText(FindNameByEnum(AddressModeNames, AddressW));
   n->AddChild(_T("ComparisonFunc"))
-      .SetText(FindNameByEnum(ComparisonFunctionNames, ComparisonFunc).data());
+      .SetText(FindNameByEnum(ComparisonFunctionNames, ComparisonFunc));
   n->AddChild(_T("MipLODBias")).SetFloat(MipLODBias);
   n->AddChild(_T("MinLOD")).SetFloat(MinLOD);
   n->AddChild(_T("MaxLOD")).SetFloat(MaxLOD);

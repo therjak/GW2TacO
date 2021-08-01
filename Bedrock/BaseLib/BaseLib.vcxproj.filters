@@ -157,9 +157,6 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files\Basic Classes\I/O</Filter>
     </ClCompile>
-    <ClCompile Include="EnumHelpers.cpp">
-      <Filter>Source Files\Basic Classes</Filter>
-    </ClCompile>
     <ClCompile Include="Rectangle.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>

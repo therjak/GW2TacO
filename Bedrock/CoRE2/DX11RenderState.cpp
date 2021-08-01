@@ -27,17 +27,17 @@ bool CCoreDX11BlendState::Update() {
   for (int32_t x = 0; x < 8; x++) {
     desc.RenderTarget[x].BlendEnable = RenderTargetBlendStates[x].BlendEnable;
     desc.RenderTarget[x].SrcBlend =
-        DX11BlendFactors[RenderTargetBlendStates[x].SrcBlend];
+        DX11BlendFactorsAt(RenderTargetBlendStates[x].SrcBlend);
     desc.RenderTarget[x].DestBlend =
-        DX11BlendFactors[RenderTargetBlendStates[x].DestBlend];
+        DX11BlendFactorsAt(RenderTargetBlendStates[x].DestBlend);
     desc.RenderTarget[x].BlendOp =
-        DX11BlendOps[RenderTargetBlendStates[x].BlendOp];
+        DX11BlendOps[static_cast<uint8_t>(RenderTargetBlendStates[x].BlendOp)];
     desc.RenderTarget[x].SrcBlendAlpha =
-        DX11BlendFactors[RenderTargetBlendStates[x].SrcBlendAlpha];
+        DX11BlendFactorsAt(RenderTargetBlendStates[x].SrcBlendAlpha);
     desc.RenderTarget[x].DestBlendAlpha =
-        DX11BlendFactors[RenderTargetBlendStates[x].DestBlendAlpha];
-    desc.RenderTarget[x].BlendOpAlpha =
-        DX11BlendOps[RenderTargetBlendStates[x].BlendOpAlpha];
+        DX11BlendFactorsAt(RenderTargetBlendStates[x].DestBlendAlpha);
+    desc.RenderTarget[x].BlendOpAlpha = DX11BlendOps[static_cast<uint8_t>(
+        RenderTargetBlendStates[x].BlendOpAlpha)];
     desc.RenderTarget[x].RenderTargetWriteMask =
         RenderTargetBlendStates[x].RenderTargetWriteMask;
   }
@@ -87,7 +87,7 @@ bool CCoreDX11DepthStencilState::Update() {
   desc.DepthEnable = DepthEnable;
   desc.DepthWriteMask =
       ZWriteEnable ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
-  desc.DepthFunc = DX11ComparisonFunctions[DepthFunc];
+  desc.DepthFunc = DX11ComparisonFunctionsAt(DepthFunc);
   desc.StencilEnable = false;
 
   Dirty = false;
@@ -188,7 +188,7 @@ bool CCoreDX11SamplerState::Update() {
   desc.BorderColor[1] = BorderColor[1];
   desc.BorderColor[2] = BorderColor[2];
   desc.BorderColor[3] = BorderColor[3];
-  desc.ComparisonFunc = DX11ComparisonFunctions[ComparisonFunc];
+  desc.ComparisonFunc = DX11ComparisonFunctionsAt(ComparisonFunc);
   desc.Filter = DX11Filters[Filter];
   desc.MaxAnisotropy = MaxAnisotropy;
   desc.MaxLOD = MaxLOD;

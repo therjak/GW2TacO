@@ -1,5 +1,6 @@
 #include "DrawAPI.h"
 
+#include <array>
 #include <vector>
 
 #include "Application.h"
@@ -8,11 +9,11 @@
 #define VERTEXBUFFERVERTEXCOUNT (VERTEXBUFFERRECTCOUNT * 4)
 
 COREVERTEXATTRIBUTE WBGuiVertexFormat[] = {
-    COREVXATTR_POSITIONT4,
-    COREVXATTR_TEXCOORD2,
-    COREVXATTR_COLOR4,
+    COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4,
+    COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2,
+    COREVERTEXATTRIBUTE::COREVXATTR_COLOR4,
 
-    COREVXATTR_STOP,
+    COREVERTEXATTRIBUTE::COREVXATTR_STOP,
 };
 
 void CWBDrawAPI::AddDisplayRect(
@@ -189,7 +190,7 @@ WBGUIVERTEX Lerp(const WBGUIVERTEX& a, const WBGUIVERTEX& b, float t) {
 void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight,
                           std::array<WBGUIVERTEX, 6>& Vertices,
                           int32_t& VertexCount) {
-  WBGUIVERTEX NewVertices[6];
+  std::array<WBGUIVERTEX, 6> NewVertices;
   int32_t NewVertexCount = 0;
 
   if (VertexCount > 6) {
@@ -206,24 +207,28 @@ void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight,
         (S.Pos.x > x && KeepRight) || (S.Pos.x < x && !KeepRight);
 
     if (eInside) {
-      if (!sInside)
+      if (!sInside) {
         NewVertices[NewVertexCount++] =
             Lerp(S, E, (x - S.Pos.x) / (E.Pos.x - S.Pos.x));
+      }
       NewVertices[NewVertexCount++] = E;
-    } else if (sInside)
+    } else if (sInside) {
       NewVertices[NewVertexCount++] =
           Lerp(S, E, (x - S.Pos.x) / (E.Pos.x - S.Pos.x));
+    }
     S = E;
   }
 
-  for (int32_t y = 0; y < NewVertexCount; y++) Vertices[y] = NewVertices[y];
+  for (int32_t y = 0; y < NewVertexCount; y++) {
+    Vertices[y] = NewVertices[y];
+  }
   VertexCount = NewVertexCount;
 }
 
 void CWBDrawAPI::ClipTriY(int32_t y, bool KeepBottom,
                           std::array<WBGUIVERTEX, 6>& Vertices,
                           int32_t& VertexCount) {
-  WBGUIVERTEX NewVertices[6];
+  std::array<WBGUIVERTEX, 6> NewVertices;
   int32_t NewVertexCount = 0;
 
   WBGUIVERTEX S = Vertices[VertexCount - 1];
@@ -561,7 +566,9 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     LOG_WARN(
         "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 "
         "functionality");
-    if (Device->GetAPIType() == COREAPI_DX11) return false;
+    if (Device->GetAPIType() == COREDEVICEAPI::COREAPI_DX11) {
+      return false;
+    }
   }
 
   PxShader =
@@ -570,12 +577,14 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     LOG_WARN(
         "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 "
         "functionality");
-    if (Device->GetAPIType() == COREAPI_DX11) return false;
+    if (Device->GetAPIType() == COREDEVICEAPI::COREAPI_DX11) {
+      return false;
+    }
   }
 
   COREVERTEXATTRIBUTE* vx = WBGuiVertexFormat;
   std::vector<COREVERTEXATTRIBUTE> Att;
-  while (*vx != COREVXATTR_STOP) Att.emplace_back(*vx++);
+  while (*vx != COREVERTEXATTRIBUTE::COREVXATTR_STOP) Att.emplace_back(*vx++);
 
   VertexFormat = Device->CreateVertexFormat(Att, VxShader.get());
   if (!VertexFormat) {
@@ -591,10 +600,10 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   }
 
   GuiBlendState->SetBlendEnable(0, true);
-  GuiBlendState->SetSrcBlend(0, COREBLEND_SRCALPHA);
-  GuiBlendState->SetDestBlend(0, COREBLEND_INVSRCALPHA);
-  GuiBlendState->SetSrcBlendAlpha(0, COREBLEND_ONE);
-  GuiBlendState->SetDestBlendAlpha(0, COREBLEND_INVSRCALPHA);
+  GuiBlendState->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_SRCALPHA);
+  GuiBlendState->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
+  GuiBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ONE);
+  GuiBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
 
   GuiRasterState = Device->CreateRasterizerState();
   if (!GuiRasterState) {
@@ -611,7 +620,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     return false;
   }
 
-  GuiZState->SetDepthFunc(CORECMP_LEQUAL);
+  GuiZState->SetDepthFunc(CORECOMPARISONFUNCTION::CORECMP_LEQUAL);
 
   ResolutionData = Device->CreateConstantBuffer();
   if (!ResolutionData) {

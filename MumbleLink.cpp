@@ -295,18 +295,18 @@ CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
   float rotation = ignoreRotation ? 0 : compassRotation;
 
   miniMapTrafo *=
-      CMatrix4x4().Translation(CVector3(-mapOffset.x, -mapOffset.y, 0.0));
-  miniMapTrafo *= CMatrix4x4().Scaling(CVector3(1, -1, 1));
+      CMatrix4x4::Translation(CVector3(-mapOffset.x, -mapOffset.y, 0.0));
+  miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, -1, 1));
   miniMapTrafo *= CMatrix4x4(CQuaternion(0, 0, rotation));
-  miniMapTrafo *= CMatrix4x4().Scaling(CVector3(1, 1, 1) / 24.0f);
+  miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, 1, 1) / 24.0f);
 
   CVector2 offset =
       -(CVector2(mapCenterX, mapCenterY) - CVector2(playerX, playerY))
            .Rotated(CVector2(0, 0), rotation);
-  miniMapTrafo *= CMatrix4x4().Translation(CVector3(offset.x, offset.y, 0.0));
+  miniMapTrafo *= CMatrix4x4::Translation(CVector3(offset.x, offset.y, 0.0));
   miniMapTrafo *=
-      CMatrix4x4().Scaling(CVector3(1, 1, 1) / mapScale * GetUIScale());
-  miniMapTrafo *= CMatrix4x4().Translation(
+      CMatrix4x4::Scaling(CVector3(1, 1, 1) / mapScale * GetUIScale());
+  miniMapTrafo *= CMatrix4x4::Translation(
       CVector3(float(miniRect.Center().x), float(miniRect.Center().y), 0.0));
 
   return miniMapTrafo;

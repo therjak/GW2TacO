@@ -87,7 +87,6 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="CrashTracker.cpp" />
     <ClCompile Include="CriticalSection.cpp" />
-    <ClCompile Include="EnumHelpers.cpp" />
     <ClCompile Include="FileList.cpp" />
     <ClCompile Include="hasher.cpp" />
     <ClCompile Include="ImageDecompressor.cpp" />

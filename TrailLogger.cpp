@@ -111,8 +111,8 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
           App->GetDevice()->SetTexture(CORESMP_PS0, trailTexture.get());
 
           constBuffer->Reset();
-          constBuffer->AddData(cam, 16 * 4);
-          constBuffer->AddData(persp, 16 * 4);
+          constBuffer->AddData(static_cast<float*>(cam), 16 * 4);
+          constBuffer->AddData(static_cast<float*>(persp), 16 * 4);
           constBuffer->AddData(&mumbleLink.charPosition, 12);
           constBuffer->AddData(&one, 4);
           constBuffer->AddData(data.data(), 16);
@@ -160,14 +160,14 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
       // -2.0f / clientRect.Height(), 0.0f ) ); camera *=
       // CMatrix4x4().Translation( CVector3( -1.0f, -1.0f, 0.5 ) );
 
-      camera *= CMatrix4x4().Translation(
+      camera *= CMatrix4x4::Translation(
           -CVector3(float(miniRect.x1), float(miniRect.y1), 0));
-      camera *= CMatrix4x4().Scaling(
+      camera *= CMatrix4x4::Scaling(
           CVector3(clientRect.Width() / float(miniRect.Width()),
                    clientRect.Height() / float(miniRect.Height()), 0));
-      camera *= CMatrix4x4().Scaling(CVector3(
+      camera *= CMatrix4x4::Scaling(CVector3(
           2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
-      camera *= CMatrix4x4().Translation(CVector3(-1.0f, 1.0f, 0.5));
+      camera *= CMatrix4x4::Translation(CVector3(-1.0f, 1.0f, 0.5));
       CMatrix4x4 perspective;
       perspective.SetIdentity();
 
@@ -208,9 +208,9 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
       CMatrix4x4 camera =
           mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
 
-      camera *= CMatrix4x4().Scaling(CVector3(
+      camera *= CMatrix4x4::Scaling(CVector3(
           2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
-      camera *= CMatrix4x4().Translation(CVector3(-1.0f, 1.0f, 0.5));
+      camera *= CMatrix4x4::Translation(CVector3(-1.0f, 1.0f, 0.5));
       // camera *= CMatrix4x4().Scaling( CVector3( 10, 10, 1 ) );
       CMatrix4x4 perspective;
       perspective.SetIdentity();
@@ -478,15 +478,17 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
       code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
 
   COREVERTEXATTRIBUTE TrailVertexFormat[] = {
-      COREVXATTR_POSITIONT4, COREVXATTR_TEXCOORD2,
-      COREVXATTR_TEXCOORD4,  COREVXATTR_COLOR4,
+      COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4,
+      COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2,
+      COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD4,
+      COREVERTEXATTRIBUTE::COREVXATTR_COLOR4,
 
-      COREVXATTR_STOP,
+      COREVERTEXATTRIBUTE::COREVXATTR_STOP,
   };
 
   COREVERTEXATTRIBUTE* vx = TrailVertexFormat;
   std::vector<COREVERTEXATTRIBUTE> Att;
-  while (*vx != COREVXATTR_STOP) Att.emplace_back(*vx++);
+  while (*vx != COREVERTEXATTRIBUTE::COREVXATTR_STOP) Att.emplace_back(*vx++);
 
   vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
   if (!vertexFormat) {
@@ -815,8 +817,8 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
   data[0] *= typeData.animSpeed;
 
   constBuffer->Reset();
-  constBuffer->AddData(cam, 16 * 4);
-  constBuffer->AddData(persp, 16 * 4);
+  constBuffer->AddData(static_cast<float*>(cam), 16 * 4);
+  constBuffer->AddData(static_cast<float*>(persp), 16 * 4);
   constBuffer->AddData(&mumbleLink.charPosition, 12);
   constBuffer->AddData(&one, 4);
   constBuffer->AddData(data.data(), 16);

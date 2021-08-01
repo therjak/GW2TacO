@@ -26,7 +26,7 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
 
   bool Create(const int32_t XRes, const int32_t YRes, const uint8_t* Data,
               const char BytesPerPixel = 4,
-              const COREFORMAT Format = COREFMT_A8R8G8B8,
+              const COREFORMAT Format = COREFORMAT::COREFMT_A8R8G8B8,
               const bool RenderTarget = false) override;
   bool Create(const uint8_t* Data, const int32_t Size) override;
   bool CreateDepthBuffer(const int32_t XRes, const int32_t YRes,

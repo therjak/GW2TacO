@@ -52,49 +52,49 @@ bool CCoreDX11VertexFormat::Create(
     vxdecl[x].InstanceDataStepRate = 0;
 
     switch (Attributes[x]) {
-      case COREVXATTR_POSITION3: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_POSITION3: {
         vxdecl[x].SemanticName = "Position";
         vxdecl[x].Format = DXGI_FORMAT_R32G32B32_FLOAT;
         vxdecl[x].SemanticIndex = PosUsages++;
         Size += 12;
       } break;
-      case COREVXATTR_POSITION4: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_POSITION4: {
         vxdecl[x].SemanticName = "Position";
         vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         vxdecl[x].SemanticIndex = PosUsages++;
         Size += 16;
       } break;
-      case COREVXATTR_NORMAL3: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_NORMAL3: {
         vxdecl[x].SemanticName = "Normal";
         vxdecl[x].Format = DXGI_FORMAT_R32G32B32_FLOAT;
         vxdecl[x].SemanticIndex = NormUsages++;
         Size += 12;
       } break;
-      case COREVXATTR_TEXCOORD2: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2: {
         vxdecl[x].SemanticName = "Texcoord";
         vxdecl[x].Format = DXGI_FORMAT_R32G32_FLOAT;
         vxdecl[x].SemanticIndex = UVUsages++;
         Size += 8;
       } break;
-      case COREVXATTR_TEXCOORD4: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD4: {
         vxdecl[x].SemanticName = "Texcoord";
         vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         vxdecl[x].SemanticIndex = UVUsages++;
         Size += 16;
       } break;
-      case COREVXATTR_COLOR4: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_COLOR4: {
         vxdecl[x].SemanticName = "Color";
         vxdecl[x].Format = DXGI_FORMAT_B8G8R8A8_UNORM;
         vxdecl[x].SemanticIndex = ColUsages++;
         Size += 4;
       } break;
-      case COREVXATTR_COLOR16: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_COLOR16: {
         vxdecl[x].SemanticName = "Color";
         vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         vxdecl[x].SemanticIndex = ColUsages++;
         Size += 16;
       } break;
-      case COREVXATTR_POSITIONT4: {
+      case COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4: {
         vxdecl[x].SemanticName = "PositionT";
         vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
         vxdecl[x].SemanticIndex = PosUsages++;

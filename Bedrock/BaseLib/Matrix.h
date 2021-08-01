@@ -13,13 +13,12 @@ class CMatrix4x4 {
       float _31, _32, _33, _34;
       float _41, _42, _43, _44;
     };
-    float m[4][4];
+    float m[4][4] = {0};
   };
 
  public:
-  CMatrix4x4();
+  constexpr CMatrix4x4() = default;
 
-  CMatrix4x4(const float* f);
   CMatrix4x4(const CMatrix4x4& mx);
   CMatrix4x4(float f11, float f12, float f13, float f14,  //
              float f21, float f22, float f23, float f24,  //
@@ -29,8 +28,8 @@ class CMatrix4x4 {
 
   float& operator()(uint32_t Row, uint32_t Col);
   float operator()(uint32_t Row, uint32_t Col) const;
-  operator float*();
-  operator const float*() const;
+  explicit operator float*();
+  explicit operator const float*() const;
   CVector4 Row(int32_t x) const;
   CVector4 Col(int32_t x) const;
   CMatrix4x4& operator*=(const CMatrix4x4& mat);

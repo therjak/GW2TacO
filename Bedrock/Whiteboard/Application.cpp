@@ -948,10 +948,10 @@ void CWBApplication::TakeScreenshot() {
   auto b = DrawAPI->GetDevice()->CreateBlendState();
   b->SetBlendEnable(0, true);
   b->SetIndependentBlend(true);
-  b->SetSrcBlend(0, COREBLEND_ZERO);
-  b->SetDestBlend(0, COREBLEND_ONE);
-  b->SetSrcBlendAlpha(0, COREBLEND_ONE);
-  b->SetDestBlendAlpha(0, COREBLEND_ZERO);
+  b->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_ZERO);
+  b->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_ONE);
+  b->SetSrcBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ONE);
+  b->SetDestBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ZERO);
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
   DrawAPI->SetCropRect(CRect(0, 0, XRes, YRes));

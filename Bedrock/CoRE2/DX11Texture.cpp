@@ -46,7 +46,8 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
                                 const uint8_t* Data, const char BytesPerPixel,
                                 const COREFORMAT format,
                                 const bool rendertarget) {
-  if (xres <= 0 || yres <= 0 || format == COREFMT_UNKNOWN) return false;
+  if (xres <= 0 || yres <= 0 || format == COREFORMAT::COREFMT_UNKNOWN)
+    return false;
   Release();
 
   D3D11_TEXTURE2D_DESC tex;
@@ -57,7 +58,7 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
   // tex.MipLevels = 1;// rendertarget ? 0 : 1;
   tex.MipLevels = rendertarget ? 0 : 1;
   tex.MiscFlags = rendertarget ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
-  tex.Format = DX11Formats[format];
+  tex.Format = DX11FormatsAt(format);
   tex.SampleDesc.Count = 1;
   tex.SampleDesc.Quality = 0;
   tex.BindFlags = D3D11_BIND_SHADER_RESOURCE |
@@ -87,7 +88,7 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
 
   if (rendertarget) {
     D3D11_RENDER_TARGET_VIEW_DESC rt;
-    rt.Format = DX11Formats[Format];
+    rt.Format = DX11FormatsAt(Format);
     rt.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
     rt.Texture2D.MipSlice = 0;
     res = Dev->CreateRenderTargetView(TextureHandle, &rt, &RTView);
@@ -181,7 +182,8 @@ void CCoreDX11Texture2D::OnDeviceLost() {
 }
 
 void CCoreDX11Texture2D::OnDeviceReset() {
-  if (RenderTarget && XRes > 0 && YRes > 0 && Format != COREFMT_UNKNOWN)
+  if (RenderTarget && XRes > 0 && YRes > 0 &&
+      Format != COREFORMAT::COREFMT_UNKNOWN)
     BASEASSERT(Create(XRes, YRes, nullptr, 4, Format, RenderTarget));
 }
 
@@ -415,7 +417,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
 
   XRes = xres;
   YRes = yres;
-  Format = COREFMT_UNKNOWN;
+  Format = COREFORMAT::COREFMT_UNKNOWN;
 
   return true;
 }

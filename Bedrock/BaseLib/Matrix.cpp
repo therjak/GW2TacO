@@ -223,14 +223,6 @@ CMatrix4x4::CMatrix4x4(const CMatrix4x4& mx) {
   memcpy(&_11, &mx._11, 16 * sizeof(float));
 }
 
-CMatrix4x4::CMatrix4x4(const float* f) {
-  BASEASSERT(f);
-  if (!f) return;
-  memcpy(&_11, f, 16 * sizeof(float));
-}
-
-CMatrix4x4::CMatrix4x4() = default;
-
 float& CMatrix4x4::operator()(uint32_t Row, uint32_t Col) {
   BASEASSERTR(Row >= 0 && Col >= 0 && Row < 4 && Col < 4, m[0][0]);
   return m[Row & 3][Col & 3];

@@ -94,7 +94,6 @@
     <ClCompile Include="DX11Texture.cpp" />
     <ClCompile Include="DX11VertexBuffer.cpp" />
     <ClCompile Include="DX11VertexFormat.cpp" />
-    <ClCompile Include="Enums.cpp" />
     <ClCompile Include="RenderState.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="Shader.cpp" />
