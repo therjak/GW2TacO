@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #include "Bedrock/UtilLib/miniz.h"
 #include "Bedrock/Whiteboard/Application.h"
 #include "Bedrock/Whiteboard/Button.h"

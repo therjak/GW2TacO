@@ -2,6 +2,11 @@
 #include <process.h>
 #include <windowsx.h>
 
+// Needs windows
+#include <TlHelp32.h>
+#include <imm.h>
+#include <winhttp.h>
+
 #include <memory>
 #include <mutex>
 #include <string>
@@ -11,6 +16,7 @@
 
 #include "Bedrock/BaseLib/Timer.h"
 #include "Bedrock/BaseLib/string_format.h"
+#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #include "Bedrock/UtilLib/miniz.h"
 #include "BuildCount.h"
 #include "GW2API.h"
@@ -32,6 +38,8 @@
 #include "gw2tactical.h"
 #include "resource.h"
 
+#pragma comment(lib, "Imm32.lib")
+#pragma comment(lib, "winhttp.lib")
 #pragma comment(lib, "Dwmapi.lib")
 
 std::unique_ptr<CWBApplication> App;
@@ -256,8 +264,6 @@ LONG WINAPI CrashOverride(struct _EXCEPTION_POINTERS* excpInfo) {
   return res;
 }
 
-#include <TlHelp32.h>
-
 DWORD GetProcessIntegrityLevel(HANDLE hProcess) {
   HANDLE hToken;
 
@@ -324,9 +330,6 @@ bool IsProcessRunning(DWORD pid) {
 
   return procRunning;
 }
-
-#include <winhttp.h>
-#pragma comment(lib, "winhttp.lib")
 
 std::string FetchHTTPS(std::string_view url, std::string_view path) {
   auto wurl = string2wstring(url);
@@ -611,9 +614,6 @@ void FetchMarkerPackOnline(std::string_view ourl) {
 }
 
 void ImportMarkerPack(CWBApplication* App, std::string_view zipFile);
-
-#include <imm.h>
-#pragma comment(lib, "Imm32.lib")
 
 void FlushZipDict();
 
