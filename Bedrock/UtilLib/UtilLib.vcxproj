@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jsonxx.h" />
+    <ClInclude Include="miniz.h" />
     <ClInclude Include="PNGDecompressor.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />

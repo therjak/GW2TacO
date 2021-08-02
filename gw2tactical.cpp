@@ -13,7 +13,7 @@
 #include "Bedrock/BaseLib/string_format.h"
 #include "Bedrock/UtilLib/PNGDecompressor.h"
 #include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/UtilLib/miniz.c"
+#include "Bedrock/UtilLib/miniz.h"
 #include "Bedrock/Whiteboard/Application.h"
 #include "GW2API.h"
 #include "Language.h"

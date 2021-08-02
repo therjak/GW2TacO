@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Bedrock/UtilLib/miniz.h"
 #include "Bedrock/Whiteboard/Application.h"
 #include "Bedrock/Whiteboard/Button.h"
 #include "OverlayConfig.h"
@@ -310,9 +311,6 @@ void GW2TrailDisplay::DoTrailLogging(int32_t mapID, CVector3 charPos) {
 }
 
 void GW2TrailDisplay::ClearEditedTrail() { editedTrail.reset(); }
-
-#define MINIZ_HEADER_FILE_ONLY
-#include "Bedrock/UtilLib/miniz.c"
 
 mz_zip_archive* OpenZipFile(std::string_view zipFile);
 

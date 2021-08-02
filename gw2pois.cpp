@@ -11,6 +11,7 @@
 
 #include "Bedrock/BaseLib/Timer.h"
 #include "Bedrock/BaseLib/string_format.h"
+#include "Bedrock/UtilLib/miniz.h"
 #include "BuildCount.h"
 #include "GW2API.h"
 #include "GW2TacO.h"
@@ -526,9 +527,6 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
 
   return true;
 }
-
-#define MINIZ_HEADER_FILE_ONLY
-#include "Bedrock/UtilLib/miniz.c"
 
 std::mutex loadListMutex;
 std::vector<std::string> loadList;
