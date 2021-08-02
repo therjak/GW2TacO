@@ -54,7 +54,7 @@
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="jsonxx.cpp" />
+    <ClCompile Include="jsonxx.cc" />
     <ClCompile Include="miniz.c" />
     <ClCompile Include="PNGDecompressor.cpp" />
     <ClCompile Include="stb_vorbis.c" />

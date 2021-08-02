@@ -33,7 +33,7 @@
     <ClCompile Include="stb_vorbis.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="jsonxx.cpp">
+    <ClCompile Include="jsonxx.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,10 +53,10 @@
     <ClInclude Include="stb_image_write.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="jsonxx.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="miniz.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jsonxx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
