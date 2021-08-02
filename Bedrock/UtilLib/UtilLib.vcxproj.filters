@@ -16,9 +16,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TODO.txt" />
-    <None Include="msxml3.tlh">
-      <Filter>Header Files</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="XMLDocument.cpp">

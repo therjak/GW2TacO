@@ -51,7 +51,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="msxml3.tlh" />
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
