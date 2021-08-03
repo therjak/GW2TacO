@@ -2035,13 +2035,19 @@ CWBItem* CWBItem::FindParentByID(std::string_view value,
 CWBItem* CWBItem::ChildSearcherFunct(std::string_view value,
                                      std::string_view type) {
   if (GetID() == value) {
-    if (type.empty()) return this;
-    if (InstanceOf(type)) return this;
+    if (type.empty()) {
+      return this;
+    }
+    if (InstanceOf(type)) {
+      return this;
+    }
   }
 
   for (auto& c : Children) {
     CWBItem* i = c->ChildSearcherFunct(value, type);
-    if (i) return i;
+    if (i) {
+      return i;
+    }
   }
 
   return nullptr;

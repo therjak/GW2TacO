@@ -661,11 +661,6 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         settings->AddSeparator();
 
         settings->AddItem(
-            DICT("toggleupdatecheck") +
-                (GetConfigValue("CheckForUpdates") ? " [x]" : " [ ]"),
-            Menu_ToggleVersionCheck);
-
-        settings->AddItem(
             DICT("hideonload") +
                 (GetConfigValue("HideOnLoadingScreens") ? " [x]" : " [ ]"),
             Menu_HideOnLoadingScreens);
@@ -1856,12 +1851,17 @@ void GW2TacO::OpenWindow(std::string_view s) {
   if (itm) {
     bool openState = false;
 
-    if (itm->IsHidden()) openState = true;
+    if (itm->IsHidden()) {
+      openState = true;
+    }
 
     itm->Hide(openState);
 
     // delete itm;
     SetWindowOpenState(s, openState);
+    if (!openState) {
+      itm->MarkForDeletion();
+    }
     return;
   }
 
