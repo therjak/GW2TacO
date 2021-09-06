@@ -1855,7 +1855,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
       openState = true;
     }
 
-    itm->Hide(openState);
+    itm->Hide(!openState);
 
     // delete itm;
     SetWindowOpenState(s, openState);
