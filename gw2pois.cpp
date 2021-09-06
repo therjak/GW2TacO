@@ -953,7 +953,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         hideOnLoadingScreens = GetConfigValue("HideOnLoadingScreens");
         lastSlowEventTime = globalTimer.GetTime();
         gw2WindowCount = 0;
-        gw2Window = nullptr;
+        gw2WindowFromPid = nullptr;
         EnumWindows(gw2WindowFromPIDFunction, mumbleLink.pID);
         gw2Window = gw2WindowFromPid;
 
