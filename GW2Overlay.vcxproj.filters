@@ -187,7 +187,7 @@
     <Xml Include="poidata.xml" />
     <Xml Include="UI.xml" />
     <Xml Include="maptimer.xml" />
-    <Xml Include="TacO_Language_cn.xml">
+    <Xml Include="TacO_Language_en.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>

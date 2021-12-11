@@ -45,7 +45,7 @@ bool CCoreDX11VertexFormat::Create(
   memset(vxdecl.get(), 0,
          sizeof(D3D11_INPUT_ELEMENT_DESC) * (Attributes.size() + 1));
 
-  for (int32_t x = 0; x < Attributes.size(); x++) {
+  for (size_t x = 0; x < Attributes.size(); x++) {
     vxdecl[x].InputSlot = 0;
     vxdecl[x].AlignedByteOffset = Size;
     vxdecl[x].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;

@@ -119,6 +119,7 @@ enum MainMenuItems {
   Menu_ToggleVsync,
   Menu_ToggleHPGrid,
   Menu_ToggleCompactMapTimer,
+  Menu_ToggleMapTimerCategories,
   Menu_ToggleMouseHighlightOutline,
   Menu_MouseHighlightColor0,
   Menu_MouseHighlightColor1,
@@ -539,6 +540,10 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
               DICT("compactmaptimer") +
                   (GetConfigValue("MapTimerCompact") ? " [x]" : " [ ]"),
               Menu_ToggleCompactMapTimer);
+          ctx->AddItem(
+              DICT("maptimercategories") +
+                  (GetConfigValue("MapTimerCategories") ? " [x]" : " [ ]"),
+              Menu_ToggleMapTimerCategories);
 
           GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
               App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
@@ -1106,6 +1111,9 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           return true;
         case Menu_ToggleCompactMapTimer:
           ToggleConfigValue("MapTimerCompact");
+          return true;
+        case Menu_ToggleMapTimerCategories:
+          ToggleConfigValue("MapTimerCategories");
           return true;
         case Menu_ToggleMouseHighlightOutline:
           ToggleConfigValue("MouseHighlightOutline");

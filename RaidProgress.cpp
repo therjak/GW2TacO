@@ -177,7 +177,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
         f->Write(API, r.shortName.c_str(), CPoint(0, posy + 1),
                  CColor{0xffffffff});
       }
-      for (int y = 0; y < r.wings.size(); y++) {
+      for (size_t y = 0; y < r.wings.size(); y++) {
         auto& w = r.wings[y];
 
         if (!compact)

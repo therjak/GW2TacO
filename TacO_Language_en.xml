@@ -35,6 +35,7 @@
   <token key="openmaptimer" value="Open Map Timer Window"/>
   <token key="closemaptimer" value="Close Map Timer Window"/>
   <token key="compactmaptimer" value="Compact Map Timer"/>
+  <token key="maptimercategories" value="Show Map Categories"/>  
   <token key="configmaptimer" value="Configure Map Timer"/>
   <token key="opentswindow" value="Open Teamspeak Window"/>
   <token key="closetswindow" value="Close Teamspeak Window"/>

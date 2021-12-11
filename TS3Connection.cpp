@@ -10,14 +10,16 @@ TS3Connection::TS3Connection() { InitWinsock(); }
 TS3Connection::~TS3Connection() { DeinitWinsock(); }
 
 bool TS3Connection::TryConnect() {
-  if (connection.IsConnected())
+  if (connection.IsConnected()) {
     return true;
+  }
 
   handlers.clear();
 
   bool connected = connection.Connect("localhost", 25639);
-  if (!connected)
+  if (!connected) {
     return false;
+  }
 
   ReadLine();
   ReadLine();
@@ -34,8 +36,9 @@ void TS3Connection::TryValidateClientID() {
       currentHandlerID = handler.second.id;
       CommandResponse use =
           SendCommand(FormatString("use %d", currentHandlerID));
-      if (use.ErrorCode)
+      if (use.ErrorCode) {
         continue;
+      }
       CommandResponse whoami = SendCommand("whoami");
       handlers[currentHandlerID].Connected = whoami.ErrorCode != 1794;
 
@@ -72,8 +75,9 @@ void TS3Connection::TryValidateClientID() {
 void TS3Connection::Tick() {
   if (!connection.IsConnected()) {
     if (FindWindow(nullptr, "TeamSpeak 3")) {
-      if (!TryConnect())
+      if (!TryConnect()) {
         return;
+      }
     } else
       return;
   } else {
@@ -86,8 +90,9 @@ void TS3Connection::Tick() {
       LastPingTime = GetTime();
     }
 
-    if (!authenticated)
+    if (!authenticated) {
       return;
+    }
   }
 
   ProcessNotifications();
@@ -102,15 +107,16 @@ void TS3Connection::InitConnection() {
   if (HasConfigString("TS3APIKey")) {
     std::string apiKey = GetConfigString("TS3APIKey");
     auto response =
-        SendCommand("auth apikey=" + apiKey); // 3P9O-GWJ8-1TKI-OY1F-AX0T-BPQK
+        SendCommand("auth apikey=" + apiKey);  // 3P9O-GWJ8-1TKI-OY1F-AX0T-BPQK
     if (response.ErrorCode)
       authenticated = false;
     else
       authenticated = true;
   }
 
-  if (!authenticated)
+  if (!authenticated) {
     return;
+  }
 
   auto notifyresponse =
       SendCommand("clientnotifyregister schandlerid=0 event=any");
@@ -126,8 +132,9 @@ void TS3Connection::InitConnection() {
         std::sscanf(schandler.c_str(), "schandlerid=%d", &handler.id);
         handlers[handler.id] = handler;
         CommandResponse use = SendCommand(FormatString("use %d", handler.id));
-        if (use.ErrorCode)
+        if (use.ErrorCode) {
           continue;
+        }
         CommandResponse whoami = SendCommand(FormatString("whoami"));
         handlers[handler.id].Connected = whoami.ErrorCode != 1794;
 
@@ -164,12 +171,13 @@ void TS3Connection::InitConnection() {
   SendCommand(FormatString("use %d", currentHandlerID));
 }
 
-TS3Connection::CommandResponse
-TS3Connection::SendCommand(std::string_view message) {
+TS3Connection::CommandResponse TS3Connection::SendCommand(
+    std::string_view message) {
   CommandResponse response;
 
-  if (!connection.IsConnected())
+  if (!connection.IsConnected()) {
     return response;
+  }
 
   ProcessNotifications();
 
@@ -190,11 +198,13 @@ TS3Connection::SendCommand(std::string_view message) {
       if (msg.size() >= 2)
         std::sscanf(msg[1].c_str(), "id=%d", &response.ErrorCode);
 
-      if (response.ErrorCode == 1796)
+      if (response.ErrorCode == 1796) {
         authenticated = false;
+      }
 
-      if (msg.size() >= 3)
+      if (msg.size() >= 3) {
         response.Message = msg[2].substr(4);
+      }
 
       if (response.ErrorCode)
         LOG_DBG("[GW2TacO] command %s response: %d %s",
@@ -208,8 +218,9 @@ TS3Connection::SendCommand(std::string_view message) {
 }
 
 void TS3Connection::ProcessNotifications() {
-  while (connection.GetLength())
+  while (connection.GetLength()) {
     ProcessNotification(ReadLine());
+  }
 }
 
 int ClientTalkTimeSorter(const TS3Connection::TS3Client& a,
@@ -228,7 +239,7 @@ void TS3Connection::ProcessNotification(std::string_view s) {
   if (cmd[0] == "notifytalkstatuschange") {
     int32_t clientid = -1;
     int32_t status = -1;
-    for (int32_t x = 1; x < cmd.size(); x++) {
+    for (size_t x = 1; x < cmd.size(); x++) {
       if (cmd[x].find("status=") == 0)
         std::sscanf(cmd[x].c_str(), "status=%d", &status);
       if (cmd[x].find("clid=") == 0)
@@ -253,7 +264,7 @@ void TS3Connection::ProcessNotification(std::string_view s) {
   if (cmd[0] == "notifyclientmoved") {
     int32_t clientid = -1;
     int32_t channelid = -1;
-    for (int32_t x = 1; x < cmd.size(); x++) {
+    for (size_t x = 1; x < cmd.size(); x++) {
       if (cmd[x].find("ctid=") == 0)
         std::sscanf(cmd[x].c_str(), "ctid=%d", &channelid);
       if (cmd[x].find("clid=") == 0)
@@ -277,7 +288,7 @@ void TS3Connection::ProcessNotification(std::string_view s) {
   }
 
   if (cmd[0] == "notifyconnectstatuschange") {
-    for (int32_t x = 1; x < cmd.size(); x++) {
+    for (size_t x = 1; x < cmd.size(); x++) {
       if (cmd[x].find("status=disconnected") == 0) {
         handlers[schandlerid].Connected = false;
         handlers[schandlerid].Channels.clear();
@@ -331,12 +342,14 @@ void TS3Connection::ProcessNotification(std::string_view s) {
 
   if (cmd[0] == "notifyclientleftview") {
     int32_t clientid = -1;
-    for (int32_t x = 1; x < cmd.size(); x++) {
-      if (cmd[x].find("clid=") == 0)
+    for (size_t x = 1; x < cmd.size(); x++) {
+      if (cmd[x].find("clid=") == 0) {
         std::sscanf(cmd[x].c_str(), "clid=%d", &clientid);
+      }
     }
-    if (clientid >= 0)
+    if (clientid >= 0) {
       handlers[schandlerid].Clients.erase(clientid);
+    }
     return;
   }
 
@@ -354,19 +367,22 @@ void TS3Connection::ProcessNotification(std::string_view s) {
 
   if (cmd[0] == "notifyclientupdated") {
     int32_t clientid = -1;
-    for (int32_t x = 1; x < cmd.size(); x++) {
-      if (cmd[x].find("clid=") == 0)
+    for (size_t x = 1; x < cmd.size(); x++) {
+      if (cmd[x].find("clid=") == 0) {
         std::sscanf(cmd[x].c_str(), "clid=%d", &clientid);
+      }
     }
 
     if (clientid >= 0) {
-      for (int32_t x = 1; x < cmd.size(); x++) {
-        if (cmd[x].find("client_input_muted=") == 0)
+      for (size_t x = 1; x < cmd.size(); x++) {
+        if (cmd[x].find("client_input_muted=") == 0) {
           std::sscanf(cmd[x].c_str(), "client_input_muted=%d",
                       &handlers[schandlerid].Clients[clientid].inputmuted);
-        if (cmd[x].find("client_output_muted=") == 0)
+        }
+        if (cmd[x].find("client_output_muted=") == 0) {
           std::sscanf(cmd[x].c_str(), "client_output_muted=%d",
                       &handlers[schandlerid].Clients[clientid].outputmuted);
+        }
       }
     }
     return;
@@ -386,15 +402,18 @@ void TS3Connection::ProcessNotification(std::string_view s) {
 }
 
 std::string TS3Connection::ReadLine() {
-  if (!connection.IsConnected())
+  if (!connection.IsConnected()) {
     return "";
+  }
 
   std::string lne = connection.ReadLine();
   if (connection.GetLength()) {
     char c;
-    if (connection.Peek(&c, 1))
-      if (c == '\r')
+    if (connection.Peek(&c, 1)) {
+      if (c == '\r') {
         c = connection.ReadByte();
+      }
+    }
   }
   return lne;
 }
@@ -477,46 +496,48 @@ std::string TS3Connection::unescape(std::string_view string) {
   std::string result;
   for (uint32_t x = 0; x < string.size(); x++) {
     if (string[x] == '\\') {
-      if (x == string.size() - 1)
+      if (x == string.size() - 1) {
         break;
+      }
 
-      if (x)
+      if (x) {
         result += string.substr(0, x);
+      }
 
       switch (string[x + 1]) {
-      case '\\':
-        result += "\\";
-      case '/':
-        result += "/";
-      case 's':
-        result += " ";
-        break;
-      case 'p':
-        result += "|";
-        break;
-      case 'a':
-        result += "\a";
-        break;
-      case 'b':
-        result += "\b";
-        break;
-      case 'f':
-        result += "\f";
-        break;
-      case 'n':
-        result += "\n";
-        break;
-      case 'r':
-        result += "\r";
-        break;
-      case 't':
-        result += "\t";
-        break;
-      case 'v':
-        result += "\v";
-        break;
-      default:
-        break;
+        case '\\':
+          result += "\\";
+        case '/':
+          result += "/";
+        case 's':
+          result += " ";
+          break;
+        case 'p':
+          result += "|";
+          break;
+        case 'a':
+          result += "\a";
+          break;
+        case 'b':
+          result += "\b";
+          break;
+        case 'f':
+          result += "\f";
+          break;
+        case 'n':
+          result += "\n";
+          break;
+        case 'r':
+          result += "\r";
+          break;
+        case 't':
+          result += "\t";
+          break;
+        case 'v':
+          result += "\v";
+          break;
+        default:
+          break;
       }
 
       string = string.substr(x + 2);

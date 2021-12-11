@@ -386,7 +386,7 @@
   <ItemGroup>
     <Xml Include="maptimer.xml" />
     <Xml Include="poidata.xml" />
-    <Xml Include="TacO_Language_cn.xml" />
+    <Xml Include="TacO_Language_en.xml" />
     <Xml Include="UI.xml" />
   </ItemGroup>
   <ItemGroup>

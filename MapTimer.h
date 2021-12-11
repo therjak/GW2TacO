@@ -17,6 +17,7 @@ class GW2MapTimer : public CWBItem {
   struct Map {
     std::string name;
     std::string chestId;
+    std::string category;
     int Length;
     int Start;
     std::string id;
@@ -24,9 +25,14 @@ class GW2MapTimer : public CWBItem {
     std::vector<Event> events;
   };
 
+  struct Category {
+    std::string id;
+    std::string name;
+    CColor color;
+  };
+
   CPoint lastpos;
-  void OnDraw(CWBDrawAPI* API) override;
-  void SetLayout(CXMLNode& node);
+  int32_t lastypos = -1;
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
@@ -40,8 +46,18 @@ class GW2MapTimer : public CWBItem {
 
   LIGHTWEIGHT_CRITICALSECTION critSec;
 
+  bool IsScrollbarVisible();
+  void OnResize(const CSize& s) override;
+  int32_t GetScrollbarStep();
+  CWBItem* GetItemUnderMouse(CPoint& Point, CRect& CropRect,
+                             WBMESSAGE MessageType) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  void SetLayout(CXMLNode& node);
+  void UpdateScrollbarData(int ypos, const CRect& cl);
+
  public:
   std::vector<Map> maps;
+  std::unordered_map<std::string, Category> categories;
 
   GW2MapTimer(CWBItem* Parent, CRect Position);
   static inline std::shared_ptr<GW2MapTimer> Create(CWBItem* Parent,
@@ -57,7 +73,4 @@ class GW2MapTimer : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   WB_DECLARE_GUIITEM(_T( "maptimer" ), CWBItem);
-
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
 };

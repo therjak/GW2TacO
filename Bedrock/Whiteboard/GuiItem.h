@@ -201,13 +201,6 @@ class CWBItem : public IWBCSS {
   virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
                                            int32_t& a2, int32_t& thumbsize,
                                            int32_t& thumbpos);
-  // returns the highlight areas of the scrollbar in client space
-  virtual bool GetHScrollbarRectangles(CRect& button1, CRect& Scrollup,
-                                       CRect& Thumb, CRect& Scrolldown,
-                                       CRect& button2);
-  virtual bool GetVScrollbarRectangles(CRect& button1, CRect& Scrollup,
-                                       CRect& Thumb, CRect& Scrolldown,
-                                       CRect& button2);
   virtual bool ScrollbarRequired(CWBScrollbarParams& s);
   virtual int32_t CalculateScrollbarMovement(CWBScrollbarParams& s,
                                              int32_t scrollbarsize,
@@ -241,8 +234,17 @@ class CWBItem : public IWBCSS {
   CWBApplication* App = nullptr;
   CWBItem* ChildInFocus = nullptr;
 
+  // returns the highlight areas of the scrollbar in client space
+  virtual bool GetHScrollbarRectangles(CRect& button1, CRect& Scrollup,
+                                       CRect& Thumb, CRect& Scrolldown,
+                                       CRect& button2);
+  virtual bool GetVScrollbarRectangles(CRect& button1, CRect& Scrollup,
+                                       CRect& Thumb, CRect& Scrolldown,
+                                       CRect& button2);
+
   virtual void OnDraw(CWBDrawAPI* API);
   virtual void OnPostDraw(CWBDrawAPI* API);
+  virtual int32_t GetScrollbarStep();
 
   //////////////////////////////////////////////////////////////////////////
   // CSS modifiable properties

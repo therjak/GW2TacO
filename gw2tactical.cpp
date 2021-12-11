@@ -800,10 +800,8 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
   displayRect.x2 = topLeft.x + int32_t(poiSize);
   displayRect.y2 = topLeft.y + int32_t(poiSize);
 
-  float mapFade = GetMapFade();
-
   CColor col = poi.typeData.color;
-  col.A() = uint8_t(col.A() * alpha * mapFade * minimapOpacity);
+  col.A() = uint8_t(col.A() * alpha * minimapOpacity);
 
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
 }

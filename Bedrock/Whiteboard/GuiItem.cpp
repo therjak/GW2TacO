@@ -132,10 +132,10 @@ void CWBItem::UpdateScreenRect() {
 void CWBItem::HandleHScrollbarClick(WBSCROLLDRAGMODE m) {
   switch (m) {
     case WB_SCROLLDRAG_BUTTON1:
-      SetHScrollbarPos(GetHScrollbarPos() - 1, true);
+      SetHScrollbarPos(GetHScrollbarPos() - GetScrollbarStep(), true);
       break;
     case WB_SCROLLDRAG_BUTTON2:
-      SetHScrollbarPos(GetHScrollbarPos() + 1, true);
+      SetHScrollbarPos(GetHScrollbarPos() + GetScrollbarStep(), true);
       break;
     case WB_SCROLLDRAG_UP:
       SetHScrollbarPos(GetHScrollbarPos() - HScrollbar.ViewSize, true);
@@ -149,10 +149,10 @@ void CWBItem::HandleHScrollbarClick(WBSCROLLDRAGMODE m) {
 void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
   switch (m) {
     case WB_SCROLLDRAG_BUTTON1:
-      SetVScrollbarPos(GetVScrollbarPos() - 1, true);
+      SetVScrollbarPos(GetVScrollbarPos() - GetScrollbarStep(), true);
       break;
     case WB_SCROLLDRAG_BUTTON2:
-      SetVScrollbarPos(GetVScrollbarPos() + 1, true);
+      SetVScrollbarPos(GetVScrollbarPos() + GetScrollbarStep(), true);
       break;
     case WB_SCROLLDRAG_UP:
       SetVScrollbarPos(GetVScrollbarPos() - VScrollbar.ViewSize, true);
@@ -464,6 +464,8 @@ void CWBItem::OnDraw(CWBDrawAPI* API) {
 }
 
 void CWBItem::OnPostDraw(CWBDrawAPI* API) {}
+
+int32_t CWBItem::GetScrollbarStep() { return 1; }
 
 void CWBItem::OnMove(const CPoint& p) {}
 
