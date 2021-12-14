@@ -50,6 +50,8 @@ CRect GetMinimapRectangle() {
 }
 
 void CMumbleLink::Update() {
+  bool justConnected = false;
+
   FORCEDDEBUGLOG("updating mumblelink");
   if (!lm) {
     HANDLE hMapObject =
@@ -69,6 +71,7 @@ void CMumbleLink::Update() {
       hMapObject = nullptr;
       return;
     }
+    justConnected = true;
   }
 
   if (!lm) return;
@@ -151,6 +154,10 @@ void CMumbleLink::Update() {
     }
   }
 
+  if (justConnected) {
+    ChangeUIScale(uiSize);
+  }
+
   id = ident.find(L"\"world_id\":");
   if (id != ident.npos)
     std::swscanf(ident.substr(id).c_str(), L"\"world_id\":%d", &worldID);
@@ -177,8 +184,6 @@ void CMumbleLink::Update() {
   textboxHasFocus = (ctx->uiState & (0x01 << 5)) != 0;
   isInCombat = (ctx->uiState & (0x01 << 6)) != 0;
 
-  pID = ctx->processId;
-
   float scale = GetUIScale();
 
   if (!isMapOpen) {
@@ -200,6 +205,8 @@ void CMumbleLink::Update() {
     bigMap.mapCenterY = ctx->mapCenterY;
     bigMap.mapScale = ctx->mapScale;
   }
+
+  lastGW2ProcessID = ctx->processId;
 
   id = ident.find(L"\"name\":");
   if (id != ident.npos) {
@@ -282,7 +289,7 @@ CMumbleLink::CMumbleLink() {
 
 CMumbleLink::~CMumbleLink() = default;
 
-bool CMumbleLink::IsValid() { return lm; }
+bool CMumbleLink::IsValid() { return lm != 0 && lastGW2ProcessID != 0; }
 
 CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
                                                   bool ignoreRotation) {
@@ -301,7 +308,8 @@ CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
   miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, 1, 1) / 24.0f);
 
   CVector2 offset =
-      -(CVector2(mapCenterX, mapCenterY) - CVector2(playerX, playerY))
+      -((CVector2(mapCenterX, mapCenterY) - CVector2(playerX, playerY)) *
+        GetWindowTooSmallScale())
            .Rotated(CVector2(0, 0), rotation);
   miniMapTrafo *= CMatrix4x4::Translation(CVector3(offset.x, offset.y, 0.0));
   miniMapTrafo *=

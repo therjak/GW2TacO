@@ -1239,19 +1239,19 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           SetConfigValue("OpacityIngame", 0);
           return true;
         case Menu_OpacityIngame_Transparent:
-          SetConfigValue("OpacityIngame", 2);
+          SetConfigValue("OpacityIngame", 1);
           return true;
         case Menu_OpacityIngame_Faded:
-          SetConfigValue("OpacityIngame", 1);
+          SetConfigValue("OpacityIngame", 2);
           return true;
         case Menu_OpacityMap_Solid:
           SetConfigValue("OpacityMap", 0);
           return true;
         case Menu_OpacityMap_Transparent:
-          SetConfigValue("OpacityMap", 2);
+          SetConfigValue("OpacityMap", 1);
           return true;
         case Menu_OpacityMap_Faded:
-          SetConfigValue("OpacityMap", 1);
+          SetConfigValue("OpacityMap", 2);
           return true;
         case Menu_DeleteMyMarkers: {
           GW2TacticalDisplay* tactical = dynamic_cast<GW2TacticalDisplay*>(
@@ -1431,6 +1431,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           case APIKeys::GW2APIKey: {
             auto key = GW2::apiKeyManager.GetKey(ApiKeyIndex);
             key->SetKey(APIKeyInput->GetText());
+            key->FetchData();
             GW2::apiKeyManager.RebuildConfigValues();
           } break;
           default:

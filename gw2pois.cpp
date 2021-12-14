@@ -708,9 +708,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   auto mumblePos = cmdLine.find("-mumble");
   if (mumblePos != cmdLine.npos) {
-    auto sub = cmdLine.substr(mumblePos + 8);
+    auto sub = cmdLine.substr(mumblePos);
     auto cmds = SplitByWhitespace(sub);
-    mumbleLink.mumblePath = cmds[1];
+    if (cmds.size() > 1) {
+      mumbleLink.mumblePath = cmds[1];
+    }
   }
 
   FORCEDOPENDEBUGFILE();
@@ -823,6 +825,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   ImportPOIS(App.get());
   FORCEDDEBUGLOG("markers imported");
+
+  mumbleLink.Update();
 
   InitGUI(App.get());
   FORCEDDEBUGLOG("gui initialized");
@@ -938,8 +942,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       {
         if (!mumbleLink.IsValid() && GetTime() > 60000) {
           LOG_ERR(
-              "[GW2TacO] Closing TacO because GW2 with mumble link was not "
-              "found in under a minute");
+              "[GW2TacO] Closing TacO because GW2 with mumble link '%s' was "
+              "not found in under a minute",
+              mumbleLink.mumblePath.c_str());
           App->SetDone(true);
         }
       }
@@ -956,7 +961,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         lastSlowEventTime = globalTimer.GetTime();
         gw2WindowCount = 0;
         gw2WindowFromPid = nullptr;
-        EnumWindows(gw2WindowFromPIDFunction, mumbleLink.pID);
+        EnumWindows(gw2WindowFromPIDFunction, mumbleLink.lastGW2ProcessID);
         gw2Window = gw2WindowFromPid;
 
         if (!gw2Window) {
@@ -965,6 +970,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         if (!gw2Window) {
           gw2Window = FindWindow("ArenaNet_Gr_Window_Class", nullptr);
         }
+      }
+
+      if (!mumbleLink.IsValid() || !gw2Window) {
+        Sleep(1000);
+        continue;
       }
 
       if (!frameThrottling || frameTriggered ||
@@ -1083,8 +1093,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
       if (!HooksInitialized) {
         FORCEDDEBUGLOG("hooks not initialized, doing that");
-        // if ( !IsDebuggerPresent() )
-        {
+        if (!IsDebuggerPresent()) {
           FORCEDDEBUGLOG("creating thread");
           auto hookThread = CreateThread(
               nullptr,  // default security attributes

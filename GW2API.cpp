@@ -43,6 +43,12 @@ APIKey::~APIKey() {
 void APIKey::FetchData() {
   if (beingInitialized) return;
 
+  keyName = "";
+  accountName = "";
+  charNames.clear();
+  caps.clear();
+  worldId = 0;
+
   valid = true;
   initialized = false;
   beingInitialized = true;
@@ -89,11 +95,10 @@ void APIKey::FetchData() {
       if (json.has<Array>("characters")) {
         auto m = json.get<Array>("characters").values();
         for (auto& x : m) {
-          if (!x->is<String>()) {
-            continue;
+          if (x->is<String>()) {
+            auto name = x->get<String>();
+            charNames.emplace_back(name);
           }
-          auto name = x->get<String>();
-          charNames.emplace_back(name);
         }
       }
     }

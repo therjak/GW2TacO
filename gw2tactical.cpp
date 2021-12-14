@@ -492,11 +492,6 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
 
     float dist = (poi.position - mumbleLink.charPosition).Length();
 
-    if (dist <= poi.typeData.infoRange) {
-      if (poi.typeData.info >= 0)
-        infoText += GetStringFromMap(poi.typeData.info) + "\n";
-    }
-
     if (!drawCountdown &&
         (poi.typeData.bits.autoTrigger || poi.typeData.bits.hasCountdown) &&
         (dist <= poi.typeData.triggerRange)) {
@@ -515,6 +510,13 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
         data = mumbleLink.charIDHash ^ mumbleLink.mapInstance;
 
       ActivationData[POIActivationDataKey(poi.guid, data)] = d;
+    }
+  }
+
+  if (poi.typeData.info >= 0) {
+    if ((poi.position - mumbleLink.charPosition).Length() <=
+        poi.typeData.infoRange) {
+      infoText += GetStringFromMap(poi.typeData.info) + "\n";
     }
   }
 
@@ -801,7 +803,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
   displayRect.y2 = topLeft.y + int32_t(poiSize);
 
   CColor col = poi.typeData.color;
-  col.A() = uint8_t(col.A() * alpha * minimapOpacity);
+  col.A() = uint8_t(col.A() * alpha * minimapOpacity * poi.typeData.alpha);
 
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
 }
@@ -1001,7 +1003,7 @@ void GW2TacticalDisplay::RemoveUserMarkersFromMap() {
   if (!mumbleLink.IsValid()) return;
 
   for (auto& poi : POIs) {
-    if (poi.second.mapID == mumbleLink.mapID) {
+    if (poi.second.mapID == mumbleLink.mapID && !poi.second.External) {
       POIs.erase(poi.first);
     }
   }
@@ -1342,6 +1344,7 @@ void ImportPOIS(CWBApplication* App) {
 
   POIs.clear();
   Routes.clear();
+  trails.clear();
 
   {
     CFileList list;

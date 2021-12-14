@@ -127,7 +127,7 @@ class CMumbleLink {
   bool camUpChanged = false;
 
   std::string mumblePath = "MumbleLink";
-  uint32_t pID = 0;
+  uint32_t lastGW2ProcessID = 0;
 };
 
 extern CMumbleLink mumbleLink;
