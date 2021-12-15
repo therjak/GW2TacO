@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files\GuiItems">
+      <UniqueIdentifier>{490669f5-6085-4b05-9725-0e0a4e494ddd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GuiItems">
+      <UniqueIdentifier>{9f430e5f-e927-44bf-8a17-bcb5d79a7afd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gui_item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="message.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="root.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="window.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="draw_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="atlas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="css_item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="context_menu.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="style_manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="label.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="box.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="skin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="text_box.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gui_item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="message.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="root.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+    <ClCompile Include="button.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+    <ClCompile Include="window.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+    <ClCompile Include="draw_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="atlas.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="css_item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="context_menu.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+    <ClCompile Include="style_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="label.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+    <ClCompile Include="box.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+    <ClCompile Include="skin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="text_box.cpp">
+      <Filter>Source Files\GuiItems</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

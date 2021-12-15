@@ -15,171 +15,171 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="gw2pois.cpp">
+    <ClCompile Include="gw2_pois.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gw2tactical.cpp">
+    <ClCompile Include="gw2_tactical.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MapTimer.cpp">
+    <ClCompile Include="map_timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MouseHighlight.cpp">
+    <ClCompile Include="mouse_highlight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MumbleLink.cpp">
+    <ClCompile Include="mumble_link.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OverlayApplication.cpp">
+    <ClCompile Include="overlay_application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ProFont.cpp">
+    <ClCompile Include="pro_font.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OverlayConfig.cpp">
+    <ClCompile Include="overlay_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GW2TacO.cpp">
+    <ClCompile Include="gw2_taco.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OverlayWindow.cpp">
+    <ClCompile Include="overlay_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BuildInfo.cpp">
+    <ClCompile Include="build_info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TS3Connection.cpp">
+    <ClCompile Include="ts3_connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TS3Control.cpp">
+    <ClCompile Include="ts3_control.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LocationalTimer.cpp">
+    <ClCompile Include="locational_timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MarkerEditor.cpp">
+    <ClCompile Include="marker_editor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TacticalCompass.cpp">
+    <ClCompile Include="tactical_compass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RangeDisplay.cpp">
+    <ClCompile Include="range_display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HPGrid.cpp">
+    <ClCompile Include="hp_grid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Notepad.cpp">
+    <ClCompile Include="notepad.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GW2API.cpp">
+    <ClCompile Include="gw2_api.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RaidProgress.cpp">
+    <ClCompile Include="raid_progress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DungeonProgress.cpp">
+    <ClCompile Include="dungeon_progress.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WvW.cpp">
+    <ClCompile Include="wvw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpecialGUIItems.cpp">
+    <ClCompile Include="special_gui_items.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TrailLogger.cpp">
+    <ClCompile Include="trail_logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Language.cpp">
+    <ClCompile Include="language.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TPTracker.cpp">
+    <ClCompile Include="tp_tracker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="gw2tactical.h">
+    <ClInclude Include="gw2_tactical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapTimer.h">
+    <ClInclude Include="map_timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MouseHighlight.h">
+    <ClInclude Include="mouse_highlight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MumbleLink.h">
+    <ClInclude Include="mumble_link.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OverlayApplication.h">
+    <ClInclude Include="overlay_application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ProFont.h">
+    <ClInclude Include="pro_font.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OverlayConfig.h">
+    <ClInclude Include="overlay_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GW2TacO.h">
+    <ClInclude Include="gw2_taco.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OverlayWindow.h">
+    <ClInclude Include="overlay_window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BuildCount.h">
+    <ClInclude Include="build_count.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BuildInfo.h">
+    <ClInclude Include="build_info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TS3Connection.h">
+    <ClInclude Include="ts3_connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TS3Control.h">
+    <ClInclude Include="ts3_control.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LocationalTimer.h">
+    <ClInclude Include="locational_timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MarkerEditor.h">
+    <ClInclude Include="marker_editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TacticalCompass.h">
+    <ClInclude Include="tactical_compass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RangeDisplay.h">
+    <ClInclude Include="range_display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HPGrid.h">
+    <ClInclude Include="hp_grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Notepad.h">
+    <ClInclude Include="notepad.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GW2API.h">
+    <ClInclude Include="gw2_api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RaidProgress.h">
+    <ClInclude Include="raid_progress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DungeonProgress.h">
+    <ClInclude Include="dungeon_progress.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WvW.h">
+    <ClInclude Include="wvw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SpecialGUIItems.h">
+    <ClInclude Include="special_gui_items.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TrailLogger.h">
+    <ClInclude Include="trail_logger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Language.h">
+    <ClInclude Include="language.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TPTracker.h">
+    <ClInclude Include="tp_tracker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
