@@ -1092,7 +1092,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
       if (!HooksInitialized) {
         FORCEDDEBUGLOG("hooks not initialized, doing that");
-        if (!IsDebuggerPresent()) {
+        // enabling this blocks mouse input while the debugger is present
+        // if (!IsDebuggerPresent()) {
+        {
           FORCEDDEBUGLOG("creating thread");
           auto hookThread = CreateThread(
               nullptr,  // default security attributes
