@@ -764,7 +764,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
 float uiScale = 1.0f;
 
 void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
-                                        CVector2& pos, const tm& ptm,
+                                        CVector2 pos, const tm& ptm,
                                         const time_t& currtime, POI& poi,
                                         float alpha, float zoomLevel) {
   if (alpha <= 0) return;
@@ -1051,13 +1051,13 @@ void ExportTrail(CXMLNode* n, GW2Trail& p) {
 
 void ExportPOIS() {
   CXMLDocument d;
-  CXMLNode& root = d.GetDocumentNode();
-  root = root.AddChild("OverlayData");
+  CXMLNode root = d.GetDocumentNode();
+  CXMLNode& overlayData = root.AddChild("OverlayData");
 
   for (const auto& c : CategoryRoot.children)
-    ExportSavedCategories(&root, c.get());
+    ExportSavedCategories(&overlayData, c.get());
 
-  CXMLNode* n = &root.AddChild("POIs");
+  CXMLNode* n = &overlayData.AddChild("POIs");
 
   for (auto& poi : POIs) {
     if (!poi.second.External && !poi.second.routeMember)
@@ -1100,12 +1100,12 @@ GUID LoadGUID(CXMLNode& n) {
   return guid;
 }
 
-void RecursiveImportPOIType(CXMLNode& root, GW2TacticalCategory* Root,
+void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
                             std::string_view currentCategory,
                             MarkerTypeData& defaults, bool KeepSaveState,
                             std::string_view zipFile) {
   for (int32_t x = 0; x < root.GetChildCount("MarkerCategory"); x++) {
-    auto& n = root.GetChild("MarkerCategory", x);
+    const auto& n = root.GetChild("MarkerCategory", x);
     if (!n.HasAttribute("name")) continue;
 
     auto name = n.GetAttribute("name");
@@ -1179,7 +1179,8 @@ void ImportPOITypes() {
 
   CategoryMap.clear();
   CategoryRoot.children.clear();
-  RecursiveImportPOIType(root, &CategoryRoot, "", MarkerTypeData(), false, "");
+  auto defaults = MarkerTypeData();
+  RecursiveImportPOIType(root, &CategoryRoot, "", defaults, false, "");
 }
 
 void ImportPOI(CWBApplication* App, CXMLNode& t, POI& p,
@@ -1230,8 +1231,8 @@ void ImportPOIDocument(CWBApplication* App, CXMLDocument& d, bool External,
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
   CXMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
-  RecursiveImportPOIType(root, &CategoryRoot, "", MarkerTypeData(), !External,
-                         zipFile);
+  auto defaults = MarkerTypeData();
+  RecursiveImportPOIType(root, &CategoryRoot, "", defaults, !External, zipFile);
 
   if (root.GetChildCount("POIs")) {
     CXMLNode n = root.GetChild("POIs");
@@ -1412,10 +1413,10 @@ void ImportPOIActivationData() {
 
 void ExportPOIActivationData() {
   CXMLDocument d;
-  CXMLNode& root = d.GetDocumentNode();
-  root = root.AddChild("OverlayData");
+  CXMLNode root = d.GetDocumentNode();
+  auto& overlayData = root.AddChild("OverlayData");
 
-  CXMLNode* n = &root.AddChild("Activations");
+  CXMLNode* n = &overlayData.AddChild("Activations");
 
   for (auto& ad : ActivationData) {
     auto& dat = ad.second;
@@ -1538,7 +1539,7 @@ MarkerTypeData::MarkerTypeData() {
   bits.scaleWithZoom = true;
 }
 
-void MarkerTypeData::Read(CXMLNode& n, bool StoreSaveState) {
+void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
   bool _iconFileSaved = n.HasAttribute("iconFile");
   bool _sizeSaved = n.HasAttribute("iconSize");
   bool _alphaSaved = n.HasAttribute("alpha");

@@ -12,9 +12,9 @@ typedef CCoreDX11Device CCore;
 CCoreWindowParameters::CCoreWindowParameters() = default;
 
 CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, bool fs,
-                                             int32_t x, int32_t y, TCHAR* title,
-                                             HICON icon, bool maximize,
-                                             bool noresize)
+                                             int32_t x, int32_t y,
+                                             const TCHAR* title, HICON icon,
+                                             bool maximize, bool noresize)
     : hInstance(hinst),
       FullScreen(fs),
       XRes(x),

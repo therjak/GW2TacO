@@ -91,7 +91,7 @@ int32_t CXMLNode::GetChildCount(const char* szNodeName) const {
   return count;
 }
 
-std::string CXMLNode::GetNodeName() {
+std::string CXMLNode::GetNodeName() const {
   if (!pNode) return {};
   return (pNode->name());
 }
@@ -186,7 +186,7 @@ bool CXMLNode::HasAttribute(std::string_view szAttribute) const {
   return attr != nullptr;
 }
 
-int32_t CXMLNode::IsValid() { return pNode != nullptr; }
+int32_t CXMLNode::IsValid() const { return pNode != nullptr; }
 
 void CXMLNode::GetAttributeAsInteger(std::string_view szAttribute,
                                      int32_t* pnValue) const {

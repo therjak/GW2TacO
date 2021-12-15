@@ -1,6 +1,6 @@
 #include "Window.h"
 
-uint32_t CWBWindow::GetBorderSelectionArea(CPoint& mousepos) {
+uint32_t CWBWindow::GetBorderSelectionArea(const CPoint& mousepos) {
   if (App->GetMouseItem() != this) return 0;
 
   const CRect r = GetScreenRect();

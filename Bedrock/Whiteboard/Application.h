@@ -76,10 +76,10 @@ class CWBApplication : public CCoreWindowHandlerWin {
   std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
 
   bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
-  bool GenerateGUIFromXMLNode(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node, CRect& Pos);
   bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
                                   std::string_view TemplateID);
-  CWBItem* GenerateUIItem(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node, CRect& Pos);
 
   CColor ClearColor = CColor(0, 0, 0, 255);
 

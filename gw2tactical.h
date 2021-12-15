@@ -96,7 +96,7 @@ struct MarkerTypeData {
   int16_t achievementBit = -1;
   int16_t info = -1;
 
-  void Read(CXMLNode& n, bool StoreSaveState);
+  void Read(const CXMLNode& n, bool StoreSaveState);
   void Write(CXMLNode* n);
 };
 
@@ -195,7 +195,7 @@ class GW2TacticalDisplay : public CWBItem {
   void InsertPOI(POI& poi);
   void DrawPOI(CWBDrawAPI* API, const tm& ptm, const time_t& currtime, POI& poi,
                bool drawDistance, std::string& infoText);
-  void DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect, CVector2& pos,
+  void DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect, CVector2 pos,
                       const tm& ptm, const time_t& currtime, POI& poi,
                       float alpha, float zoomLevel);
   void OnDraw(CWBDrawAPI* API) override;

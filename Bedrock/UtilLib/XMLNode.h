@@ -25,9 +25,9 @@ class CXMLNode {
 
   bool Next(CXMLNode& out, const char*);
 
-  int32_t IsValid();
+  int32_t IsValid() const;
 
-  std::string GetNodeName();
+  std::string GetNodeName() const;
 
   void GetText(char*, int32_t);
   std::string GetText();

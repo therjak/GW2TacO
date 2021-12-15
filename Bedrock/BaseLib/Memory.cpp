@@ -72,7 +72,7 @@ void CMemTracker::AddPointer(void* p, const char* file, int32_t line,
   CLightweightCriticalSection cs(&critsec);
   if (MemTrackerPool && !Paused && p) {
     Paused = true;
-    CAllocationInfo& allocinfo =
+    const CAllocationInfo& allocinfo =
         CAllocationInfo(const_cast<char*>(file), line, size);
     MemTrackerPool->operator[](p) = allocinfo;
     Paused = false;

@@ -872,7 +872,7 @@ bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
   return b;
 }
 
-bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, CXMLNode& node,
+bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
                                             CRect& Pos) {
   CWBItem* NewItem = GenerateUIItem(Root, node, Pos);
   if (!NewItem) return false;
@@ -910,7 +910,7 @@ bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, CXMLNode& node,
   return ProcessGUIXML(NewItem, node);
 }
 
-CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, CXMLNode& node,
+CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, const CXMLNode& node,
                                         CRect& Pos) {
   if (FactoryCallbacks.find(node.GetNodeName()) != FactoryCallbacks.end()) {
     return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);

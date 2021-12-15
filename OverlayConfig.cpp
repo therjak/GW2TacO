@@ -56,13 +56,13 @@ void LoadConfig() {
 
 void SaveConfig() {
   CXMLDocument doc;
-  CXMLNode& root = doc.GetDocumentNode();
-  root = root.AddChild("TacOConfig");
+  CXMLNode root = doc.GetDocumentNode();
+  auto& tacoConfig = root.AddChild("TacOConfig");
   for (const auto& kdp : ConfigNums) {
-    root.AddChild(kdp.first).SetAttributeFromInteger("Data", kdp.second);
+    tacoConfig.AddChild(kdp.first).SetAttributeFromInteger("Data", kdp.second);
   }
   for (const auto& kdp : ConfigStrings) {
-    root.AddChild(kdp.first).SetAttribute("String", kdp.second);
+    tacoConfig.AddChild(kdp.first).SetAttribute("String", kdp.second);
   }
   doc.SaveToFile("TacOConfig.xml");
 }

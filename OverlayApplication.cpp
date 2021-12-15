@@ -27,7 +27,7 @@ bool COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
 
   DrawAPI->SetUIBlendState(std::move(GuiBlendState));
 
-  holePunchBlendState.swap(DrawAPI->GetDevice()->CreateBlendState());
+  holePunchBlendState = DrawAPI->GetDevice()->CreateBlendState();
   holePunchBlendState->SetBlendEnable(0, true);
   holePunchBlendState->SetIndependentBlend(true);
   holePunchBlendState->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_ZERO);

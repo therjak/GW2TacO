@@ -76,7 +76,7 @@ class CWBWindow : public CWBItem {
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
 
   CRect GetElementPos(WBWINDOWELEMENT Element);
-  uint32_t GetBorderSelectionArea(CPoint& mousepos);
+  uint32_t GetBorderSelectionArea(const CPoint& mousepos);
 
   WB_DECLARE_GUIITEM(_T( "window" ), CWBItem);
 };

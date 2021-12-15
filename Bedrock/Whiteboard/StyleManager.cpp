@@ -41,8 +41,8 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
     for (const auto& s : selectors) {
       std::string selector(Trim(s));
       auto& mr = dRules[selector];
-      for (auto& or : dRuleset) {
-        mr.insert_or_assign(or.first, or.second);
+      for (auto& rs : dRuleset) {
+        mr.insert_or_assign(rs.first, rs.second);
       }
     }
   }

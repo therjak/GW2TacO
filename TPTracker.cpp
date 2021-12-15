@@ -268,7 +268,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       for (size_t x = 0; x < buys.size(); x++) {
         if (!HasGW2ItemData(buys[x].itemID)) continue;
 
-        auto& itemData = GetGW2ItemData(buys[x].itemID);
+        const auto& itemData = GetGW2ItemData(buys[x].itemID);
         bool outbid = buys[x].price < itemData.buyPrice;
 
         if (nextSellOnly &&
@@ -323,7 +323,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
       for (size_t x = 0; x < sells.size(); x++) {
         if (!HasGW2ItemData(sells[x].itemID)) continue;
-        auto& itemData = GetGW2ItemData(sells[x].itemID);
+        const auto& itemData = GetGW2ItemData(sells[x].itemID);
         bool outbid = sells[x].price > itemData.sellPrice;
 
         if (nextSellOnly &&

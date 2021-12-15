@@ -20,7 +20,7 @@ void __cdecl operator delete[](void* pointer, const char* file, int32_t line);
 
 class CAllocationInfo {
  public:
-  char* File = nullptr;
+  const char* File = nullptr;
   int32_t Line = 0;
   int32_t Size = 0;
 
@@ -30,7 +30,7 @@ class CAllocationInfo {
 
   CAllocationInfo() = default;
   ;
-  CAllocationInfo(char* file, int32_t line, int32_t size) {
+  CAllocationInfo(const char* file, int32_t line, int32_t size) {
     File = file;
     Line = line;
     Size = size;

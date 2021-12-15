@@ -780,13 +780,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FORCEDDEBUGLOG("App instance created.");
 
-  int width = 1;
-  int height = 1;
+  int32_t width = 1;
+  int32_t height = 1;
 
-  CCoreWindowParameters p =
-      CCoreWindowParameters(GetModuleHandle(nullptr), false, width, height,
-                            _T( "Guild Wars 2 Tactical Overlay" ),
-                            LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
+  CCoreWindowParameters p(GetModuleHandle(nullptr), false, width, height,
+                          _T( "Guild Wars 2 Tactical Overlay" ),
+                          LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
   p.OverrideWindowStyle = WS_POPUP;
   p.OverrideWindowStyleEx =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |

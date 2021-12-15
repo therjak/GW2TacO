@@ -29,7 +29,7 @@ class CCoreWindowParameters {
   bool FullScreen = false;
   int32_t XRes = 800;
   int32_t YRes = 600;
-  TCHAR* WindowTitle = nullptr;
+  const TCHAR* WindowTitle = nullptr;
   HICON Icon = nullptr;
   bool Maximized = false;
   bool ResizeDisabled = false;
@@ -39,8 +39,9 @@ class CCoreWindowParameters {
 
   CCoreWindowParameters();
   CCoreWindowParameters(HINSTANCE hinst, bool FullScreen, int32_t XRes,
-                        int32_t YRes, TCHAR* WindowTitle, HICON Icon = nullptr,
-                        bool Maximized = false, bool ResizeDisabled = false);
+                        int32_t YRes, const TCHAR* WindowTitle,
+                        HICON Icon = nullptr, bool Maximized = false,
+                        bool ResizeDisabled = false);
 
   std::unique_ptr<CCoreDevice> CreateDevice() const;
 };

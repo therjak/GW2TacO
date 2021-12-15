@@ -351,10 +351,10 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
   std::vector<std::string> _categories;
 
   // categories
-  CXMLNode& categoriesNode = node.GetChild("Categories");
+  const CXMLNode& categoriesNode = node.GetChild("Categories");
   if (categoriesNode.IsValid()) {
     for (int x = 0; x < categoriesNode.GetChildCount("Category"); ++x) {
-      CXMLNode& categoryNode = categoriesNode.GetChild("Category", x);
+      const CXMLNode& categoryNode = categoriesNode.GetChild("Category", x);
 
       Category category;
       if (categoryNode.HasAttribute("id"))
@@ -375,10 +375,10 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
   }
 
   // maps
-  CXMLNode& mapsNode = node.GetChild("Maps");
+  const CXMLNode& mapsNode = node.GetChild("Maps");
   if (mapsNode.IsValid()) {
     for (int x = 0; x < mapsNode.GetChildCount("Map"); x++) {
-      CXMLNode& mapNode = mapsNode.GetChild("Map", x);
+      const CXMLNode& mapNode = mapsNode.GetChild("Map", x);
 
       Map map;
       if (mapNode.HasAttribute("Name")) {
@@ -411,7 +411,7 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
 
       // events
       for (int y = 0; y < mapNode.GetChildCount("Event"); y++) {
-        CXMLNode& eventNode = mapNode.GetChild("Event", y);
+        const CXMLNode& eventNode = mapNode.GetChild("Event", y);
         Event event;
         event.length = 0;
         event.start = start;
@@ -440,7 +440,7 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
         map.events.push_back(event);
       }
 
-      auto& cat = !map.category.empty() ? map.category : "";
+      const auto& cat = !map.category.empty() ? map.category : "";
       if (_categoryMapsDict.find(cat) == _categoryMapsDict.end()) {
         _categoryMapsDict.insert(std::make_pair(cat, std::vector<Map>()));
         _categories.emplace_back(cat);
