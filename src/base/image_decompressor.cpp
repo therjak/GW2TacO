@@ -1,11 +1,11 @@
-#include "image_decompressor.h"
+#include "src/base/image_decompressor.h"
 
 #include <comdef.h>
 #include <olectl.h>
 
 #include <memory>
 
-#include "base_lib.h"
+#include "src/base/base_lib.h"
 
 #define HIMETRIC_INCH 2540
 

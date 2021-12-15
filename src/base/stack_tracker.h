@@ -4,8 +4,8 @@
 
 #include <string>
 
-#include "base_config.h"
-#include "logger.h"
+#include "src/base/base_config.h"
+#include "src/base/logger.h"
 
 #ifdef ENABLE_STACKTRACKER_CLASS
 

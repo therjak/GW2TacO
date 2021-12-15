@@ -1,6 +1,6 @@
-#include "style_manager.h"
+#include "src/white_board/style_manager.h"
 
-#include "../BaseLib/string_format.h"
+#include "src/base/string_format.h"
 
 CStyleManager::CStyleManager() = default;
 

@@ -1,4 +1,4 @@
-#include "dx11_device.h"
+#include "src/core2/dx11_device.h"
 
 #include <comdef.h>
 #include <dcomp.h>
@@ -6,13 +6,13 @@
 #include <algorithm>
 #include <vector>
 
-#include "dx11_constant_buffer.h"
-#include "dx11_index_buffer.h"
-#include "dx11_render_state.h"
-#include "dx11_shader.h"
-#include "dx11_texture.h"
-#include "dx11_vertex_buffer.h"
-#include "dx11_vertex_format.h"
+#include "src/core2/dx11_constant_buffer.h"
+#include "src/core2/dx11_index_buffer.h"
+#include "src/core2/dx11_render_state.h"
+#include "src/core2/dx11_shader.h"
+#include "src/core2/dx11_texture.h"
+#include "src/core2/dx11_vertex_buffer.h"
+#include "src/core2/dx11_vertex_format.h"
 #pragma comment(lib, "DXGI.lib")
 //#pragma comment(lib,"dcomp.lib")
 

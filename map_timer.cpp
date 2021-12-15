@@ -4,10 +4,10 @@
 #include <string>
 #include <thread>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/UtilLib/jsonxx.h"
 #include "gw2_api.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
+#include "src/util/jsonxx.h"
 
 using namespace jsonxx;
 

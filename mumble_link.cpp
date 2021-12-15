@@ -1,8 +1,8 @@
 ﻿#include "mumble_link.h"
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/BaseLib/timer.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
+#include "src/base/timer.h"
 #include "trail_logger.h"
 
 CMumbleLink mumbleLink;

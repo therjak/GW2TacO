@@ -2,8 +2,8 @@
 
 #include <string_view>
 
-#include "stream_reader.h"
-#include "stream_writer.h"
+#include "src/base/stream_reader.h"
+#include "src/base/stream_writer.h"
 
 typedef _W64 unsigned int UINT_PTR, *PUINT_PTR;
 typedef UINT_PTR SOCKET;

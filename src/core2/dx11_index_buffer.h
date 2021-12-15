@@ -1,6 +1,6 @@
 #pragma once
-#include "dx11_device.h"
-#include "index_buffer.h"
+#include "src/core2/dx11_device.h"
+#include "src/core2/index_buffer.h"
 
 #ifdef CORE_API_DX11
 

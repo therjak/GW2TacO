@@ -2,9 +2,9 @@
 #include <thread>
 #include <vector>
 
-#include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/Whiteboard/draw_api.h"
-#include "Bedrock/Whiteboard/gui_item.h"
+#include "src/util/jsonxx.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
 
 struct TransactionItem {
   int32_t transactionID = 0;

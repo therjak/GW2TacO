@@ -14,10 +14,7 @@
 #include <thread>
 #include <vector>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/BaseLib/timer.h"
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
-#include "Bedrock/UtilLib/miniz.h"
 #include "build_count.h"
 #include "gw2_api.h"
 #include "gw2_taco.h"
@@ -35,6 +32,9 @@
 #include "range_display.h"
 #include "resource.h"
 #include "special_gui_items.h"
+#include "src/base/string_format.h"
+#include "src/base/timer.h"
+#include "src/util/miniz.h"
 #include "tactical_compass.h"
 #include "trail_logger.h"
 
@@ -412,7 +412,7 @@ int lastMainLoopTime = 0;
 
 #include <thread>
 
-#include "Bedrock/UtilLib/jsonxx.h"
+#include "src/util/jsonxx.h"
 
 using namespace jsonxx;
 

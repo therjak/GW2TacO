@@ -1,12 +1,12 @@
-#include "png_decompressor.h"
+#include "src/util/png_decompressor.h"
 
 #include <memory>
 #include <string_view>
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "src/util/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "src/util/stb_image_write.h"
 
 bool DecompressPNG(const uint8_t* IData, int32_t IDataSize,
                    std::unique_ptr<uint8_t[]>& Image, int32_t& XRes,

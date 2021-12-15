@@ -1,6 +1,6 @@
 #pragma once
-#include "dx11_device.h"
-#include "vertex_buffer.h"
+#include "src/core2/dx11_device.h"
+#include "src/core2/vertex_buffer.h"
 
 #ifdef CORE_API_DX11
 

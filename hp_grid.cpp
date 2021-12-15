@@ -1,8 +1,8 @@
 ﻿#include "hp_grid.h"
 
-#include "Bedrock/BaseLib/sphere.h"
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/base/sphere.h"
 
 void GW2HPGrid::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("HPGridVisible")) {

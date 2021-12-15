@@ -1,6 +1,6 @@
 ﻿#include "overlay_application.h"
 
-#include "Bedrock/Whiteboard/application.h"
+#include "src/white_board/application.h"
 
 COverlayApp::COverlayApp() = default;
 

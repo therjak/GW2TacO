@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "resource.h"
+#include "src/core2/resource.h"
 
 #define COREBUFFERSCOPECOUNT 6
 

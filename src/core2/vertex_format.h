@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "enums.h"
-#include "resource.h"
+#include "src/core2/enums.h"
+#include "src/core2/resource.h"
 
 class CCoreVertexShader;
 

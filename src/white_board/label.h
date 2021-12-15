@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-#include "application.h"
+#include "src/white_board/application.h"
 
 class CWBLabel : public CWBItem {
   std::string Text;

@@ -1,7 +1,7 @@
-#include "root.h"
+#include "src/white_board/root.h"
 
-#include "application.h"
-#include "message.h"
+#include "src/white_board/application.h"
+#include "src/white_board/message.h"
 
 bool CWBRoot::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {

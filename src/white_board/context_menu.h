@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 
-#include "gui_item.h"
+#include "src/white_board/gui_item.h"
 
 #define WB_CONTEXT_SEPARATOR ((void*)(INT_MIN))
 

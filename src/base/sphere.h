@@ -1,7 +1,7 @@
 #pragma once
 
-#include "plane.h"
-#include "vector.h"
+#include "src/base/plane.h"
+#include "src/base/vector.h"
 
 class CSphere {
  public:

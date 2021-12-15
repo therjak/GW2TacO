@@ -6,15 +6,15 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../BaseLib/color.h"
-#include "../CoRE2/core2.h"
-#include "../UtilLib/xml_document.h"
-#include "context_menu.h"
-#include "draw_api.h"
-#include "gui_item.h"
-#include "message.h"
-#include "root.h"
-#include "style_manager.h"
+#include "src/base/color.h"
+#include "src/core2/core2.h"
+#include "src/util/xml_document.h"
+#include "src/white_board/context_menu.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
+#include "src/white_board/message.h"
+#include "src/white_board/root.h"
+#include "src/white_board/style_manager.h"
 
 enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_OFF = 0,

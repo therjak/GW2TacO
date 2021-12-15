@@ -5,9 +5,9 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/BaseLib/timer.h"
-#include "Bedrock/UtilLib/xml_document.h"
+#include "src/base/string_format.h"
+#include "src/base/timer.h"
+#include "src/util/xml_document.h"
 
 // These maps must be sorted. So no unordered_map.
 std::map<std::string, int32_t> ConfigNums;

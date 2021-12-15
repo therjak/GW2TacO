@@ -1,4 +1,4 @@
-#include "dx11_index_buffer.h"
+#include "src/core2/dx11_index_buffer.h"
 
 #ifdef CORE_API_DX11
 

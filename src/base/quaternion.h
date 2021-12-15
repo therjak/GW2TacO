@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "matrix.h"
-#include "vector.h"
+#include "src/base/matrix.h"
+#include "src/base/vector.h"
 
 class CQuaternion {
  public:

@@ -1,7 +1,7 @@
 ﻿#include "ts3_connection.h"
 
-#include "Bedrock/BaseLib/string_format.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
 
 TS3Connection teamSpeakConnection;
 

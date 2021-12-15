@@ -1,4 +1,4 @@
-#include "atlas.h"
+#include "src/white_board/atlas.h"
 
 #include <algorithm>
 

@@ -1,7 +1,7 @@
 ﻿#include "mouse_highlight.h"
 
-#include "Bedrock/Whiteboard/application.h"
 #include "overlay_config.h"
+#include "src/white_board/application.h"
 
 void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("MouseHighlightVisible"))

@@ -1,10 +1,10 @@
 ﻿#include "notepad.h"
 
-#include "Bedrock/Whiteboard/application.h"
-#include "Bedrock/Whiteboard/text_box.h"
 #include "gw2_tactical.h"
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/white_board/application.h"
+#include "src/white_board/text_box.h"
 
 bool GW2Notepad::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                     WBMESSAGE MessageType) {

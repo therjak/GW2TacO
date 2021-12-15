@@ -1,6 +1,6 @@
-#include "message.h"
+#include "src/white_board/message.h"
 
-#include "application.h"
+#include "src/white_board/application.h"
 
 CWBMessage::CWBMessage() {
   App = nullptr;

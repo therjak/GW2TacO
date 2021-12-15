@@ -1,10 +1,10 @@
-#include "vector.h"
+#include "src/base/vector.h"
 
 #include <cmath>
 #include <cstdint>
 
-#include "matrix.h"
-#include "spec_math.h"
+#include "src/base/matrix.h"
+#include "src/base/spec_math.h"
 
 const int32_t Lerp(const int32_t v1, const int32_t v2, const float t) {
   return static_cast<int32_t>((v2 - v1) * t + v1);

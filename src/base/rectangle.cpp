@@ -1,10 +1,10 @@
-#include "rectangle.h"
+#include "src/base/rectangle.h"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
 
-#include "vector.h"
+#include "src/base/vector.h"
 
 bool IntervalIntersection(int32_t a1, int32_t a2, int32_t b1, int32_t b2) {
   int32_t _a1 = std::min(a1, a2);

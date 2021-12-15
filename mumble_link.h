@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Bedrock/BaseLib/base_lib.h"
+#include "src/base/base_lib.h"
 
 struct MumbleContext {
   unsigned char serverAddress[28];  // contains sockaddr_in or sockaddr_in6

@@ -1,9 +1,9 @@
-#include "font.h"
+#include "src/white_board/font.h"
 
 #include <algorithm>
 #include <vector>
 
-#include "draw_api.h"
+#include "src/white_board/draw_api.h"
 
 INLINE uint32_t DictionaryHash(const CWBKerningPair& i) {
   return i.First + (i.Second << 16);

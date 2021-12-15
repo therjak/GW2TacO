@@ -3,16 +3,16 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../BaseLib/base_lib.h"
-#include "../BaseLib/color.h"
-#include "../UtilLib/xml_document.h"
-#include "constant_buffer.h"
-#include "enums.h"
-#include "index_buffer.h"
-#include "render_state.h"
-#include "vertex_buffer.h"
-#include "vertex_format.h"
-#include "window_handler.h"
+#include "src/base/base_lib.h"
+#include "src/base/color.h"
+#include "src/core2/constant_buffer.h"
+#include "src/core2/enums.h"
+#include "src/core2/index_buffer.h"
+#include "src/core2/render_state.h"
+#include "src/core2/vertex_buffer.h"
+#include "src/core2/vertex_format.h"
+#include "src/core2/window_handler.h"
+#include "src/util/xml_document.h"
 
 class CCoreDevice {
   //////////////////////////////////////////////////////////////////////////

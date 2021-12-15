@@ -3,10 +3,10 @@
 #include <algorithm>
 #include <string>
 
-#include "Bedrock/UtilLib/jsonxx.h"
 #include "language.h"
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/util/jsonxx.h"
 using namespace jsonxx;
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);

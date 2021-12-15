@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "../BaseLib/base_lib.h"
-#include "../BaseLib/color.h"
-#include "core2_config.h"
-#include "device.h"
-#include "dx11_enums.h"
+#include "src/base/base_lib.h"
+#include "src/base/color.h"
+#include "src/core2/core2_config.h"
+#include "src/core2/device.h"
+#include "src/core2/dx11_enums.h"
 
 #ifdef CORE_API_DX11
 

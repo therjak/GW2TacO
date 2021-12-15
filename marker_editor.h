@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include <vector>
 
-#include "Bedrock/Whiteboard/draw_api.h"
-#include "Bedrock/Whiteboard/gui_item.h"
 #include "gw2_tactical.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
 
 class GW2MarkerEditor : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;

@@ -1,6 +1,6 @@
 #pragma once
-#include "dx11_device.h"
-#include "shader.h"
+#include "src/core2/dx11_device.h"
+#include "src/core2/shader.h"
 
 #ifdef CORE_API_DX11
 

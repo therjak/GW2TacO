@@ -1,10 +1,10 @@
 ﻿#pragma once
 #include <vector>
 
-#include "Bedrock/BaseLib/base_lib.h"
-#include "Bedrock/BaseLib/sphere.h"
-#include "Bedrock/Whiteboard/draw_api.h"
-#include "Bedrock/Whiteboard/gui_item.h"
+#include "src/base/base_lib.h"
+#include "src/base/sphere.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
 
 class LocationalTimer {
  public:

@@ -6,11 +6,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/BaseLib/hasher.h"
-#include "Bedrock/Whiteboard/draw_api.h"
-#include "Bedrock/Whiteboard/gui_item.h"
 #include "gw2_tactical.h"
 #include "mumble_link.h"
+#include "src/base/hasher.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
 
 void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos);
 

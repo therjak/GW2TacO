@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include <string>
 
-#include "Bedrock/BaseLib/vector.h"
+#include "src/base/vector.h"
 
 class WvWObjective {
  public:

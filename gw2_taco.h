@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/Whiteboard/gui_item.h"
-#include "Bedrock/Whiteboard/text_box.h"
-#include "Bedrock/Whiteboard/window.h"
 #include "gw2_tactical.h"
+#include "src/white_board/gui_item.h"
+#include "src/white_board/text_box.h"
+#include "src/white_board/window.h"
 #include "ts3_connection.h"
 
 enum class TacOKeyAction : int32_t {

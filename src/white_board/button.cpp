@@ -1,4 +1,4 @@
-#include "button.h"
+#include "src/white_board/button.h"
 
 WBITEMSTATE CWBButton::GetState() {
   WBITEMSTATE i = CWBItem::GetState();

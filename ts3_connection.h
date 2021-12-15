@@ -3,7 +3,7 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "Bedrock/BaseLib/base_lib.h"
+#include "src/base/base_lib.h"
 
 class TS3Connection {
   CSocket connection;

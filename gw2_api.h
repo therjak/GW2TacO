@@ -7,8 +7,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/BaseLib/base_lib.h"
-#include "Bedrock/Whiteboard/draw_api.h"
+#include "src/base/base_lib.h"
+#include "src/white_board/draw_api.h"
 
 namespace GW2 {
 class APIKey {

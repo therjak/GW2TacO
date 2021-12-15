@@ -1,18 +1,18 @@
-#include "application.h"
+#include "src/white_board/application.h"
 
 #include <clocale>
 #include <cstdio>
 
-#include "../BaseLib/file_list.h"
-#include "../BaseLib/read_file.h"
-#include "../BaseLib/string_format.h"
-#include "../BaseLib/timer.h"
-#include "../UtilLib/png_decompressor.h"
-#include "box.h"
-#include "button.h"
-#include "label.h"
-#include "text_box.h"
-#include "window.h"
+#include "src/base/file_list.h"
+#include "src/base/read_file.h"
+#include "src/base/string_format.h"
+#include "src/base/timer.h"
+#include "src/util/png_decompressor.h"
+#include "src/white_board/box.h"
+#include "src/white_board/button.h"
+#include "src/white_board/label.h"
+#include "src/white_board/text_box.h"
+#include "src/white_board/window.h"
 
 CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
   Root = nullptr;

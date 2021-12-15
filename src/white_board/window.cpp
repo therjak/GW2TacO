@@ -1,4 +1,4 @@
-#include "window.h"
+#include "src/white_board/window.h"
 
 uint32_t CWBWindow::GetBorderSelectionArea(const CPoint& mousepos) {
   if (App->GetMouseItem() != this) return 0;

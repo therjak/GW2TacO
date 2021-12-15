@@ -2,7 +2,7 @@
 #include <array>
 #include <vector>
 
-#include "../BaseLib/enum_helpers.h"
+#include "src/base/enum_helpers.h"
 
 enum class COREDEVICEAPI : uint8_t {
   COREAPI_DX9,

@@ -1,12 +1,12 @@
-#include "dx11_texture.h"
+#include "src/core2/dx11_texture.h"
 
 #include <comdef.h>
 
 #include <algorithm>
 
-#include "../BaseLib/image_decompressor.h"
-#include "../UtilLib/png_decompressor.h"
-#include "dss_texture_loader.h"
+#include "src/base/image_decompressor.h"
+#include "src/core2/dss_texture_loader.h"
+#include "src/util/png_decompressor.h"
 #ifdef CORE_API_DX11
 
 CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* dev)
@@ -204,7 +204,7 @@ bool CCoreDX11Texture2D::Update(const uint8_t* Data, const int32_t XRes,
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
-#include "../UtilLib/png_decompressor.h"
+#include "src/util/png_decompressor.h"
 
 float degammafloat(float f) {
   if (f < 0.0031308f) return 12.92f * f;

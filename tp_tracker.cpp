@@ -5,11 +5,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/UtilLib/png_decompressor.h"
 #include "gw2_api.h"
 #include "language.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
+#include "src/util/png_decompressor.h"
 
 using namespace jsonxx;
 

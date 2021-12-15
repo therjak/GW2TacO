@@ -1,8 +1,8 @@
 ﻿#include "overlay_window.h"
 
-#include "Bedrock/Whiteboard/application.h"
-#include "Bedrock/Whiteboard/window.h"
 #include "overlay_config.h"
+#include "src/white_board/application.h"
+#include "src/white_board/window.h"
 
 bool OverlayWindow::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                        WBMESSAGE MessageType) {

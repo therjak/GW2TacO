@@ -1,7 +1,7 @@
-#include "gui_item.h"
+#include "src/white_board/gui_item.h"
 
-#include "../BaseLib/string_format.h"
-#include "application.h"
+#include "src/base/string_format.h"
+#include "src/white_board/application.h"
 
 static WBGUID WB_GUID_COUNTER = 1337;
 

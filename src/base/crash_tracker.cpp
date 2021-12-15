@@ -1,4 +1,4 @@
-#include "crash_tracker.h"
+#include "src/base/crash_tracker.h"
 
 #include <DbgHelp.h>
 
@@ -6,9 +6,9 @@
 #include <string>
 #include <string_view>
 
-#include "logger.h"
-#include "stack_tracker.h"
-#include "string_format.h"
+#include "src/base/logger.h"
+#include "src/base/stack_tracker.h"
+#include "src/base/string_format.h"
 
 std::string BuildVersion;
 

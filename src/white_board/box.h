@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string_view>
 
-#include "application.h"
+#include "src/white_board/application.h"
 
 enum class WBBOXAXIS : uint8_t {
   WB_HORIZONTAL = 0,

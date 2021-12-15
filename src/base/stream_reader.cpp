@@ -1,12 +1,12 @@
-#include "stream_reader.h"
+#include "src/base/stream_reader.h"
 
 #include <windows.h>
 
 #include <algorithm>
 #include <string_view>
 
-#include "assert.h"
-#include "memory.h"
+#include "src/base/assert.h"
+#include "src/base/memory.h"
 
 //////////////////////////////////////////////////////////////////////////
 // base class implementation
