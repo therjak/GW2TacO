@@ -32,12 +32,12 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
 
   CColor Color = CSSProperties.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR);
   CColor BackgroundColor(0x00000000);
-  CColor SelectionColor =
-      Lerp(Selection.DisplayDescriptor.GetColor(WB_STATE_HOVER,
-                                                WB_ITEM_BACKGROUNDCOLOR),
-           Selection.DisplayDescriptor.GetColor(WB_STATE_ACTIVE,
-                                                WB_ITEM_BACKGROUNDCOLOR),
-           min(1.0f, (globalTimer.GetTime() - HiglightStartTime) / 300.0f));
+  CColor SelectionColor = Lerp(
+      Selection.DisplayDescriptor.GetColor(WB_STATE_HOVER,
+                                           WB_ITEM_BACKGROUNDCOLOR),
+      Selection.DisplayDescriptor.GetColor(WB_STATE_ACTIVE,
+                                           WB_ITEM_BACKGROUNDCOLOR),
+      std::min(1.0f, (globalTimer.GetTime() - HiglightStartTime) / 300.0f));
   if (!InFocus())
     SelectionColor = Selection.DisplayDescriptor.GetColor(
         WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR);
@@ -170,8 +170,8 @@ void CWBTextBox::SetCursorPos(int32_t pos, bool Selecting) {
   else {
     if (SelectionStart == SelectionEnd) SelectionOrigin = SelectionStart;
     CursorPos = pos;
-    SelectionStart = min(CursorPos, SelectionOrigin);
-    SelectionEnd = max(CursorPos, SelectionOrigin);
+    SelectionStart = std::min(CursorPos, SelectionOrigin);
+    SelectionEnd = std::max(CursorPos, SelectionOrigin);
   }
 
   // adjust scrollbars so cursor is visible
@@ -630,13 +630,13 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
       // handle cursor movement keys
       switch (Message.Key) {
         case VK_LEFT:
-          SetCursorPos(max(0, CursorPos - 1),
+          SetCursorPos(std::max(0, CursorPos - 1),
                        Message.KeyboardState & WB_KBSTATE_SHIFT);
           DesiredCursorPosXinPixels = GetCursorXinPixels();
           return true;
 
         case VK_RIGHT:
-          SetCursorPos(min((int32_t)Text.size(), CursorPos + 1),
+          SetCursorPos(std::min((int32_t)Text.size(), CursorPos + 1),
                        Message.KeyboardState & WB_KBSTATE_SHIFT);
           DesiredCursorPosXinPixels = GetCursorXinPixels();
           return true;
@@ -892,16 +892,17 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
     XSize += Width;
 
     if (Text[x] == '\n') {
-      Size.x = max(Size.x, XSize);
+      Size.x = std::max(Size.x, XSize);
       Size.y += Font->GetLineHeight();
       XSize = 0;
     }
   }
 
-  SetHScrollbarParameters(0, max(XSize, Size.x), GetClientRect().Width());
+  SetHScrollbarParameters(0, std::max(XSize, Size.x), GetClientRect().Width());
   SetVScrollbarParameters(0, Size.y, GetClientRect().Height());
 
-  if (GetClientRect().Width() >= max(XSize, Size.x)) SetHScrollbarPos(0, true);
+  if (GetClientRect().Width() >= std::max(XSize, Size.x))
+    SetHScrollbarPos(0, true);
   if (GetClientRect().Height() >= Size.y) SetVScrollbarPos(0, true);
 
   DoSyntaxHighlight();
@@ -939,8 +940,9 @@ void CWBTextBox::RemoveText(int32_t Position, int32_t Length,
 }
 
 void CWBTextBox::SetSelection(int32_t start, int32_t end) {
-  SelectionStart = max(0, min(start, end));
-  SelectionEnd = min((int32_t)Text.size(), max(start, end));
+  SelectionStart = std::max(0, std::min(start, end));
+  SelectionEnd =
+      std::min(static_cast<int32_t>(Text.size()), std::max(start, end));
 }
 
 CColor CWBTextBox::GetTextColor(int32_t Index, CColor& DefaultColor) {
@@ -1035,7 +1037,7 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
            Text[End] != _T('\n') && Text[End] != _T('\r')) {
       End++;
     }
-    End = min((int32_t)Text.size() - 1, End);
+    End = std::min(static_cast<int32_t>(Text.size()) - 1, End);
   } else {
     while ((Start >= 0 && _istalnum(Text[Start])) || Text[Start] == _T('_')) {
       Start--;
@@ -1044,7 +1046,7 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
            Text[End] == _T('_')) {
       End++;
     }
-    End = min((int32_t)Text.size() - 1, End);
+    End = std::min(static_cast<int32_t>(Text.size()) - 1, End);
   }
 
   Start++;

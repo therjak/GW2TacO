@@ -146,9 +146,9 @@ void CWBContextMenu::ResizeToContentSize() {
         }
       }
 
-      ContentSize.x = max(ContentSize.x,
-                          padding.x1 + Client.x2 - padding.x2 + arrowPadding +
-                              Font->GetWidth(item->Text, true, TextTransform));
+      ContentSize.x = std::max(
+          ContentSize.x, padding.x1 + Client.x2 - padding.x2 + arrowPadding +
+                             Font->GetWidth(item->Text, true, TextTransform));
       ContentSize.y += Font->GetLineHeight();
     }
   }

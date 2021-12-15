@@ -233,13 +233,13 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
           CRect r = GetSavedPosition();
           const CPoint md = Message.GetPosition() - App->GetLeftDownPos();
           if (DragMode & WB_DRAGMODE_LEFT)
-            r.x1 = min(r.x1 + md.x, r.x2 - MinSize.x);
+            r.x1 = std::min(r.x1 + md.x, r.x2 - MinSize.x);
           if (DragMode & WB_DRAGMODE_TOP)
-            r.y1 = min(r.y1 + md.y, r.y2 - MinSize.y);
+            r.y1 = std::min(r.y1 + md.y, r.y2 - MinSize.y);
           if (DragMode & WB_DRAGMODE_RIGHT)
-            r.x2 = max(r.x2 + md.x, r.x1 + MinSize.x);
+            r.x2 = std::max(r.x2 + md.x, r.x1 + MinSize.x);
           if (DragMode & WB_DRAGMODE_BOTTOM)
-            r.y2 = max(r.y2 + md.y, r.y1 + MinSize.y);
+            r.y2 = std::max(r.y2 + md.y, r.y1 + MinSize.y);
           SetPosition(r);
           return true;
         }

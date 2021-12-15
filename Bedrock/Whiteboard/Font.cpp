@@ -461,7 +461,7 @@ int32_t CWBFont::GetWidth(std::string_view String, bool AdvanceLastChar,
     const uint16_t Char = ApplyTextTransformUtf8(t.c_str(), Text, Transform);
 
     if (Char == '\n') {
-      maxXp = max(xp, maxXp);
+      maxXp = std::max(xp, maxXp);
       xp = 0;
       continue;
     }
@@ -492,7 +492,7 @@ int32_t CWBFont::GetWidth(std::string_view String, bool AdvanceLastChar,
     }
   }
 
-  return max(maxXp, xp);
+  return std::max(maxXp, xp);
 }
 
 void CWBFont::AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount) {
@@ -507,7 +507,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
 
   AlphabetSize = 0;
   for (const auto& abc : Description->Alphabet)
-    AlphabetSize = max(AlphabetSize, abc.Char) + 1;
+    AlphabetSize = std::max<int32_t>(AlphabetSize, abc.Char) + 1;
 
   Alphabet = std::make_unique<WBSYMBOL[]>(AlphabetSize);
   memset(Alphabet.get(), 0, AlphabetSize * sizeof(WBSYMBOL));
@@ -535,10 +535,10 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
 
           if (c[3] > 10) {
             hadContent = true;
-            content.x1 = min(content.x1, i);
-            content.x2 = max(content.x2, i);
-            content.y1 = min(content.y1, j);
-            content.y2 = max(content.y2, j);
+            content.x1 = std::min(content.x1, i);
+            content.x2 = std::max(content.x2, i);
+            content.y1 = std::min(content.y1, j);
+            content.y2 = std::max(content.y2, j);
           }
         }
 

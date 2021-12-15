@@ -82,17 +82,17 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
   const float xs = static_cast<float>(abs(p2.x - p1.x));
   const float ys = static_cast<float>(abs(p2.y - p1.y));
 
-  if (p1.x < rArea.x1) t1 = max(t1, (rArea.x1 - p1.x) / xs);
-  if (p1.y < rArea.y1) t1 = max(t1, (rArea.y1 - p1.y) / ys);
+  if (p1.x < rArea.x1) t1 = std::max(t1, (rArea.x1 - p1.x) / xs);
+  if (p1.y < rArea.y1) t1 = std::max(t1, (rArea.y1 - p1.y) / ys);
 
-  if (p1.x > rArea.x2) t1 = max(t1, (p1.x - rArea.x2) / xs);
-  if (p1.y > rArea.y2) t1 = max(t1, (p1.y - rArea.y2) / ys);
+  if (p1.x > rArea.x2) t1 = std::max(t1, (p1.x - rArea.x2) / xs);
+  if (p1.y > rArea.y2) t1 = std::max(t1, (p1.y - rArea.y2) / ys);
 
-  if (p2.x < rArea.x1) t2 = max(t2, (rArea.x1 - p2.x) / xs);
-  if (p2.y < rArea.y1) t2 = max(t2, (rArea.y1 - p2.y) / ys);
+  if (p2.x < rArea.x1) t2 = std::max(t2, (rArea.x1 - p2.x) / xs);
+  if (p2.y < rArea.y1) t2 = std::max(t2, (rArea.y1 - p2.y) / ys);
 
-  if (p2.x > rArea.x2) t2 = max(t2, (p2.x - rArea.x2) / xs);
-  if (p2.y > rArea.y2) t2 = max(t2, (p2.y - rArea.y2) / ys);
+  if (p2.x > rArea.x2) t2 = std::max(t2, (p2.x - rArea.x2) / xs);
+  if (p2.y > rArea.y2) t2 = std::max(t2, (p2.y - rArea.y2) / ys);
 
   t2 = 1 - t2;
 
@@ -257,10 +257,10 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
   CPoint p3 = _p3 + Offset;
 
   CRect Bound = CRect(p1, p1);
-  Bound.x1 = min(min(p1.x, p2.x), p3.x);
-  Bound.x2 = max(max(p1.x, p2.x), p3.x);
-  Bound.y1 = min(min(p1.y, p2.y), p3.y);
-  Bound.y2 = max(max(p1.y, p2.y), p3.y);
+  Bound.x1 = std::min(std::min(p1.x, p2.x), p3.x);
+  Bound.x2 = std::max(std::max(p1.x, p2.x), p3.x);
+  Bound.y1 = std::min(std::min(p1.y, p2.y), p3.y);
+  Bound.y2 = std::max(std::max(p1.y, p2.y), p3.y);
 
   Bound |= CropRect | Bound;
   if (Bound.Width() <= 0 || Bound.Height() <= 0) return;
@@ -316,7 +316,7 @@ void CWBDrawAPI::RenderDisplayList() {
 
   int32_t VxCount = DisplayList.size();
   while (VxCount > 0) {
-    const int32_t Count = min(VxCount, VERTEXBUFFERVERTEXCOUNT);
+    const int32_t Count = std::min(VxCount, VERTEXBUFFERVERTEXCOUNT);
 
     void* Buffer = nullptr;
 

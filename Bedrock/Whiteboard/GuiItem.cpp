@@ -877,12 +877,12 @@ void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
   const int32_t ma = s.MaxScroll;
 
   const float scrollsize = static_cast<float>(ma - mi);
-  const float rs = max(0.0f, min(1.0f, s.ViewSize / scrollsize));
-  float rp =
-      max(0.0f, min(1.0f, (s.ScrollPos - mi) / (scrollsize - s.ViewSize)));
+  const float rs = std::max(0.0f, std::min(1.0f, s.ViewSize / scrollsize));
+  float rp = std::max(
+      0.0f, std::min(1.0f, (s.ScrollPos - mi) / (scrollsize - s.ViewSize)));
 
-  thumbsize =
-      static_cast<int32_t> max(Scrollbar_ThumbMinimalSize, rs * (a2 - a1));
+  thumbsize = static_cast<int32_t>(
+      std::max<float>(Scrollbar_ThumbMinimalSize, rs * (a2 - a1)));
   thumbpos = static_cast<int32_t>((a2 - thumbsize - a1) * rp) + a1;
 }
 
@@ -899,13 +899,14 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams& s,
   const int32_t ma = s.MaxScroll;
   const float scrollsize = static_cast<float>(ma - mi);
 
-  const float sp = max(
-      0.0f, min(1.0f, (s.DragStartPosition - mi) / (scrollsize - s.ViewSize)));
+  const float sp = std::max(
+      0.0f,
+      std::min(1.0f, (s.DragStartPosition - mi) / (scrollsize - s.ViewSize)));
   const int32_t thumbposstart =
       static_cast<int32_t>((a2 - thumbsize - a1) * sp);
 
   const int32_t thumbposdelta =
-      max(0, min(a2 - thumbsize - a1, thumbposstart + delta));
+      std::max(0, std::min(a2 - thumbsize - a1, thumbposstart + delta));
   int32_t newscrollpos =
       static_cast<int32_t>(
           (thumbposdelta / static_cast<float>(a2 - thumbsize - a1)) *
@@ -1283,8 +1284,8 @@ void CWBItem::GetVScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
 void CWBItem::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
   int32_t sc = ScrollPos;
   if (Clamp)
-    sc = max(HScrollbar.MinScroll,
-             min(sc, HScrollbar.MaxScroll - HScrollbar.ViewSize));
+    sc = std::max(HScrollbar.MinScroll,
+                  std::min(sc, HScrollbar.MaxScroll - HScrollbar.ViewSize));
   if (sc != HScrollbar.ScrollPos) {
     HScrollbar.ScrollPos = sc;
     App->SendMessage(CWBMessage(App, WBM_HSCROLL, GetGuid(), sc));
@@ -1295,8 +1296,8 @@ void CWBItem::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
 void CWBItem::SetVScrollbarPos(int32_t ScrollPos, bool Clamp) {
   int32_t sc = ScrollPos;
   if (Clamp)
-    sc = max(VScrollbar.MinScroll,
-             min(sc, VScrollbar.MaxScroll - VScrollbar.ViewSize));
+    sc = std::max(VScrollbar.MinScroll,
+                  std::min(sc, VScrollbar.MaxScroll - VScrollbar.ViewSize));
   if (sc != VScrollbar.ScrollPos) {
     VScrollbar.ScrollPos = sc;
     App->SendMessage(CWBMessage(App, WBM_VSCROLL, GetGuid(), sc));
@@ -1691,7 +1692,8 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     std::string v(value);
     std::sscanf(v.c_str(), _T( "%f" ), &dw);
 
-    const int32_t o = static_cast<int32_t> max(0, min(255, dw * 255));
+    const int32_t o =
+        static_cast<int32_t>(std::max(0.f, std::min(255.f, dw * 255)));
 
     VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_OPACITY,
                           o * 0x01010101, pseudo);
@@ -2134,8 +2136,9 @@ bool CWBItem::ParseRGBA(std::string_view description, CColor& output) {
     if (std::sscanf(Params[3].c_str(), _T( "%f" ), &a) != 1) return false;
 
   uint8_t Colors[3];
-  for (int32_t y = 0; y < 3; y++) Colors[y] = max(0, min(255, c[y]));
-  const uint8_t Alpha = static_cast<int32_t>(max(0, min(1, a)) * 255);
+  for (int32_t y = 0; y < 3; y++) Colors[y] = std::max(0, std::min(255, c[y]));
+  const uint8_t Alpha =
+      static_cast<int32_t>(std::max(0.f, std::min(1.f, a)) * 255.f);
 
   output = CColor(Colors[0], Colors[1], Colors[2], Alpha);
   return true;

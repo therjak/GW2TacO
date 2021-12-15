@@ -43,11 +43,12 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
           if (!GetChild(x)->IsHidden())
             BRect = BRect & GetChild(x)->GetPosition();
 
-        SetVScrollbarPos(max(BRect.y1, min(BRect.y2 - client.Height(),
-                                           GetVScrollbarPos() -
-                                               (int)(Message.Data *
-                                                     client.Height() / 5.0f))),
-                         false);
+        SetVScrollbarPos(
+            std::max(BRect.y1, std::min(BRect.y2 - client.Height(),
+                                        GetVScrollbarPos() -
+                                            (int)(Message.Data *
+                                                  client.Height() / 5.0f))),
+            false);
         return true;
       }
       break;
