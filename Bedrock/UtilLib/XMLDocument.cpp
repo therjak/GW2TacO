@@ -1,7 +1,7 @@
 #include "XMLDocument.h"
 
-#include <Objbase.h>
 #include <combaseapi.h>
+#include <objbase.h>
 
 #include <cstdio>
 #include <sstream>

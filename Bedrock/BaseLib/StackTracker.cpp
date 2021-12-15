@@ -2,8 +2,8 @@
 
 #ifdef ENABLE_STACKTRACKER_CLASS
 
-#include <Windows.h>
-// Windows needs to be on the top.
+#include <windows.h>
+// windows needs to be on the top.
 #include <DbgHelp.h>
 #pragma comment(lib, "dbghelp.lib")
 #include <tchar.h>

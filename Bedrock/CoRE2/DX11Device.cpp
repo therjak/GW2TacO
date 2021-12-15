@@ -1,7 +1,7 @@
 #include "DX11Device.h"
 
-#include <DComp.h>
 #include <comdef.h>
+#include <dcomp.h>
 
 #include <vector>
 

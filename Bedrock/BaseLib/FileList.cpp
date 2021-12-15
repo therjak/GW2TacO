@@ -1,6 +1,6 @@
 #include "FileList.h "
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <utility>
 

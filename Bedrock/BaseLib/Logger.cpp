@@ -1,6 +1,7 @@
 #include "Logger.h"
 
-#include <Windows.h>
+#include <windows.h>
+//
 #include <debugapi.h>
 #include <tchar.h>
 

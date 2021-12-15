@@ -3,8 +3,8 @@
 #include <WinSock2.h>
 
 WSADATA wsaData;
-#include <MMSystem.h>
 #include <Ws2tcpip.h>
+#include <mmsystem.h>
 
 #include <memory>
 

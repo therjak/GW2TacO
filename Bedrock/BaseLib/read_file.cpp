@@ -1,6 +1,7 @@
 #include "read_file.h"
 
-#include <Windows.h>
+#include <windows.h>
+//
 #include <fileapi.h>
 
 #include <string>

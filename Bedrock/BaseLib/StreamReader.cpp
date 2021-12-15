@@ -1,6 +1,6 @@
 #include "StreamReader.h"
 
-#include <Windows.h>
+#include <windows.h>
 
 #include <string_view>
 

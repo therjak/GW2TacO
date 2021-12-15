@@ -1,8 +1,8 @@
 #include "Timer.h"
 
-#include <Windows.h>
-// Windows needs to be on the top.
-#include <MMSystem.h>
+#include <windows.h>
+// windows needs to be on the top.
+#include <mmsystem.h>
 #include <timeapi.h>
 #pragma comment(lib, "winmm.lib")
 

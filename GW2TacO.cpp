@@ -1,6 +1,6 @@
 ﻿#include "GW2TacO.h"
 
-#include <Shellapi.h>
+#include <shellapi.h>
 
 #include <mutex>
 
