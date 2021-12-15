@@ -1,5 +1,7 @@
 ﻿#include "TacticalCompass.h"
 
+#include <algorithm>
+
 #include "Language.h"
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
@@ -56,7 +58,9 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
     CVector4 p1 = CVector4(rworld * sinf(f1), 1.0f, rworld * cosf(f1), 0.0f);
 
     if (!zoomedin)
-      a1 = 1 - powf(max(0, camDir * CVector2(p1.x, p1.z).Normalized()), 10.0f);
+      a1 = 1 -
+           std::pow(std::max(0.f, camDir * CVector2(p1.x, p1.z).Normalized()),
+                    10.0f);
 
     p1 = p1 + charpos;
     p1 = p1 * cam;
@@ -64,7 +68,7 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
 
     if (p1.z < 0.01) continue;
 
-    p1.z = max(0.01f, p1.z);
+    p1.z = std::max(0.01f, p1.z);
     p1 = p1 * persp;
     p1 /= p1.w;
 
@@ -78,7 +82,7 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
     CPoint pa = CPoint(static_cast<int>(p1.x * drawrect.Width()),
                        static_cast<int>((1 - p1.y) * drawrect.Height()));
 
-    a1 = max(0, min(1, a1)) * 255;
+    a1 = std::max(0.f, std::min(1.f, a1)) * 255.f;
 
     CRect cent = CRect(pa, pa);
     CPoint p = f->GetCenter(txt[x], cent);

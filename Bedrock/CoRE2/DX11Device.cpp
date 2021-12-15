@@ -3,6 +3,7 @@
 #include <comdef.h>
 #include <dcomp.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "DX11ConstantBuffer.h"
@@ -958,8 +959,8 @@ bool CCoreDX11Device::SetViewport(CRect Viewport) {
 
   viewport.TopLeftX = static_cast<float>(Viewport.x1);
   viewport.TopLeftY = static_cast<float>(Viewport.y1);
-  viewport.Width = max(0, (float)Viewport.Width());
-  viewport.Height = max(0, (float)Viewport.Height());
+  viewport.Width = std::max(0.f, static_cast<float>(Viewport.Width()));
+  viewport.Height = std::max(0.f, static_cast<float>(Viewport.Height()));
   viewport.MinDepth = 0;
   viewport.MaxDepth = 1;
   DeviceContext->RSSetViewports(1, &viewport);

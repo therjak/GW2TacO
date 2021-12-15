@@ -1,5 +1,6 @@
 ﻿#include "MapTimer.h"
 
+#include <algorithm>
 #include <string>
 
 #include "Bedrock/BaseLib/string_format.h"
@@ -227,8 +228,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
             1;
 
         if (p2 >= paddingLeft && p1 <= cl.Width()) {
-          CRect r = CRect(max(paddingLeft, p1), toppos, min(cl.Width(), p2),
-                          bottompos);
+          CRect r = CRect(std::max(paddingLeft, p1), toppos,
+                          std::min(cl.Width(), p2), bottompos);
 
           API->DrawRect(r, map.events[currevent].color);
 

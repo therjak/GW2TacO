@@ -2,6 +2,7 @@
 
 #include <shellapi.h>
 
+#include <algorithm>
 #include <mutex>
 
 #include "Bedrock/BaseLib/string_format.h"
@@ -1522,7 +1523,7 @@ float GetWindowTooSmallScale() {
   if (rect.Width() < 1024 || rect.Height() < 768) {
     float xScale = rect.Width() / 1024.0f;
     float yScale = rect.Height() / 768.0f;
-    return min(xScale, yScale);
+    return std::min(xScale, yScale);
   }
 
   return 1.0f;
@@ -1553,8 +1554,8 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 #define speed 500.0f
 
       int32_t currTime = GetTime();
-      float delta =
-          max(0, min(1, (currTime - lastMenuHoverTransitionTime) / speed));
+      float delta = std::max(
+          0.f, std::min(1.f, (currTime - lastMenuHoverTransitionTime) / speed));
 
       bool hover =
           ClientToScreen(it->GetClientRect()).Contains(App->GetMousePos());
@@ -1573,7 +1574,8 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       float col = 1 - delta * 0.5f;
       if (hover) col = 0.5f + delta * 0.5f;
 
-      uint32_t o = static_cast<uint32_t> max(0, min(255, col * 255));
+      uint32_t o =
+          static_cast<uint32_t>(std::max(0.f, std::min(255.f, col * 255.f)));
 
       taco->SetDisplayProperty(WB_STATE_NORMAL, WB_ITEM_OPACITY,
                                o * 0x01010101);
@@ -1644,12 +1646,12 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
               minvals = maxvals = p.position;
               initialized = true;
             } else {
-              minvals.x = min(p.position.x, minvals.x);
-              minvals.y = min(p.position.y, minvals.y);
-              minvals.z = min(p.position.z, minvals.z);
-              maxvals.x = max(p.position.x, maxvals.x);
-              maxvals.y = max(p.position.y, maxvals.y);
-              maxvals.z = max(p.position.z, maxvals.z);
+              minvals.x = std::min(p.position.x, minvals.x);
+              minvals.y = std::min(p.position.y, minvals.y);
+              minvals.z = std::min(p.position.z, minvals.z);
+              maxvals.x = std::max(p.position.x, maxvals.x);
+              maxvals.y = std::max(p.position.y, maxvals.y);
+              maxvals.z = std::max(p.position.z, maxvals.z);
             }
           }
         }
@@ -1664,9 +1666,9 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
           if (p.mapID == mumbleLink.mapID && !p.category) {
             CVector3 d = p.position - center;
 
-            maxdistance3d = max(d.Length(), maxdistance3d);
+            maxdistance3d = std::max(d.Length(), maxdistance3d);
             d.y = 0;
-            maxdistance2d = max(d.Length(), maxdistance2d);
+            maxdistance2d = std::max(d.Length(), maxdistance2d);
           }
         }
 

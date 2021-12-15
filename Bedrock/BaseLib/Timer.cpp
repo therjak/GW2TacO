@@ -6,6 +6,8 @@
 #include <timeapi.h>
 #pragma comment(lib, "winmm.lib")
 
+#include <algorithm>
+
 CTimer globalTimer;
 
 CTimer::CTimer() { LastUpdateTime = StartTime = timeGetTime(); }
@@ -25,7 +27,7 @@ void CTimer::Update() {
   LastUpdateTime = CurrentTime;
 }
 
-void CTimer::SetSpeed(float Speed) { SpeedModifier = max(0, Speed); }
+void CTimer::SetSpeed(float Speed) { SpeedModifier = std::max(0.f, Speed); }
 
 void CTimer::Pause(bool Pause) { Paused = Pause; }
 

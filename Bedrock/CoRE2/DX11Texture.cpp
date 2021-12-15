@@ -2,6 +2,8 @@
 
 #include <comdef.h>
 
+#include <algorithm>
+
 #include "../BaseLib/ImageDecompressor.h"
 #include "../UtilLib/PNGDecompressor.h"
 #include "DDSTextureLoader.h"
@@ -307,15 +309,17 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
 
       if (!degamma) {
         for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++)
-          image[x] = static_cast<uint8_t> max(0, min(255, img2[x] * 255));
+          image[x] = static_cast<uint8_t>(
+              std::max(0.f, std::min(255.f, img2[x] * 255.f)));
       } else {
         for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4;) {
           for (int y = 0; y < 3; y++, x++)
-            image[x] = static_cast<uint8_t> max(
-                0, min(255, degammafloat(img2[x]) * 255));
+            image[x] = static_cast<uint8_t>(
+                std::max(0.f, std::min(255.f, degammafloat(img2[x]) * 255.f)));
 
           x++;
-          image[x] = static_cast<uint8_t> max(0, min(255, img2[x] * 255));
+          image[x] = static_cast<uint8_t>(
+              std::max(0.f, std::min(255.f, img2[x] * 255.f)));
         }
       }
     } break;
@@ -714,11 +718,11 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
   if (bc) {
     size_t numBlocksWide = 0;
     if (width > 0) {
-      numBlocksWide = max(1, (width + 3) / 4);
+      numBlocksWide = std::max(1u, (width + 3u) / 4u);
     }
     size_t numBlocksHigh = 0;
     if (height > 0) {
-      numBlocksHigh = max(1, (height + 3) / 4);
+      numBlocksHigh = std::max(1u, (height + 3u) / 4u);
     }
     rowBytes = numBlocksWide * bpe;
     numRows = numBlocksHigh;
@@ -1411,7 +1415,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
 
   uint8_t* dptr = pixels.get();
 
-  const size_t msize = min(rowPitch, mapped.RowPitch);
+  const size_t msize = std::min(rowPitch, mapped.RowPitch);
   for (size_t h = 0; h < rowCount; ++h) {
     memcpy_s(dptr, rowPitch, sptr, msize);
     sptr += mapped.RowPitch;

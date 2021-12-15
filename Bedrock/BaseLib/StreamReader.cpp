@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "Assert.h"
@@ -49,7 +50,7 @@ uint32_t CStreamReader::ReadBits(uint32_t BitCount) {
     // read next byte if needed
     if (readerBitOffset == 0) BASEASSERT(ReadStream(&readerLastChar, 1) == 1);
 
-    uint32_t count = min(8 - readerBitOffset, BitCount);
+    uint32_t count = std::min(8 - readerBitOffset, BitCount);
     uint32_t mask = (1 << count) - 1;
 
     uint8_t bits = readerLastChar >> readerBitOffset;
@@ -93,7 +94,8 @@ CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {
 CStreamReaderMemory::~CStreamReaderMemory() {}
 
 int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
-  int64_t bytestoread = max(0, min(nCount, DataSize - Offset));
+  int64_t bytestoread = std::max(
+      0ull, std::min(static_cast<uint64_t>(nCount), DataSize - Offset));
   memcpy(lpBuf, Data.get() + Offset, static_cast<size_t>(bytestoread));
   Offset += bytestoread;
   return static_cast<int32_t>(bytestoread);

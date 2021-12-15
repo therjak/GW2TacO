@@ -1,5 +1,6 @@
 ﻿#include "DungeonProgress.h"
 
+#include <algorithm>
 #include <cctype>
 #include <string>
 #include <unordered_map>
@@ -158,7 +159,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
 
     int32_t textwidth = 0;
     for (const auto& d : dungeons)
-      textwidth = max(textwidth, f->GetWidth(d.shortName, false));
+      textwidth = std::max(textwidth, f->GetWidth(d.shortName, false));
 
     for (auto& d : dungeons) {
       f->Write(API, (d.shortName + ":"), CPoint(0, posy + 1),

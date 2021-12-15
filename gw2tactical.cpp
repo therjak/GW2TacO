@@ -360,7 +360,7 @@ float GetMapFade() {
 
   if (mumbleLink.isMapOpen) {
     lastMapTime = MAPFADELENGTH - lastMapTime;
-    mapFade = min(1.0f, lastMapTime / float(MAPFADELENGTH));
+    mapFade = std::min(1.0f, lastMapTime / float(MAPFADELENGTH));
   }
 
   return mapFade;
@@ -593,14 +593,16 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
   camspacex = camspacex * persp;
   camspacex /= camspacex.w;
 
-  int s = static_cast<int> min(
+  int s = static_cast<int>(std::min<float>(
       poi.typeData.maxSize,
-      max(poi.typeData.minSize,
-          abs((camspacex - camspace).x) * drawrect.Width()));
+      std::max<float>(poi.typeData.minSize,
+                      std::abs((camspacex - camspace).x) * drawrect.Width())));
 
   if (poi.typeData.behavior == POIBehavior::WvWObjective) {
-    alphaMultiplier = max(
-        0, min(1, powf(CVector2(screenpos.x, screenpos.y).Length(), 2) + 0.3f));
+    alphaMultiplier = std::max(
+        0.f, std::min(1.f, std::pow(CVector2(screenpos.x, screenpos.y).Length(),
+                                    2.f) +
+                               0.3f));
   }
 
   screenpos = screenpos * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
@@ -777,8 +779,10 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
     return;
 
   if (poi.typeData.bits.keepOnMapEdge) {
-    pos.x = min(miniRect.x2, max(miniRect.x1, pos.x));
-    pos.y = min(miniRect.y2, max(miniRect.y1, pos.y));
+    pos.x = std::min(static_cast<float>(miniRect.x2),
+                     std::max(static_cast<float>(miniRect.x1), pos.x));
+    pos.y = std::min(static_cast<float>(miniRect.y2),
+                     std::max(static_cast<float>(miniRect.y1), pos.y));
   }
 
   if (!poi.icon) {
@@ -791,9 +795,11 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
   if (poi.typeData.bits.scaleWithZoom) poiSize /= zoomLevel;
   poiSize *= uiScale;
 
-  alpha *= 1.0f -
-           max(0.0f, min(1.0f, (zoomLevel - poi.typeData.miniMapFadeOutLevel) /
-                                   2.0f));
+  alpha *=
+      1.0f -
+      std::max(0.0f,
+               std::min(1.0f,
+                        (zoomLevel - poi.typeData.miniMapFadeOutLevel) / 2.0f));
 
   CVector2 startPoint = pos - CVector2(poiSize / 2.0f, poiSize / 2.0f);
   CPoint topLeft = CPoint(int32_t(startPoint.x), int32_t(startPoint.y));

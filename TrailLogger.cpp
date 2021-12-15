@@ -195,9 +195,10 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
           texture = trailTexture.get();
 
         float alpha =
-            1.0f - max(0.0f, min(1.0f, (mumbleLink.miniMap.mapScale -
-                                        trail.typeData.miniMapFadeOutLevel) /
-                                           2.0f));
+            1.0f -
+            std::max(0.0f, std::min(1.0f, (mumbleLink.miniMap.mapScale -
+                                           trail.typeData.miniMapFadeOutLevel) /
+                                              2.0f));
 
         trail.SetupAndDraw(constBuffer.get(), texture, camera, perspective, one,
                            false, 0, data, mapFade * alpha * minimapOpacity,
@@ -239,9 +240,10 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
           texture = trailTexture.get();
 
         float alpha =
-            1.0f - max(0.0f, min(1.0f, (mumbleLink.bigMap.mapScale -
-                                        trail.typeData.miniMapFadeOutLevel) /
-                                           2.0f));
+            1.0f -
+            std::max(0.0f, std::min(1.0f, (mumbleLink.bigMap.mapScale -
+                                           trail.typeData.miniMapFadeOutLevel) /
+                                              2.0f));
         trail.SetupAndDraw(constBuffer.get(), texture, camera, perspective, one,
                            false, 0, data,
                            (1.0f - mapFade) * alpha * minimapOpacity, 1.0f,
@@ -701,7 +703,7 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
       lastOrt = CVector3(0, 0, 0);
     }
 
-    CVector3 nextPos = CVector3(points + min(pointCount - 1, x + 1) * 3);
+    CVector3 nextPos = CVector3(points + std::min(pointCount - 1, x + 1) * 3);
 
     if (nextPos == CVector3(0, 0, 0)) nextPos = pos;
 

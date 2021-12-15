@@ -1,5 +1,7 @@
 ﻿#include "RangeDisplay.h"
 
+#include <algorithm>
+
 #include "MumbleLink.h"
 #include "OverlayConfig.h"
 
@@ -57,14 +59,20 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
     float a2 = 1.0f;
     float f1 = x / static_cast<float>(resolution) * PI * 2;
     float f2 = (x + 1) / static_cast<float>(resolution) * PI * 2;
-    CVector4 p1 = CVector4(rworld * sinf(f1), 0, rworld * cosf(f1), 0.0f);
-    CVector4 p2 = CVector4(rworld * sinf(f2), 0, rworld * cosf(f2), 0.0f);
+    CVector4 p1 =
+        CVector4(rworld * std::sin(f1), 0, rworld * std::cos(f1), 0.0f);
+    CVector4 p2 =
+        CVector4(rworld * std::sin(f2), 0, rworld * std::cos(f2), 0.0f);
 
     CVector3 toPoint(p1 - campos);
 
     if (!zoomedin) {
-      a1 = 1 - powf(max(0, camDir * CVector2(p1.x, p1.z).Normalized()), 10.0f);
-      a2 = 1 - powf(max(0, camDir * CVector2(p2.x, p2.z).Normalized()), 10.0f);
+      a1 = 1 -
+           std::pow(std::max(0.f, camDir * CVector2(p1.x, p1.z).Normalized()),
+                    10.0f);
+      a2 = 1 -
+           std::pow(std::max(0.f, camDir * CVector2(p2.x, p2.z).Normalized()),
+                    10.0f);
     }
 
     p1 = p1 + charpos;
@@ -78,8 +86,8 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
 
     if (p1.z < 0.01 && p2.z < 0.01) continue;
 
-    p1.z = max(0.01f, p1.z);
-    p2.z = max(0.01f, p2.z);
+    p1.z = std::max(0.01f, p1.z);
+    p2.z = std::max(0.01f, p2.z);
 
     p1 = p1 * persp;
     p2 = p2 * persp;
@@ -104,8 +112,8 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
     CPoint pb = CPoint(static_cast<int>(p2.x * drawrect.Width()),
                        static_cast<int>((1 - p2.y) * drawrect.Height()));
 
-    a1 = max(0, min(1, a1)) * alpha * 255;
-    a2 = max(0, min(1, a2)) * alpha * 255;
+    a1 = std::max(0.f, std::min(1.f, a1)) * alpha * 255.f;
+    a2 = std::max(0.f, std::min(1.f, a2)) * alpha * 255.f;
 
     API->DrawLine(pa, pb, CColor(228, 210, 157, static_cast<uint8_t>(a1)),
                   CColor(228, 210, 157, static_cast<uint8_t>(a2)));

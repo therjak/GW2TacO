@@ -282,7 +282,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (nextSellOnly) {
             for (size_t y = x; y < buys.size(); y++)
               if (buys[y].itemID == buys[x].itemID)
-                price = max(buys[y].price, buys[x].price);
+                price = std::max(buys[y].price, buys[x].price);
           }
 
           if (itemData.icon)
@@ -337,7 +337,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (nextSellOnly) {
             for (size_t y = x; y < sells.size(); y++)
               if (sells[y].itemID == sells[x].itemID)
-                price = min(sells[y].price, sells[x].price);
+                price = std::min(sells[y].price, sells[x].price);
           }
 
           if (itemData.icon)

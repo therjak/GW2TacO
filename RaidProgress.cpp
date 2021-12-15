@@ -1,5 +1,6 @@
 ﻿#include "RaidProgress.h"
 
+#include <algorithm>
 #include <cctype>
 
 #include "Bedrock/BaseLib/string_format.h"
@@ -158,7 +159,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
     int32_t posx = 0;
     if (compact) {
       for (const auto& r : raids)
-        posx = max(posx, f->GetWidth(r.shortName.c_str()));
+        posx = std::max(posx, f->GetWidth(r.shortName.c_str()));
     }
     posx += 3;
     int32_t oposx = posx;
