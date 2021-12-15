@@ -5,8 +5,8 @@
 #include <string_view>
 #include <vector>
 
-#include "../BaseLib/color.h"
-#include "application.h"
+#include "src/base/color.h"
+#include "src/white_board/application.h"
 
 #define WB_TEXTBOX_SINGLELINE 0x0000001
 #define WB_TEXTBOX_PASSWORD 0x0000002

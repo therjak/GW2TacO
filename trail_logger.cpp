@@ -9,10 +9,10 @@
 #include <vector>
 
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
-#include "Bedrock/UtilLib/miniz.h"
-#include "Bedrock/Whiteboard/application.h"
-#include "Bedrock/Whiteboard/button.h"
 #include "overlay_config.h"
+#include "src/util/miniz.h"
+#include "src/white_board/application.h"
+#include "src/white_board/button.h"
 
 #define TRAILFILEVERSION 0
 

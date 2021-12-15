@@ -1,9 +1,9 @@
-#include "quaternion.h"
+#include "src/base/quaternion.h"
 
 #include <cmath>
 #include <cstdint>
 
-#include "spec_math.h"
+#include "src/base/spec_math.h"
 
 CQuaternion Lerp(const CQuaternion& v1, const CQuaternion& v2, const float t) {
   return ((v2 - v1) * t + v1).Normalized();

@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "resource.h"
+#include "src/core2/resource.h"
 
 #define CORESHADERTYPECOUNT 5
 

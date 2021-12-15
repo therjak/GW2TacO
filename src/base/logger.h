@@ -6,7 +6,7 @@
 #include <string_view>
 #include <vector>
 
-#include "ring_buffer.h"
+#include "src/base/ring_buffer.h"
 
 #define ENABLE_LOGGING
 

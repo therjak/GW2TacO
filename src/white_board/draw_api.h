@@ -4,10 +4,10 @@
 #include <cstdint>
 #include <vector>
 
-#include "../BaseLib/color.h"
-#include "../CoRE2/core2.h"
-#include "atlas.h"
-#include "font.h"
+#include "src/base/color.h"
+#include "src/core2/core2.h"
+#include "src/white_board/atlas.h"
+#include "src/white_board/font.h"
 
 struct WBDISPLAYLINE {
   CPoint p1, p2;

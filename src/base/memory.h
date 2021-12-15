@@ -15,8 +15,8 @@ void __cdecl operator delete[](void* pointer, const char* file, int32_t line);
 
 #define new new (__FILE__, __LINE__)
 
-#include "CriticalSection.h"
-#include "StackTracker.h"
+#include "src/base/critical_section.h"
+#include "src/base/stack_tracker.h"
 
 class CAllocationInfo {
  public:

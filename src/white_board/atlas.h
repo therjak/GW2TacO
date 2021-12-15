@@ -2,7 +2,7 @@
 #include <array>
 #include <unordered_map>
 
-#include "../CoRE2/core2.h"
+#include "src/core2/core2.h"
 
 // cache size must be 2^x
 #define ATLASCACHESIZE 32

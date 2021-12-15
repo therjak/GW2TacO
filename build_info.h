@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <string>
 
-#include "Bedrock/BaseLib/base_lib.h"
+#include "src/base/base_lib.h"
 
 extern std::string TacOBuild;
 extern std::string buildDateTime;

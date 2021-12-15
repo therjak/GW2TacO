@@ -3,8 +3,8 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "Bedrock/BaseLib/base_lib.h"
 #include "gw2_taco.h"
+#include "src/base/base_lib.h"
 
 void LoadConfig();
 void SaveConfig();

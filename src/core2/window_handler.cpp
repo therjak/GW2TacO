@@ -1,8 +1,8 @@
-#include "window_handler.h"
+#include "src/core2/window_handler.h"
 
-#include "../BaseLib/rectangle.h"
-#include "../BaseLib/timer.h"
-#include "dx11_device.h"
+#include "src/base//timer.h"
+#include "src/base/rectangle.h"
+#include "src/core2/dx11_device.h"
 
 typedef CCoreDX11Device CCore;
 

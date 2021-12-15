@@ -1,5 +1,5 @@
 ﻿#pragma once
-#include "Bedrock/Whiteboard/application.h"
+#include "src/white_board/application.h"
 
 class COverlayApp : public CWBApplication {
  protected:

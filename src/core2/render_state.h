@@ -2,10 +2,10 @@
 
 #include <array>
 
-#include "index_buffer.h"
-#include "shader.h"
-#include "texture.h"
-#include "vertex_format.h"
+#include "src/core2/index_buffer.h"
+#include "src/core2/shader.h"
+#include "src/core2/texture.h"
+#include "src/core2/vertex_format.h"
 
 class CCoreSamplerState;
 class CCoreDepthStencilState;

@@ -1,6 +1,6 @@
 #include <windows.h>
 
-#include "base_lib.h"
+#include "src/base/base_lib.h"
 
 void InitializeLightweightCS(LIGHTWEIGHT_CRITICALSECTION* cs) {
   cs->threadID = THREAD_UNUSED;

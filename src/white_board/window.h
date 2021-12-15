@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 
-#include "application.h"
+#include "src/white_board/application.h"
 
 #define WB_WINDOW_CLOSEABLE 0x00000001
 #define WB_WINDOW_MOVEABLE 0x00000002

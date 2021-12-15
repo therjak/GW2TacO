@@ -2,10 +2,10 @@
 
 #include <algorithm>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/Whiteboard/application.h"
 #include "language.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
+#include "src/white_board/application.h"
 #include "ts3_connection.h"
 
 void TS3Control::OnDraw(CWBDrawAPI* API) {

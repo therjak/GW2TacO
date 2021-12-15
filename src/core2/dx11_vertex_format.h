@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "dx11_device.h"
-#include "vertex_format.h"
+#include "src/core2/dx11_device.h"
+#include "src/core2/vertex_format.h"
 
 #ifdef CORE_API_DX11
 

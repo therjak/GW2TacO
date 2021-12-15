@@ -1,6 +1,6 @@
-#include "resource.h"
+#include "src/core2/resource.h"
 
-#include "device.h"
+#include "src/core2/device.h"
 
 CCoreResource::CCoreResource() = default;
 

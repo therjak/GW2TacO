@@ -1,5 +1,5 @@
 #pragma once
-#include "../BaseLib/base_lib.h"
+#include "src/base/base_lib.h"
 //////////////////////////////////////////////////////////////////////////
 // every allocatable D3D resource is derived from this class
 //

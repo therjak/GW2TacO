@@ -7,10 +7,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/BaseLib/color.h"
-#include "Bedrock/BaseLib/hasher.h"
-#include "Bedrock/Whiteboard/context_menu.h"
-#include "Bedrock/Whiteboard/gui_item.h"
+#include "src/base/color.h"
+#include "src/base/hasher.h"
+#include "src/white_board/context_menu.h"
+#include "src/white_board/gui_item.h"
 
 enum class POIBehavior : int32_t {
   AlwaysVisible,

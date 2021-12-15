@@ -1,9 +1,9 @@
-#include "text_box.h"
+#include "src/white_board/text_box.h"
 
 #include <algorithm>
 #include <regex>
 
-#include "../BaseLib/timer.h"
+#include "src/base/timer.h"
 
 INLINE void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   const WBITEMSTATE s = GetState();

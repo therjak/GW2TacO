@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#include "quaternion.h"
-#include "vector.h"
+#include "src/base/quaternion.h"
+#include "src/base/vector.h"
 
 class CMatrix4x4 {
   union {

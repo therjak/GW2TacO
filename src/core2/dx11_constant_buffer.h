@@ -1,6 +1,6 @@
 #pragma once
-#include "constant_buffer.h"
-#include "dx11_device.h"
+#include "src/core2/constant_buffer.h"
+#include "src/core2/dx11_device.h"
 
 #ifdef CORE_API_DX11
 class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {

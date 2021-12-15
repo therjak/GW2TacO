@@ -40,14 +40,6 @@
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BaseLib\BaseLib.vcxproj">
-      <Project>{b6271439-accf-49cd-8f84-aa1156fede17}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\CoRE2\CoRE2.vcxproj">
-      <Project>{da81b8ab-efb1-495f-9861-374f914a6080}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="application.cpp" />
     <ClCompile Include="button.cpp" />
     <ClCompile Include="context_menu.cpp" />
@@ -65,11 +57,23 @@
     <ClCompile Include="style_manager.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\base\BaseLib.vcxproj">
+      <Project>{b6271439-accf-49cd-8f84-aa1156fede17}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\core2\CoRE2.vcxproj">
+      <Project>{da81b8ab-efb1-495f-9861-374f914a6080}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\util\UtilLib.vcxproj">
+      <Project>{ecdb5e35-f1f9-4619-88e7-b9f14f4e0a1a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{652A214A-D012-4AD5-AC97-52C1E13718E1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>WhiteBoard</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>white_board</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_Unicode|Win32'" Label="Configuration">
@@ -149,6 +153,7 @@
       <ShowIncludes>false</ShowIncludes>
       <PrecompiledHeaderFile>BasePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -166,6 +171,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <PrecompiledHeaderFile>BasePCH.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -185,6 +191,7 @@
       <PrecompiledHeaderFile>BasePCH.h</PrecompiledHeaderFile>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -209,6 +216,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PreprocessToFile>false</PreprocessToFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -17,7 +17,7 @@
 //--------------------------------------------------------------------------------------
 
 #pragma once
-#include "core2_config.h"
+#include "src/core2/core2_config.h"
 
 #ifdef CORE_API_DX11
 bool CreateDDSTextureFromMemory(

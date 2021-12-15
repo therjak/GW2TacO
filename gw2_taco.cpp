@@ -6,13 +6,6 @@
 #include <mutex>
 #include <thread>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/Whiteboard/application.h"
-#include "Bedrock/Whiteboard/button.h"
-#include "Bedrock/Whiteboard/label.h"
-#include "Bedrock/Whiteboard/text_box.h"
-#include "Bedrock/Whiteboard/window.h"
 #include "build_count.h"
 #include "build_info.h"
 #include "dungeon_progress.h"
@@ -27,6 +20,13 @@
 #include "overlay_config.h"
 #include "overlay_window.h"
 #include "raid_progress.h"
+#include "src/base/string_format.h"
+#include "src/util/jsonxx.h"
+#include "src/white_board/application.h"
+#include "src/white_board/button.h"
+#include "src/white_board/label.h"
+#include "src/white_board/text_box.h"
+#include "src/white_board/window.h"
 #include "tp_tracker.h"
 #include "trail_logger.h"
 #include "ts3_connection.h"

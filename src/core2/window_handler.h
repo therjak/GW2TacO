@@ -4,8 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "../BaseLib/base_lib.h"
-#include "../BaseLib/rectangle.h"
+#include "src/base/base_lib.h"
+#include "src/base/rectangle.h"
 
 class CCoreDevice;
 

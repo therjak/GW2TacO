@@ -8,11 +8,11 @@
 #include <string>
 #include <string_view>
 
-#include "../BaseLib/logger.h"
-#include "../BaseLib/read_file.h"
-#include "../UtilLib/RapidXML/rapidxml.hpp"
-#include "../UtilLib/RapidXML/rapidxml_print.hpp"
-#include "xml_node.h"
+#include "src/base/logger.h"
+#include "src/base/read_file.h"
+#include "src/util/RapidXML/rapidxml.hpp"
+#include "src/util/RapidXML/rapidxml_print.hpp"
+#include "src/util/xml_node.h"
 
 CXMLDocument::CXMLDocument() = default;
 

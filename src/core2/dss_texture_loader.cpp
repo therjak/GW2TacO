@@ -16,7 +16,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
 
-#include "dss_texture_loader.h"
+#include "src/core2/dss_texture_loader.h"
 
 #include <dxgiformat.h>
 

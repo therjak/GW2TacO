@@ -1,4 +1,4 @@
-#include "stack_tracker.h"
+#include "src/base/stack_tracker.h"
 
 #ifdef ENABLE_STACKTRACKER_CLASS
 
@@ -13,7 +13,7 @@
 #include <string>
 #include <string_view>
 
-#include "logger.h"
+#include "src/base/logger.h"
 
 bool CStackTracker::DbgInitialized = false;
 

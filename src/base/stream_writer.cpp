@@ -1,7 +1,7 @@
-#include "stream_writer.h"
+#include "src/base/stream_writer.h"
 
-#include "assert.h"
-#include "logger.h"
+#include "src/base/assert.h"
+#include "src/base/logger.h"
 
 CStreamWriter::CStreamWriter() { writerCurrentChar = 0; }
 

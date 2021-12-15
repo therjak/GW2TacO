@@ -1,7 +1,7 @@
-#include "context_menu.h"
+#include "src/white_board/context_menu.h"
 
-#include "application.h"
-#include "button.h"
+#include "src/white_board/application.h"
+#include "src/white_board/button.h"
 
 void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   const WBITEMSTATE i = GetState();

@@ -1,5 +1,5 @@
 #pragma once
-#include "resource.h"
+#include "src/core2/resource.h"
 
 class CCoreVertexBuffer : public CCoreResource {
   friend class CCoreDevice;

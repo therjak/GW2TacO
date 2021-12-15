@@ -9,19 +9,19 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/BaseLib/file_list.h"
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/BaseLib/timer.h"
-#include "Bedrock/UtilLib/jsonxx.h"
-#include "Bedrock/UtilLib/png_decompressor.h"
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
-#include "Bedrock/UtilLib/miniz.h"
-#include "Bedrock/Whiteboard/application.h"
 #include "gw2_api.h"
 #include "language.h"
 #include "mumble_link.h"
 #include "overlay_application.h"
 #include "overlay_config.h"
+#include "src/base/file_list.h"
+#include "src/base/string_format.h"
+#include "src/base/timer.h"
+#include "src/util/jsonxx.h"
+#include "src/util/miniz.h"
+#include "src/util/png_decompressor.h"
+#include "src/white_board/application.h"
 #include "trail_logger.h"
 #include "wvw.h"
 

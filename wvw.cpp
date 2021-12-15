@@ -6,12 +6,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/UtilLib/jsonxx.h"
 #include "gw2_api.h"
 #include "gw2_tactical.h"
 #include "language.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
+#include "src/util/jsonxx.h"
 
 using namespace jsonxx;
 

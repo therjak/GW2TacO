@@ -1,11 +1,11 @@
 ﻿#include "marker_editor.h"
 
-#include "Bedrock/Whiteboard/application.h"
-#include "Bedrock/Whiteboard/button.h"
-#include "Bedrock/Whiteboard/label.h"
 #include "gw2_tactical.h"
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/white_board/application.h"
+#include "src/white_board/button.h"
+#include "src/white_board/label.h"
 #include "trail_logger.h"
 
 bool GW2MarkerEditor::IsMouseTransparent(const CPoint& ClientSpacePoint,

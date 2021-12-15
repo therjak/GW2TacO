@@ -1,7 +1,7 @@
 ﻿#include "build_info.h"
 
-#include "Bedrock/BaseLib/string_format.h"
 #include "build_count.h"
+#include "src/base/string_format.h"
 
 #ifdef _DEBUG
 std::string TacOBuild = FormatString("%.3d.%dd", RELEASECOUNT, BUILDCOUNT);

@@ -1,8 +1,8 @@
-#include "skin.h"
+#include "src/white_board/skin.h"
 
 #include <string>
 
-#include "../BaseLib/string_format.h"
+#include "src/base/string_format.h"
 
 //////////////////////////////////////////////////////////////////////////
 // metrics

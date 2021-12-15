@@ -1,8 +1,8 @@
-#include "sphere.h"
+#include "src/base/sphere.h"
 
 #include <cmath>
 
-#include "plane.h"
+#include "src/base/plane.h"
 
 const bool CSphere::Intersect(const CPlane& p) const {
   return abs(p.Distance(Position)) < Radius;

@@ -1,4 +1,4 @@
-#include "dx11_shader.h"
+#include "src/core2/dx11_shader.h"
 #ifdef CORE_API_DX11
 
 #include <comdef.h>

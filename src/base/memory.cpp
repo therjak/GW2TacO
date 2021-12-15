@@ -1,8 +1,8 @@
-#include "memory.h"
+#include "src/base/memory.h"
 
 #include <cstdlib>
 
-#include "base_config.h"
+#include "src/base/base_config.h"
 
 #ifdef MEMORY_TRACKING
 

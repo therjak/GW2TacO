@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../BaseLib/color.h"
-#include "atlas.h"
+#include "src/base/color.h"
+#include "src/white_board/atlas.h"
 
 enum class WBTEXTALIGNMENTX : uint8_t {
   WBTA_CENTERX,

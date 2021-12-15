@@ -2,10 +2,10 @@
 
 #include <vector>
 
-#include "Bedrock/BaseLib/sphere.h"
-#include "Bedrock/BaseLib/string_format.h"
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/base/sphere.h"
+#include "src/base/string_format.h"
 
 std::vector<LocationalTimer> LocationalTimers;
 

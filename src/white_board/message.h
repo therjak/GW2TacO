@@ -1,5 +1,5 @@
 #pragma once
-#include "gui_item.h"
+#include "src/white_board/gui_item.h"
 
 enum WBMESSAGE {
   WBM_NONE = 0,

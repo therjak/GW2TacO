@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "gui_item.h"
+#include "src/white_board/gui_item.h"
 
 class CStyleManager {
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>>

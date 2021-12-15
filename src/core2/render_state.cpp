@@ -1,6 +1,6 @@
-#include "render_state.h"
+#include "src/core2/render_state.h"
 
-#include "../UtilLib/xml_document.h"
+#include "src/util/xml_document.h"
 
 CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* Device)
     : CCoreResource(Device) {

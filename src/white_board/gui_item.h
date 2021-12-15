@@ -7,10 +7,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../BaseLib/color.h"
-#include "css_item.h"
-#include "draw_api.h"
-#include "skin.h"
+#include "src/base/color.h"
+#include "src/white_board/css_item.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/skin.h"
 
 typedef uint32_t WBGUID;
 class CWBDrawAPI;

@@ -6,11 +6,11 @@
 #include <thread>
 #include <unordered_map>
 
-#include "Bedrock/BaseLib/string_format.h"
-#include "Bedrock/UtilLib/jsonxx.h"
 #include "gw2_api.h"
 #include "language.h"
 #include "overlay_config.h"
+#include "src/base/string_format.h"
+#include "src/util/jsonxx.h"
 
 std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 

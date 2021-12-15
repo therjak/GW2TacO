@@ -1,6 +1,6 @@
-#include "device.h"
+#include "src/core2/device.h"
 
-#include "resource.h"
+#include "src/core2/resource.h"
 
 INLINE const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
                                                  const CORESAMPLER Sampler) {

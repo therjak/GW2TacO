@@ -1,4 +1,4 @@
-#include "box.h"
+#include "src/white_board/box.h"
 
 void CWBBox::AddChild(const std::shared_ptr<CWBItem>& Item) {
   CWBItem::AddChild(Item);

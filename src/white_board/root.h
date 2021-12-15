@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 
-#include "gui_item.h"
+#include "src/white_board/gui_item.h"
 
 class CWBRoot : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;

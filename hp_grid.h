@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "Bedrock/BaseLib/sphere.h"
-#include "Bedrock/Whiteboard/draw_api.h"
-#include "Bedrock/Whiteboard/gui_item.h"
+#include "src/base/sphere.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
 
 class GW2HPGrid : public CWBItem {
   CPoint lastpos;

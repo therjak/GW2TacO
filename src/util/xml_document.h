@@ -3,8 +3,8 @@
 #include <string>
 #include <string_view>
 
-#include "../UtilLib/RapidXML/rapidxml.hpp"
-#include "xml_node.h"
+#include "src/util/RapidXML/rapidxml.hpp"
+#include "src/util/xml_node.h"
 
 class CXMLDocument {
   rapidxml::xml_document<> doc;

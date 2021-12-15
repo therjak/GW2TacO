@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <memory>
 
-#include "assert.h"
+#include "src/base/assert.h"
 
 template <typename ItemType>
 class CRingBuffer {

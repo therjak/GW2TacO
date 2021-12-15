@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
 
-#include "core2_config.h"
-#include "enums.h"
+#include "src/core2/core2_config.h"
+#include "src/core2/enums.h"
 
 #ifdef CORE_API_DX11
 

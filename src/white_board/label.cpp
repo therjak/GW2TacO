@@ -1,4 +1,4 @@
-#include "label.h"
+#include "src/white_board/label.h"
 
 void CWBLabel::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);

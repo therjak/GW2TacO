@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "../BaseLib/color.h"
-#include "draw_api.h"
+#include "src/base/color.h"
+#include "src/white_board/draw_api.h"
 
 enum class WBMETRICTYPE : uint8_t {
   WB_UNDEFINED = 0,

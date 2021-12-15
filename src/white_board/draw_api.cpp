@@ -1,9 +1,9 @@
-#include "draw_api.h"
+#include "src/white_board/draw_api.h"
 
 #include <array>
 #include <vector>
 
-#include "application.h"
+#include "src/white_board/application.h"
 
 #define VERTEXBUFFERRECTCOUNT 4096
 #define VERTEXBUFFERVERTEXCOUNT (VERTEXBUFFERRECTCOUNT * 4)
