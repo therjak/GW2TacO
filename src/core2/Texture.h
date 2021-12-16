@@ -15,9 +15,9 @@ class CCoreTexture : public CCoreResource {
   virtual bool SetToSampler(const CORESAMPLER Sampler) = 0;
 
  public:
-  INLINE explicit CCoreTexture(CCoreDevice* Device) : CCoreResource(Device) {}
+  explicit CCoreTexture(CCoreDevice* Device) : CCoreResource(Device) {}
   // should remove this texture from the device render state here
-  INLINE ~CCoreTexture() override = default;
+  ~CCoreTexture() override = default;
 };
 
 class CCoreTexture2D : public CCoreTexture {
@@ -26,7 +26,7 @@ class CCoreTexture2D : public CCoreTexture {
   COREFORMAT Format;
 
  public:
-  INLINE explicit CCoreTexture2D(CCoreDevice* Device) : CCoreTexture(Device) {
+  explicit CCoreTexture2D(CCoreDevice* Device) : CCoreTexture(Device) {
     XRes = YRes = 0;
     Format = COREFORMAT::COREFMT_UNKNOWN;
   }
@@ -53,11 +53,10 @@ class CCoreTexture2D : public CCoreTexture {
 
 class CCoreTexture3D : public CCoreTexture {
  public:
-  INLINE explicit CCoreTexture3D(CCoreDevice* Device) : CCoreTexture(Device) {}
+  explicit CCoreTexture3D(CCoreDevice* Device) : CCoreTexture(Device) {}
 };
 
 class CCoreTextureCube : public CCoreTexture {
  public:
-  INLINE explicit CCoreTextureCube(CCoreDevice* Device)
-      : CCoreTexture(Device) {}
+  explicit CCoreTextureCube(CCoreDevice* Device) : CCoreTexture(Device) {}
 };

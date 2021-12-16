@@ -312,9 +312,9 @@ class CWBItem : public IWBCSS {
   virtual bool MessageProc(const CWBMessage& Message);
   bool FindItemInParentTree(const CWBItem* Item);
 
-  INLINE const WBGUID GetGuid() const { return Guid; }
-  INLINE CWBApplication* GetApplication() const { return App; }
-  INLINE CWBItem* GetParent() const { return Parent; }
+  const WBGUID GetGuid() const { return Guid; }
+  CWBApplication* GetApplication() const { return App; }
+  CWBItem* GetParent() const { return Parent; }
 
   virtual CRect GetClientRect() const;  // returns value in client space
   virtual CRect GetWindowRect() const;  // returns value in client space

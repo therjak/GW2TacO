@@ -1,5 +1,7 @@
 #include "src/core2/render_state.h"
 
+#include <tchar.h>
+
 #include "src/util/xml_document.h"
 
 CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* Device)

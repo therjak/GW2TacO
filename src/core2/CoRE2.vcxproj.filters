@@ -100,9 +100,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="window_handler.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>

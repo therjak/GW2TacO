@@ -1,4 +1,6 @@
 #pragma once
+#include <tchar.h>
+
 #include <cstdint>
 #include <string_view>
 #include <unordered_map>
@@ -60,7 +62,7 @@ inline bool operator==(const CWBKerningPair& lhs, const CWBKerningPair& rhs) {
   return lhs.First == rhs.First && lhs.Second == rhs.Second;
 }
 
-INLINE uint32_t DictionaryHash(const CWBKerningPair& i);
+uint32_t DictionaryHash(const CWBKerningPair& i);
 
 struct DHash {
   std::size_t operator()(const CWBKerningPair& i) const {
@@ -123,8 +125,8 @@ class CWBFont {
   void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const CSize& Size,
                  const CPoint& Offset, int32_t Advance, CRect contentRect);
   void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
-  INLINE uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
-                                         WBTEXTTRANSFORM Transform);
+  uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
+                                  WBTEXTTRANSFORM Transform);
 
  public:
   explicit CWBFont(CAtlas* Atlas);
@@ -170,8 +172,8 @@ class CWBFont {
                          WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
                          WBTEXTTRANSFORM Transform, bool DoKerning = true);
 
-  INLINE char ApplyTextTransform(const char* Text, const char* CurrPos,
-                                 WBTEXTTRANSFORM Transform);
+  char ApplyTextTransform(const char* Text, const char* CurrPos,
+                          WBTEXTTRANSFORM Transform);
 
   void ConvertToUppercase();
 };

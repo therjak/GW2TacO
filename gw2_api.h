@@ -7,7 +7,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "src/base/base_lib.h"
 #include "src/white_board/draw_api.h"
 
 namespace GW2 {

@@ -22,21 +22,4 @@
 #define MEMORY_TRACKING
 #endif
 
-#ifdef ENABLE_STACKTRACKER_CLASS
-#ifdef MEMORY_TRACKING
-#define ENABLE_MALLOC_STACK_TRACE
 #endif
-#endif
-
-#endif
-
-//////////////////////////////////////////////////////////////////////////
-// global config
-
-#define INLINE
-#define ASSERTMODULENAME "Perpetuum"
-
-#define HASHED_STRINGS
-//#define FAST_INVSQRT
-
-#define STACK_TRACE_DEPTH 10

@@ -108,9 +108,9 @@ class CWBMessage final {
   CWBMessage& operator=(CWBMessage&&) = default;
   ~CWBMessage() = default;
 
-  INLINE WBMESSAGE GetMessage() const { return Message; }
-  INLINE WBGUID GetTarget() const { return Target; }
-  INLINE CPoint GetPosition() const { return CPoint(Position[0], Position[1]); }
+  WBMESSAGE GetMessage() const { return Message; }
+  WBGUID GetTarget() const { return Target; }
+  CPoint GetPosition() const { return CPoint(Position[0], Position[1]); }
 
   bool IsTargetID(std::string_view Name);
   std::string GetTargetID();

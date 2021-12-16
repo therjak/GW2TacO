@@ -2,6 +2,7 @@
 #ifdef CORE_API_DX11
 
 #include <comdef.h>
+#include <tchar.h>
 
 #include <array>
 

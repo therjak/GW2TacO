@@ -1,8 +1,11 @@
 #include "src/util/png_decompressor.h"
 
+#include <tchar.h>
+
 #include <memory>
 #include <string_view>
 
+#include "src/base/logger.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "src/util/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION

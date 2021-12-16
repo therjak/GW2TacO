@@ -1,9 +1,10 @@
 #pragma once
 
+#include <tchar.h>
+
 #include <string>
 #include <string_view>
-
-#include "src/base/base_lib.h"
+#include <vector>
 
 class IWBCSS {
   std::vector<std::string> aClasses;

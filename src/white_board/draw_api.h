@@ -117,9 +117,9 @@ class CWBDrawAPI {
   void SetOffset(const CPoint& p);
   void SetCropRect(const CRect& r);
   void SetParentCropRect(const CRect& r) { ParentCropRect = r; };
-  INLINE CRect& GetCropRect() { return CropRect; }
-  INLINE CRect& GetParentCropRect() { return ParentCropRect; }
-  INLINE CPoint& GetOffset() { return Offset; }
+  CRect& GetCropRect() { return CropRect; }
+  CRect& GetParentCropRect() { return ParentCropRect; }
+  CPoint& GetOffset() { return Offset; }
 
   void SetUIRenderState();
   void SetUIBlendState(std::unique_ptr<CCoreBlendState>&& BlendState);

@@ -1,14 +1,16 @@
 #include "src/core2/device.h"
 
+#include <tchar.h>
+
 #include "src/core2/resource.h"
 
-INLINE const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
-                                                 const CORESAMPLER Sampler) {
+const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
+                                          const CORESAMPLER Sampler) {
   return (State << 16) + Sampler;
 }
 
-INLINE void RenderStateFromID(const CORERENDERSTATEID ID,
-                              CORERENDERSTATE& State, CORESAMPLER& Sampler) {
+void RenderStateFromID(const CORERENDERSTATEID ID, CORERENDERSTATE& State,
+                       CORESAMPLER& Sampler) {
   State = static_cast<CORERENDERSTATE>(ID >> 16);
   Sampler = static_cast<CORESAMPLER>(ID & 0xffff);
 }

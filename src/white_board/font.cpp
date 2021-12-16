@@ -3,9 +3,10 @@
 #include <algorithm>
 #include <vector>
 
+#include "src/base/stream_reader.h"
 #include "src/white_board/draw_api.h"
 
-INLINE uint32_t DictionaryHash(const CWBKerningPair& i) {
+uint32_t DictionaryHash(const CWBKerningPair& i) {
   return i.First + (i.Second << 16);
 }
 
@@ -624,8 +625,8 @@ void CWBFont::ConvertToUppercase() {
     }
 }
 
-INLINE char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
-                                        WBTEXTTRANSFORM Transform) {
+char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
+                                 WBTEXTTRANSFORM Transform) {
   switch (Transform) {
     default:
     case WBTEXTTRANSFORM::WBTT_NONE:
@@ -647,9 +648,8 @@ INLINE char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
 }
 
 // Also increments CurrPos.
-INLINE uint16_t CWBFont::ApplyTextTransformUtf8(const char* Text,
-                                                char const*& CurrPos,
-                                                WBTEXTTRANSFORM Transform) {
+uint16_t CWBFont::ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
+                                         WBTEXTTRANSFORM Transform) {
   const uint32_t decoded = ReadUTF8Char(CurrPos);
 
   switch (Transform) {

@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "src/base/base_lib.h"
 #include "src/base/color.h"
 #include "src/core2/constant_buffer.h"
 #include "src/core2/enums.h"

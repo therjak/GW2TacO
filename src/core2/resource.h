@@ -1,5 +1,5 @@
 #pragma once
-#include "src/base/base_lib.h"
+#include "src/base/stack_tracker.h"
 //////////////////////////////////////////////////////////////////////////
 // every allocatable D3D resource is derived from this class
 //

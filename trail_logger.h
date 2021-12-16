@@ -9,6 +9,7 @@
 #include "gw2_tactical.h"
 #include "mumble_link.h"
 #include "src/base/hasher.h"
+#include "src/base/stream_reader.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 

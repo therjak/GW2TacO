@@ -32,6 +32,7 @@
 #include "range_display.h"
 #include "resource.h"
 #include "special_gui_items.h"
+#include "src/base/crash_tracker.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/util/miniz.h"

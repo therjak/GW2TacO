@@ -47,7 +47,7 @@ class CWBTextBox : public CWBItem {
 
   CWBCSSPropertyBatch Selection;
 
-  INLINE void DrawCursor(CWBDrawAPI* API, const CPoint& p);
+  void DrawCursor(CWBDrawAPI* API, const CPoint& p);
   void SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting);
   void RemoveSelectedText();
   void Copy();

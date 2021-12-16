@@ -1,5 +1,7 @@
 #include "src/white_board/skin.h"
 
+#include <tchar.h>
+
 #include <string>
 
 #include "src/base/string_format.h"

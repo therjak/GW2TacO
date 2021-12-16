@@ -2,6 +2,7 @@
 #include <array>
 #include <unordered_map>
 
+#include "src/base/critical_section.h"
 #include "src/core2/core2.h"
 
 // cache size must be 2^x
@@ -105,8 +106,8 @@ class CAtlas {
 
   void ClearImageUsageflags();
 
-  INLINE int32_t GetXRes() const { return XRes; }
-  INLINE int32_t GetYRes() const { return YRes; }
+  int32_t GetXRes() const { return XRes; }
+  int32_t GetYRes() const { return YRes; }
 
   bool Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize);
 };

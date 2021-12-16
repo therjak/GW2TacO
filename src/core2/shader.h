@@ -17,23 +17,23 @@ class CCoreShader : public CCoreResource {
   std::string EntryFunction;
   std::string ShaderVersion;
 
-  INLINE void FetchBinary(void* binary, int32_t length) {
+  void FetchBinary(void* binary, int32_t length) {
     Binary = std::make_unique<uint8_t[]>(length);
     memcpy(Binary.get(), binary, length);
     BinaryLength = length;
   }
 
  public:
-  INLINE explicit CCoreShader(CCoreDevice* Device) : CCoreResource(Device) {
+  explicit CCoreShader(CCoreDevice* Device) : CCoreResource(Device) {
     BinaryLength = 0;
   };
   ~CCoreShader() override;
 
   virtual bool Create(void* Binary, int32_t Length) = 0;
 
-  INLINE void* GetBinary() { return Binary.get(); }
+  void* GetBinary() { return Binary.get(); }
 
-  INLINE int32_t GetBinaryLength() { return BinaryLength; }
+  int32_t GetBinaryLength() { return BinaryLength; }
 
   void SetCode(std::string_view code, std::string_view entry,
                std::string_view shaderversion) {
@@ -52,44 +52,40 @@ class CCoreShader : public CCoreResource {
 
 class CCorePixelShader : public CCoreShader {
  public:
-  INLINE explicit CCorePixelShader(CCoreDevice* Device) : CCoreShader(Device){};
+  explicit CCorePixelShader(CCoreDevice* Device) : CCoreShader(Device){};
   ~CCorePixelShader() override;
   void* GetHandle() override = 0;
 };
 
 class CCoreGeometryShader : public CCoreShader {
  public:
-  INLINE explicit CCoreGeometryShader(CCoreDevice* Device)
-      : CCoreShader(Device){};
+  explicit CCoreGeometryShader(CCoreDevice* Device) : CCoreShader(Device){};
   ~CCoreGeometryShader() override;
 };
 
 class CCoreVertexShader : public CCoreShader {
  public:
-  INLINE explicit CCoreVertexShader(CCoreDevice* Device)
-      : CCoreShader(Device){};
+  explicit CCoreVertexShader(CCoreDevice* Device) : CCoreShader(Device){};
   ~CCoreVertexShader() override;
 };
 
 class CCoreHullShader : public CCoreShader {
  public:
-  INLINE explicit CCoreHullShader(CCoreDevice* Device) : CCoreShader(Device){};
+  explicit CCoreHullShader(CCoreDevice* Device) : CCoreShader(Device){};
   ~CCoreHullShader() override;
   void* GetHandle() override = 0;
 };
 
 class CCoreDomainShader : public CCoreShader {
  public:
-  INLINE explicit CCoreDomainShader(CCoreDevice* Device)
-      : CCoreShader(Device){};
+  explicit CCoreDomainShader(CCoreDevice* Device) : CCoreShader(Device){};
   ~CCoreDomainShader() override;
   void* GetHandle() override = 0;
 };
 
 class CCoreComputeShader : public CCoreShader {
  public:
-  INLINE explicit CCoreComputeShader(CCoreDevice* Device)
-      : CCoreShader(Device){};
+  explicit CCoreComputeShader(CCoreDevice* Device) : CCoreShader(Device){};
   ~CCoreComputeShader() override;
   void* GetHandle() override = 0;
 };

@@ -1,10 +1,14 @@
 #include "src/white_board/application.h"
 
+#include <tchar.h>
+
 #include <clocale>
 #include <cstdio>
 
 #include "src/base/file_list.h"
 #include "src/base/read_file.h"
+#include "src/base/stream_reader.h"
+#include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/util/png_decompressor.h"

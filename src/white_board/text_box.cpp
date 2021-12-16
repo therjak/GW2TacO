@@ -5,7 +5,7 @@
 
 #include "src/base/timer.h"
 
-INLINE void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
+void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   const WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2))
     API->DrawRect(

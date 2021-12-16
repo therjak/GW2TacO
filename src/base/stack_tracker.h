@@ -8,6 +8,7 @@
 #include "src/base/logger.h"
 
 #ifdef ENABLE_STACKTRACKER_CLASS
+#define STACK_TRACE_DEPTH 10
 
 class CStackTracker {
   static bool DbgInitialized;

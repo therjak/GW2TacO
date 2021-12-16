@@ -2,6 +2,7 @@
 
 #include <comdef.h>
 #include <dcomp.h>
+#include <tchar.h>
 
 #include <algorithm>
 #include <vector>

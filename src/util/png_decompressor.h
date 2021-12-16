@@ -1,8 +1,7 @@
 #pragma once
+#include <cstdint>
 #include <memory>
 #include <string_view>
-
-#include "src/base/base_lib.h"
 
 bool DecompressPNG(const uint8_t* IData, int32_t IDataSize,
                    std::unique_ptr<uint8_t[]>& Image, int32_t& XRes,

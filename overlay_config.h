@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "gw2_taco.h"
-#include "src/base/base_lib.h"
+#include "src/base/rectangle.h"
 
 void LoadConfig();
 void SaveConfig();

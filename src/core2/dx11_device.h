@@ -3,7 +3,6 @@
 
 #include <vector>
 
-#include "src/base/base_lib.h"
 #include "src/base/color.h"
 #include "src/core2/core2_config.h"
 #include "src/core2/device.h"
@@ -51,8 +50,8 @@ class CCoreDX11Device : public CCoreDevice {
  public:
   CCoreDX11Device();
   ~CCoreDX11Device() override;
-  INLINE ID3D11Device* GetDevice() { return Device; }
-  INLINE ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
+  ID3D11Device* GetDevice() { return Device; }
+  ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
   COREDEVICEAPI GetAPIType() override { return COREDEVICEAPI::COREAPI_DX11; }
 
   // this initializer will change to accommodate multiple platforms at once once

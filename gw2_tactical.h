@@ -9,6 +9,7 @@
 
 #include "src/base/color.h"
 #include "src/base/hasher.h"
+#include "src/base/matrix.h"
 #include "src/white_board/context_menu.h"
 #include "src/white_board/gui_item.h"
 

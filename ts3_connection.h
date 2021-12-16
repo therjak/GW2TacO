@@ -3,7 +3,7 @@
 #include <string_view>
 #include <unordered_map>
 
-#include "src/base/base_lib.h"
+#include "src/base/socket.h"
 
 class TS3Connection {
   CSocket connection;

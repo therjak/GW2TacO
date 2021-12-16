@@ -1,8 +1,10 @@
 ﻿#pragma once
+#include <cstdint>
 #include <vector>
 
-#include "src/base/base_lib.h"
+#include "src/base/rectangle.h"
 #include "src/base/sphere.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 

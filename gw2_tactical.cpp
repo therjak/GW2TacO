@@ -16,6 +16,7 @@
 #include "overlay_application.h"
 #include "overlay_config.h"
 #include "src/base/file_list.h"
+#include "src/base/plane.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/util/jsonxx.h"

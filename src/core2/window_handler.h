@@ -1,10 +1,12 @@
 #pragma once
+#include <windows.h>
+
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <string_view>
 #include <vector>
 
-#include "src/base/base_lib.h"
 #include "src/base/rectangle.h"
 
 class CCoreDevice;
@@ -100,7 +102,7 @@ class CCoreWindowHandler {
   CPoint GetRightDownPos();
   CPoint GetMidDownPos();
 
-  INLINE CCoreDevice* GetDevice() { return Device.get(); }
+  CCoreDevice* GetDevice() { return Device.get(); }
 
   virtual void SetWindowTitle(std::string_view Title) = 0;
   virtual void SetInactiveFrameLimiter(bool set);

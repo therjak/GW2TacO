@@ -6,7 +6,6 @@
 #include <string_view>
 
 #include "src/base/assert.h"
-#include "src/base/memory.h"
 
 //////////////////////////////////////////////////////////////////////////
 // base class implementation

@@ -1,5 +1,11 @@
 ﻿#pragma once
-#include "src/base/base_lib.h"
+#include <cstdint>
+#include <memory>
+#include <string>
+
+#include "src/base/matrix.h"
+#include "src/base/rectangle.h"
+#include "src/base/ring_buffer.h"
 
 struct MumbleContext {
   unsigned char serverAddress[28];  // contains sockaddr_in or sockaddr_in6
@@ -40,8 +46,8 @@ struct CompassData {
 
 struct LinkedMem {
 #ifdef WIN32
-  UINT32 uiVersion = 0;
-  DWORD uiTick = 0;
+  uint32_t uiVersion = 0;
+  uint32_t uiTick = 0;
 #else
   uint32_t uiVersion = 0;
   uint32_t uiTick = 0;
@@ -55,7 +61,7 @@ struct LinkedMem {
   float fCameraTop[3] = {0};
   wchar_t identity[256] = {0};
 #ifdef WIN32
-  UINT32 context_len = 0;
+  uint32_t context_len = 0;
 #else
   uint32_t context_len = 0;
 #endif

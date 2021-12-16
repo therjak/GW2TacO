@@ -5,7 +5,7 @@
 
 #include <memory>
 
-#include "src/base/base_lib.h"
+#include "src/base/logger.h"
 
 #define HIMETRIC_INCH 2540
 
