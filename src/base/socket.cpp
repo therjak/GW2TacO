@@ -1,10 +1,10 @@
 #include "src/base/socket.h"
 
-#include <WinSock2.h>
+#include <winsock2.h>
 
 WSADATA wsaData;
-#include <Ws2tcpip.h>
 #include <mmsystem.h>
+#include <ws2tcpip.h>
 
 #include <memory>
 

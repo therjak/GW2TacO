@@ -257,14 +257,6 @@ LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
   return CallNextHookEx(nullptr, code, wParam, lParam);
 }
 
-LONG WINAPI CrashOverride(struct _EXCEPTION_POINTERS* excpInfo) {
-  if (IsDebuggerPresent()) {
-    return EXCEPTION_CONTINUE_SEARCH;
-  }
-  LONG res = baseCrashTracker(excpInfo);
-  return res;
-}
-
 DWORD GetProcessIntegrityLevel(HANDLE hProcess) {
   HANDLE hToken;
 
@@ -659,7 +651,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   lastSlowEventTime = globalTimer.GetTime();
 
   extern std::string TacOBuild;
-  InitializeCrashTracker("GW2 TacO " + TacOBuild, CrashOverride);
   FORCEDDEBUGLOG("Crash tracker initialized.");
 
   Logger.AddOutput(std::make_unique<CLoggerOutput_File>(_T("GW2TacO.log")));

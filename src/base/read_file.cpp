@@ -12,7 +12,7 @@ namespace baselib {
 std::string ReadFile(std::string_view name) {
   HANDLE hFile =
       CreateFile(name.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 nullptr, OPEN_EXISTING, NULL, nullptr);
+                 nullptr, OPEN_EXISTING, 0, nullptr);
   if (hFile == INVALID_HANDLE_VALUE) {
     return std::string();
   }

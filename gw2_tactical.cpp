@@ -3,6 +3,7 @@
 #include <mmsystem.h>
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <string>
 #include <thread>
@@ -298,7 +299,7 @@ CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
   CVector3 fln, frn, fun, fdn;
   CMatrix4x4 rotm;
 
-  float xfov = atan(asp * tan(yfov));
+  float xfov = std::atan(asp * std::tan(yfov));
 
   rotm = CMatrix4x4::Rotation(
       CQuaternion::FromAxisAngle(CVector3(0, 1, 0), -xfov));

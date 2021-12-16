@@ -30,10 +30,12 @@ std::vector<std::string> SplitByWhitespace(std::string_view input) {
 
 std::string_view Trim(std::string_view s) {
   {
-    auto it = std::find_if_not(s.begin(), s.end(), std::isspace);
+    auto it = std::find_if_not(s.begin(), s.end(),
+                               [](unsigned char c) { return std::isspace(c); });
     s = s.substr(it - s.begin());
   }
-  auto it = std::find_if_not(s.rbegin(), s.rend(), std::isspace);
+  auto it = std::find_if_not(s.rbegin(), s.rend(),
+                             [](unsigned char c) { return std::isspace(c); });
   return s.substr(0, s.rend() - it);
 }
 

@@ -2,12 +2,6 @@
 
 #include <windows.h>
 
-void InitializeLightweightCS(LIGHTWEIGHT_CRITICALSECTION* cs) {
-  cs->threadID = THREAD_UNUSED;
-  cs->spinCount = 0;
-  cs->threadDibsID = THREAD_UNUSED;
-}
-
 void EnterLightweightCS(LIGHTWEIGHT_CRITICALSECTION* cs) {
   DWORD id = GetCurrentThreadId();
 

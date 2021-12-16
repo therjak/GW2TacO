@@ -1,34 +1,32 @@
 #pragma once
-#include "src/base/stack_tracker.h"
+#include "src/core2/device.h"
 //////////////////////////////////////////////////////////////////////////
 // every allocatable D3D resource is derived from this class
 //
-// on creation the resource adds itself to the main resource pool of the Api handler
+// on creation the resource adds itself to the main resource pool of the Api
+// handler
 //
-// on destruction the resource removes itself from the resource pool 
+// on destruction the resource removes itself from the resource pool
 //
 // on destruction of the Api handler the unfreed resources are deallocated
 //
-// only the constructor of a resource may add the resource to the 
+// only the constructor of a resource may add the resource to the
 // Api handler, and this MUST be done for each created resource
 //
-// resource types that need to be reallocated on a lost device MUST 
+// resource types that need to be reallocated on a lost device MUST
 // implement the OnDeviceLost() and OnDeviceReset() functions
 
-class CCoreResource
-{
-	friend class CCoreDevice;
-	CStackTracker StackInfo; //debug stack information
+class CCoreResource {
+  friend class CCoreDevice;
 
-protected:
-	CCoreDevice *Device = nullptr;
+ protected:
+  CCoreDevice* Device = nullptr;
 
-public:
+ public:
+  CCoreResource();
+  explicit CCoreResource(CCoreDevice* Device);
+  virtual ~CCoreResource();
 
-	CCoreResource();
-	explicit CCoreResource(CCoreDevice *Device);
-	virtual ~CCoreResource();
-
-	virtual void OnDeviceLost();
-	virtual void OnDeviceReset();
+  virtual void OnDeviceLost();
+  virtual void OnDeviceReset();
 };

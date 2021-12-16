@@ -83,12 +83,12 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
 
   File =
       CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 nullptr, OPEN_ALWAYS, NULL, nullptr);
+                 nullptr, OPEN_ALWAYS, 0, nullptr);
   CloseHandle(File);
 
   File =
       CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 nullptr, OPEN_ALWAYS | TRUNCATE_EXISTING, NULL, nullptr);
+                 nullptr, OPEN_ALWAYS | TRUNCATE_EXISTING, 0, nullptr);
   if (File == INVALID_HANDLE_VALUE) {
     LPTSTR pMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,

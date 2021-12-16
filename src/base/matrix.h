@@ -17,7 +17,7 @@ class CMatrix4x4 {
   };
 
  public:
-  constexpr CMatrix4x4() = default;
+  constexpr CMatrix4x4() : m{0} {}
 
   CMatrix4x4(const CMatrix4x4& mx);
   CMatrix4x4(float f11, float f12, float f13, float f14,  //

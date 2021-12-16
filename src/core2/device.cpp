@@ -31,35 +31,11 @@ CCoreDevice::~CCoreDevice() {
   DefaultBlendState.reset();
   DefaultDepthStencilState.reset();
 
-#ifdef ENABLE_STACKTRACKER_CLASS
-  if (!Resources.empty()) {
-#ifdef _DEBUG
-    LOG_ERR("[core] ---Leaked graphical resources start here---");
-#endif  // _DEBUG
-  }
-  int32_t Counter = 0;
-#endif
-
   // remove remaining (leaked) resources:
   for (auto r : Resources) {
-#ifdef ENABLE_STACKTRACKER_CLASS
-#ifdef _DEBUG
-    LOG_ERR("[core] Unfreed graphical resource found. Allocation stack:");
-    r->StackInfo.DumpToLog(LOGVERBOSITY::LOG_ERROR);
-#endif  // _DEBUG
-    Counter++;
-#endif
     delete r;
   }
   Resources.clear();
-
-#ifdef ENABLE_STACKTRACKER_CLASS
-  if (Counter > 0)
-    LOG_NFO(
-        _T("[core] %d unfreed graphical resources found on exit. This is ")
-        _T("fine."),
-        Counter);
-#endif
 }
 
 void CCoreDevice::ResetDevice() {
