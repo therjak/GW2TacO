@@ -8,8 +8,6 @@
 #include "src/core2/device.h"
 #include "src/core2/dx11_enums.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11Device : public CCoreDevice {
   IDXGISwapChain1* SwapChain = nullptr;
   ID3D11Device* Device = nullptr;
@@ -183,5 +181,3 @@ class CCoreDX11Device : public CCoreDevice {
 
   ID3D11DepthStencilView* GetDepthBufferView() { return DepthBufferView; }
 };
-
-#endif

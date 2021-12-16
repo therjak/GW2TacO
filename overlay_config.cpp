@@ -5,6 +5,7 @@
 #include <string_view>
 #include <unordered_map>
 
+#include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/util/xml_document.h"

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <regex>
 
+#include "src/base/logger.h"
 #include "src/base/timer.h"
 
 void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {

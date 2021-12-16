@@ -1,8 +1,8 @@
 #include "src/core2/dx11_render_state.h"
 
-#ifdef CORE_API_DX11
-
 #include <comdef.h>
+
+#include "src/base/logger.h"
 
 CCoreDX11BlendState::CCoreDX11BlendState(CCoreDX11Device* d)
     : CCoreBlendState(d) {
@@ -222,7 +222,3 @@ bool CCoreDX11SamplerState::Apply(CORESAMPLER Smp) {
 
   return true;
 }
-
-#else
-NoEmptyFile();
-#endif

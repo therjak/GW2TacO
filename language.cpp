@@ -9,6 +9,7 @@
 
 #include "overlay_config.h"
 #include "src/base/file_list.h"
+#include "src/base/logger.h"
 
 typedef std::function<bool(uint32_t)> UTF8CHARCALLBACK;
 void DecodeUtf8(std::string_view Input, UTF8CHARCALLBACK callback) {

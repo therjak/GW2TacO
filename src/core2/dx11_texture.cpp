@@ -4,10 +4,11 @@
 
 #include <algorithm>
 
+#include "src/base/assert.h"
 #include "src/base/image_decompressor.h"
+#include "src/base/logger.h"
 #include "src/core2/dss_texture_loader.h"
 #include "src/util/png_decompressor.h"
-#ifdef CORE_API_DX11
 
 CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* dev)
     : CCoreTexture2D(dev) {
@@ -1422,7 +1423,3 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
   if (pStaging) pStaging->Release();
   return S_OK;
 }
-
-#else
-NoEmptyFile();
-#endif

@@ -1,5 +1,6 @@
 #include "src/white_board/style_manager.h"
 
+#include "src/base/logger.h"
 #include "src/base/string_format.h"
 
 CStyleManager::CStyleManager() = default;

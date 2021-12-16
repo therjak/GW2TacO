@@ -1,6 +1,7 @@
 ﻿#include "ts3_connection.h"
 
 #include "overlay_config.h"
+#include "src/base/logger.h"
 #include "src/base/string_format.h"
 
 TS3Connection teamSpeakConnection;

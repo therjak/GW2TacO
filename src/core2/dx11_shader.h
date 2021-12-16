@@ -2,8 +2,6 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/shader.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11VertexShader : public CCoreVertexShader {
   ID3D11Device* Dev;
   ID3D11DeviceContext* DeviceContext;
@@ -111,5 +109,3 @@ class CCoreDX11ComputeShader : public CCoreComputeShader {
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return ComputeShaderHandle; }
 };
-
-#endif

@@ -20,6 +20,7 @@
 #include "overlay_config.h"
 #include "overlay_window.h"
 #include "raid_progress.h"
+#include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"

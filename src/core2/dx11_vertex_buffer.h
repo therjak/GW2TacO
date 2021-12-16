@@ -2,8 +2,6 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/vertex_buffer.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
   ID3D11Device* Dev;
   ID3D11DeviceContext* DeviceContext;
@@ -29,5 +27,3 @@ class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
   bool UnLock() override;
   void* GetHandle() override { return VertexBufferHandle; }
 };
-
-#endif

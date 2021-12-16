@@ -1,5 +1,4 @@
 #pragma once
-#include "src/core2/device.h"
 //////////////////////////////////////////////////////////////////////////
 // every allocatable D3D resource is derived from this class
 //
@@ -15,6 +14,7 @@
 //
 // resource types that need to be reallocated on a lost device MUST
 // implement the OnDeviceLost() and OnDeviceReset() functions
+class CCoreDevice;
 
 class CCoreResource {
   friend class CCoreDevice;

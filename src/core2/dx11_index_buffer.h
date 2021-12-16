@@ -2,8 +2,6 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/index_buffer.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
   ID3D11Device* Dev;
   ID3D11DeviceContext* DeviceContext;
@@ -26,5 +24,3 @@ class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
   bool UnLock() override;
   void* GetHandle() override { return IndexBufferHandle; }
 };
-
-#endif

@@ -1,8 +1,6 @@
 #include "src/core2/core2_config.h"
 #include "src/core2/enums.h"
 
-#ifdef CORE_API_DX11
-
 COREFORMAT GetFormat(DXGI_FORMAT Format) {
   switch (Format) {
     case DXGI_FORMAT_B8G8R8A8_UNORM:
@@ -17,7 +15,3 @@ COREFORMAT GetFormat(DXGI_FORMAT Format) {
       return COREFORMAT::COREFMT_UNKNOWN;
   }
 }
-
-#else
-NoEmptyFile();
-#endif

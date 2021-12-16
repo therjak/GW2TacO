@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include "src/base/logger.h"
+
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() = default;

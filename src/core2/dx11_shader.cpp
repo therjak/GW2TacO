@@ -1,10 +1,11 @@
 #include "src/core2/dx11_shader.h"
-#ifdef CORE_API_DX11
 
 #include <comdef.h>
 #include <tchar.h>
 
 #include <array>
+
+#include "src/base/logger.h"
 
 typedef HRESULT(__stdcall d3d_compile_func)(
     LPCVOID pSrcData, SIZE_T SrcDataSize, LPCSTR pSourceName,
@@ -610,7 +611,3 @@ bool CCoreDX11ComputeShader::CreateFromBlob(void* CodeBlob,
 #endif
   return Success;
 }
-
-#else
-NoEmptyFile();
-#endif

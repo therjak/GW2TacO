@@ -1,10 +1,10 @@
 #include "src/core2/dx11_vertex_format.h"
 
-#ifdef CORE_API_DX11
-
 #include <comdef.h>
 
 #include <vector>
+
+#include "src/base/logger.h"
 
 CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device* dev)
     : CCoreVertexFormat(dev) {
@@ -121,7 +121,3 @@ bool CCoreDX11VertexFormat::Create(
 }
 
 int32_t CCoreDX11VertexFormat::GetSize() { return Size; }
-
-#else
-NoEmptyFile();
-#endif

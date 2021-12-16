@@ -3,8 +3,6 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/texture.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11Texture2D : public CCoreTexture2D {
   ID3D11Device* Dev;
   ID3D11DeviceContext* DeviceContext;
@@ -66,5 +64,3 @@ class CCoreDX11TextureCube : public CCoreTextureCube {
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
                        _In_ ID3D11Resource* pSource, CStreamWriter& Writer);
-
-#endif

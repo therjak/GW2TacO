@@ -2,8 +2,6 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/render_state.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11BlendState : public CCoreBlendState {
   CCoreDX11Device* Device;
   ID3D11Device* Dev;
@@ -63,5 +61,3 @@ class CCoreDX11SamplerState : public CCoreSamplerState {
   bool Apply(CORESAMPLER Smp) override;
   void* GetHandle() override { return State; }
 };
-
-#endif

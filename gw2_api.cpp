@@ -6,6 +6,7 @@
 #include "language.h"
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/base/logger.h"
 #include "src/util/jsonxx.h"
 using namespace jsonxx;
 

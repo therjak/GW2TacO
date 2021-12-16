@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 
+#include "src/base/logger.h"
 #include "src/white_board/application.h"
 
 #define VERTEXBUFFERRECTCOUNT 4096

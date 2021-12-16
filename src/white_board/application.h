@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "src/base/color.h"
+#include "src/base/ring_buffer.h"
 #include "src/core2/core2.h"
 #include "src/util/xml_document.h"
 #include "src/white_board/context_menu.h"

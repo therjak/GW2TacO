@@ -86,7 +86,10 @@ class CWBDrawAPI {
 
   bool RequestAtlasImageUse(WBATLASHANDLE h, CRect& r);
 
-  float UVTRANSLATION(float uv, float res) { return (uv + UVOffset) / res; }
+  template <class UV, class RES>
+  float UVTRANSLATION(UV uv, RES res) {
+    return (uv + UVOffset) / static_cast<float>(res);
+  }
 
  public:
   CWBDrawAPI();

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "src/base/logger.h"
 #include "src/core2/dx11_constant_buffer.h"
 #include "src/core2/dx11_index_buffer.h"
 #include "src/core2/dx11_render_state.h"
@@ -21,8 +22,6 @@ typedef HRESULT(__stdcall* DCompositionCreateDeviceCallback)(
     _In_opt_ IDXGIDevice* dxgiDevice, _In_ REFIID iid,
     _Outptr_ void** dcompositionDevice);
 DCompositionCreateDeviceCallback DCompositionCreateDeviceFunc = nullptr;
-
-#ifdef CORE_API_DX11
 
 CCoreDX11Device::CCoreDX11Device() = default;
 
@@ -1127,7 +1126,3 @@ ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
 
   return bb;
 }
-
-#else
-NoEmptyFile();
-#endif

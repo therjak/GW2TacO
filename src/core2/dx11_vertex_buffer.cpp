@@ -1,8 +1,8 @@
 #include "src/core2/dx11_vertex_buffer.h"
 
-#ifdef CORE_API_DX11
-
 #include <comdef.h>
+
+#include "src/base/logger.h"
 
 CCoreDX11VertexBuffer::CCoreDX11VertexBuffer(CCoreDX11Device* dev)
     : CCoreVertexBuffer(dev) {
@@ -125,7 +125,3 @@ bool CCoreDX11VertexBuffer::UnLock() {
   DeviceContext->Unmap(VertexBufferHandle, 0);
   return true;
 }
-
-#else
-NoEmptyFile();
-#endif

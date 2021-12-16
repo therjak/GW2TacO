@@ -1,5 +1,6 @@
 ﻿#include "overlay_application.h"
 
+#include "src/base/logger.h"
 #include "src/white_board/application.h"
 
 COverlayApp::COverlayApp() = default;

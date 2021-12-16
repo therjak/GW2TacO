@@ -5,8 +5,6 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/vertex_format.h"
 
-#ifdef CORE_API_DX11
-
 class CCoreDX11VertexFormat : public CCoreVertexFormat {
   ID3D11Device* Dev;
   ID3D11DeviceContext* DeviceContext;
@@ -24,5 +22,3 @@ class CCoreDX11VertexFormat : public CCoreVertexFormat {
               CCoreVertexShader* vs = nullptr) override;
   int32_t GetSize() override;
 };
-
-#endif

@@ -1,8 +1,8 @@
 #include "src/core2/dx11_index_buffer.h"
 
-#ifdef CORE_API_DX11
-
 #include <comdef.h>
+
+#include "src/base/logger.h"
 
 CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device* dev)
     : CCoreIndexBuffer(dev) {
@@ -84,7 +84,3 @@ bool CCoreDX11IndexBuffer::UnLock() {
   DeviceContext->Unmap(IndexBufferHandle, 0);
   return true;
 }
-
-#else
-NoEmptyFile();
-#endif

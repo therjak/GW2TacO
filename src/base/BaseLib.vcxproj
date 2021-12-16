@@ -83,7 +83,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="color.cpp" />
-    <ClCompile Include="crash_tracker.cpp" />
     <ClCompile Include="critical_section.cpp" />
     <ClCompile Include="file_list.cpp" />
     <ClCompile Include="hasher.cpp" />
@@ -102,7 +101,6 @@
     <ClCompile Include="stream_writer.cpp" />
     <ClCompile Include="string_format.cpp" />
     <ClCompile Include="timer.cpp" />
-    <ClCompile Include="stack_tracker.cpp" />
     <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

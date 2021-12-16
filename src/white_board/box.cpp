@@ -1,5 +1,7 @@
 #include "src/white_board/box.h"
 
+#include "src/base/logger.h"
+
 void CWBBox::AddChild(const std::shared_ptr<CWBItem>& Item) {
   CWBItem::AddChild(Item);
   RearrangeChildren();

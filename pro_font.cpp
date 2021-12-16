@@ -1,6 +1,7 @@
 ﻿#include "pro_font.h"
 
 #include "src/base/image_decompressor.h"
+#include "src/base/logger.h"
 
 unsigned char raw_profont_bin[] = {
     66, 77,  70,  3,   1,   29,  0,   0,   0,   13,  0,   64,  0,   100, 0,

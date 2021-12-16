@@ -2,6 +2,7 @@
 
 #include <tchar.h>
 
+#include "src/base/logger.h"
 #include "src/base/rectangle.h"
 #include "src/base/timer.h"
 #include "src/core2/dx11_device.h"

@@ -12,8 +12,6 @@
 #define ENABLE_CORE_DEBUG_MODE
 #endif
 
-#define CORE_API_DX11
-
 //////////////////////////////////////////////////////////////////////////
 // logic
 #ifndef WIN32_LEAN_AND_MEAN
@@ -21,10 +19,6 @@
 #endif
 #define _WINSOCKAPI_
 #include <windows.h>
-
-#ifdef CORE_API_DX11
-
+//
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
-
-#endif

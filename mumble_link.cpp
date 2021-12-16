@@ -1,6 +1,7 @@
 ﻿#include "mumble_link.h"
 
 #include "overlay_config.h"
+#include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "trail_logger.h"

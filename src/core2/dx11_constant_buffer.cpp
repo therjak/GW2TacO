@@ -2,7 +2,8 @@
 
 #include <cstring>
 
-#ifdef CORE_API_DX11
+#include "src/base/logger.h"
+
 CCoreDX11ConstantBuffer::CCoreDX11ConstantBuffer(CCoreDX11Device* dev)
     : CCoreConstantBuffer(dev) {
   Buffer = nullptr;
@@ -51,5 +52,3 @@ void CCoreDX11ConstantBuffer::Upload() {
     DeviceContext->Unmap(Buffer, 0);
   }
 }
-
-#endif

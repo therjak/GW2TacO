@@ -129,9 +129,6 @@
     <ClCompile Include="quaternion.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
-    <ClCompile Include="stack_tracker.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
     <ClCompile Include="image_decompressor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -152,9 +149,6 @@
     </ClCompile>
     <ClCompile Include="rectangle.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="crash_tracker.cpp">
-      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="matrix.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>

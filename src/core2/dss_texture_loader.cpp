@@ -24,8 +24,6 @@
 #include <cassert>
 #include <memory>
 
-#ifdef CORE_API_DX11
-
 // using namespace Microsoft::WRL;
 
 //--------------------------------------------------------------------------------------
@@ -979,5 +977,3 @@ bool CreateDDSTextureFromMemory(
                               ddsDataSize - offset, texture, textureView,
                               maxsize);
 }
-
-#endif

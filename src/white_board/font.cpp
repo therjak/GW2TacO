@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "src/base/logger.h"
 #include "src/base/stream_reader.h"
 #include "src/white_board/draw_api.h"
 
