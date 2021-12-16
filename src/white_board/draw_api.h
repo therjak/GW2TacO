@@ -86,6 +86,8 @@ class CWBDrawAPI {
 
   bool RequestAtlasImageUse(WBATLASHANDLE h, CRect& r);
 
+  float UVTRANSLATION(float uv, float res) { return (uv + UVOffset) / res; }
+
  public:
   CWBDrawAPI();
   virtual ~CWBDrawAPI();

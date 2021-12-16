@@ -114,17 +114,6 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
   if (!Data || Size <= 0) return false;
   Release();
 
-#ifdef CORE_API_D3DX
-  ID3D11Resource* r = NULL;
-  if (D3DX11CreateTextureFromMemory(Dev, Data, Size, NULL, NULL, &r, NULL) !=
-      S_OK) {
-    LOG(LOG_ERROR, _T( "[core] Texture Creation From Image failed" ));
-    return false;
-  }
-
-  TextureHandle = (ID3D11Texture2D*)r;
-#else
-
   int32_t xr, yr;
   auto Img = DecompressImage(Data, Size, xr, yr);
 
@@ -133,10 +122,6 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
       if (!CreateDDSTextureFromMemory(
               Dev, Data, Size,
               reinterpret_cast<ID3D11Resource**>(&TextureHandle), &View)) {
-
-#ifdef CORE_VERBOSE_LOG
-        LOG_ERR("Texture Creation From Image failed: d3dx not linked");
-#endif
         return false;
       } else {
         ViewCreated = true;
@@ -151,8 +136,6 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
     Create(xr, yr, Img.get());
     Img.reset();
   }
-
-#endif
 
   if (!ViewCreated) {
     const HRESULT res =

@@ -8,7 +8,5 @@ typedef CCoreDX11Device CCore;
 
 #endif
 
-#define UVTRANSLATION(uv, res) ((uv + UVOffset) / (float)(res))
-
 #include "src/core2/resource.h"
 #include "src/core2/texture.h"

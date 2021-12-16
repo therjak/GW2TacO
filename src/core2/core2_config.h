@@ -14,8 +14,6 @@
 
 #define CORE_API_DX11
 
-#define CORE_VERBOSE_LOG
-
 //////////////////////////////////////////////////////////////////////////
 // logic
 #ifndef WIN32_LEAN_AND_MEAN
@@ -28,11 +26,5 @@
 
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
-
-#ifdef CORE_API_D3DX
-#include <D3DX11.h>
-
-#pragma comment(lib, "d3dx11.lib")
-#endif
 
 #endif

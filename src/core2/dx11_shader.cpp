@@ -137,17 +137,9 @@ bool CCoreDX11VertexShader::CompileAndCreate(std::string* Err) {
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
-#ifdef CORE_API_D3DX
-  if (D3DX11CompileFromMemory(Code.c_str(), Code.size(), NULL, NULL, NULL,
-                              EntryFunction.c_str(), ShaderVersion.c_str(),
-                              D3DCOMPILE_OPTIMIZATION_LEVEL0, 0, NULL, &PS,
-                              &Error, 0) != S_OK)
-#else
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
-                     &Error) != S_OK)
-#endif
-  {
+                     &Error) != S_OK) {
     if (!Err)
       LOG_ERR(_T("[core] VertexShader compilation error: %s"),
               (char*)Error->GetBufferPointer());
@@ -232,17 +224,9 @@ bool CCoreDX11PixelShader::CompileAndCreate(std::string* Err) {
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
-#ifdef CORE_API_D3DX
-  if (D3DX11CompileFromMemory(Code.c_str(), Code.size(), NULL, NULL, NULL,
-                              EntryFunction.c_str(), ShaderVersion.c_str(),
-                              D3DCOMPILE_OPTIMIZATION_LEVEL0, 0, NULL, &PS,
-                              &Error, 0) != S_OK)
-#else
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
-                     &Error) != S_OK)
-#endif
-  {
+                     &Error) != S_OK) {
     if (!Err)
       LOG_ERR(_T("[core] PixelShader compilation error: %s"),
               (char*)Error->GetBufferPointer());
@@ -328,17 +312,9 @@ bool CCoreDX11GeometryShader::CompileAndCreate(std::string* Err) {
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
-#ifdef CORE_API_D3DX
-  if (D3DX11CompileFromMemory(Code.c_str(), Code.size(), NULL, NULL, NULL,
-                              EntryFunction.c_str(), ShaderVersion.c_str(),
-                              D3DCOMPILE_OPTIMIZATION_LEVEL0, 0, NULL, &PS,
-                              &Error, 0) != S_OK)
-#else
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
-                     &Error) != S_OK)
-#endif
-  {
+                     &Error) != S_OK) {
     if (!Err)
       LOG_ERR(_T("[core] GeometryShader compilation error: %s"),
               (char*)Error->GetBufferPointer());
@@ -423,17 +399,9 @@ bool CCoreDX11DomainShader::CompileAndCreate(std::string* Err) {
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
-#ifdef CORE_API_D3DX
-  if (D3DX11CompileFromMemory(Code.c_str(), Code.size(), NULL, NULL, NULL,
-                              EntryFunction.c_str(), ShaderVersion.c_str(),
-                              D3DCOMPILE_OPTIMIZATION_LEVEL0, 0, NULL, &PS,
-                              &Error, 0) != S_OK)
-#else
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
-                     &Error) != S_OK)
-#endif
-  {
+                     &Error) != S_OK) {
     if (!Err)
       LOG_ERR(_T("[core] DomainShader compilation error: %s"),
               (char*)Error->GetBufferPointer());
@@ -518,18 +486,9 @@ bool CCoreDX11HullShader::CompileAndCreate(std::string* Err) {
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
-#ifdef CORE_API_D3DX
-  if (D3DX11CompileFromMemory(Code.c_str(), Code.size(), NULL, NULL, NULL,
-                              EntryFunction.c_str(), ShaderVersion.c_str(),
-                              D3DCOMPILE_OPTIMIZATION_LEVEL0, 0, NULL, &PS,
-                              &Error, 0) != S_OK)
-#else
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
-                     &Error) != S_OK)
-#endif
-
-  {
+                     &Error) != S_OK) {
     if (!Err)
       LOG_ERR(_T("[core] HullShader compilation error: %s"),
               (char*)Error->GetBufferPointer());
@@ -613,18 +572,9 @@ bool CCoreDX11ComputeShader::CompileAndCreate(std::string* Err) {
   uint32_t tmp;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
-#ifdef CORE_API_D3DX
-  if (D3DX11CompileFromMemory(Code.c_str(), Code.size(), NULL, NULL, NULL,
-                              EntryFunction.c_str(), ShaderVersion.c_str(),
-                              D3DCOMPILE_OPTIMIZATION_LEVEL0, 0, NULL, &PS,
-                              &Error, 0) != S_OK)
-#else
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
-                     &Error) != S_OK)
-#endif
-
-  {
+                     &Error) != S_OK) {
     if (!Err)
       LOG_ERR(_T("[core] ComputeShader compilation error: %s"),
               (char*)Error->GetBufferPointer());
