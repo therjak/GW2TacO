@@ -9,6 +9,9 @@
 #include "src/white_board/atlas.h"
 #include "src/white_board/font.h"
 
+class CWBApplication;
+class CWBItem;
+
 struct WBDISPLAYLINE {
   CPoint p1, p2;
   float u1 = 0, v1 = 0, u2 = 0, v2 = 0;

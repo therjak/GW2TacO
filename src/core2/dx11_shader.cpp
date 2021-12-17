@@ -1,6 +1,7 @@
 #include "src/core2/dx11_shader.h"
 
 #include <comdef.h>
+#include <float.h>
 #include <tchar.h>
 
 #include <array>
@@ -24,7 +25,7 @@ typedef HRESULT(__stdcall D3DXCompileShader(
 
 d3d_compile_func* D3DCompileFunc = nullptr;
 D3DXCompileShader* D3DXCompileFunc = nullptr;
-
+/*
 void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;
 
@@ -54,7 +55,7 @@ void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
 
   LOG_ERR("[core] Failed to load %s from d3dx**_xx.dll!", FunctName.c_str());
   return nullptr;
-}
+}*/
 
 void* GetFunctionFromD3DCompileDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;

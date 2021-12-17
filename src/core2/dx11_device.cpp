@@ -55,7 +55,7 @@ CCoreDX11Device::~CCoreDX11Device() {
     Device->QueryInterface(__uuidof(ID3D11Debug),
                            reinterpret_cast<void**>(&dbg));
     if (dbg) {
-      LOG_NFO("[core] Dumping Live objects before freeing device:");
+      LOG_NFO("%s", "[core] Dumping Live objects before freeing device:");
       dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
       dbg->Release();
     }
@@ -171,7 +171,7 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
 bool CCoreDX11Device::CreateClassicSwapChain(
     const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
-  LOG_NFO("[core] Creating classic swap chain");
+  LOG_NFO("%s", "[core] Creating classic swap chain");
 
   FORCEDDEBUGLOG("Initapi");
   HRESULT res = S_OK;
@@ -231,7 +231,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
   FORCEDDEBUGLOG("viewports set");
 
   if (CreateDefaultRenderStates())
-    LOG_NFO("[core] DirectX11 Device initialization successful.");
+    LOG_NFO("%s", "[core] DirectX11 Device initialization successful.");
 
   FORCEDDEBUGLOG("default renderstates created");
 
@@ -248,7 +248,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
 bool CCoreDX11Device::CreateDirectCompositionSwapchain(
     const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
-  LOG_NFO("[core] Creating DirectComposition swap chain");
+  LOG_NFO("%s", "[core] Creating DirectComposition swap chain");
 
   FORCEDDEBUGLOG("Initapi");
   HRESULT res = S_OK;
@@ -279,7 +279,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 #endif
     FORCEDDEBUGLOG("About to create d3d device");
     res = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
-                            nullptr, NULL, D3D11_SDK_VERSION, &Device, nullptr,
+                            nullptr, 0, D3D11_SDK_VERSION, &Device, nullptr,
                             &DeviceContext);
     if (res != S_OK) {
       _com_error error(res);
@@ -392,7 +392,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   FORCEDDEBUGLOG("viewports set");
 
   if (CreateDefaultRenderStates())
-    LOG_NFO("[core] DirectX11 Device initialization successful.");
+    LOG_NFO("%s", "[core] DirectX11 Device initialization successful.");
 
   FORCEDDEBUGLOG("default renderstates created");
 
@@ -456,7 +456,7 @@ bool CCoreDX11Device::IsWindowed() {
   IDXGIOutput* i = nullptr;
 
   if (SwapChain->GetFullscreenState(&fs, &i) != S_OK) {
-    LOG_ERR("[core] Failed to get fullscreen state");
+    LOG_ERR("%s", "[core] Failed to get fullscreen state");
     return false;
   }
 
@@ -476,7 +476,7 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
   DXGI_SWAP_CHAIN_DESC desc;
   HRESULT res = SwapChain->GetDesc(&desc);
   if (res != S_OK) {
-    LOG_ERR("[core] Failed to get swapchain description");
+    LOG_ERR("%s", "[core] Failed to get swapchain description");
     return;
   }
 

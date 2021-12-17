@@ -2,6 +2,8 @@
 
 #include <tchar.h>
 
+#include <algorithm>
+
 #include "src/core2/resource.h"
 
 const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,

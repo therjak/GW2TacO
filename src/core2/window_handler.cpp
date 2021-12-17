@@ -140,7 +140,7 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   Device = wp.CreateDevice();
 
   if (!Device) {
-    LOG_ERR("[init] Device object is NULL during init.");
+    LOG_ERR("%s", "[init] Device object is NULL during init.");
     return false;
   }
 
@@ -396,7 +396,7 @@ void CCoreWindowHandlerWin::HandleResize() {
     Device->Resize(XRes, YRes);
 }
 
-uint32_t CCoreWindowHandlerWin::GetHandle() { return (uint32_t)hWnd; }
+HWND CCoreWindowHandlerWin::GetHandle() { return hWnd; }
 
 void CCoreWindowHandlerWin::FinalizeMouseCursor() {
   POINT ap;

@@ -75,6 +75,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
   if (m.ReadByte() != 'B' || m.ReadByte() != 'M' || m.ReadByte() != 'F' ||
       m.ReadByte() != 3) {
     LOG_ERR(
+        "%s",
         "[gui] Error loading font data: bad fileformat or unsupported version");
     return false;
   }
@@ -85,7 +86,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
     auto BlockData = std::make_unique<uint8_t[]>(BlockSize);
 
     if (m.Read(BlockData.get(), BlockSize) != BlockSize) {
-      LOG_ERR("[gui] Error loading font data: unable to read block data");
+      LOG_ERR("%s", "[gui] Error loading font data: unable to read block data");
       return false;
     }
 
@@ -96,14 +97,15 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       {
         if (BlockSize != sizeof(BMCOMMON)) {
           LOG_ERR(
+              "%s",
               "[gui] Error loading font data: common block size doesn't match");
           return false;
         }
         const BMCOMMON* cmn = reinterpret_cast<BMCOMMON*>(BlockData.get());
         if (cmn->pages > 1) {
-          LOG_ERR(
-              "[gui] Error loading font data: only single page fonts are "
-              "supported");
+          LOG_ERR("%s",
+                  "[gui] Error loading font data: only single page fonts are "
+                  "supported");
           return false;
         }
         LineHeight = cmn->lineHeight;
@@ -114,9 +116,9 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       case 4:  // characters
       {
         if (BlockSize % sizeof(BMCHAR) != 0) {
-          LOG_ERR(
-              "[gui] Error loading font data: character block size doesn't "
-              "match");
+          LOG_ERR("%s",
+                  "[gui] Error loading font data: character block size doesn't "
+                  "match");
           return false;
         }
 
@@ -140,9 +142,9 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       case 5:  // kerning data
       {
         if (BlockSize % sizeof(BMKERNINGDATA) != 0) {
-          LOG_ERR(
-              "[gui] Error loading font data: kerning block size doesn't "
-              "match");
+          LOG_ERR("%s",
+                  "[gui] Error loading font data: kerning block size doesn't "
+                  "match");
           return false;
         }
 
@@ -159,7 +161,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
       } break;
 
       default:
-        LOG_ERR("[gui] Error loading font data: unknown block type");
+        LOG_ERR("%s", "[gui] Error loading font data: unknown block type");
         return false;
     }
   }
@@ -190,6 +192,7 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
   if (m.ReadByte() != 'i' || m.ReadByte() != 'n' || m.ReadByte() != 'f' ||
       m.ReadByte() != 'o') {
     LOG_ERR(
+        "%s",
         "[gui] Error loading font data: bad fileformat or unsupported version");
     return false;
   }
@@ -523,7 +526,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
                           Description->YRes, abc.UV);
 
       if (!h) {
-        LOG_ERR("[gui] Atlas Error while creating font!");
+        LOG_ERR("%s", "[gui] Atlas Error while creating font!");
         return false;
       };
 

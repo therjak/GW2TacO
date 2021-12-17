@@ -326,7 +326,7 @@ void CWBTextBox::Copy() {
 
     HiglightStartTime = globalTimer.GetTime();
   } else
-    LOG_WARN("[gui] Failed to open clipboard");
+    LOG_WARN("%s", "[gui] Failed to open clipboard");
 }
 
 void CWBTextBox::Paste() {
@@ -362,7 +362,7 @@ void CWBTextBox::Paste() {
     CloseClipboard();
     OnTextChange();
   } else
-    LOG_WARN("[gui] Failed to open clipboard");
+    LOG_WARN("%s", "[gui] Failed to open clipboard");
 }
 
 CWBTextBoxHistoryEntry* CWBTextBox::CreateNewHistoryEntry(bool Remove,

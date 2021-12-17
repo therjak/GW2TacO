@@ -101,15 +101,15 @@ bool CCoreDX11VertexBuffer::Update(const int32_t Offset, const uint8_t* Data,
 bool CCoreDX11VertexBuffer::Lock(void** Result, const uint32_t Offset,
                                  const int32_t size, const int32_t Flags) {
   if (!Dynamic) {
-    LOG_ERR("[core] Attempting to lock static vertexbuffer failed");
+    LOG_ERR("%s", "[core] Attempting to lock static vertexbuffer failed");
     return false;
   }
 
   if (!VertexBufferHandle) return false;
 
   D3D11_MAPPED_SUBRESOURCE ms;
-  if (DeviceContext->Map(VertexBufferHandle, NULL, D3D11_MAP_WRITE_DISCARD,
-                         NULL, &ms) != S_OK)
+  if (DeviceContext->Map(VertexBufferHandle, 0, D3D11_MAP_WRITE_DISCARD, 0,
+                         &ms) != S_OK)
     return false;
 
   *Result = ms.pData;

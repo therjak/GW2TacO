@@ -89,7 +89,7 @@ class CCoreWindowHandler {
   virtual bool DeviceOK() = 0;
   virtual void ToggleFullScreen() = 0;
 
-  virtual uint32_t GetHandle() = 0;
+  virtual HWND GetHandle() = 0;
 
   virtual int32_t GetXRes();
   virtual int32_t GetYRes();
@@ -141,7 +141,7 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   bool DeviceOK() override;
   void ToggleFullScreen() override;
 
-  uint32_t GetHandle() override;
+  HWND GetHandle() override;
 
   void FinalizeMouseCursor() override;
   void SetWindowTitle(std::string_view Title) override;

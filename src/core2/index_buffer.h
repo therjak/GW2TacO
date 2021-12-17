@@ -1,4 +1,6 @@
 #pragma once
+#include <cstdint>
+
 #include "src/core2/resource.h"
 
 class CCoreIndexBuffer : public CCoreResource {

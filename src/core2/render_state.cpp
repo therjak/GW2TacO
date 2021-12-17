@@ -2,6 +2,8 @@
 
 #include <tchar.h>
 
+#include <limits>
+
 #include "src/util/xml_document.h"
 
 CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* Device)
@@ -354,8 +356,8 @@ CCoreSamplerState::CCoreSamplerState(CCoreDevice* Device)
   AddressU = CORETEXADDRESS_CLAMP;
   AddressV = CORETEXADDRESS_CLAMP;
   AddressW = CORETEXADDRESS_CLAMP;
-  MinLOD = -FLT_MAX;
-  MaxLOD = FLT_MAX;
+  MinLOD = std::numeric_limits<float>::lowest();  //-FLT_MAX;
+  MaxLOD = std::numeric_limits<float>::max();     // FLT_MAX;
   MipLODBias = 0;
   MaxAnisotropy = 1;
   ComparisonFunc = CORECOMPARISONFUNCTION::CORECMP_NEVER;

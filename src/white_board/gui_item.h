@@ -10,6 +10,7 @@
 #include "src/base/color.h"
 #include "src/white_board/css_item.h"
 #include "src/white_board/draw_api.h"
+#include "src/white_board/message_enum.h"
 #include "src/white_board/skin.h"
 
 typedef uint32_t WBGUID;

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include <string>
 #include <string_view>
 
 #include "src/util//RapidXML/rapidxml.hpp"

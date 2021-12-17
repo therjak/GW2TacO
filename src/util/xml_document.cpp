@@ -74,8 +74,8 @@ std::string CXMLDocument::SaveToString() {
 bool CXMLDocument::SaveToFile(std::string_view sz) {
   auto s = SaveToString();
 
-  HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, NULL, nullptr, CREATE_ALWAYS,
-                        NULL, nullptr);
+  HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0,
+                        nullptr);
   if (h == INVALID_HANDLE_VALUE) return false;
   DWORD b;
   WriteFile(h, s.c_str(), s.length(), &b, nullptr);

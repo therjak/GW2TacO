@@ -1,5 +1,7 @@
 #include "src/white_board/gui_item.h"
 
+#include <algorithm>
+
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/white_board/application.h"
