@@ -24,7 +24,7 @@ class CCoreDX11Device : public CCoreDevice {
   ID3D11Query* OcclusionQuery = nullptr;
 
   void ResetPrivateResources() override;
-  bool InitAPI(const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
+  bool InitAPI(const HWND hWnd, const bool FullScreen, const int32_t XRes,
                const int32_t YRes, const int32_t AALevel = 0,
                const int32_t RefreshRate = 60) override;
   bool ApplyRenderState(const CORESAMPLER Sampler,
@@ -36,11 +36,10 @@ class CCoreDX11Device : public CCoreDevice {
   virtual bool CreateBackBuffer(int32_t XRes, int32_t YRes);
   virtual bool CreateDepthBuffer(int32_t XRes, int32_t YRes);
 
-  bool CreateClassicSwapChain(const uint32_t hWnd, const bool FullScreen,
+  bool CreateClassicSwapChain(const HWND hWnd, const bool FullScreen,
                               const int32_t XRes, const int32_t YRes,
                               const int32_t AALevel, const int32_t RefreshRate);
-  bool CreateDirectCompositionSwapchain(const uint32_t hWnd,
-                                        const bool FullScreen,
+  bool CreateDirectCompositionSwapchain(const HWND hWnd, const bool FullScreen,
                                         const int32_t XRes, const int32_t YRes,
                                         const int32_t AALevel,
                                         const int32_t RefreshRate);

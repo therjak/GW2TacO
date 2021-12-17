@@ -169,7 +169,7 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
 }
 
 bool CCoreDX11Device::CreateClassicSwapChain(
-    const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
+    const HWND hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
   LOG_NFO("%s", "[core] Creating classic swap chain");
 
@@ -246,7 +246,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
 }
 
 bool CCoreDX11Device::CreateDirectCompositionSwapchain(
-    const uint32_t hWnd, const bool FullScreen, const int32_t XRes,
+    const HWND hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
   LOG_NFO("%s", "[core] Creating DirectComposition swap chain");
 
@@ -406,7 +406,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   return true;
 }
 
-bool CCoreDX11Device::InitAPI(const uint32_t hWnd, const bool FullScreen,
+bool CCoreDX11Device::InitAPI(const HWND hWnd, const bool FullScreen,
                               const int32_t XRes, const int32_t YRes,
                               const int32_t AALevel /* =0 */,
                               const int32_t RefreshRate /* =60 */) {

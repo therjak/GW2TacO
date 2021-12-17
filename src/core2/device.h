@@ -30,7 +30,7 @@ class CCoreDevice {
 
   void ResetDevice();
   virtual void ResetPrivateResources() = 0;
-  virtual bool InitAPI(const uint32_t hWnd, const bool FullScreen,
+  virtual bool InitAPI(const HWND hWnd, const bool FullScreen,
                        const int32_t XRes, const int32_t YRes,
                        const int32_t AALevel = 0,
                        const int32_t RefreshRate = 60) = 0;
