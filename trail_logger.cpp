@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -83,7 +84,7 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
       else
         trailRasterizer1->Apply();
 
-      CLightweightCriticalSection cs(&critsec);
+      std::lock_guard<std::mutex> lockGuard(mtx);
 
       for (auto& y : trails) {
         auto& trail = *y.second;
@@ -291,7 +292,7 @@ void GW2TrailDisplay::OnDraw(CWBDrawAPI* API) {
 }
 
 void GW2TrailDisplay::DoTrailLogging(int32_t mapID, CVector3 charPos) {
-  CLightweightCriticalSection cs(&critsec);
+  std::lock_guard<std::mutex> lockGuard(mtx);
 
   if (!trailBeingRecorded) return;
 

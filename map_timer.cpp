@@ -1,6 +1,7 @@
 ﻿#include "map_timer.h"
 
 #include <algorithm>
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -59,7 +60,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         if (json.has<Array>("worldbosses")) {
           auto dungeonData = json.get<Array>("worldbosses").values();
 
-          CLightweightCriticalSection cs(&critSec);
+          std::lock_guard<std::mutex> lockGuard(mtx);
 
           worldBosses.clear();
 
@@ -78,7 +79,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         if (json.has<Array>("mapchests")) {
           auto dungeonData = json.get<Array>("mapchests").values();
 
-          CLightweightCriticalSection cs(&critSec);
+          std::lock_guard<std::mutex> lockGuard(mtx);
 
           mapchests.clear();
 
@@ -208,7 +209,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
       // highlight rect
       {
-        CLightweightCriticalSection cs(&critSec);
+        std::lock_guard<std::mutex> lockGuard(mtx);
         if (!map.chestId.empty() &&
             std::find(mapchests.begin(), mapchests.end(), map.chestId) !=
                 mapchests.end())
@@ -268,7 +269,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
           bool isHighlighted = false;
 
           {
-            CLightweightCriticalSection cs(&critSec);
+            std::lock_guard<std::mutex> lockGuard(mtx);
             const auto& bossId = map.events[currevent].worldBossId;
             if (!map.events[currevent].worldBossId.empty() &&
                 std::find(worldBosses.begin(), worldBosses.end(), bossId) !=

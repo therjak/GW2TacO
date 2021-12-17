@@ -1,8 +1,8 @@
 #pragma once
 #include <array>
+#include <mutex>
 #include <unordered_map>
 
-#include "src/base/critical_section.h"
 #include "src/core2/core2.h"
 
 // cache size must be 2^x
@@ -80,7 +80,7 @@ class CAtlas {
   void FlushCache();
   CAtlasNode* GetNodeCached(WBATLASHANDLE Handle);
 
-  LIGHTWEIGHT_CRITICALSECTION critsec;
+  std::mutex mtx;
 
  public:
   CAtlas(int32_t XSize, int32_t YSize);

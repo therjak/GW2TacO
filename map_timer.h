@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -44,7 +45,7 @@ class GW2MapTimer : public CWBItem {
   std::vector<std::string> worldBosses;
   std::vector<std::string> mapchests;
 
-  LIGHTWEIGHT_CRITICALSECTION critSec;
+  std::mutex mtx;
 
   bool IsScrollbarVisible();
   void OnResize(const CSize& s) override;

@@ -60,9 +60,6 @@
     <ClInclude Include="color.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
-    <ClInclude Include="critical_section.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
     <ClInclude Include="random.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
@@ -120,9 +117,6 @@
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="critical_section.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
     <ClCompile Include="timer.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>

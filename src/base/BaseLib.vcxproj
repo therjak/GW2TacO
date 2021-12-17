@@ -55,7 +55,6 @@
     <ClInclude Include="base_config.h" />
     <ClInclude Include="color.h" />
     <ClInclude Include="crash_tracker.h" />
-    <ClInclude Include="critical_section.h" />
     <ClInclude Include="enum_helpers.h" />
     <ClInclude Include="file_list.h" />
     <ClInclude Include="hasher.h" />
@@ -83,7 +82,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="color.cpp" />
-    <ClCompile Include="critical_section.cpp" />
     <ClCompile Include="file_list.cpp" />
     <ClCompile Include="hasher.cpp" />
     <ClCompile Include="image_decompressor.cpp" />

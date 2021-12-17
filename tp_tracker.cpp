@@ -1,6 +1,7 @@
 ﻿#include "tp_tracker.h"
 
 #include <algorithm>
+#include <mutex>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -12,25 +13,25 @@
 #include "src/util/png_decompressor.h"
 
 using namespace jsonxx;
-
-LIGHTWEIGHT_CRITICALSECTION itemCacheCritSec;
-
+namespace {
+std::mutex item_data_cache_mtx;
 std::unordered_map<int32_t, GW2ItemData> itemDataCache;
+}  // namespace
 
 bool HasGW2ItemData(int32_t itemID) {
-  CLightweightCriticalSection cs(&itemCacheCritSec);
+  std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
   return itemDataCache.find(itemID) != itemDataCache.end();
 }
 
 GW2ItemData GetGW2ItemData(int32_t itemID) {
-  CLightweightCriticalSection cs(&itemCacheCritSec);
+  std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
   if (itemDataCache.find(itemID) != itemDataCache.end())
     return itemDataCache[itemID];
   return GW2ItemData();
 }
 
 void SetGW2ItemData(GW2ItemData& data) {
-  CLightweightCriticalSection cs(&itemCacheCritSec);
+  std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
   itemDataCache[data.itemID] = data;
 }
 
@@ -114,8 +115,9 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (!TPTracker::ParseTransaction(item, itemData)) continue;
           incoming.push_back(itemData);
 
-          if (itemDataCache.find(itemData.itemID) == itemDataCache.end())
+          if (!HasGW2ItemData(itemData.itemID)) {
             unknownItems.push_back(itemData.itemID);
+          }
 
           if (std::find(priceCheckList.begin(), priceCheckList.end(),
                         itemData.itemID) == priceCheckList.end()) {
@@ -136,8 +138,9 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           if (!TPTracker::ParseTransaction(item, itemData)) continue;
           outgoing.push_back(itemData);
 
-          if (itemDataCache.find(itemData.itemID) == itemDataCache.end())
+          if (!HasGW2ItemData(itemData.itemID)) {
             unknownItems.push_back(itemData.itemID);
+          }
 
           if (std::find(priceCheckList.begin(), priceCheckList.end(),
                         itemData.itemID) == priceCheckList.end()) {
@@ -238,7 +241,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       }
 
       {
-        CLightweightCriticalSection cs(&itemCacheCritSec);
+        std::lock_guard<std::mutex> lockGuard(transaction_mtx);
         buys = incoming;
         sells = outgoing;
       }
@@ -253,7 +256,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
   }
 
   {
-    CLightweightCriticalSection cs(&itemCacheCritSec);
+    std::lock_guard<std::mutex> lockGuard(transaction_mtx);
 
     int32_t posy = 0;
     int32_t lh = f->GetLineHeight();

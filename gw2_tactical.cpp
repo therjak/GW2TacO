@@ -416,7 +416,7 @@ void GW2TacticalDisplay::FetchAchievements() {
         }
 
         {
-          CLightweightCriticalSection cs(&dataWriteCritSec);
+          std::lock_guard<std::mutex> lockGuard(achievements_mtx);
           achievements = incoming;
         }
       }
@@ -473,7 +473,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
   float alphaMultiplier = 1;
 
   if (!poi.IsVisible(ptm, currtime, achievementsFetched, achievements,
-                     dataWriteCritSec))
+                     achievements_mtx))
     return;
 
   if (poi.typeData.behavior == POIBehavior::WvWObjective) {
@@ -775,7 +775,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
                                         float alpha, float zoomLevel) {
   if (alpha <= 0) return;
   if (!poi.IsVisible(ptm, currtime, achievementsFetched, achievements,
-                     dataWriteCritSec))
+                     achievements_mtx))
     return;
 
   if (!poi.typeData.bits.keepOnMapEdge &&
@@ -960,7 +960,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
       if (!mmp->typeData.bits.miniMapVisible && showMinimapMarkers != 2)
         continue;
       if (!mmp->IsVisible(ptm, currtime, achievementsFetched, achievements,
-                          dataWriteCritSec))
+                          achievements_mtx))
         continue;
 
       CVector3 poiPos(mmp->position * miniMapTrafo);
@@ -976,7 +976,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
     for (const auto& mmp : minimapPOIs) {
       if (!mmp->typeData.bits.bigMapVisible && showBigmapMarkers != 2) continue;
       if (!mmp->IsVisible(ptm, currtime, achievementsFetched, achievements,
-                          dataWriteCritSec))
+                          achievements_mtx))
         continue;
 
       CVector3 poiPos(mmp->position * miniMapTrafo);
@@ -1894,7 +1894,7 @@ void POI::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
 bool POI::IsVisible(const tm& ptm, const time_t& currtime,
                     bool achievementsFetched,
                     std::unordered_map<int32_t, Achievement>& achievements,
-                    LIGHTWEIGHT_CRITICALSECTION& dataWriteCritSec) {
+                    std::mutex& mtx) {
   if (category && !category->IsVisible()) return false;
 
   if (typeData.behavior == POIBehavior::ReappearOnDailyReset) {
@@ -1952,7 +1952,7 @@ bool POI::IsVisible(const tm& ptm, const time_t& currtime,
   }
 
   if (achievementsFetched && typeData.achievementId != -1) {
-    CLightweightCriticalSection cs(&dataWriteCritSec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     if (achievements.find(typeData.achievementId) != achievements.end()) {
       if (achievements[typeData.achievementId].done) {
         return true;

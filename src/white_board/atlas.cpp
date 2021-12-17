@@ -1,6 +1,7 @@
 #include "src/white_board/atlas.h"
 
 #include <algorithm>
+#include <mutex>
 
 #include "src/base/logger.h"
 
@@ -118,7 +119,7 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
   memset(White, 0xff, 4 * 4);
 
   {
-    CLightweightCriticalSection cs(&critsec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     auto img = std::make_unique<CAtlasImage>(reinterpret_cast<uint8_t*>(&White),
                                              2, 2, CRect(0, 0, 2, 2));
     WhitePixel = img.get();
@@ -132,7 +133,7 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
 
 CAtlas::~CAtlas() {
   {
-    CLightweightCriticalSection cs(&critsec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     ImageStorage.clear();
   }
 }
@@ -181,7 +182,7 @@ WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
                                const CRect& a) {
   if (a.Width() == 0 || a.Height() == 0) return 0;
 
-  CLightweightCriticalSection cs(&critsec);
+  std::lock_guard<std::mutex> lockGuard(mtx);
 
   auto img = std::make_unique<CAtlasImage>(i, xs, ys, a);
   const auto h = img->GetHandle();
@@ -221,7 +222,7 @@ bool CAtlas::Optimize(bool DebugMode) {
   memset(Image.get(), 0, XRes * YRes * 4);
 
   if (DebugMode) {
-    CLightweightCriticalSection cs(&critsec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     for (auto& x : ImageStorage) {
       const auto handle = x.second->GetHandle();
       if (Dictionary.find(handle) != Dictionary.end()) {
@@ -238,7 +239,7 @@ bool CAtlas::Optimize(bool DebugMode) {
   FlushCache();
 
   {
-    CLightweightCriticalSection cs(&critsec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     int32_t RequiredCount = 0;
     for (auto& x : ImageStorage)
       RequiredCount += x.second->IsRequired() ? 1 : 0;
@@ -282,7 +283,7 @@ bool CAtlas::Optimize(bool DebugMode) {
 
 void CAtlas::DeleteImage(const WBATLASHANDLE h) {
   {
-    CLightweightCriticalSection cs(&critsec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     ImageStorage.erase(h);
   }
 
@@ -301,7 +302,7 @@ CSize CAtlas::GetSize(WBATLASHANDLE h) {
   if (n) return n->GetArea().Size();
 
   {
-    CLightweightCriticalSection cs(&critsec);
+    std::lock_guard<std::mutex> lockGuard(mtx);
     auto it = ImageStorage.find(h);
     if (it != ImageStorage.end()) return it->second->GetSize();
   }
@@ -320,7 +321,7 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect& r) {
   if (!n) {
     // image not on atlas, add it
     {
-      CLightweightCriticalSection cs(&critsec);
+      std::lock_guard<std::mutex> lockGuard(mtx);
       auto it = ImageStorage.find(h);
       if (it != ImageStorage.end()) {
         if (PackImage(it->second.get())) {
@@ -347,7 +348,7 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect& r) {
 CPoint CAtlas::GetWhitePixelUV() { return WhitePixelPosition; }
 
 void CAtlas::ClearImageUsageflags() {
-  CLightweightCriticalSection cs(&critsec);
+  std::lock_guard<std::mutex> lockGuard(mtx);
   for (auto& x : ImageStorage) x.second->ClearRequired();
 }
 

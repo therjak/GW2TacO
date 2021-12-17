@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -27,13 +28,12 @@ class TPTracker : public CWBItem {
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
 
+  std::mutex transaction_mtx;
   std::thread fetchThread;
 
   std::vector<TransactionItem> buys;
   std::vector<TransactionItem> sells;
   static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
-
-  LIGHTWEIGHT_CRITICALSECTION dataWriteCritSec;
 
  public:
   TPTracker(CWBItem* Parent, CRect Position);

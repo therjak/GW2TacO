@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <array>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -89,7 +90,7 @@ class GW2TrailDisplay : public CWBItem {
   bool trailBeingRecorded = false;
   bool trailRecordPaused = false;
 
-  LIGHTWEIGHT_CRITICALSECTION critsec;
+  std::mutex mtx;
 
   CCoreTexture2D* GetTexture(std::string_view fname, std::string_view zipFile,
                              std::string_view categoryZip);

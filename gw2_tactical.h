@@ -2,6 +2,7 @@
 #include <objbase.h>
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -134,7 +135,7 @@ struct POI {
   bool IsVisible(const tm& ptm, const time_t& currtime,
                  bool achievementsFetched,
                  std::unordered_map<int32_t, Achievement>& achievements,
-                 LIGHTWEIGHT_CRITICALSECTION& dataWriteCritSec);
+                 std::mutex& mtx);
 };
 
 struct POIActivationDataKey {
@@ -209,7 +210,7 @@ class GW2TacticalDisplay : public CWBItem {
   bool achievementsFetched = false;
   int32_t lastFetchTime = 0;
   std::thread fetchThread;
-  LIGHTWEIGHT_CRITICALSECTION dataWriteCritSec;
+  std::mutex achievements_mtx;
 
   std::unordered_map<int32_t, Achievement> achievements;
 
