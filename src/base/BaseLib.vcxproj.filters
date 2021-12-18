@@ -60,9 +60,6 @@
     <ClInclude Include="color.h">
       <Filter>Header Files\Basic Classes</Filter>
     </ClInclude>
-    <ClInclude Include="random.h">
-      <Filter>Header Files\Basic Classes</Filter>
-    </ClInclude>
     <ClInclude Include="assert.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
@@ -160,9 +157,6 @@
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
     <ClCompile Include="color.cpp">
-      <Filter>Source Files\Basic Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="random.cpp">
       <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>
     <ClCompile Include="string_format.cpp">

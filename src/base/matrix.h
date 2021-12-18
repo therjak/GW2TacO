@@ -13,11 +13,11 @@ class CMatrix4x4 {
       float _31, _32, _33, _34;
       float _41, _42, _43, _44;
     };
-    float m[4][4] = {0};
+    float m[4][4] = {{0}};
   };
 
  public:
-  constexpr CMatrix4x4() : m{0} {}
+  constexpr CMatrix4x4() : m{{0}} {}
 
   CMatrix4x4(const CMatrix4x4& mx);
   CMatrix4x4(float f11, float f12, float f13, float f14,  //
