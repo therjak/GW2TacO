@@ -52,8 +52,6 @@ class CMatrix4x4 {
   CMatrix4x4& SetIdentity();
   CVector4 Apply(const CVector3& v) const;
   CVector4 Apply(const CVector4& v) const;
-  void Decompose(CVector3& Scale, CQuaternion& Rotation,
-                 CVector3& Translation) const;
   float Determinant() const;
   void Invert();
   CMatrix4x4 Inverted() const;
@@ -70,9 +68,6 @@ class CMatrix4x4 {
   static CMatrix4x4 Translation(const CVector3& v);
   static CMatrix4x4 Scaling(const CVector3& v);
   static CMatrix4x4 Rotation(const CQuaternion& q);
-  CVector3 GetTranslation() const;
-  CVector3 GetScaling() const;
-  CQuaternion GetRotation() const;
   void SetTransformation(const CVector3& scaling, const CQuaternion& rotation,
                          const CVector3& translation);
 };

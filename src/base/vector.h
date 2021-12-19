@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-class CQuaternion;
 class CMatrix4x4;
 
 class CVector2 {
@@ -110,13 +109,9 @@ class CVector3 {
   CVector3 operator/(const float f) const;
   bool operator==(const CVector3& v) const;
   bool operator!=(const CVector3& v) const;
-  float operator*(const CVector3& v) const;        // dot product
-  CVector3 operator%(const CVector3& v) const;     // cross product
-  CVector3 operator*(const CQuaternion& q) const;  // rotation
-  CVector3& operator*=(const CQuaternion& q);      // rotation
-  CVector3 operator/(const CQuaternion& q) const;  // reverse rotation
-  CVector3& operator/=(const CQuaternion& q);      // reverse rotation
-  CVector4 operator*(const CMatrix4x4& q) const;   // transformation
+  float operator*(const CVector3& v) const;       // dot product
+  CVector3 operator%(const CVector3& v) const;    // cross product
+  CVector4 operator*(const CMatrix4x4& q) const;  // transformation
 
   float Length() const;
   float LengthSquared() const;
@@ -177,7 +172,3 @@ const CVector2 Lerp(const CVector2& v1, const CVector2& v2, const float t);
 const CVector2I Lerp(const CVector2I& v1, const CVector2I& v2, const float t);
 const CVector3 Lerp(const CVector3& v1, const CVector3& v2, const float t);
 const CVector4 Lerp(const CVector4& v1, const CVector4& v2, const float t);
-float mod(float v, float m);
-int32_t Mod(int32_t a, int32_t b);
-float Mod(float a, float b);
-float Mod(float a, int32_t b);

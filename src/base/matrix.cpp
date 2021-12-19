@@ -15,13 +15,6 @@ void CMatrix4x4::SetTransformation(const CVector3& scaling,
           CMatrix4x4::Translation(translation);
 }
 
-CVector3 CMatrix4x4::GetScaling() const {
-  return CVector3(CVector3(Row(0)).Length(), CVector3(Row(1)).Length(),
-                  CVector3(Row(2)).Length());
-}
-
-CVector3 CMatrix4x4::GetTranslation() const { return CVector3(Row(3)); }
-
 CMatrix4x4 CMatrix4x4::Rotation(const CQuaternion& q) { return CMatrix4x4(q); }
 
 CMatrix4x4 CMatrix4x4::Scaling(const CVector3& v) {
@@ -406,34 +399,4 @@ CMatrix4x4::CMatrix4x4(const CQuaternion& q) {
   _34 = 0;
   _41 = _42 = _43 = 0;
   _44 = 1;
-}
-
-void CMatrix4x4::Decompose(CVector3& Scale, CQuaternion& Rotation,
-                           CVector3& Translation) const {
-  CMatrix4x4 normalized;
-
-  Scale = CVector3(CVector3(Row(0)).Length(), CVector3(Row(1)).Length(),
-                   CVector3(Row(2)).Length());
-
-  Translation = CVector3(Row(3));
-
-  BASEASSERT(Scale.x != 0.0f || Scale.y != 0.0f || Scale.z != 0.0f);
-
-  normalized._11 = _11 / Scale.x;
-  normalized._12 = _12 / Scale.x;
-  normalized._13 = _13 / Scale.x;
-  normalized._21 = _21 / Scale.y;
-  normalized._22 = _22 / Scale.y;
-  normalized._23 = _23 / Scale.y;
-  normalized._31 = _31 / Scale.z;
-  normalized._32 = _32 / Scale.z;
-  normalized._33 = _33 / Scale.z;
-
-  Rotation.FromRotationMatrix(normalized);
-}
-
-CQuaternion CMatrix4x4::GetRotation() const {
-  CQuaternion q;
-  q.FromRotationMatrix(*this);
-  return q;
 }

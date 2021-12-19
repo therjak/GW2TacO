@@ -46,16 +46,6 @@ const CVector4 Lerp(const CVector4& v1, const CVector4& v2, const float t) {
   return (v2 - v1) * t + v1;
 }
 
-float mod(float v, float m) { return m * static_cast<int32_t>(floor(v / m)); }
-
-int32_t Mod(int32_t a, int32_t b) { return ((a % b) + b) % b; }
-
-float Mod(float a, float b) { return fmodf(((fmodf(a, b)) + b), b); }
-
-float Mod(float a, int32_t b) {
-  return fmodf(((fmodf(a, static_cast<float>(b))) + b), static_cast<float>(b));
-}
-
 CVector4 CVector3::operator*(const CMatrix4x4& q) const {
   return q.Apply(*this);
 }
