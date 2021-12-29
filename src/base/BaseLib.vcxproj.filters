@@ -138,13 +138,7 @@
     <ClCompile Include="matrix.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
-    <ClCompile Include="plane.cpp">
-      <Filter>Source Files\Basic Classes\Math</Filter>
-    </ClCompile>
     <ClCompile Include="spec_math.cpp">
-      <Filter>Source Files\Basic Classes\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="sphere.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
     <ClCompile Include="vector.cpp">

@@ -85,12 +85,10 @@
     <ClCompile Include="image_decompressor.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="plane.cpp" />
     <ClCompile Include="read_file.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="spec_math.cpp" />
-    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="stream_reader.cpp" />
     <ClCompile Include="stream_writer.cpp" />
     <ClCompile Include="string_format.cpp" />
