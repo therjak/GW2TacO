@@ -136,7 +136,7 @@ void TS3Connection::InitConnection() {
         if (use.ErrorCode) {
           continue;
         }
-        CommandResponse whoami = SendCommand(FormatString("whoami"));
+        CommandResponse whoami = SendCommand("whoami");
         handlers[handler.id].Connected = whoami.ErrorCode != 1794;
 
         if (whoami.ErrorCode == 512)
