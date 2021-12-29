@@ -45,9 +45,6 @@
     <ClInclude Include="plane.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>
-    <ClInclude Include="quaternion.h">
-      <Filter>Header Files\Basic Classes\Math</Filter>
-    </ClInclude>
     <ClInclude Include="rectangle.h">
       <Filter>Header Files\Basic Classes\Math</Filter>
     </ClInclude>
@@ -116,9 +113,6 @@
   <ItemGroup>
     <ClCompile Include="timer.cpp">
       <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="quaternion.cpp">
-      <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
     <ClCompile Include="image_decompressor.cpp">
       <Filter>Source Files</Filter>

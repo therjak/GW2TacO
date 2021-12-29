@@ -302,17 +302,13 @@ CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
 
   float xfov = std::atan(asp * std::tan(yfov));
 
-  rotm = CMatrix4x4::Rotation(
-      CQuaternion::FromAxisAngle(CVector3(0, 1, 0), -xfov));
+  rotm = CMatrix4x4::Rotation(CVector3(0, 1, 0), -xfov);
   fln = CVector3(CVector3(-1, 0, 0) * rotm);
-  rotm =
-      CMatrix4x4::Rotation(CQuaternion::FromAxisAngle(CVector3(0, 1, 0), xfov));
+  rotm = CMatrix4x4::Rotation(CVector3(0, 1, 0), xfov);
   frn = CVector3(CVector3(1, 0, 0) * rotm);
-  rotm = CMatrix4x4::Rotation(
-      CQuaternion::FromAxisAngle(CVector3(1, 0, 0), -yfov));
+  rotm = CMatrix4x4::Rotation(CVector3(1, 0, 0), -yfov);
   fun = CVector3(CVector3(0, 1, 0) * rotm);
-  rotm =
-      CMatrix4x4::Rotation(CQuaternion::FromAxisAngle(CVector3(1, 0, 0), yfov));
+  rotm = CMatrix4x4::Rotation(CVector3(1, 0, 0), yfov);
   fdn = CVector3(CVector3(0, -1, 0) * rotm);
 
   CPlane fplanes[4];

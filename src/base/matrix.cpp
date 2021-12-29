@@ -5,17 +5,7 @@
 #include <cstring>
 
 #include "src/base/assert.h"
-#include "src/base/quaternion.h"
 #include "src/base/vector.h"
-
-void CMatrix4x4::SetTransformation(const CVector3& scaling,
-                                   const CQuaternion& rotation,
-                                   const CVector3& translation) {
-  *this = CMatrix4x4::Scaling(scaling) * CMatrix4x4::Rotation(rotation) *
-          CMatrix4x4::Translation(translation);
-}
-
-CMatrix4x4 CMatrix4x4::Rotation(const CQuaternion& q) { return CMatrix4x4(q); }
 
 CMatrix4x4 CMatrix4x4::Scaling(const CVector3& v) {
   CMatrix4x4 mx;
@@ -384,19 +374,16 @@ bool CMatrix4x4::operator!=(const CMatrix4x4& mat) const {
   return 0 != memcmp(&_11, &mat._11, 16 * sizeof(float));
 }
 
-CMatrix4x4::CMatrix4x4(const CQuaternion& q) {
-  _11 = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
-  _12 = 2.0f * (q.x * q.y + q.z * q.s);
-  _13 = 2.0f * (q.x * q.z - q.y * q.s);
-  _14 = 0;
-  _21 = 2.0f * (q.x * q.y - q.z * q.s);
-  _22 = 1.0f - 2.0f * (q.x * q.x + q.z * q.z);
-  _23 = 2.0f * (q.y * q.z + q.x * q.s);
-  _24 = 0;
-  _31 = 2.0f * (q.x * q.z + q.y * q.s);
-  _32 = 2.0f * (q.y * q.z - q.x * q.s);
-  _33 = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
-  _34 = 0;
-  _41 = _42 = _43 = 0;
-  _44 = 1;
+CMatrix4x4 CMatrix4x4::Rotation(const CVector3& Axis, const float Angle) {
+  const float s = std::cos(Angle / 2.0f);
+  const CVector3 v = Axis * std::sin(Angle / 2.0f);
+  const float x = v.x;
+  const float y = v.y;
+  const float z = v.z;
+
+  return CMatrix4x4(                                                         //
+      1 - 2 * (y * y + z * z), 2 * (x * y + z * s), 2 * (x * z - y * s), 0,  //
+      2 * (x * y - z * s), 1 - 2 * (x * x + z * z), 2 * (y * z + x * s), 0,  //
+      2 * (x * z + y * s), 2 * (y * z - x * s), 1 - 2 * (x * x + y * y), 0,  //
+      0, 0, 0, 1);
 }

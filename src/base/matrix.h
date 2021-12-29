@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "src/base/quaternion.h"
 #include "src/base/vector.h"
 
 class CMatrix4x4 {
@@ -24,7 +23,6 @@ class CMatrix4x4 {
              float f21, float f22, float f23, float f24,  //
              float f31, float f32, float f33, float f34,  //
              float f41, float f42, float f43, float f44);
-  explicit CMatrix4x4(const CQuaternion& q);
 
   float& operator()(uint32_t Row, uint32_t Col);
   float operator()(uint32_t Row, uint32_t Col) const;
@@ -67,7 +65,5 @@ class CMatrix4x4 {
                            const float zf);
   static CMatrix4x4 Translation(const CVector3& v);
   static CMatrix4x4 Scaling(const CVector3& v);
-  static CMatrix4x4 Rotation(const CQuaternion& q);
-  void SetTransformation(const CVector3& scaling, const CQuaternion& rotation,
-                         const CVector3& translation);
+  static CMatrix4x4 Rotation(const CVector3& Axis, const float Angle);
 };

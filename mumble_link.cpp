@@ -305,7 +305,7 @@ CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
   miniMapTrafo *=
       CMatrix4x4::Translation(CVector3(-mapOffset.x, -mapOffset.y, 0.0));
   miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, -1, 1));
-  miniMapTrafo *= CMatrix4x4(CQuaternion(0, 0, rotation));
+  miniMapTrafo *= CMatrix4x4::Rotation(CVector3(0, 0, 1), rotation);
   miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, 1, 1) / 24.0f);
 
   CVector2 offset =

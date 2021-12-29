@@ -64,7 +64,6 @@
     <ClInclude Include="logger.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="plane.h" />
-    <ClInclude Include="quaternion.h" />
     <ClInclude Include="rectangle.h" />
     <ClInclude Include="ring_buffer.h" />
     <ClInclude Include="socket.h" />
@@ -87,7 +86,6 @@
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="plane.cpp" />
-    <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="read_file.cpp" />
     <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="socket.cpp" />
