@@ -86,7 +86,6 @@
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="read_file.cpp" />
-    <ClCompile Include="rectangle.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="spec_math.cpp" />
     <ClCompile Include="stream_reader.cpp" />

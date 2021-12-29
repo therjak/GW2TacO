@@ -132,9 +132,6 @@
     <ClCompile Include="logger.cpp">
       <Filter>Source Files\Basic Classes\I/O</Filter>
     </ClCompile>
-    <ClCompile Include="rectangle.cpp">
-      <Filter>Source Files\Basic Classes\Math</Filter>
-    </ClCompile>
     <ClCompile Include="matrix.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
