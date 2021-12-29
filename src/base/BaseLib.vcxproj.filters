@@ -141,9 +141,6 @@
     <ClCompile Include="vector.cpp">
       <Filter>Source Files\Basic Classes\Math</Filter>
     </ClCompile>
-    <ClCompile Include="color.cpp">
-      <Filter>Source Files\Basic Classes</Filter>
-    </ClCompile>
     <ClCompile Include="string_format.cpp">
       <Filter>Source Files\Basic Classes</Filter>
     </ClCompile>

@@ -79,7 +79,6 @@
     <None Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="color.cpp" />
     <ClCompile Include="file_list.cpp" />
     <ClCompile Include="hasher.cpp" />
     <ClCompile Include="image_decompressor.cpp" />
