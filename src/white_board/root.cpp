@@ -5,6 +5,9 @@
 
 bool CWBRoot::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
+    default:
+      break;
+
     case WBM_REPOSITION: {
       if (Message.GetTarget() == GetGuid() || Message.GetTarget() == 0) {
         if (!Message.Resized) return true;  // ignore movement

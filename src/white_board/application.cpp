@@ -943,7 +943,7 @@ void CWBApplication::TakeScreenshot() {
         auto s2 = ScreenShotName + _T( "_%d" );
 
         int32_t no = -1;
-        const int32_t i = sscanf(File.FileName.c_str(), s2.c_str(), &no);
+        sscanf(File.FileName.c_str(), s2.c_str(), &no);
         maxcnt = std::max(maxcnt, no);
       }
     }

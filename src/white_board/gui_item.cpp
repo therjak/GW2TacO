@@ -65,6 +65,8 @@ CColor CWBDisplayProperties::GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
   }
 
   switch (v) {
+    default:
+      return CColor{0xffffffff};
     case WB_ITEM_BACKGROUNDCOLOR:
       return CColor{0};
     case WB_ITEM_FOREGROUNDCOLOR:
@@ -74,8 +76,6 @@ CColor CWBDisplayProperties::GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
     case WB_ITEM_FONTCOLOR:
       return CColor{0xffffffff};
   }
-
-  return CColor{0xffffffff};
 }
 
 void CWBDisplayProperties::SetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
@@ -146,6 +146,8 @@ void CWBItem::HandleHScrollbarClick(WBSCROLLDRAGMODE m) {
     case WB_SCROLLDRAG_DOWN:
       SetHScrollbarPos(GetHScrollbarPos() + HScrollbar.ViewSize, true);
       break;
+    default:
+      break;
   }
 }
 
@@ -162,6 +164,8 @@ void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
       break;
     case WB_SCROLLDRAG_DOWN:
       SetVScrollbarPos(GetVScrollbarPos() + VScrollbar.ViewSize, true);
+      break;
+    default:
       break;
   }
 }

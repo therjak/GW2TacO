@@ -49,7 +49,7 @@ class GW2MapTimer : public CWBItem {
 
   bool IsScrollbarVisible();
   void OnResize(const CSize& s) override;
-  int32_t GetScrollbarStep();
+  int32_t GetScrollbarStep() override;
   CWBItem* GetItemUnderMouse(CPoint& Point, CRect& CropRect,
                              WBMESSAGE MessageType) override;
   void OnDraw(CWBDrawAPI* API) override;

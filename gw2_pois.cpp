@@ -411,7 +411,7 @@ using namespace jsonxx;
 
 #include <tlhelp32.h>
 
-#include "WvW.h"
+#include "wvw.h"
 
 void GetFileName(CHAR pfname[MAX_PATH]) {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());

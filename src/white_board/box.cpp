@@ -27,6 +27,9 @@ bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
 
 bool CWBBox::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
+    default:
+      break;
+
     case WBM_CLIENTAREACHANGED:
       if (Message.GetTarget() == GetGuid()) {
         RearrangeChildren();
