@@ -13,6 +13,10 @@
 #include "src/util/png_decompressor.h"
 
 using namespace jsonxx;
+
+using math::CPoint;
+using math::CRect;
+
 namespace {
 std::mutex item_data_cache_mtx;
 std::unordered_map<int32_t, GW2ItemData> itemDataCache;

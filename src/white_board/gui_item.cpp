@@ -6,6 +6,10 @@
 #include "src/base/string_format.h"
 #include "src/white_board/application.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 static WBGUID WB_GUID_COUNTER = 1337;
 
 //////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,9 @@
 #include "overlay_config.h"
 #include "src/base/sphere.h"
 
+using math::CPoint;
+using math::CRect;
+
 void GW2HPGrid::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("HPGridVisible")) {
     SetConfigValue("HPGridVisible", 1);

@@ -1,13 +1,16 @@
 ﻿#pragma once
 
+#include <memory>
 #include <vector>
 
+#include "src/base/rectangle.h"
 #include "src/base/sphere.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
 class GW2HPGrid : public CWBItem {
-  CPoint lastpos;
+  math::CPoint lastpos;
   void OnDraw(CWBDrawAPI* API) override;
 
   struct GridLine {
@@ -17,21 +20,21 @@ class GW2HPGrid : public CWBItem {
 
   struct GridData {
     int mapID = 0;
-    CSphere bSphere;
+    math::CSphere bSphere;
     std::vector<GridLine> displayedPercentages;
   };
 
   std::vector<GridData> Grids;
 
  public:
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
   virtual void LoadGrids();
 
-  GW2HPGrid(CWBItem* Parent, CRect Position);
+  GW2HPGrid(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<GW2HPGrid> Create(CWBItem* Parent,
-                                                  CRect Position) {
+                                                  math::CRect Position) {
     auto p = std::make_shared<GW2HPGrid>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -41,6 +44,7 @@ class GW2HPGrid : public CWBItem {
   }
   ~GW2HPGrid() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("hpgrid", CWBItem);
 };

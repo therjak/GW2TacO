@@ -113,9 +113,9 @@ struct POI {
   MarkerTypeData typeData;
   WBATLASHANDLE icon = 0;
 
-  CVector4 cameraSpacePosition;
+  math::CVector4 cameraSpacePosition;
 
-  CVector3 position;
+  math::CVector3 position;
   int32_t mapID = 0;
   size_t wvwObjectiveID = 0;
   std::string Type;
@@ -170,7 +170,7 @@ struct POIRoute {
   std::vector<GUID> route;
   bool external = false;
   bool hasResetPos = false;
-  CVector3 resetPos;
+  math::CVector3 resetPos;
   float resetRad = 0;
   int MapID = 0;
 
@@ -189,19 +189,19 @@ extern std::unordered_map<std::string, POI> wvwPOIs;
 class GW2TacticalDisplay : public CWBItem {
   bool TacticalIconsOnEdge;
   float asp = 0;
-  CMatrix4x4 cam;
-  CMatrix4x4 persp;
-  CRect drawrect;
+  math::CMatrix4x4 cam;
+  math::CMatrix4x4 persp;
+  math::CRect drawrect;
 
   void FetchAchievements();
   void InsertPOI(POI& poi);
   void DrawPOI(CWBDrawAPI* API, const tm& ptm, const time_t& currtime, POI& poi,
                bool drawDistance, std::string& infoText);
-  void DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect, CVector2 pos,
-                      const tm& ptm, const time_t& currtime, POI& poi,
-                      float alpha, float zoomLevel);
+  void DrawPOIMinimap(CWBDrawAPI* API, const math::CRect& miniRect,
+                      math::CVector2 pos, const tm& ptm, const time_t& currtime,
+                      POI& poi, float alpha, float zoomLevel);
   void OnDraw(CWBDrawAPI* API) override;
-  CVector3 ProjectTacticalPos(CVector3 pos, float fov, float asp);
+  math::CVector3 ProjectTacticalPos(math::CVector3 pos, float fov, float asp);
   std::vector<POI*> mapPOIs;
   std::vector<POI*> minimapPOIs;
   bool drawWvWNames = false;
@@ -215,9 +215,9 @@ class GW2TacticalDisplay : public CWBItem {
   std::unordered_map<int32_t, Achievement> achievements;
 
  public:
-  GW2TacticalDisplay(CWBItem* Parent, CRect Position);
-  static inline std::shared_ptr<GW2TacticalDisplay> Create(CWBItem* Parent,
-                                                           CRect Position) {
+  GW2TacticalDisplay(CWBItem* Parent, math::CRect Position);
+  static inline std::shared_ptr<GW2TacticalDisplay> Create(
+      CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2TacticalDisplay>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -227,10 +227,11 @@ class GW2TacticalDisplay : public CWBItem {
   }
   ~GW2TacticalDisplay() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("gw2tactical", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
   void RemoveUserMarkersFromMap();
 };

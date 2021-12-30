@@ -1,4 +1,8 @@
 ﻿#pragma once
+#include <memory>
+
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
@@ -7,9 +11,9 @@ class GW2TacticalCompass : public CWBItem {
   void DrawTacticalCompass(CWBDrawAPI* API);
 
  public:
-  GW2TacticalCompass(CWBItem* Parent, CRect Position);
-  static inline std::shared_ptr<GW2TacticalCompass> Create(CWBItem* Parent,
-                                                           CRect Position) {
+  GW2TacticalCompass(CWBItem* Parent, math::CRect Position);
+  static inline std::shared_ptr<GW2TacticalCompass> Create(
+      CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2TacticalCompass>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -19,9 +23,10 @@ class GW2TacticalCompass : public CWBItem {
   }
   ~GW2TacticalCompass() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("gw2rangecircles", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

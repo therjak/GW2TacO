@@ -1,16 +1,20 @@
 ﻿#pragma once
 
+#include <memory>
+
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
 class TS3Control : public CWBItem {
-  CPoint lastpos;
+  math::CPoint lastpos;
   void OnDraw(CWBDrawAPI* API) override;
 
  public:
-  TS3Control(CWBItem* Parent, CRect Position);
+  TS3Control(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<TS3Control> Create(CWBItem* Parent,
-                                                   CRect Position) {
+                                                   math::CRect Position) {
     auto p = std::make_shared<TS3Control>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -20,9 +24,9 @@ class TS3Control : public CWBItem {
   }
   ~TS3Control() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("ts3control", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

@@ -8,6 +8,9 @@
 #include "src/white_board/application.h"
 #include "ts3_connection.h"
 
+using math::CPoint;
+using math::CRect;
+
 void TS3Control::OnDraw(CWBDrawAPI* API) {
   CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();

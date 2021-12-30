@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+namespace math {
+
 #ifdef FAST_INVSQRT
 float InvSqrt(float x) {
   float xhalf = 0.5f * x;
@@ -24,3 +26,5 @@ float DeGamma(float c) {
 }
 
 #endif
+
+}  // namespace math

@@ -10,6 +10,8 @@
 #include "src/util/jsonxx.h"
 using namespace jsonxx;
 
+using math::CPoint;
+
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 
 std::string FetchAPIData(std::string_view path, std::string_view apiKey) {

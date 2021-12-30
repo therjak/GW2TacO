@@ -29,6 +29,14 @@
 #include "wvw.h"
 
 using namespace jsonxx;
+using math::CMatrix4x4;
+using math::CPlane;
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+using math::CVector2;
+using math::CVector3;
+using math::CVector4;
 
 WBATLASHANDLE DefaultIconHandle = -1;
 WBATLASHANDLE forbiddenIconHandle = -1;

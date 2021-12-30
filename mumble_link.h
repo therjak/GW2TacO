@@ -40,18 +40,13 @@ struct CompassData {
   float mapCenterX = 0;       // continentCoords
   float mapCenterY = 0;       // continentCoords
   float mapScale = 0;         // not even sure TBH :-P};
-  CMatrix4x4 BuildTransformationMatrix(const CRect& miniRect,
-                                       bool ignoreRotation);
+  math::CMatrix4x4 BuildTransformationMatrix(const math::CRect& miniRect,
+                                             bool ignoreRotation);
 };
 
 struct LinkedMem {
-#ifdef WIN32
   uint32_t uiVersion = 0;
   uint32_t uiTick = 0;
-#else
-  uint32_t uiVersion = 0;
-  uint32_t uiTick = 0;
-#endif
   float fAvatarPosition[3] = {0};
   float fAvatarFront[3] = {0};
   float fAvatarTop[3] = {0};
@@ -60,11 +55,7 @@ struct LinkedMem {
   float fCameraFront[3] = {0};
   float fCameraTop[3] = {0};
   wchar_t identity[256] = {0};
-#ifdef WIN32
   uint32_t context_len = 0;
-#else
-  uint32_t context_len = 0;
-#endif
   unsigned char context[256] = {0};
   wchar_t description[2048] = {0};
 };
@@ -73,7 +64,7 @@ struct LinkedMem {
 
 class CMumbleLink {
   LinkedMem* lm = nullptr;
-  CVector4 camchardist[AVGCAMCOUNTER];
+  math::CVector4 camchardist[AVGCAMCOUNTER];
 
  public:
   LinkedMem lastData;
@@ -82,11 +73,11 @@ class CMumbleLink {
   int tick = 0;
   double interpolation = 0;
 
-  CVector3 charPosition;
-  CVector3 charEye;
-  CVector3 camPosition;
-  CVector3 camDir;
-  CVector3 camUp;
+  math::CVector3 charPosition;
+  math::CVector3 charEye;
+  math::CVector3 camPosition;
+  math::CVector3 camDir;
+  math::CVector3 camUp;
   float fov = 0;
   int32_t mapID = 0;
   int32_t worldID = 0;
@@ -111,7 +102,7 @@ class CMumbleLink {
 
   std::string charName;
 
-  CVector4 averagedCharPosition;
+  math::CVector4 averagedCharPosition;
 
   void Update();
   bool IsValid();
@@ -137,4 +128,4 @@ class CMumbleLink {
 };
 
 extern CMumbleLink mumbleLink;
-CRect GetMinimapRectangle();
+math::CRect GetMinimapRectangle();

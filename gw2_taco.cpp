@@ -35,6 +35,10 @@
 
 using namespace jsonxx;
 
+using math::CPoint;
+using math::CRect;
+using math::CVector3;
+
 std::string_view UIFileNames[] = {
     "UI_small.css",
     "UI_normal.css",

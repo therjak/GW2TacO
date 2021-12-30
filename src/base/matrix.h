@@ -4,6 +4,8 @@
 
 #include "src/base/vector.h"
 
+namespace math {
+
 class CMatrix4x4 {
   union {
     struct {
@@ -67,3 +69,5 @@ class CMatrix4x4 {
   static CMatrix4x4 Scaling(const CVector3& v);
   static CMatrix4x4 Rotation(const CVector3& Axis, const float Angle);
 };
+
+}  // namespace math

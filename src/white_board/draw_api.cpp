@@ -9,6 +9,12 @@
 #define VERTEXBUFFERRECTCOUNT 4096
 #define VERTEXBUFFERVERTEXCOUNT (VERTEXBUFFERRECTCOUNT * 4)
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+using math::CVector2;
+using math::CVector4;
+
 void CWBDrawAPI::AddDisplayRect(
     const CRect& Rect, const float u1, const float v1, const float u2,
     const float v2,
@@ -99,13 +105,13 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
 
   if (t1 >= t2) return;
 
-  r.p1 = Lerp(p1, p2, t1);
-  r.p2 = Lerp(p1, p2, t2);
+  r.p1 = math::Lerp(p1, p2, t1);
+  r.p2 = math::Lerp(p1, p2, t2);
 
-  r.u1 = Lerp(u1, u2, t1);
-  r.u2 = Lerp(u1, u2, t2);
-  r.v1 = Lerp(v1, v2, t1);
-  r.v2 = Lerp(v1, v2, t2);
+  r.u1 = math::Lerp(u1, u2, t1);
+  r.u2 = math::Lerp(u1, u2, t2);
+  r.v1 = math::Lerp(v1, v2, t1);
+  r.v2 = math::Lerp(v1, v2, t2);
 
   r.c1 = Lerp(a, b, t1);
   r.c2 = Lerp(a, b, t2);
@@ -174,8 +180,8 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
 
 WBGUIVERTEX Lerp(const WBGUIVERTEX& a, const WBGUIVERTEX& b, float t) {
   WBGUIVERTEX r;
-  r.Pos = Lerp(a.Pos, b.Pos, t);
-  r.UV = Lerp(a.UV, b.UV, t);
+  r.Pos = math::Lerp(a.Pos, b.Pos, t);
+  r.UV = math::Lerp(a.UV, b.UV, t);
   r.Color = Lerp(a.Color, b.Color, t);
   return r;
 }

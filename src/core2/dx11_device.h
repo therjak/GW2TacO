@@ -154,7 +154,7 @@ class CCoreDX11Device : public CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // renderstate functions
 
-  bool SetViewport(CRect Viewport) override;
+  bool SetViewport(math::CRect Viewport) override;
   ID3D11BlendState* GetCurrentBlendState();
   void SetCurrentBlendState(ID3D11BlendState* bs);
   ID3D11RasterizerState* GetCurrentRasterizerState();

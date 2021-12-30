@@ -3,6 +3,9 @@
 #include "overlay_config.h"
 #include "src/white_board/application.h"
 
+using math::CPoint;
+using math::CRect;
+
 void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("MouseHighlightVisible"))
     SetConfigValue("MouseHighlightVisible", 0);

@@ -32,7 +32,7 @@ class GW2MapTimer : public CWBItem {
     CColor color;
   };
 
-  CPoint lastpos;
+  math::CPoint lastpos;
   int32_t lastypos = -1;
 
   bool beingFetched = false;
@@ -48,21 +48,21 @@ class GW2MapTimer : public CWBItem {
   std::mutex mtx;
 
   bool IsScrollbarVisible();
-  void OnResize(const CSize& s) override;
+  void OnResize(const math::CSize& s) override;
   int32_t GetScrollbarStep() override;
-  CWBItem* GetItemUnderMouse(CPoint& Point, CRect& CropRect,
+  CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
                              WBMESSAGE MessageType) override;
   void OnDraw(CWBDrawAPI* API) override;
   void SetLayout(CXMLNode& node);
-  void UpdateScrollbarData(int ypos, const CRect& cl);
+  void UpdateScrollbarData(int ypos, const math::CRect& cl);
 
  public:
   std::vector<Map> maps;
   std::unordered_map<std::string, Category> categories;
 
-  GW2MapTimer(CWBItem* Parent, CRect Position);
+  GW2MapTimer(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<GW2MapTimer> Create(CWBItem* Parent,
-                                                    CRect Position) {
+                                                    math::CRect Position) {
     auto p = std::make_shared<GW2MapTimer>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -72,6 +72,7 @@ class GW2MapTimer : public CWBItem {
   }
   ~GW2MapTimer() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("maptimer", CWBItem);
 };

@@ -22,7 +22,7 @@ class Dungeon {
 };
 
 class DungeonProgress : public CWBItem {
-  CPoint lastpos;
+  math::CPoint lastpos;
   void OnDraw(CWBDrawAPI* API) override;
 
   bool beingFetched = false;
@@ -35,9 +35,9 @@ class DungeonProgress : public CWBItem {
   std::vector<Dungeon> dungeons;
 
  public:
-  DungeonProgress(CWBItem* Parent, CRect Position);
+  DungeonProgress(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<DungeonProgress> Create(CWBItem* Parent,
-                                                        CRect Position) {
+                                                        math::CRect Position) {
     auto p = std::make_shared<DungeonProgress>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -47,9 +47,9 @@ class DungeonProgress : public CWBItem {
   }
   ~DungeonProgress() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("dungeonprogress", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

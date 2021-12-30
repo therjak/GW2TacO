@@ -12,6 +12,9 @@
 
 using namespace jsonxx;
 
+using math::CPoint;
+using math::CRect;
+
 void BeautifyString(std::string& str) {
   for (uint32_t x = 0; x < str.size(); x++) {
     if (str[x] == '_') {

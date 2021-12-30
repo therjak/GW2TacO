@@ -2,6 +2,9 @@
 
 #include "src/base/logger.h"
 
+using math::CPoint;
+using math::CRect;
+
 void CWBBox::AddChild(const std::shared_ptr<CWBItem>& Item) {
   CWBItem::AddChild(Item);
   RearrangeChildren();

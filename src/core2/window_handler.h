@@ -58,7 +58,7 @@ class CCoreWindowHandler {
   bool Active = false;
   bool Maximized = false;
   bool Minimized = false;
-  CRect ClientRect;
+  math::CRect ClientRect;
 
   bool InactiveFrameLimiter = true;
   int32_t LimitedFPS = 20;
@@ -70,7 +70,7 @@ class CCoreWindowHandler {
 
   COREMOUSECURSOR CurrentMouseCursor = COREMOUSECURSOR::CM_ARROW;
 
-  CPoint MousePos, LeftDownPos, RightDownPos, MidDownPos;
+  math::CPoint MousePos, LeftDownPos, RightDownPos, MidDownPos;
 
   virtual void HandleResize() = 0;
   virtual void HandleAltEnter() = 0;
@@ -97,10 +97,10 @@ class CCoreWindowHandler {
 
   virtual void SelectMouseCursor(COREMOUSECURSOR Cursor);
   virtual void FinalizeMouseCursor() = 0;
-  CPoint GetMousePos();
-  CPoint GetLeftDownPos();
-  CPoint GetRightDownPos();
-  CPoint GetMidDownPos();
+  math::CPoint GetMousePos();
+  math::CPoint GetLeftDownPos();
+  math::CPoint GetRightDownPos();
+  math::CPoint GetMidDownPos();
 
   CCoreDevice* GetDevice() { return Device.get(); }
 

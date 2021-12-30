@@ -5,6 +5,10 @@
 
 #include "src/base/logger.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() = default;

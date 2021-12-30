@@ -19,8 +19,8 @@ std::string GetConfigString(std::string_view value);
 bool HasWindowData(std::string_view windowname);
 bool IsWindowOpen(std::string_view windowname);
 void SetWindowOpenState(std::string_view windowname, bool Open);
-CRect GetWindowPosition(std::string_view windowname);
-void SetWindowPosition(std::string_view windowname, CRect Pos);
+math::CRect GetWindowPosition(std::string_view windowname);
+void SetWindowPosition(std::string_view windowname, math::CRect Pos);
 
 void GetKeyBindings(std::unordered_map<int32_t, TacOKeyAction>& KeyBindings);
 void DeleteKeyBinding(int32_t key);

@@ -5,6 +5,8 @@
 
 #include "src/base/vector.h"
 
+namespace math {
+
 class CRect {
  public:
   int32_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;
@@ -99,10 +101,10 @@ class CRect {
     y2 = y1 + y;
   }
   constexpr void Normalize() {
-    int32_t _x1 = x1;
-    int32_t _y1 = y1;
-    int32_t _x2 = x2;
-    int32_t _y2 = y2;
+    const int32_t _x1 = x1;
+    const int32_t _y1 = y1;
+    const int32_t _x2 = x2;
+    const int32_t _y2 = y2;
 
     x1 = _x1 < _x2 ? _x1 : _x2;
     x2 = _x1 < _x2 ? _x2 : _x1;
@@ -115,7 +117,7 @@ class CRect {
   constexpr CPoint BottomLeft() const { return CPoint(x1, y2); }
   constexpr CSize Size() const { return CSize(Width(), Height()); }
   constexpr CPoint Center() const { return CPoint(x1 + x2, y1 + y2) / 2; }
-  constexpr CRect GetCenterRect(CSize& s) {
+  constexpr CRect GetCenterRect(const CSize& s) {
     return CRect(Center().x - s.x / 2, Center().y - s.y / 2,
                  Center().x - s.x / 2 + s.x, Center().y - s.y / 2 + s.y);
   }
@@ -127,10 +129,12 @@ class CRect {
 
 constexpr bool IntervalIntersection(int32_t a1, int32_t a2, int32_t b1,
                                     int32_t b2) {
-  int32_t _a1 = std::min(a1, a2);
-  int32_t _a2 = std::max(a1, a2);
-  int32_t _b1 = std::min(b1, b2);
-  int32_t _b2 = std::max(b1, b2);
+  const int32_t _a1 = std::min(a1, a2);
+  const int32_t _a2 = std::max(a1, a2);
+  const int32_t _b1 = std::min(b1, b2);
+  const int32_t _b2 = std::max(b1, b2);
 
   return !((a1 < b1 && a2 < b1) || (a1 > b2 && a2 > b2));
 }
+
+}  // namespace math

@@ -1,5 +1,9 @@
 #include "src/white_board/button.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 WBITEMSTATE CWBButton::GetState() {
   WBITEMSTATE i = CWBItem::GetState();
   if (Pushed) {

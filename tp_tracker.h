@@ -1,8 +1,11 @@
 ﻿#pragma once
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
 
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
@@ -36,9 +39,9 @@ class TPTracker : public CWBItem {
   static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
 
  public:
-  TPTracker(CWBItem* Parent, CRect Position);
+  TPTracker(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<TPTracker> Create(CWBItem* Parent,
-                                                  CRect Position) {
+                                                  math::CRect Position) {
     auto p = std::make_shared<TPTracker>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -48,9 +51,9 @@ class TPTracker : public CWBItem {
   }
   ~TPTracker() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("tptracker", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

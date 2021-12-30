@@ -43,6 +43,8 @@
 #pragma comment(lib, "winhttp.lib")
 #pragma comment(lib, "Dwmapi.lib")
 
+using math::CRect;
+
 std::unique_ptr<CWBApplication> App;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;

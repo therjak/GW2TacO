@@ -2,6 +2,8 @@
 
 #include "src/white_board/button.h"
 
+using math::CRect;
+
 ClickThroughButton::ClickThroughButton(CWBItem* Parent, const CRect& Pos,
                                        std::string_view txt /*=  ""  */)
     : CWBButton(Parent, Pos, txt) {}

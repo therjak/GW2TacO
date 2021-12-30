@@ -12,6 +12,10 @@
 
 using namespace jsonxx;
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 bool GW2MapTimer::IsScrollbarVisible() {
   CRect cr = GetClientRect();
   return IsVScrollbarEnabled() && lastypos > cr.Height();

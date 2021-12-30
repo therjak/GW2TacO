@@ -18,6 +18,13 @@
 
 #define TRAILFILEVERSION 0
 
+using math::CMatrix4x4;
+using math::CPoint;
+using math::CRect;
+using math::CVector2;
+using math::CVector3;
+using math::CVector4;
+
 extern float globalOpacity;
 extern float minimapOpacity;
 
@@ -278,7 +285,7 @@ void GW2TrailDisplay::OnDraw(CWBDrawAPI* API) {
 
   if (GetConfigValue("LogTrails")) {
     CWBFont* f = GetFont(GetState());
-    int32_t ypos = Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
+    int32_t ypos = math::Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
 
     std::string_view s = "TacO is logging your trail.";
 

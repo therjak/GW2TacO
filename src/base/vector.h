@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+namespace math {
+
 class CMatrix4x4;
 
 class CVector2 {
@@ -34,7 +36,7 @@ class CVector2 {
     return *this;
   }
   constexpr CVector2& operator/=(const float f) {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     x *= fi;
     y *= fi;
     return *this;
@@ -51,7 +53,7 @@ class CVector2 {
     return CVector2(x * f, y * f);
   }
   constexpr CVector2 operator/(const float f) const {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     return CVector2(x * fi, y * fi);
   }
   constexpr bool operator==(const CVector2& v) const {
@@ -106,7 +108,7 @@ class CVector2I {
     return *this;
   }
   constexpr CVector2I& operator/=(const float f) {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     x = static_cast<int32_t>(x * fi);
     y = static_cast<int32_t>(y * fi);
     return *this;
@@ -128,7 +130,7 @@ class CVector2I {
     return CVector2I(static_cast<int32_t>(x * f), static_cast<int32_t>(y * f));
   }
   constexpr CVector2I operator/(const float f) const {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     return CVector2I(static_cast<int32_t>(x * fi),
                      static_cast<int32_t>(y * fi));
   }
@@ -195,7 +197,7 @@ class CVector3 {
     return *this;
   }
   constexpr CVector3& operator/=(const float f) {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     x *= fi;
     y *= fi;
     z *= fi;
@@ -213,7 +215,7 @@ class CVector3 {
     return CVector3(x * f, y * f, z * f);
   }
   constexpr CVector3 operator/(const float f) const {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     return CVector3(x * fi, y * fi, z * fi);
   }
   constexpr bool operator==(const CVector3& v) {
@@ -283,7 +285,7 @@ class CVector4 {
     return *this;
   }
   constexpr CVector4& operator/=(const float f) {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     x *= fi;
     y *= fi;
     z *= fi;
@@ -302,7 +304,7 @@ class CVector4 {
     return CVector4(x * f, y * f, z * f, w * f);
   }
   constexpr CVector4 operator/(const float f) const {
-    float fi = 1 / f;
+    const float fi = 1 / f;
     return CVector4(x * fi, y * fi, z * fi, w * fi);
   }
   constexpr bool operator==(const CVector4& v) const {
@@ -377,3 +379,5 @@ constexpr CVector3 Lerp(const CVector3& v1, const CVector3& v2, const float t) {
 constexpr CVector4 Lerp(const CVector4& v1, const CVector4& v2, const float t) {
   return (v2 - v1) * t + v1;
 }
+
+}  // namespace math

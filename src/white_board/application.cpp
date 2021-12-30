@@ -19,6 +19,9 @@
 #include "src/white_board/text_box.h"
 #include "src/white_board/window.h"
 
+using math::CPoint;
+using math::CRect;
+
 CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
   Root = nullptr;
   MouseCaptureItem = nullptr;

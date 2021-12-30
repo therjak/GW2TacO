@@ -7,6 +7,9 @@
 #include "src/base/timer.h"
 #include "src/core2/dx11_device.h"
 
+using math::CPoint;
+using math::CRect;
+
 typedef CCoreDX11Device CCore;
 
 //////////////////////////////////////////////////////////////////////////

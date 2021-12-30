@@ -5,6 +5,8 @@
 #include "src/base/plane.h"
 #include "src/base/vector.h"
 
+namespace math {
+
 class CSphere {
  public:
   float Radius = 0;
@@ -21,3 +23,5 @@ class CSphere {
     return (Position - p).Length() < Radius;
   }
 };
+
+}  // namespace math

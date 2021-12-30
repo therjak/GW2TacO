@@ -13,9 +13,9 @@ class CWBButton : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;
 
  public:
-  CWBButton(CWBItem* Parent, const CRect& Pos, std::string_view txt);
+  CWBButton(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
   static inline std::shared_ptr<CWBButton> Create(CWBItem* Parent,
-                                                  const CRect& Pos,
+                                                  const math::CRect& Pos,
                                                   std::string_view txt = "") {
     auto p = std::make_shared<CWBButton>(Parent, Pos, txt);
     p->SelfRef = p;
@@ -26,15 +26,16 @@ class CWBButton : public CWBItem {
   }
   ~CWBButton() override;
 
-  bool Initialize(CWBItem* Parent, const CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
   std::string GetText() const;
   void SetText(std::string_view val);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("button", CWBItem);
 
-  CSize GetContentSize() override;
+  math::CSize GetContentSize() override;
 
   virtual void Push(bool pushed);
   virtual bool IsPushed();

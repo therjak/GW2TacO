@@ -95,12 +95,12 @@ class GW2TacO : public CWBItem {
  public:
   void OnDraw(CWBDrawAPI* API) override;
   void OnPostDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
-  GW2TacO(CWBItem* Parent, CRect Position);
+  GW2TacO(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<GW2TacO> Create(CWBItem* Parent,
-                                                CRect Position) {
+                                                math::CRect Position) {
     auto p = std::make_shared<GW2TacO>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -110,7 +110,8 @@ class GW2TacO : public CWBItem {
   }
   ~GW2TacO() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("GW2TacO", CWBItem);
   void OpenWindow(std::string_view s);
 

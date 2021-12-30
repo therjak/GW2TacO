@@ -49,7 +49,7 @@ class CWBContextMenu : public CWBItem {
   virtual void ResizeToContentSize();
   void OnDraw(CWBDrawAPI* API) override;
   void SpawnSubMenu(int32_t itemidx);
-  CRect GetItemRect(int32_t idx);
+  math::CRect GetItemRect(int32_t idx);
   void MarkParentForDeletion();
 
   bool MouseInContextHierarchy();
@@ -60,9 +60,9 @@ class CWBContextMenu : public CWBItem {
   void MarkForDeletion() override;
 
  public:
-  CWBContextMenu(CWBItem* Parent, const CRect& Pos, WBGUID Target);
+  CWBContextMenu(CWBItem* Parent, const math::CRect& Pos, WBGUID Target);
   static inline std::shared_ptr<CWBContextMenu> Create(CWBItem* Parent,
-                                                       const CRect& Pos,
+                                                       const math::CRect& Pos,
                                                        WBGUID Target) {
     auto p = std::make_shared<CWBContextMenu>(Parent, Pos, Target);
     p->SelfRef = p;
@@ -73,7 +73,7 @@ class CWBContextMenu : public CWBItem {
   }
   ~CWBContextMenu() override;
 
-  bool Initialize(CWBItem* Parent, const CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
   WB_DECLARE_GUIITEM("contextmenu", CWBItem);
 

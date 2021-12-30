@@ -6,6 +6,8 @@
 #include "src/base/matrix.h"
 #include "src/base/spec_math.h"
 
+namespace math {
+
 CVector4 CVector3::operator*(const CMatrix4x4& q) const {
   return q.Apply(*this);
 }
@@ -52,3 +54,5 @@ CVector2I CVector2I::Normalized() const {
 }
 
 float CVector2I::Length() const { return sqrtf(LengthSquared()); }
+
+}  // namespace math

@@ -18,6 +18,8 @@
 #pragma comment(lib, "DXGI.lib")
 //#pragma comment(lib,"dcomp.lib")
 
+using math::CRect;
+
 typedef HRESULT(__stdcall* DCompositionCreateDeviceCallback)(
     _In_opt_ IDXGIDevice* dxgiDevice, _In_ REFIID iid,
     _Outptr_ void** dcompositionDevice);

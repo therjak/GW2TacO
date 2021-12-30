@@ -15,6 +15,10 @@
 
 using namespace jsonxx;
 
+using math::CRect;
+using math::CSize;
+using math::CVector3;
+
 bool wvwCanBeRendered = false;
 std::vector<WvWObjective> wvwObjectives;
 std::string FetchHTTPS(std::string_view url, std::string_view path);

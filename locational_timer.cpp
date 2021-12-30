@@ -4,8 +4,13 @@
 
 #include "mumble_link.h"
 #include "overlay_config.h"
+#include "src/base/rectangle.h"
 #include "src/base/sphere.h"
 #include "src/base/string_format.h"
+#include "src/base/vector.h"
+
+using math::CPoint;
+using math::CRect;
 
 std::vector<LocationalTimer> LocationalTimers;
 
@@ -102,7 +107,7 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
   int32_t tme = GetTime();
   CWBFont* f = GetFont(GetState());
 
-  int32_t ypos = Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
+  int32_t ypos = math::Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
 
   for (auto& t : LocationalTimers) {
     t.Update();

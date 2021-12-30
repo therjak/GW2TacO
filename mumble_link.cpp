@@ -6,6 +6,12 @@
 #include "src/base/timer.h"
 #include "trail_logger.h"
 
+using math::CMatrix4x4;
+using math::CRect;
+using math::CVector2;
+using math::CVector3;
+using math::CVector4;
+
 CMumbleLink mumbleLink;
 bool frameTriggered = false;
 extern std::unique_ptr<CWBApplication> App;
@@ -99,15 +105,16 @@ void CMumbleLink::Update() {
 
   interpolation = inter;
 
-  charPosition = Lerp(CVector3(prevData.fAvatarPosition),
-                      CVector3(lastData.fAvatarPosition), inter);
-  charEye =
-      Lerp(CVector3(prevData.fAvatarTop), CVector3(lastData.fAvatarTop), 1);
-  camPosition = Lerp(CVector3(prevData.fCameraPosition),
-                     CVector3(lastData.fCameraPosition), 1);
-  camUp = Lerp(CVector3(prevData.fCameraTop), CVector3(lastData.fCameraTop), 1);
-  camDir = Lerp(CVector3(prevData.fCameraFront),
-                CVector3(lastData.fCameraFront), inter);
+  charPosition = math::Lerp(CVector3(prevData.fAvatarPosition),
+                            CVector3(lastData.fAvatarPosition), inter);
+  charEye = math::Lerp(CVector3(prevData.fAvatarTop),
+                       CVector3(lastData.fAvatarTop), 1);
+  camPosition = math::Lerp(CVector3(prevData.fCameraPosition),
+                           CVector3(lastData.fCameraPosition), 1);
+  camUp = math::Lerp(CVector3(prevData.fCameraTop),
+                     CVector3(lastData.fCameraTop), 1);
+  camDir = math::Lerp(CVector3(prevData.fCameraFront),
+                      CVector3(lastData.fCameraFront), inter);
 
   charPosChanged =
       CVector3(prevData.fAvatarPosition) != CVector3(lastData.fAvatarPosition);

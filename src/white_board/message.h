@@ -11,7 +11,7 @@ class CWBMessage final {
  public:
   union {
     struct {
-      CRect Rectangle;
+      math::CRect Rectangle;
       bool Moved;
       bool Resized;
     };
@@ -41,7 +41,9 @@ class CWBMessage final {
 
   WBMESSAGE GetMessage() const { return Message; }
   WBGUID GetTarget() const { return Target; }
-  CPoint GetPosition() const { return CPoint(Position[0], Position[1]); }
+  math::CPoint GetPosition() const {
+    return math::CPoint(Position[0], Position[1]);
+  }
 
   bool IsTargetID(std::string_view Name);
   std::string GetTargetID();

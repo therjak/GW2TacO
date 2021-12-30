@@ -6,6 +6,9 @@
 #include "src/base/logger.h"
 #include "src/base/timer.h"
 
+using math::CPoint;
+using math::CRect;
+
 void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   const WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2))

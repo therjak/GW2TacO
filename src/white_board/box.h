@@ -39,9 +39,9 @@ class CWBBox : public CWBItem {
   bool ClickThrough = false;
 
  public:
-  CWBBox(CWBItem* Parent, const CRect& Pos);
+  CWBBox(CWBItem* Parent, const math::CRect& Pos);
   static inline std::shared_ptr<CWBBox> Create(CWBItem* Parent,
-                                               const CRect& Pos) {
+                                               const math::CRect& Pos) {
     auto p = std::make_shared<CWBBox>(Parent, Pos);
     p->SelfRef = p;
     if (Parent) {
@@ -52,9 +52,10 @@ class CWBBox : public CWBItem {
 
   ~CWBBox() override;
 
-  bool Initialize(CWBItem* Parent, const CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("box", CWBItem);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
@@ -64,6 +65,6 @@ class CWBBox : public CWBItem {
   virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 };

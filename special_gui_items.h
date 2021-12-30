@@ -1,14 +1,18 @@
 ﻿#pragma once
+#include <memory>
 #include <string_view>
 
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/button.h"
 #include "src/white_board/gui_item.h"
 
 class ClickThroughButton : public CWBButton {
  public:
-  ClickThroughButton(CWBItem* Parent, const CRect& Pos, std::string_view txt);
+  ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
+                     std::string_view txt);
   static inline std::shared_ptr<ClickThroughButton> Create(
-      CWBItem* Parent, const CRect& Pos, std::string_view txt = "") {
+      CWBItem* Parent, const math::CRect& Pos, std::string_view txt = "") {
     auto p = std::make_shared<ClickThroughButton>(Parent, Pos, txt);
     p->SelfRef = p;
     if (Parent) {
@@ -18,8 +22,9 @@ class ClickThroughButton : public CWBButton {
   }
   ~ClickThroughButton() override;
 
-  bool Initialize(CWBItem* Parent, const CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("clickthroughbutton", CWBItem);
 };

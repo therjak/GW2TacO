@@ -30,8 +30,8 @@ enum class WBTEXTTRANSFORM : uint8_t {
 
 struct WBSYMBOLINPUT {
   uint16_t Char = 0;
-  CRect UV;
-  CPoint Offset;
+  math::CRect UV;
+  math::CPoint Offset;
   int32_t Advance = 0;
 };
 
@@ -42,7 +42,7 @@ struct WBSYMBOL {
   int16_t Advance = 0;
   uint16_t Char = 0;
 
-  CRect calculatedContentRect;
+  math::CRect calculatedContentRect;
 };
 
 struct WBKERNINGDATA {
@@ -122,8 +122,9 @@ class CWBFont {
 
   TCHAR MissingChar = 0;
 
-  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const CSize& Size,
-                 const CPoint& Offset, int32_t Advance, CRect contentRect);
+  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const math::CSize& Size,
+                 const math::CPoint& Offset, int32_t Advance,
+                 math::CRect contentRect);
   void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
   uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
                                   WBTEXTTRANSFORM Transform);
@@ -141,8 +142,9 @@ class CWBFont {
       int32_t x1, int32_t x2, std::string_view Text,
       WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetCenterHeight(int32_t y1, int32_t y2);
-  CPoint GetCenter(std::string_view Text, CRect Rect,
-                   WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
+  math::CPoint GetCenter(
+      std::string_view Text, math::CRect Rect,
+      WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetMedian();
 
   int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
@@ -151,10 +153,10 @@ class CWBFont {
                 int32_t y, CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
                 bool DoKerning = true);
-  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const CPoint& p,
+  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const math::CPoint& p,
                     CColor Color = CColor(0xffffffff));
-  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, const CPoint& p,
-                CColor Color = CColor(0xffffffff),
+  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String,
+                const math::CPoint& p, CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
                 bool DoKerning = true);
   int32_t GetWidth(
@@ -168,9 +170,11 @@ class CWBFont {
   int32_t GetHeight(uint16_t Char);
   int32_t GetHeight(std::string_view String);
 
-  CPoint GetTextPosition(std::string_view String, const CRect& Container,
-                         WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
-                         WBTEXTTRANSFORM Transform, bool DoKerning = true);
+  math::CPoint GetTextPosition(std::string_view String,
+                               const math::CRect& Container,
+                               WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
+                               WBTEXTTRANSFORM Transform,
+                               bool DoKerning = true);
 
   char ApplyTextTransform(const char* Text, const char* CurrPos,
                           WBTEXTTRANSFORM Transform);

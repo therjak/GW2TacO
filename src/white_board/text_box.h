@@ -47,7 +47,7 @@ class CWBTextBox : public CWBItem {
 
   CWBCSSPropertyBatch Selection;
 
-  void DrawCursor(CWBDrawAPI* API, const CPoint& p);
+  void DrawCursor(CWBDrawAPI* API, const math::CPoint& p);
   void SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting);
   void RemoveSelectedText();
   void Copy();
@@ -63,7 +63,7 @@ class CWBTextBox : public CWBItem {
   int32_t GetCursorPosMouse();
   int32_t GetLineLeadingWhiteSpaceSize();
 
-  CPoint GetTextStartOffset();
+  math::CPoint GetTextStartOffset();
 
   virtual void DoSyntaxHighlight(){};
   virtual void OnTextChange(bool nonHumanInteraction = false);
@@ -96,11 +96,11 @@ class CWBTextBox : public CWBItem {
                   bool ChangeHistory = true);
 
  public:
-  CWBTextBox(CWBItem* Parent, const CRect& Pos, int32_t flags,
+  CWBTextBox(CWBItem* Parent, const math::CRect& Pos, int32_t flags,
              std::string_view txt);
   static inline std::shared_ptr<CWBTextBox> Create(
-      CWBItem* Parent, const CRect& Pos, int32_t flags = WB_TEXTBOX_SINGLELINE,
-      std::string_view txt = "") {
+      CWBItem* Parent, const math::CRect& Pos,
+      int32_t flags = WB_TEXTBOX_SINGLELINE, std::string_view txt = "") {
     auto p = std::make_shared<CWBTextBox>(Parent, Pos, flags, txt);
     p->SelfRef = p;
     if (Parent) {
@@ -110,7 +110,7 @@ class CWBTextBox : public CWBItem {
   }
   ~CWBTextBox() override;
 
-  bool Initialize(CWBItem* Parent, const CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
@@ -120,7 +120,8 @@ class CWBTextBox : public CWBItem {
      // of the windows '\r\n')
   void SetText(std::string_view val, bool EnableUndo = false);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("textbox", CWBItem);
 
   virtual void SetSelection(int32_t start, int32_t end);

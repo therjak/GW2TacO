@@ -6,6 +6,9 @@
 #include "src/white_board/application.h"
 #include "src/white_board/text_box.h"
 
+using math::CPoint;
+using math::CRect;
+
 bool GW2Notepad::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                     WBMESSAGE MessageType) {
   return true;

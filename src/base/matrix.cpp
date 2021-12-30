@@ -7,6 +7,8 @@
 #include "src/base/assert.h"
 #include "src/base/vector.h"
 
+namespace math {
+
 CMatrix4x4 CMatrix4x4::Scaling(const CVector3& v) {
   CMatrix4x4 mx;
   mx.SetIdentity();
@@ -387,3 +389,5 @@ CMatrix4x4 CMatrix4x4::Rotation(const CVector3& Axis, const float Angle) {
       2 * (x * z + y * s), 2 * (y * z - x * s), 1 - 2 * (x * x + y * y), 0,  //
       0, 0, 0, 1);
 }
+
+}  // namespace math

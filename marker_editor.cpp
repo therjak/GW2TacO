@@ -8,6 +8,10 @@
 #include "src/white_board/label.h"
 #include "trail_logger.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CVector3;
+
 bool GW2MarkerEditor::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                          WBMESSAGE MessageType) {
   return true;

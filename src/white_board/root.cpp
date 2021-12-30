@@ -3,6 +3,8 @@
 #include "src/white_board/application.h"
 #include "src/white_board/message.h"
 
+using math::CRect;
+
 bool CWBRoot::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     default:

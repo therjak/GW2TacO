@@ -140,7 +140,7 @@ class CCoreDevice {
   CCoreTexture* GetTexture(CORESAMPLER Sampler);
 
   virtual bool SetRenderTarget(CCoreTexture2D* RT) = 0;
-  virtual bool SetViewport(CRect Viewport) = 0;
+  virtual bool SetViewport(math::CRect Viewport) = 0;
 
   //////////////////////////////////////////////////////////////////////////
   // shader functions

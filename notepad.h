@@ -1,5 +1,9 @@
 ﻿#pragma once
+#include <memory>
+
 #include "gw2_tactical.h"
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
@@ -13,12 +17,12 @@ class GW2Notepad : public CWBItem {
   bool canSetFocus = false;
 
  public:
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
-  GW2Notepad(CWBItem* Parent, CRect Position);
+  GW2Notepad(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<GW2Notepad> Create(CWBItem* Parent,
-                                                   CRect Position) {
+                                                   math::CRect Position) {
     auto p = std::make_shared<GW2Notepad>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -28,7 +32,7 @@ class GW2Notepad : public CWBItem {
   }
   ~GW2Notepad() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("notepad", CWBItem);
 
   void StartEdit();

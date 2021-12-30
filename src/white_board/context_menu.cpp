@@ -3,6 +3,10 @@
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);

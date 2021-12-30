@@ -35,7 +35,7 @@ class CWBWindow : public CWBItem {
   int32_t TitleBarHeight;
   int32_t CornerSelectionSize;
 
-  CSize MinSize;
+  math::CSize MinSize;
 
   std::string WindowTitle;
 
@@ -49,10 +49,10 @@ class CWBWindow : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;
 
  public:
-  CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt = "",
+  CWBWindow(CWBItem* Parent, const math::CRect& Pos, const TCHAR* txt = "",
             uint32_t style = WB_WINDOW_DEFAULT);
   static inline std::shared_ptr<CWBWindow> Create(
-      CWBItem* Parent, const CRect& Pos, const TCHAR* txt = "",
+      CWBItem* Parent, const math::CRect& Pos, const TCHAR* txt = "",
       uint32_t style = WB_WINDOW_DEFAULT) {
     auto p = std::make_shared<CWBWindow>(Parent, Pos, txt, style);
     p->SelfRef = p;
@@ -63,7 +63,7 @@ class CWBWindow : public CWBItem {
   }
   ~CWBWindow() override;
 
-  bool Initialize(CWBItem* Parent, const CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
@@ -71,10 +71,11 @@ class CWBWindow : public CWBItem {
   void SetTitle(std::string_view val) { WindowTitle = val; }
 
   uint32_t GetDragMode();
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
 
-  CRect GetElementPos(WBWINDOWELEMENT Element);
-  uint32_t GetBorderSelectionArea(const CPoint& mousepos);
+  math::CRect GetElementPos(WBWINDOWELEMENT Element);
+  uint32_t GetBorderSelectionArea(const math::CPoint& mousepos);
 
   WB_DECLARE_GUIITEM("window", CWBItem);
 };

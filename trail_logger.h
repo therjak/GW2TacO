@@ -14,19 +14,19 @@
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos);
+void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);
 
 struct GW2TrailVertex {
-  CVector4 Pos;
-  CVector2 UV;
-  CVector4 CenterPos;
+  math::CVector4 Pos;
+  math::CVector2 UV;
+  math::CVector4 CenterPos;
   CColor Color;
 };
 
 class GW2Trail {
   friend class GW2TrailDisplay;
 
-  std::vector<CVector3> positions;
+  std::vector<math::CVector3> positions;
 
   void Reset(int32_t _mapID = 0);
 
@@ -46,7 +46,7 @@ class GW2Trail {
   void Draw();
   void Update();
   void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
-                    CMatrix4x4& cam, CMatrix4x4& persp, float& one,
+                    math::CMatrix4x4& cam, math::CMatrix4x4& persp, float& one,
                     bool scaleData, int32_t fadeoutBubble,
                     std::array<float, 8>& data, float fadeAlpha, float width,
                     float uvScale, float width2d);
@@ -67,9 +67,9 @@ class GW2Trail {
 
 class GW2TrailDisplay : public CWBItem {
   float asp = 0;
-  CMatrix4x4 cam;
-  CMatrix4x4 persp;
-  CRect drawrect;
+  math::CMatrix4x4 cam;
+  math::CMatrix4x4 persp;
+  math::CRect drawrect;
 
   void OnDraw(CWBDrawAPI* API) override;
 
@@ -98,9 +98,9 @@ class GW2TrailDisplay : public CWBItem {
   std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 
  public:
-  GW2TrailDisplay(CWBItem* Parent, CRect Position);
+  GW2TrailDisplay(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<GW2TrailDisplay> Create(CWBItem* Parent,
-                                                        CRect Position) {
+                                                        math::CRect Position) {
     auto p = std::make_shared<GW2TrailDisplay>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -110,13 +110,14 @@ class GW2TrailDisplay : public CWBItem {
   }
   ~GW2TrailDisplay() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("gw2Trails", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
-  void DoTrailLogging(int32_t mapID, CVector3 charPos);
+  void DoTrailLogging(int32_t mapID, math::CVector3 charPos);
 
   void StartStopTrailRecording(bool start);
   void PauseTrail(bool pause, bool newSection = false);

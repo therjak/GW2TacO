@@ -15,6 +15,8 @@
 std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 
 using namespace jsonxx;
+using math::CPoint;
+using math::CRect;
 
 void DungeonProgress::OnDraw(CWBDrawAPI* API) {
   CWBFont* f = GetFont(GetState());

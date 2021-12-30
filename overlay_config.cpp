@@ -10,6 +10,9 @@
 #include "src/base/timer.h"
 #include "src/util/xml_document.h"
 
+using math::CPoint;
+using math::CRect;
+
 // These maps must be sorted. So no unordered_map.
 std::map<std::string, int32_t> ConfigNums;
 std::map<std::string, std::string> ConfigStrings;

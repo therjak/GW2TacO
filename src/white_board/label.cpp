@@ -1,5 +1,9 @@
 #include "src/white_board/label.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 void CWBLabel::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
 

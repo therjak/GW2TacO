@@ -7,6 +7,10 @@
 #include "src/base/stream_reader.h"
 #include "src/white_board/draw_api.h"
 
+using math::CPoint;
+using math::CRect;
+using math::CSize;
+
 uint32_t DictionaryHash(const CWBKerningPair& i) {
   return i.First + (i.Second << 16);
 }

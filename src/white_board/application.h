@@ -25,7 +25,8 @@ enum class WBMOUSECLICKREPEATMODE : uint8_t {
 };
 
 typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
-                                             const CXMLNode& node, CRect& Pos);
+                                             const CXMLNode& node,
+                                             math::CRect& Pos);
 
 class CWBApplication : public CCoreWindowHandlerWin {
   friend class CWBItem;
@@ -54,7 +55,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
 
   bool SendMessageToItem(const CWBMessage& Message, CWBItem* Target);
   void ProcessMessage(CWBMessage& Message);
-  CWBItem* GetItemUnderMouse(CPoint& Point, WBMESSAGE w);
+  CWBItem* GetItemUnderMouse(math::CPoint& Point, WBMESSAGE w);
 
   virtual void UpdateMouseItem();
   virtual void CleanTrash();
@@ -77,10 +78,12 @@ class CWBApplication : public CCoreWindowHandlerWin {
   std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
 
   bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
-  bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
+                              math::CRect& Pos);
   bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
                                   std::string_view TemplateID);
-  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
 
   CColor ClearColor = CColor(0, 0, 0, 255);
 

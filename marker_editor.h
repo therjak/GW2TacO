@@ -15,12 +15,12 @@ class GW2MarkerEditor : public CWBItem {
   bool ChangeDefault = false;
 
  public:
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
-  GW2MarkerEditor(CWBItem* Parent, CRect Position);
+  GW2MarkerEditor(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<GW2MarkerEditor> Create(CWBItem* Parent,
-                                                        CRect Position) {
+                                                        math::CRect Position) {
     auto p = std::make_shared<GW2MarkerEditor>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -30,6 +30,6 @@ class GW2MarkerEditor : public CWBItem {
   }
   ~GW2MarkerEditor() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("markereditor", CWBItem);
 };

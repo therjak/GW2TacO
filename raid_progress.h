@@ -1,7 +1,11 @@
 ﻿#pragma once
+#include <memory>
 #include <string>
 #include <thread>
+#include <vector>
 
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
@@ -27,7 +31,7 @@ class Raid {
 };
 
 class RaidProgress : public CWBItem {
-  CPoint lastpos;
+  math::CPoint lastpos;
   void OnDraw(CWBDrawAPI* API) override;
 
   bool beingFetched = false;
@@ -40,9 +44,9 @@ class RaidProgress : public CWBItem {
   std::vector<Raid> raids;
 
  public:
-  RaidProgress(CWBItem* Parent, CRect Position);
+  RaidProgress(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<RaidProgress> Create(CWBItem* Parent,
-                                                     CRect Position) {
+                                                     math::CRect Position) {
     auto p = std::make_shared<RaidProgress>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -52,10 +56,10 @@ class RaidProgress : public CWBItem {
   }
   ~RaidProgress() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("raidprogress", CWBItem);
 
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
   std::vector<Raid>& GetRaids();
 };

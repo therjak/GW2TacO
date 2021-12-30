@@ -4,9 +4,11 @@
 
 #include "src/base/vector.h"
 
+namespace math {
+
 class CPlane {
   void Normalize() {
-    float l = Normal.Length();
+    const float l = Normal.Length();
     Normal /= l;
     D /= l;
   }
@@ -34,9 +36,11 @@ class CPlane {
     return Normal * v + D;  // optimized for a normalized plane
   }
   constexpr int32_t Side(const CVector3& v) const {
-    float f = Distance(v);
+    const float f = Distance(v);
     if (f > 0) return 1;
     if (f < 0) return -1;
     return 0;
   }
 };
+
+}  // namespace math

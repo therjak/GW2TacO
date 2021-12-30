@@ -6,6 +6,13 @@
 #include "mumble_link.h"
 #include "overlay_config.h"
 
+using math::CMatrix4x4;
+using math::CPoint;
+using math::CRect;
+using math::CVector2;
+using math::CVector3;
+using math::CVector4;
+
 constexpr float PI = 3.1415926535897932384626433832795f;
 
 float GetMapFade();

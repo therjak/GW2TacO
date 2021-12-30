@@ -52,13 +52,14 @@ class CWBPositionDescriptor {
   void SetMetric(WBPOSITIONTYPE p, WBMETRICTYPE m, float Value);
   void SetAutoSize(WBPOSITIONTYPE p);
   void ClearMetrics(WBPOSITIONTYPE p);
-  CRect GetPosition(CSize ParentSize, CSize ContentSize, const CRect& Original);
-  CRect GetPadding(CSize ParentSize, const CRect& BorderSize);
+  math::CRect GetPosition(math::CSize ParentSize, math::CSize ContentSize,
+                          const math::CRect& Original);
+  math::CRect GetPadding(math::CSize ParentSize, const math::CRect& BorderSize);
 
   bool IsWidthSet();
   bool IsHeightSet();
-  int32_t GetWidth(CSize ParentSize, CSize ContentSize);
-  int32_t GetHeight(CSize ParentSize, CSize ContentSize);
+  int32_t GetWidth(math::CSize ParentSize, math::CSize ContentSize);
+  int32_t GetHeight(math::CSize ParentSize, math::CSize ContentSize);
 
   bool IsAutoResizer();
 };
@@ -74,7 +75,7 @@ class CWBPositionDescriptorPixels {
  public:
   CWBPositionDescriptorPixels();
   void SetValue(WBPOSITIONTYPE p, int32_t Pixels);
-  FORCEINLINE CRect GetPosition(CSize ParentSize);
+  FORCEINLINE math::CRect GetPosition(math::CSize ParentSize);
 };
 
 enum class WBSKINELEMENTBEHAVIOR : uint8_t {
@@ -108,8 +109,8 @@ class CWBSkinElement {
   WBATLASHANDLE GetHandle();
   std::string& GetName();
 
-  FORCEINLINE void Render(CWBDrawAPI* API, const CRect& Pos);
-  CSize GetElementSize(CWBDrawAPI* API);
+  FORCEINLINE void Render(CWBDrawAPI* API, const math::CRect& Pos);
+  math::CSize GetElementSize(CWBDrawAPI* API);
 };
 
 class CWBMosaicImage {
@@ -127,7 +128,7 @@ class CWBMosaicImage {
   void SetHandle(WBATLASHANDLE handle);
   void SetColor(CColor color);
 
-  FORCEINLINE void Render(CWBDrawAPI* API, const CRect& Pos);
+  FORCEINLINE void Render(CWBDrawAPI* API, const math::CRect& Pos);
 };
 
 class CWBMosaic {
@@ -147,7 +148,7 @@ class CWBMosaic {
   std::string& GetName();
   void AddImage(const CWBMosaicImage& Image);
   void Flush();
-  void Render(CWBDrawAPI* API, const CRect& Position);
+  void Render(CWBDrawAPI* API, const math::CRect& Position);
   void SetOverShoot(WBRECTSIDE side, int32_t val);
 };
 
@@ -166,9 +167,11 @@ class CWBSkin {
                        int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
                        int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
 
-  void RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID, const CRect& Pos);
-  void RenderElement(CWBDrawAPI* API, std::string_view Name, const CRect& Pos);
+  void RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID,
+                     const math::CRect& Pos);
+  void RenderElement(CWBDrawAPI* API, std::string_view Name,
+                     const math::CRect& Pos);
   WBSKINELEMENTID GetElementID(std::string_view Name);
   CWBSkinElement* GetElement(WBSKINELEMENTID id);
-  CSize GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID id);
+  math::CSize GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID id);
 };

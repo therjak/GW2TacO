@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "src/base/rectangle.h"
@@ -18,9 +19,9 @@ class LocationalTimer {
   };
 
   int32_t MapID = 0;
-  CSphere EnterSphere = CSphere(CVector3(0, 0, 0), 0);
-  CSphere ExitSphere = CSphere(CVector3(0, 0, 0), 0);
-  CVector3 ResetPoint = CVector3(0, 0, 0);
+  math::CSphere EnterSphere = math::CSphere(math::CVector3(0, 0, 0), 0);
+  math::CSphere ExitSphere = math::CSphere(math::CVector3(0, 0, 0), 0);
+  math::CVector3 ResetPoint = math::CVector3(0, 0, 0);
   int32_t TimerLength = 0;
   int32_t StartDelay = 0;
 
@@ -39,12 +40,12 @@ class LocationalTimer {
 class TimerDisplay : public CWBItem {
  public:
   void OnDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
-  TimerDisplay(CWBItem* Parent, CRect Position);
+  TimerDisplay(CWBItem* Parent, math::CRect Position);
   static inline std::shared_ptr<TimerDisplay> Create(CWBItem* Parent,
-                                                     CRect Position) {
+                                                     math::CRect Position) {
     auto p = std::make_shared<TimerDisplay>(Parent, Position);
     p->SelfRef = p;
     if (Parent) {
@@ -54,7 +55,8 @@ class TimerDisplay : public CWBItem {
   }
   ~TimerDisplay() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
   WB_DECLARE_GUIITEM("TimerDisplay", CWBItem);
 };
 

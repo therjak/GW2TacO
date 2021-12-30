@@ -4,6 +4,9 @@
 #include "src/white_board/application.h"
 #include "src/white_board/window.h"
 
+using math::CPoint;
+using math::CRect;
+
 bool OverlayWindow::IsMouseTransparent(const CPoint& ClientSpacePoint,
                                        WBMESSAGE MessageType) {
   if (GetConfigValue("EditMode")) return false;
