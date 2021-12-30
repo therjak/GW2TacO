@@ -42,5 +42,5 @@ class GW2HPGrid : public CWBItem {
   ~GW2HPGrid() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "hpgrid" ), CWBItem);
+  WB_DECLARE_GUIITEM("hpgrid", CWBItem);
 };

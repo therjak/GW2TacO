@@ -220,13 +220,13 @@ class CWBItem : public IWBCSS {
                      std::string_view PropName);
 
   CWBItem* ChildSearcherFunct(std::string_view value,
-                              std::string_view type = _T( "" ));
+                              std::string_view type = "");
 
   WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, CRect r);
   virtual void ChangeContentOffset(CPoint ContentOff);
 
   static const std::string& GetClassName() {
-    static const std::string type = _T( "guiitem" );
+    static const std::string type = "guiitem";
     return type;
   }
 
@@ -370,7 +370,7 @@ class CWBItem : public IWBCSS {
   virtual CWBContextMenu* OpenContextMenu(CPoint Position);
 
   const std::string& GetType() const override {
-    static const std::string type = _T( "guiitem" );
+    static const std::string type = "guiitem";
     return type;
   }
 
@@ -403,8 +403,7 @@ class CWBItem : public IWBCSS {
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
-  CWBItem* FindChildByID(std::string_view value,
-                         std::string_view type = _T( "" ));
+  CWBItem* FindChildByID(std::string_view value, std::string_view type = "");
 
   template <typename t>
   t* FindChildByID(std::string_view value) {
@@ -428,8 +427,7 @@ class CWBItem : public IWBCSS {
     return nullptr;
   }
 
-  CWBItem* FindParentByID(std::string_view value,
-                          std::string_view type = _T( "" ));
+  CWBItem* FindParentByID(std::string_view value, std::string_view type = "");
   virtual void CalculateWindowPosition(const CSize& s);
 
   CWBMessage BuildPositionMessage(const CRect& Pos);

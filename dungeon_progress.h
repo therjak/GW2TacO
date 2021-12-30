@@ -48,7 +48,7 @@ class DungeonProgress : public CWBItem {
   ~DungeonProgress() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "dungeonprogress" ), CWBItem);
+  WB_DECLARE_GUIITEM("dungeonprogress", CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

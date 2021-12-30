@@ -43,8 +43,8 @@ bool CWBMessage::IsTargetID(std::string_view Name) {
 }
 
 std::string CWBMessage::GetTargetID() {
-  if (!App) return _T( "" );
+  if (!App) return "";
   CWBItem* i = App->FindItemByGuid(Target);
-  if (!i) return _T( "" );
+  if (!i) return "";
   return i->GetID();
 }

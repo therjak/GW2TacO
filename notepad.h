@@ -29,7 +29,7 @@ class GW2Notepad : public CWBItem {
   ~GW2Notepad() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "notepad" ), CWBItem);
+  WB_DECLARE_GUIITEM("notepad", CWBItem);
 
   void StartEdit();
 };

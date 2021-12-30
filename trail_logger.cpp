@@ -35,7 +35,7 @@ float GetMapFade();
 
 void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos) {
   GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-      App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+      App->GetRoot()->FindChildByID("trail", "gw2Trails"));
   if (trails) trails->DoTrailLogging(mapID, charPos);
 }
 

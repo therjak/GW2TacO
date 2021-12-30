@@ -112,9 +112,7 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
       if (Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
               .DisplayDescriptor.GetSkin(buttonstate,
                                          WB_ITEM_BACKGROUNDIMAGE) == 0xffffffff)
-        if (Font)
-          Font->Write(API, _T( "X" ),
-                      Font->GetCenter(_T( "X" ), closebuttonpos));
+        if (Font) Font->Write(API, "X", Font->GetCenter("X", closebuttonpos));
     }
   }
 
@@ -142,23 +140,20 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
 
 CWBWindow::CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt,
                      uint32_t style)
-    : CWBItem() {
-  Initialize(Parent, Pos, txt, style);
+    : CWBItem(),
+      BorderWidth(3),
+      TitleBarHeight(style & WB_WINDOW_TITLE ? 12 : 0),
+      CornerSelectionSize(15),
+      MinSize(CornerSelectionSize * 2 + 1, CornerSelectionSize * 2 + 1),
+      WindowTitle(txt),
+      Style(style),
+      DragMode(0) {
+  Initialize(Parent, Pos);
 }
 
 CWBWindow::~CWBWindow() = default;
 
-bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position,
-                           const TCHAR* txt, uint32_t style) {
-  WindowTitle = txt;
-
-  DragMode = 0;
-
-  Style = style;
-  BorderWidth = 3;
-  TitleBarHeight = style & WB_WINDOW_TITLE ? 12 : 0;
-  CornerSelectionSize = 15;
-  MinSize = CSize(CornerSelectionSize * 2 + 1, CornerSelectionSize * 2 + 1);
+bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position) {
   auto& element = Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
   auto& pdescriptor = element.PositionDescriptor;
   pdescriptor.SetMetric(WBPOSITIONTYPE::WB_MARGIN_TOP, WBMETRICTYPE::WB_PIXELS,
@@ -268,6 +263,9 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
         MarkForDeletion();
       }
       break;
+
+    default:
+      break;
   }
 
   return CWBItem::MessageProc(Message);
@@ -280,8 +278,8 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
   bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
-    if (pseudo[x] == _T( "title" ) || pseudo[x] == _T( "close" ) ||
-        pseudo[x] == _T( "minimize" ) || pseudo[x] == _T( "info" )) {
+    if (pseudo[x] == "title" || pseudo[x] == "close" ||
+        pseudo[x] == "minimize" || pseudo[x] == "info") {
       ElementTarget = true;
       break;
     }
@@ -296,25 +294,25 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
   bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
-    if (pseudo[x] == _T( "title" )) {
+    if (pseudo[x] == "title") {
       Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_TITLE].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
 
-    if (pseudo[x] == _T( "close" )) {
+    if (pseudo[x] == "close") {
       Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
 
-    if (pseudo[x] == _T( "minimize" )) {
+    if (pseudo[x] == "minimize") {
       Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_MINIMIZE].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
 
-    if (pseudo[x] == _T( "info" )) {
+    if (pseudo[x] == "info") {
       Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_INFO].ApplyStyle(
           this, prop, value, pseudo);
       continue;
@@ -326,7 +324,6 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
 
 CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto window = CWBWindow::Create(Root, Pos);
-  if (node.HasAttribute(_T( "title" )))
-    window->SetTitle(node.GetAttribute(_T( "title" )));
+  if (node.HasAttribute("title")) window->SetTitle(node.GetAttribute("title"));
   return window.get();
 }

@@ -17,5 +17,5 @@ class CWBRoot : public CWBItem {
   void SetApplication(CWBApplication* Application);
   bool Initialize(CWBItem* Parent, const CRect& Position) override;
 
-  WB_DECLARE_GUIITEM(_T( "root" ), CWBItem);
+  WB_DECLARE_GUIITEM("root", CWBItem);
 };

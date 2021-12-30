@@ -20,7 +20,7 @@ class GW2RangeDisplay : public CWBItem {
   ~GW2RangeDisplay() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "gw2rangecircles" ), CWBItem);
+  WB_DECLARE_GUIITEM("gw2rangecircles", CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

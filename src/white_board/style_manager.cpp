@@ -10,9 +10,9 @@ CStyleManager::~CStyleManager() = default;
 void CStyleManager::ParseDeclarations(
     std::string_view s,
     std::unordered_map<std::string, std::string>& dRuleset) {
-  auto propertiesArr = Split(s, _T( ";" ));
+  auto propertiesArr = Split(s, ";");
   for (const auto& p : propertiesArr) {
-    auto prop = Split(p, _T( ":" ));
+    auto prop = Split(p, ":");
     if (prop.size() != 2) continue;
     std::string key(Trim(prop[0]));
     std::string value(Trim(prop[1]));
@@ -23,22 +23,22 @@ void CStyleManager::ParseDeclarations(
 bool CStyleManager::ParseStyleData(std::string_view s) {
   int nPos = 0;
   std::string style(s);
-  while ((nPos = style.find(_T( "/*" ))) != std::string::npos) {
-    int nEnd = style.find(_T( "*/" ), nPos);
+  while ((nPos = style.find("/*")) != std::string::npos) {
+    int nEnd = style.find("*/", nPos);
     if (nEnd == std::string::npos) nEnd = style.size();
 
     style = style.substr(0, nPos) + style.substr(nEnd + 2);
   }
 
-  auto rules = Split(style, _T( "}" ));
+  auto rules = Split(style, "}");
   for (const auto& r : rules) {
-    auto properties = Split(r, _T( "{" ));
+    auto properties = Split(r, "{");
     if (properties.size() != 2) continue;
 
     std::unordered_map<std::string, std::string> dRuleset;
     ParseDeclarations(properties[1], dRuleset);
 
-    auto selectors = Split(properties[0], _T( "," ));
+    auto selectors = Split(properties[0], ",");
     for (const auto& s : selectors) {
       std::string selector(Trim(s));
       auto& mr = dRules[selector];
@@ -68,7 +68,7 @@ std::vector<CWBItem*> CStyleManager::GetElementsBySelector(
     CWBItem* pRootItem, std::string_view selector) {
   std::vector<CWBItem*> result;
   result.emplace_back((CWBItem*)pRootItem);
-  auto components = Split(selector, _T( " " ));
+  auto components = Split(selector, " ");
   for (size_t i = 0; i < components.size(); i++) {
     if (components[i].size() < 1) continue;
     std::vector<CWBItem*> narrowResult;
@@ -86,7 +86,7 @@ void CStyleManager::ApplyStyles(CWBItem* pRootItem) {
     std::string selector = r.first;
     std::unordered_map<std::string, std::string>& rules = r.second;
 
-    auto PseudoTags = Split(selector, _T( ":" ));
+    auto PseudoTags = Split(selector, ":");
     std::vector<CWBItem*> items =
         GetElementsBySelector(pRootItem, PseudoTags[0]);
 
@@ -113,7 +113,7 @@ void CStyleManager::ApplyStylesFromDeclarations(
   for (auto& r : dRuleset) {
     std::string rule = r.first;
     std::string value = r.second;
-    auto PseudoTags = Split(rule, _T( ":" ));
+    auto PseudoTags = Split(rule, ":");
 
     if (!pRootItem->ApplyStyle(rule, value, PseudoTags)) {
       LOG_DBG("[css] rule '%s' was not handled by item '%s' #%s .%s",

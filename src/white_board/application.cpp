@@ -33,11 +33,11 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
 
   // initialize default factory calls
 
-  RegisterUIFactoryCallback(_T( "window" ), CWBWindow::Factory);
-  RegisterUIFactoryCallback(_T( "button" ), CWBButton::Factory);
-  RegisterUIFactoryCallback(_T( "box" ), CWBBox::Factory);
-  RegisterUIFactoryCallback(_T( "label" ), CWBLabel::Factory);
-  RegisterUIFactoryCallback(_T( "textbox" ), CWBTextBox::Factory);
+  RegisterUIFactoryCallback("window", CWBWindow::Factory);
+  RegisterUIFactoryCallback("button", CWBButton::Factory);
+  RegisterUIFactoryCallback("box", CWBBox::Factory);
+  RegisterUIFactoryCallback("label", CWBLabel::Factory);
+  RegisterUIFactoryCallback("textbox", CWBTextBox::Factory);
 }
 
 CWBApplication::~CWBApplication() {
@@ -57,8 +57,8 @@ bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
   }
 
   if (!Target) {
-    // LOG(LOG_WARNING,_T("[gui] Message target item %d not found. Message type:
-    // %d"),Message.GetTarget(),Message.GetMessage());
+    // LOG(LOG_WARNING,"[gui] Message target item %d not found. Message type:
+    // %d",Message.GetTarget(),Message.GetMessage());
     return false;
   }
 
@@ -189,7 +189,7 @@ int32_t CWBApplication::GetKeyboardRepeatTime() {
 }
 
 LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  // LOG(LOG_DEBUG,_T("[gui] WM_%d %d %d"),uMsg,wParam,lParam);
+  // LOG(LOG_DEBUG,"[gui] WM_%d %d %d",uMsg,wParam,lParam);
 
   switch (uMsg) {
     case WM_ACTIVATE:
@@ -595,25 +595,25 @@ bool CWBApplication::LoadXMLLayout(std::string_view XML) {
 
   CXMLNode root = doc->GetDocumentNode();
 
-  if (!root.GetChildCount(_T( "guidescriptor" ))) {
+  if (!root.GetChildCount("guidescriptor")) {
     LOG_ERR("[gui] Error loading XML Layout: 'guidescriptor' member missing");
     return false;
   }
 
-  root = root.GetChild(_T( "guidescriptor" ));
+  root = root.GetChild("guidescriptor");
 
-  if (!root.GetChildCount(_T( "gui" ))) {
+  if (!root.GetChildCount("gui")) {
     LOG_ERR("[gui] Error loading XML Layout: 'gui' member missing");
     return false;
   }
 
-  CXMLNode gui = root.GetChild(_T( "gui" ));
-  if (!gui.HasAttribute(_T( "id" ))) {
+  CXMLNode gui = root.GetChild("gui");
+  if (!gui.HasAttribute("id")) {
     LOG_ERR("[gui] Error loading XML Layout: 'id' member missing from 'gui'");
     return false;
   }
 
-  auto id = gui.GetAttribute(_T( "id" ));
+  auto id = gui.GetAttribute("id");
 
   LayoutRepository[id] = std::move(doc);
 
@@ -715,14 +715,13 @@ bool CWBApplication::LoadSkin(std::string_view XML,
                               std::vector<int>& enabledGlyphs) {
   CXMLDocument doc;
   if (!doc.LoadFromString(XML)) return false;
-  if (!doc.GetDocumentNode().GetChildCount(_T( "whiteboardskin" )))
-    return false;
+  if (!doc.GetDocumentNode().GetChildCount("whiteboardskin")) return false;
 
-  CXMLNode r = doc.GetDocumentNode().GetChild(_T( "whiteboardskin" ));
+  CXMLNode r = doc.GetDocumentNode().GetChild("whiteboardskin");
 
-  for (int32_t x = 0; x < r.GetChildCount(_T( "image" )); x++) {
-    CXMLNode n = r.GetChild(_T( "image" ), x);
-    auto img = n.GetAttributeAsString(_T( "image" ));
+  for (int32_t x = 0; x < r.GetChildCount("image"); x++) {
+    CXMLNode n = r.GetChild("image", x);
+    auto img = n.GetAttributeAsString("image");
 
     auto data = B64Decode(img);
 
@@ -733,48 +732,48 @@ bool CWBApplication::LoadSkin(std::string_view XML,
       ARGBtoABGR(Image.get(), XRes, YRes);
       ClearZeroAlpha(Image.get(), XRes, YRes);
 
-      for (int32_t y = 0; y < n.GetChildCount(_T( "element" )); y++) {
-        CXMLNode e = n.GetChild(_T( "element" ), y);
+      for (int32_t y = 0; y < n.GetChildCount("element"); y++) {
+        CXMLNode e = n.GetChild("element", y);
 
         CRect r2;
-        e.GetAttributeAsInteger(_T( "x1" ), &r2.x1);
-        e.GetAttributeAsInteger(_T( "y1" ), &r2.y1);
-        e.GetAttributeAsInteger(_T( "x2" ), &r2.x2);
-        e.GetAttributeAsInteger(_T( "y2" ), &r2.y2);
+        e.GetAttributeAsInteger("x1", &r2.x1);
+        e.GetAttributeAsInteger("y1", &r2.y1);
+        e.GetAttributeAsInteger("x2", &r2.x2);
+        e.GetAttributeAsInteger("y2", &r2.y2);
 
         CPoint b;
-        e.GetAttributeAsInteger(_T( "x-behavior" ), &b.x);
-        e.GetAttributeAsInteger(_T( "y-behavior" ), &b.y);
+        e.GetAttributeAsInteger("x-behavior", &b.x);
+        e.GetAttributeAsInteger("y-behavior", &b.y);
 
         const WBATLASHANDLE h = Atlas->AddImage(Image.get(), XRes, YRes, r2);
-        Skin->AddElement(e.GetAttributeAsString(_T( "name" )), h,
+        Skin->AddElement(e.GetAttributeAsString("name"), h,
                          static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
                          static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
       }
     }
   }
 
-  for (int32_t x = 0; x < r.GetChildCount(_T( "mosaic" )); x++) {
-    CXMLNode m = r.GetChild(_T( "mosaic" ), x);
+  for (int32_t x = 0; x < r.GetChildCount("mosaic"); x++) {
+    CXMLNode m = r.GetChild("mosaic", x);
 
     CRect r2;
-    m.GetAttributeAsInteger(_T( "overshootx1" ), &r2.x1);
-    m.GetAttributeAsInteger(_T( "overshooty1" ), &r2.y1);
-    m.GetAttributeAsInteger(_T( "overshootx2" ), &r2.x2);
-    m.GetAttributeAsInteger(_T( "overshooty2" ), &r2.y2);
+    m.GetAttributeAsInteger("overshootx1", &r2.x1);
+    m.GetAttributeAsInteger("overshooty1", &r2.y1);
+    m.GetAttributeAsInteger("overshootx2", &r2.x2);
+    m.GetAttributeAsInteger("overshooty2", &r2.y2);
 
-    Skin->AddMosaic(m.GetAttributeAsString(_T( "name" )),
-                    m.GetAttributeAsString(_T( "description" )), r2.x1, r2.y1,
-                    r2.x2, r2.y2);
+    Skin->AddMosaic(m.GetAttributeAsString("name"),
+                    m.GetAttributeAsString("description"), r2.x1, r2.y1, r2.x2,
+                    r2.y2);
   }
 
-  for (int32_t x = 0; x < r.GetChildCount(_T( "font" )); x++) {
-    CXMLNode n = r.GetChild(_T( "font" ), x);
+  for (int32_t x = 0; x < r.GetChildCount("font"); x++) {
+    CXMLNode n = r.GetChild("font", x);
 
-    auto Name = n.GetAttributeAsString(_T( "name" ));
+    auto Name = n.GetAttributeAsString("name");
 
-    auto img = n.GetAttributeAsString(_T( "image" ));
-    auto bin = n.GetAttributeAsString(_T( "binary" ));
+    auto img = n.GetAttributeAsString("image");
+    auto bin = n.GetAttributeAsString("binary");
 
     // uint8_t* Dataimg = nullptr;
     // uint8_t* Databin = nullptr;
@@ -827,13 +826,13 @@ bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
 bool CWBApplication::GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc) {
   CXMLNode root = doc->GetDocumentNode();
 
-  if (!root.GetChildCount(_T( "guidescriptor" ))) return false;
+  if (!root.GetChildCount("guidescriptor")) return false;
 
-  root = root.GetChild(_T( "guidescriptor" ));
+  root = root.GetChild("guidescriptor");
 
-  if (!root.GetChildCount(_T( "gui" ))) return false;
+  if (!root.GetChildCount("gui")) return false;
 
-  CXMLNode gui = root.GetChild(_T( "gui" ));
+  CXMLNode gui = root.GetChild("gui");
 
   return ProcessGUIXML(Root, gui);
 }
@@ -843,17 +842,17 @@ bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
                                                 std::string_view TemplateID) {
   CXMLNode root = doc->GetDocumentNode();
 
-  if (!root.GetChildCount(_T( "guidescriptor" ))) return false;
+  if (!root.GetChildCount("guidescriptor")) return false;
 
-  root = root.GetChild(_T( "guidescriptor" ));
+  root = root.GetChild("guidescriptor");
 
-  for (int32_t x = 0; x < root.GetChildCount(_T( "guitemplate" )); x++) {
-    CXMLNode t = root.GetChild(_T( "guitemplate" ), x);
+  for (int32_t x = 0; x < root.GetChildCount("guitemplate"); x++) {
+    CXMLNode t = root.GetChild("guitemplate", x);
 
-    if (t.HasAttribute(_T( "id" )))
-      if (t.GetAttributeAsString(_T( "id" )) == TemplateID) {
-        if (t.HasAttribute(_T( "class" ))) {
-          auto a = Split(t.GetAttribute(_T( "class" )), _T( " " ));
+    if (t.HasAttribute("id"))
+      if (t.GetAttributeAsString("id") == TemplateID) {
+        if (t.HasAttribute("class")) {
+          auto a = Split(t.GetAttribute("class"), " ");
           for (const auto& s : a)
             if (s.size() > 1) Root->AddClass(s);
         }
@@ -882,32 +881,30 @@ bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
   CWBItem* NewItem = GenerateUIItem(Root, node, Pos);
   if (!NewItem) return false;
 
-  if (node.HasAttribute(_T( "pos" ))) {
-    const auto& pos = node.GetAttribute(_T( "pos" ));
+  if (node.HasAttribute("pos")) {
+    const auto& pos = node.GetAttribute("pos");
     if (std::count(pos.begin(), pos.end(), ',') == 3) {
-      std::sscanf(node.GetAttribute(_T( "pos" )).c_str(), _T( "%d,%d,%d,%d" ),
-                  &Pos.x1, &Pos.y1, &Pos.x2, &Pos.y2);
+      std::sscanf(node.GetAttribute("pos").c_str(), "%d,%d,%d,%d", &Pos.x1,
+                  &Pos.y1, &Pos.x2, &Pos.y2);
     } else {
       uint32_t x = 0, y = 0;
-      std::sscanf(node.GetAttribute(_T( "pos" )).c_str(), _T( "%d,%d" ), &x,
-                  &y);
+      std::sscanf(node.GetAttribute("pos").c_str(), "%d,%d", &x, &y);
       Pos.MoveTo(x, y);
     }
     NewItem->SetPosition(Pos);
   }
 
-  if (node.HasAttribute(_T( "size" ))) {
+  if (node.HasAttribute("size")) {
     uint32_t x = 0, y = 0;
-    std::sscanf(node.GetAttribute(_T( "size" )).c_str(), _T( "%d,%d" ), &x, &y);
+    std::sscanf(node.GetAttribute("size").c_str(), "%d,%d", &x, &y);
     Pos.SetSize(x, y);
     NewItem->SetPosition(Pos);
   }
 
-  if (node.HasAttribute(_T( "id" )))
-    NewItem->SetID(node.GetAttribute(_T( "id" )));
+  if (node.HasAttribute("id")) NewItem->SetID(node.GetAttribute("id"));
 
-  if (node.HasAttribute(_T( "class" ))) {
-    auto a = Split(node.GetAttribute(_T( "class" )), _T( " " ));
+  if (node.HasAttribute("class")) {
+    auto a = Split(node.GetAttribute("class"), " ");
     for (const auto& s : a)
       if (s.size() > 1) NewItem->AddClass(s);
   }
@@ -931,16 +928,16 @@ void CWBApplication::RegisterUIFactoryCallback(
 }
 
 void CWBApplication::TakeScreenshot() {
-  CreateDirectory(_T( "Screenshots" ), nullptr);
+  CreateDirectory("Screenshots", nullptr);
 
   int32_t maxcnt = 0;
   {
-    auto s = ScreenShotName + _T( "_*.png" );
-    CFileList fl(s, _T( "Screenshots" ));
+    auto s = ScreenShotName + "_*.png";
+    CFileList fl(s, "Screenshots");
 
     for (auto& File : fl.Files) {
       if (File.FileName.find(ScreenShotName) == std::string::npos) {
-        auto s2 = ScreenShotName + _T( "_%d" );
+        auto s2 = ScreenShotName + "_%d";
 
         int32_t no = -1;
         sscanf(File.FileName.c_str(), s2.c_str(), &no);
@@ -964,8 +961,8 @@ void CWBApplication::TakeScreenshot() {
   DrawAPI->DrawRect(CRect(0, 0, XRes, YRes), CColor{0xff000000});
   DrawAPI->FlushDrawBuffer();
 
-  auto fname = FormatString(_T( "Screenshots\\%s_%04d.png" ),
-                            ScreenShotName.c_str(), maxcnt + 1);
+  auto fname = FormatString("Screenshots\\%s_%04d.png", ScreenShotName.c_str(),
+                            maxcnt + 1);
   DrawAPI->GetDevice()->TakeScreenShot(fname);
 
   DrawAPI->SetUIRenderState();

@@ -25,5 +25,5 @@ class OverlayWindow : public CWBWindow {
   ~OverlayWindow() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "OverlayWindow" ), CWBItem);
+  WB_DECLARE_GUIITEM("OverlayWindow", CWBItem);
 };

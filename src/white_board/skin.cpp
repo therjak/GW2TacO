@@ -443,9 +443,9 @@ CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
   Mosaics.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_RIGHT, OverShootRight);
   Mosaics.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_BOTTOM, OverShootBottom);
 
-  auto Lines = Split(Description, _T( ")" ));
+  auto Lines = Split(Description, ")");
   for (const auto& l : Lines) {
-    auto Data = Split(Trim(l), _T( "(" ));
+    auto Data = Split(Trim(l), "(");
     CWBMosaicImage i;
 
     if (Data.size() == 2) {
@@ -461,44 +461,44 @@ CWBMosaic* CWBSkin::AddMosaic(std::string_view Name,
         i.SetStretching(1, e->GetBehavior(1) ==
                                WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
 
-        auto Data2 = Split(Data[1], _T( ";" ));
+        auto Data2 = Split(Data[1], ";");
 
         for (const auto& d2 : Data2) {
-          auto keyvalue = Split(d2, _T( ":" ));
+          auto keyvalue = Split(d2, ":");
           if (keyvalue.size() > 0) {
             const auto key = Trim(keyvalue[0]);
             std::string value;
 
             if (keyvalue.size() > 1) value = Trim(keyvalue[1]);
 
-            if (key == _T( "top" )) {
+            if (key == "top") {
               i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_TOP,
                                  std::stoi(value));
             }
-            if (key == _T( "left" )) {
+            if (key == "left") {
               i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_LEFT,
                                  std::stoi(value));
             }
-            if (key == _T( "right" )) {
+            if (key == "right") {
               i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_RIGHT,
                                  std::stoi(value));
             }
-            if (key == _T( "bottom" )) {
+            if (key == "bottom") {
               i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_BOTTOM,
                                  std::stoi(value));
             }
-            if (key == _T( "width" )) {
+            if (key == "width") {
               i.SetPositionValue(WBPOSITIONTYPE::WB_WIDTH, std::stoi(value));
             }
-            if (key == _T( "height" )) {
+            if (key == "height") {
               i.SetPositionValue(WBPOSITIONTYPE::WB_HEIGHT, std::stoi(value));
             }
 
-            if (key == _T( "repeat-x" )) i.SetTiling(0, true);
-            if (key == _T( "repeat-y" )) i.SetTiling(1, true);
-            if (key == _T( "stretch-x" )) i.SetStretching(0, true);
-            if (key == _T( "stretch-y" )) i.SetStretching(1, true);
-            if (key == _T( "color" )) {
+            if (key == "repeat-x") i.SetTiling(0, true);
+            if (key == "repeat-y") i.SetTiling(1, true);
+            if (key == "stretch-x") i.SetStretching(0, true);
+            if (key == "stretch-y") i.SetStretching(1, true);
+            if (key == "color") {
               uint32_t v = std::stoi(value, nullptr, 16);
               if (value.size() <= 6) v = v | 0xff000000;
               i.SetColor(CColor(v));

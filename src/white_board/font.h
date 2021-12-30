@@ -131,7 +131,7 @@ class CWBFont {
  public:
   explicit CWBFont(CAtlas* Atlas);
   virtual ~CWBFont();
-  bool Initialize(CWBFontDescription* Description, TCHAR MissingChar = _T('o'));
+  bool Initialize(CWBFontDescription* Description, TCHAR MissingChar = 'o');
 
   int32_t GetLineHeight();
   int32_t GetBase();

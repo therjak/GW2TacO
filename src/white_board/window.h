@@ -49,10 +49,10 @@ class CWBWindow : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;
 
  public:
-  CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt = _T( "" ),
+  CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt = "",
             uint32_t style = WB_WINDOW_DEFAULT);
   static inline std::shared_ptr<CWBWindow> Create(
-      CWBItem* Parent, const CRect& Pos, const TCHAR* txt = _T( "" ),
+      CWBItem* Parent, const CRect& Pos, const TCHAR* txt = "",
       uint32_t style = WB_WINDOW_DEFAULT) {
     auto p = std::make_shared<CWBWindow>(Parent, Pos, txt, style);
     p->SelfRef = p;
@@ -63,9 +63,7 @@ class CWBWindow : public CWBItem {
   }
   ~CWBWindow() override;
 
-  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
-                          const TCHAR* txt = _T( "" ),
-                          uint32_t style = WB_WINDOW_DEFAULT);
+  bool Initialize(CWBItem* Parent, const CRect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
@@ -78,5 +76,5 @@ class CWBWindow : public CWBItem {
   CRect GetElementPos(WBWINDOWELEMENT Element);
   uint32_t GetBorderSelectionArea(const CPoint& mousepos);
 
-  WB_DECLARE_GUIITEM(_T( "window" ), CWBItem);
+  WB_DECLARE_GUIITEM("window", CWBItem);
 };

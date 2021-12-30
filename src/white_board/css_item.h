@@ -24,7 +24,7 @@ class IWBCSS {
 
   virtual const std::string& GetType() const = 0;
   static const std::string& GetClassName() {
-    static const std::string type = _T( "IWBCSS" );
+    static const std::string type = "IWBCSS";
     return type;
   }
   virtual bool InstanceOf(std::string_view name) const = 0;

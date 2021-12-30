@@ -100,7 +100,7 @@ class CWBTextBox : public CWBItem {
              std::string_view txt);
   static inline std::shared_ptr<CWBTextBox> Create(
       CWBItem* Parent, const CRect& Pos, int32_t flags = WB_TEXTBOX_SINGLELINE,
-      std::string_view txt = _T( "" )) {
+      std::string_view txt = "") {
     auto p = std::make_shared<CWBTextBox>(Parent, Pos, flags, txt);
     p->SelfRef = p;
     if (Parent) {
@@ -110,9 +110,7 @@ class CWBTextBox : public CWBItem {
   }
   ~CWBTextBox() override;
 
-  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
-                          int32_t flags = WB_TEXTBOX_SINGLELINE,
-                          std::string_view txt = _T( "" ));
+  bool Initialize(CWBItem* Parent, const CRect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
@@ -123,7 +121,7 @@ class CWBTextBox : public CWBItem {
   void SetText(std::string_view val, bool EnableUndo = false);
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "textbox" ), CWBItem);
+  WB_DECLARE_GUIITEM("textbox", CWBItem);
 
   virtual void SetSelection(int32_t start, int32_t end);
   void SetCursorPos(int32_t pos, bool Selecting);

@@ -88,55 +88,55 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
       if (Hidden) break;
 
       CWBButton* b = dynamic_cast<CWBButton*>(
-          App->FindItemByGuid(Message.GetTarget(), _T( "button" )));
+          App->FindItemByGuid(Message.GetTarget(), "button"));
       if (!b) break;
-      if (b->GetID() == _T( "changemarkertype" )) {
+      if (b->GetID() == "changemarkertype") {
         auto ctx = b->OpenContextMenu(App->GetMousePos());
         OpenTypeContextMenu(ctx, CategoryList, false, 0, true);
         ChangeDefault = false;
       }
 
-      if (b->GetID() == _T( "changedefaultmarkertype" )) {
+      if (b->GetID() == "changedefaultmarkertype") {
         auto ctx = b->OpenContextMenu(App->GetMousePos());
         OpenTypeContextMenu(ctx, CategoryList, false, 0, true);
         ChangeDefault = true;
       }
 
-      if (b->GetID() == _T( "starttrail" )) {
+      if (b->GetID() == "starttrail") {
         b->Push(!b->IsPushed());
         b->SetText(b->IsPushed() ? "Stop Recording" : "Start New Trail");
         GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->StartStopTrailRecording(b->IsPushed());
       }
 
-      if (b->GetID() == _T( "pausetrail" )) {
+      if (b->GetID() == "pausetrail") {
         GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->PauseTrail(!b->IsPushed());
       }
 
-      if (b->GetID() == _T( "startnewsection" )) {
+      if (b->GetID() == "startnewsection") {
         GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->PauseTrail(false, true);
       }
 
-      if (b->GetID() == _T( "deletelastsegment" )) {
+      if (b->GetID() == "deletelastsegment") {
         GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->DeleteLastTrailSegment();
       }
 
-      if (b->GetID() == _T( "savetrail" )) {
+      if (b->GetID() == "savetrail") {
         GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->ExportTrail();
       }
 
-      if (b->GetID() == _T( "loadtrail" )) {
+      if (b->GetID() == "loadtrail") {
         GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->ImportTrail();
       }
 

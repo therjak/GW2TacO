@@ -607,7 +607,7 @@ std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat(
 std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
-  if (Err) *Err = _T( "" );
+  if (Err) *Err = "";
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return {};
   }
@@ -625,7 +625,7 @@ std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
   if (Err) {
-    *Err = _T( "" );
+    *Err = "";
   }
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return {};
@@ -662,7 +662,7 @@ std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
   if (Err) {
-    *Err = _T( "" );
+    *Err = "";
   }
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
@@ -681,7 +681,7 @@ std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
   if (Err) {
-    *Err = _T( "" );
+    *Err = "";
   }
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
@@ -700,7 +700,7 @@ std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
   if (Err) {
-    *Err = _T( "" );
+    *Err = "";
   }
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;
@@ -719,7 +719,7 @@ std::unique_ptr<CCoreComputeShader> CCoreDX11Device::CreateComputeShader(
     LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
     std::string* Err) {
   if (Err) {
-    *Err = _T( "" );
+    *Err = "";
   }
   if (!Code || !CodeSize || !EntryFunction || !ShaderVersion) {
     return nullptr;

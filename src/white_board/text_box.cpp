@@ -21,7 +21,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
   CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
-  const int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
+  const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
   CPoint Pos = CPoint(0, 0);
   const CPoint Offset =
@@ -117,15 +117,14 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
 
 CWBTextBox::CWBTextBox(CWBItem* Parent, const CRect& Pos, int32_t flags,
                        std::string_view Txt)
-    : CWBItem() {
-  Initialize(Parent, Pos, flags, Txt);
+    : CWBItem(), CursorBlinkStartTime(globalTimer.GetTime()), Flags(flags) {
+  Initialize(Parent, Pos);
+  SetTextInternal(Txt, false, true);
 }
 
 CWBTextBox::~CWBTextBox() = default;
 
-bool CWBTextBox::Initialize(CWBItem* Parent, const CRect& Position,
-                            int32_t flags, std::string_view Txt) {
-  Flags = flags;
+bool CWBTextBox::Initialize(CWBItem* Parent, const CRect& Position) {
   Selection.DisplayDescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
                                        0);
   Selection.DisplayDescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
@@ -140,29 +139,17 @@ bool CWBTextBox::Initialize(CWBItem* Parent, const CRect& Position,
   SetDisplayProperty(WB_STATE_DISABLED_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
                      0xff1e1e1e);
 
-  CursorBlinkStartTime = globalTimer.GetTime();
-  HiglightStartTime = 0;
-
-  CursorPos = 0;
-  SelectionStart = 0;
-  SelectionEnd = 0;
-  SelectionOrigin = 0;
-  DesiredCursorPosXinPixels = 0;
-
-  HistoryPosition = 0;
-
   if (!CWBItem::Initialize(Parent, Position)) return false;
 
   EnableHScrollbar(true, true);
   EnableVScrollbar(true, true);
 
-  SetTextInternal(Txt, false, true);
   return true;
 }
 
 void CWBTextBox::SetCursorPos(int32_t pos, bool Selecting) {
   CWBFont* Font = GetFont(GetState());
-  const int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
+  const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
   CursorBlinkStartTime = globalTimer.GetTime();
 
@@ -194,7 +181,7 @@ void CWBTextBox::SetCursorPos(int32_t pos, bool Selecting) {
     CPos.x += Width;
   }
 
-  int32_t CurrCharWidth = Font->GetWidth(_T(' '));
+  int32_t CurrCharWidth = Font->GetWidth(' ');
   if (CursorPos != Text.size()) CurrCharWidth = Font->GetWidth(Text[CursorPos]);
 
   OnCursorPosChange(CursorPos);
@@ -226,7 +213,7 @@ void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting) {
   CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
-  const int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
+  const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
   if (!(y < 0 || (y == 0 && x < 0))) {
     int32_t yp = 0;
@@ -443,7 +430,7 @@ int32_t CWBTextBox::GetCursorXinPixels() {
   CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
-  const int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
+  const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
   const int32_t c = GetCursorX();
   int32_t Pixels = 0;
@@ -507,7 +494,7 @@ int32_t CWBTextBox::GetCursorPosMouse() {
   CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
-  const int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
+  const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
   const CPoint mp = ScreenToClient(App->GetMousePos());
   CPoint Pos = CPoint(0, 0);
@@ -558,6 +545,8 @@ int32_t CWBTextBox::GetCursorPosMouse() {
 
 bool CWBTextBox::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
+    default:
+      break;
     case WBM_FOCUSGAINED:
       if (Message.GetTarget() == GetGuid()) {
         OriginalText = Text;
@@ -706,7 +695,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
 
           // skip to the end of the line
           for (; CursorPos < static_cast<int32_t>(Text.size()); CursorPos++)
-            if (Text[CursorPos] == _T('\n')) {
+            if (Text[CursorPos] == '\n') {
               SetCursorPos(CursorPos, Message.KeyboardState & WB_KBSTATE_SHIFT);
               DesiredCursorPosXinPixels = GetCursorXinPixels();
               break;
@@ -823,7 +812,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
 
       int32_t Key = Message.Key;
 
-      if (Message.Key == VK_RETURN) Key = _T('\n');
+      if (Message.Key == VK_RETURN) Key = '\n';
 
       // insert character
       RemoveSelectedText();
@@ -870,7 +859,7 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
   CWBFont* Font = GetFont(i);
   const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
-  const int32_t TabWidth = Font->GetWidth(_T(' ')) * 4;
+  const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
   App->SendMessage(
       CWBMessage(App, WBM_TEXTCHANGED, GetGuid(),
@@ -955,7 +944,7 @@ bool CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
   bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
-    if (pseudo[x] == _T( "selection" )) {
+    if (pseudo[x] == "selection") {
       ElementTarget = true;
       break;
     }
@@ -966,7 +955,7 @@ bool CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
   bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
-    if (pseudo[x] == _T( "selection" )) {
+    if (pseudo[x] == "selection") {
       Handled |= Selection.ApplyStyle(this, prop, value, pseudo);
       continue;
     }
@@ -977,33 +966,33 @@ bool CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
 
 CWBItem* CWBTextBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   int32_t Flags = 0;
-  if (node.HasAttribute(_T( "singleline" ))) {
+  if (node.HasAttribute("singleline")) {
     int32_t b = 0;
-    node.GetAttributeAsInteger(_T( "singleline" ), &b);
+    node.GetAttributeAsInteger("singleline", &b);
     Flags |= b * WB_TEXTBOX_SINGLELINE;
   }
 
-  if (node.HasAttribute(_T( "password" ))) {
+  if (node.HasAttribute("password")) {
     int32_t b = 0;
-    node.GetAttributeAsInteger(_T( "password" ), &b);
+    node.GetAttributeAsInteger("password", &b);
     Flags |= b * WB_TEXTBOX_PASSWORD;
   }
 
-  if (node.HasAttribute(_T( "linenumbers" ))) {
+  if (node.HasAttribute("linenumbers")) {
     int32_t b = 0;
-    node.GetAttributeAsInteger(_T( "linenumbers" ), &b);
+    node.GetAttributeAsInteger("linenumbers", &b);
     Flags |= b * WB_TEXTBOX_LINENUMS;
   }
 
-  if (node.HasAttribute(_T( "selection" ))) {
+  if (node.HasAttribute("selection")) {
     int32_t b = 0;
-    node.GetAttributeAsInteger(_T( "selection" ), &b);
+    node.GetAttributeAsInteger("selection", &b);
     Flags |= (!b) * WB_TEXTBOX_NOSELECTION;
   }
 
   auto textbox = CWBTextBox::Create(Root, Pos, Flags);
-  if (node.HasAttribute(_T( "text" )))
-    textbox->SetTextInternal(node.GetAttribute(_T( "text" )), false, true);
+  if (node.HasAttribute("text"))
+    textbox->SetTextInternal(node.GetAttribute("text"), false, true);
 
   if (Flags & WB_TEXTBOX_SINGLELINE) {
     textbox->EnableHScrollbar(false, false);
@@ -1030,21 +1019,21 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
   int32_t End = CharacterInWord;
 
   if (IsWhiteSpace) {
-    while (Start >= 0 && _istspace(Text[Start]) && Text[Start] != _T('\n') &&
-           Text[Start] != _T('\r')) {
+    while (Start >= 0 && _istspace(Text[Start]) && Text[Start] != '\n' &&
+           Text[Start] != '\r') {
       Start--;
     }
     while (End < static_cast<int32_t>(Text.size()) && _istspace(Text[End]) &&
-           Text[End] != _T('\n') && Text[End] != _T('\r')) {
+           Text[End] != '\n' && Text[End] != '\r') {
       End++;
     }
     End = std::min(static_cast<int32_t>(Text.size()) - 1, End);
   } else {
-    while ((Start >= 0 && _istalnum(Text[Start])) || Text[Start] == _T('_')) {
+    while ((Start >= 0 && _istalnum(Text[Start])) || Text[Start] == '_') {
       Start--;
     }
     while ((End < static_cast<int32_t>(Text.size()) && _istalnum(Text[End])) ||
-           Text[End] == _T('_')) {
+           Text[End] == '_') {
       End++;
     }
     End = std::min(static_cast<int32_t>(Text.size()) - 1, End);

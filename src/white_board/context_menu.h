@@ -73,10 +73,9 @@ class CWBContextMenu : public CWBItem {
   }
   ~CWBContextMenu() override;
 
-  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
-                          WBGUID Target);
+  bool Initialize(CWBItem* Parent, const CRect& Position) override;
 
-  WB_DECLARE_GUIITEM(_T( "contextmenu" ), CWBItem);
+  WB_DECLARE_GUIITEM("contextmenu", CWBItem);
 
   virtual CWBContextItem* AddItem(std::string_view Text, int32_t ID,
                                   bool Highlighted = false,

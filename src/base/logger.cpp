@@ -23,7 +23,7 @@ CLoggerOutput::CLoggerOutput() = default;
 void CLoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
                                         const std::string& String) {
   OutputDebugString(String.c_str());
-  OutputDebugString(_T( "\n" ));
+  OutputDebugString("\n");
 }
 
 CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() = default;
@@ -31,7 +31,7 @@ CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() = default;
 CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput() = default;
 
 void CLoggerOutput_StdOut::Process(LOGVERBOSITY v, const std::string& String) {
-  _tprintf(_T( "%s\n" ), String.c_str());
+  _tprintf("%s\n", String.c_str());
 }
 
 CLoggerOutput_StdOut::~CLoggerOutput_StdOut() = default;
@@ -43,11 +43,7 @@ void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
     if (!OpenLogFile(fname, Append)) return;
     if (!f) return;
   }
-#ifndef UNICODE
   fprintf(f, "%s\n", String.c_str());
-#else
-  fwprintf(f, _T( "%s\n" ), String.c_str());
-#endif
 }
 
 bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
@@ -83,7 +79,7 @@ CLoggerOutput_File::CLoggerOutput_File(std::string_view Filename,
 CLoggerOutput_File::CLoggerOutput_File() {
   f = nullptr;
   Append = true;
-  fname = _T( "log.log" );
+  fname = "log.log";
 }
 
 int32_t CLogger::GetNewEntryCount() { return NewEntryCount; }
@@ -126,20 +122,20 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
   time(&rawtime);
   localtime_s(&timeinfo, &rawtime);
 
-  auto TimeStamp = FormatString(_T( "[%.4d-%.2d-%.2d %.2d:%.2d:%.2d] " ),
-                                timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-                                timeinfo.tm_mday, timeinfo.tm_hour,
-                                timeinfo.tm_min, timeinfo.tm_sec);
+  auto TimeStamp =
+      FormatString("[%.4d-%.2d-%.2d %.2d:%.2d:%.2d] ", timeinfo.tm_year + 1900,
+                   timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour,
+                   timeinfo.tm_min, timeinfo.tm_sec);
 
   if (Prefix) {
     if (v < LOGVERBOSITY::LOG_WARNING)
-      LogString = _T( "(Err)  " ) + LogString;
+      LogString = "(Err)  " + LogString;
     else if (v < LOGVERBOSITY::LOG_INFO)
-      LogString = _T( "(Warn) " ) + LogString;
+      LogString = "(Warn) " + LogString;
     else if (v < LOGVERBOSITY::LOG_DEBUG)
-      LogString = _T( "(Info) " ) + LogString;
+      LogString = "(Info) " + LogString;
     else
-      LogString = _T( "(Dbg)  " ) + LogString;
+      LogString = "(Dbg)  " + LogString;
   }
 
   if (AddTimeStamp) LogString = TimeStamp + LogString;

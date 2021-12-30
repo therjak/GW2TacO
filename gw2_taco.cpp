@@ -262,17 +262,17 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_COMMAND: {
       CWBButton* cb = dynamic_cast<CWBButton*>(
-          App->FindItemByGuid(Message.GetTarget(), _T( "clickthroughbutton" )));
-      if (cb && cb->GetID() == _T( "TPButton" )) {
+          App->FindItemByGuid(Message.GetTarget(), "clickthroughbutton"));
+      if (cb && cb->GetID() == "TPButton") {
         TurnOffTPLight();
         break;
       }
 
       CWBButton* b = dynamic_cast<CWBButton*>(
-          App->FindItemByGuid(Message.GetTarget(), _T( "button" )));
+          App->FindItemByGuid(Message.GetTarget(), "button"));
       if (!b) break;
 
-      if (b->GetID() == _T( "MenuButton" )) {
+      if (b->GetID() == "MenuButton") {
         auto ctx = b->OpenContextMenu(App->GetMousePos());
         ctx->SetID("TacOMenu");
 
@@ -748,7 +748,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         ctx->AddItem(DICT("exittaco"), Menu_Exit);
         return true;
       }
-      if (b->GetID() == _T( "GoToWebsite" )) {
+      if (b->GetID() == "GoToWebsite") {
         ShellExecute((HWND)App->GetHandle(), "open",
                      "https://github.com/therjak/GW2TacO/", nullptr, nullptr,
                      SW_SHOW);
@@ -1314,8 +1314,8 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             return true;
           }
           case TacOKeyAction::EditNotepad: {
-            GW2Notepad* d = dynamic_cast<GW2Notepad*>(
-                FindChildByID(_T( "notepad" ), _T( "notepad" )));
+            GW2Notepad* d =
+                dynamic_cast<GW2Notepad*>(FindChildByID("notepad", "notepad"));
             if (d) {
               d->StartEdit();
               return true;
@@ -1323,12 +1323,10 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             return true;
           }
           case TacOKeyAction::StartTrailRec: {
-            CWBButton* startTrail =
-                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
-                    _T( "starttrail" ), _T( "button" )));
-            GW2TrailDisplay* trails =
-                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" )));
+            CWBButton* startTrail = dynamic_cast<CWBButton*>(
+                App->GetRoot()->FindChildByID("starttrail", "button"));
+            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (startTrail && trails) {
               // startTrail->Push( !startTrail->IsPushed() );
               App->SendMessage(
@@ -1337,12 +1335,10 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           }
             return true;
           case TacOKeyAction::PauseTrailRec: {
-            CWBButton* pauseTrail =
-                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
-                    _T( "pausetrail" ), _T( "button" )));
-            GW2TrailDisplay* trails =
-                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" )));
+            CWBButton* pauseTrail = dynamic_cast<CWBButton*>(
+                App->GetRoot()->FindChildByID("pausetrail", "button"));
+            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (pauseTrail && trails) {
               // pauseTrail->Push( !pauseTrail->IsPushed() );
               App->SendMessage(
@@ -1351,19 +1347,16 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           }
             return true;
           case TacOKeyAction::DeleteLastTrailSegment: {
-            GW2TrailDisplay* trails =
-                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" )));
+            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (trails) trails->DeleteLastTrailSegment();
           }
             return true;
           case TacOKeyAction::ResumeTrailAndCreateNewSection: {
-            CWBButton* pauseTrail =
-                dynamic_cast<CWBButton*>(App->GetRoot()->FindChildByID(
-                    _T( "startnewsection" ), _T( "button" )));
-            GW2TrailDisplay* trails =
-                dynamic_cast<GW2TrailDisplay*>(App->GetRoot()->FindChildByID(
-                    _T( "trail" ), _T( "gw2Trails" )));
+            CWBButton* pauseTrail = dynamic_cast<CWBButton*>(
+                App->GetRoot()->FindChildByID("startnewsection", "button"));
+            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (pauseTrail && !pauseTrail->IsHidden() && trails)
               App->SendMessage(
                   CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
@@ -1548,10 +1541,9 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   teamSpeakConnection.Tick();
   CheckItemPickup();
 
-  auto it = FindChildByID(_T( "MenuHoverBox" ));
+  auto it = FindChildByID("MenuHoverBox");
   if (it) {
-    auto taco = dynamic_cast<CWBButton*>(
-        FindChildByID(_T( "MenuButton" ), _T( "button" )));
+    auto taco = dynamic_cast<CWBButton*>(FindChildByID("MenuButton", "button"));
     if (taco) {
 #define speed 500.0f
 
@@ -1589,7 +1581,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     }
   }
 
-  auto tpFlairButton = FindChildByID(_T( "RedCircle" ));
+  auto tpFlairButton = FindChildByID("RedCircle");
   if (tpFlairButton && showPickupHighlight &&
       GetConfigValue("EnableTPNotificationIcon")) {
     CRect r = tpFlairButton->ClientToScreen(tpFlairButton->GetClientRect());

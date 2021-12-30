@@ -479,11 +479,11 @@ void CWBItem::OnMove(const CPoint& p) {}
 void CWBItem::OnResize(const CSize& s) {}
 
 void CWBItem::OnMouseEnter() {
-  // LOG(LOG_DEBUG,_T("Mouse Entered Item %d"),GetGuid());
+  // LOG(LOG_DEBUG,"Mouse Entered Item %d",GetGuid());
 }
 
 void CWBItem::OnMouseLeave() {
-  // LOG(LOG_DEBUG,_T("Mouse Left Item %d"),GetGuid());
+  // LOG(LOG_DEBUG,"Mouse Left Item %d",GetGuid());
 }
 
 void CWBItem::CalculateClientPosition() {
@@ -1325,8 +1325,8 @@ void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
   int32_t StateCount = 0;
   for (size_t x = 1; x < pseudo.size(); x++) {
     const auto p = Trim(pseudo[x]);
-    if (p == _T( "active" ) || p == _T( "hover" ) || p == _T( "disabled" ) ||
-        p == _T( "disabled-active" ) || p == _T( "normal" ))
+    if (p == "active" || p == "hover" || p == "disabled" ||
+        p == "disabled-active" || p == "normal")
       StateCount++;
   }
 
@@ -1339,23 +1339,23 @@ void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
   } else {
     for (size_t x = 1; x < pseudo.size(); x++) {
       const auto p = Trim(pseudo[x]);
-      if (p == _T( "active" )) {
+      if (p == "active") {
         desc.SetValue(WB_STATE_ACTIVE, TargetComponent, Value);
         continue;
       }
-      if (p == _T( "hover" )) {
+      if (p == "hover") {
         desc.SetValue(WB_STATE_HOVER, TargetComponent, Value);
         continue;
       }
-      if (p == _T( "disabled" )) {
+      if (p == "disabled") {
         desc.SetValue(WB_STATE_DISABLED, TargetComponent, Value);
         continue;
       }
-      if (p == _T( "disabled-active" )) {
+      if (p == "disabled-active") {
         desc.SetValue(WB_STATE_DISABLED_ACTIVE, TargetComponent, Value);
         continue;
       }
-      if (p == _T( "normal" )) {
+      if (p == "normal") {
         desc.SetValue(WB_STATE_NORMAL, TargetComponent, Value);
         continue;
       }
@@ -1367,67 +1367,67 @@ bool CWBItem::InterpretPositionString(CWBCSSPropertyBatch& props,
                                       std::string_view prop,
                                       std::string_view value,
                                       const std::vector<std::string>& pseudo) {
-  if (prop == _T( "left" )) {
+  if (prop == "left") {
     PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_LEFT,
                        value);
     return true;
   }
 
-  if (prop == _T( "right" )) {
+  if (prop == "right") {
     PositionApplicator(props.PositionDescriptor,
                        WBPOSITIONTYPE::WB_MARGIN_RIGHT, value);
     return true;
   }
 
-  if (prop == _T( "top" )) {
+  if (prop == "top") {
     PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_TOP,
                        value);
     return true;
   }
 
-  if (prop == _T( "bottom" )) {
+  if (prop == "bottom") {
     PositionApplicator(props.PositionDescriptor,
                        WBPOSITIONTYPE::WB_MARGIN_BOTTOM, value);
     return true;
   }
 
-  if (prop == _T( "width" )) {
+  if (prop == "width") {
     PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_WIDTH,
                        value);
     return true;
   }
 
-  if (prop == _T( "height" )) {
+  if (prop == "height") {
     PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_HEIGHT,
                        value);
     return true;
   }
 
-  if (prop == _T( "padding-left" )) {
+  if (prop == "padding-left") {
     PositionApplicator(props.PositionDescriptor,
                        WBPOSITIONTYPE::WB_PADDING_LEFT, value);
     return true;
   }
 
-  if (prop == _T( "padding-right" )) {
+  if (prop == "padding-right") {
     PositionApplicator(props.PositionDescriptor,
                        WBPOSITIONTYPE::WB_PADDING_RIGHT, value);
     return true;
   }
 
-  if (prop == _T( "padding-top" )) {
+  if (prop == "padding-top") {
     PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_PADDING_TOP,
                        value);
     return true;
   }
 
-  if (prop == _T( "padding-bottom" )) {
+  if (prop == "padding-bottom") {
     PositionApplicator(props.PositionDescriptor,
                        WBPOSITIONTYPE::WB_PADDING_BOTTOM, value);
     return true;
   }
 
-  if (prop == _T( "margin" )) {
+  if (prop == "margin") {
     PositionApplicator(props.PositionDescriptor, WBPOSITIONTYPE::WB_MARGIN_LEFT,
                        value);
     PositionApplicator(props.PositionDescriptor,
@@ -1439,7 +1439,7 @@ bool CWBItem::InterpretPositionString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "padding" )) {
+  if (prop == "padding") {
     PositionApplicator(props.PositionDescriptor,
                        WBPOSITIONTYPE::WB_PADDING_LEFT, value);
     PositionApplicator(props.PositionDescriptor,
@@ -1453,27 +1453,27 @@ bool CWBItem::InterpretPositionString(CWBCSSPropertyBatch& props,
 
   int32_t dw = 0;
 
-  if (prop == _T( "border" )) {
+  if (prop == "border") {
     if (ScanPXValue(value, dw, prop)) props.BorderSizes = CRect(dw, dw, dw, dw);
     return true;
   }
 
-  if (prop == _T( "border-left" )) {
+  if (prop == "border-left") {
     if (ScanPXValue(value, dw, prop)) props.BorderSizes.x1 = dw;
     return true;
   }
 
-  if (prop == _T( "border-top" )) {
+  if (prop == "border-top") {
     if (ScanPXValue(value, dw, prop)) props.BorderSizes.y1 = dw;
     return true;
   }
 
-  if (prop == _T( "border-right" )) {
+  if (prop == "border-right") {
     if (ScanPXValue(value, dw, prop)) props.BorderSizes.x2 = dw;
     return true;
   }
 
-  if (prop == _T( "border-bottom" )) {
+  if (prop == "border-bottom") {
     if (ScanPXValue(value, dw, prop)) props.BorderSizes.y2 = dw;
     return true;
   }
@@ -1486,28 +1486,21 @@ std::vector<std::string> CWBItem::ExplodeValueWithoutSplittingParameters(
   std::vector<std::string> aOut;
   int nPrevious = 0;
 
-#ifndef UNICODE
-#define SPACE isspace
-#define SPACETYPE unsigned char
-#else
-#define SPACE iswspace
-#define SPACETYPE wchar_t
-#endif
-
   unsigned int x = 0;
   int32_t bracketcnt = 0;
 
   while (x < String.size()) {
-    while (x < String.size() && SPACE(static_cast<SPACETYPE>(String[x]))) x++;
+    while (x < String.size() && isspace(static_cast<unsigned char>(String[x])))
+      x++;
 
-    if (String[x] == _T('(')) bracketcnt++;
-    if (String[x] == _T(')') && bracketcnt) bracketcnt--;
+    if (String[x] == '(') bracketcnt++;
+    if (String[x] == ')' && bracketcnt) bracketcnt--;
 
     nPrevious = x;
     while (x < String.size() &&
-           (bracketcnt || (!SPACE(static_cast<SPACETYPE>(String[x]))))) {
-      if (String[x] == _T('(')) bracketcnt++;
-      if (String[x] == _T(')') && bracketcnt) bracketcnt--;
+           (bracketcnt || (!isspace(static_cast<unsigned char>(String[x]))))) {
+      if (String[x] == '(') bracketcnt++;
+      if (String[x] == ')' && bracketcnt) bracketcnt--;
       x++;
     }
 
@@ -1521,47 +1514,47 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
                                      std::string_view prop,
                                      std::string_view value,
                                      const std::vector<std::string>& pseudo) {
-  if (prop == _T( "background" )) {
+  if (prop == "background") {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               dw | 0xff000000, pseudo);
-      if (attrib == (_T( "none" ))) {
+      if (attrib == ("none")) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               0, pseudo);
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
                               0xffffffff, pseudo);
       }
 
-      if (attrib == (_T( "left" )))
+      if (attrib == ("left"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
                               pseudo);
-      if (attrib == (_T( "center" )))
+      if (attrib == ("center"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER,
                               pseudo);
-      if (attrib == (_T( "right" )))
+      if (attrib == ("right"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT,
                               pseudo);
-      if (attrib == (_T( "top" )))
+      if (attrib == ("top"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP,
                               pseudo);
-      if (attrib == (_T( "middle" )))
+      if (attrib == ("middle"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE,
                               pseudo);
-      if (attrib == (_T( "bottom" )))
+      if (attrib == ("bottom"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM,
                               pseudo);
 
-      if (attrib.find(_T( "rgba(" )) == 0) {
+      if (attrib.find("rgba(") == 0) {
         CColor col;
         if (!ParseRGBA(attrib, col)) {
           LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
@@ -1581,19 +1574,19 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "background-color" )) {
+  if (prop == "background-color") {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               dw | 0xff000000, pseudo);
-      if (attrib == (_T( "none" )))
+      if (attrib == ("none"))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               0, pseudo);
 
-      if (attrib.find(_T( "rgba(" )) == 0) {
+      if (attrib.find("rgba(") == 0) {
         CColor col;
         if (!ParseRGBA(attrib, col)) {
           LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
@@ -1608,19 +1601,19 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "foreground-color" )) {
+  if (prop == "foreground-color") {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1)
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1)
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
                               dw | 0xff000000, pseudo);
-      if (attrib == (_T( "none" )))
+      if (attrib == ("none"))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
                               0, pseudo);
 
-      if (attrib.find(_T( "rgba(" )) == 0) {
+      if (attrib.find("rgba(") == 0) {
         CColor col;
         if (!ParseRGBA(attrib, col)) {
           LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
@@ -1635,31 +1628,31 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "background-position" )) {
+  if (prop == "background-position") {
     auto Attribs = SplitByWhitespace(value);
 
     for (const auto& attrib : Attribs) {
-      if (attrib == (_T( "left" )))
+      if (attrib == ("left"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
                               pseudo);
-      if (attrib == (_T( "center" )))
+      if (attrib == ("center"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER,
                               pseudo);
-      if (attrib == (_T( "right" )))
+      if (attrib == ("right"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT,
                               pseudo);
-      if (attrib == (_T( "top" )))
+      if (attrib == ("top"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP,
                               pseudo);
-      if (attrib == (_T( "middle" )))
+      if (attrib == ("middle"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE,
                               pseudo);
-      if (attrib == (_T( "bottom" )))
+      if (attrib == ("bottom"))
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM,
                               pseudo);
@@ -1668,11 +1661,11 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "background-image" )) {
+  if (prop == "background-image") {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
-      if (attrib == (_T( "none" )))
+      if (attrib == ("none"))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
                               0xffffffff, pseudo);
 
@@ -1685,19 +1678,19 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "border-color" )) {
+  if (prop == "border-color") {
     uint32_t dw = 0;
     std::string v(value);
-    std::sscanf(v.c_str(), _T( "#%x" ), &dw);
+    std::sscanf(v.c_str(), "#%x", &dw);
     VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BORDERCOLOR,
                           dw | 0xff000000, pseudo);
     return true;
   }
 
-  if (prop == _T( "opacity" )) {
+  if (prop == "opacity") {
     float dw = 0;
     std::string v(value);
-    std::sscanf(v.c_str(), _T( "%f" ), &dw);
+    std::sscanf(v.c_str(), "%f", &dw);
 
     const int32_t o =
         static_cast<int32_t>(std::max(0.f, std::min(255.f, dw * 255)));
@@ -1708,52 +1701,52 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
   }
 
   // quick check for scrollbar related stuff
-  if (prop[0] == _T('s')) {
+  if (prop[0] == 's') {
     WBSKINELEMENTID id;
 
-    if (prop == _T( "scrollbar-up" )) {
+    if (prop == "scrollbar-up") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_UP, id,
                               pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-down" )) {
+    if (prop == "scrollbar-down") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_DOWN, id,
                               pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-left" )) {
+    if (prop == "scrollbar-left") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_LEFT, id,
                               pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-right" )) {
+    if (prop == "scrollbar-right") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_RIGHT, id,
                               pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-background-horizontal" )) {
+    if (prop == "scrollbar-background-horizontal") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_HBAR, id,
                               pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-background-vertical" )) {
+    if (prop == "scrollbar-background-vertical") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_VBAR, id,
                               pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-thumb-horizontal" )) {
+    if (prop == "scrollbar-thumb-horizontal") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_HTHUMB,
                               id, pseudo);
       return true;
     }
-    if (prop == _T( "scrollbar-thumb-vertical" )) {
+    if (prop == "scrollbar-thumb-vertical") {
       if (ScanSkinValue(value, id, prop))
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_VTHUMB,
                               id, pseudo);
@@ -1769,10 +1762,10 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
 bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
                                   std::string_view prop, std::string_view value,
                                   const std::vector<std::string>& pseudo) {
-  if (prop == _T( "font-color" )) {
+  if (prop == "font-color") {
     uint32_t dw = 0;
     std::string v(value);
-    if (std::sscanf(v.c_str(), _T( "#%x" ), &dw) == 1) {
+    if (std::sscanf(v.c_str(), "#%x", &dw) == 1) {
       VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
                             dw | 0xff000000, pseudo);
       return true;
@@ -1786,20 +1779,20 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "text-transform" )) {
-    if (value == (_T( "none" )))
+  if (prop == "text-transform") {
+    if (value == ("none"))
       VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
                             static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_NONE),
                             pseudo);
-    if (value == (_T( "capitalize" )))
+    if (value == ("capitalize"))
       VisualStyleApplicator(
           props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
           static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_CAPITALIZE), pseudo);
-    if (value == (_T( "uppercase" )))
+    if (value == ("uppercase"))
       VisualStyleApplicator(
           props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
           static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_UPPERCASE), pseudo);
-    if (value == (_T( "lowercase" )))
+    if (value == ("lowercase"))
       VisualStyleApplicator(
           props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
           static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_LOWERCASE), pseudo);
@@ -1807,13 +1800,13 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "font" )) {
+  if (prop == "font") {
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
       // try to apply as color
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), _T( "#%x" ), &dw) == 1) {
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
                               dw | 0xff000000, pseudo);
         continue;
@@ -1833,25 +1826,22 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
     return true;
   }
 
-  if (prop == _T( "font-family" )) {
+  if (prop == "font-family") {
     FontStyleApplicator(props, pseudo, value);
     return true;
   }
 
-  if (prop == _T( "text-align" )) {
-    if (value == _T( "left" )) props.TextAlignX = WBTEXTALIGNMENTX::WBTA_LEFT;
-    if (value == _T( "center" ))
-      props.TextAlignX = WBTEXTALIGNMENTX::WBTA_CENTERX;
-    if (value == _T( "right" )) props.TextAlignX = WBTEXTALIGNMENTX::WBTA_RIGHT;
+  if (prop == "text-align") {
+    if (value == "left") props.TextAlignX = WBTEXTALIGNMENTX::WBTA_LEFT;
+    if (value == "center") props.TextAlignX = WBTEXTALIGNMENTX::WBTA_CENTERX;
+    if (value == "right") props.TextAlignX = WBTEXTALIGNMENTX::WBTA_RIGHT;
     return true;
   }
 
-  if (prop == _T( "vertical-align" )) {
-    if (value == _T( "top" )) props.TextAlignY = WBTEXTALIGNMENTY::WBTA_TOP;
-    if (value == _T( "middle" ))
-      props.TextAlignY = WBTEXTALIGNMENTY::WBTA_CENTERY;
-    if (value == _T( "bottom" ))
-      props.TextAlignY = WBTEXTALIGNMENTY::WBTA_BOTTOM;
+  if (prop == "vertical-align") {
+    if (value == "top") props.TextAlignY = WBTEXTALIGNMENTY::WBTA_TOP;
+    if (value == "middle") props.TextAlignY = WBTEXTALIGNMENTY::WBTA_CENTERY;
+    if (value == "bottom") props.TextAlignY = WBTEXTALIGNMENTY::WBTA_BOTTOM;
     return true;
   }
 
@@ -1869,12 +1859,12 @@ bool CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
     return true;
   }
 
-  if (prop == _T( "visibility" )) {
-    if (value == _T( "hidden" )) {
+  if (prop == "visibility") {
+    if (value == "hidden") {
       Hidden = true;
       return true;
     }
-    if (value == _T( "visible" )) {
+    if (value == "visible") {
       Hidden = false;
       return true;
     }
@@ -1883,75 +1873,75 @@ bool CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
     return true;
   }
 
-  if (prop == _T( "overflow" )) {
-    if (value == _T( "hidden" )) {
+  if (prop == "overflow") {
+    if (value == "hidden") {
       EnableHScrollbar(false, false);
       EnableVScrollbar(false, false);
       return true;
     }
 
-    if (value == _T( "auto" )) {
+    if (value == "auto") {
       EnableHScrollbar(true, true);
       EnableVScrollbar(true, true);
       return true;
     }
 
-    if (value == _T( "scroll" )) {
+    if (value == "scroll") {
       EnableHScrollbar(true, false);
       EnableVScrollbar(true, false);
       return true;
     }
   }
 
-  if (prop == _T( "overflow-x" )) {
-    if (value == _T( "hidden" )) {
+  if (prop == "overflow-x") {
+    if (value == "hidden") {
       EnableHScrollbar(false, false);
       return true;
     }
 
-    if (value == _T( "auto" )) {
+    if (value == "auto") {
       EnableHScrollbar(true, true);
       return true;
     }
 
-    if (value == _T( "scroll" )) {
+    if (value == "scroll") {
       EnableHScrollbar(true, false);
       return true;
     }
   }
 
-  if (prop == _T( "overflow-y" )) {
-    if (value == _T( "hidden" )) {
+  if (prop == "overflow-y") {
+    if (value == "hidden") {
       EnableVScrollbar(false, false);
       return true;
     }
 
-    if (value == _T( "auto" )) {
+    if (value == "auto") {
       EnableVScrollbar(true, true);
       return true;
     }
 
-    if (value == _T( "scroll" )) {
+    if (value == "scroll") {
       EnableVScrollbar(true, false);
       return true;
     }
   }
 
   // quick check for scrollbar related stuff
-  if (prop[0] == _T('s')) {
+  if (prop[0] == 's') {
     int32_t dw = 0;
 
-    if (prop == _T( "scrollbar-size" )) {
+    if (prop == "scrollbar-size") {
       if (ScanPXValue(value, dw, prop)) Scrollbar_Size = dw;
       return true;
     }
 
-    if (prop == _T( "scrollbar-button-size" )) {
+    if (prop == "scrollbar-button-size") {
       if (ScanPXValue(value, dw, prop)) Scrollbar_ButtonSize = dw;
       return true;
     }
 
-    if (prop == _T( "scrollbar-thumb-minimum-size" )) {
+    if (prop == "scrollbar-thumb-minimum-size") {
       if (ScanPXValue(value, dw, prop)) Scrollbar_ThumbMinimalSize = dw;
       return true;
     }
@@ -1963,17 +1953,17 @@ bool CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
 void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
                                  WBPOSITIONTYPE Type, std::string_view value) {
   if (Type == WBPOSITIONTYPE::WB_WIDTH || Type == WBPOSITIONTYPE::WB_HEIGHT) {
-    if (value == _T( "none" )) {
+    if (value == "none") {
       pos.ClearMetrics(Type);
       return;
     }
-    if (value == _T( "auto" )) {
+    if (value == "auto") {
       pos.ClearMetrics(Type);
       pos.SetAutoSize(Type);
       return;
     }
 
-  } else if (value == _T( "auto" )) {
+  } else if (value == "auto") {
     pos.ClearMetrics(Type);
     return;
   }
@@ -1992,7 +1982,7 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
 
   std::string v(value);
   if (px && !pc) {
-    if (std::sscanf(v.c_str(), _T( "%fpx" ), &pxv) != 1) {
+    if (std::sscanf(v.c_str(), "%fpx", &pxv) != 1) {
       LOG_WARN("[guiitem] Item style error: invalid value '%s' (px)",
                v.c_str());
       return;
@@ -2003,7 +1993,7 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
   }
 
   if (pc && !px) {
-    if (std::sscanf(v.c_str(), _T( "%f%%" ), &pcv) != 1) {
+    if (std::sscanf(v.c_str(), "%f%%", &pcv) != 1) {
       LOG_WARN("[guiitem] Item style error: invalid value '%s' (%%)",
                v.c_str());
       return;
@@ -2013,8 +2003,8 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
     return;
   }
 
-  if (std::sscanf(v.c_str(), _T( "%fpx%f%%" ), &pxv, &pcv) != 2)
-    if (std::sscanf(v.c_str(), _T( "%f%%%fpx" ), &pcv, &pxv) != 2) {
+  if (std::sscanf(v.c_str(), "%fpx%f%%", &pxv, &pcv) != 2)
+    if (std::sscanf(v.c_str(), "%f%%%fpx", &pcv, &pxv) != 2) {
       LOG_WARN("[guiitem] Item style error: invalid value '%s' (px, %%)",
                v.c_str());
       return;
@@ -2126,21 +2116,21 @@ void CWBItem::SetChildInFocus(CWBItem* i) {
 }
 
 bool CWBItem::ParseRGBA(std::string_view description, CColor& output) {
-  auto Params = Split(description, _T( "," ));
+  auto Params = Split(description, ",");
   if (Params.size() < 3 || Params.size() > 4) return false;
 
   int32_t result = 0;
   int32_t c[3];
-  result += std::sscanf(Params[0].c_str(), _T( "rgba(%d" ), &c[0]);
-  result += std::sscanf(Params[1].c_str(), _T( "%d" ), &c[1]);
-  result += std::sscanf(Params[2].c_str(), _T( "%d" ), &c[2]);
+  result += std::sscanf(Params[0].c_str(), "rgba(%d", &c[0]);
+  result += std::sscanf(Params[1].c_str(), "%d", &c[1]);
+  result += std::sscanf(Params[2].c_str(), "%d", &c[2]);
 
   if (result < 3) return false;
 
   float a = 1;
 
   if (Params.size() == 4)
-    if (std::sscanf(Params[3].c_str(), _T( "%f" ), &a) != 1) return false;
+    if (std::sscanf(Params[3].c_str(), "%f", &a) != 1) return false;
 
   uint8_t Colors[3];
   for (int32_t y = 0; y < 3; y++) Colors[y] = std::max(0, std::min(255, c[y]));
@@ -2160,23 +2150,23 @@ void CWBItem::FontStyleApplicator(CWBCSSPropertyBatch& desc,
   } else {
     for (size_t y = 1; y < pseudo.size(); y++) {
       const auto p = Trim(pseudo[y]);
-      if (p == _T( "active" )) {
+      if (p == "active") {
         desc.Fonts[WB_STATE_ACTIVE] = name;
         continue;
       }
-      if (p == _T( "hover" )) {
+      if (p == "hover") {
         desc.Fonts[WB_STATE_HOVER] = name;
         continue;
       }
-      if (p == _T( "disabled" )) {
+      if (p == "disabled") {
         desc.Fonts[WB_STATE_DISABLED] = name;
         continue;
       }
-      if (p == _T( "disabled-active" )) {
+      if (p == "disabled-active") {
         desc.Fonts[WB_STATE_DISABLED_ACTIVE] = name;
         continue;
       }
-      if (p == _T( "normal" )) {
+      if (p == "normal") {
         desc.Fonts[WB_STATE_NORMAL] = name;
         continue;
       }
@@ -2188,7 +2178,7 @@ bool CWBItem::ScanPXValue(std::string_view Value, int32_t& Result,
                           std::string_view PropName) {
   Result = 0;
   std::string v(Value);
-  if (std::sscanf(v.c_str(), _T( "%dpx" ), &Result) != 1) {
+  if (std::sscanf(v.c_str(), "%dpx", &Result) != 1) {
     LOG_WARN("[guiitem] Item style error: invalid %s value '%s' (px)",
              std::string(PropName).c_str(), std::string(Value).c_str());
     return false;
@@ -2198,7 +2188,7 @@ bool CWBItem::ScanPXValue(std::string_view Value, int32_t& Result,
 
 bool CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
                             std::string_view PropName) {
-  if (Value.find(_T( "skin(" )) == 0) {
+  if (Value.find("skin(") == 0) {
     const int32_t i = Value.find(')');
     if (i != std::string_view::npos) {
       // Value.GetPointer()[ i ] = 0;

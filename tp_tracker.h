@@ -49,7 +49,7 @@ class TPTracker : public CWBItem {
   ~TPTracker() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "tptracker" ), CWBItem);
+  WB_DECLARE_GUIITEM("tptracker", CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

@@ -228,7 +228,7 @@ class GW2TacticalDisplay : public CWBItem {
   ~GW2TacticalDisplay() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "gw2tactical" ), CWBItem);
+  WB_DECLARE_GUIITEM("gw2tactical", CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

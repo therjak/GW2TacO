@@ -111,7 +111,7 @@ class GW2TacO : public CWBItem {
   ~GW2TacO() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "GW2TacO" ), CWBItem);
+  WB_DECLARE_GUIITEM("GW2TacO", CWBItem);
   void OpenWindow(std::string_view s);
 
   // return true if this item handled the message

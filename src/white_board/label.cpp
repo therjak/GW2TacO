@@ -21,16 +21,13 @@ void CWBLabel::OnDraw(CWBDrawAPI* API) {
 }
 
 CWBLabel::CWBLabel(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
-    : CWBItem() {
-  Initialize(Parent, Pos, Txt);
+    : CWBItem(), Text(Txt) {
+  Initialize(Parent, Pos);
 }
 
 CWBLabel::~CWBLabel() = default;
 
-bool CWBLabel::Initialize(CWBItem* Parent, const CRect& Position,
-                          std::string_view Txt) {
-  Text = Txt;
-
+bool CWBLabel::Initialize(CWBItem* Parent, const CRect& Position) {
   if (!CWBItem::Initialize(Parent, Position)) return false;
   ContentChanged();
   return true;
@@ -38,8 +35,7 @@ bool CWBLabel::Initialize(CWBItem* Parent, const CRect& Position,
 
 CWBItem* CWBLabel::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto label = CWBLabel::Create(Root, Pos);
-  if (node.HasAttribute(_T( "text" )))
-    label->SetText(node.GetAttribute(_T( "text" )));
+  if (node.HasAttribute("text")) label->SetText(node.GetAttribute("text"));
   return label.get();
 }
 

@@ -302,16 +302,16 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
                         const std::vector<std::string>& pseudo) {
   if (CWBItem::ApplyStyle(prop, value, pseudo)) return true;
 
-  if (prop == _T( "child-layout" )) {
-    if (value == _T( "none" )) {
+  if (prop == "child-layout") {
+    if (value == "none") {
       SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_NONE);
       return true;
     }
-    if (value == _T( "horizontal" )) {
+    if (value == "horizontal") {
       SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_HORIZONTAL);
       return true;
     }
-    if (value == _T( "vertical" )) {
+    if (value == "vertical") {
       SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_VERTICAL);
       return true;
     }
@@ -322,22 +322,22 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
     return false;
   }
 
-  if (prop == _T( "child-spacing" )) {
+  if (prop == "child-spacing") {
     int32_t dw = std::stoi(std::string(value));
     SetSpacing(dw);
     return true;
   }
 
-  if (prop == _T( "child-align-x" )) {
-    if (value == _T( "left" )) {
+  if (prop == "child-align-x") {
+    if (value == "left") {
       SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_LEFT);
       return true;
     }
-    if (value == _T( "right" )) {
+    if (value == "right") {
       SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_RIGHT);
       return true;
     }
-    if (value == _T( "center" )) {
+    if (value == "center") {
       SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_CENTER);
       return true;
     }
@@ -349,16 +349,16 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
     return true;
   }
 
-  if (prop == _T( "child-align-y" )) {
-    if (value == _T( "top" )) {
+  if (prop == "child-align-y") {
+    if (value == "top") {
       SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_TOP);
       return true;
     }
-    if (value == _T( "bottom" )) {
+    if (value == "bottom") {
       SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_BOTTOM);
       return true;
     }
-    if (value == _T( "center" )) {
+    if (value == "center") {
       SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_CENTER);
       return true;
     }
@@ -370,12 +370,12 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
     return true;
   }
 
-  if (prop == _T( "child-fill-x" )) {
-    if (value == _T( "false" )) {
+  if (prop == "child-fill-x") {
+    if (value == "false") {
       SetSizing(WBBOXAXIS::WB_HORIZONTAL, WBBOXSIZING::WB_SIZING_KEEP);
       return true;
     }
-    if (value == _T( "true" )) {
+    if (value == "true") {
       SetSizing(WBBOXAXIS::WB_HORIZONTAL, WBBOXSIZING::WB_SIZING_FILL);
       return true;
     }
@@ -386,12 +386,12 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
     return true;
   }
 
-  if (prop == _T( "child-fill-y" )) {
-    if (value == _T( "false" )) {
+  if (prop == "child-fill-y") {
+    if (value == "false") {
       SetSizing(WBBOXAXIS::WB_VERTICAL, WBBOXSIZING::WB_SIZING_KEEP);
       return true;
     }
-    if (value == _T( "true" )) {
+    if (value == "true") {
       SetSizing(WBBOXAXIS::WB_VERTICAL, WBBOXSIZING::WB_SIZING_FILL);
       return true;
     }
@@ -425,9 +425,9 @@ void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
 CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto box = CWBBox::Create(Root, Pos);
 
-  if (node.HasAttribute(_T( "clickthrough" ))) {
+  if (node.HasAttribute("clickthrough")) {
     int32_t b = 0;
-    node.GetAttributeAsInteger(_T( "clickthrough" ), &b);
+    node.GetAttributeAsInteger("clickthrough", &b);
     box->ClickThrough = b != 0;
   }
 

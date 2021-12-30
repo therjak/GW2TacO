@@ -155,14 +155,14 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
   if (DefaultIconHandle == -1) {
     DefaultIconHandle =
         App->GetSkin()
-            ->GetElement(App->GetSkin()->GetElementID(_T( "defaulticon" )))
+            ->GetElement(App->GetSkin()->GetElementID("defaulticon"))
             ->GetHandle();
   }
 
   if (forbiddenIconHandle == -1) {
     forbiddenIconHandle =
         App->GetSkin()
-            ->GetElement(App->GetSkin()->GetElementID(_T( "forbiddenicon" )))
+            ->GetElement(App->GetSkin()->GetElementID("forbiddenicon"))
             ->GetHandle();
     forbiddenIconSize = App->GetAtlas()->GetSize(forbiddenIconHandle);
   }
@@ -942,7 +942,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
   // draw minimap trails
 
   GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
-      App->GetRoot()->FindChildByID(_T( "trail" ), _T( "gw2Trails" )));
+      App->GetRoot()->FindChildByID("trail", "gw2Trails"));
   if (trails) trails->DrawProxy(API, true);
 
   // draw minimap
@@ -1034,7 +1034,7 @@ void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
 }
 
 void ExportPOI(CXMLNode* n, POI& p) {
-  CXMLNode* t = &n->AddChild(_T( "POI" ));
+  CXMLNode* t = &n->AddChild("POI");
   t->SetAttributeFromInteger("MapID", p.mapID);
   t->SetAttributeFromFloat("xpos", p.position.x);
   t->SetAttributeFromFloat("ypos", p.position.y);
@@ -1047,7 +1047,7 @@ void ExportPOI(CXMLNode* n, POI& p) {
 }
 
 void ExportTrail(CXMLNode* n, GW2Trail& p) {
-  CXMLNode* t = &n->AddChild(_T( "Trail" ));
+  CXMLNode* t = &n->AddChild("Trail");
   if (!p.Type.empty()) t->SetAttribute("type", p.Type);
   t->SetAttribute(
       "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid),
@@ -1078,7 +1078,7 @@ void ExportPOIS() {
   for (const auto& r : Routes) {
     if (r.external) continue;
 
-    CXMLNode* t = &n->AddChild(_T( "Route" ));
+    CXMLNode* t = &n->AddChild("Route");
     t->SetAttribute("Name", r.name);
     t->SetAttributeFromInteger("BackwardDirection",
                                static_cast<int32_t>(r.backwards));
@@ -1092,7 +1092,7 @@ void ExportPOIS() {
 }
 
 GUID LoadGUID(CXMLNode& n) {
-  auto guidb64 = n.GetAttributeAsString(_T( "GUID" ));
+  auto guidb64 = n.GetAttributeAsString("GUID");
 
   auto data = B64Decode(guidb64);
 
@@ -1431,7 +1431,7 @@ void ExportPOIActivationData() {
       if (poi.typeData.behavior == POIBehavior::AlwaysVisible) continue;
     }
 
-    CXMLNode* t = &n->AddChild(_T( "POIActivation" ));
+    CXMLNode* t = &n->AddChild("POIActivation");
     t->SetAttributeFromInteger(
         "lut1", (reinterpret_cast<int32_t*>(&dat.lastUpdateTime))[0]);
     t->SetAttributeFromInteger(

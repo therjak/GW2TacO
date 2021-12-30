@@ -11,8 +11,9 @@ class CWBLabel : public CWBItem {
 
  public:
   CWBLabel(CWBItem* Parent, const CRect& Pos, std::string_view txt);
-  static inline std::shared_ptr<CWBLabel> Create(
-      CWBItem* Parent, const CRect& Pos, std::string_view txt = _T("")) {
+  static inline std::shared_ptr<CWBLabel> Create(CWBItem* Parent,
+                                                 const CRect& Pos,
+                                                 std::string_view txt = "") {
     auto p = std::make_shared<CWBLabel>(Parent, Pos, txt);
     p->SelfRef = p;
     if (Parent) {
@@ -22,14 +23,13 @@ class CWBLabel : public CWBItem {
   }
   ~CWBLabel() override;
 
-  virtual bool Initialize(CWBItem* Parent, const CRect& Position,
-                          std::string_view txt = _T( "" ));
+  bool Initialize(CWBItem* Parent, const CRect& Position) override;
 
   std::string GetText() const { return Text; }
   void SetText(std::string_view val);
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "label" ), CWBItem);
+  WB_DECLARE_GUIITEM("label", CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override {

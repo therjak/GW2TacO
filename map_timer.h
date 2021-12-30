@@ -73,5 +73,5 @@ class GW2MapTimer : public CWBItem {
   ~GW2MapTimer() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "maptimer" ), CWBItem);
+  WB_DECLARE_GUIITEM("maptimer", CWBItem);
 };

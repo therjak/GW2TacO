@@ -111,7 +111,7 @@ class GW2TrailDisplay : public CWBItem {
   ~GW2TrailDisplay() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "gw2Trails" ), CWBItem);
+  WB_DECLARE_GUIITEM("gw2Trails", CWBItem);
 
   bool IsMouseTransparent(const CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

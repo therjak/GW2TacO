@@ -53,8 +53,8 @@ bool InitGUI(CWBApplication* App) {
   CreateUniFont(App, "UniFont");
   CreateProFont(App, "ProFont");
 
-  App->LoadSkinFromFile(_T( "UI.wbs" ), localization->GetUsedGlyphs());
-  App->LoadXMLLayoutFromFile(_T( "UI.xml" ));
+  App->LoadSkinFromFile("UI.wbs", localization->GetUsedGlyphs());
+  App->LoadXMLLayoutFromFile("UI.xml");
   App->LoadCSSFromFile(UIFileNames[GetConfigValue("InterfaceSize")]);
   App->RegisterUIFactoryCallback("GW2TacticalDisplay",
                                  GW2TacticalDisplay::Factory);
@@ -71,7 +71,7 @@ bool InitGUI(CWBApplication* App) {
   App->RegisterUIFactoryCallback("clickthroughbutton",
                                  ClickThroughButton::Factory);
 
-  App->GenerateGUI(App->GetRoot(), _T( "gw2pois" ));
+  App->GenerateGUI(App->GetRoot(), "gw2pois");
 
   App->ReApplyStyle();
 
@@ -653,7 +653,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   extern std::string TacOBuild;
   FORCEDDEBUGLOG("Crash tracker initialized.");
 
-  Logger.AddOutput(std::make_unique<CLoggerOutput_File>(_T("GW2TacO.log")));
+  Logger.AddOutput(std::make_unique<CLoggerOutput_File>("GW2TacO.log"));
   Logger.SetVerbosity(LOGVERBOSITY::LOG_DEBUG);
   FORCEDDEBUGLOG("Logger set up.");
 
@@ -723,7 +723,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       (HasConfigValue("ForceDPIAware") && GetConfigValue("ForceDPIAware"))) {
     bool dpiSet = false;
 
-    HMODULE hShCore = LoadLibrary(_T( "Shcore.dll" ));
+    HMODULE hShCore = LoadLibrary("Shcore.dll");
     if (hShCore) {
       SetProcessDpiAwareness setDPIAwareness =
           reinterpret_cast<SetProcessDpiAwareness>(
@@ -737,7 +737,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
 
     if (!dpiSet) {
-      HMODULE hUser32 = LoadLibrary(_T( "user32.dll" ));
+      HMODULE hUser32 = LoadLibrary("user32.dll");
       SetProcessDPIAwareFunc setDPIAware =
           reinterpret_cast<SetProcessDPIAwareFunc>(
               GetProcAddress(hUser32, "SetProcessDPIAware"));
@@ -776,7 +776,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   int32_t height = 1;
 
   CCoreWindowParameters p(GetModuleHandle(nullptr), false, width, height,
-                          _T( "Guild Wars 2 Tactical Overlay" ),
+                          "Guild Wars 2 Tactical Overlay",
                           LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
   p.OverrideWindowStyle = WS_POPUP;
   p.OverrideWindowStyleEx =
@@ -809,7 +809,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   DWORD hookThreadID = 0;
 
-  App->SetScreenshotName(_T( "GW2TacO" ));
+  App->SetScreenshotName("GW2TacO");
   App->SetClearColor(CColor(0, 0, 0, 0));
 
   FORCEDDEBUGLOG("screenshot name and clear color set");

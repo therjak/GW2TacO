@@ -91,7 +91,7 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   wc.lpfnWndProc = WndProcProxy;
   wc.hInstance = wp.hInstance;
   wc.hIcon = wp.Icon;
-  wc.lpszClassName = _T("CoRE2");
+  wc.lpszClassName = "CoRE2";
   RegisterClass(&wc);
 
   FORCEDDEBUGLOG("Class registered");
@@ -120,7 +120,7 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
     if (wp.OverrideWindowStyle) dwStyle = wp.OverrideWindowStyle;
     AdjustWindowRect(&WindowRect, dwStyle, FALSE);
     FORCEDDEBUGLOG("Windowrect adjusted (non override)");
-    hWnd = CreateWindow(_T( "CoRE2" ), wp.WindowTitle, dwStyle, CW_USEDEFAULT,
+    hWnd = CreateWindow("CoRE2", wp.WindowTitle, dwStyle, CW_USEDEFAULT,
                         CW_USEDEFAULT, WindowRect.right - WindowRect.left,
                         WindowRect.bottom - WindowRect.top, nullptr, nullptr,
                         wp.hInstance, this);
@@ -128,8 +128,8 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
     dwStyle = wp.OverrideWindowStyle;
     AdjustWindowRect(&WindowRect, dwStyle, FALSE);
     FORCEDDEBUGLOG("Windowrect adjusted (override)");
-    hWnd = CreateWindowEx(wp.OverrideWindowStyleEx, _T( "CoRE2" ),
-                          wp.WindowTitle, dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
+    hWnd = CreateWindowEx(wp.OverrideWindowStyleEx, "CoRE2", wp.WindowTitle,
+                          dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                           WindowRect.right - WindowRect.left,
                           WindowRect.bottom - WindowRect.top, nullptr, nullptr,
                           wp.hInstance, this);

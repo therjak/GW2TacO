@@ -67,17 +67,16 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
                                                              WB_ITEM_FONTCOLOR);
       }
 
-      const int32_t width =
-          Font->Write(API, Items[x]->Text, Offset, textColor, TextTransform);
+      Font->Write(API, Items[x]->Text, Offset, textColor, TextTransform);
 
       // draw sub arrow
       if (!Items[x]->Children.empty()) {
         if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
             0xffffffff) {
         } else {
-          const int32_t wi = Font->GetWidth(_T( ">" ));
+          const int32_t wi = Font->GetWidth(">");
           Font->Write(
-              API, _T( ">" ),
+              API, ">",
               CPoint(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
                          (Client.x2 - padding.x2),
                      Offset.y),
@@ -93,8 +92,8 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
 }
 
 CWBContextMenu::CWBContextMenu(CWBItem* Parent, const CRect& Pos, WBGUID trg)
-    : CWBItem() {
-  CWBContextMenu::Initialize(Parent, Pos, trg);
+    : CWBItem(), Target(trg) {
+  CWBContextMenu::Initialize(Parent, Pos);
 }
 
 CWBContextMenu::~CWBContextMenu() {
@@ -142,7 +141,7 @@ void CWBContextMenu::ResizeToContentSize() {
         if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
             0xffffffff) {
         } else {
-          arrowPadding = Font->GetWidth(_T( ">" ));
+          arrowPadding = Font->GetWidth(">");
         }
       }
 
@@ -160,12 +159,7 @@ void CWBContextMenu::ResizeToContentSize() {
   SetPosition(CRect(r.TopLeft(), r.TopLeft() + Size));
 }
 
-bool CWBContextMenu::Initialize(CWBItem* Parent, const CRect& Position,
-                                WBGUID trg) {
-  ParentMenu = nullptr;
-  SubMenu = nullptr;
-  Pushed = false;
-  Target = trg;
+bool CWBContextMenu::Initialize(CWBItem* Parent, const CRect& Position) {
   if (!CWBItem::Initialize(Parent, Position)) return false;
 
   SetClientPadding(2, 0, 2, 0);
@@ -293,6 +287,9 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       }
 
       return true;
+
+    default:
+      break;
   }
 
   return CWBItem::MessageProc(Message);
@@ -399,7 +396,7 @@ CWBContextMenu* CWBContextMenu::GetContextRoot() {
 }
 
 CWBContextItem::CWBContextItem() {
-  Text = _T( "" );
+  Text = "";
   ReturnID = 0;
   Separator = false;
 }
@@ -449,7 +446,7 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
-    if (pseudo[x] == _T( "separator" )) {
+    if (pseudo[x] == "separator") {
       ElementTarget = true;
       break;
     }
@@ -462,7 +459,7 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
-    if (pseudo[x] == _T( "separator" )) {
+    if (pseudo[x] == "separator") {
       Handled |= SeparatorElements.ApplyStyle(this, prop, value, pseudo);
       continue;
     }

@@ -85,53 +85,53 @@ void CCoreBlendState::SetAlphaToCoverage(bool e) {
 bool CCoreBlendState::Import(CXMLNode* n) {
   std::string s;
 
-  if (n->HasAttribute(_T("AlphaToCoverage"))) {
-    n->GetChild(_T("AlphaToCoverage")).GetValue(AlphaToCoverage);
+  if (n->HasAttribute("AlphaToCoverage")) {
+    n->GetChild("AlphaToCoverage").GetValue(AlphaToCoverage);
   }
-  if (n->HasAttribute(_T("IndependentBlend"))) {
-    n->GetChild(_T("IndependentBlend")).GetValue(IndependentBlend);
+  if (n->HasAttribute("IndependentBlend")) {
+    n->GetChild("IndependentBlend").GetValue(IndependentBlend);
   }
 
-  for (int32_t x = 0; x < n->GetChildCount(_T("RenderTarget")); x++) {
-    CXMLNode c = n->GetChild(_T("RenderTarget"), x);
+  for (int32_t x = 0; x < n->GetChildCount("RenderTarget"); x++) {
+    CXMLNode c = n->GetChild("RenderTarget", x);
     int32_t id = 0;
-    c.GetAttributeAsInteger(_T("Target"), &id);
+    c.GetAttributeAsInteger("Target", &id);
 
-    if (c.GetChildCount(_T("BlendEnable"))) {
-      c.GetChild(_T("BlendEnable"))
+    if (c.GetChildCount("BlendEnable")) {
+      c.GetChild("BlendEnable")
           .GetValue(RenderTargetBlendStates[id].BlendEnable);
     }
-    if (c.GetChildCount(_T("SrcBlend"))) {
-      s = c.GetChild(_T("SrcBlend")).GetText();
+    if (c.GetChildCount("SrcBlend")) {
+      s = c.GetChild("SrcBlend").GetText();
       FindEnumByName(BlendFactorNames, s, RenderTargetBlendStates[id].SrcBlend);
     }
-    if (c.GetChildCount(_T("DestBlend"))) {
-      s = c.GetChild(_T("DestBlend")).GetText();
+    if (c.GetChildCount("DestBlend")) {
+      s = c.GetChild("DestBlend").GetText();
       FindEnumByName(BlendFactorNames, s,
                      RenderTargetBlendStates[id].DestBlend);
     }
-    if (c.GetChildCount(_T("BlendOp"))) {
-      s = c.GetChild(_T("BlendOp")).GetText();
+    if (c.GetChildCount("BlendOp")) {
+      s = c.GetChild("BlendOp").GetText();
       FindEnumByName(BlendOpNames, s, RenderTargetBlendStates[id].BlendOp);
     }
 
-    if (c.GetChildCount(_T("SrcBlendAlpha"))) {
-      s = c.GetChild(_T("SrcBlendAlpha")).GetText();
+    if (c.GetChildCount("SrcBlendAlpha")) {
+      s = c.GetChild("SrcBlendAlpha").GetText();
       FindEnumByName(BlendFactorNames, s,
                      RenderTargetBlendStates[id].SrcBlendAlpha);
     }
-    if (c.GetChildCount(_T("DestBlendAlpha"))) {
-      s = c.GetChild(_T("DestBlendAlpha")).GetText();
+    if (c.GetChildCount("DestBlendAlpha")) {
+      s = c.GetChild("DestBlendAlpha").GetText();
       FindEnumByName(BlendFactorNames, s,
                      RenderTargetBlendStates[id].DestBlendAlpha);
     }
-    if (c.GetChildCount(_T("BlendOpAlpha"))) {
-      s = c.GetChild(_T("BlendOpAlpha")).GetText();
+    if (c.GetChildCount("BlendOpAlpha")) {
+      s = c.GetChild("BlendOpAlpha").GetText();
       FindEnumByName(BlendOpNames, s, RenderTargetBlendStates[id].BlendOpAlpha);
     }
 
-    if (c.GetChildCount(_T("RenderTargetWriteMask"))) {
-      c.GetChild(_T("RenderTargetWriteMask"))
+    if (c.GetChildCount("RenderTargetWriteMask")) {
+      c.GetChild("RenderTargetWriteMask")
           .GetValue(RenderTargetBlendStates[id].RenderTargetWriteMask);
     }
   }
@@ -141,42 +141,40 @@ bool CCoreBlendState::Import(CXMLNode* n) {
 }
 
 void CCoreBlendState::Export(CXMLNode* n) {
-  n->AddChild(_T("AlphaToCoverage")).SetInt(AlphaToCoverage);
-  n->AddChild(_T("IndependentBlend")).SetInt(IndependentBlend);
+  n->AddChild("AlphaToCoverage").SetInt(AlphaToCoverage);
+  n->AddChild("IndependentBlend").SetInt(IndependentBlend);
 
   for (int32_t x = 0; x < 8; x++) {
-    CXMLNode b = n->AddChild(_T("RenderTarget"));
-    b.SetAttributeFromInteger(_T("Target"), x);
+    CXMLNode b = n->AddChild("RenderTarget");
+    b.SetAttributeFromInteger("Target", x);
 
-    b.AddChild(_T("BlendEnable"))
-        .SetInt(RenderTargetBlendStates[x].BlendEnable);
-    b.AddChild(_T("SrcBlend"))
+    b.AddChild("BlendEnable").SetInt(RenderTargetBlendStates[x].BlendEnable);
+    b.AddChild("SrcBlend")
         .SetText(FindNameByEnum(BlendFactorNames,
                                 RenderTargetBlendStates[x].SrcBlend)
                      .data());
-    b.AddChild(_T("DestBlend"))
+    b.AddChild("DestBlend")
         .SetText(FindNameByEnum(BlendFactorNames,
                                 RenderTargetBlendStates[x].DestBlend)
                      .data());
-    b.AddChild(_T("BlendOp"))
-        .SetText(
-            FindNameByEnum(BlendOpNames, RenderTargetBlendStates[x].BlendOp)
-                .data());
+    b.AddChild("BlendOp").SetText(
+        FindNameByEnum(BlendOpNames, RenderTargetBlendStates[x].BlendOp)
+            .data());
 
-    b.AddChild(_T("SrcBlendAlpha"))
+    b.AddChild("SrcBlendAlpha")
         .SetText(FindNameByEnum(BlendFactorNames,
                                 RenderTargetBlendStates[x].SrcBlendAlpha)
                      .data());
-    b.AddChild(_T("DestBlendAlpha"))
+    b.AddChild("DestBlendAlpha")
         .SetText(FindNameByEnum(BlendFactorNames,
                                 RenderTargetBlendStates[x].DestBlendAlpha)
                      .data());
-    b.AddChild(_T("BlendOpAlpha"))
+    b.AddChild("BlendOpAlpha")
         .SetText(FindNameByEnum(BlendOpNames,
                                 RenderTargetBlendStates[x].BlendOpAlpha)
                      .data());
 
-    b.AddChild(_T("RenderTargetWriteMask"))
+    b.AddChild("RenderTargetWriteMask")
         .SetInt(RenderTargetBlendStates[x].RenderTargetWriteMask);
   }
 }
@@ -206,14 +204,14 @@ void CCoreDepthStencilState::SetDepthEnable(bool e) {
 }
 
 bool CCoreDepthStencilState::Import(CXMLNode* n) {
-  if (n->GetChildCount(_T("DepthEnable"))) {
-    n->GetChild(_T("DepthEnable")).GetValue(DepthEnable);
+  if (n->GetChildCount("DepthEnable")) {
+    n->GetChild("DepthEnable").GetValue(DepthEnable);
   }
-  if (n->GetChildCount(_T("ZWriteEnable"))) {
-    n->GetChild(_T("ZWriteEnable")).GetValue(ZWriteEnable);
+  if (n->GetChildCount("ZWriteEnable")) {
+    n->GetChild("ZWriteEnable").GetValue(ZWriteEnable);
   }
-  if (n->GetChildCount(_T("DepthFunc"))) {
-    auto s = n->GetChild(_T("DepthFunc")).GetText();
+  if (n->GetChildCount("DepthFunc")) {
+    auto s = n->GetChild("DepthFunc").GetText();
     FindEnumByName(ComparisonFunctionNames, s, DepthFunc);
   }
 
@@ -222,9 +220,9 @@ bool CCoreDepthStencilState::Import(CXMLNode* n) {
 }
 
 void CCoreDepthStencilState::Export(CXMLNode* n) {
-  n->AddChild(_T("DepthEnable")).SetInt(DepthEnable);
-  n->AddChild(_T("ZWriteEnable")).SetInt(ZWriteEnable);
-  n->AddChild(_T("DepthFunc"))
+  n->AddChild("DepthEnable").SetInt(DepthEnable);
+  n->AddChild("ZWriteEnable").SetInt(ZWriteEnable);
+  n->AddChild("DepthFunc")
       .SetText(FindNameByEnum(ComparisonFunctionNames, DepthFunc).data());
 }
 
@@ -295,39 +293,39 @@ void CCoreRasterizerState::SetFillMode(COREFILLMODE e) {
 }
 
 bool CCoreRasterizerState::Import(CXMLNode* n) {
-  if (n->GetChildCount(_T("FillMode"))) {
-    auto s = n->GetChild(_T("FillMode")).GetText();
+  if (n->GetChildCount("FillMode")) {
+    auto s = n->GetChild("FillMode").GetText();
     FindEnumByName(FillModeNames, s, FillMode);
   }
-  if (n->GetChildCount(_T("CullMode"))) {
-    auto s = n->GetChild(_T("CullMode")).GetText();
+  if (n->GetChildCount("CullMode")) {
+    auto s = n->GetChild("CullMode").GetText();
     FindEnumByName(CullModeNames, s, CullMode);
   }
 
-  if (n->GetChildCount(_T("DepthBias"))) {
-    n->GetChild(_T("DepthBias")).GetValue(DepthBias);
+  if (n->GetChildCount("DepthBias")) {
+    n->GetChild("DepthBias").GetValue(DepthBias);
   }
-  if (n->GetChildCount(_T("DepthBiasClamp"))) {
-    n->GetChild(_T("DepthBiasClamp")).GetValue(DepthBiasClamp);
+  if (n->GetChildCount("DepthBiasClamp")) {
+    n->GetChild("DepthBiasClamp").GetValue(DepthBiasClamp);
   }
-  if (n->GetChildCount(_T("SlopeScaledDepthBias"))) {
-    n->GetChild(_T("SlopeScaledDepthBias")).GetValue(SlopeScaledDepthBias);
+  if (n->GetChildCount("SlopeScaledDepthBias")) {
+    n->GetChild("SlopeScaledDepthBias").GetValue(SlopeScaledDepthBias);
   }
 
-  if (n->GetChildCount(_T("FrontCounterClockwise"))) {
-    n->GetChild(_T("FrontCounterClockwise")).GetValue(FrontCounterClockwise);
+  if (n->GetChildCount("FrontCounterClockwise")) {
+    n->GetChild("FrontCounterClockwise").GetValue(FrontCounterClockwise);
   }
-  if (n->GetChildCount(_T("DepthClipEnable"))) {
-    n->GetChild(_T("DepthClipEnable")).GetValue(DepthClipEnable);
+  if (n->GetChildCount("DepthClipEnable")) {
+    n->GetChild("DepthClipEnable").GetValue(DepthClipEnable);
   }
-  if (n->GetChildCount(_T("ScissorEnable"))) {
-    n->GetChild(_T("ScissorEnable")).GetValue(ScissorEnable);
+  if (n->GetChildCount("ScissorEnable")) {
+    n->GetChild("ScissorEnable").GetValue(ScissorEnable);
   }
-  if (n->GetChildCount(_T("MultisampleEnable"))) {
-    n->GetChild(_T("MultisampleEnable")).GetValue(MultisampleEnable);
+  if (n->GetChildCount("MultisampleEnable")) {
+    n->GetChild("MultisampleEnable").GetValue(MultisampleEnable);
   }
-  if (n->GetChildCount(_T("AntialiasedLineEnable"))) {
-    n->GetChild(_T("AntialiasedLineEnable")).GetValue(AntialiasedLineEnable);
+  if (n->GetChildCount("AntialiasedLineEnable")) {
+    n->GetChild("AntialiasedLineEnable").GetValue(AntialiasedLineEnable);
   }
 
   Dirty = true;
@@ -335,19 +333,19 @@ bool CCoreRasterizerState::Import(CXMLNode* n) {
 }
 
 void CCoreRasterizerState::Export(CXMLNode* n) {
-  n->AddChild(_T("FillMode"))
+  n->AddChild("FillMode")
       .SetText(FindNameByEnum(FillModeNames, FillMode).data());
-  n->AddChild(_T("CullMode"))
+  n->AddChild("CullMode")
       .SetText(FindNameByEnum(CullModeNames, CullMode).data());
 
-  n->AddChild(_T("DepthBias")).SetInt(DepthBias);
-  n->AddChild(_T("DepthBiasClamp")).SetFloat(DepthBiasClamp);
-  n->AddChild(_T("SlopeScaledDepthBias")).SetFloat(SlopeScaledDepthBias);
-  n->AddChild(_T("FrontCounterClockwise")).SetInt(FrontCounterClockwise);
-  n->AddChild(_T("DepthClipEnable")).SetInt(DepthClipEnable);
-  n->AddChild(_T("ScissorEnable")).SetInt(ScissorEnable);
-  n->AddChild(_T("MultisampleEnable")).SetInt(MultisampleEnable);
-  n->AddChild(_T("AntialiasedLineEnable")).SetInt(AntialiasedLineEnable);
+  n->AddChild("DepthBias").SetInt(DepthBias);
+  n->AddChild("DepthBiasClamp").SetFloat(DepthBiasClamp);
+  n->AddChild("SlopeScaledDepthBias").SetFloat(SlopeScaledDepthBias);
+  n->AddChild("FrontCounterClockwise").SetInt(FrontCounterClockwise);
+  n->AddChild("DepthClipEnable").SetInt(DepthClipEnable);
+  n->AddChild("ScissorEnable").SetInt(ScissorEnable);
+  n->AddChild("MultisampleEnable").SetInt(MultisampleEnable);
+  n->AddChild("AntialiasedLineEnable").SetInt(AntialiasedLineEnable);
 }
 
 CCoreSamplerState::CCoreSamplerState(CCoreDevice* Device)
@@ -422,40 +420,40 @@ void CCoreSamplerState::SetFilter(COREFILTER e) {
 }
 
 bool CCoreSamplerState::Import(CXMLNode* n) {
-  if (n->GetChildCount(_T("Filter"))) {
-    auto s = n->GetChild(_T("Filter")).GetText();
+  if (n->GetChildCount("Filter")) {
+    auto s = n->GetChild("Filter").GetText();
     FindEnumByName(FilterNames, s, Filter);
   }
-  if (n->GetChildCount(_T("AddressU"))) {
-    auto s = n->GetChild(_T("AddressU")).GetText();
+  if (n->GetChildCount("AddressU")) {
+    auto s = n->GetChild("AddressU").GetText();
     FindEnumByName(AddressModeNames, s, AddressU);
   }
-  if (n->GetChildCount(_T("AddressV"))) {
-    auto s = n->GetChild(_T("AddressV")).GetText();
+  if (n->GetChildCount("AddressV")) {
+    auto s = n->GetChild("AddressV").GetText();
     FindEnumByName(AddressModeNames, s, AddressV);
   }
-  if (n->GetChildCount(_T("AddressW"))) {
-    auto s = n->GetChild(_T("AddressW")).GetText();
+  if (n->GetChildCount("AddressW")) {
+    auto s = n->GetChild("AddressW").GetText();
     FindEnumByName(AddressModeNames, s, AddressW);
   }
 
-  if (n->GetChildCount(_T("ComparisonFunc"))) {
-    auto s = n->GetChild(_T("ComparisonFunc")).GetText();
+  if (n->GetChildCount("ComparisonFunc")) {
+    auto s = n->GetChild("ComparisonFunc").GetText();
     FindEnumByName(ComparisonFunctionNames, s, ComparisonFunc);
   }
 
-  if (n->GetChildCount(_T("MipLODBias"))) {
-    n->GetChild(_T("MipLODBias")).GetValue(MipLODBias);
+  if (n->GetChildCount("MipLODBias")) {
+    n->GetChild("MipLODBias").GetValue(MipLODBias);
   }
-  if (n->GetChildCount(_T("MinLOD"))) {
-    n->GetChild(_T("MinLOD")).GetValue(MinLOD);
+  if (n->GetChildCount("MinLOD")) {
+    n->GetChild("MinLOD").GetValue(MinLOD);
   }
-  if (n->GetChildCount(_T("MaxLOD"))) {
-    n->GetChild(_T("MaxLOD")).GetValue(MaxLOD);
+  if (n->GetChildCount("MaxLOD")) {
+    n->GetChild("MaxLOD").GetValue(MaxLOD);
   }
 
-  if (n->GetChildCount(_T("MaxAnisotropy"))) {
-    n->GetChild(_T("MaxAnisotropy")).GetValue(MaxAnisotropy);
+  if (n->GetChildCount("MaxAnisotropy")) {
+    n->GetChild("MaxAnisotropy").GetValue(MaxAnisotropy);
   }
 
   Dirty = true;
@@ -463,17 +461,14 @@ bool CCoreSamplerState::Import(CXMLNode* n) {
 }
 
 void CCoreSamplerState::Export(CXMLNode* n) {
-  n->AddChild(_T("Filter")).SetText(FindNameByEnum(FilterNames, Filter));
-  n->AddChild(_T("AddressU"))
-      .SetText(FindNameByEnum(AddressModeNames, AddressU));
-  n->AddChild(_T("AddressV"))
-      .SetText(FindNameByEnum(AddressModeNames, AddressV));
-  n->AddChild(_T("AddressW"))
-      .SetText(FindNameByEnum(AddressModeNames, AddressW));
-  n->AddChild(_T("ComparisonFunc"))
+  n->AddChild("Filter").SetText(FindNameByEnum(FilterNames, Filter));
+  n->AddChild("AddressU").SetText(FindNameByEnum(AddressModeNames, AddressU));
+  n->AddChild("AddressV").SetText(FindNameByEnum(AddressModeNames, AddressV));
+  n->AddChild("AddressW").SetText(FindNameByEnum(AddressModeNames, AddressW));
+  n->AddChild("ComparisonFunc")
       .SetText(FindNameByEnum(ComparisonFunctionNames, ComparisonFunc));
-  n->AddChild(_T("MipLODBias")).SetFloat(MipLODBias);
-  n->AddChild(_T("MinLOD")).SetFloat(MinLOD);
-  n->AddChild(_T("MaxLOD")).SetFloat(MaxLOD);
-  n->AddChild(_T("MaxAnisotropy")).SetInt(MaxAnisotropy);
+  n->AddChild("MipLODBias").SetFloat(MipLODBias);
+  n->AddChild("MinLOD").SetFloat(MinLOD);
+  n->AddChild("MaxLOD").SetFloat(MaxLOD);
+  n->AddChild("MaxAnisotropy").SetInt(MaxAnisotropy);
 }

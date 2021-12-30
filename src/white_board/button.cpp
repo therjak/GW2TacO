@@ -18,7 +18,7 @@ WBITEMSTATE CWBButton::GetState() {
 
   if (i == WB_STATE_HOVER && App->GetMouseCaptureItem())
     if (App->GetMouseCaptureItem() != this &&
-        App->GetMouseCaptureItem()->GetType() != _T( "contextmenu" ))
+        App->GetMouseCaptureItem()->GetType() != "contextmenu")
       i = WB_STATE_NORMAL;
 
   return i;
@@ -45,17 +45,13 @@ void CWBButton::OnDraw(CWBDrawAPI* API) {
 }
 
 CWBButton::CWBButton(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
-    : CWBItem() {
-  Initialize(Parent, Pos, Txt);
+    : CWBItem(), Text(Txt) {
+  Initialize(Parent, Pos);
 }
 
 CWBButton::~CWBButton() = default;
 
-bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position,
-                           std::string_view Txt) {
-  Pushed = false;
-  Text = Txt;
-
+bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position) {
   if (!CWBItem::Initialize(Parent, Position)) return false;
 
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL,
@@ -76,6 +72,9 @@ bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position,
 
 bool CWBButton::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
+    default:
+      break;
+
     case WBM_LEFTBUTTONDOWN:
     case WBM_RIGHTBUTTONDOWN:
     case WBM_MIDDLEBUTTONDOWN:
@@ -124,7 +123,6 @@ bool CWBButton::IsPushed() { return Pushed; }
 
 CWBItem* CWBButton::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto button = CWBButton::Create(Root, Pos);
-  if (node.HasAttribute(_T( "text" )))
-    button->SetText(node.GetAttribute(_T( "text" )));
+  if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
   return button.get();
 }

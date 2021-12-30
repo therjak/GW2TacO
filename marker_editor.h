@@ -31,5 +31,5 @@ class GW2MarkerEditor : public CWBItem {
   ~GW2MarkerEditor() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, CRect& Pos);
-  WB_DECLARE_GUIITEM(_T( "markereditor" ), CWBItem);
+  WB_DECLARE_GUIITEM("markereditor", CWBItem);
 };

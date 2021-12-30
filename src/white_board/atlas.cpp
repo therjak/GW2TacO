@@ -141,7 +141,7 @@ CAtlas::~CAtlas() {
 bool CAtlas::PackImage(CAtlasImage* img) {
   if (!img) return false;
 
-  // LOG(LOG_DEBUG,_T("Packing Image %d"),img->GetHandle());
+  // LOG(LOG_DEBUG,"Packing Image %d",img->GetHandle());
 
   FlushCache();
   const CSize s = img->GetSize();
@@ -195,7 +195,7 @@ bool CAtlas::UpdateTexture() {
 
   if (!TextureUpdateNeeded) return true;
 
-  // LOG(LOG_DEBUG,_T("Updating Atlas Texture"));
+  // LOG(LOG_DEBUG,"Updating Atlas Texture");
 
   if (!Atlas || !Atlas->Update(Image.get(), XRes, YRes, 4)) return false;
 
