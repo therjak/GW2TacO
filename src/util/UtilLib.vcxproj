@@ -41,7 +41,6 @@
     <ClCompile Include="jsonxx.cc" />
     <ClCompile Include="miniz.c" />
     <ClCompile Include="png_decompressor.cpp" />
-    <ClCompile Include="stb_vorbis.c" />
     <ClCompile Include="xml_document.cpp" />
     <ClCompile Include="xml_node.cpp" />
   </ItemGroup>
