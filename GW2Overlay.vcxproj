@@ -398,6 +398,7 @@
     <ClCompile Include="src\wvw.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\base\ring_buffer.h" />
     <ClInclude Include="src\build_count.h" />
     <ClInclude Include="src\build_info.h" />
     <ClInclude Include="src\dungeon_progress.h" />
