@@ -1034,7 +1034,7 @@ bool FindSavedCategory(GW2TacticalCategory* t) {
 
 void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
   if (!FindSavedCategory(t)) return;
-  auto nn = n->AddChild("MarkerCategory");
+  auto& nn = n->AddChild("MarkerCategory");
   nn.SetAttribute("name", t->name);
   if (t->name != t->displayName) nn.SetAttribute("DisplayName", t->displayName);
   t->data.Write(&nn);
@@ -1772,34 +1772,31 @@ void AddTypeContextMenu(CWBContextItem* ctx,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
                         bool closeOnClick) {
-  for (const auto& cm : CategoryMap) {
-    auto dta = cm.second;
-    if (dta->Parent == Parent) {
-      std::string txt;
-      if (AddVisibilityMarkers)
-        txt += "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
-      if (!dta->displayName.empty())
-        txt += dta->displayName;
-      else
-        txt += dta->name;
+  for (const auto& dta : Parent->children) {
+    std::string txt;
+    if (AddVisibilityMarkers)
+      txt += "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
+    if (!dta->displayName.empty())
+      txt += dta->displayName;
+    else
+      txt += dta->name;
 
-      if (dta->IsOnlySeparator) {
-        ctx->AddSeparator();
-        if (!dta->displayName.empty())
-          txt = dta->displayName;
-        else
-          txt = dta->name;
-        ctx->AddItem(txt, CategoryList.size() + BaseID, false, closeOnClick);
-        CategoryList.push_back(dta);
-        ctx->AddSeparator();
-      } else {
-        auto n = ctx->AddItem(txt, CategoryList.size() + BaseID,
-                              AddVisibilityMarkers && dta->IsDisplayed,
-                              closeOnClick);
-        CategoryList.push_back(dta);
-        AddTypeContextMenu(n, CategoryList, dta, AddVisibilityMarkers, BaseID,
-                           closeOnClick);
-      }
+    if (dta->IsOnlySeparator) {
+      ctx->AddSeparator();
+      if (!dta->displayName.empty())
+        txt = dta->displayName;
+      else
+        txt = dta->name;
+      ctx->AddItem(txt, CategoryList.size() + BaseID, false, closeOnClick);
+      CategoryList.push_back(dta.get());
+      ctx->AddSeparator();
+    } else {
+      auto n =
+          ctx->AddItem(txt, CategoryList.size() + BaseID,
+                       AddVisibilityMarkers && dta->IsDisplayed, closeOnClick);
+      CategoryList.push_back(dta.get());
+      AddTypeContextMenu(n, CategoryList, dta.get(), AddVisibilityMarkers,
+                         BaseID, closeOnClick);
     }
   }
 }
@@ -1809,34 +1806,31 @@ void AddTypeContextMenu(CWBContextMenu* ctx,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
                         bool closeOnClick) {
-  for (auto& dtap : CategoryMap) {
-    auto dta = dtap.second;
-    if (dta->Parent == Parent) {
-      std::string txt;
-      if (AddVisibilityMarkers)
-        txt += "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
-      if (!dta->displayName.empty())
-        txt += dta->displayName;
-      else
-        txt += dta->name;
+  for (const auto& dta : Parent->children) {
+    std::string txt;
+    if (AddVisibilityMarkers)
+      txt += "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
+    if (!dta->displayName.empty())
+      txt += dta->displayName;
+    else
+      txt += dta->name;
 
-      if (dta->IsOnlySeparator) {
-        ctx->AddSeparator();
-        if (!dta->displayName.empty())
-          txt = dta->displayName;
-        else
-          txt = dta->name;
-        ctx->AddItem(txt, CategoryList.size() + BaseID, false, closeOnClick);
-        CategoryList.push_back(dta);
-        ctx->AddSeparator();
-      } else {
-        auto n = ctx->AddItem(txt, CategoryList.size() + BaseID,
-                              AddVisibilityMarkers && dta->IsDisplayed,
-                              closeOnClick);
-        CategoryList.push_back(dta);
-        AddTypeContextMenu(n, CategoryList, dta, AddVisibilityMarkers, BaseID,
-                           closeOnClick);
-      }
+    if (dta->IsOnlySeparator) {
+      ctx->AddSeparator();
+      if (!dta->displayName.empty())
+        txt = dta->displayName;
+      else
+        txt = dta->name;
+      ctx->AddItem(txt, CategoryList.size() + BaseID, false, closeOnClick);
+      CategoryList.push_back(dta.get());
+      ctx->AddSeparator();
+    } else {
+      auto n =
+          ctx->AddItem(txt, CategoryList.size() + BaseID,
+                       AddVisibilityMarkers && dta->IsDisplayed, closeOnClick);
+      CategoryList.push_back(dta.get());
+      AddTypeContextMenu(n, CategoryList, dta.get(), AddVisibilityMarkers,
+                         BaseID, closeOnClick);
     }
   }
 }
