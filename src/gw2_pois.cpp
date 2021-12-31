@@ -653,11 +653,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   lastSlowEventTime = globalTimer.GetTime();
 
   extern std::string TacOBuild;
-  FORCEDDEBUGLOG("Crash tracker initialized.");
 
   Logger.AddOutput(std::make_unique<CLoggerOutput_File>("GW2TacO.log"));
   Logger.SetVerbosity(LOGVERBOSITY::LOG_DEBUG);
-  FORCEDDEBUGLOG("Logger set up.");
 
   Logger.Log(LOGVERBOSITY::LOG_INFO, false, false, "");
   Logger.Log(LOGVERBOSITY::LOG_INFO, false, false,
@@ -709,9 +707,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
   }
 
-  FORCEDOPENDEBUGFILE();
-  FORCEDDEBUGLOG("Winmain started.");
-
   if (!SetupTacoProtocolHandling())
     LOG_ERR("[GW2TacO] Failed to register gw2taco:// protocol with windows.");
 
@@ -756,8 +751,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
   }
 
-  FORCEDDEBUGLOG("Config Loaded.");
-
   localization = std::make_unique<Localization>();
   localization->Import();
 
@@ -771,8 +764,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   }
 
   App = std::make_unique<COverlayApp>();
-
-  FORCEDDEBUGLOG("App instance created.");
 
   int32_t width = 1;
   int32_t height = 1;
@@ -789,7 +780,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                               WS_EX_TOOLWINDOW | WS_EX_LAYERED |
                               WS_EX_NOREDIRECTIONBITMAP;
 
-  FORCEDDEBUGLOG("About to initialize the app.");
   if (!App->Initialize(p)) {
     MessageBox(
         nullptr,
@@ -807,22 +797,16 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         "[GW2TacO] Failed to change message filters for WM_COPYDATA - "
         "gw2taco:// protocol messages will NOT be processed!");
 
-  FORCEDDEBUGLOG("App initialized.");
-
   DWORD hookThreadID = 0;
 
   App->SetScreenshotName("GW2TacO");
   App->SetClearColor(CColor(0, 0, 0, 0));
 
-  FORCEDDEBUGLOG("screenshot name and clear color set");
-
   ImportPOIS(App.get());
-  FORCEDDEBUGLOG("markers imported");
 
   mumbleLink.Update();
 
   InitGUI(App.get());
-  FORCEDDEBUGLOG("gui initialized");
 
   extern WBATLASHANDLE DefaultIconHandle;
   if (DefaultIconHandle == -1) {
@@ -831,15 +815,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   }
 
   ImportPOIActivationData();
-  FORCEDDEBUGLOG("activation data imported");
   ImportLocationalTimers();
-  FORCEDDEBUGLOG("locational timers imported");
 
   LoadWvWObjectives();
 
   OpenWindows(App.get());
-
-  FORCEDDEBUGLOG("taco windows opened");
 
   HWND handle = (HWND)App->GetHandle();
 
@@ -860,8 +840,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   ShowWindow(handle, nCmdShow);
 
-  FORCEDDEBUGLOG("set some window attributes");
-
   bool FoundGW2Window = false;
 
   if (!HasConfigValue("Vsync")) {
@@ -876,8 +854,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   CRect pos;
 
   DWORD GW2Pid = 0;
-
-  FORCEDDEBUGLOG("starting main loop");
 
   GW2TacO* taco = dynamic_cast<GW2TacO*>(
       App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
@@ -922,7 +898,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
     }
 
-    FORCEDDEBUGLOG("messages handled");
     mumbleLink.Update();
     bool shortTick = (GetTime() - mumbleLink.LastFrameTime) < 333;
 
@@ -944,7 +919,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
 
     if (App->DeviceOK()) {
-      FORCEDDEBUGLOG("device is ok, drawing");
       extern bool frameTriggered;
 
       auto currTime = globalTimer.GetTime();
@@ -974,7 +948,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
           lastRenderTime + 200 < currTime) {
         if (gw2Window) {
           if (!FoundGW2Window) {
-            FORCEDDEBUGLOG("GW2 window found for the first time");
             GetWindowThreadProcessId(gw2Window, &GW2Pid);
 
             DWORD currentProcessIntegrity =
@@ -1004,7 +977,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
           if (GW2ClientRect.right - GW2ClientRect.left != pos.Width() ||
               GW2ClientRect.bottom - GW2ClientRect.top != pos.Height() ||
               p.x != pos.x1 || p.y != pos.y1) {
-            FORCEDDEBUGLOG("moving TacO to be over GW2");
             LOG_ERR("[GW2TacO] gw2 window size change: %d %d %d %d (%d %d)",
                     GW2ClientRect.left, GW2ClientRect.top, GW2ClientRect.right,
                     GW2ClientRect.bottom,
@@ -1085,11 +1057,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
 
       if (!HooksInitialized) {
-        FORCEDDEBUGLOG("hooks not initialized, doing that");
         // enabling this blocks mouse input while the debugger is present
         // if (!IsDebuggerPresent()) {
         {
-          FORCEDDEBUGLOG("creating thread");
           auto hookThread = CreateThread(
               nullptr,  // default security attributes
               0,        // use default stack size
@@ -1100,9 +1070,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                     SetWindowsHookEx(WH_MOUSE_LL, MouseHook, nullptr, 0);
                 MSG msg;
 
-                if (!keyboardHook || !mouseHook) {
-                  FORCEDDEBUGLOG("failed to set mouse or keyboard hook");
-                }
                 keyboardHookActive = true;
                 mouseHookActive = true;
 
@@ -1137,8 +1104,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FlushZipDict();
 
-  FORCEDDEBUGLOG("closing down taco");
-
   if (hookThreadID) {
     PostThreadMessage(hookThreadID, WM_QUIT, 0, 0);
   }
@@ -1146,7 +1111,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   ShowWindow(handle, SW_HIDE);
 
   SaveConfig();
-  FORCEDDEBUGLOG("config saved");
 
   while (keyboardHookActive)
     ;
@@ -1169,7 +1133,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   // cleanup
   App.reset();
 
-  FORCEDDEBUGLOG("app deleted, returning from main()");
   localization.reset();
 
   return true;

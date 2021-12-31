@@ -6,13 +6,6 @@
 #include <string_view>
 #include <vector>
 
-#include "src/base/ring_buffer.h"
-
-#define ENABLE_LOGGING
-
-#define LOG_TO_DEBUGOUTPUT
-//#define LOG_TO_STDOUT
-
 enum class LOGVERBOSITY : uint16_t {
   LOG_ERROR = 0x100,
   LOG_WARNING = 0x200,
@@ -41,13 +34,6 @@ class CLoggerOutput_DebugOutput : public CLoggerOutput {
   void Process(LOGVERBOSITY v, const std::string& String) override;
 };
 
-class CLoggerOutput_StdOut : public CLoggerOutput {
- public:
-  CLoggerOutput_StdOut();
-  ~CLoggerOutput_StdOut() override;
-  void Process(LOGVERBOSITY v, const std::string& String) override;
-};
-
 class CLoggerOutput_File : public CLoggerOutput {
   FILE* f;
   std::string fname;
@@ -59,16 +45,6 @@ class CLoggerOutput_File : public CLoggerOutput {
   ~CLoggerOutput_File() override;
   bool OpenLogFile(std::string_view Filename, bool Append = true);
   void Process(LOGVERBOSITY v, const std::string& String) override;
-};
-
-class CLoggerOutput_RingBuffer : public CLoggerOutput {
-  CRingBuffer<std::string> Buffer;
-
- public:
-  CLoggerOutput_RingBuffer();
-  ~CLoggerOutput_RingBuffer() override;
-  void Process(LOGVERBOSITY v, const std::string& String) override;
-  void Dump(std::string_view fname);
 };
 
 class CLogger {
@@ -90,33 +66,9 @@ class CLogger {
 
 extern CLogger Logger;
 
-#ifdef ENABLE_LOGGING
 #define LOG(v, s, ...) Logger.Log(v, true, true, s, __VA_ARGS__)
-#else
-#define LOG(v, s, ...) \
-  do {                 \
-  } while (0)
-#endif
-
-#ifdef ENABLE_LOGGING
-#define LOGSIMPLE(v, s, ...) Logger.Log(v, false, false, s, __VA_ARGS__)
-#else
-#define LOGSIMPLE(v, s, ...) \
-  do {                       \
-  } while (0)
-#endif
 
 #define LOG_WARN(s, ...) LOG(LOGVERBOSITY::LOG_WARNING, s, __VA_ARGS__)
 #define LOG_ERR(s, ...) LOG(LOGVERBOSITY::LOG_ERROR, s, __VA_ARGS__)
 #define LOG_DBG(s, ...) LOG(LOGVERBOSITY::LOG_DEBUG, s, __VA_ARGS__)
 #define LOG_NFO(s, ...) LOG(LOGVERBOSITY::LOG_INFO, s, __VA_ARGS__)
-
-#define LOG_SETVERBOSITY(v) Logger.SetVerbosity(v)
-#define LOG_ADDOUTPUT(v) Logger.AddOutput(v)
-
-#define FORCEDOPENDEBUGFILE() \
-  do {                        \
-  } while (0)
-#define FORCEDDEBUGLOG(v, ...) \
-  do {                         \
-  } while (0)

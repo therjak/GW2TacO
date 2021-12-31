@@ -20,10 +20,8 @@ bool configChanged = false;
 auto lastConfigChangeTime = globalTimer.GetTime();
 
 void LoadConfig() {
-  FORCEDDEBUGLOG("Loading config.");
   CXMLDocument d;
   if (!d.LoadFromFile("TacOConfig.xml")) {
-    FORCEDDEBUGLOG("Config failed to load, setting defaults.");
     SetConfigValue("EditMode", 0);
     SetConfigValue("InterfaceSize", 1);
     SetConfigValue("CloseWithGW2", 1);
@@ -33,16 +31,11 @@ void LoadConfig() {
   }
   ConfigNums.clear();
   ConfigStrings.clear();
-  FORCEDDEBUGLOG("Config flushed.");
 
   if (!d.GetDocumentNode().GetChildCount("TacOConfig")) return;
   CXMLNode root = d.GetDocumentNode().GetChild("TacOConfig");
 
-  FORCEDDEBUGLOG("Config root found.");
-
   for (int32_t x = 0; x < root.GetChildCount(); x++) {
-    FORCEDDEBUGLOG("Loading config value %d/%d.", x, root.GetChildCount());
-
     auto item = root.GetChild(x);
     if (item.HasAttribute("Data")) {
       int32_t data = 0;

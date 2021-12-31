@@ -1,151 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Header Files\GuiItems">
-      <UniqueIdentifier>{48d5ea91-8eb6-4d17-8dfb-85585a5cb219}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GuiItems">
-      <UniqueIdentifier>{abd4a602-64db-4f64-886d-64cd611cc392}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\DX11">
-      <UniqueIdentifier>{838c2911-14c3-464d-ad0b-e53ca2078983}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Resources">
-      <UniqueIdentifier>{78318201-1605-4774-ae15-51b90ab1c9b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\System">
-      <UniqueIdentifier>{dfc77f5e-91aa-4788-9cca-99ada81999ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\DX11">
-      <UniqueIdentifier>{e5d0e7d3-998b-4ab7-8aa2-8cd7ad206838}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Resources">
-      <UniqueIdentifier>{bbce0451-7de1-475c-83be-d9c1c2b70bc4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\System">
-      <UniqueIdentifier>{9b29c3b1-3dad-436a-8378-6c7f520e6a23}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Math">
-      <UniqueIdentifier>{61571f7d-8565-47de-ae9d-ddbd6f157fa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Math">
-      <UniqueIdentifier>{8e7b92ec-87b6-4f3c-8fa9-6044ae8eb298}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\tgw2_pois.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tgw2_tactical.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tmap_timer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tmouse_highlight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tmumble_link.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\toverlay_application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tpro_font.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\toverlay_config.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tgw2_taco.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\toverlay_window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tbuild_info.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tts3_connection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include=src\t"ts3_control.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tlocational_timer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tmarker_editor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ttactical_compass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\trange_display.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\thp_grid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tnotepad.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tgw2_api.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\traid_progress.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tdungeon_progress.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\twvw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tspecial_gui_items.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ttrail_logger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tlanguage.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ttp_tracker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\button.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\context_menu.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\box.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\text_box.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\label.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\root.cpp">
-      <Filter>Source Files\GuiItems</Filter>
-    </ClCompile>
-    <ClCompile Include="src\white_board\window.cpp">
-      <Filter>Source Files\GuiItems</Filter>
+    <ClCompile Include="src\hp_grid.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="src\white_board\application.cpp">
       <Filter>Source Files</Filter>
@@ -153,10 +10,64 @@
     <ClCompile Include="src\white_board\atlas.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\white_board\box.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\build_info.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\white_board\button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\constant_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\white_board\context_menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\white_board\css_item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\core2\device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\white_board\draw_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dss_texture_loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\dungeon_progress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_constant_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_index_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_enums.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_render_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_vertex_format.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_vertex_buffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\dx11_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\file_list.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\white_board\font.cpp">
@@ -165,183 +76,159 @@
     <ClCompile Include="src\white_board\gui_item.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gw2_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gw2_pois.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gw2_taco.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gw2_tactical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\hasher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\image_decompressor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\white_board\label.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\language.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\locational_timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\map_timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\marker_editor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mouse_highlight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\white_board\message.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mumble_link.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\notepad.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overlay_application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overlay_config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\overlay_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\pro_font.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\raid_progress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\range_display.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\render_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\resource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\white_board\root.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core2\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\white_board\skin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\base\socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\spec_math.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\special_gui_items.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\stream_reader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\stream_writer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="src\white_board\style_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core2\dss_texture_loader.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_constant_buffer.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_device.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_enums.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_index_buffer.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_render_state.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_shader.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_texture.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_vertex_buffer.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\dx11_vertex_format.cpp">
-      <Filter>Source Files\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\constant_buffer.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\device.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\render_state.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\resource.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\shader.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core2\window_handler.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\image_decompressor.cpp">
+    <ClCompile Include="src\tactical_compass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\hasher.cpp">
-      <Filter>Source Files\System</Filter>
+    <ClCompile Include="src\white_board\text_box.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\base\timer.cpp">
-      <Filter>Source Files\System</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\matrix.cpp">
-      <Filter>Header Files\Math</Filter>
+    <ClCompile Include="src\tp_tracker.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\spec_math.cpp">
-      <Filter>Header Files\Math</Filter>
+    <ClCompile Include="src\trail_logger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ts3_connection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ts3_control.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\base\vector.cpp">
-      <Filter>Header Files\Math</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\file_list.cpp">
-      <Filter>Header Files\System</Filter>
+    <ClCompile Include="src\core2\window_handler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\socket.cpp">
-      <Filter>Source Files\System</Filter>
+    <ClCompile Include="src\white_board\window.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\base\stream_reader.cpp">
-      <Filter>Source Files\System</Filter>
-    </ClCompile>
-    <ClCompile Include="src\base\stream_writer.cpp">
-      <Filter>Source Files\System</Filter>
+    <ClCompile Include="src\wvw.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\tgw2_tactical.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tmap_timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tmouse_highlight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tmumble_link.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\toverlay_application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tpro_font.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\toverlay_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tgw2_taco.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\toverlay_window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tbuild_count.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tbuild_info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tts3_connection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tresource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tts3_control.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tlocational_timer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tmarker_editor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ttactical_compass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\trange_display.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\thp_grid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tnotepad.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tgw2_api.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\traid_progress.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tdungeon_progress.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\twvw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tspecial_gui_items.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ttrail_logger.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tlanguage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\ttp_tracker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\white_board\application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\white_board\atlas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\build_count.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\build_info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\core2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\core2_config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\white_board\css_item.h">
@@ -350,31 +237,151 @@
     <ClInclude Include="src\white_board\draw_api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\white_board\font.h">
+    <ClInclude Include="src\core2\dss_texture_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\white_board\gui_item.h">
+    <ClInclude Include="src\dungeon_progress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\enum_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\file_list.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gw2_tactical.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gw2_taco.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gw2_api.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\image_decompressor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\index_buffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\language.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\locational_timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\map_timer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\marker_editor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\white_board\message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\hp_grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mouse_highlight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mumble_link.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\notepad.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\overlay_application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\overlay_config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\overlay_window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\pro_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\raid_progress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\range_display.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="src\white_board\skin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\socket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\stream_reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\stream_writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\white_board\style_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\white_board\button.h">
-      <Filter>Header Files\GuiItems</Filter>
+    <ClInclude Include="src\core2\texture.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\white_board\context_menu.h">
+    <ClInclude Include="src\tp_tracker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\matrix.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\vector.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\sphere.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\rectangle.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\plane.h">
+      <Filter>Header Files\math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_constant_buffer.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_device.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_enums.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_index_buffer.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_render_state.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_shader.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_texture.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_vertex_buffer.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\dx11_vertex_format.h">
+      <Filter>Header Files\DX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\white_board\button.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
     <ClInclude Include="src\white_board\box.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
-    <ClInclude Include="src\white_board\text_box.h">
+    <ClInclude Include="src\white_board\gui_item.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
     <ClInclude Include="src\white_board\label.h">
@@ -383,148 +390,128 @@
     <ClInclude Include="src\white_board\root.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
+    <ClInclude Include="src\white_board\context_menu.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
+    <ClInclude Include="src\white_board\text_box.h">
+      <Filter>Header Files\GuiItems</Filter>
+    </ClInclude>
     <ClInclude Include="src\white_board\window.h">
       <Filter>Header Files\GuiItems</Filter>
     </ClInclude>
-    <ClInclude Include="src\core2\core2.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\base\spec_math.h">
+      <Filter>Header Files\math</Filter>
     </ClInclude>
-    <ClInclude Include="src\core2\core2_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dss_texture_loader.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_constant_buffer.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_device.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_enums.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_index_buffer.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_render_state.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_shader.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_texture.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_vertex_buffer.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\dx11_vertex_format.h">
-      <Filter>Header Files\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\index_buffer.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\texture.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\vertex_buffer.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\vertex_format.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\constant_buffer.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\device.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\enums.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\render_state.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\resource.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\shader.h">
-      <Filter>Header Files\System</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core2\window_handler.h">
+    <ClInclude Include="src\base\hasher.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
     <ClInclude Include="src\base\timer.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\hasher.h">
+    <ClInclude Include="src\core2\window_handler.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\image_decompressor.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\matrix.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\plane.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\rectangle.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\spec_math.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\sphere.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\vector.h">
-      <Filter>Source Files\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\color.h">
-      <Filter>Header Files\Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="src\base\enum_helpers.h">
+    <ClInclude Include="src\core2\shader.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\file_list.h">
+    <ClInclude Include="src\core2\resource.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\socket.h">
+    <ClInclude Include="src\core2\render_state.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\stream_reader.h">
+    <ClInclude Include="src\core2\enums.h">
       <Filter>Header Files\System</Filter>
     </ClInclude>
-    <ClInclude Include="src\base\stream_writer.h">
+    <ClInclude Include="src\core2\device.h">
       <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\constant_buffer.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\vertex_buffer.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core2\vertex_format.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\white_board\font.h">
+      <Filter>Header Files\System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\special_gui_items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tactical_compass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\trail_logger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ts3_connection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ts3_control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wvw.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="poidata.xml" />
-    <Xml Include="UI.xml" />
-    <Xml Include="maptimer.xml" />
+    <Xml Include="maptimer.xml">
+      <Filter>Resources</Filter>
+    </Xml>
+    <Xml Include="poidata.xml">
+      <Filter>Resources</Filter>
+    </Xml>
     <Xml Include="TacO_Language_en.xml">
-      <Filter>Resource Files</Filter>
+      <Filter>Resources</Filter>
+    </Xml>
+    <Xml Include="UI.xml">
+      <Filter>Resources</Filter>
     </Xml>
   </ItemGroup>
   <ItemGroup>
-    <None Include="UI.css" />
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2113408a-cd2c-48e9-a274-625e29adf7d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{fea27271-b9e1-44bd-a5fa-a943d1f54bbc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{deff6360-a58d-4df3-aab5-df19d56f74c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\math">
+      <UniqueIdentifier>{e531a3cf-62a3-4d47-a5f7-3788e18bac9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DX">
+      <UniqueIdentifier>{694ad39a-f63a-409b-a0b3-3236b6f01388}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GuiItems">
+      <UniqueIdentifier>{bbc854ff-b5a0-4d40-958a-c2940d6b607a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\System">
+      <UniqueIdentifier>{e9ec7918-2648-4bfd-96b4-fb7b3c81701c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GW2TacO.rc">
-      <Filter>Resource Files</Filter>
+      <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="notepad.txt">
+      <Filter>Resources</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="Taco-16.ico">
-      <Filter>Resource Files</Filter>
+      <Filter>Resources</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="notepad.txt">
-      <Filter>Resource Files</Filter>
-    </Text>
+    <None Include="UI.css">
+      <Filter>Resources</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -457,6 +457,11 @@
     <ClInclude Include="src\core2\vertex_buffer.h" />
     <ClInclude Include="src\core2\vertex_format.h" />
     <ClInclude Include="src\core2\window_handler.h" />
+    <ClInclude Include="src\special_gui_items.h" />
+    <ClInclude Include="src\tactical_compass.h" />
+    <ClInclude Include="src\trail_logger.h" />
+    <ClInclude Include="src\ts3_connection.h" />
+    <ClInclude Include="src\ts3_control.h" />
     <ClInclude Include="src\white_board\application.h" />
     <ClInclude Include="src\white_board\atlas.h" />
     <ClInclude Include="src\white_board\box.h" />
@@ -474,12 +479,7 @@
     <ClInclude Include="src\white_board\text_box.h" />
     <ClInclude Include="src\white_board\window.h" />
     <ClInclude Include="src\tp_tracker.h" />
-    <ClInclude Include="src\ttrail_logger.h" />
-    <ClInclude Include="src\tspecial_gui_items.h" />
-    <ClInclude Include="src\ttactical_compass.h" />
-    <ClInclude Include="src\tts3_connection.h" />
-    <ClInclude Include="src\tts3_control.h" />
-    <ClInclude Include="src\twvw.h" />
+    <ClInclude Include="src\wvw.h" />
   </ItemGroup>
   <ItemGroup>
     <Xml Include="maptimer.xml" />

@@ -83,7 +83,6 @@ CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
 }
 
 bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
-  FORCEDDEBUGLOG("CCoreWindowHandlerWin::Initialize");
   XRes = wp.XRes;
   YRes = wp.YRes;
   InitParameters = wp;
@@ -96,8 +95,6 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   wc.hIcon = wp.Icon;
   wc.lpszClassName = "CoRE2";
   RegisterClass(&wc);
-
-  FORCEDDEBUGLOG("Class registered");
 
   RECT WindowRect;
   WindowRect.left = 0;
@@ -122,7 +119,6 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
     dwStyle = dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
     if (wp.OverrideWindowStyle) dwStyle = wp.OverrideWindowStyle;
     AdjustWindowRect(&WindowRect, dwStyle, FALSE);
-    FORCEDDEBUGLOG("Windowrect adjusted (non override)");
     hWnd = CreateWindow("CoRE2", wp.WindowTitle, dwStyle, CW_USEDEFAULT,
                         CW_USEDEFAULT, WindowRect.right - WindowRect.left,
                         WindowRect.bottom - WindowRect.top, nullptr, nullptr,
@@ -130,15 +126,12 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   } else {
     dwStyle = wp.OverrideWindowStyle;
     AdjustWindowRect(&WindowRect, dwStyle, FALSE);
-    FORCEDDEBUGLOG("Windowrect adjusted (override)");
     hWnd = CreateWindowEx(wp.OverrideWindowStyleEx, "CoRE2", wp.WindowTitle,
                           dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
                           WindowRect.right - WindowRect.left,
                           WindowRect.bottom - WindowRect.top, nullptr, nullptr,
                           wp.hInstance, this);
   }
-
-  FORCEDDEBUGLOG("Window created");
 
   Device = wp.CreateDevice();
 
@@ -152,13 +145,9 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
     return false;
   }
 
-  FORCEDDEBUGLOG("device initialized!!!");
-
   ShowWindow(hWnd, Maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
   SetForegroundWindow(hWnd);
   SetFocus(hWnd);
-
-  FORCEDDEBUGLOG("window set to foreground etc");
 
   MouseCursorsAt(COREMOUSECURSOR::CM_ARROW) = (LoadCursor(nullptr, IDC_ARROW));
   MouseCursorsAt(COREMOUSECURSOR::CM_CROSS) = (LoadCursor(nullptr, IDC_CROSS));
@@ -172,8 +161,6 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
       (LoadCursor(nullptr, IDC_SIZENWSE));
   MouseCursorsAt(COREMOUSECURSOR::CM_TEXT) = (LoadCursor(nullptr, IDC_IBEAM));
   MouseCursorsAt(COREMOUSECURSOR::CM_WAIT) = (LoadCursor(nullptr, IDC_WAIT));
-
-  FORCEDDEBUGLOG("mouse cursors loaded");
 
   Maximized = wp.Maximized;
   Minimized = false;
@@ -190,8 +177,6 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
     XRes = r2.right - r2.left;
     YRes = r2.bottom - r2.top;
   }
-
-  FORCEDDEBUGLOG("windowhandler initialized");
 
   return true;
 }

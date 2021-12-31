@@ -30,14 +30,6 @@ CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() = default;
 
 CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput() = default;
 
-void CLoggerOutput_StdOut::Process(LOGVERBOSITY v, const std::string& String) {
-  _tprintf("%s\n", String.c_str());
-}
-
-CLoggerOutput_StdOut::~CLoggerOutput_StdOut() = default;
-
-CLoggerOutput_StdOut::CLoggerOutput_StdOut() = default;
-
 void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
   if (!f) {
     if (!OpenLogFile(fname, Append)) return;
@@ -141,24 +133,5 @@ CLogger::~CLogger() = default;
 
 CLogger::CLogger() {
   Verbosity = LOGGER_BASE_OUTPUT_VERBOSITY;
-#ifdef LOG_TO_DEBUGOUTPUT
   Outputs.emplace_back(std::make_unique<CLoggerOutput_DebugOutput>());
-#endif
-}
-
-CLoggerOutput_RingBuffer::CLoggerOutput_RingBuffer() = default;
-
-CLoggerOutput_RingBuffer::~CLoggerOutput_RingBuffer() = default;
-
-void CLoggerOutput_RingBuffer::Process(LOGVERBOSITY v,
-                                       const std::string& String) {
-  Buffer.Add(String);
-}
-
-void CLoggerOutput_RingBuffer::Dump(std::string_view fname) {
-  FILE* f = nullptr;
-  fopen_s(&f, fname.data(), "w+b");
-  for (int32_t x = 0; x < Buffer.NumItems(); x++)
-    fprintf(f, "%s\n", Buffer[x].c_str());
-  fclose(f);
 }

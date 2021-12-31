@@ -59,21 +59,18 @@ CRect GetMinimapRectangle() {
 void CMumbleLink::Update() {
   bool justConnected = false;
 
-  FORCEDDEBUGLOG("updating mumblelink");
   if (!lm) {
     HANDLE hMapObject =
         CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0,
                            sizeof(LinkedMem), mumblePath.c_str());
 
     if (hMapObject == nullptr) {
-      FORCEDDEBUGLOG("failed to create mumble link file");
       return;
     }
 
     lm = static_cast<LinkedMem*>(MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS,
                                                0, 0, sizeof(LinkedMem)));
     if (lm == nullptr) {
-      FORCEDDEBUGLOG("mumble link file closed");
       CloseHandle(hMapObject);
       hMapObject = nullptr;
       return;
@@ -82,8 +79,6 @@ void CMumbleLink::Update() {
   }
 
   if (!lm) return;
-
-  FORCEDDEBUGLOG("getting mumblelink data");
 
   if (tick == lm->uiTick) {
     memcpy(&lastData, lm, sizeof(LinkedMem));

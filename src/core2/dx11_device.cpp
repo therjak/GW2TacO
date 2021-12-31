@@ -72,8 +72,6 @@ void CCoreDX11Device::ResetPrivateResources() {}
 bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
   if (BackBufferView) BackBufferView->Release();
 
-  FORCEDDEBUGLOG("creating backbuffer");
-
   HRESULT res = S_OK;
   ID3D11Texture2D* bb;
 
@@ -86,8 +84,6 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
     return false;
   }
 
-  FORCEDDEBUGLOG("getbuffer called");
-
   res = Device->CreateRenderTargetView(bb, nullptr, &BackBufferView);
   if (res != S_OK) {
     _com_error err(res);
@@ -96,8 +92,6 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
     return false;
   }
 
-  FORCEDDEBUGLOG("createrendertargetview called");
-
   res = bb->Release();
   if (res != S_OK) {
     _com_error err(res);
@@ -105,8 +99,6 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
             err.ErrorMessage());
     // return false;
   }
-
-  FORCEDDEBUGLOG("previous buffer released");
 
   return true;
 }
@@ -118,8 +110,6 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
   if (DepthBuffer) {
     DepthBuffer->Release();
   }
-
-  FORCEDDEBUGLOG("creating depthbuffer");
 
   HRESULT res = S_OK;
 
@@ -148,8 +138,6 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
     return false;
   }
 
-  FORCEDDEBUGLOG("createtexture called");
-
   ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
 
   depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -165,8 +153,6 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
     return false;
   }
 
-  FORCEDDEBUGLOG("createdepthstencilview called");
-
   return true;
 }
 
@@ -175,7 +161,6 @@ bool CCoreDX11Device::CreateClassicSwapChain(
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
   LOG_NFO("%s", "[core] Creating classic swap chain");
 
-  FORCEDDEBUGLOG("Initapi");
   HRESULT res = S_OK;
 
   DXGI_SWAP_CHAIN_DESC scd;
@@ -201,7 +186,6 @@ bool CCoreDX11Device::CreateClassicSwapChain(
         "without debug mode...",
         err.ErrorMessage());
 #endif
-    FORCEDDEBUGLOG("About to create d3d device");
     res = D3D11CreateDeviceAndSwapChain(
         nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, nullptr, NULL,
         D3D11_SDK_VERSION, &scd, reinterpret_cast<IDXGISwapChain**>(&SwapChain),
@@ -212,7 +196,6 @@ bool CCoreDX11Device::CreateClassicSwapChain(
               error.ErrorMessage());
       return false;
     }
-    FORCEDDEBUGLOG("D3D device created");
 #ifdef ENABLE_CORE_DEBUG_MODE
   }
 #endif
@@ -220,22 +203,15 @@ bool CCoreDX11Device::CreateClassicSwapChain(
   if (!CreateBackBuffer(XRes, YRes)) {
     return false;
   }
-  FORCEDDEBUGLOG("Backbuffer created");
   if (!CreateDepthBuffer(XRes, YRes)) {
     return false;
   }
-  FORCEDDEBUGLOG("Depthbuffer created");
   DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
 
-  FORCEDDEBUGLOG("rendertargets set");
-
   SetViewport(CRect(0, 0, XRes, YRes));
-  FORCEDDEBUGLOG("viewports set");
 
   if (CreateDefaultRenderStates())
     LOG_NFO("%s", "[core] DirectX11 Device initialization successful.");
-
-  FORCEDDEBUGLOG("default renderstates created");
 
   D3D11_QUERY_DESC queryDesc;
   memset(&queryDesc, 0, sizeof(queryDesc));
@@ -252,7 +228,6 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
   LOG_NFO("%s", "[core] Creating DirectComposition swap chain");
 
-  FORCEDDEBUGLOG("Initapi");
   HRESULT res = S_OK;
 
   IDXGIFactory2* dxgiFactory;
@@ -279,7 +254,6 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
         "without debug mode...",
         err.ErrorMessage());
 #endif
-    FORCEDDEBUGLOG("About to create d3d device");
     res = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0,
                             nullptr, 0, D3D11_SDK_VERSION, &Device, nullptr,
                             &DeviceContext);
@@ -289,7 +263,6 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
               error.ErrorMessage());
       return false;
     }
-    FORCEDDEBUGLOG("D3D device created");
 #ifdef ENABLE_CORE_DEBUG_MODE
   }
 #endif
@@ -381,22 +354,15 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   if (!CreateBackBuffer(XRes, YRes)) {
     return false;
   }
-  FORCEDDEBUGLOG("Backbuffer created");
   if (!CreateDepthBuffer(XRes, YRes)) {
     return false;
   }
-  FORCEDDEBUGLOG("Depthbuffer created");
   DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
 
-  FORCEDDEBUGLOG("rendertargets set");
-
   SetViewport(CRect(0, 0, XRes, YRes));
-  FORCEDDEBUGLOG("viewports set");
 
   if (CreateDefaultRenderStates())
     LOG_NFO("%s", "[core] DirectX11 Device initialization successful.");
-
-  FORCEDDEBUGLOG("default renderstates created");
 
   D3D11_QUERY_DESC queryDesc;
   memset(&queryDesc, 0, sizeof(queryDesc));
@@ -433,23 +399,17 @@ bool CCoreDX11Device::InitAPI(const HWND hWnd, const bool FullScreen,
 
 bool CCoreDX11Device::Initialize(CCoreWindowHandler* window,
                                  const int32_t AALevel) {
-  FORCEDDEBUGLOG("Initializing DX11 device");
   Window = window;
 
   if (!InitAPI(Window->GetHandle(), Window->GetInitParameters().FullScreen,
                Window->GetXRes(), Window->GetYRes(), AALevel, 60))
     return false;
 
-  FORCEDDEBUGLOG("InitAPI ran");
-
   ShowWindow((HWND)Window->GetHandle(), Window->GetInitParameters().Maximized
                                             ? SW_SHOWMAXIMIZED
                                             : SW_SHOWNORMAL);
-  FORCEDDEBUGLOG("Showwindow ran");
   SetForegroundWindow((HWND)Window->GetHandle());
-  FORCEDDEBUGLOG("Setforegroundwindow ran");
   SetFocus((HWND)Window->GetHandle());
-  FORCEDDEBUGLOG("Setfocus ran");
   return true;
 }
 
