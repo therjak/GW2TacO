@@ -36,46 +36,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="assert.h" />
-    <ClInclude Include="base_config.h" />
-    <ClInclude Include="color.h" />
-    <ClInclude Include="crash_tracker.h" />
-    <ClInclude Include="enum_helpers.h" />
-    <ClInclude Include="file_list.h" />
-    <ClInclude Include="hasher.h" />
-    <ClInclude Include="read_file.h" />
     <ClInclude Include="string_format.h" />
-    <ClInclude Include="image_decompressor.h" />
     <ClInclude Include="logger.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="plane.h" />
-    <ClInclude Include="rectangle.h" />
     <ClInclude Include="ring_buffer.h" />
-    <ClInclude Include="socket.h" />
-    <ClInclude Include="spec_math.h" />
-    <ClInclude Include="sphere.h" />
-    <ClInclude Include="stream_reader.h" />
-    <ClInclude Include="stream_writer.h" />
-    <ClInclude Include="timer.h" />
-    <ClInclude Include="stack_tracker.h" />
-    <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="file_list.cpp" />
-    <ClCompile Include="hasher.cpp" />
-    <ClCompile Include="image_decompressor.cpp" />
     <ClCompile Include="logger.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="read_file.cpp" />
-    <ClCompile Include="socket.cpp" />
-    <ClCompile Include="spec_math.cpp" />
-    <ClCompile Include="stream_reader.cpp" />
-    <ClCompile Include="stream_writer.cpp" />
     <ClCompile Include="string_format.cpp" />
-    <ClCompile Include="timer.cpp" />
-    <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B6271439-ACCF-49CD-8F84-AA1156FEDE17}</ProjectGuid>

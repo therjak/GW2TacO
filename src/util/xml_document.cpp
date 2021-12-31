@@ -1,6 +1,9 @@
 #include "xml_document.h"
 
+#include <windows.h>
+//
 #include <combaseapi.h>
+#include <fileapi.h>
 #include <objbase.h>
 
 #include <cstdio>
@@ -9,17 +12,36 @@
 #include <string_view>
 
 #include "src/base/logger.h"
-#include "src/base/read_file.h"
 #include "src/util/RapidXML/rapidxml.hpp"
 #include "src/util/RapidXML/rapidxml_print.hpp"
 #include "src/util/xml_node.h"
+
+namespace {
+std::string ReadFile(std::string_view name) {
+  HANDLE hFile =
+      CreateFile(name.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
+                 nullptr, OPEN_EXISTING, 0, nullptr);
+  if (hFile == INVALID_HANDLE_VALUE) {
+    return std::string();
+  }
+  int32_t size = GetFileSize(hFile, nullptr);
+  auto ret = std::string(size, 0);
+  DWORD nRead = 0;
+  bool b = ::ReadFile(hFile, ret.data(), size, &nRead, nullptr);
+  CloseHandle(hFile);
+  if (!b || nRead != size) {
+    return std::string();
+  }
+  return ret;
+}
+}  // namespace
 
 CXMLDocument::CXMLDocument() = default;
 
 CXMLDocument::~CXMLDocument() { CoUninitialize(); }
 
 bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
-  memString = baselib::ReadFile(szFileName);
+  memString = ReadFile(szFileName);
   if (memString.empty()) {
     return false;
   }
@@ -33,22 +55,6 @@ bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
 
   return true;
 }
-
-// throws HRESULT as a long on FAILED
-#define HRCALL(a)                       \
-  {                                     \
-    HRESULT __hr;                       \
-    __hr = (a);                         \
-    if (FAILED(__hr)) throw(long) __hr; \
-  }
-
-// throws HRESULT as a long on FAILED or if !b is true
-#define HRCALLRV(a, b)                          \
-  {                                             \
-    HRESULT __hr;                               \
-    __hr = (a);                                 \
-    if (FAILED(__hr) || !(b)) throw(long) __hr; \
-  }
 
 bool CXMLDocument::LoadFromString(std::string_view s) {
   memString = s;

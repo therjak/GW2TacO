@@ -48,20 +48,10 @@ void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
 
 bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
                                      bool Append /*= true*/) {
-#ifndef UNICODE
   if (!Append)
     return (!fopen_s(&f, Filename.data(), "wt"));
   else
     return (!fopen_s(&f, Filename.data(), "at"));
-#else
-  CString s = Filename;
-  char Fname[2048];
-  s.WriteAsMultiByte(Fname, 2048);
-  if (!Append)
-    return (!fopen_s(&f, Fname, "wt, ccs= UTF-8 "));
-  else
-    return (!fopen_s(&f, Fname, "at, ccs= UTF-8 "));
-#endif
 }
 
 CLoggerOutput_File::~CLoggerOutput_File() {

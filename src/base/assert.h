@@ -1,11 +1,10 @@
 #pragma once
-#include "src/base/base_config.h"
 
 #ifdef _DEBUG
 #include <intrin.h>
 #endif
 
-#ifndef MEMORY_TRACKING
+#ifndef _DEBUG
 // memtracking disabled:
 
 #ifdef _DEBUG
