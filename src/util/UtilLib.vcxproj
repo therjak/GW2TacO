@@ -35,9 +35,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="jsonxx.cc" />
     <ClCompile Include="miniz.c" />
     <ClCompile Include="png_decompressor.cpp" />
@@ -48,6 +45,10 @@
     <ClInclude Include="jsonxx.h" />
     <ClInclude Include="miniz.h" />
     <ClInclude Include="png_decompressor.h" />
+    <ClInclude Include="RapidXML\rapidxml.hpp" />
+    <ClInclude Include="RapidXML\rapidxml_iterators.hpp" />
+    <ClInclude Include="RapidXML\rapidxml_print.hpp" />
+    <ClInclude Include="RapidXML\rapidxml_utils.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
     <ClInclude Include="xml_document.h" />
