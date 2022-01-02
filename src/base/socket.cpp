@@ -7,6 +7,7 @@ WSADATA wsaData;
 #include <ws2tcpip.h>
 
 #include <memory>
+#pragma comment(lib, "Ws2_32.lib")
 
 CSocket::CSocket() : CStreamReader(), CStreamWriter() {
   Socket = INVALID_SOCKET;

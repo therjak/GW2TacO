@@ -37,34 +37,23 @@
   <ItemGroup>
     <ClCompile Include="jsonxx.cc" />
     <ClCompile Include="miniz.c" />
-    <ClCompile Include="png_decompressor.cpp" />
-    <ClCompile Include="xml_document.cpp" />
-    <ClCompile Include="xml_node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="jsonxx.h" />
     <ClInclude Include="miniz.h" />
-    <ClInclude Include="png_decompressor.h" />
     <ClInclude Include="RapidXML\rapidxml.hpp" />
     <ClInclude Include="RapidXML\rapidxml_iterators.hpp" />
     <ClInclude Include="RapidXML\rapidxml_print.hpp" />
     <ClInclude Include="RapidXML\rapidxml_utils.hpp" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="stb_image_write.h" />
-    <ClInclude Include="xml_document.h" />
-    <ClInclude Include="xml_node.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\base\BaseLib.vcxproj">
-      <Project>{b6271439-accf-49cd-8f84-aa1156fede17}</Project>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{ECDB5E35-F1F9-4619-88E7-B9F14F4E0A1A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>UtilLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>util</ProjectName>
+    <ProjectName>third_party</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_MultiByte|Win32'" Label="Configuration">
