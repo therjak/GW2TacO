@@ -42,6 +42,8 @@
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")
 #pragma comment(lib, "Dwmapi.lib")
+#pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "Shell32.lib")
 
 using math::CRect;
 

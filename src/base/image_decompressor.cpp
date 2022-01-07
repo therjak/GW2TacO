@@ -7,6 +7,8 @@
 
 #include "src/base/logger.h"
 
+#pragma comment(lib, "Gdi32.lib")
+
 #define HIMETRIC_INCH 2540
 
 std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,

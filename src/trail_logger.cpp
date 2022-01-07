@@ -16,6 +16,8 @@
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
 
+#pragma comment(lib, "Comdlg32.lib")
+
 #define TRAILFILEVERSION 0
 
 using math::CMatrix4x4;
