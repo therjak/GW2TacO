@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 
 #include "src/base/vector.h"
@@ -7,15 +8,7 @@
 namespace math {
 
 class CMatrix4x4 {
-  union {
-    struct {
-      float _11, _12, _13, _14;
-      float _21, _22, _23, _24;
-      float _31, _32, _33, _34;
-      float _41, _42, _43, _44;
-    };
-    float m[4][4] = {{0}};
-  };
+  std::array<std::array<float, 4>, 4> m = {{0}};
 
  public:
   constexpr CMatrix4x4() : m{{0}} {}
@@ -26,10 +19,9 @@ class CMatrix4x4 {
              float f31, float f32, float f33, float f34,  //
              float f41, float f42, float f43, float f44);
 
-  float& operator()(uint32_t Row, uint32_t Col);
-  float operator()(uint32_t Row, uint32_t Col) const;
-  explicit operator float*();
-  explicit operator const float*() const;
+  constexpr const std::array<std::array<float, 4>, 4>& data() const {
+    return m;
+  }
   CVector4 Row(int32_t x) const;
   CVector4 Col(int32_t x) const;
   CMatrix4x4& operator*=(const CMatrix4x4& mat);

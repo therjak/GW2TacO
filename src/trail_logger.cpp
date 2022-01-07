@@ -124,8 +124,18 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
           App->GetDevice()->SetTexture(CORESMP_PS0, trailTexture.get());
 
           constBuffer->Reset();
-          constBuffer->AddData(static_cast<float*>(cam), 16 * 4);
-          constBuffer->AddData(static_cast<float*>(persp), 16 * 4);
+          const auto& cam_data = cam.data();
+          const auto cam_size_x = cam_data[0].size() * sizeof(float);
+          constBuffer->AddData(cam_data[0].data(), cam_size_x);
+          constBuffer->AddData(cam_data[1].data(), cam_size_x);
+          constBuffer->AddData(cam_data[2].data(), cam_size_x);
+          constBuffer->AddData(cam_data[3].data(), cam_size_x);
+          const auto& persp_data = persp.data();
+          const auto persp_size_x = persp_data[0].size() * sizeof(float);
+          constBuffer->AddData(persp_data[0].data(), persp_size_x);
+          constBuffer->AddData(persp_data[1].data(), persp_size_x);
+          constBuffer->AddData(persp_data[2].data(), persp_size_x);
+          constBuffer->AddData(persp_data[3].data(), persp_size_x);
           constBuffer->AddData(&mumbleLink.charPosition, 12);
           constBuffer->AddData(&one, 4);
           constBuffer->AddData(data.data(), 16);
@@ -824,8 +834,18 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
   data[0] *= typeData.animSpeed;
 
   constBuffer->Reset();
-  constBuffer->AddData(static_cast<float*>(cam), 16 * 4);
-  constBuffer->AddData(static_cast<float*>(persp), 16 * 4);
+  const auto& cam_data = cam.data();
+  const auto cam_size_x = cam_data[0].size() * sizeof(float);
+  constBuffer->AddData(cam_data[0].data(), cam_size_x);
+  constBuffer->AddData(cam_data[1].data(), cam_size_x);
+  constBuffer->AddData(cam_data[2].data(), cam_size_x);
+  constBuffer->AddData(cam_data[3].data(), cam_size_x);
+  const auto& persp_data = persp.data();
+  const auto persp_size_x = persp_data[0].size() * sizeof(float);
+  constBuffer->AddData(persp_data[0].data(), persp_size_x);
+  constBuffer->AddData(persp_data[1].data(), persp_size_x);
+  constBuffer->AddData(persp_data[2].data(), persp_size_x);
+  constBuffer->AddData(persp_data[3].data(), persp_size_x);
   constBuffer->AddData(&mumbleLink.charPosition, 12);
   constBuffer->AddData(&one, 4);
   constBuffer->AddData(data.data(), 16);
