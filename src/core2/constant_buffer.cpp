@@ -10,7 +10,7 @@ CCoreConstantBuffer::~CCoreConstantBuffer() = default;
 
 void CCoreConstantBuffer::Reset() { DataLength = 0; }
 
-void CCoreConstantBuffer::AddData(void* DataIn, int32_t Length) {
+void CCoreConstantBuffer::AddData(const void* DataIn, int32_t Length) {
   if (DataLength + Length > BufferLength) {
     std::unique_ptr<uint8_t[]> OldData;
     OldData.swap(Data);
