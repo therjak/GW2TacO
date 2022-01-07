@@ -52,7 +52,9 @@ class CMatrix4x4 {
   constexpr CMatrix4x4& SetIdentity();
   constexpr CVector4 Apply(const CVector3& v) const;
   constexpr CVector4 Apply(const CVector4& v) const;
-  float Determinant() const;
+  constexpr float Determinant() const {
+    return -Col(3) * CVector4::Cross(Col(0), Col(1), Col(2));
+  }
   void Invert();
   CMatrix4x4 Inverted() const;
   void SetLookAtLH(const CVector3& Eye, const CVector3& Target,

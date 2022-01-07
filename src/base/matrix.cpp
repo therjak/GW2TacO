@@ -111,10 +111,6 @@ CMatrix4x4 CMatrix4x4::Inverted() const {
 
 void CMatrix4x4::Invert() { *this = Inverted(); }
 
-float CMatrix4x4::Determinant() const {
-  return -Col(3) * CVector4::Cross(Col(0), Col(1), Col(2));
-}
-
 CMatrix4x4 CMatrix4x4::Rotation(const CVector3& Axis, const float Angle) {
   const float s = std::cos(Angle / 2.0f);
   const CVector3 v = Axis * std::sin(Angle / 2.0f);
