@@ -1,12 +1,12 @@
 ﻿#include "src/wvw.h"
 
 #include <ctime>
+#include <format>
 #include <string_view>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 
-#include "src/base/string_format.h"
 #include "src/gw2_api.h"
 #include "src/gw2_tactical.h"
 #include "src/language.h"
@@ -210,7 +210,7 @@ void LoadWvWObjectives() {
 
       if (obj.has<Array>("coord")) {
         if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
-          auto mapPath = FormatString("/v2/maps?id=%d", mapID);
+          auto mapPath = std::format("/v2/maps?id={:d}", mapID);
           auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
 
           Object map;
@@ -384,7 +384,7 @@ void UpdateWvWStatus() {
       return;
     }
 
-    auto apiPath = FormatString("/v2/wvw/matches?world=%d", key->worldId);
+    auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->worldId);
     auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath);
 
     Object o;

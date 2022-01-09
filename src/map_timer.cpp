@@ -1,11 +1,11 @@
 ﻿#include "src/map_timer.h"
 
 #include <algorithm>
+#include <format>
 #include <mutex>
 #include <string>
 #include <thread>
 
-#include "src/base/string_format.h"
 #include "src/gw2_api.h"
 #include "src/overlay_config.h"
 #include "src/util/jsonxx.h"
@@ -249,19 +249,18 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
                                map.events[currevent].length * 60;
             if (timeleft >= 0 &&
                 timeleft <= map.events[currevent].length * 60) {
-              text = !text.empty() ? FormatString("%s %d:%.2d", text.c_str(),
-                                                  timeleft / 60, timeleft % 60)
-                                   : FormatString("%d:%.2d", timeleft / 60,
-                                                  timeleft % 60);
+              text = !text.empty() ? std::format("{:s} {:d}:{:02d}", text,
+                                                 timeleft / 60, timeleft % 60)
+                                   : std::format("{:d}:{:02d}", timeleft / 60,
+                                                 timeleft % 60);
             }
           }
 
           if (ClientToScreen(r.GetIntersection(cl))
                   .Contains(GetApplication()->GetMousePos())) {
-            mouseToolTip =
-                !map.events[currevent].name.empty()
-                    ? FormatString("%s - %s", map.name.c_str(), text.c_str())
-                    : text;
+            mouseToolTip = !map.events[currevent].name.empty()
+                               ? std::format("{:s} - {:s}", map.name, text)
+                               : text;
           }
 
           CPoint p = f->GetCenter(text, r, TextTransform);

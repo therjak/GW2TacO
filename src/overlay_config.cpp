@@ -1,12 +1,12 @@
 ﻿#include "src/overlay_config.h"
 
+#include <format>
 #include <map>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 
 #include "src/base/logger.h"
-#include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/util/xml_document.h"
 
@@ -174,7 +174,7 @@ void GetKeyBindings(std::unordered_map<int32_t, TacOKeyAction>& KeyBindings) {
 void SetKeyBinding(TacOKeyAction action, int32_t key) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[FormatString("KeyboardKey_%d", key)] =
+  ConfigNums[std::format("KeyboardKey_{:d}", key)] =
       static_cast<int32_t>(action);
 }
 
@@ -214,8 +214,7 @@ void GetScriptKeyBindings(
 void SetScriptKeyBinding(std::string_view scriptEvent, int32_t key) {
   configChanged = true;
   lastConfigChangeTime = globalTimer.GetTime();
-  ConfigNums[FormatString("ScriptKey_%s", std::string(scriptEvent).c_str())] =
-      key;
+  ConfigNums[std::format("ScriptKey_{:s}", scriptEvent)] = key;
 }
 
 void DeleteScriptKeyBinding(std::string_view scriptEvent) {

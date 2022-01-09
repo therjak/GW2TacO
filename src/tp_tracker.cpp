@@ -1,12 +1,12 @@
 ﻿#include "src/tp_tracker.h"
 
 #include <algorithm>
+#include <format>
 #include <mutex>
 #include <thread>
 #include <unordered_map>
 #include <vector>
 
-#include "src/base/string_format.h"
 #include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
@@ -49,15 +49,14 @@ __inline std::string ToGold(int32_t value) {
 
   std::string result;
   if (value) {
-    result += FormatString("%d", value) + DICT("gold") + " ";
-    result += FormatString("%.2d", silver) + DICT("silver") + " ";
-    result += FormatString("%.2d", copper) + DICT("copper");
+    result = std::format("{:d}{:s} {:02d}{:s} {:02d}{:s}", value, DICT("gold"),
+                         silver, DICT("silver"), copper, DICT("copper"));
   } else {
     if (silver) {
-      result += FormatString("%d", silver) + DICT("silver") + " ";
-      result += FormatString("%.2d", copper) + DICT("copper");
+      result = std::format("{:d}{:s} {:02d}{:s}", silver, DICT("silver"),
+                           copper, DICT("copper"));
     } else
-      result = FormatString("%d", copper) + DICT("copper");
+      result = std::format("{:d}{:s}", copper, DICT("copper"));
   }
 
   return result;
@@ -299,7 +298,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
                                   false, false, true, true, CColor{0xffffffff});
           auto text = itemData.name + " " + ToGold(price);
           if (buys[x].quantity > 1)
-            text = FormatString("%d ", buys[x].quantity) + text;
+            text = std::format("{:d} ", buys[x].quantity) + text;
           f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
@@ -354,7 +353,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
                                   false, false, true, true, CColor{0xffffffff});
           auto text = itemData.name + " " + ToGold(price);
           if (sells[x].quantity > 1)
-            text = FormatString("%d ", sells[x].quantity) + text;
+            text = std::format("{:d} ", sells[x].quantity) + text;
           f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;

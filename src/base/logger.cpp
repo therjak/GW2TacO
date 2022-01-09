@@ -7,10 +7,9 @@
 
 #include <cstdint>
 #include <ctime>
+#include <format>
 #include <string>
 #include <string_view>
-
-#include "src/base/string_format.h"
 
 CLogger Logger;
 
@@ -104,10 +103,10 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
   time(&rawtime);
   localtime_s(&timeinfo, &rawtime);
 
-  auto TimeStamp =
-      FormatString("[%.4d-%.2d-%.2d %.2d:%.2d:%.2d] ", timeinfo.tm_year + 1900,
-                   timeinfo.tm_mon + 1, timeinfo.tm_mday, timeinfo.tm_hour,
-                   timeinfo.tm_min, timeinfo.tm_sec);
+  auto TimeStamp = std::format("[{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}] ",
+                               timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
+                               timeinfo.tm_mday, timeinfo.tm_hour,
+                               timeinfo.tm_min, timeinfo.tm_sec);
 
   if (Prefix) {
     if (v < LOGVERBOSITY::LOG_WARNING)

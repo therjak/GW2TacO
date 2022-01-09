@@ -1,12 +1,13 @@
 ﻿#include "src/build_info.h"
 
-#include "src/base/string_format.h"
+#include <format>
+
 #include "src/build_count.h"
 
 #ifdef _DEBUG
-std::string TacOBuild = FormatString("%.3d.%dd", RELEASECOUNT, BUILDCOUNT);
+std::string TacOBuild = std::format("{:03d}.{:d}d", RELEASECOUNT, BUILDCOUNT);
 #else
-std::string TacOBuild = FormatString("%.3d.%dr", RELEASECOUNT, BUILDCOUNT);
+std::string TacOBuild = std::format("{:03d}.{:d}r", RELEASECOUNT, BUILDCOUNT);
 #endif
 
 std::string buildDateTime(__DATE__ " " __TIME__);

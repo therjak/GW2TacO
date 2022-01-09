@@ -1,5 +1,7 @@
 ﻿#include "src/ts3_connection.h"
 
+#include <format>
+
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/overlay_config.h"
@@ -36,7 +38,7 @@ void TS3Connection::TryValidateClientID() {
     if (handler.second.Connected && handler.second.clientIDInvalid) {
       currentHandlerID = handler.second.id;
       CommandResponse use =
-          SendCommand(FormatString("use %d", currentHandlerID));
+          SendCommand(std::format("use {:d}", currentHandlerID));
       if (use.ErrorCode) {
         continue;
       }
@@ -132,7 +134,7 @@ void TS3Connection::InitConnection() {
         TS3Schandler handler;
         std::sscanf(schandler.c_str(), "schandlerid=%d", &handler.id);
         handlers[handler.id] = handler;
-        CommandResponse use = SendCommand(FormatString("use %d", handler.id));
+        CommandResponse use = SendCommand(std::format("use {:d}", handler.id));
         if (use.ErrorCode) {
           continue;
         }
@@ -169,7 +171,7 @@ void TS3Connection::InitConnection() {
       }
   }
 
-  SendCommand(FormatString("use %d", currentHandlerID));
+  SendCommand(std::format("use {:d}", currentHandlerID));
 }
 
 TS3Connection::CommandResponse TS3Connection::SendCommand(
@@ -304,7 +306,7 @@ void TS3Connection::ProcessNotification(std::string_view s) {
 
       if (cmd[x].find("status=connected") == 0) {
         handlers[schandlerid].Connected = true;
-        CommandResponse use = SendCommand(FormatString("use %d", schandlerid));
+        CommandResponse use = SendCommand(std::format("use {:d}", schandlerid));
         if (!use.ErrorCode) {
           currentHandlerID = schandlerid;
           CommandResponse whoami = SendCommand("whoami");

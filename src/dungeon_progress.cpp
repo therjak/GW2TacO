@@ -2,11 +2,11 @@
 
 #include <algorithm>
 #include <cctype>
+#include <format>
 #include <string>
 #include <thread>
 #include <unordered_map>
 
-#include "src/base/string_format.h"
 #include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
@@ -178,7 +178,7 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
         posx += f->GetLineHeight() * 2 + 1;
         if (y == 0) posx += f->GetLineHeight() / 2;
         API->DrawRect(r, p.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
-        std::string s = y == 0 ? "S" : FormatString("P%d", y);
+        std::string s = y == 0 ? "S" : std::format("P{:d}", y);
 
         if (d.shortName == "TA") {
           switch (y) {

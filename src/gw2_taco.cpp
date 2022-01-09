@@ -3,11 +3,11 @@
 #include <shellapi.h>
 
 #include <algorithm>
+#include <format>
 #include <mutex>
 #include <thread>
 
 #include "src/base/logger.h"
-#include "src/base/string_format.h"
 #include "src/build_count.h"
 #include "src/build_info.h"
 #include "src/dungeon_progress.h"
@@ -256,7 +256,7 @@ void ChangeUIScale(int size) {
 std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
   for (auto& kb : KeyBindings)
     if (kb.second == action) {
-      return FormatString(" [%c]", kb.first);
+      return std::format(" [{:c}]", kb.first);
       break;
     }
   return "";
@@ -591,7 +591,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
             for (auto& kb : KeyBindings)
               if (static_cast<int32_t>(kb.second) == x) {
-                str = DICT(ActionNames[x]) + FormatString(" [%c]", kb.first);
+                str = DICT(ActionNames[x]) + std::format(" [{:c}]", kb.first);
                 break;
               }
 
@@ -704,7 +704,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
           for (auto& kb : KeyBindings)
             if (static_cast<int32_t>(kb.second) == x) {
-              str = DICT(ActionNames[x]) + FormatString(" [%c]", kb.first);
+              str = DICT(ActionNames[x]) + std::format(" [{:c}]", kb.first);
               break;
             }
 
@@ -1615,10 +1615,20 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     auto infoline = lastInfoLine;
 
     if (lastInfoLine.empty()) {
-      infoline = FormatString(
-          "map: %d world: %d shard: %d position: %f %f %f campos: %.2f %.2f "
-          "%.2f game fps: %.2f overlay fps: %.2f map:%d compPos:%d compRot:%d "
-          "cW:%d cH:%d cR:%f pX:%f pY:%f mcX:%f mcY:%f mS:%f",
+      infoline = std::format(
+          "map: {:d} "
+          "world: {:d} "
+          "shard: {:d} "
+          "position: {:f} {:f} {:f} "
+          "campos: {:.2f} {:.2f} {:.2f} "
+          "game fps: {:.2f} "
+          "overlay fps: {:.2f} "
+          "map:{:d} "
+          "compPos:{:d} "
+          "compRot:{:d} "
+          "cW:{:d} cH:{:d} cR:{:f} "
+          "pX::{:f} pY:{:f} "
+          "mcX:{:f} mcY:{:f} mS:{:f}",
           mumbleLink.mapID, mumbleLink.worldID, mumbleLink.mapInstance,
           mumbleLink.charPosition.x, mumbleLink.charPosition.y,
           mumbleLink.charPosition.z, mumbleLink.camDir.x, mumbleLink.camDir.y,
@@ -1675,9 +1685,12 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
         maxdistance2d = /*WorldToGameCoords*/ (maxdistance2d);
         maxdistance3d = /*WorldToGameCoords*/ (maxdistance3d);
 
-        infoline = FormatString(
-            "map: %d markercenter: %.2f %.2f %.2f maxdist2d: %.2f maxdist3d: "
-            "%.2f playerdist: %.2f",
+        infoline = std::format(
+            "map: {:d} "
+            "markercenter: {:.2f} {:.2f} {:.2f} "
+            "maxdist2d: {:.2f} "
+            "maxdist3d: {:.2f} "
+            "playerdist: {:.2f}",
             mumbleLink.mapID, center.x, center.y, center.z, maxdistance2d,
             maxdistance3d, playerdist);
       }
@@ -1738,7 +1751,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       } else {
         line1 = DICT("action") + " '" +
                 DICT(ActionNames[(int32_t)ActionToRebind]) + "' " +
-                DICT("currently_bound") + FormatString(" '%c'", key);
+                DICT("currently_bound") + std::format(" '{:c}'", key);
       }
     } else {
       if (ScriptActionToRebind <
@@ -2069,19 +2082,20 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
   CWBItem* v4 = App->GetRoot()->FindChildByID("RedCircle");
 
   if (v1) {
-    auto str = FormatString(
-        "#MenuButton{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; "
-        "background:skin(taco_stretch_dark) top left; } "
-        "#MenuButton:hover{background:skin(taco_stretch_light) top left;} "
-        "#MenuButton:active{background:skin(taco_stretch_light) top left;}",
+    auto str = std::format(
+        "#MenuButton{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
+        "background:skin(taco_stretch_dark) top left; }} "
+        "#MenuButton:hover{{background:skin(taco_stretch_light) top left;}} "
+        "#MenuButton:active{{background:skin(taco_stretch_light) top left;}}",
         int(tacoIconRect.x1 * scale), int(tacoIconRect.y1 * scale),
         int(tacoIconRect.Width() * scale), int(tacoIconRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
   if (v2) {
-    auto str = FormatString(
-        "#MenuHoverBox{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; }",
+    auto str = std::format(
+        "#MenuHoverBox{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
+        "}}",
         int(menuHoverRect.x1 * scale), int(menuHoverRect.y1 * scale),
         int(menuHoverRect.Width() * scale),
         int(menuHoverRect.Height() * scale));
@@ -2089,17 +2103,17 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
   }
 
   if (v3) {
-    auto str = FormatString(
-        "#TPButton{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; }",
+    auto str = std::format(
+        "#TPButton{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; }}",
         int(tpButtonRect.x1 * scale), int(tpButtonRect.y1 * scale),
         int(tpButtonRect.Width() * scale), int(tpButtonRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
   if (v4) {
-    auto str = FormatString(
-        "#RedCircle{ left:%dpx; top:%dpx; width:%dpx; height:%dpx; "
-        "background:skin(redcircle_stretch) top left; }",
+    auto str = std::format(
+        "#RedCircle{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
+        "background:skin(redcircle_stretch) top left; }}",
         int(tpHighlightRect.x1 * scale), int(tpHighlightRect.y1 * scale),
         int(tpHighlightRect.Width() * scale),
         int(tpHighlightRect.Height() * scale));

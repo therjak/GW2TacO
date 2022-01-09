@@ -1,10 +1,10 @@
 ﻿#include "src/locational_timer.h"
 
+#include <format>
 #include <vector>
 
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
-#include "src/base/string_format.h"
 #include "src/base/vector.h"
 #include "src/mumble_link.h"
 #include "src/overlay_config.h"
@@ -122,7 +122,7 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
 
       auto s = e.Text;
       if (timepos < e.Time && timepos > e.Time - e.CountdownLength)
-        s += FormatString(" in %d", static_cast<int32_t>(e.Time - timepos));
+        s += std::format(" in {:d}", static_cast<int32_t>(e.Time - timepos));
 
       CPoint pos = f->GetTextPosition(
           s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),

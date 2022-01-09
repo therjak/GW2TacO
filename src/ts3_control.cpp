@@ -1,8 +1,8 @@
 ﻿#include "src/ts3_control.h"
 
 #include <algorithm>
+#include <format>
 
-#include "src/base/string_format.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
 #include "src/ts3_connection.h"
@@ -65,9 +65,8 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
             if (cl.channelid == mychannelid) participants++;
           }
 
-          auto channelText = FormatString(
-              "%s (%d)", handler.Channels[mychannelid].name.c_str(),
-              participants);
+          auto channelText = std::format(
+              "{:s} ({:d})", handler.Channels[mychannelid].name, participants);
 
           CPoint p = f->GetTextPosition(
               channelText, GetClientRect() - CRect(size / 2, ypos, 0, 0),

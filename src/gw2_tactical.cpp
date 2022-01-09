@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <format>
 #include <iterator>
 #include <string>
 #include <thread>
@@ -685,11 +686,11 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
     int32_t minutes = (timeLeft - seconds) / 60;
     int32_t hours = (timeLeft - seconds - minutes * 60) / 60;
 
-    if (hours) txt += FormatString("%.2d:", hours);
+    if (hours) txt += std::format("{:02d}:", hours);
 
-    if (minutes) txt += FormatString("%.2d:", minutes);
+    if (minutes) txt += std::format("{:02d}:", minutes);
 
-    txt += FormatString("%.2d", seconds);
+    txt += std::format("{:02d}", seconds);
 
     int32_t offset = 0;
     if (drawDistance) offset += f->GetLineHeight();
@@ -744,10 +745,10 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
       std::string txt;
 
       if (!useMetricDisplay)
-        txt = FormatString("%d", static_cast<int32_t>(charDist));
+        txt = std::format("{:d}", static_cast<int32_t>(charDist));
       else {
         charDist *= 0.0254f;
-        txt = FormatString("%.1fm", charDist);
+        txt = std::format("{:.1f}m", charDist);
       }
 
       p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
@@ -1737,7 +1738,7 @@ void MarkerTypeData::Write(CXMLNode* n) {
   if (bits.minSizeSaved) n->SetAttributeFromInteger("minSize", minSize);
   if (bits.maxSizeSaved) n->SetAttributeFromInteger("maxSize", maxSize);
   if (bits.colorSaved)
-    n->SetAttribute("color", FormatString("%x", color.argb()));
+    n->SetAttribute("color", std::format("{:x}", color.argb()));
   if (bits.trailDataSaved)
     n->SetAttribute("trailData", GetStringFromMap(trailData));
   if (bits.animSpeedSaved) n->SetAttributeFromFloat("animSpeed", animSpeed);

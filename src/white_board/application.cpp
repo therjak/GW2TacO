@@ -4,6 +4,7 @@
 
 #include <clocale>
 #include <cstdio>
+#include <format>
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
@@ -963,8 +964,8 @@ void CWBApplication::TakeScreenshot() {
   DrawAPI->DrawRect(CRect(0, 0, XRes, YRes), CColor{0xff000000});
   DrawAPI->FlushDrawBuffer();
 
-  auto fname = FormatString("Screenshots\\%s_%04d.png", ScreenShotName.c_str(),
-                            maxcnt + 1);
+  auto fname =
+      std::format("Screenshots\\{:s}_{:04d}.png", ScreenShotName, maxcnt + 1);
   DrawAPI->GetDevice()->TakeScreenShot(fname);
 
   DrawAPI->SetUIRenderState();
