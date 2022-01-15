@@ -113,7 +113,7 @@ bool CCoreDX11VertexFormat::Create(
                              vs->GetBinaryLength(), &VertexFormatHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateInputLayout failed (%s)", err.ErrorMessage());
+    Log_Err("[core] CreateInputLayout failed ({:s})", err.ErrorMessage());
     return false;
   }
 

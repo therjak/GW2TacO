@@ -120,7 +120,7 @@ bool APIKey::HasCaps(std::string_view cap) {
 }
 
 std::string APIKey::QueryAPI(std::string_view path) {
-  LOG_NFO("[GW2TacO] Querying the API: %s", std::string(path).c_str());
+  Log_Nfo("[GW2TacO] Querying the API: {:s}", path);
 
   return FetchAPIData(path, apiKey);
 }

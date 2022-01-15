@@ -48,7 +48,7 @@ bool CCoreDX11VertexBuffer::Create(const uint8_t* Data, const uint32_t size) {
   const HRESULT res = Dev->CreateBuffer(&bd, &vxData, &VertexBufferHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateBuffer for vertexbuffer failed (%s)",
+    Log_Err("[core] CreateBuffer for vertexbuffer failed ({:s})",
             err.ErrorMessage());
     return false;
   }
@@ -72,7 +72,7 @@ bool CCoreDX11VertexBuffer::CreateDynamic(const uint32_t size) {
   const HRESULT res = Dev->CreateBuffer(&bd, nullptr, &VertexBufferHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateBuffer for vertexbuffer failed (%s)",
+    Log_Err("[core] CreateBuffer for vertexbuffer failed ({:s})",
             err.ErrorMessage());
     return false;
   }
@@ -101,7 +101,7 @@ bool CCoreDX11VertexBuffer::Update(const int32_t Offset, const uint8_t* Data,
 bool CCoreDX11VertexBuffer::Lock(void** Result, const uint32_t Offset,
                                  const int32_t size, const int32_t Flags) {
   if (!Dynamic) {
-    LOG_ERR("%s", "[core] Attempting to lock static vertexbuffer failed");
+    Log_Err("[core] Attempting to lock static vertexbuffer failed");
     return false;
   }
 

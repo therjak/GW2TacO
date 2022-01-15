@@ -49,7 +49,7 @@ bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
   try {
     doc.parse<0>(memString.data());
   } catch (const std::exception& e) {
-    LOG_ERR("[XML] Failed to load document: %s", e.what());
+    Log_Err("[XML] Failed to load document: {:s}", e.what());
     return false;
   }
 
@@ -62,7 +62,7 @@ bool CXMLDocument::LoadFromString(std::string_view s) {
   try {
     doc.parse<0>(memString.data());
   } catch (const std::exception& e) {
-    LOG_ERR("[XML] Failed to load document: %s", e.what());
+    Log_Err("[XML] Failed to load document: {:s}", e.what());
     return false;
   }
 

@@ -57,7 +57,7 @@ CCoreDX11Device::~CCoreDX11Device() {
     Device->QueryInterface(__uuidof(ID3D11Debug),
                            reinterpret_cast<void**>(&dbg));
     if (dbg) {
-      LOG_NFO("%s", "[core] Dumping Live objects before freeing device:");
+      Log_Nfo("[core] Dumping Live objects before freeing device:");
       dbg->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
       dbg->Release();
     }
@@ -79,7 +79,7 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
                              reinterpret_cast<LPVOID*>(&bb));
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 Swapchain buffer acquisition failed (%s)",
+    Log_Err("[core] DirectX11 Swapchain buffer acquisition failed ({:s})",
             err.ErrorMessage());
     return false;
   }
@@ -87,7 +87,7 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
   res = Device->CreateRenderTargetView(bb, nullptr, &BackBufferView);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 Rendertarget View creation failed (%s)",
+    Log_Err("[core] DirectX11 Rendertarget View creation failed ({:s})",
             err.ErrorMessage());
     return false;
   }
@@ -95,7 +95,7 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
   res = bb->Release();
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 Swapchain buffer texture release failed (%s)",
+    Log_Err("[core] DirectX11 Swapchain buffer texture release failed ({:s})",
             err.ErrorMessage());
     // return false;
   }
@@ -133,7 +133,7 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
   res = Device->CreateTexture2D(&depthBufferDesc, nullptr, &DepthBuffer);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 Depth Texture creation failed (%s)",
+    Log_Err("[core] DirectX11 Depth Texture creation failed ({:s})",
             err.ErrorMessage());
     return false;
   }
@@ -148,7 +148,7 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
                                        &DepthBufferView);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 DepthStencil View creation failed (%s)",
+    Log_Err("[core] DirectX11 DepthStencil View creation failed ({:s})",
             err.ErrorMessage());
     return false;
   }
@@ -159,7 +159,7 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t XRes, int32_t YRes) {
 bool CCoreDX11Device::CreateClassicSwapChain(
     const HWND hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
-  LOG_NFO("%s", "[core] Creating classic swap chain");
+  Log_Nfo("[core] Creating classic swap chain");
 
   HRESULT res = S_OK;
 
@@ -181,8 +181,8 @@ bool CCoreDX11Device::CreateClassicSwapChain(
       &DeviceContext);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_WARN(
-        "[core] DirectX11 debug mode device creation failed. (%s) Trying "
+    Log_Warn(
+        "[core] DirectX11 debug mode device creation failed. ({:s}) Trying "
         "without debug mode...",
         err.ErrorMessage());
 #endif
@@ -192,7 +192,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
         &Device, nullptr, &DeviceContext);
     if (res != S_OK) {
       _com_error error(res);
-      LOG_ERR("[core] DirectX11 Device creation failed (%s)",
+      Log_Err("[core] DirectX11 Device creation failed ({:s})",
               error.ErrorMessage());
       return false;
     }
@@ -211,7 +211,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
   SetViewport(CRect(0, 0, XRes, YRes));
 
   if (CreateDefaultRenderStates())
-    LOG_NFO("%s", "[core] DirectX11 Device initialization successful.");
+    Log_Nfo("[core] DirectX11 Device initialization successful.");
 
   D3D11_QUERY_DESC queryDesc;
   memset(&queryDesc, 0, sizeof(queryDesc));
@@ -226,7 +226,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
 bool CCoreDX11Device::CreateDirectCompositionSwapchain(
     const HWND hWnd, const bool FullScreen, const int32_t XRes,
     const int32_t YRes, const int32_t AALevel, const int32_t RefreshRate) {
-  LOG_NFO("%s", "[core] Creating DirectComposition swap chain");
+  Log_Nfo("[core] Creating DirectComposition swap chain");
 
   HRESULT res = S_OK;
 
@@ -239,7 +239,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 #endif
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DXGI factory creation failed (%s)", error.ErrorMessage());
+    Log_Err("[core] DXGI factory creation failed ({:s})", error.ErrorMessage());
     return false;
   }
 
@@ -249,8 +249,8 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
                           D3D11_SDK_VERSION, &Device, nullptr, &DeviceContext);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_WARN(
-        "[core] DirectX11 debug mode device creation failed. (%s) Trying "
+    Log_Warn(
+        "[core] DirectX11 debug mode device creation failed. ({:s}) Trying "
         "without debug mode...",
         err.ErrorMessage());
 #endif
@@ -259,7 +259,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
                             &DeviceContext);
     if (res != S_OK) {
       _com_error error(res);
-      LOG_ERR("[core] DirectX11 Device creation failed (%s)",
+      Log_Err("[core] DirectX11 Device creation failed ({:s})",
               error.ErrorMessage());
       return false;
     }
@@ -283,7 +283,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
                                                    nullptr, &SwapChain);
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DirectX11 SwapChain creation failed (%s)",
+    Log_Err("[core] DirectX11 SwapChain creation failed ({:s})",
             error.ErrorMessage());
     return false;
   }
@@ -296,7 +296,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DirectComposition device creation failed (%s)",
+    Log_Err("[core] DirectComposition device creation failed ({:s})",
             error.ErrorMessage());
     return false;
   }
@@ -306,7 +306,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DirectComposition target creation failed (%s)",
+    Log_Err("[core] DirectComposition target creation failed ({:s})",
             error.ErrorMessage());
     return false;
   }
@@ -316,7 +316,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DirectComposition visual creation failed (%s)",
+    Log_Err("[core] DirectComposition visual creation failed ({:s})",
             error.ErrorMessage());
     return false;
   }
@@ -325,8 +325,9 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR(
-        "[core] DirectComposition visual swapchain content setting failed (%s)",
+    Log_Err(
+        "[core] DirectComposition visual swapchain content setting failed "
+        "({:s})",
         error.ErrorMessage());
     return false;
   }
@@ -335,7 +336,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DirectComposition setting target root visual failed (%s)",
+    Log_Err("[core] DirectComposition setting target root visual failed ({:s})",
             error.ErrorMessage());
     return false;
   }
@@ -344,7 +345,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   if (res != S_OK) {
     _com_error error(res);
-    LOG_ERR("[core] DirectComposition commit failed (%s)",
+    Log_Err("[core] DirectComposition commit failed ({:s})",
             error.ErrorMessage());
     return false;
   }
@@ -362,7 +363,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   SetViewport(CRect(0, 0, XRes, YRes));
 
   if (CreateDefaultRenderStates())
-    LOG_NFO("%s", "[core] DirectX11 Device initialization successful.");
+    Log_Nfo("[core] DirectX11 Device initialization successful.");
 
   D3D11_QUERY_DESC queryDesc;
   memset(&queryDesc, 0, sizeof(queryDesc));
@@ -418,7 +419,7 @@ bool CCoreDX11Device::IsWindowed() {
   IDXGIOutput* i = nullptr;
 
   if (SwapChain->GetFullscreenState(&fs, &i) != S_OK) {
-    LOG_ERR("%s", "[core] Failed to get fullscreen state");
+    Log_Err("[core] Failed to get fullscreen state");
     return false;
   }
 
@@ -430,15 +431,16 @@ bool CCoreDX11Device::IsWindowed() {
 
 void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
   if (xr <= 0 || yr <= 0) {
-    LOG_WARN("[core] Trying to resize swapchain to invalid resolution: %d %d",
-             xr, yr);
+    Log_Warn(
+        "[core] Trying to resize swapchain to invalid resolution: {:d} {:d}",
+        xr, yr);
     return;
   }
 
   DXGI_SWAP_CHAIN_DESC desc;
   HRESULT res = SwapChain->GetDesc(&desc);
   if (res != S_OK) {
-    LOG_ERR("%s", "[core] Failed to get swapchain description");
+    Log_Err("[core] Failed to get swapchain description");
     return;
   }
 
@@ -463,9 +465,9 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
                                  desc.Flags);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR(
-        "[core] Failed to resize swapchain to %d %d (bufferCount: %d, flags: "
-        "%d) (%s)",
+    Log_Err(
+        "[core] Failed to resize swapchain to {:d} {:d} "
+        "(bufferCount: {:d}, flags: {:d}) ({:s})",
         xr, yr, desc.BufferCount, desc.Flags, err.ErrorMessage());
     return;
   }
@@ -483,12 +485,12 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
 
 void CCoreDX11Device::SetFullScreenMode(const bool FullScreen, const int32_t xr,
                                         const int32_t yr) {
-  LOG_NFO("[core] Switching fullscreen mode to %d", FullScreen);
+  Log_Nfo("[core] Switching fullscreen mode to {:d}", FullScreen);
 
   const HRESULT res = SwapChain->SetFullscreenState(FullScreen, nullptr);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] Failed to set FullScreen mode to %d. (%s)", FullScreen,
+    Log_Err("[core] Failed to set FullScreen mode to {:d}. ({:s})", FullScreen,
             err.ErrorMessage());
     return;
   }
@@ -1016,7 +1018,7 @@ void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
                                            reinterpret_cast<LPVOID*>(&bb));
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 Swapchain buffer acquisition failed (%s)",
+    Log_Err("[core] DirectX11 Swapchain buffer acquisition failed ({:s})",
             err.ErrorMessage());
     return;
   }
@@ -1032,7 +1034,7 @@ void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
 
   bb->Release();
 
-  LOG_NFO("[core] Screenshot %s saved", Filename);
+  Log_Nfo("[core] Screenshot {:s} saved", Filename);
 }
 
 #ifdef ENABLE_PIX_API
@@ -1081,7 +1083,7 @@ ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
                                            reinterpret_cast<LPVOID*>(&bb));
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] DirectX11 Swapchain buffer acquisition failed (%s)",
+    Log_Err("[core] DirectX11 Swapchain buffer acquisition failed ({:s})",
             err.ErrorMessage());
     return nullptr;
   }

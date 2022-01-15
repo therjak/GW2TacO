@@ -210,9 +210,8 @@ TS3Connection::CommandResponse TS3Connection::SendCommand(
       }
 
       if (response.ErrorCode)
-        LOG_DBG("[GW2TacO] command %s response: %d %s",
-                std::string(message).c_str(), response.ErrorCode,
-                response.Message.c_str());
+        Log_Dbg("[GW2TacO] command {:s} response: {:d} {:s}", message,
+                response.ErrorCode, response.Message);
       break;
     }
   }

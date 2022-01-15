@@ -382,12 +382,12 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(std::string_view fname,
                 auto t = tex.get();
                 textureCache[s] = std::move(tex);
                 return t;
-              } else
-                LOG_ERR(
-                    "[GW2TacO] Failed to decompress image %s from archive %s",
-                    std::string(fname).c_str(),
-                    x == 0 ? std::string(zipFile).c_str()
-                           : std::string(categoryZip).c_str());
+              } else {
+                Log_Err(
+                    "[GW2TacO] Failed to decompress image {:s} from archive "
+                    "{:s}",
+                    fname, x == 0 ? zipFile : categoryZip);
+              }
             }
           }
         }
@@ -401,13 +401,13 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(std::string_view fname,
   CStreamReaderMemory f;
   if (!f.Open(s) && !f.Open("POIs\\" + s)) {
     textureCache[s] = nullptr;
-    LOG_ERR("[GW2TacO] Failed to open image %s", s.c_str());
+    Log_Err("[GW2TacO] Failed to open image {:s}", s);
     return trailTexture.get();
   }
 
   auto texture =
       App->GetDevice()->CreateTexture2D(f.GetData(), int32_t(f.GetLength()));
-  if (!texture) LOG_ERR("[GW2TacO] Failed to decompress image %s", s.c_str());
+  if (!texture) Log_Err("[GW2TacO] Failed to decompress image {:s}", s);
   textureCache[s] = std::move(texture);
   return textureCache[s].get();
 }
@@ -420,10 +420,12 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
   if (tex.Open("Data\\trail.png")) {
     trailTexture = App->GetDevice()->CreateTexture2D(tex.GetData(),
                                                      int32_t(tex.GetLength()));
-    if (!trailTexture)
-      LOG_ERR("[GW2TacO] Failed to decompress trail texture image!");
-  } else
-    LOG_ERR("[GW2TacO] Failed to open trail texture!");
+    if (!trailTexture) {
+      Log_Err("[GW2TacO] Failed to decompress trail texture image!");
+    }
+  } else {
+    Log_Err("[GW2TacO] Failed to open trail texture!");
+  }
 
   App->GetDevice()->SetShaderConstants(constBuffer.get());
   trailSampler = App->GetDevice()->CreateSamplerState();
@@ -508,7 +510,7 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
 
   vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
   if (!vertexFormat) {
-    LOG_ERR("[GW2TacO]  Error creating Trail Vertex Format");
+    Log_Err("[GW2TacO]  Error creating Trail Vertex Format");
   }
 }
 
@@ -928,8 +930,7 @@ bool GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
 
   CStreamReaderMemory f;
   if (!f.Open(fileName) && !f.Open("POIs\\" + std::string(fileName))) {
-    LOG_ERR("[GW2TacO] Failed to open trail data file %s",
-            std::string(fileName).c_str());
+    Log_Err("[GW2TacO] Failed to open trail data file {:s}", fileName);
     return false;
   }
 

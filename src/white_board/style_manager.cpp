@@ -96,9 +96,8 @@ void CStyleManager::ApplyStyles(CWBItem* pRootItem) {
         std::string value = ry.second;
 
         if (!item->ApplyStyle(rule, value, PseudoTags)) {
-          LOG_DBG("[css] rule %s was not handled by item '%s' #%s .%s",
-                  rule.c_str(), item->GetType().c_str(), item->GetID().c_str(),
-                  item->GetClassString().c_str());
+          Log_Dbg("[css] rule {:s} was not handled by item '{:s}' #{:s} .{:s}",
+                  rule, item->GetType(), item->GetID(), item->GetClassString());
         }
       }
     }
@@ -116,9 +115,9 @@ void CStyleManager::ApplyStylesFromDeclarations(
     auto PseudoTags = Split(rule, ":");
 
     if (!pRootItem->ApplyStyle(rule, value, PseudoTags)) {
-      LOG_DBG("[css] rule '%s' was not handled by item '%s' #%s .%s",
-              rule.c_str(), pRootItem->GetType().c_str(),
-              pRootItem->GetID().c_str(), pRootItem->GetClassString().c_str());
+      Log_Dbg("[css] rule '{:s}' was not handled by item '{:s}' #{:s} .{:s}",
+              rule, pRootItem->GetType(), pRootItem->GetID(),
+              pRootItem->GetClassString());
     }
   }
 }

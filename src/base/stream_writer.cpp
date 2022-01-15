@@ -96,8 +96,7 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                   reinterpret_cast<LPTSTR>(&pMsgBuf), 0, nullptr);
 
-    LOG_ERR("[writer] Error opening file '%s': %s",
-            std::string(Filename).c_str(), pMsgBuf);
+    Log_Err("[writer] Error opening file '{:s}': {:s}", Filename, pMsgBuf);
     LocalFree(pMsgBuf);
     return 0;
   }

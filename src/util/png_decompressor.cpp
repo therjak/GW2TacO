@@ -18,7 +18,7 @@ bool DecompressPNG(const uint8_t* IData, int32_t IDataSize,
   uint8_t* Data = stbi_load_from_memory(IData, IDataSize, &x, &y, &n, 4);
 
   if (!Data) {
-    LOG_ERR("[png] Image decompression failed: %s", stbi_failure_reason());
+    Log_Err("[png] Image decompression failed: {:s}", stbi_failure_reason());
     return false;
   }
 
@@ -65,8 +65,7 @@ bool ExportPNG(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
 
   bool result = stbi_write_png(FileName.get(), XRes, YRes, 4, Image, XRes * 4);
 
-  if (!result)
-    LOG_ERR("[png] PNG export error ('%s')", std::string(OutFile).c_str());
+  if (!result) Log_Err("[png] PNG export error ('{:s}')", OutFile);
 
   return result;
 }
@@ -81,8 +80,7 @@ bool ExportTga(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
 
   bool result = stbi_write_tga(FileName.get(), XRes, YRes, 4, Image);
 
-  if (!result)
-    LOG_ERR("[png] TGA export error ('%s')", std::string(OutFile).c_str());
+  if (!result) Log_Err("[png] TGA export error ('{:s}')", OutFile);
 
   return result;
 }
@@ -94,8 +92,7 @@ bool ExportBmp(uint8_t* Image, int32_t XRes, int32_t YRes,
 
   bool result = stbi_write_bmp(FileName.get(), XRes, YRes, 4, Image);
 
-  if (!result)
-    LOG_ERR("[png] BMP export error ('%s')", std::string(OutFile).c_str());
+  if (!result) Log_Err("[png] BMP export error ('{:s}')", OutFile);
 
   return result;
 }
@@ -107,8 +104,7 @@ bool ExportRaw(uint8_t* Image, int32_t XRes, int32_t YRes,
 
   bool result = stbi_write_bmp(FileName.get(), XRes, YRes, 4, Image);
 
-  if (!result)
-    LOG_ERR("[png] BMP export error ('%s')", std::string(OutFile).c_str());
+  if (!result) Log_Err("[png] BMP export error ('{:s}')", OutFile);
 
   return result;
 }

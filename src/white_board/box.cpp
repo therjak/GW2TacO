@@ -318,10 +318,10 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
       SetArrangement(WBBOXARRANGEMENT::WB_ARRANGE_VERTICAL);
       return true;
     }
-    LOG_WARN(
-        "[gui] %s has invalid parameter: '%s' (none/horizontal/vertical "
+    Log_Warn(
+        "[gui] {:s} has invalid parameter: '{:s}' (none/horizontal/vertical "
         "required)",
-        std::string(prop).c_str(), std::string(value).c_str());
+        prop, value);
     return false;
   }
 
@@ -345,9 +345,9 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
       return true;
     }
 
-    LOG_WARN(
-        "[gui] %s has invalid parameter: '%s' (left/center/right required)",
-        std::string(prop).c_str(), std::string(value).c_str());
+    Log_Warn(
+        "[gui] {:s} has invalid parameter: '{:s}' (left/center/right required)",
+        prop, value);
 
     return true;
   }
@@ -366,9 +366,9 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
       return true;
     }
 
-    LOG_WARN(
-        "[gui] %s has invalid parameter: '%s' (top/center/bottom required)",
-        std::string(prop).c_str(), std::string(value).c_str());
+    Log_Warn(
+        "[gui] {:s} has invalid parameter: '{:s}' (top/center/bottom required)",
+        prop, value);
 
     return true;
   }
@@ -383,8 +383,8 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
       return true;
     }
 
-    LOG_WARN("[gui] %s has invalid parameter: '%s' (true/false required)",
-             std::string(prop).c_str(), std::string(value).c_str());
+    Log_Warn("[gui] {:s} has invalid parameter: '{:s}' (true/false required)",
+             prop, value);
 
     return true;
   }
@@ -399,8 +399,8 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
       return true;
     }
 
-    LOG_WARN("[gui] %s has invalid parameter: '%s' (true/false required)",
-             std::string(prop).c_str(), std::string(value).c_str());
+    Log_Warn("[gui] {:s} has invalid parameter: '{:s}' (true/false required)",
+             prop, value);
 
     return true;
   }

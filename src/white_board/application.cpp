@@ -60,8 +60,8 @@ bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
   }
 
   if (!Target) {
-    // LOG(LOG_WARNING,"[gui] Message target item %d not found. Message type:
-    // %d",Message.GetTarget(),Message.GetMessage());
+    // Log_Warn("[gui] Message target item {:d} not found. Message type:
+    // {:d}",Message.GetTarget(),Message.GetMessage());
     return false;
   }
 
@@ -192,7 +192,7 @@ int32_t CWBApplication::GetKeyboardRepeatTime() {
 }
 
 LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  // LOG(LOG_DEBUG,"[gui] WM_%d %d %d",uMsg,wParam,lParam);
+  // Log_Dbg("[gui] WM_{:d} {:d} {:d}",uMsg,wParam,lParam);
 
   switch (uMsg) {
     case WM_ACTIVATE:
@@ -286,7 +286,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     } break;
     case WM_SYSKEYDOWN:
     case WM_KEYDOWN:
-      // LOG_ERR( "[wndproc] WM_SYSKEYDOWN %d %d", wParam, lParam );
+      // Log_Err( "[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam );
 
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
           wParam == VK_RCONTROL)
@@ -297,13 +297,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Alt = true;
 
       // UpdateControlKeyStates();
-      // LOG_ERR( "[wndproc] WM_KEYDOWN/WM_SYSKEYDOWN: %d %d %d %d %d %d", uMsg,
-      // wParam, lParam, Alt, Ctrl, Shift );
+      // Log_Err( "[wndproc] WM_KEYDOWN/WM_SYSKEYDOWN: {:d} {:d} {:d} {:d} {:d}
+      // {:d}", uMsg, wParam, lParam, Alt, Ctrl, Shift );
       SendMessage(CWBMessage(this, WBM_KEYDOWN, 0, wParam, GetKeyboardState()));
       break;
     case WM_SYSKEYUP:
     case WM_KEYUP:
-      // LOG_DBG("[app] Keyup: %d",wParam);
+      // Log_Dbg("[app] Keyup: {:d}",wParam);
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
           wParam == VK_RCONTROL)
         Ctrl = false;
@@ -312,8 +312,8 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU)
         Alt = false;
 
-      // LOG_ERR( "[wndproc] WM_KEYUP/WM_SYSKEYUP: %d %d %d", uMsg, wParam,
-      // lParam );
+      // Log_Err( "[wndproc] WM_KEYUP/WM_SYSKEYUP: {:d} {:d} {:d}", uMsg,
+      // wParam, lParam );
       switch (wParam) {
         case VK_SNAPSHOT:
           TakeScreenshot();
@@ -325,8 +325,9 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       break;
     case WM_SYSCHAR:
     case WM_CHAR:
-      // LOG_DBG("[app] Char: %d",wParam);
-      // LOG_ERR( "[wndproc] WM_CHAR/WM_SYSCHAR %d %d", uMsg, wParam, lParam );
+      // Log_Dbg("[app] Char: {:d}",wParam);
+      // Log_Err("[wndproc] WM_CHAR/WM_SYSCHAR {:d} {:d}", uMsg, wParam,
+      // lParam);
       // UpdateControlKeyStates();
       SendMessage(CWBMessage(this, WBM_CHAR, 0, wParam, GetKeyboardState()));
       break;
@@ -340,7 +341,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 bool CWBApplication::Initialize() {
   Atlas = std::make_unique<CAtlas>(2048, 2048);
   if (!Atlas->InitializeTexture(Device.get())) {
-    LOG_ERR("[gui] Error creating UI Texture Atlas");
+    Log_Err("[gui] Error creating UI Texture Atlas");
     return false;
   }
 
@@ -441,7 +442,7 @@ void CWBApplication::SetDone(bool d) { Done = d; }
 void CWBApplication::Display() { Display(DrawAPI.get()); }
 
 void CWBApplication::Display(CWBDrawAPI* API) {
-  // LOG_DBG("Begin Frame");
+  // Log_Dbg("Begin Frame");
 
   CleanTrash();
 
@@ -464,7 +465,7 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   Device->EndScene();
   Device->Flip(Vsync);
 
-  // LOG_DBG("End Frame");
+  // Log_Dbg("End Frame");
 
   // this is a convenient place to store this:
   Logger.ResetEntryCounter();
@@ -567,8 +568,7 @@ CWBFont* CWBApplication::GetFont(std::string_view FontName) {
   if (f != Fonts.end()) {
     return f->second.get();
   }
-  LOG_WARN("[gui] Font %s not found, falling back to default font",
-           std::string(FontName).c_str());
+  Log_Warn("[gui] Font {:s} not found, falling back to default font", FontName);
   return DefaultFont;
 }
 
@@ -592,27 +592,27 @@ void CWBApplication::AddToTrash(const std::shared_ptr<CWBItem>& item) {
 bool CWBApplication::LoadXMLLayout(std::string_view XML) {
   auto doc = std::make_unique<CXMLDocument>();
   if (!doc->LoadFromString(XML)) {
-    LOG_ERR("[gui] Error loading XML Layout: parsing failed");
+    Log_Err("[gui] Error loading XML Layout: parsing failed");
     return false;
   }
 
   CXMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) {
-    LOG_ERR("[gui] Error loading XML Layout: 'guidescriptor' member missing");
+    Log_Err("[gui] Error loading XML Layout: 'guidescriptor' member missing");
     return false;
   }
 
   root = root.GetChild("guidescriptor");
 
   if (!root.GetChildCount("gui")) {
-    LOG_ERR("[gui] Error loading XML Layout: 'gui' member missing");
+    Log_Err("[gui] Error loading XML Layout: 'gui' member missing");
     return false;
   }
 
   CXMLNode gui = root.GetChild("gui");
   if (!gui.HasAttribute("id")) {
-    LOG_ERR("[gui] Error loading XML Layout: 'id' member missing from 'gui'");
+    Log_Err("[gui] Error loading XML Layout: 'id' member missing from 'gui'");
     return false;
   }
 
@@ -626,8 +626,7 @@ bool CWBApplication::LoadXMLLayout(std::string_view XML) {
 bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
-    LOG_ERR("[gui] Error loading XML Layout: file '%s' not found",
-            std::string(FileName).c_str());
+    Log_Err("[gui] Error loading XML Layout: file '{:s}' not found", FileName);
     return false;
   }
 
@@ -639,7 +638,7 @@ bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
 bool CWBApplication::GenerateGUI(CWBItem* Root, std::string_view Layout) {
   std::string l(Layout);
   if (LayoutRepository.find(l) == LayoutRepository.end()) {
-    LOG_ERR("[gui] Error generating UI: layout '%s' not loaded", l.c_str());
+    Log_Err("[gui] Error generating UI: layout '{:s}' not loaded", l);
     return false;
   }
 
@@ -657,8 +656,7 @@ bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
                                          std::string_view TemplateID) {
   std::string l(Layout);
   if (LayoutRepository.find(l) == LayoutRepository.end()) {
-    LOG_ERR("[gui] Error generating UI template: layout '%s' not loaded",
-            l.c_str());
+    Log_Err("[gui] Error generating UI template: layout '{:s}' not loaded", l);
     return false;
   }
 
@@ -698,8 +696,7 @@ bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
                                      bool ResetStyleManager) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
-    LOG_ERR("[gui] Error loading CSS: file '%s' not found",
-            std::string(FileName).c_str());
+    Log_Err("[gui] Error loading CSS: file '{:s}' not found", FileName);
     return false;
   }
 
@@ -811,17 +808,14 @@ bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
                                       std::vector<int>& enabledGlyphs) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
-    LOG_ERR("[gui] Error loading Skin: file '%s' not found",
-            std::string(FileName).c_str());
+    Log_Err("[gui] Error loading Skin: file '{:s}' not found", FileName);
     return false;
   }
 
   const std::string_view s(reinterpret_cast<char*>(f.GetData()),
                            static_cast<int32_t>(f.GetLength()));
   const bool b = LoadSkin(s, enabledGlyphs);
-  if (b)
-    LOG_NFO("[gui] Successfully loaded Skin '%s'",
-            std::string(FileName).c_str());
+  if (b) Log_Nfo("[gui] Successfully loaded Skin '{:s}'", FileName);
 
   return b;
 }
@@ -921,7 +915,7 @@ CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, const CXMLNode& node,
     return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);
   }
 
-  LOG_ERR("[xml2gui] Unknown tag: '%s'", node.GetNodeName().c_str());
+  Log_Err("[xml2gui] Unknown tag: '{:s}'", node.GetNodeName());
   return nullptr;
 }
 

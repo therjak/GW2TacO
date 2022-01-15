@@ -71,13 +71,13 @@ CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
 
     for (int32_t y = 0; y < YRes; y++) {
       if (y + Source.y1 < 0 || y + Source.y1 >= SrcYRes) {
-        LOG_ERR("[gui] Atlas source image out of bounds, failed to add image");
+        Log_Err("[gui] Atlas source image out of bounds, failed to add image");
         return;
       }
 
       for (int32_t x = 0; x < XRes; x++) {
         if (x + Source.x1 < 0 || x + Source.x1 >= SrcXRes) {
-          LOG_ERR(
+          Log_Err(
               "[gui] Atlas source image out of bounds, failed to add image");
           return;
         }
@@ -145,14 +145,14 @@ CAtlas::~CAtlas() {
 bool CAtlas::PackImage(CAtlasImage* img) {
   if (!img) return false;
 
-  // LOG(LOG_DEBUG,"Packing Image %d",img->GetHandle());
+  // Log_Dbg("Packing Image {:d}",img->GetHandle());
 
   FlushCache();
   const CSize s = img->GetSize();
 
   CAtlasNode* n = Root->AddNode(s.x, s.y);
   if (!n) {
-    LOG_WARN("[gui] Atlas full. Image can't be added.");
+    Log_Warn("[gui] Atlas full. Image can't be added.");
     return 0;
   }
 
@@ -195,11 +195,11 @@ WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
 }
 
 bool CAtlas::UpdateTexture() {
-  // LOG_DBG("Atlas Texture Update Request");
+  // Log_Dbg("Atlas Texture Update Request");
 
   if (!TextureUpdateNeeded) return true;
 
-  // LOG(LOG_DEBUG,"Updating Atlas Texture");
+  // Log_Dbg("Updating Atlas Texture");
 
   if (!Atlas || !Atlas->Update(Image.get(), XRes, YRes, 4)) return false;
 
@@ -221,7 +221,7 @@ int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
 bool CAtlas::Optimize(bool DebugMode) {
   // rearranges the atlas in a more optimal fashion and removes unused
 
-  LOG_DBG("[gui] Optimizing Atlas");
+  Log_Dbg("[gui] Optimizing Atlas");
 
   memset(Image.get(), 0, XRes * YRes * 4);
 

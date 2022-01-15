@@ -332,8 +332,7 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
   auto wurl = string2wstring(url);
   auto wpath = string2wstring(path);
 
-  LOG_NFO("[GW2TacO] Fetching URL: %s/%s", std::string(url).c_str(),
-          std::string(path).c_str());
+  Log_Nfo("[GW2TacO] Fetching URL: {:s}/{:s}", url, path);
 
   DWORD dwSize = 0;
   DWORD dwDownloaded = 0;
@@ -534,29 +533,28 @@ std::vector<std::string> loadList;
 void FetchMarkerPackOnline(std::string_view ourl) {
   int32_t pos = ourl.find("gw2taco://markerpack/");
   if (pos == ourl.npos) {
-    LOG_ERR("[GW2TacO] Trying to access malformed package url %s",
-            std::string(ourl).c_str());
+    Log_Err("[GW2TacO] Trying to access malformed package url {:s}", ourl);
     return;
   }
 
-  LOG_NFO("[GW2TacO] Trying to fetch marker pack %s",
-          std::string(ourl.substr(pos)).c_str());
+  Log_Nfo("[GW2TacO] Trying to fetch marker pack {:s}", ourl.substr(pos));
 
   std::string url(ourl.substr(pos + 21));
   std::thread downloadThread(
       [](std::string url) {
         CStreamWriterMemory mem;
         if (!DownloadFile(url, mem)) {
-          LOG_ERR("[GW2TacO] Failed to download package %s", url.c_str());
+          Log_Err("[GW2TacO] Failed to download package {:s}", url);
           return;
         }
 
         mz_zip_archive zip;
         memset(&zip, 0, sizeof(zip));
         if (!mz_zip_reader_init_mem(&zip, mem.GetData(), mem.GetLength(), 0)) {
-          LOG_ERR(
-              "[GW2TacO] Package %s doesn't seem to be a well formed zip file",
-              url.c_str());
+          Log_Err(
+              "[GW2TacO] Package {:s} doesn't seem to be a well formed zip "
+              "file",
+              url);
           return;
         }
 
@@ -571,7 +569,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
 
         auto fileName = url.substr(cnt + 1);
         if (fileName.empty()) {
-          LOG_ERR("[GW2TacO] Package %s has a malformed name", url.c_str());
+          Log_Err("[GW2TacO] Package {:s} has a malformed name", url);
           return;
         }
 
@@ -591,14 +589,12 @@ void FetchMarkerPackOnline(std::string_view ourl) {
 
         CStreamWriterFile out;
         if (!out.Open(fileName)) {
-          LOG_ERR("[GW2TacO] Failed to open file for writing: %s",
-                  fileName.c_str());
+          Log_Err("[GW2TacO] Failed to open file for writing: {:s}", fileName);
           return;
         }
 
         if (!out.Write(uint8_view(mem.GetData(), mem.GetLength()))) {
-          LOG_ERR("[GW2TacO] Failed to write out data to file: %s",
-                  fileName.c_str());
+          Log_Err("[GW2TacO] Failed to write out data to file: {:s}", fileName);
           remove(fileName.c_str());
           return;
         }
@@ -663,7 +659,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   Logger.Log(LOGVERBOSITY::LOG_INFO, false, false,
              "----------------------------------------------");
   std::string cmdLine(GetCommandLineA());
-  LOG_NFO("[GW2TacO] CommandLine: %s", cmdLine.c_str());
+  Log_Nfo("[GW2TacO] CommandLine: {:s}", cmdLine);
 
   if (cmdLine.find("-fromurl") != cmdLine.npos) {
     TCHAR szFileName[MAX_PATH + 1];
@@ -677,7 +673,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     SetCurrentDirectory(s.c_str());
 
     auto TacoWindow = FindWindow("CoRE2", "Guild Wars 2 Tactical Overlay");
-    LOG_NFO("[GW2TacO] TacO window id: %d", TacoWindow);
+    Log_Nfo("[GW2TacO] TacO window id: {:d}",
+            reinterpret_cast<int>(TacoWindow));
     if (TacoWindow) {
       COPYDATASTRUCT MyCDS;
       MyCDS.dwData = 0;
@@ -687,7 +684,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       SendMessage(TacoWindow, WM_COPYDATA, (WPARAM)(HWND) nullptr,
                   (LPARAM)(LPVOID)&MyCDS);
 
-      LOG_NFO("[GW2TacO] WM_COPYDATA sent. Result code: %d", GetLastError());
+      Log_Nfo("[GW2TacO] WM_COPYDATA sent. Result code: {:d}", GetLastError());
       return 0;
     }
 
@@ -710,7 +707,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   }
 
   if (!SetupTacoProtocolHandling())
-    LOG_ERR("[GW2TacO] Failed to register gw2taco:// protocol with windows.");
+    Log_Err("[GW2TacO] Failed to register gw2taco:// protocol with windows.");
 
   typedef HRESULT(WINAPI *
                   SetProcessDpiAwareness)(_In_ PROCESS_DPI_AWARENESS value);
@@ -730,7 +727,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       if (setDPIAwareness) {
         setDPIAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
         dpiSet = true;
-        LOG_NFO("[GW2TacO] DPI Awareness set through SetProcessDpiAwareness");
+        Log_Nfo("[GW2TacO] DPI Awareness set through SetProcessDpiAwareness");
       }
       FreeLibrary(hShCore);
     }
@@ -742,21 +739,21 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
               GetProcAddress(hUser32, "SetProcessDPIAware"));
       if (setDPIAware) {
         setDPIAware();
-        LOG_NFO("[GW2TacO] DPI Awareness set through SetProcessDpiAware");
+        Log_Nfo("[GW2TacO] DPI Awareness set through SetProcessDpiAware");
         dpiSet = true;
       }
       FreeLibrary(hUser32);
     }
 
     if (!dpiSet) {
-      LOG_ERR("[GW2TacO] DPI Awareness NOT set");
+      Log_Err("[GW2TacO] DPI Awareness NOT set");
     }
   }
 
   localization = std::make_unique<Localization>();
   localization->Import();
 
-  LOG_NFO("[GW2TacO] build ID: %s", ("GW2 TacO " + TacOBuild).c_str());
+  Log_Nfo("[GW2TacO] build ID: {:s}", ("GW2 TacO " + TacOBuild));
 
   bool hasDComp = false;
   HMODULE dComp = LoadLibraryA("dcomp.dll");
@@ -795,7 +792,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   if (!ChangeWindowMessageFilterEx((HWND)App->GetHandle(), WM_COPYDATA,
                                    MSGFLT_ALLOW, nullptr))
-    LOG_ERR(
+    Log_Err(
         "[GW2TacO] Failed to change message filters for WM_COPYDATA - "
         "gw2taco:// protocol messages will NOT be processed!");
 
@@ -911,10 +908,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       // if (mumbleLink.mumblePath != "MumbleLink")
       {
         if (!mumbleLink.IsValid() && GetTime() > 60000) {
-          LOG_ERR(
-              "[GW2TacO] Closing TacO because GW2 with mumble link '%s' was "
+          Log_Err(
+              "[GW2TacO] Closing TacO because GW2 with mumble link '{:s}' was "
               "not found in under a minute",
-              mumbleLink.mumblePath.c_str());
+              mumbleLink.mumblePath);
           App->SetDone(true);
         }
       }
@@ -957,7 +954,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             DWORD gw2ProcessIntegrity = GetProcessIntegrityLevel(
                 OpenProcess(PROCESS_QUERY_INFORMATION, TRUE, GW2Pid));
 
-            LOG_DBG("[GW2TacO] Taco integrity: %x, GW2 integrity: %x",
+            Log_Dbg("[GW2TacO] Taco integrity: {:x}, GW2 integrity: {:x}",
                     currentProcessIntegrity, gw2ProcessIntegrity);
 
             if (gw2ProcessIntegrity > currentProcessIntegrity ||
@@ -979,11 +976,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
           if (GW2ClientRect.right - GW2ClientRect.left != pos.Width() ||
               GW2ClientRect.bottom - GW2ClientRect.top != pos.Height() ||
               p.x != pos.x1 || p.y != pos.y1) {
-            LOG_ERR("[GW2TacO] gw2 window size change: %d %d %d %d (%d %d)",
-                    GW2ClientRect.left, GW2ClientRect.top, GW2ClientRect.right,
-                    GW2ClientRect.bottom,
-                    GW2ClientRect.right - GW2ClientRect.left,
-                    GW2ClientRect.bottom - GW2ClientRect.top);
+            Log_Err(
+                "[GW2TacO] gw2 window size change: {:d} {:d} {:d} {:d} ({:d} "
+                "{:d})",
+                GW2ClientRect.left, GW2ClientRect.top, GW2ClientRect.right,
+                GW2ClientRect.bottom, GW2ClientRect.right - GW2ClientRect.left,
+                GW2ClientRect.bottom - GW2ClientRect.top);
             bool NeedsResize =
                 GW2ClientRect.right - GW2ClientRect.left != pos.Width() ||
                 GW2ClientRect.bottom - GW2ClientRect.top != pos.Height();
@@ -1097,8 +1095,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         }
         HooksInitialized = true;
       }
-    } else
-      LOG_ERR("[GW2TacO] Device fail");
+    } else {
+      Log_Err("[GW2TacO] Device fail");
+    }
 
     mainLoopCounter++;
     lastMainLoopTime = GetTime();

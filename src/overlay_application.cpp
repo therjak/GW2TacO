@@ -10,7 +10,7 @@ bool COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
 
   auto GuiBlendState = Device->CreateBlendState();
   if (!GuiBlendState) {
-    LOG_ERR("[gui] Error creating UI Blend State");
+    Log_Err("[gui] Error creating UI Blend State");
     return false;
   }
 

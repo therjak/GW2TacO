@@ -35,7 +35,7 @@ void CCoreDX11ConstantBuffer::Upload() {
     if (Dev->CreateBuffer(&desc, nullptr, &Buffer) != S_OK) {
       Buffer = nullptr;
       AllocatedBufferSize = 0;
-      LOG_ERR("[core] Error creating constant buffer of size %d", DataLength);
+      Log_Err("[core] Error creating constant buffer of size {:d}", DataLength);
     } else {
       AllocatedBufferSize = DataLength;
     }
@@ -46,7 +46,7 @@ void CCoreDX11ConstantBuffer::Upload() {
   // upload data
   D3D11_MAPPED_SUBRESOURCE map;
   if (DeviceContext->Map(Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map) != S_OK) {
-    LOG_ERR("%s", "[core] Failed to map constant buffer resource!");
+    Log_Err("[core] Failed to map constant buffer resource!");
   } else {
     memcpy(map.pData, Data.get(), DataLength);
     DeviceContext->Unmap(Buffer, 0);

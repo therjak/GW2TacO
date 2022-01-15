@@ -78,14 +78,15 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
       Dev->CreateTexture2D(&tex, Data ? &data : nullptr, &TextureHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateTexture2D failed (%s)", err.ErrorMessage());
+    Log_Err("[core] CreateTexture2D failed ({:s})", err.ErrorMessage());
     return false;
   }
 
   res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateShaderResourceView failed (%s)", err.ErrorMessage());
+    Log_Err("[core] CreateShaderResourceView failed ({:s})",
+            err.ErrorMessage());
     return false;
   }
 
@@ -97,7 +98,7 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
     res = Dev->CreateRenderTargetView(TextureHandle, &rt, &RTView);
     if (res != S_OK) {
       _com_error err(res);
-      LOG_ERR("[core] Failed to rendertarget view (%s)", err.ErrorMessage());
+      Log_Err("[core] Failed to rendertarget view ({:s})", err.ErrorMessage());
       return false;
     }
   }
@@ -143,7 +144,7 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
         Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
     if (res != S_OK) {
       _com_error err(res);
-      LOG_ERR("[core] CreateShaderResourceView failed (%s)",
+      Log_Err("[core] CreateShaderResourceView failed ({:s})",
               err.ErrorMessage());
       return false;
     }
@@ -210,8 +211,8 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
   const HRESULT res = SaveDDSTexture(DeviceContext, TextureHandle, Writer);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] Failed to export texture to '%s' (%x: %s)",
-            std::string(Filename).c_str(), res, err.ErrorMessage());
+    Log_Err("[core] Failed to export texture to '{:s}' ({:x}: {:s})", Filename,
+            res, err.ErrorMessage());
     return;
   }
 
@@ -273,7 +274,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
 
         break;
       } else {
-        LOG_ERR("[core] Failed to export texture: unknown FourCC format (%x)",
+        Log_Err("[core] Failed to export texture: unknown FourCC format ({:x})",
                 head.dwFourCC);
         return;
       }
@@ -322,14 +323,14 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
           }
           break;
         default:
-          LOG_ERR("[core] Failed to export texture: unknown DXGI format (%d)",
-                  Head->dxgiFormat);
+          Log_Err("[core] Failed to export texture: unknown DXGI format ({:d})",
+                  static_cast<int>(Head->dxgiFormat));
           break;
       }
       break;
     }
     default:
-      LOG_ERR("[core] Failed to export texture: unknown FourCC format (%x)",
+      Log_Err("[core] Failed to export texture: unknown FourCC format ({:x})",
               head.dwFourCC);
       return;
       break;
@@ -370,7 +371,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
   HRESULT res = Dev->CreateTexture2D(&tex, nullptr, &TextureHandle);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateTexture2D failed (%s)", err.ErrorMessage());
+    Log_Err("[core] CreateTexture2D failed ({:s})", err.ErrorMessage());
     return false;
   }
 
@@ -386,7 +387,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
   res = Dev->CreateDepthStencilView(TextureHandle, &deptdesc, &DepthView);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateDepthStencilView failed (%s)", err.ErrorMessage());
+    Log_Err("[core] CreateDepthStencilView failed ({:s})", err.ErrorMessage());
     return false;
   }
 
@@ -400,7 +401,8 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
   res = Dev->CreateShaderResourceView(TextureHandle, &resdesc, &View);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[core] CreateShaderResourceView failed (%s)", err.ErrorMessage());
+    Log_Err("[core] CreateShaderResourceView failed ({:s})",
+            err.ErrorMessage());
     return false;
   }
 
@@ -804,7 +806,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
       return hr;
     }
 
-    if (!pTemp) LOG_ERR("[Core2] Error creating temp texture");
+    if (!pTemp) Log_Err("[Core2] Error creating temp texture");
 
     const DXGI_FORMAT fmt = EnsureNotTypeless(desc.Format);
 
@@ -841,7 +843,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
       return hr;
     }
 
-    if (!pStaging) LOG_ERR("[Core2] Error creating staging texture");
+    if (!pStaging) Log_Err("[Core2] Error creating staging texture");
 
     pContext->CopyResource(pStaging, pTemp);
     if (pTemp) pTemp->Release();
@@ -864,7 +866,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
       return hr;
     }
 
-    if (!pStaging) LOG_ERR("[Core2] Error creating staging texture");
+    if (!pStaging) Log_Err("[Core2] Error creating staging texture");
 
     pContext->CopyResource(pStaging, pSource);
     if (pTexture) pTexture->Release();

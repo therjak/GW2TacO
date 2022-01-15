@@ -177,7 +177,7 @@ void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
 bool CWBItem::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_NONE:
-      LOG_ERR("[gui] Message Type 0 Encountered. Message Target is %d",
+      Log_Err("[gui] Message Type 0 Encountered. Message Target is {:d}",
               Message.GetTarget());
       return true;
 
@@ -483,11 +483,11 @@ void CWBItem::OnMove(const CPoint& p) {}
 void CWBItem::OnResize(const CSize& s) {}
 
 void CWBItem::OnMouseEnter() {
-  // LOG(LOG_DEBUG,"Mouse Entered Item %d",GetGuid());
+  // Log_Dbg("Mouse Entered Item {:d}",GetGuid());
 }
 
 void CWBItem::OnMouseLeave() {
-  // LOG(LOG_DEBUG,"Mouse Left Item %d",GetGuid());
+  // Log_Dbg("Mouse Left Item {:d}",GetGuid());
 }
 
 void CWBItem::CalculateClientPosition() {
@@ -1561,8 +1561,8 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
       if (attrib.find("rgba(") == 0) {
         CColor col;
         if (!ParseRGBA(attrib, col)) {
-          LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
-                   attrib.c_str());
+          Log_Warn("[gui] CSS rgba() description invalid, skipping: {:s}",
+                   attrib);
           continue;
         }
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
@@ -1593,8 +1593,8 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
       if (attrib.find("rgba(") == 0) {
         CColor col;
         if (!ParseRGBA(attrib, col)) {
-          LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
-                   attrib.c_str());
+          Log_Warn("[gui] CSS rgba() description invalid, skipping: {:s}",
+                   attrib);
           continue;
         }
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
@@ -1620,8 +1620,8 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
       if (attrib.find("rgba(") == 0) {
         CColor col;
         if (!ParseRGBA(attrib, col)) {
-          LOG_WARN("[gui] CSS rgba() description invalid, skipping: %s",
-                   attrib.c_str());
+          Log_Warn("[gui] CSS rgba() description invalid, skipping: {:s}",
+                   attrib);
           continue;
         }
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
@@ -1872,8 +1872,8 @@ bool CWBItem::ApplyStyle(std::string_view prop, std::string_view value,
       Hidden = false;
       return true;
     }
-    LOG_WARN("[guiitem] Item style error: invalid visibility value '%s'",
-             std::string(value).c_str());
+    Log_Warn("[guiitem] Item style error: invalid visibility value '{:s}'",
+             value);
     return true;
   }
 
@@ -1979,16 +1979,15 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
   float pcv = 0;
 
   if (!pc && !px) {
-    LOG_WARN("[guiitem] Item style error: missing 'px' or '%%' in '%s' value",
-             std::string(value).c_str());
+    Log_Warn("[guiitem] Item style error: missing 'px' or '%' in '{:s}' value",
+             value);
     return;
   }
 
   std::string v(value);
   if (px && !pc) {
     if (std::sscanf(v.c_str(), "%fpx", &pxv) != 1) {
-      LOG_WARN("[guiitem] Item style error: invalid value '%s' (px)",
-               v.c_str());
+      Log_Warn("[guiitem] Item style error: invalid value '{:s}' (px)", v);
       return;
     }
     pos.ClearMetrics(Type);
@@ -1998,8 +1997,7 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
 
   if (pc && !px) {
     if (std::sscanf(v.c_str(), "%f%%", &pcv) != 1) {
-      LOG_WARN("[guiitem] Item style error: invalid value '%s' (%%)",
-               v.c_str());
+      Log_Warn("[guiitem] Item style error: invalid value '{:s}' (%)", v);
       return;
     }
     pos.ClearMetrics(Type);
@@ -2009,8 +2007,7 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
 
   if (std::sscanf(v.c_str(), "%fpx%f%%", &pxv, &pcv) != 2)
     if (std::sscanf(v.c_str(), "%f%%%fpx", &pcv, &pxv) != 2) {
-      LOG_WARN("[guiitem] Item style error: invalid value '%s' (px, %%)",
-               v.c_str());
+      Log_Warn("[guiitem] Item style error: invalid value '{:s}' (px, %)", v);
       return;
     }
 
@@ -2183,8 +2180,8 @@ bool CWBItem::ScanPXValue(std::string_view Value, int32_t& Result,
   Result = 0;
   std::string v(Value);
   if (std::sscanf(v.c_str(), "%dpx", &Result) != 1) {
-    LOG_WARN("[guiitem] Item style error: invalid %s value '%s' (px)",
-             std::string(PropName).c_str(), std::string(Value).c_str());
+    Log_Warn("[guiitem] Item style error: invalid {:s} value '{:s}' (px)",
+             PropName, Value);
     return false;
   }
   return true;
@@ -2198,8 +2195,7 @@ bool CWBItem::ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
       // Value.GetPointer()[ i ] = 0;
       Result = App->GetSkin()->GetElementID(Value.substr(5, i - 5));
       if (Result == 0xffffffff) {
-        LOG_WARN("[gui] Skin element not found: %s",
-                 std::string(Value.substr(5, i - 5)).c_str());
+        Log_Warn("[gui] Skin element not found: {:s}", Value.substr(5, i - 5));
         return false;
       }
 

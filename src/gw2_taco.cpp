@@ -235,8 +235,8 @@ int scaleCountDownHack = 0;
 
 void ChangeUIScale(int size) {
   if (size < 0 || size > 3) {
-    LOG_ERR(
-        "Someone wants to set the UI size to %d! Are you multi-clienting "
+    Log_Err(
+        "Someone wants to set the UI size to {:d}! Are you multi-clienting "
         "perhaps?",
         size);
     return;

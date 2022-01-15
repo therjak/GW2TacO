@@ -193,7 +193,7 @@ void CWBDrawAPI::ClipTriX(int32_t x, bool KeepRight,
   int32_t NewVertexCount = 0;
 
   if (VertexCount > 6) {
-    LOG_ERR("Something got fucked up");
+    Log_Err("Something got fucked up");
   }
 
   WBGUIVERTEX S = Vertices[VertexCount - 1];
@@ -329,7 +329,7 @@ void CWBDrawAPI::RenderDisplayList() {
 
     if (!VertexBuffer->Lock(&Buffer, 0, Count * sizeof(WBGUIVERTEX),
                             CORELOCK_DISCARD)) {
-      LOG_ERR("[gui] Error locking UI Vertex Buffer during draw.");
+      Log_Err("[gui] Error locking UI Vertex Buffer during draw.");
       return;
     }
 
@@ -337,26 +337,27 @@ void CWBDrawAPI::RenderDisplayList() {
            Count * sizeof(WBGUIVERTEX));
 
     if (!VertexBuffer->UnLock()) {
-      LOG_ERR("[gui] Error unlocking UI Vertex Buffer during draw.");
+      Log_Err("[gui] Error unlocking UI Vertex Buffer during draw.");
       return;
     }
 
     switch (DrawMode) {
       case WBDRAWMODE::WBD_RECTANGLES:
         if (!Device->DrawIndexedTriangles(Count / 2, Count)) {
-          LOG_ERR("[gui] Error drawing UI Triangles (%d %d)", Count / 2, Count);
+          Log_Err("[gui] Error drawing UI Triangles ({:d} {:d})", Count / 2,
+                  Count);
           return;
         }
         break;
       case WBDRAWMODE::WBD_LINES:
         if (!Device->DrawLines(Count / 2)) {
-          LOG_ERR("[gui] Error drawing UI Lines (%d)", Count / 2);
+          Log_Err("[gui] Error drawing UI Lines ({:d})", Count / 2);
           return;
         }
         break;
       case WBDRAWMODE::WBD_TRIANGLES:
         if (!Device->DrawTriangles(Count / 3)) {
-          LOG_ERR("[gui] Error drawing UI Triangles (%d)", Count / 3);
+          Log_Err("[gui] Error drawing UI Triangles ({:d})", Count / 3);
           return;
         }
         break;
@@ -394,13 +395,13 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   VertexBuffer = Device->CreateVertexBufferDynamic(sizeof(WBGUIVERTEX) *
                                                    VERTEXBUFFERRECTCOUNT * 4);
   if (!VertexBuffer) {
-    LOG_ERR("[gui] Error creating UI Vertex Buffer");
+    Log_Err("[gui] Error creating UI Vertex Buffer");
     return false;
   }
 
   rectIndexBuffer = Device->CreateIndexBuffer(VERTEXBUFFERRECTCOUNT * 6);
   if (!rectIndexBuffer) {
-    LOG_ERR("[gui] Error creating UI Index Buffer");
+    Log_Err("[gui] Error creating UI Index Buffer");
     return false;
   }
 
@@ -416,11 +417,11 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
       Locked[x * 6 + 5] = x * 4 + 3;
     }
     if (!rectIndexBuffer->UnLock()) {
-      LOG_ERR("[gui] Error unlocking UI Index Buffer during init");
+      Log_Err("[gui] Error unlocking UI Index Buffer during init");
       return false;
     }
   } else {
-    LOG_ERR("[gui] Error locking UI Index Buffer during init");
+    Log_Err("[gui] Error locking UI Index Buffer during init");
     return false;
   }
 
@@ -562,7 +563,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   VxShader =
       Device->CreateVertexShaderFromBlob(raw_ui_vxshader, raw_ui_vxshader_size);
   if (!VxShader) {
-    LOG_WARN(
+    Log_Warn(
         "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 "
         "functionality");
     if (Device->GetAPIType() == COREDEVICEAPI::COREAPI_DX11) {
@@ -573,7 +574,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   PxShader =
       Device->CreatePixelShaderFromBlob(raw_ui_pxshader, raw_ui_pxshader_size);
   if (!PxShader) {
-    LOG_WARN(
+    Log_Warn(
         "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 "
         "functionality");
     if (Device->GetAPIType() == COREDEVICEAPI::COREAPI_DX11) {
@@ -589,14 +590,14 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
 
   VertexFormat = Device->CreateVertexFormat(Att, VxShader.get());
   if (!VertexFormat) {
-    LOG_ERR("[gui] Error creating UI Vertex Format");
+    Log_Err("[gui] Error creating UI Vertex Format");
     return false;
   }
 
   GuiSampler = Device->CreateSamplerState();
   GuiBlendState = Device->CreateBlendState();
   if (!GuiBlendState) {
-    LOG_ERR("[gui] Error creating UI Blend State");
+    Log_Err("[gui] Error creating UI Blend State");
     return false;
   }
 
@@ -608,7 +609,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
 
   GuiRasterState = Device->CreateRasterizerState();
   if (!GuiRasterState) {
-    LOG_ERR("[gui] Error creating UI Raster State");
+    Log_Err("[gui] Error creating UI Raster State");
     return false;
   }
 
@@ -617,7 +618,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
 
   GuiZState = Device->CreateDepthStencilState();
   if (!GuiZState) {
-    LOG_ERR("[gui] Error creating UI Z State");
+    Log_Err("[gui] Error creating UI Z State");
     return false;
   }
 
@@ -625,7 +626,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
 
   ResolutionData = Device->CreateConstantBuffer();
   if (!ResolutionData) {
-    LOG_ERR("[gui] Error creating UI Resolution Data Buffer");
+    Log_Err("[gui] Error creating UI Resolution Data Buffer");
     return false;
   }
 
@@ -773,7 +774,7 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
   if (!Atlas) return false;
 
   if (!Atlas->RequestImageUse(h, UV)) {
-    LOG_DBG("Request Atlas Image Failed for %d", h);
+    Log_Dbg("Request Atlas Image Failed for {:d}", h);
     // atlas is full, attempt to fix
 
     // first flush display buffer to avoid problems from remapping the atlas
@@ -787,12 +788,12 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
       // atlas is really, really, really full. fail.
 
       if (defragmentReportCount == 100)
-        LOG_ERR(
+        Log_Err(
             "[gui] MID-FRAME TEXTURE ATLAS OPTIMIZATION REPORT COUNT REACHED "
             "100, STOPPING REPORTING");
 
       if (defragmentReportCount < 100)
-        LOG_ERR(
+        Log_Err(
             "[gui] GUI Texture Atlas too small to render current frame. "
             "Flushing mid-frame, thiss will result in reduced performance.");
 
@@ -800,7 +801,7 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
 
       Atlas->Reset();
       if (!Atlas->RequestImageUse(h, UV)) {
-        LOG_ERR("[gui] Image %d does not fit the atlas.", h);
+        Log_Err("[gui] Image {:d} does not fit the atlas.", h);
         return false;
       }
     }

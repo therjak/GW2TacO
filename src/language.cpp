@@ -83,7 +83,7 @@ void Localization::ImportLanguage(CXMLDocument& d) {
   if (root.HasAttribute("language"))
     language = root.GetAttributeAsString("language");
   else {
-    LOG_ERR("[GW2TacO] Language data file didn't specify the language.");
+    Log_Err("[GW2TacO] Language data file didn't specify the language.");
     return;
   }
 
@@ -138,8 +138,7 @@ void Localization::SetActiveLanguage(std::string_view language) {
     if (languages[x].name == lang) {
       activeLanguageIdx = x;
       SetConfigString("language", lang);
-      LOG_NFO("[GW2TacO] Setting TacO language to %s",
-              std::string(language).c_str());
+      Log_Nfo("[GW2TacO] Setting TacO language to {:s}", language);
       return;
     }
   }
@@ -201,10 +200,10 @@ std::string Localization::Localize(std::string_view token,
 
     if (std::find(dumpedStrings.begin(), dumpedStrings.end(), tokenString) ==
         dumpedStrings.end()) {
-      LOG_WARN(
-          "[GW2TacO] Translation for token '%s' is not available in the %s "
+      Log_Warn(
+          "[GW2TacO] Translation for token '{:s}' is not available in the {:s} "
           "language.",
-          tokenString.c_str(), languages[activeLanguageIdx].name.c_str());
+          tokenString, languages[activeLanguageIdx].name);
       dumpedStrings.push_back(tokenString);
     }
 

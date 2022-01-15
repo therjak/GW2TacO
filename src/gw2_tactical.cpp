@@ -138,7 +138,7 @@ mz_zip_archive* OpenZipFile(std::string_view zf) {
     memset(zip.get(), 0, sizeof(mz_zip_archive));
 
     if (!mz_zip_reader_init_file(zip.get(), zipFile.c_str(), 0)) {
-      LOG_ERR("[GW2TacO] Failed to open zip archive %s", zipFile.c_str());
+      Log_Err("[GW2TacO] Failed to open zip archive {:s}", zipFile);
       zipDict[zipFile] = nullptr;
     } else {
       zipDict[zipFile] = std::move(zip);
@@ -213,10 +213,9 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
 
                 return handle;
               } else {
-                LOG_ERR("[GWTacO] Failed to decompress png %s form archive %s",
-                        filename.c_str(),
-                        x == 0 ? std::string(zipFile).c_str()
-                               : std::string(categoryZip).c_str());
+                Log_Err(
+                    "[GWTacO] Failed to decompress png {:s} form archive {:s}",
+                    filename, x == 0 ? zipFile : categoryZip);
               }
             }
           }
@@ -233,7 +232,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
 
   CStreamReaderMemory f;
   if (!f.Open(s) && !f.Open("POIs\\" + s)) {
-    LOG_ERR("[GWTacO] Failed to open image %s", s.c_str());
+    Log_Err("[GWTacO] Failed to open image {:s}", s);
     return DefaultIconHandle;
   }
 
@@ -241,7 +240,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
   int32_t xres, yres;
   if (!DecompressPNG(f.GetData(), static_cast<int32_t>(f.GetLength()),
                      imageData, xres, yres)) {
-    LOG_ERR("[GWTacO] Failed to decompress png %s", s.c_str());
+    Log_Err("[GWTacO] Failed to decompress png {:s}", s);
     return DefaultIconHandle;
   }
 

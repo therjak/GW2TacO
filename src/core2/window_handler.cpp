@@ -136,7 +136,7 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
   Device = wp.CreateDevice();
 
   if (!Device) {
-    LOG_ERR("%s", "[init] Device object is NULL during init.");
+    Log_Err("[init] Device object is NULL during init.");
     return false;
   }
 
@@ -331,7 +331,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
 
     } break;
     case WM_SYSKEYDOWN: {
-      LOG_ERR("[wndproc] WM_SYSKEYDOWN %d %d", wParam, lParam);
+      Log_Err("[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam);
       if (wParam == VK_F10)
         return 0;  // if we dont do this, system menu opens up on F10 = bad for
                    // fraps
@@ -345,7 +345,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
       break;
     }
     case WM_SYSCOMMAND: {
-      LOG_ERR("[wndproc] WM_SYSCOMMAND %d %d", wParam, lParam);
+      Log_Err("[wndproc] WM_SYSCOMMAND {:d} {:d}", wParam, lParam);
       switch (wParam) {
         case SC_SCREENSAVE:
         case SC_MONITORPOWER:

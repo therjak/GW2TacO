@@ -43,7 +43,7 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
   HRESULT res = CreateStreamOnHGlobal(hGlobal, TRUE, &pstm);
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[base] CreateStreamOnHGlobal failed (%s)", err.ErrorMessage());
+    Log_Err("[base] CreateStreamOnHGlobal failed ({:s})", err.ErrorMessage());
     return nullptr;
   }
 
@@ -55,7 +55,7 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
                             // oleloadpicture
     {
       _com_error err(res);
-      LOG_ERR("[base] OleLoadPicture failed (%s)", err.ErrorMessage());
+      Log_Err("[base] OleLoadPicture failed ({:s})", err.ErrorMessage());
     }
     pstm->Release();
     GlobalFree(hGlobal);
@@ -103,7 +103,7 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
 
   if (res != S_OK) {
     _com_error err(res);
-    LOG_ERR("[base] gpPicture->Render failed (%s)", err.ErrorMessage());
+    Log_Err("[base] gpPicture->Render failed ({:s})", err.ErrorMessage());
     Image.reset();
   } else {
     GetDIBits(mdc, bm, 0, YSize, Image.get(), &bmi, DIB_RGB_COLORS);
