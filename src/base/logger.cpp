@@ -88,8 +88,8 @@ std::string FormatString(std::string_view format, va_list args) {
   return ret;
 }
 
-void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
-                  std::string_view String, ...) {
+void CLogger::LLog(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
+                   std::string_view String, ...) {
   if (Verbosity < v) return;
 
   va_list argList;
@@ -97,31 +97,48 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
   auto LogString = FormatString(String, argList);
   va_end(argList);
 
-  time_t rawtime;
-  tm timeinfo;
+  Log(v, Prefix, AddTimeStamp, LogString);
+}
 
-  time(&rawtime);
-  localtime_s(&timeinfo, &rawtime);
+void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
+                  std::string_view String) {
+  if (Verbosity < v) return;
 
-  auto TimeStamp = std::format("[{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}] ",
-                               timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
-                               timeinfo.tm_mday, timeinfo.tm_hour,
-                               timeinfo.tm_min, timeinfo.tm_sec);
+  auto ts = [AddTimeStamp]() -> std::string {
+    if (!AddTimeStamp) {
+      return "";
+    }
+    time_t rawtime;
+    tm timeinfo;
 
-  if (Prefix) {
-    if (v < LOGVERBOSITY::LOG_WARNING)
-      LogString = "(Err)  " + LogString;
-    else if (v < LOGVERBOSITY::LOG_INFO)
-      LogString = "(Warn) " + LogString;
-    else if (v < LOGVERBOSITY::LOG_DEBUG)
-      LogString = "(Info) " + LogString;
-    else
-      LogString = "(Dbg)  " + LogString;
+    time(&rawtime);
+    localtime_s(&timeinfo, &rawtime);
+
+    return std::format("[{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}] ",
+                       timeinfo.tm_year + 1900, timeinfo.tm_mon + 1,
+                       timeinfo.tm_mday, timeinfo.tm_hour, timeinfo.tm_min,
+                       timeinfo.tm_sec);
+  };
+
+  auto pf = [Prefix, v]() -> std::string {
+    if (Prefix) {
+      if (v < LOGVERBOSITY::LOG_WARNING)
+        return "(Err)  ";
+      else if (v < LOGVERBOSITY::LOG_INFO)
+        return "(Warn) ";
+      else if (v < LOGVERBOSITY::LOG_DEBUG)
+        return "(Info) ";
+      else
+        return "(Dbg)  ";
+    }
+    return "";
+  };
+
+  auto LogString = std::format("{:s}{:s}{:s}", ts(), pf(), String);
+
+  for (auto& output : Outputs) {
+    output->Process(v, LogString);
   }
-
-  if (AddTimeStamp) LogString = TimeStamp + LogString;
-
-  for (auto& output : Outputs) output->Process(v, LogString);
 
   NewEntryCount++;
 }

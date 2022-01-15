@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <ctime>
+#include <format>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -56,8 +57,10 @@ class CLogger {
   CLogger();
   virtual ~CLogger();
   void Close();
-  void Log(LOGVERBOSITY v, bool Prefix, bool TimeStamp, std::string_view String,
-           ...);
+  void LLog(LOGVERBOSITY v, bool Prefix, bool TimeStamp,
+            std::string_view String, ...);
+  void Log(LOGVERBOSITY v, bool Prefix, bool TimeStamp,
+           std::string_view String);
   void SetVerbosity(LOGVERBOSITY v);
   void AddOutput(std::unique_ptr<CLoggerOutput>&& Output);
   void ResetEntryCounter();
@@ -66,7 +69,32 @@ class CLogger {
 
 extern CLogger Logger;
 
-#define LOG(v, s, ...) Logger.Log(v, true, true, s, __VA_ARGS__)
+template <class... Args>
+void Log(LOGVERBOSITY v, const std::string_view fmt, Args&&... args) {
+  Logger.Log(v, true, true, std::format(fmt, args...));
+}
+
+template <class... Args>
+void Log_Warn(const std::string_view fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_WARNING, fmt, args...);
+}
+
+template <class... Args>
+void Log_Err(const std::string_view fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_ERROR, fmt, args...);
+}
+
+template <class... Args>
+void Log_Dbg(const std::string_view fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_DEBUG, fmt, args...);
+}
+
+template <class... Args>
+void Log_Nfo(const std::string_view fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_INFO, fmt, args...);
+}
+
+#define LOG(v, s, ...) Logger.LLog(v, true, true, s, __VA_ARGS__)
 
 #define LOG_WARN(s, ...) LOG(LOGVERBOSITY::LOG_WARNING, s, __VA_ARGS__)
 #define LOG_ERR(s, ...) LOG(LOGVERBOSITY::LOG_ERROR, s, __VA_ARGS__)
