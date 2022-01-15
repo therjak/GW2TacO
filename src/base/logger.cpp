@@ -73,33 +73,6 @@ void CLogger::AddOutput(std::unique_ptr<CLoggerOutput>&& Output) {
 
 void CLogger::SetVerbosity(LOGVERBOSITY v) { Verbosity = v; }
 
-std::string FormatString(std::string_view format, va_list args) {
-  if (format.empty()) {
-    return std::string();
-  }
-
-  va_list args_copy;
-  va_copy(args_copy, args);
-  int n = std::vsnprintf(nullptr, 0, format.data(), args_copy);
-  va_end(args_copy);
-  std::string ret(n + 1, 0);
-  std::vsnprintf(ret.data(), ret.size(), format.data(), args);
-
-  return ret;
-}
-
-void CLogger::LLog(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
-                   std::string_view String, ...) {
-  if (Verbosity < v) return;
-
-  va_list argList;
-  va_start(argList, String);
-  auto LogString = FormatString(String, argList);
-  va_end(argList);
-
-  Log(v, Prefix, AddTimeStamp, LogString);
-}
-
 void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
                   std::string_view String) {
   if (Verbosity < v) return;

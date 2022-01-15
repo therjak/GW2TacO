@@ -57,8 +57,6 @@ class CLogger {
   CLogger();
   virtual ~CLogger();
   void Close();
-  void LLog(LOGVERBOSITY v, bool Prefix, bool TimeStamp,
-            std::string_view String, ...);
   void Log(LOGVERBOSITY v, bool Prefix, bool TimeStamp,
            std::string_view String);
   void SetVerbosity(LOGVERBOSITY v);
@@ -93,10 +91,3 @@ template <class... Args>
 void Log_Nfo(const std::string_view fmt, Args&&... args) {
   Log(LOGVERBOSITY::LOG_INFO, fmt, args...);
 }
-
-#define LOG(v, s, ...) Logger.LLog(v, true, true, s, __VA_ARGS__)
-
-#define LOG_WARN(s, ...) LOG(LOGVERBOSITY::LOG_WARNING, s, __VA_ARGS__)
-#define LOG_ERR(s, ...) LOG(LOGVERBOSITY::LOG_ERROR, s, __VA_ARGS__)
-#define LOG_DBG(s, ...) LOG(LOGVERBOSITY::LOG_DEBUG, s, __VA_ARGS__)
-#define LOG_NFO(s, ...) LOG(LOGVERBOSITY::LOG_INFO, s, __VA_ARGS__)
