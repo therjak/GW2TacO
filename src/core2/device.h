@@ -94,7 +94,7 @@ class CCoreDevice {
   virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const int32_t XRes, const int32_t YRes, const uint8_t* Data,
       const char BytesPerPixel = 4,
-      const COREFORMAT Format = COREFORMAT::COREFMT_A8R8G8B8,
+      const COREFORMAT Format = COREFORMAT::A8R8G8B8,
       const bool RenderTarget = false) = 0;
   virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const uint8_t* Data, const int32_t Size) = 0;

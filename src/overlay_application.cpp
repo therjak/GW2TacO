@@ -15,20 +15,20 @@ bool COverlayApp::Initialize(const CCoreWindowParameters& WindowParams) {
   }
 
   GuiBlendState->SetBlendEnable(0, true);
-  GuiBlendState->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_SRCALPHA);
-  GuiBlendState->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
-  GuiBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ONE);
-  GuiBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
+  GuiBlendState->SetSrcBlend(0, COREBLENDFACTOR::SRCALPHA);
+  GuiBlendState->SetDestBlend(0, COREBLENDFACTOR::INVSRCALPHA);
+  GuiBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::ONE);
+  GuiBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::INVSRCALPHA);
 
   DrawAPI->SetUIBlendState(std::move(GuiBlendState));
 
   holePunchBlendState = DrawAPI->GetDevice()->CreateBlendState();
   holePunchBlendState->SetBlendEnable(0, true);
   holePunchBlendState->SetIndependentBlend(true);
-  holePunchBlendState->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_ZERO);
-  holePunchBlendState->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_ZERO);
-  holePunchBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ZERO);
-  holePunchBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ZERO);
+  holePunchBlendState->SetSrcBlend(0, COREBLENDFACTOR::ZERO);
+  holePunchBlendState->SetDestBlend(0, COREBLENDFACTOR::ZERO);
+  holePunchBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::ZERO);
+  holePunchBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::ZERO);
 
   return true;
 }

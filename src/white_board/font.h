@@ -1,6 +1,4 @@
 #pragma once
-#include <tchar.h>
-
 #include <cstdint>
 #include <string_view>
 #include <unordered_map>

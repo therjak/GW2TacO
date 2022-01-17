@@ -2,7 +2,6 @@
 
 #include <comdef.h>
 #include <dcomp.h>
-#include <tchar.h>
 
 #include <algorithm>
 #include <vector>
@@ -729,7 +728,7 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
                                        const CORERENDERSTATE RenderState,
                                        const CORERENDERSTATEVALUE Value) {
   switch (RenderState) {
-    case CORERS_BLENDSTATE: {
+    case CORERENDERSTATE::BLENDSTATE: {
       if (!Value.BlendState) {
         DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
         CurrentBlendState = nullptr;
@@ -737,7 +736,7 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
       }
       return Value.BlendState->Apply();
     } break;
-    case CORERS_RASTERIZERSTATE: {
+    case CORERENDERSTATE::RASTERIZERSTATE: {
       if (!Value.RasterizerState) {
         DeviceContext->RSSetState(nullptr);
         CurrentRasterizerState = nullptr;
@@ -745,7 +744,7 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
       }
       return Value.RasterizerState->Apply();
     } break;
-    case CORERS_DEPTHSTENCILSTATE: {
+    case CORERENDERSTATE::DEPTHSTENCILSTATE: {
       if (!Value.DepthStencilState) {
         DeviceContext->OMSetDepthStencilState(nullptr, 0);
         CurrentDepthStencilState = nullptr;
@@ -753,28 +752,31 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
       }
       return Value.DepthStencilState->Apply();
     } break;
-    case CORERS_SAMPLERSTATE: {
+    case CORERENDERSTATE::SAMPLERSTATE: {
       if (!Value.SamplerState) {
         return false;
       }
       return Value.SamplerState->Apply(Sampler);
     } break;
-    case CORERS_TEXTURE: {
+    case CORERENDERSTATE::TEXTURE: {
       if (!Value.Texture) {
         ID3D11ShaderResourceView* null[1];
         null[0] = nullptr;
 
-        if (Sampler >= CORESMP_PS0 && Sampler <= CORESMP_PS15)
-          DeviceContext->PSSetShaderResources(Sampler, 1, null);
-        if (Sampler >= CORESMP_VS0 && Sampler <= CORESMP_VS3)
-          DeviceContext->VSSetShaderResources(Sampler - CORESMP_VS0, 1, null);
-        if (Sampler >= CORESMP_GS0 && Sampler <= CORESMP_GS3)
-          DeviceContext->GSSetShaderResources(Sampler - CORESMP_GS0, 1, null);
+        if (Sampler >= CORESAMPLER::PS0 && Sampler <= CORESAMPLER::PS15)
+          DeviceContext->PSSetShaderResources(Sampler - CORESAMPLER::PS0, 1,
+                                              null);
+        if (Sampler >= CORESAMPLER::VS0 && Sampler <= CORESAMPLER::VS3)
+          DeviceContext->VSSetShaderResources(Sampler - CORESAMPLER::VS0, 1,
+                                              null);
+        if (Sampler >= CORESAMPLER::GS0 && Sampler <= CORESAMPLER::GS3)
+          DeviceContext->GSSetShaderResources(Sampler - CORESAMPLER::GS0, 1,
+                                              null);
         return true;
       }
       return ApplyTextureToSampler(Sampler, Value.Texture);
     } break;
-    case CORERS_VERTEXFORMAT: {
+    case CORERENDERSTATE::VERTEXFORMAT: {
       if (!Value.VertexFormat) {
         CurrentVertexFormatSize = 0;
         DeviceContext->IASetInputLayout(nullptr);
@@ -784,49 +786,49 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
       CurrentVertexFormatSize = Value.VertexFormat->GetSize();
       return ApplyVertexFormat(Value.VertexFormat);
     } break;
-    case CORERS_INDEXBUFFER: {
+    case CORERENDERSTATE::INDEXBUFFER: {
       if (!Value.IndexBuffer) {
         DeviceContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
         return true;
       }
       return ApplyIndexBuffer(Value.IndexBuffer);
     } break;
-    case CORERS_VERTEXSHADER: {
+    case CORERENDERSTATE::VERTEXSHADER: {
       if (!Value.VertexShader) {
         DeviceContext->VSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyVertexShader(Value.VertexShader);
     } break;
-    case CORERS_GEOMETRYSHADER: {
+    case CORERENDERSTATE::GEOMETRYSHADER: {
       if (!Value.GeometryShader) {
         DeviceContext->GSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyGeometryShader(Value.GeometryShader);
     } break;
-    case CORERS_HULLSHADER: {
+    case CORERENDERSTATE::HULLSHADER: {
       if (!Value.GeometryShader) {
         DeviceContext->HSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyHullShader(Value.HullShader);
     } break;
-    case CORERS_DOMAINSHADER: {
+    case CORERENDERSTATE::DOMAINSHADER: {
       if (!Value.DomainShader) {
         DeviceContext->DSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyDomainShader(Value.DomainShader);
     } break;
-    case CORERS_COMPUTESHADER: {
+    case CORERENDERSTATE::COMPUTESHADER: {
       if (!Value.ComputeShader) {
         DeviceContext->DSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyComputeShader(Value.ComputeShader);
     } break;
-    case CORERS_PIXELSHADER: {
+    case CORERENDERSTATE::PIXELSHADER: {
       if (!Value.PixelShader) {
         DeviceContext->PSSetShader(nullptr, nullptr, 0);
         return true;

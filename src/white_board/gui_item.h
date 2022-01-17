@@ -24,13 +24,13 @@ enum WBMESSAGE;
 
 class CWBContextMenu;
 
-enum WBALIGNMENT {
-  WB_ALIGN_TOP = 0,
-  WB_ALIGN_LEFT = 0,
-  WB_ALIGN_CENTER = 1,
-  WB_ALIGN_MIDDLE = 1,
-  WB_ALIGN_RIGHT = 2,
-  WB_ALIGN_BOTTOM = 2,
+enum class WBALIGNMENT : uint8_t {
+  TOP = 0,
+  LEFT = 0,
+  CENTER = 1,
+  MIDDLE = 1,
+  RIGHT = 2,
+  BOTTOM = 2,
 };
 
 enum WBITEMSTATE {

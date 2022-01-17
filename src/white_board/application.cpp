@@ -1,7 +1,5 @@
 #include "src/white_board/application.h"
 
-#include <tchar.h>
-
 #include <clocale>
 #include <cstdio>
 #include <format>
@@ -948,10 +946,10 @@ void CWBApplication::TakeScreenshot() {
   auto b = DrawAPI->GetDevice()->CreateBlendState();
   b->SetBlendEnable(0, true);
   b->SetIndependentBlend(true);
-  b->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_ZERO);
-  b->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_ONE);
-  b->SetSrcBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ONE);
-  b->SetDestBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ZERO);
+  b->SetSrcBlend(0, COREBLENDFACTOR::ZERO);
+  b->SetDestBlend(0, COREBLENDFACTOR::ONE);
+  b->SetSrcBlendAlpha(0, COREBLENDFACTOR::ONE);
+  b->SetDestBlendAlpha(0, COREBLENDFACTOR::ZERO);
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
   DrawAPI->SetCropRect(CRect(0, 0, XRes, YRes));

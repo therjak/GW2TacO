@@ -49,7 +49,7 @@ class CCoreDX11Device : public CCoreDevice {
   ~CCoreDX11Device() override;
   ID3D11Device* GetDevice() { return Device; }
   ID3D11DeviceContext* GetDeviceContext() { return DeviceContext; }
-  COREDEVICEAPI GetAPIType() override { return COREDEVICEAPI::COREAPI_DX11; }
+  COREDEVICEAPI GetAPIType() override { return COREDEVICEAPI::DX11; }
 
   // this initializer will change to accommodate multiple platforms at once once
   // we get to that point:
@@ -70,7 +70,7 @@ class CCoreDX11Device : public CCoreDevice {
   std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const int32_t XRes, const int32_t YRes, const uint8_t* Data,
       const char BytesPerPixel = 4,
-      const COREFORMAT Format = COREFORMAT::COREFMT_A8R8G8B8,
+      const COREFORMAT Format = COREFORMAT::A8R8G8B8,
       const bool RenderTarget = false) override;
   std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t* Data,
                                                   const int32_t Size) override;

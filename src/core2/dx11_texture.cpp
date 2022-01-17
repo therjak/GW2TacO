@@ -35,12 +35,12 @@ void CCoreDX11Texture2D::Release() {
 }
 
 bool CCoreDX11Texture2D::SetToSampler(const CORESAMPLER smp) {
-  if (smp >= CORESMP_PS0 && smp <= CORESMP_PS15)
-    DeviceContext->PSSetShaderResources(smp, 1, &View);
-  if (smp >= CORESMP_VS0 && smp <= CORESMP_VS3)
-    DeviceContext->VSSetShaderResources(smp - CORESMP_VS0, 1, &View);
-  if (smp >= CORESMP_GS0 && smp <= CORESMP_GS3)
-    DeviceContext->GSSetShaderResources(smp - CORESMP_GS0, 1, &View);
+  if (smp >= CORESAMPLER::PS0 && smp <= CORESAMPLER::PS15)
+    DeviceContext->PSSetShaderResources(smp - CORESAMPLER::PS0, 1, &View);
+  if (smp >= CORESAMPLER::VS0 && smp <= CORESAMPLER::VS3)
+    DeviceContext->VSSetShaderResources(smp - CORESAMPLER::VS0, 1, &View);
+  if (smp >= CORESAMPLER::GS0 && smp <= CORESAMPLER::GS3)
+    DeviceContext->GSSetShaderResources(smp - CORESAMPLER::GS0, 1, &View);
 
   return true;
 }
@@ -49,8 +49,7 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
                                 const uint8_t* Data, const char BytesPerPixel,
                                 const COREFORMAT format,
                                 const bool rendertarget) {
-  if (xres <= 0 || yres <= 0 || format == COREFORMAT::COREFMT_UNKNOWN)
-    return false;
+  if (xres <= 0 || yres <= 0 || format == COREFORMAT::UNKNOWN) return false;
   Release();
 
   D3D11_TEXTURE2D_DESC tex;
@@ -170,8 +169,7 @@ void CCoreDX11Texture2D::OnDeviceLost() {
 }
 
 void CCoreDX11Texture2D::OnDeviceReset() {
-  if (RenderTarget && XRes > 0 && YRes > 0 &&
-      Format != COREFORMAT::COREFMT_UNKNOWN)
+  if (RenderTarget && XRes > 0 && YRes > 0 && Format != COREFORMAT::UNKNOWN)
     BASEASSERT(Create(XRes, YRes, nullptr, 4, Format, RenderTarget));
 }
 
@@ -408,7 +406,7 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
 
   XRes = xres;
   YRes = yres;
-  Format = COREFORMAT::COREFMT_UNKNOWN;
+  Format = COREFORMAT::UNKNOWN;
 
   return true;
 }

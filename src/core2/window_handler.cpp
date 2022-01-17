@@ -1,7 +1,5 @@
 #include "src/core2/window_handler.h"
 
-#include <tchar.h>
-
 #include "src/base/logger.h"
 #include "src/base/rectangle.h"
 #include "src/base/timer.h"
@@ -242,13 +240,13 @@ void CCoreWindowHandlerWin::ToggleFullScreen() {
 
 void CCoreWindowHandlerWin::HandleAltEnter() {
   switch (Device->GetAPIType()) {
-    case COREDEVICEAPI::COREAPI_DX9:
+    case COREDEVICEAPI::DX9:
       ToggleFullScreen();
       break;
-    case COREDEVICEAPI::COREAPI_DX11:
+    case COREDEVICEAPI::DX11:
       // handled by dxgi <3
       break;
-    case COREDEVICEAPI::COREAPI_OPENGL:
+    case COREDEVICEAPI::OPENGL:
       break;
     default:
       break;

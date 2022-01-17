@@ -1,6 +1,7 @@
 #include "src/white_board/text_box.h"
 
 #include <algorithm>
+#include <cctype>
 #include <regex>
 
 #include "src/base/logger.h"
@@ -470,7 +471,7 @@ int32_t CWBTextBox::GetLineLeadingWhiteSpaceSize() {
   const int32_t ls = CursorPos - GetCursorX();
   int32_t cnt = 0;
   for (int32_t x = ls; x < static_cast<int32_t>(Text.size()); x++) {
-    if (Text[x] == '\n' || !_istspace(Text[x])) return cnt;
+    if (Text[x] == '\n' || !std::isspace(Text[x])) return cnt;
     cnt++;
   }
   return cnt;
@@ -1012,8 +1013,8 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
       CharacterInWord >= static_cast<int32_t>(Text.size()))
     return;
 
-  const bool IsWhiteSpace = _istspace(Text[CharacterInWord]);
-  const bool IsAlNum = _istalnum(Text[CharacterInWord]);
+  const bool IsWhiteSpace = std::isspace(Text[CharacterInWord]);
+  const bool IsAlNum = std::isalnum(Text[CharacterInWord]);
   if (!IsWhiteSpace && !IsAlNum) {
     SetCursorPos(CharacterInWord, false);
     SetCursorPos(CharacterInWord + 1, true);
@@ -1024,21 +1025,22 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
   int32_t End = CharacterInWord;
 
   if (IsWhiteSpace) {
-    while (Start >= 0 && _istspace(Text[Start]) && Text[Start] != '\n' &&
+    while (Start >= 0 && std::isspace(Text[Start]) && Text[Start] != '\n' &&
            Text[Start] != '\r') {
       Start--;
     }
-    while (End < static_cast<int32_t>(Text.size()) && _istspace(Text[End]) &&
+    while (End < static_cast<int32_t>(Text.size()) && std::isspace(Text[End]) &&
            Text[End] != '\n' && Text[End] != '\r') {
       End++;
     }
     End = std::min(static_cast<int32_t>(Text.size()) - 1, End);
   } else {
-    while ((Start >= 0 && _istalnum(Text[Start])) || Text[Start] == '_') {
+    while ((Start >= 0 && std::isalnum(Text[Start])) || Text[Start] == '_') {
       Start--;
     }
-    while ((End < static_cast<int32_t>(Text.size()) && _istalnum(Text[End])) ||
-           Text[End] == '_') {
+    while (
+        (End < static_cast<int32_t>(Text.size()) && std::isalnum(Text[End])) ||
+        Text[End] == '_') {
       End++;
     }
     End = std::min(static_cast<int32_t>(Text.size()) - 1, End);

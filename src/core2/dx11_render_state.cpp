@@ -131,10 +131,10 @@ bool CCoreDX11RasterizerState::Update() {
 
   D3D11_RASTERIZER_DESC desc;
   desc.AntialiasedLineEnable = AntialiasedLineEnable;
-  desc.CullMode = DX11CullModes[CullMode];
+  desc.CullMode = DX11CullModes[static_cast<uint8_t>(CullMode)];
   desc.DepthBias = DepthBias;
   desc.DepthBiasClamp = DepthBiasClamp;
-  desc.FillMode = DX11FillModes[FillMode];
+  desc.FillMode = DX11FillModes[static_cast<uint8_t>(FillMode)];
   desc.FrontCounterClockwise = FrontCounterClockwise;
   desc.MultisampleEnable = MultisampleEnable;
   desc.ScissorEnable = ScissorEnable;
@@ -181,15 +181,15 @@ bool CCoreDX11SamplerState::Update() {
 
   D3D11_SAMPLER_DESC desc;
 
-  desc.AddressU = DX11TextureAddressModes[AddressU];
-  desc.AddressV = DX11TextureAddressModes[AddressV];
-  desc.AddressW = DX11TextureAddressModes[AddressW];
+  desc.AddressU = DX11TextureAddressModes[static_cast<uint8_t>(AddressU)];
+  desc.AddressV = DX11TextureAddressModes[static_cast<uint8_t>(AddressV)];
+  desc.AddressW = DX11TextureAddressModes[static_cast<uint8_t>(AddressW)];
   desc.BorderColor[0] = BorderColor[0];
   desc.BorderColor[1] = BorderColor[1];
   desc.BorderColor[2] = BorderColor[2];
   desc.BorderColor[3] = BorderColor[3];
   desc.ComparisonFunc = DX11ComparisonFunctionsAt(ComparisonFunc);
-  desc.Filter = DX11Filters[Filter];
+  desc.Filter = DX11Filters[static_cast<uint16_t>(Filter)];
   desc.MaxAnisotropy = MaxAnisotropy;
   desc.MaxLOD = MaxLOD;
   desc.MinLOD = MinLOD;
@@ -211,14 +211,14 @@ bool CCoreDX11SamplerState::Update() {
 bool CCoreDX11SamplerState::Apply(CORESAMPLER Smp) {
   Update();
 
-  if (Smp >= CORESMP_PS0 && Smp <= CORESMP_PS15)
-    Context->PSSetSamplers(Smp - CORESMP_PS0, 1, &State);
+  if (Smp >= CORESAMPLER::PS0 && Smp <= CORESAMPLER::PS15)
+    Context->PSSetSamplers(Smp - CORESAMPLER::PS0, 1, &State);
 
-  if (Smp >= CORESMP_VS0 && Smp <= CORESMP_VS3)
-    Context->VSSetSamplers(Smp - CORESMP_VS0, 1, &State);
+  if (Smp >= CORESAMPLER::VS0 && Smp <= CORESAMPLER::VS3)
+    Context->VSSetSamplers(Smp - CORESAMPLER::VS0, 1, &State);
 
-  if (Smp >= CORESMP_GS0 && Smp <= CORESMP_GS3)
-    Context->GSSetSamplers(Smp - CORESMP_GS0, 1, &State);
+  if (Smp >= CORESAMPLER::GS0 && Smp <= CORESAMPLER::GS3)
+    Context->GSSetSamplers(Smp - CORESAMPLER::GS0, 1, &State);
 
   return true;
 }

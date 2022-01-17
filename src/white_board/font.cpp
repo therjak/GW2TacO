@@ -1,6 +1,7 @@
 #include "src/white_board/font.h"
 
 #include <algorithm>
+#include <cctype>
 #include <vector>
 
 #include "src/base/logger.h"
@@ -638,15 +639,15 @@ char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
       return *CurrPos;
       break;
     case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
-      if (Text == CurrPos || (CurrPos > Text && _istspace(*(CurrPos - 1))))
-        return _totupper(*CurrPos);
-      return _totlower(*CurrPos);
+      if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1))))
+        return std::toupper(*CurrPos);
+      return std::tolower(*CurrPos);
       break;
     case WBTEXTTRANSFORM::WBTT_UPPERCASE:
-      return _totupper(*CurrPos);
+      return std::toupper(*CurrPos);
       break;
     case WBTEXTTRANSFORM::WBTT_LOWERCASE:
-      return _totlower(*CurrPos);
+      return std::tolower(*CurrPos);
       break;
   }
   return 0;
@@ -663,15 +664,15 @@ uint16_t CWBFont::ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
       return decoded;
       break;
     case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
-      if (Text == CurrPos || (CurrPos > Text && _istspace(*(CurrPos - 1))))
-        return _totupper(decoded);
-      return _totlower(decoded);
+      if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1))))
+        return std::toupper(decoded);
+      return std::tolower(decoded);
       break;
     case WBTEXTTRANSFORM::WBTT_UPPERCASE:
-      return _totupper(decoded);
+      return std::toupper(decoded);
       break;
     case WBTEXTTRANSFORM::WBTT_LOWERCASE:
-      return _totlower(decoded);
+      return std::tolower(decoded);
       break;
   }
   return 0;

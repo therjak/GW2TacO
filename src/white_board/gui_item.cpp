@@ -395,17 +395,18 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
 
         if (e->GetBehavior(0) ==
             WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
-          if (AlignX == WB_ALIGN_RIGHT) offset.x = Pos.Width() - elementsize.x;
-          if (AlignX == WB_ALIGN_CENTER)
+          if (AlignX == WBALIGNMENT::RIGHT)
+            offset.x = Pos.Width() - elementsize.x;
+          if (AlignX == WBALIGNMENT::CENTER)
             offset.x = (Pos.Width() - elementsize.x) / 2;
           size.x = elementsize.x;
         }
 
         if (e->GetBehavior(1) ==
             WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
-          if (AlignY == WB_ALIGN_BOTTOM)
+          if (AlignY == WBALIGNMENT::BOTTOM)
             offset.y = Pos.Height() - elementsize.y;
-          if (AlignY == WB_ALIGN_MIDDLE)
+          if (AlignY == WBALIGNMENT::MIDDLE)
             offset.y = (Pos.Height() - elementsize.y) / 2;
           size.y = elementsize.y;
         }
@@ -1535,28 +1536,28 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
 
       if (attrib == ("left"))
         VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
-                              pseudo);
+                              WB_ITEM_BACKGROUNDALIGNMENT_X,
+                              static_cast<int32_t>(WBALIGNMENT::LEFT), pseudo);
       if (attrib == ("center"))
-        VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER,
-                              pseudo);
+        VisualStyleApplicator(
+            props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X,
+            static_cast<int32_t>(WBALIGNMENT::CENTER), pseudo);
       if (attrib == ("right"))
         VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT,
-                              pseudo);
+                              WB_ITEM_BACKGROUNDALIGNMENT_X,
+                              static_cast<int32_t>(WBALIGNMENT::RIGHT), pseudo);
       if (attrib == ("top"))
         VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP,
-                              pseudo);
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y,
+                              static_cast<int32_t>(WBALIGNMENT::TOP), pseudo);
       if (attrib == ("middle"))
-        VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE,
-                              pseudo);
+        VisualStyleApplicator(
+            props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
+            static_cast<int32_t>(WBALIGNMENT::MIDDLE), pseudo);
       if (attrib == ("bottom"))
-        VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM,
-                              pseudo);
+        VisualStyleApplicator(
+            props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
+            static_cast<int32_t>(WBALIGNMENT::BOTTOM), pseudo);
 
       if (attrib.find("rgba(") == 0) {
         CColor col;
@@ -1638,28 +1639,28 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     for (const auto& attrib : Attribs) {
       if (attrib == ("left"))
         VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_LEFT,
-                              pseudo);
+                              WB_ITEM_BACKGROUNDALIGNMENT_X,
+                              static_cast<int32_t>(WBALIGNMENT::LEFT), pseudo);
       if (attrib == ("center"))
-        VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_CENTER,
-                              pseudo);
+        VisualStyleApplicator(
+            props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X,
+            static_cast<int32_t>(WBALIGNMENT::CENTER), pseudo);
       if (attrib == ("right"))
         VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_X, WB_ALIGN_RIGHT,
-                              pseudo);
+                              WB_ITEM_BACKGROUNDALIGNMENT_X,
+                              static_cast<int32_t>(WBALIGNMENT::RIGHT), pseudo);
       if (attrib == ("top"))
         VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_TOP,
-                              pseudo);
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y,
+                              static_cast<int32_t>(WBALIGNMENT::TOP), pseudo);
       if (attrib == ("middle"))
-        VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_MIDDLE,
-                              pseudo);
+        VisualStyleApplicator(
+            props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
+            static_cast<int32_t>(WBALIGNMENT::MIDDLE), pseudo);
       if (attrib == ("bottom"))
-        VisualStyleApplicator(props.DisplayDescriptor,
-                              WB_ITEM_BACKGROUNDALIGNMENT_Y, WB_ALIGN_BOTTOM,
-                              pseudo);
+        VisualStyleApplicator(
+            props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
+            static_cast<int32_t>(WBALIGNMENT::BOTTOM), pseudo);
     }
 
     return true;

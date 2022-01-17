@@ -1,7 +1,5 @@
 #include "src/core2/render_state.h"
 
-#include <tchar.h>
-
 #include <limits>
 
 #include "src/util/xml_document.h"
@@ -20,12 +18,12 @@ CCoreBlendState::CCoreBlendState(CCoreDevice* Device)
 
   for (auto& RenderTargetBlendState : RenderTargetBlendStates) {
     RenderTargetBlendState.BlendEnable = false;
-    RenderTargetBlendState.SrcBlend = COREBLENDFACTOR::COREBLEND_ONE;
-    RenderTargetBlendState.DestBlend = COREBLENDFACTOR::COREBLEND_ZERO;
-    RenderTargetBlendState.BlendOp = COREBLENDOP::COREBLENDOP_ADD;
-    RenderTargetBlendState.SrcBlendAlpha = COREBLENDFACTOR::COREBLEND_ONE;
-    RenderTargetBlendState.DestBlendAlpha = COREBLENDFACTOR::COREBLEND_ZERO;
-    RenderTargetBlendState.BlendOpAlpha = COREBLENDOP::COREBLENDOP_ADD;
+    RenderTargetBlendState.SrcBlend = COREBLENDFACTOR::ONE;
+    RenderTargetBlendState.DestBlend = COREBLENDFACTOR::ZERO;
+    RenderTargetBlendState.BlendOp = COREBLENDOP::ADD;
+    RenderTargetBlendState.SrcBlendAlpha = COREBLENDFACTOR::ONE;
+    RenderTargetBlendState.DestBlendAlpha = COREBLENDFACTOR::ZERO;
+    RenderTargetBlendState.BlendOpAlpha = COREBLENDOP::ADD;
     RenderTargetBlendState.RenderTargetWriteMask = 0x0f;
   }
 }
@@ -183,7 +181,7 @@ CCoreDepthStencilState::CCoreDepthStencilState(CCoreDevice* Device)
     : CCoreRenderStateBatch(Device) {
   DepthEnable = true;
   ZWriteEnable = true;
-  DepthFunc = CORECOMPARISONFUNCTION::CORECMP_LESS;
+  DepthFunc = CORECOMPARISONFUNCTION::LESS;
 }
 
 CCoreDepthStencilState::~CCoreDepthStencilState() = default;
@@ -228,8 +226,8 @@ void CCoreDepthStencilState::Export(CXMLNode* n) {
 
 CCoreRasterizerState::CCoreRasterizerState(CCoreDevice* Device)
     : CCoreRenderStateBatch(Device) {
-  FillMode = COREFILL_SOLID;
-  CullMode = CORECULL_CCW;
+  FillMode = COREFILLMODE::SOLID;
+  CullMode = CORECULLMODE::CCW;
   FrontCounterClockwise = false;
   DepthBias = 0;
   DepthBiasClamp = 0;
@@ -350,15 +348,15 @@ void CCoreRasterizerState::Export(CXMLNode* n) {
 
 CCoreSamplerState::CCoreSamplerState(CCoreDevice* Device)
     : CCoreRenderStateBatch(Device) {
-  Filter = COREFILTER_MIN_MAG_MIP_LINEAR;
-  AddressU = CORETEXADDRESS_CLAMP;
-  AddressV = CORETEXADDRESS_CLAMP;
-  AddressW = CORETEXADDRESS_CLAMP;
+  Filter = COREFILTER::MIN_MAG_MIP_LINEAR;
+  AddressU = CORETEXTUREADDRESSMODE::CLAMP;
+  AddressV = CORETEXTUREADDRESSMODE::CLAMP;
+  AddressW = CORETEXTUREADDRESSMODE::CLAMP;
   MinLOD = std::numeric_limits<float>::lowest();  //-FLT_MAX;
   MaxLOD = std::numeric_limits<float>::max();     // FLT_MAX;
   MipLODBias = 0;
   MaxAnisotropy = 1;
-  ComparisonFunc = CORECOMPARISONFUNCTION::CORECMP_NEVER;
+  ComparisonFunc = CORECOMPARISONFUNCTION::NEVER;
   BorderColor[0] = BorderColor[1] = BorderColor[2] = BorderColor[3] = 1;
 }
 

@@ -316,7 +316,7 @@ void CWBDrawAPI::RenderDisplayList() {
   if (!VertexBuffer) return;
 
   // update texture atlas if needed
-  if (Atlas && Device->GetTexture(CORESMP_PS0) == Atlas->GetTexture())
+  if (Atlas && Device->GetTexture(CORESAMPLER::PS0) == Atlas->GetTexture())
     Atlas->UpdateTexture();
 
   Device->SetVertexBuffer(VertexBuffer.get(), 0);
@@ -566,7 +566,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     Log_Warn(
         "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 "
         "functionality");
-    if (Device->GetAPIType() == COREDEVICEAPI::COREAPI_DX11) {
+    if (Device->GetAPIType() == COREDEVICEAPI::DX11) {
       return false;
     }
   }
@@ -577,15 +577,15 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     Log_Warn(
         "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 "
         "functionality");
-    if (Device->GetAPIType() == COREDEVICEAPI::COREAPI_DX11) {
+    if (Device->GetAPIType() == COREDEVICEAPI::DX11) {
       return false;
     }
   }
 
   std::vector<COREVERTEXATTRIBUTE> Att = {
-      COREVERTEXATTRIBUTE::COREVXATTR_POSITIONT4,
-      COREVERTEXATTRIBUTE::COREVXATTR_TEXCOORD2,
-      COREVERTEXATTRIBUTE::COREVXATTR_COLOR4,
+      COREVERTEXATTRIBUTE::POSITIONT4,
+      COREVERTEXATTRIBUTE::TEXCOORD2,
+      COREVERTEXATTRIBUTE::COLOR4,
   };
 
   VertexFormat = Device->CreateVertexFormat(Att, VxShader.get());
@@ -602,10 +602,10 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   }
 
   GuiBlendState->SetBlendEnable(0, true);
-  GuiBlendState->SetSrcBlend(0, COREBLENDFACTOR::COREBLEND_SRCALPHA);
-  GuiBlendState->SetDestBlend(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
-  GuiBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::COREBLEND_ONE);
-  GuiBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::COREBLEND_INVSRCALPHA);
+  GuiBlendState->SetSrcBlend(0, COREBLENDFACTOR::SRCALPHA);
+  GuiBlendState->SetDestBlend(0, COREBLENDFACTOR::INVSRCALPHA);
+  GuiBlendState->SetSrcBlendAlpha(0, COREBLENDFACTOR::ONE);
+  GuiBlendState->SetDestBlendAlpha(0, COREBLENDFACTOR::INVSRCALPHA);
 
   GuiRasterState = Device->CreateRasterizerState();
   if (!GuiRasterState) {
@@ -614,7 +614,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   }
 
   GuiRasterState->SetAntialiasedLineEnable(true);
-  GuiRasterState->SetCullMode(CORECULL_NONE);
+  GuiRasterState->SetCullMode(CORECULLMODE::NONE);
 
   GuiZState = Device->CreateDepthStencilState();
   if (!GuiZState) {
@@ -622,7 +622,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
     return false;
   }
 
-  GuiZState->SetDepthFunc(CORECOMPARISONFUNCTION::CORECMP_LEQUAL);
+  GuiZState->SetDepthFunc(CORECOMPARISONFUNCTION::LEQUAL);
 
   ResolutionData = Device->CreateConstantBuffer();
   if (!ResolutionData) {
@@ -736,11 +736,11 @@ void CWBDrawAPI::SetUIRenderState() {
   Device->SetHullShader(nullptr);
   Device->SetDomainShader(nullptr);
   Device->SetPixelShader(PxShader.get());
-  Device->SetTexture(CORESMP_PS0, Atlas->GetTexture());
+  Device->SetTexture(CORESAMPLER::PS0, Atlas->GetTexture());
 
   Device->SetRenderTarget(nullptr);
 
-  if (GuiSampler) GuiSampler->Apply(CORESMP_PS0);
+  if (GuiSampler) GuiSampler->Apply(CORESAMPLER::PS0);
 
   ResolutionData->Reset();
 

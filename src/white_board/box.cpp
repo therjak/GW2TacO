@@ -19,8 +19,8 @@ CWBBox::~CWBBox() = default;
 bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
   Arrangement = WBBOXARRANGEMENT::WB_ARRANGE_NONE;
   Spacing = 0;
-  AlignmentX = WB_ALIGN_LEFT;
-  AlignmentY = WB_ALIGN_TOP;
+  AlignmentX = WBALIGNMENT::LEFT;
+  AlignmentY = WBALIGNMENT::TOP;
   SizingX = WBBOXSIZING::WB_SIZING_KEEP;
   SizingY = WBBOXSIZING::WB_SIZING_KEEP;
 
@@ -145,8 +145,8 @@ void CWBBox::RearrangeHorizontal() {
   for (uint32_t x = 0; x < NumChildren(); x++)
     width += GetChild(x)->GetPosition().Width();
 
-  if (AlignmentX == WB_ALIGN_RIGHT) pos = GetClientRect().Width() - width;
-  if (AlignmentX == WB_ALIGN_CENTER)
+  if (AlignmentX == WBALIGNMENT::RIGHT) pos = GetClientRect().Width() - width;
+  if (AlignmentX == WBALIGNMENT::CENTER)
     pos = (GetClientRect().Width() - width) / 2;
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
@@ -177,9 +177,9 @@ void CWBBox::RearrangeHorizontal() {
     }
 
     int32_t off = 0;
-    if (AlignmentY == WB_ALIGN_BOTTOM)
+    if (AlignmentY == WBALIGNMENT::BOTTOM)
       off = ClientRect.Height() - ChildPosition.Height();
-    if (AlignmentY == WB_ALIGN_CENTER)
+    if (AlignmentY == WBALIGNMENT::CENTER)
       off = (ClientRect.Height() - ChildPosition.Height()) / 2;
 
     const CRect np = CRect(pos, off, pos + ChildPosition.Width(),
@@ -220,8 +220,9 @@ void CWBBox::RearrangeVertical() {
   for (uint32_t x = 0; x < NumChildren(); x++)
     height += GetChild(x)->GetPosition().Height();
 
-  if (AlignmentY == WB_ALIGN_BOTTOM) pos = GetClientRect().Height() - height;
-  if (AlignmentY == WB_ALIGN_CENTER)
+  if (AlignmentY == WBALIGNMENT::BOTTOM)
+    pos = GetClientRect().Height() - height;
+  if (AlignmentY == WBALIGNMENT::CENTER)
     pos = (GetClientRect().Height() - height) / 2;
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
@@ -252,9 +253,9 @@ void CWBBox::RearrangeVertical() {
     }
 
     int32_t off = 0;
-    if (AlignmentX == WB_ALIGN_BOTTOM)
+    if (AlignmentX == WBALIGNMENT::BOTTOM)
       off = ClientRect.Width() - ChildPosition.Width();
-    if (AlignmentX == WB_ALIGN_CENTER)
+    if (AlignmentX == WBALIGNMENT::CENTER)
       off = (ClientRect.Width() - ChildPosition.Width()) / 2;
 
     const CRect np = CRect(off, pos, off + ChildPosition.Width(),
@@ -333,15 +334,15 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == "child-align-x") {
     if (value == "left") {
-      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_LEFT);
+      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WBALIGNMENT::LEFT);
       return true;
     }
     if (value == "right") {
-      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_RIGHT);
+      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WBALIGNMENT::RIGHT);
       return true;
     }
     if (value == "center") {
-      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WB_ALIGN_CENTER);
+      SetAlignment(WBBOXAXIS::WB_HORIZONTAL, WBALIGNMENT::CENTER);
       return true;
     }
 
@@ -354,15 +355,15 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
 
   if (prop == "child-align-y") {
     if (value == "top") {
-      SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_TOP);
+      SetAlignment(WBBOXAXIS::WB_VERTICAL, WBALIGNMENT::TOP);
       return true;
     }
     if (value == "bottom") {
-      SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_BOTTOM);
+      SetAlignment(WBBOXAXIS::WB_VERTICAL, WBALIGNMENT::BOTTOM);
       return true;
     }
     if (value == "center") {
-      SetAlignment(WBBOXAXIS::WB_VERTICAL, WB_ALIGN_CENTER);
+      SetAlignment(WBBOXAXIS::WB_VERTICAL, WBALIGNMENT::CENTER);
       return true;
     }
 

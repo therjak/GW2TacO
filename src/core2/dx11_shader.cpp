@@ -2,7 +2,6 @@
 
 #include <comdef.h>
 #include <float.h>
-#include <tchar.h>
 
 #include <array>
 
@@ -25,37 +24,6 @@ typedef HRESULT(__stdcall D3DXCompileShader(
 
 d3d_compile_func* D3DCompileFunc = nullptr;
 D3DXCompileShader* D3DXCompileFunc = nullptr;
-/*
-void* GetFunctionFromD3DXDLL(const std::string& FunctName) {
-  HMODULE dll = nullptr;
-
-  constexpr std::array<std::string_view, 34> CompilerDLLs = {
-      "d3dx11_47.dll", "d3dx11_46.dll", "d3dx11_45.dll", "d3dx11_44.dll",
-      "d3dx11_43.dll", "d3dx11_42.dll", "d3dx11_41.dll", "d3dx11_40.dll",
-      "d3dx11_39.dll", "d3dx11_38.dll", "d3dx11_37.dll", "d3dx11_36.dll",
-      "d3dx11_35.dll", "d3dx11_34.dll", "d3dx11_33.dll", "d3dx11_32.dll",
-      "d3dx11_31.dll", "d3dx10_47.dll", "d3dx10_46.dll", "d3dx10_45.dll",
-      "d3dx10_44.dll", "d3dx10_43.dll", "d3dx10_42.dll", "d3dx10_41.dll",
-      "d3dx10_40.dll", "d3dx10_39.dll", "d3dx10_38.dll", "d3dx10_37.dll",
-      "d3dx10_36.dll", "d3dx10_35.dll", "d3dx10_34.dll", "d3dx10_33.dll",
-      "d3dx10_32.dll", "d3dx10_31.dll",
-  };
-
-  for (const auto& cd : CompilerDLLs) {
-    dll = LoadLibraryA(cd.data());
-    if (dll) {
-      void* func = GetProcAddress(dll, FunctName.c_str());
-      if (func) {
-        Log_Nfo("[core] Successfully loaded {:s} from {:s}", FunctName,
-                cd);
-        return func;
-      }
-    }
-  }
-
-  Log_Err("[core] Failed to load {:s} from d3dx**_xx.dll!", FunctName);
-  return nullptr;
-}*/
 
 void* GetFunctionFromD3DCompileDLL(const std::string& FunctName) {
   HMODULE dll = nullptr;
