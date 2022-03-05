@@ -9,6 +9,7 @@
     <Category Color="C0AF60C7" Name="Living World Season 4" id="lws4" />
     <Category Color="C062B1EA" Name="Icebrood Saga" id="ibs" />
     <Category Color="C06984E4" Name="Eye of the North" id="eotn" />
+    <Category Color="C06984E4" Name="End of Dragons" id="eod" />
   </Categories>
   <Maps>
     <Map Name="Daytime" Length="120" Start="25" id="daytime">
@@ -257,6 +258,28 @@
     <Map Category="eotn" Name="Twisted Marionette" Length="120" Start="0" id="wtm">
       <Event Name="Twisted Marionette (Public)" Length="20" Color="80cdd5f2"/>
       <Event Name="" Length="100" Color="00000000"/>
+    </Map>
+    <Map Category="eod" Name="Cantha: Day and night" Length="120" Start="40" id="cdn">
+      <Event Name="Day" Length="55" Color="80ffe37f"/>
+      <Event Name="Dusk" Length="5" Color="80ffe37f"/>
+      <Event Name="Night" Length="55" Color="809f99cc"/>
+      <Event Name="Dawn" Length="5" Color="80ffe37f"/>
+    </Map>
+    <Map Category="eod" Name="Seitung Province" Length="120" Start="90" id="sp">
+      <Event Name="Aetherblade Assault" Length="30" Color="80ffe37f"/>
+      <Event Name="" Length="90" Color="00000000"/>
+    </Map>
+    <Map Category="eod" Name="New Kaineng City" Length="120" Start="0" id="nkc">
+      <Event Name="Kaineng Blackout" Length="30" Color="80ffe37f"/>
+      <Event Name="" Length="90" Color="00000000"/>
+    </Map>
+    <Map Category="eod" Name="The Echovald Wilds" Length="120" Start="30" id="tev">
+      <Event Name="Gang War" Length="35" Color="80ffe37f"/>
+      <Event Name="" Length="85" Color="00000000"/>
+    </Map>
+    <Map Category="eod" Name="Dragon's End" Length="120" Start="0" id="dre">
+      <Event Name="Preparations" Length="60" Color="80000000"/>
+      <Event Name="The Battle for the Jade Sea" Length="60" Color="80ffe37f"/>
     </Map>
   </Maps>
 </GW2MapTimer>
