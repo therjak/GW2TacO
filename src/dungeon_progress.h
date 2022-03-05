@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "src/white_board/draw_api.h"
@@ -33,6 +34,7 @@ class DungeonProgress : public CWBItem {
   std::thread fetchThread;
 
   std::vector<Dungeon> dungeons;
+  std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 
  public:
   DungeonProgress(CWBItem* Parent, math::CRect Position);

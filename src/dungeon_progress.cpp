@@ -12,8 +12,6 @@
 #include "src/overlay_config.h"
 #include "src/util/jsonxx.h"
 
-std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
-
 using namespace jsonxx;
 using math::CPoint;
 using math::CRect;
