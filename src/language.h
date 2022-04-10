@@ -38,4 +38,8 @@ class Localization {
 };
 
 extern std::unique_ptr<Localization> localization;
-#define DICT(token, ...) localization->Localize(token, __VA_ARGS__)
+
+template <class... Args>
+std::string DICT(const std::string_view token, Args&&... args) {
+  return localization->Localize(token, args...);
+}
