@@ -497,7 +497,11 @@ GW2MapTimer::GW2MapTimer(CWBItem* Parent, CRect Position)
   ApplyStyle("overflow-y", "auto", std::vector<std::string>());
 }
 
-GW2MapTimer::~GW2MapTimer() = default;
+GW2MapTimer::~GW2MapTimer() {
+  if (fetchThread.joinable()) {
+    fetchThread.join();
+  }
+}
 
 CWBItem* GW2MapTimer::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   return GW2MapTimer::Create(Root, Pos).get();
