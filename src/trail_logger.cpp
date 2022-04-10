@@ -788,7 +788,7 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
 
   int32_t* idxData;
 
-  if (idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
+  if (idxBuf && idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
     memcpy(idxData, indices.get(), sizeof(int32_t) * 6 * (pointCount - 1));
     // int cnt = 0;
     // for ( int32_t x = 0; x < pointCount - 1; x++ )
