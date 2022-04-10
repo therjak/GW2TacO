@@ -1951,18 +1951,16 @@ bool POI::IsVisible(const tm& ptm, const time_t& currtime,
 
   if (achievementsFetched && typeData.achievementId != -1) {
     std::lock_guard<std::mutex> lockGuard(mtx);
-    if (achievements.find(typeData.achievementId) != achievements.end()) {
-      if (achievements[typeData.achievementId].done) {
-        return true;
-      }
+    const auto& achievement = achievements.find(typeData.achievementId);
+    if (achievement != achievements.end()) {
+      const bool done = !achievement->second.done;
       if (typeData.achievementBit == -1) {
-        return false;
+        return !done;
       }
-      const auto& bits = achievements[typeData.achievementId].bits;
-      if (std::find(bits.begin(), bits.end(), typeData.achievementBit) !=
-          bits.end()) {
-        return false;
-      }
+      const auto& bits = achievement->second.bits;
+      const bool hasBit = std::find(bits.begin(), bits.end(),
+                                    typeData.achievementBit) != bits.end();
+      return !done && !hasBit;
     }
   }
 
