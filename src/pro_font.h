@@ -5,3 +5,5 @@
 
 bool CreateProFont(CWBApplication* App, std::string_view FontName);
 bool CreateUniFont(CWBApplication* App, std::string_view FontName);
+bool CreateUniFontOutlined(CWBApplication* App, std::string_view FontName);
+bool CreateProFontOutlined(CWBApplication* App, std::string_view FontName);

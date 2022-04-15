@@ -54,12 +54,34 @@ HWND gw2WindowFromPid = nullptr;
 bool disableHooks = false;
 
 bool InitGUI(CWBApplication* App) {
+  CreateUniFontOutlined(App, "UniFontOutlined");
+  CreateUniFontOutlined(App, "ProFontOutlined");
   CreateUniFont(App, "UniFont");
   CreateProFont(App, "ProFont");
 
-  App->LoadSkinFromFile("UI.wbs", localization->GetUsedGlyphs());
-  App->LoadXMLLayoutFromFile("UI.xml");
-  App->LoadCSSFromFile(UIFileNames[GetConfigValue("InterfaceSize")]);
+  if (!App->LoadSkinFromFile("UI.wbs", localization->GetUsedGlyphs())) {
+    MessageBox(NULL,
+               "TacO can't find the UI.wbs ui skin file!\nPlease make sure you "
+               "extracted all the files from the archive to a separate folder!",
+               "Missing File!", MB_ICONERROR);
+    return false;
+  }
+  if (!App->LoadXMLLayoutFromFile("UI.xml")) {
+    MessageBox(
+        NULL,
+        "TacO can't find the UI.xml ui layout file!\nPlease make sure you "
+        "extracted all the files from the archive to a separate folder!",
+        "Missing File!", MB_ICONERROR);
+    return false;
+  }
+  if (!App->LoadCSSFromFile(UIFileNames[GetConfigValue("InterfaceSize")])) {
+    MessageBox(
+        NULL,
+        "TacO can't find a required UI css style file!\nPlease make sure you "
+        "extracted all the files from the archive to a separate folder!",
+        "Missing File!", MB_ICONERROR);
+    return false;
+  }
   App->RegisterUIFactoryCallback("GW2TacticalDisplay",
                                  GW2TacticalDisplay::Factory);
   App->RegisterUIFactoryCallback("GW2TrailDisplay", GW2TrailDisplay::Factory);
@@ -805,7 +827,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   mumbleLink.Update();
 
-  InitGUI(App.get());
+  if (!InitGUI(App.get())) {
+    Log_Err("[GW2TacO] Missing file during init, exiting!");
+    return -1;
+  }
 
   extern WBATLASHANDLE DefaultIconHandle;
   if (DefaultIconHandle == -1) {
@@ -872,6 +897,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   int32_t hideOnLoadingScreens = GetConfigValue("HideOnLoadingScreens");
 
+  bool hadRetrace = false;
+
   while (App->HandleMessages()) {
 #ifdef _DEBUG
     if (GetAsyncKeyState(VK_F11)) {
@@ -897,7 +924,15 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
     }
 
-    mumbleLink.Update();
+    for (int x = 0; x < (frameThrottling ? 32 : 1); x++) {
+      if (mumbleLink.Update()) {
+        break;
+      }
+      if (frameThrottling) {
+        Sleep(1);
+      }
+    }
+
     bool shortTick = (GetTime() - mumbleLink.LastFrameTime) < 333;
 
     if (!hideOnLoadingScreens) {
@@ -943,8 +978,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         continue;
       }
 
-      if (!frameThrottling || frameTriggered ||
-          lastRenderTime + 200 < currTime) {
+      /* if (!frameThrottling || frameTriggered ||
+          lastRenderTime + 200 < currTime) */
+      {
         if (gw2Window) {
           if (!FoundGW2Window) {
             GetWindowThreadProcessId(gw2Window, &GW2Pid);
@@ -1052,8 +1088,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         taco->TickScriptEngine();
         AutoSaveConfig();
         App->Display();
+        // App->GetDevice()->WaitRetrace();
         frameTriggered = false;
         lastRenderTime = currTime;
+        hadRetrace = false;
       }
 
       if (!HooksInitialized) {

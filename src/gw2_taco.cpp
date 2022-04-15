@@ -786,21 +786,22 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
         CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
             App->FindItemByGuid(Message.Position[1]));
-        auto itm = ctxMenu->GetItem(Message.Data);
+        if (ctxMenu) {
+          auto itm = ctxMenu->GetItem(Message.Data);
 
-        auto& dta = CategoryList[Message.Data - Menu_MarkerFilter_Base];
+          auto& dta = CategoryList[Message.Data - Menu_MarkerFilter_Base];
 
-        if (!dta->IsOnlySeparator) {
-          auto txt = "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
-          if (!dta->displayName.empty())
-            txt += dta->displayName;
-          else
-            txt += dta->name;
+          if (!dta->IsOnlySeparator) {
+            auto txt = "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
+            if (!dta->displayName.empty())
+              txt += dta->displayName;
+            else
+              txt += dta->name;
 
-          itm->SetText(txt);
-          itm->SetHighlight(dta->IsDisplayed);
+            itm->SetText(txt);
+            itm->SetHighlight(dta->IsDisplayed);
+          }
         }
-
         break;
       }
       if (Message.Data >= Menu_ToggleMapTimerMap) {
@@ -951,6 +952,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                         CategoryList[Message.Data - Menu_MarkerFilter_Base]
                             ->GetFullTypeName()),
                        displayed);
+        CategoryRoot.CalculateVisibilityCache();
         break;
       }
 
@@ -1542,7 +1544,9 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   }
   scaleCountDownHack--;
 
-  teamSpeakConnection.Tick();
+  if (IsWindowOpen("TS3Control")) {
+    teamSpeakConnection.Tick();
+  }
   CheckItemPickup();
 
   auto it = FindChildByID("MenuHoverBox");
@@ -1600,16 +1604,22 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     }
   }
 
-  if (!HasConfigValue("LogTrails")) SetConfigValue("LogTrails", 0);
+  if (!HasConfigValue("LogTrails")) {
+    SetConfigValue("LogTrails", 0);
+  }
 
-  if (!HasConfigValue("CloseWithGW2")) SetConfigValue("CloseWithGW2", 1);
+  if (!HasConfigValue("CloseWithGW2")) {
+    SetConfigValue("CloseWithGW2", 1);
+  }
 
-  if (!HasConfigValue("InfoLineVisible")) SetConfigValue("InfoLineVisible", 0);
+  if (!HasConfigValue("InfoLineVisible")) {
+    SetConfigValue("InfoLineVisible", 0);
+  }
 
   int ypos = 0;
 
   if (GetConfigValue("InfoLineVisible")) {
-    auto font = App->GetFont("ProFont");
+    auto font = App->GetFont("ProFontOutlined");
     if (!font) return;
 
     auto infoline = lastInfoLine;
@@ -1645,8 +1655,8 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
         CVector3 minvals;
         CVector3 maxvals;
         bool initialized = false;
-
-        for (auto& poi : POIs) {
+        auto& mPOIs = GetMapPOIs();
+        for (auto& poi : mPOIs) {
           auto& p = poi.second;
 
           if (p.mapID == mumbleLink.mapID && !p.category) {
@@ -1668,7 +1678,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
         float maxdistance3d = 0;
         CVector3 center = (maxvals + minvals) * 0.5f;
 
-        for (auto& poi : POIs) {
+        for (auto& poi : mPOIs) {
           auto& p = poi.second;
 
           if (p.mapID == mumbleLink.mapID && !p.category) {
@@ -1700,11 +1710,6 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
         infoline, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
         WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_UPPERCASE);
 
-    for (int x = 0; x < 3; x++)
-      for (int y = 0; y < 3; y++)
-        font->Write(API, infoline, startpos + CPoint(x - 1, y - 1),
-                    CColor{0xff000000}, WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
-
     font->Write(API, infoline, startpos, CColor{0xffffffff},
                 WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
@@ -1712,7 +1717,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
   extern int gw2WindowCount;
   if (gw2WindowCount > 1) {
-    auto font = App->GetFont("UniFont");
+    auto font = App->GetFont("UniFontOutlined");
     if (!font) return;
 
     auto infoline = DICT("multiclientwarning");
@@ -1720,11 +1725,13 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
         infoline, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
         WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_UPPERCASE);
 
-    for (int x = 0; x < 3; x++)
-      for (int y = 0; y < 3; y++)
-        font->Write(API, infoline, CPoint(spos2.x + x - 1, ypos + y - 1),
-                    CColor{0xff000000}, WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
-
+    /*
+        for (int x = 0; x < 3; x++)
+          for (int y = 0; y < 3; y++)
+            font->Write(API, infoline, CPoint(spos2.x + x - 1, ypos + y - 1),
+                        CColor{0xff000000}, WBTEXTTRANSFORM::WBTT_UPPERCASE,
+       true);
+    */
     font->Write(API, infoline, CPoint(spos2.x, ypos), CColor{0xffff4040},
                 WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();

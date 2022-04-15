@@ -22,6 +22,7 @@ class CCoreDX11Device : public CCoreDevice {
   ID3D11RasterizerState* CurrentRasterizerState = nullptr;
 
   ID3D11Query* OcclusionQuery = nullptr;
+  HANDLE swapChainRetraceObject = 0;
 
   void ResetPrivateResources() override;
   bool InitAPI(const HWND hWnd, const bool FullScreen, const int32_t XRes,
@@ -174,6 +175,7 @@ class CCoreDX11Device : public CCoreDevice {
 
   void BeginOcclusionQuery() override;
   bool EndOcclusionQuery() override;
+  void WaitRetrace() override;
 
   //////////////////////////////////////////////////////////////////////////
   // dx11 specific functions

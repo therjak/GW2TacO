@@ -56,7 +56,7 @@ CRect GetMinimapRectangle() {
   return pos;
 }
 
-void CMumbleLink::Update() {
+bool CMumbleLink::Update() {
   bool justConnected = false;
 
   if (!lm) {
@@ -65,7 +65,7 @@ void CMumbleLink::Update() {
                            sizeof(LinkedMem), mumblePath.c_str());
 
     if (hMapObject == nullptr) {
-      return;
+      return false;
     }
 
     lm = static_cast<LinkedMem*>(MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS,
@@ -73,16 +73,18 @@ void CMumbleLink::Update() {
     if (lm == nullptr) {
       CloseHandle(hMapObject);
       hMapObject = nullptr;
-      return;
+      return false;
     }
     justConnected = true;
   }
 
-  if (!lm) return;
+  if (!lm) {
+    return false;
+  }
 
   if (tick == lm->uiTick) {
-    memcpy(&lastData, lm, sizeof(LinkedMem));
-    return;
+    // memcpy(&lastData, lm, sizeof(LinkedMem));
+    return false;
   } else {
     memcpy(&prevData, &lastData, sizeof(LinkedMem));
     memcpy(&lastData, lm, sizeof(LinkedMem));
@@ -266,9 +268,12 @@ void CMumbleLink::Update() {
   averagedCharPosition = avgCamCharDist * cami;
   averagedCharPosition /= averagedCharPosition.w;
 
-  if (!GetConfigValue("SmoothCharacterPos"))
+  if (!GetConfigValue("SmoothCharacterPos")) {
     averagedCharPosition =
         CVector4(charPosition.x, charPosition.y, charPosition.z, 1.0f);
+  }
+
+  return true;
 }
 
 float CMumbleLink::GetFrameRate() {

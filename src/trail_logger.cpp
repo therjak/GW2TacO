@@ -30,7 +30,9 @@ using math::CVector4;
 extern float globalOpacity;
 extern float minimapOpacity;
 
-std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;
+std::unordered_map<int, TrailSet> trails;
+
+TrailSet& GetMapTrails() { return trails[mumbleLink.mapID]; }
 
 extern std::unique_ptr<CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
@@ -95,20 +97,28 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
       std::lock_guard<std::mutex> lockGuard(mtx);
 
-      for (auto& y : trails) {
+      auto& mapTrails = GetMapTrails();
+      for (auto& y : mapTrails) {
         auto& trail = *y.second;
         if (!trail.typeData.bits.inGameVisible && showIngameTrails != 2)
           continue;
 
-        auto& str = GetStringFromMap(trail.typeData.texture);
         CCoreTexture* texture = nullptr;
+        if (!trail.texture) {
+          auto& str = GetStringFromMap(trail.typeData.texture);
 
-        if (!str.empty())
-          texture = GetTexture(
-              str, trail.zipFile,
-              trail.category ? GetStringFromMap(trail.category->zipFile) : "");
-        else
-          texture = trailTexture.get();
+          if (!str.empty()) {
+            texture = GetTexture(str, trail.zipFile,
+                                 trail.category
+                                     ? GetStringFromMap(trail.category->zipFile)
+                                     : "");
+          } else {
+            texture = trailTexture.get();
+          }
+          trail.texture = texture;
+        } else {
+          texture = trail.texture;
+        }
 
         float width = GameToWorldCoords(20);
 
@@ -196,7 +206,8 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
       API->SetRenderView(miniRect);
 
-      for (auto& y : trails) {
+      auto& mapTrails = GetMapTrails();
+      for (auto& y : mapTrails) {
         auto& trail = *y.second;
         if (!trail.typeData.bits.miniMapVisible && showMinimapTrails != 2)
           continue;
@@ -205,15 +216,22 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
         if (trail.typeData.bits.scaleWithZoom)
           trailWidth /= mumbleLink.miniMap.mapScale;
 
-        auto& str = GetStringFromMap(trail.typeData.texture);
         CCoreTexture* texture = nullptr;
+        if (!trail.texture) {
+          auto& str = GetStringFromMap(trail.typeData.texture);
 
-        if (!str.empty())
-          texture = GetTexture(
-              str, trail.zipFile,
-              trail.category ? GetStringFromMap(trail.category->zipFile) : "");
-        else
-          texture = trailTexture.get();
+          if (!str.empty()) {
+            texture = GetTexture(str, trail.zipFile,
+                                 trail.category
+                                     ? GetStringFromMap(trail.category->zipFile)
+                                     : "");
+          } else {
+            texture = trailTexture.get();
+          }
+          trail.texture = texture;
+        } else {
+          texture = trail.texture;
+        }
 
         float alpha =
             1.0f -
@@ -241,7 +259,8 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
       API->SetRenderView(miniRect);
 
-      for (auto& y : trails) {
+      auto& mapTrails = GetMapTrails();
+      for (auto& y : mapTrails) {
         auto& trail = *y.second;
         if (!trail.typeData.bits.bigMapVisible && showBigmapTrails != 2)
           continue;
@@ -250,15 +269,22 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
         if (trail.typeData.bits.scaleWithZoom)
           trailWidth /= mumbleLink.miniMap.mapScale;
 
-        auto& str = GetStringFromMap(trail.typeData.texture);
         CCoreTexture* texture = nullptr;
+        if (!trail.texture) {
+          auto& str = GetStringFromMap(trail.typeData.texture);
 
-        if (!str.empty())
-          texture = GetTexture(
-              str, trail.zipFile,
-              trail.category ? GetStringFromMap(trail.category->zipFile) : "");
-        else
-          texture = trailTexture.get();
+          if (!str.empty()) {
+            texture = GetTexture(str, trail.zipFile,
+                                 trail.category
+                                     ? GetStringFromMap(trail.category->zipFile)
+                                     : "");
+          } else {
+            texture = trailTexture.get();
+          }
+          trail.texture = texture;
+        } else {
+          texture = trail.texture;
+        }
 
         float alpha =
             1.0f -

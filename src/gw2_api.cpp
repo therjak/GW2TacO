@@ -95,7 +95,12 @@ void APIKey::FetchData() {
       auto characterData =
           "{\"characters\":" + QueryAPI("/v2/characters") + "}";
       json.parse(characterData);
-      if (json.has<Array>("characters")) {
+      if (!json.has<Array>("characters")) {
+        Log_Err("[GW2TacO] Unexpected result from API characters endpoint: %s",
+                characterData);
+        Log_Err("[GW2TacO] CHARACTERS WON'T BE RECOGNIZED FOR API KEY NAMED %s",
+                keyName);
+      } else {
         auto m = json.get<Array>("characters").values();
         for (auto& x : m) {
           if (x->is<String>()) {
@@ -104,6 +109,12 @@ void APIKey::FetchData() {
           }
         }
       }
+    } else {
+      Log_Err(
+          "[GW2TacO] API error: API key '%s - %s (%s)' doesn't have the "
+          "'characters' permission - account identification through Mumble "
+          "Link will not be possible.",
+          accountName, keyName, apiKey);
     }
 
     initialized = true;

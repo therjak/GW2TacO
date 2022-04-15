@@ -42,7 +42,9 @@ void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
   if (!mumbleLink.IsValid()) return;
 
   if (mumbleLink.mapID == -1) return;
-  for (auto& poi : POIs) {
+
+  auto& mPOIs = GetMapPOIs();
+  for (auto& poi : mPOIs) {
     auto& cpoi = poi.second;
 
     if (cpoi.mapID != mumbleLink.mapID) continue;
@@ -149,7 +151,8 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
     case WBM_CONTEXTMESSAGE:
       if (Message.Data >= 0 && Message.Data < CategoryList.size()) {
         if (!ChangeDefault) {
-          POIs[CurrentPOI].SetCategory(App, CategoryList[Message.Data]);
+          auto& mPOIs = GetMapPOIs();
+          mPOIs[CurrentPOI].SetCategory(App, CategoryList[Message.Data]);
           ExportPOIS();
           CWBLabel* type =
               dynamic_cast<CWBLabel*>(FindChildByID("markertype", "label"));

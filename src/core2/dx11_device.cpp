@@ -27,6 +27,10 @@ DCompositionCreateDeviceCallback DCompositionCreateDeviceFunc = nullptr;
 CCoreDX11Device::CCoreDX11Device() = default;
 
 CCoreDX11Device::~CCoreDX11Device() {
+  if (swapChainRetraceObject) {
+    CloseHandle(swapChainRetraceObject);
+  }
+
   if (OcclusionQuery) {
     OcclusionQuery->Release();
   }
@@ -275,16 +279,32 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
                                       DXGI_USAGE_RENDER_TARGET_OUTPUT,
                                       backBufferCount,
                                       DXGI_SCALING_STRETCH,
-                                      DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL,
+                                      DXGI_SWAP_EFFECT_FLIP_DISCARD,
                                       DXGI_ALPHA_MODE_PREMULTIPLIED,
                                       0};
+  swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT |
+                        DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
+
   res = dxgiFactory->CreateSwapChainForComposition(Device, &swapChainDesc,
                                                    nullptr, &SwapChain);
   if (res != S_OK) {
-    _com_error error(res);
-    Log_Err("[core] DirectX11 SwapChain creation failed ({:s})",
-            error.ErrorMessage());
-    return false;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+    swapChainDesc.Flags = 0;
+    res = dxgiFactory->CreateSwapChainForComposition(Device, &swapChainDesc,
+                                                     nullptr, &SwapChain);
+
+    if (res != S_OK) {
+      swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
+      res = dxgiFactory->CreateSwapChainForComposition(Device, &swapChainDesc,
+                                                       nullptr, &SwapChain);
+
+      if (res != S_OK) {
+        _com_error error(res);
+        Log_Err("[core] DirectX11 SwapChain creation failed (%s)",
+                error.ErrorMessage());
+        return false;
+      }
+    }
   }
 
   IDCompositionDevice* dcompDevice = nullptr;
@@ -347,6 +367,13 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
     Log_Err("[core] DirectComposition commit failed ({:s})",
             error.ErrorMessage());
     return false;
+  }
+
+  IDXGISwapChain2* swapChain2;
+  if (SUCCEEDED(SwapChain->QueryInterface(__uuidof(IDXGISwapChain2),
+                                          (void**)&swapChain2))) {
+    swapChainRetraceObject = swapChain2->GetFrameLatencyWaitableObject();
+    swapChain2->Release();
   }
 
   dxgiFactory->Release();
@@ -480,6 +507,17 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
 
   DeviceContext->OMSetRenderTargets(1, &BackBufferView, DepthBufferView);
   SetViewport(CRect(0, 0, xr, yr));
+
+  if (swapChainRetraceObject) {
+    CloseHandle(swapChainRetraceObject);
+
+    IDXGISwapChain2* swapChain2;
+    if (SUCCEEDED(SwapChain->QueryInterface(__uuidof(IDXGISwapChain2),
+                                            (void**)&swapChain2))) {
+      swapChainRetraceObject = swapChain2->GetFrameLatencyWaitableObject();
+      swapChain2->Release();
+    }
+  }
 }
 
 void CCoreDX11Device::SetFullScreenMode(const bool FullScreen, const int32_t xr,
@@ -1076,6 +1114,11 @@ bool CCoreDX11Device::EndOcclusionQuery() {
   }
 
   return 0;
+}
+
+void CCoreDX11Device::WaitRetrace() {
+  if (swapChainRetraceObject)
+    WaitForSingleObjectEx(swapChainRetraceObject, 1000, true);
 }
 
 ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {

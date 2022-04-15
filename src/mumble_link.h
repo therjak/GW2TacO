@@ -104,7 +104,7 @@ class CMumbleLink {
 
   math::CVector4 averagedCharPosition;
 
-  void Update();
+  bool Update();
   bool IsValid();
 
   std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;

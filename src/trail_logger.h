@@ -39,6 +39,7 @@ class GW2Trail {
   std::unique_ptr<CCoreVertexBuffer> trailMesh;
   CCoreDevice* dev = nullptr;
   std::unique_ptr<CCoreIndexBuffer> idxBuf;
+  CCoreTexture* texture = nullptr;
 
   int32_t map = 0;
 
@@ -129,4 +130,6 @@ class GW2TrailDisplay : public CWBItem {
   void DrawProxy(CWBDrawAPI* API, bool miniMaprender);
 };
 
-extern std::unordered_map<GUID, std::unique_ptr<GW2Trail>> trails;
+typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;
+extern std::unordered_map<int, TrailSet> trails;
+TrailSet& GetMapTrails();

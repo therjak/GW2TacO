@@ -213,4 +213,5 @@ class CCoreDevice {
 
   virtual void BeginOcclusionQuery() = 0;
   virtual bool EndOcclusionQuery() = 0;
+  virtual void WaitRetrace() = 0;
 };

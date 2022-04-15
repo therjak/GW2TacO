@@ -118,7 +118,7 @@ struct POI {
   math::CVector3 position;
   int32_t mapID = 0;
   size_t wvwObjectiveID = 0;
-  std::string Type;
+  int32_t Type;  // type string id
 
   time_t lastUpdateTime = 0;
   bool External = false;
@@ -180,11 +180,15 @@ struct POIRoute {
 uint32_t DictionaryHash(const GUID& i);
 uint32_t DictionaryHash(const POIActivationDataKey& i);
 
-extern std::unordered_map<GUID, POI> POIs;
+typedef std::unordered_map<GUID, POI> POISet;
+extern std::unordered_map<int, POISet> POIs;
+
 extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
 extern std::unordered_map<std::string, POI> wvwPOIs;
+extern GW2TacticalCategory CategoryRoot;
+POISet& GetMapPOIs();
 
 class GW2TacticalDisplay : public CWBItem {
   bool TacticalIconsOnEdge;
@@ -254,8 +258,12 @@ class GW2TacticalCategory {
   std::string GetFullTypeName();
 
   bool IsDisplayed = true;
-  bool IsVisible();
+  bool cachedVisibility = true;
+  bool IsVisible() const;
+  void CacheVisibility();
 
+  static bool visibilityCached;
+  void CalculateVisibilityCache();
   virtual ~GW2TacticalCategory() = default;
 };
 
