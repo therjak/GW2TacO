@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
@@ -47,8 +48,6 @@ GW2TacticalCategory CategoryRoot;
 std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
 int32_t useMetricDisplay = 0;
 
-std::string emptyString;
-std::vector<std::string> stringArray;
 float GetUIScale();
 
 float globalOpacity = 1.0f;
@@ -64,19 +63,11 @@ std::size_t hash<POIActivationDataKey>::operator()(
 }
 }  // namespace std
 
-int32_t AddStringToMap(std::string_view string) {
-  if (string.empty()) return -1;
-  auto pos = std::find(stringArray.begin(), stringArray.end(), string);
-  if (pos != stringArray.end()) {
-    return std::distance(stringArray.begin(), pos);
-  }
-  stringArray.emplace_back(string);
-  return stringArray.size() - 1;
-}
-
-std::string& GetStringFromMap(int32_t idx) {
-  if (idx < 0 || idx >= stringArray.size()) return emptyString;
-  return stringArray[idx];
+std::unordered_set<std::string> string_set;
+std::string_view AddStringToSet(std::string_view string) {
+  if (string.empty()) return std::string_view();
+  const auto& p = string_set.emplace(string);
+  return *p.first;
 }
 
 int32_t tacoStartTime = timeGetTime();
@@ -524,10 +515,10 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
     }
   }
 
-  if (poi.typeData.info >= 0) {
+  if (!poi.typeData.info.empty()) {
     if ((poi.position - mumbleLink.charPosition).Length() <=
         poi.typeData.infoRange) {
-      infoText += GetStringFromMap(poi.typeData.info) + "\n";
+      infoText += std::string(poi.typeData.info) + "\n";
     }
   }
 
@@ -554,9 +545,8 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
   float mapFade = GetMapFade();
 
   if (!poi.icon) {
-    poi.icon = GetMapIcon(
-        App, GetStringFromMap(poi.iconFile), GetStringFromMap(poi.zipFile),
-        poi.category ? GetStringFromMap(poi.category->zipFile) : "");
+    poi.icon = GetMapIcon(App, poi.iconFile, poi.zipFile,
+                          poi.category ? poi.category->zipFile : "");
   }
 
   WBATLASHANDLE icon = poi.icon;
@@ -793,9 +783,8 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
   }
 
   if (!poi.icon) {
-    poi.icon = GetMapIcon(
-        App, GetStringFromMap(poi.iconFile), GetStringFromMap(poi.zipFile),
-        poi.category ? GetStringFromMap(poi.category->zipFile) : "");
+    poi.icon = GetMapIcon(App, poi.iconFile, poi.zipFile,
+                          poi.category ? poi.category->zipFile : "");
   }
 
   float poiSize = float(poi.typeData.miniMapSize);
@@ -1057,8 +1046,8 @@ void ExportPOI(CXMLNode* n, POI& p) {
   t->SetAttributeFromFloat("xpos", p.position.x);
   t->SetAttributeFromFloat("ypos", p.position.y);
   t->SetAttributeFromFloat("zpos", p.position.z);
-  if (p.Type != -1) {
-    t->SetAttribute("type", GetStringFromMap(p.Type));
+  if (!p.Type.empty()) {
+    t->SetAttribute("type", p.Type);
   }
   t->SetAttribute(
       "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid),
@@ -1195,7 +1184,7 @@ void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
     }
 
     c->data.Read(n, KeepSaveState);
-    c->zipFile = AddStringToMap(zipFile);
+    c->zipFile = AddStringToSet(zipFile);
     c->KeepSaveState = KeepSaveState;
 
     RecursiveImportPOIType(n, c, newCatName, c->data, KeepSaveState, zipFile);
@@ -1223,16 +1212,16 @@ void ImportPOI(CWBApplication* App, CXMLNode& t, POI& p,
   if (t.HasAttribute("zpos")) t.GetAttributeAsFloat("zpos", &p.position.z);
   if (t.HasAttribute("icon")) t.GetAttributeAsInteger("icon", &p.icon);
   if (t.HasAttribute("type"))
-    p.Type = AddStringToMap(t.GetAttributeAsString("type"));
+    p.Type = AddStringToSet(t.GetAttributeAsString("type"));
 
   if (!t.HasAttribute("GUID"))
     CoCreateGuid(&p.guid);
   else
     p.guid = LoadGUID(t);
 
-  p.zipFile = AddStringToMap(zipFile);
+  p.zipFile = AddStringToSet(zipFile);
 
-  auto* td = GetCategory(GetStringFromMap(p.Type));
+  auto* td = GetCategory(p.Type);
   if (td) p.SetCategory(App, td);
 
   p.typeData.Read(t, true);
@@ -1256,7 +1245,7 @@ bool ImportTrail(CWBApplication* App, CXMLNode& t, GW2Trail& p,
 
   p.typeData.Read(t, true);
 
-  return p.Import(GetStringFromMap(p.typeData.trailData), zipFile);
+  return p.Import(p.typeData.trailData, zipFile);
 }
 
 void ImportPOIDocument(CWBApplication* App, CXMLDocument& d, bool External,
@@ -1558,7 +1547,7 @@ void UpdatePOI() {
 
     CVector3 v = cpoi.position - CVector3(mumbleLink.charPosition);
     if (v.Length() < cpoi.typeData.triggerRange) {
-      auto& str = GetStringFromMap(cpoi.typeData.toggleCategory);
+      const auto& str = cpoi.typeData.toggleCategory;
       if (!str.empty()) {
         GW2TacticalCategory* cat = GetCategory(str);
         if (cat) {
@@ -1664,7 +1653,7 @@ void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
     bits.infoRangeSaved = _infoRangeSaved;
   }
 
-  if (_iconFileSaved) iconFile = AddStringToMap(n.GetAttribute("iconFile"));
+  if (_iconFileSaved) iconFile = AddStringToSet(n.GetAttribute("iconFile"));
 
   if (_sizeSaved) n.GetAttributeAsFloat("iconSize", &size);
 
@@ -1709,12 +1698,12 @@ void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
     std::sscanf(colorStr.c_str(), "%x", &colHex);
     color = CColor(colHex);
   }
-  if (_trailDataSaved) trailData = AddStringToMap(n.GetAttribute("trailData"));
+  if (_trailDataSaved) trailData = AddStringToSet(n.GetAttribute("trailData"));
   if (_animSpeedSaved) n.GetAttributeAsFloat("animSpeed", &animSpeed);
-  if (_textureSaved) texture = AddStringToMap(n.GetAttribute("texture"));
+  if (_textureSaved) texture = AddStringToSet(n.GetAttribute("texture"));
   if (_trailScaleSaved) n.GetAttributeAsFloat("trailScale", &trailScale);
   if (_toggleCategorySaved)
-    toggleCategory = AddStringToMap(n.GetAttribute("toggleCategory"));
+    toggleCategory = AddStringToSet(n.GetAttribute("toggleCategory"));
   if (_achievementIdSaved) {
     int32_t val;
     n.GetAttributeAsInteger("achievementId", &val);
@@ -1758,13 +1747,12 @@ void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
     n.GetAttributeAsInteger("keepOnMapEdge", &val);
     bits.keepOnMapEdge = val != 0;
   }
-  if (_infoSaved) info = AddStringToMap(n.GetAttributeAsString("info"));
+  if (_infoSaved) info = AddStringToSet(n.GetAttributeAsString("info"));
   if (_infoRangeSaved) n.GetAttributeAsFloat("infoRange", &infoRange);
 }
 
 void MarkerTypeData::Write(CXMLNode* n) {
-  if (bits.iconFileSaved)
-    n->SetAttribute("iconFile", GetStringFromMap(iconFile));
+  if (bits.iconFileSaved) n->SetAttribute("iconFile", iconFile);
   if (bits.sizeSaved) n->SetAttributeFromFloat("iconSize", size);
   if (bits.alphaSaved) n->SetAttributeFromFloat("alpha", alpha);
   if (bits.fadeNearSaved) n->SetAttributeFromFloat("fadeNear", fadeNear);
@@ -1784,13 +1772,12 @@ void MarkerTypeData::Write(CXMLNode* n) {
   if (bits.maxSizeSaved) n->SetAttributeFromInteger("maxSize", maxSize);
   if (bits.colorSaved)
     n->SetAttribute("color", std::format("{:x}", color.argb()));
-  if (bits.trailDataSaved)
-    n->SetAttribute("trailData", GetStringFromMap(trailData));
+  if (bits.trailDataSaved) n->SetAttribute("trailData", trailData);
   if (bits.animSpeedSaved) n->SetAttributeFromFloat("animSpeed", animSpeed);
-  if (bits.textureSaved) n->SetAttribute("texture", GetStringFromMap(texture));
+  if (bits.textureSaved) n->SetAttribute("texture", texture);
   if (bits.trailScaleSaved) n->SetAttributeFromFloat("trailScale", trailScale);
   if (bits.toggleCategorySaved)
-    n->SetAttribute("toggleCategory", GetStringFromMap(toggleCategory));
+    n->SetAttribute("toggleCategory", toggleCategory);
   if (bits.achievementIdSaved)
     n->SetAttributeFromInteger("achievementId", achievementId);
   if (bits.achievementBitSaved)
@@ -1809,7 +1796,7 @@ void MarkerTypeData::Write(CXMLNode* n) {
     n->SetAttributeFromInteger("mapDisplaySize", miniMapSize);
   if (bits.keepOnMapEdgeSaved)
     n->SetAttributeFromInteger("keepOnMapEdge", bits.keepOnMapEdge);
-  if (bits.infoSaved) n->SetAttribute("info", GetStringFromMap(info));
+  if (bits.infoSaved) n->SetAttribute("info", info);
   if (bits.infoRangeSaved) n->SetAttributeFromFloat("infoRange", infoRange);
 }
 
@@ -1950,7 +1937,7 @@ void GW2TacticalCategory::CalculateVisibilityCache() {
 void POI::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
   category = t;
   typeData = t->data;
-  Type = AddStringToMap(t->GetFullTypeName());
+  Type = AddStringToSet(t->GetFullTypeName());
   icon = 0;
   iconFile = typeData.iconFile;
 }

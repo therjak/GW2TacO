@@ -105,13 +105,11 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
         CCoreTexture* texture = nullptr;
         if (!trail.texture) {
-          auto& str = GetStringFromMap(trail.typeData.texture);
+          const auto& str = trail.typeData.texture;
 
           if (!str.empty()) {
             texture = GetTexture(str, trail.zipFile,
-                                 trail.category
-                                     ? GetStringFromMap(trail.category->zipFile)
-                                     : "");
+                                 trail.category ? trail.category->zipFile : "");
           } else {
             texture = trailTexture.get();
           }
@@ -218,13 +216,11 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
         CCoreTexture* texture = nullptr;
         if (!trail.texture) {
-          auto& str = GetStringFromMap(trail.typeData.texture);
+          const auto& str = trail.typeData.texture;
 
           if (!str.empty()) {
             texture = GetTexture(str, trail.zipFile,
-                                 trail.category
-                                     ? GetStringFromMap(trail.category->zipFile)
-                                     : "");
+                                 trail.category ? trail.category->zipFile : "");
           } else {
             texture = trailTexture.get();
           }
@@ -271,13 +267,11 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
         CCoreTexture* texture = nullptr;
         if (!trail.texture) {
-          auto& str = GetStringFromMap(trail.typeData.texture);
+          const auto& str = trail.typeData.texture;
 
           if (!str.empty()) {
             texture = GetTexture(str, trail.zipFile,
-                                 trail.category
-                                     ? GetStringFromMap(trail.category->zipFile)
-                                     : "");
+                                 trail.category ? trail.category->zipFile : "");
           } else {
             texture = trailTexture.get();
           }
@@ -364,9 +358,9 @@ void GW2TrailDisplay::ClearEditedTrail() { editedTrail.reset(); }
 
 mz_zip_archive* OpenZipFile(std::string_view zipFile);
 
-CCoreTexture2D* GW2TrailDisplay::GetTexture(std::string_view fname,
-                                            std::string_view zipFile,
-                                            std::string_view categoryZip) {
+CCoreTexture2D* GW2TrailDisplay::GetTexture(
+    const std::string_view& fname, const std::string_view& zipFile,
+    const std::string_view& categoryZip) {
   std::string s =
       (zipFile.empty() ? (std::string(zipFile) + "\\") : std::string("")) +
       std::string(fname);

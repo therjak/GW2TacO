@@ -93,8 +93,9 @@ class GW2TrailDisplay : public CWBItem {
 
   std::mutex mtx;
 
-  CCoreTexture2D* GetTexture(std::string_view fname, std::string_view zipFile,
-                             std::string_view categoryZip);
+  CCoreTexture2D* GetTexture(const std::string_view& fname,
+                             const std::string_view& zipFile,
+                             const std::string_view& categoryZip);
 
   std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 

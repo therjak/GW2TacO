@@ -90,13 +90,13 @@ struct MarkerTypeData {
   int16_t minSize = 5;
   int16_t maxSize = 2048;
 
-  int16_t iconFile = -1;
-  int16_t trailData = -1;
-  int16_t texture = -1;
-  int16_t toggleCategory = -1;
+  std::string_view iconFile;
+  std::string_view trailData;
+  std::string_view texture;
+  std::string_view toggleCategory;
   int16_t achievementId = -1;
   int16_t achievementBit = -1;
-  int16_t info = -1;
+  std::string_view info;
 
   void Read(const CXMLNode& n, bool StoreSaveState);
   void Write(CXMLNode* n);
@@ -118,14 +118,14 @@ struct POI {
   math::CVector3 position;
   int32_t mapID = 0;
   size_t wvwObjectiveID = 0;
-  int32_t Type;  // type string id
+  std::string_view Type;
 
   time_t lastUpdateTime = 0;
   bool External = false;
   bool routeMember = false;
 
-  int16_t zipFile = 0;
-  int16_t iconFile = 0;
+  std::string_view zipFile;
+  std::string_view iconFile;
 
   GUID guid;
 
@@ -247,7 +247,7 @@ class GW2TacticalCategory {
   std::string name;
   std::string displayName;
 
-  int16_t zipFile = 0;
+  std::string_view zipFile;
 
   MarkerTypeData data;
   bool KeepSaveState = false;
@@ -288,4 +288,3 @@ float GameToWorldCoords(float game);
 void FindClosestRouteMarkers(bool force);
 
 int32_t GetTime();
-std::string& GetStringFromMap(int32_t idx);
