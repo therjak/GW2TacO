@@ -77,12 +77,16 @@ void TS3Connection::TryValidateClientID() {
 
 void TS3Connection::Tick() {
   if (!connection.IsConnected()) {
-    if (FindWindow(nullptr, "TeamSpeak 3")) {
-      if (!TryConnect()) {
+    if (GetTime() - LastPingTime > 1000) {
+      if (FindWindow(nullptr, "TeamSpeak 3")) {
+        if (!TryConnect()) {
+          return;
+        }
+      } else {
+        LastPingTime = GetTime();
         return;
       }
-    } else
-      return;
+    }
   } else {
     TryValidateClientID();
   }

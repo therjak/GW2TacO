@@ -64,16 +64,16 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         if (json.has<Array>("worldbosses")) {
           auto dungeonData = json.get<Array>("worldbosses").values();
 
-          std::lock_guard<std::mutex> lockGuard(mtx);
-
-          worldBosses.clear();
-
+          std::vector<std::string> localWorldBosses;
           for (auto& x : dungeonData) {
             if (!x->is<String>()) continue;
 
             auto eventName = x->get<String>();
-            worldBosses.push_back(eventName);
+            localWorldBosses.push_back(eventName);
           }
+
+          std::lock_guard<std::mutex> lockGuard(mtx);
+          std::swap(localWorldBosses, worldBosses);
         }
 
         lastDungeonStatus =
@@ -83,16 +83,16 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         if (json.has<Array>("mapchests")) {
           auto dungeonData = json.get<Array>("mapchests").values();
 
-          std::lock_guard<std::mutex> lockGuard(mtx);
-
-          mapchests.clear();
-
+          std::vector<std::string> localMapchests;
           for (auto& x : dungeonData) {
             if (!x->is<String>()) continue;
 
             auto eventName = x->get<String>();
-            mapchests.push_back(eventName);
+            localMapchests.push_back(eventName);
           }
+
+          std::lock_guard<std::mutex> lockGuard(mtx);
+          std::swap(mapchests, localMapchests);
         }
 
         beingFetched = false;
@@ -212,11 +212,10 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
       }
 
       // highlight rect
-      {
+      if (!map.chestId.empty()) {
         std::lock_guard<std::mutex> lockGuard(mtx);
-        if (!map.chestId.empty() &&
-            std::find(mapchests.begin(), mapchests.end(), map.chestId) !=
-                mapchests.end())
+        if (std::find(mapchests.begin(), mapchests.end(), map.chestId) !=
+            mapchests.end())
           highlightRects.emplace_back(
               CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
       }
@@ -271,17 +270,15 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
           bool isHighlighted = false;
 
-          {
+          const auto& bossId = map.events[currevent].worldBossId;
+          if (!map.events[currevent].worldBossId.empty()) {
             std::lock_guard<std::mutex> lockGuard(mtx);
-            const auto& bossId = map.events[currevent].worldBossId;
-            if (!map.events[currevent].worldBossId.empty() &&
-                std::find(worldBosses.begin(), worldBosses.end(), bossId) !=
-                    worldBosses.end()) {
+            if (std::find(worldBosses.begin(), worldBosses.end(), bossId) !=
+                worldBosses.end()) {
               isHighlighted = true;
             }
-            if (!map.events[currevent].worldBossId.empty() &&
-                std::find(mapchests.begin(), mapchests.end(), bossId) !=
-                    mapchests.end()) {
+            if (std::find(mapchests.begin(), mapchests.end(), bossId) !=
+                mapchests.end()) {
               isHighlighted = true;
             }
           }
