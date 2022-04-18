@@ -96,7 +96,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
         posx = oposx;
 
       if (!compact)
-        f->Write(API, DICT("raid_wing") + std::format("{:d}:", y + 1),
+        f->Write(API, DICT("raid_wing") + std::to_string(y + 1),
                  CPoint(posx, posy + 1), CColor{0xffffffff});
 
       if (!compact) posx = f->GetLineHeight() * 3;
@@ -115,7 +115,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
                         e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
         }
         auto s = e.type == RaidEvent::Type::Boss
-                     ? (DICT("raid_boss") + std::format("{:d}", cnt))
+                     ? (DICT("raid_boss") + std::to_string(cnt))
                      : DICT("raid_event");
 
         if (e.type == RaidEvent::Type::Boss) cnt++;
