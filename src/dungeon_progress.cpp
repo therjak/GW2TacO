@@ -160,9 +160,11 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
+namespace {
 constexpr auto st = "Story";
 constexpr auto ex = "Explorable";
 constexpr int32_t ignore = -1;  // does not count for dungeon frequenter
+}  // namespace
 
 DungeonProgress::DungeonProgress(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position),
