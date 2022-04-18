@@ -7,6 +7,7 @@
 #include <thread>
 #include <unordered_map>
 
+#include "src/base/logger.h"
 #include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
@@ -29,73 +30,9 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       !fetchThread.joinable()) {
     beingFetched = true;
     fetchThread = std::thread([this, key]() {
-      if (!hasFullDungeonInfo) {
-        Object json;
-
-        auto globalRaidInfo =
-            "{\"dungeons\":" + key->QueryAPI("/v2/dungeons") + "}";
-        json.parse(globalRaidInfo);
-
-        if (json.has<Array>("dungeons")) {
-          auto dungeonData = json.get<Array>("dungeons").values();
-
-          for (auto& x : dungeonData) {
-            if (!x->is<String>()) continue;
-
-            Dungeon d;
-            d.name = x->get<String>();
-
-            auto raidInfo = key->QueryAPI("/v2/dungeons/" + d.name);
-            Object dungeonJson;
-            dungeonJson.parse(raidInfo);
-
-            if (dungeonJson.has<Array>("paths")) {
-              auto wings = dungeonJson.get<Array>("paths").values();
-              for (auto& wing : wings) {
-                auto dungeonPath = wing->get<Object>();
-                DungeonPath p;
-                if (dungeonPath.has<String>("id"))
-                  p.name = dungeonPath.get<String>("id");
-
-                if (dungeonPath.has<String>("type"))
-                  p.type = dungeonPath.get<String>("type");
-
-                d.paths.push_back(p);
-              }
-            }
-
-            if (!d.name.empty()) {
-              d.shortName = std::toupper(d.name[0]);
-
-              for (unsigned int y = 0; y + 1 < d.name.size(); y++) {
-                if (d.name[y] == '_') {
-                  if (d.name[y + 1] == 'o' && y + 2 < d.name.size() &&
-                      d.name[y + 2] == 'f') {
-                    d.shortName += "o";
-                  } else if (d.name[y + 1] == 't' && y + 3 < d.name.size() &&
-                             d.name[y + 2] == 'h' && d.name[y + 3] == 'e') {
-                    d.shortName += "t";
-                  } else if (d.name[y + 1] == 'a' && y + 4 < d.name.size() &&
-                             d.name[y + 2] == 'r' && d.name[y + 3] == 'a' &&
-                             d.name[y + 4] == 'h') {
-                    d.shortName = "Arah";
-                  } else {
-                    d.shortName += std::toupper(d.name[y + 1]);
-                  }
-                }
-              }
-            }
-
-            dungeons.push_back(d);
-          }
-        }
-
-        hasFullDungeonInfo = true;
-      }
-
-      auto lastDungeonStatus =
+      const auto& lastDungeonStatus =
           "{\"dungeons\":" + key->QueryAPI("/v2/account/dungeons") + "}";
-      auto dungeonFrequenterStatus =
+      const auto& dungeonFrequenterStatus =
           "{\"dungeons\":" +
           key->QueryAPI("/v2/account/achievements?ids=2963") + "}";
       Object json;
@@ -104,25 +41,27 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       json2.parse(dungeonFrequenterStatus);
 
       if (json.has<Array>("dungeons")) {
-        auto dungeonData = json.get<Array>("dungeons").values();
+        const auto& dungeonData = json.get<Array>("dungeons").values();
 
-        for (auto& x : dungeonData) {
+        for (const auto& x : dungeonData) {
           if (!x->is<String>()) continue;
 
           auto eventName = x->get<String>();
-          for (auto& d : dungeons)
+          for (auto& d : dungeons) {
             for (auto& p : d.paths) {
-              if (p.name == eventName) p.finished = true;
+              if (p.name == eventName) {
+                std::lock_guard<std::mutex> lockGuard(p.mtx);
+                p.finished = true;
+              }
             }
+          }
         }
       }
 
       if (json2.has<Array>("dungeons")) {
-        auto dungeonData = json2.get<Array>("dungeons").values();
+        const auto& dungeonData = json2.get<Array>("dungeons").values();
 
-        for (auto& d : dungeons)
-          for (auto& p : d.paths) p.frequenter = false;
-
+        std::vector<bool> fq(32, false);
         if (!dungeonData.empty() && dungeonData[0]->is<Object>()) {
           Object obj = dungeonData[0]->get<Object>();
           if (obj.has<Array>("bits")) {
@@ -131,17 +70,23 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
               for (auto& bit : bits) {
                 if (bit->is<Number>()) {
                   auto frequentedID = static_cast<int32_t>(bit->get<Number>());
-                  for (auto& d : dungeons)
-                    for (auto& p : d.paths) {
-                      if (dungeonToAchievementMap.find(p.name) !=
-                          dungeonToAchievementMap.end()) {
-                        if (dungeonToAchievementMap[p.name] == frequentedID)
-                          p.frequenter = true;
-                      }
-                    }
+                  if (frequentedID < 0 || frequentedID >= fq.size()) {
+                    Log_Err("unknown dungeon fequenterID: {:d}", frequentedID);
+                    continue;
+                  }
+                  fq[frequentedID] = true;
                 }
               }
             }
+          }
+        }
+        for (auto& d : dungeons) {
+          for (auto& p : d.paths) {
+            if (p.id < 0) {
+              continue;
+            }
+            std::lock_guard<std::mutex> lockGuard(p.mtx);
+            p.frequenter = fq[p.id];
           }
         }
       }
@@ -155,96 +100,123 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
     fetchThread.join();
   }
 
-  if (hasFullDungeonInfo) {
-    int32_t posy = 1;
+  int32_t posy = 1;
+  int32_t textwidth = 0;
 
-    int32_t textwidth = 0;
-    for (const auto& d : dungeons)
-      textwidth = std::max(textwidth, f->GetWidth(d.shortName, false));
+  for (const auto& d : dungeons) {
+    textwidth = std::max(textwidth, f->GetWidth(d.shortName, false));
+  }
 
-    for (auto& d : dungeons) {
-      f->Write(API, (d.shortName + ":"), CPoint(0, posy + 1),
-               CColor{0xffffffff});
-      int32_t posx = textwidth + f->GetLineHeight() / 2;
-      for (int y = 0; y < d.paths.size(); y++) {
-        auto& p = d.paths[y];
+  for (auto& d : dungeons) {
+    f->Write(API, (std::string(d.shortName) + ":"), CPoint(0, posy + 1),
+             CColor{0xffffffff});
+    int32_t posx = textwidth + f->GetLineHeight() / 2;
+    for (int y = 0; y < d.paths.size(); y++) {
+      auto& p = d.paths[y];
 
-        CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
-                        posy + f->GetLineHeight() - 1);
-        CRect cr = API->GetCropRect();
-        API->SetCropRect(ClientToScreen(r));
-        posx += f->GetLineHeight() * 2 + 1;
-        if (y == 0) posx += f->GetLineHeight() / 2;
+      CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
+                      posy + f->GetLineHeight() - 1);
+      CRect cr = API->GetCropRect();
+      API->SetCropRect(ClientToScreen(r));
+      posx += f->GetLineHeight() * 2 + 1;
+      if (y == 0) {
+        posx += f->GetLineHeight() / 2;
+      }
+      {
+        std::lock_guard<std::mutex> lockGuard(p.mtx);
         API->DrawRect(r, p.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
-        std::string s = y == 0 ? "S" : std::format("P{:d}", y);
+      }
+      std::string s = y == 0 ? "S" : std::format("P{:d}", y);
 
-        if (d.shortName == "TA") {
-          switch (y) {
-            case 1:
-              s = "Up";
-              break;
-            case 2:
-              s = "Fwd";
-              break;
-            case 3:
-              s = "Ae";
-              break;
-          }
+      if (d.shortName == "TA") {
+        switch (y) {
+          case 1:
+            s = "Up";
+            break;
+          case 2:
+            s = "Fwd";
+            break;
+          case 3:
+            s = "Ae";
+            break;
         }
+      }
 
-        CPoint tp = f->GetTextPosition(
-            s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
-            WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
-        tp.y = posy + 1;
-        f->Write(API, s, tp, CColor{0xffffffff});
+      CPoint tp = f->GetTextPosition(
+          s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
+          WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
+      tp.y = posy + 1;
+      f->Write(API, s, tp, CColor{0xffffffff});
+      {
+        std::lock_guard<std::mutex> lockGuard(p.mtx);
         API->DrawRectBorder(
             r, p.frequenter ? CColor{0xffffcc00} : CColor{0x80000000});
-        API->SetCropRect(cr);
       }
-      posy += f->GetLineHeight();
+      API->SetCropRect(cr);
     }
-  } else {
-    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), CColor{0xffffffff});
+    posy += f->GetLineHeight();
   }
 
   DrawBorder(API);
 }
 
+constexpr auto st = "Story";
+constexpr auto ex = "Explorable";
+constexpr int32_t ignore = -1;  // does not count for dungeon frequenter
+
 DungeonProgress::DungeonProgress(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {
-  dungeonToAchievementMap["ac_story"] = 4;
-  dungeonToAchievementMap["hodgins"] = 5;
-  dungeonToAchievementMap["detha"] = 6;
-  dungeonToAchievementMap["tzark"] = 7;
-  dungeonToAchievementMap["cm_story"] = 12;
-  dungeonToAchievementMap["asura"] = 13;
-  dungeonToAchievementMap["seraph"] = 14;
-  dungeonToAchievementMap["butler"] = 15;
-  dungeonToAchievementMap["ta_story"] = 20;
-  dungeonToAchievementMap["leurent"] = 21;
-  dungeonToAchievementMap["vevina"] = 22;
-  dungeonToAchievementMap["aetherpath"] = 23;
-  dungeonToAchievementMap["se_story"] = 16;
-  dungeonToAchievementMap["fergg"] = 17;
-  dungeonToAchievementMap["rasalov"] = 18;
-  dungeonToAchievementMap["koptev"] = 19;
-  dungeonToAchievementMap["cof_story"] = 28;
-  dungeonToAchievementMap["ferrah"] = 29;
-  dungeonToAchievementMap["magg"] = 30;
-  dungeonToAchievementMap["rhiannon"] = 31;
-  dungeonToAchievementMap["hotw_story"] = 24;
-  dungeonToAchievementMap["butcher"] = 25;
-  dungeonToAchievementMap["plunderer"] = 26;
-  dungeonToAchievementMap["zealot"] = 27;
-  dungeonToAchievementMap["coe_story"] = 0;
-  dungeonToAchievementMap["submarine"] = 1;
-  dungeonToAchievementMap["teleporter"] = 2;
-  dungeonToAchievementMap["front_door"] = 3;
-  dungeonToAchievementMap["jotun"] = 8;
-  dungeonToAchievementMap["mursaat"] = 9;
-  dungeonToAchievementMap["forgotten"] = 10;
-  dungeonToAchievementMap["seer"] = 11;
-}
+    : CWBItem(Parent, Position),
+      dungeons{
+          Dungeon{"ascalonian_catacombs",
+                  "AC",
+                  {{"ac_story", st, 4},
+                   {"hodgins", ex, 5},
+                   {"detha", ex, 6},
+                   {"tzark", ex, 7}}},
+          Dungeon{"caudecus_manor",
+                  "CM",
+                  {{"cm_story", st, 12},
+                   {"asura", ex, 13},
+                   {"seraph", ex, 14},
+                   {"butler", ex, 15}}},
+          Dungeon{"twilight_arbor",
+                  "TA",
+                  {{"ta_story", st, 20},
+                   {"leurent", ex, 21},
+                   {"vevina", ex, 22},
+                   {"aetherpath", ex, 23}}},
+          Dungeon{"sorrows_embrace",
+                  "SE",
+                  {{"se_story", st, 16},
+                   {"fergg", ex, 17},
+                   {"rasalov", ex, 18},
+                   {"koptev", ex, 19}}},
+          Dungeon{"citadel_of_flame",
+                  "CoF",
+                  {{"cof_story", st, 28},
+                   {"ferrah", ex, 29},
+                   {"magg", ex, 30},
+                   {"rhiannon", ex, 31}}},
+          Dungeon{"honor_of_the_waves",
+                  "HotW",
+                  {{"hotw_story", st, 24},
+                   {"butcher", ex, 25},
+                   {"plunderer", ex, 26},
+                   {"zealot", ex, 27}}},
+          Dungeon{"crucible_of_eternity",
+                  "CoE",
+                  {{"coe_story", st, 0},
+                   {"submarine", ex, 1},
+                   {"teleporter", ex, 2},
+                   {"front_door", ex, 3}}},
+          Dungeon{"ruined_city_of_arah",
+                  "Arah",
+                  {{"arah_story", st, ignore},
+                   {"jotun", ex, 8},
+                   {"mursaat", ex, 9},
+                   {"forgotten", ex, 10},
+                   {"seer", ex, 11}}},
+      } {}
 
 DungeonProgress::~DungeonProgress() {
   if (fetchThread.joinable()) fetchThread.join();

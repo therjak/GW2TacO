@@ -1,7 +1,7 @@
 ﻿#pragma once
+#include <mutex>
 #include <string>
 #include <thread>
-#include <unordered_map>
 #include <vector>
 
 #include "src/white_board/draw_api.h"
@@ -9,16 +9,21 @@
 
 class DungeonPath {
  public:
-  std::string name;
-  std::string type;
+  DungeonPath(std::string name, std::string type, int32_t id)
+      : name(name), type(type), id(id) {}
+  DungeonPath(const DungeonPath& p) : name(p.name), type(p.type), id(p.id) {}
+  const std::string_view name;
+  const std::string_view type;
+  const int32_t id;
+  std::mutex mtx;
   bool finished = false;
   bool frequenter = false;
 };
 
 class Dungeon {
  public:
-  std::string name;
-  std::string shortName;
+  const std::string_view name;
+  const std::string_view shortName;
   std::vector<DungeonPath> paths;
 };
 
@@ -34,7 +39,6 @@ class DungeonProgress : public CWBItem {
   std::thread fetchThread;
 
   std::vector<Dungeon> dungeons;
-  std::unordered_map<std::string, int32_t> dungeonToAchievementMap;
 
  public:
   DungeonProgress(CWBItem* Parent, math::CRect Position);
