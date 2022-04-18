@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <mutex>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
 
@@ -33,8 +34,6 @@ class DungeonProgress : public CWBItem {
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
-
-  bool hasFullDungeonInfo = false;
 
   std::thread fetchThread;
 

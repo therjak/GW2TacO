@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <memory>
+#include <mutex>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
 
@@ -11,22 +13,27 @@
 
 class RaidEvent {
  public:
-  std::string name;
-  std::string type;
+  enum class Type : char { Boss, Checkpoint };
+  RaidEvent(std::string name, Type type)
+      : name(std::move(name)), type(std::move(type)) {}
+  RaidEvent(const RaidEvent& e) : name(e.name), type(e.type) {}
+  std::string_view name;
+  Type type;
+  std::mutex mtx;
   bool finished = false;
 };
 
 class Wing {
  public:
-  std::string name;
+  std::string_view name;
   std::vector<RaidEvent> events;
 };
 
 class Raid {
  public:
-  std::string name;
-  std::string shortName;
-  std::string configName;
+  std::string_view name;
+  std::string_view shortName;
+  std::string_view configName;
   std::vector<Wing> wings;
 };
 
@@ -36,8 +43,6 @@ class RaidProgress : public CWBItem {
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
-
-  bool hasFullRaidInfo = false;
 
   std::thread fetchThread;
 

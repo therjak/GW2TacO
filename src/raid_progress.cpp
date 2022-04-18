@@ -4,7 +4,9 @@
 #include <cctype>
 #include <format>
 #include <thread>
+#include <unordered_set>
 
+#include "src/base/logger.h"
 #include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
@@ -14,27 +16,6 @@ using namespace jsonxx;
 
 using math::CPoint;
 using math::CRect;
-
-void BeautifyString(std::string& str) {
-  for (uint32_t x = 0; x < str.size(); x++) {
-    if (str[x] == '_') {
-      str[x] = ' ';
-    }
-
-    if (x == 0 || str[x - 1] == ' ') {
-      str[x] = std::toupper(str[x]);
-    }
-    if (x > 0 && str[x - 1] == ' ') {
-      if (str[x] == 'O' && x + 1 < str.size() && str[x + 1] == 'f') {
-        str[x] = 'o';
-      }
-      if (str[x] == 'T' && x + 2 < str.size() && str[x + 1] == 'h' &&
-          str[x + 2] == 'e') {
-        str[x] = 't';
-      }
-    }
-  }
-}
 
 void RaidProgress::OnDraw(CWBDrawAPI* API) {
   if (!HasConfigValue("CompactRaidWindow"))
@@ -54,82 +35,6 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       !fetchThread.joinable()) {
     beingFetched = true;
     fetchThread = std::thread([this, key]() {
-      if (!hasFullRaidInfo) {
-        Object json;
-
-        auto globalRaidInfo = "{\"raids\":" + key->QueryAPI("/v2/raids") + "}";
-        json.parse(globalRaidInfo);
-
-        if (json.has<Array>("raids")) {
-          auto raidData = json.get<Array>("raids").values();
-
-          for (auto& x : raidData) {
-            if (!x->is<String>()) continue;
-
-            Raid r;
-            r.name = x->get<String>();
-            if (!r.name.empty()) {
-              r.shortName = std::toupper(r.name[0]);
-
-              for (unsigned int y = 0; y + 1 < r.name.size(); y++) {
-                if (r.name[y] == '_' || r.name[y] == ' ') {
-                  if (r.name[y + 1] == 'o' && y + 2 < r.name.size() &&
-                      r.name[y + 2] == 'f') {
-                    r.shortName += 'o';
-                  } else if (r.name[y + 1] == 't' && y + 3 < r.name.size() &&
-                             r.name[y + 2] == 'h' && r.name[y + 3] == 'e') {
-                    r.shortName += 't';
-                  } else {
-                    r.shortName += std::toupper(r.name[y + 1]);
-                  }
-                }
-              }
-              r.shortName += ":";
-            }
-
-            r.configName = "showraid_" + r.name;
-            for (char& y : r.configName)
-              if (!isalnum(y))
-                y = '_';
-              else
-                y = std::tolower(y);
-
-            auto raidInfo = key->QueryAPI("/v2/raids/" + r.name);
-            Object raidJson;
-            raidJson.parse(raidInfo);
-
-            if (raidJson.has<Array>("wings")) {
-              auto wings = raidJson.get<Array>("wings").values();
-              for (auto& y : wings) {
-                auto wing = y->get<Object>();
-                Wing w;
-                if (wing.has<String>("id")) w.name = wing.get<String>("id");
-
-                if (wing.has<Array>("events")) {
-                  auto events = wing.get<Array>("events").values();
-                  for (auto& event : events) {
-                    auto _event = event->get<Object>();
-                    RaidEvent e;
-                    if (_event.has<String>("id"))
-                      e.name = _event.get<String>("id");
-                    if (_event.has<String>("type"))
-                      e.type = _event.get<String>("type");
-
-                    w.events.push_back(e);
-                  }
-                }
-                r.wings.push_back(w);
-              }
-            }
-
-            BeautifyString(r.name);
-            raids.push_back(r);
-          }
-        }
-
-        hasFullRaidInfo = true;
-      }
-
       auto lastRaidStatus =
           "{\"raids\":" + key->QueryAPI("/v2/account/raids") + "}";
       Object json;
@@ -138,15 +43,20 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       if (json.has<Array>("raids")) {
         auto raidData = json.get<Array>("raids").values();
 
+        std::unordered_set<std::string> finishedEvents;
         for (auto& x : raidData) {
           if (!x->is<String>()) continue;
-
-          auto eventName = x->get<String>();
-          for (auto& r : raids)
-            for (auto& w : r.wings)
-              for (auto& e : w.events) {
-                if (e.name == eventName) e.finished = true;
+          finishedEvents.emplace(x->get<String>());
+        }
+        for (auto& r : raids) {
+          for (auto& w : r.wings) {
+            for (auto& e : w.events) {
+              if (finishedEvents.contains(std::string(e.name))) {
+                std::lock_guard<std::mutex> lockGuard(e.mtx);
+                e.finished = true;
               }
+            }
+          }
         }
       }
 
@@ -159,77 +69,126 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
     fetchThread.join();
   }
 
-  if (hasFullRaidInfo) {
-    int32_t posx = 0;
-    if (compact) {
-      for (const auto& r : raids)
-        posx = std::max(posx, f->GetWidth(r.shortName));
+  int32_t posx = 0;
+  if (compact) {
+    for (const auto& r : raids) posx = std::max(posx, f->GetWidth(r.shortName));
+  }
+  posx += 3;
+  int32_t oposx = posx;
+
+  int32_t posy = 0;
+  for (auto& r : raids) {
+    if (HasConfigValue(r.configName) && !GetConfigValue(r.configName)) continue;
+
+    if (!compact) {
+      f->Write(API, DICT(r.configName, r.name), CPoint(0, posy + 1),
+               CColor{0xffffffff});
+      posy += f->GetLineHeight();
+    } else {
+      f->Write(API, r.shortName, CPoint(0, posy + 1), CColor{0xffffffff});
     }
-    posx += 3;
-    int32_t oposx = posx;
+    for (size_t y = 0; y < r.wings.size(); y++) {
+      auto& w = r.wings[y];
 
-    int32_t posy = 0;
-    for (auto& r : raids) {
-      if (HasConfigValue(r.configName) && !GetConfigValue(r.configName))
-        continue;
+      if (!compact)
+        posx = f->GetLineHeight() * 1;
+      else
+        posx = oposx;
 
-      if (!compact) {
-        f->Write(API, DICT(r.configName, r.name), CPoint(0, posy + 1),
-                 CColor{0xffffffff});
-        posy += f->GetLineHeight();
-      } else {
-        f->Write(API, r.shortName, CPoint(0, posy + 1), CColor{0xffffffff});
-      }
-      for (size_t y = 0; y < r.wings.size(); y++) {
-        auto& w = r.wings[y];
+      if (!compact)
+        f->Write(API, DICT("raid_wing") + std::format("{:d}:", y + 1),
+                 CPoint(posx, posy + 1), CColor{0xffffffff});
 
-        if (!compact)
-          posx = f->GetLineHeight() * 1;
-        else
-          posx = oposx;
+      if (!compact) posx = f->GetLineHeight() * 3;
 
-        if (!compact)
-          f->Write(API, DICT("raid_wing") + std::format("{:d}:", y + 1),
-                   CPoint(posx, posy + 1), CColor{0xffffffff});
+      int cnt = 1;
 
-        if (!compact) posx = f->GetLineHeight() * 3;
-
-        int cnt = 1;
-
-        for (auto& e : w.events) {
-          CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
-                          posy + f->GetLineHeight() - 1);
-          CRect cr = API->GetCropRect();
-          API->SetCropRect(ClientToScreen(r));
-          posx += f->GetLineHeight() * 2 + 1;
+      for (auto& e : w.events) {
+        CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
+                        posy + f->GetLineHeight() - 1);
+        CRect cr = API->GetCropRect();
+        API->SetCropRect(ClientToScreen(r));
+        posx += f->GetLineHeight() * 2 + 1;
+        {
+          std::lock_guard<std::mutex> lockGuard(e.mtx);
           API->DrawRect(r,
                         e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
-          auto s = e.type[0] == 'B'
-                       ? (DICT("raid_boss") + std::format("{:d}", cnt))
-                       : DICT("raid_event");
-
-          if (e.type[0] == 'B') cnt++;
-
-          CPoint tp = f->GetTextPosition(
-              s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
-              WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
-          tp.y = posy + 1;
-          f->Write(API, s, tp, CColor{0xffffffff});
-          API->DrawRectBorder(r, CColor{0x80000000});
-          API->SetCropRect(cr);
         }
+        auto s = e.type == RaidEvent::Type::Boss
+                     ? (DICT("raid_boss") + std::format("{:d}", cnt))
+                     : DICT("raid_event");
 
-        posy += f->GetLineHeight();
+        if (e.type == RaidEvent::Type::Boss) cnt++;
+
+        CPoint tp = f->GetTextPosition(
+            s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
+            WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
+        tp.y = posy + 1;
+        f->Write(API, s, tp, CColor{0xffffffff});
+        API->DrawRectBorder(r, CColor{0x80000000});
+        API->SetCropRect(cr);
       }
+
+      posy += f->GetLineHeight();
     }
-  } else
-    f->Write(API, DICT("waitingforapi"), CPoint(0, 0), CColor{0xffffffff});
+  }
 
   DrawBorder(API);
 }
 
 RaidProgress::RaidProgress(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {}
+    : CWBItem(Parent, Position),
+      raids{
+          Raid{"Forsaken Thicket",
+               "FT",
+               "showraid_forsaken_thicket",
+               {Wing{"spirit_vale",
+                     {{"vale_guardian", RaidEvent::Type::Boss},
+                      {"spirit_woods", RaidEvent::Type::Checkpoint},
+                      {"gorseval", RaidEvent::Type::Boss},
+                      {"sabetha", RaidEvent::Type::Boss}}},
+                Wing{"salvation_pass",
+                     {{"slothasor", RaidEvent::Type::Boss},
+                      {"bandit_trio", RaidEvent::Type::Boss},
+                      {"matthias", RaidEvent::Type::Boss}}},
+                Wing{"stronghold_of_the_faithful",
+                     {{"escort", RaidEvent::Type::Boss},
+                      {"keep_construct", RaidEvent::Type::Boss},
+                      {"twisted_castle", RaidEvent::Type::Checkpoint},
+                      {"xera", RaidEvent::Type::Boss}}}}},
+          Raid{"Bastion of the Penitent",
+               "BotP",
+               "showraid_bastion_of_the_penitent",
+               {Wing{"bastion_of_the_penitent",
+                     {{"cairn", RaidEvent::Type::Boss},
+                      {"mursaat_overseer", RaidEvent::Type::Boss},
+                      {"samarog", RaidEvent::Type::Boss},
+                      {"deimos", RaidEvent::Type::Boss}}}}},
+          Raid{"Hall of Chains",
+               "HoC",
+               "showraid_hall_of_chains",
+               {Wing{"hall_of_chains",
+                     {{"soulless_horror", RaidEvent::Type::Boss},
+                      {"river_of_souls", RaidEvent::Type::Boss},
+                      {"statues_of_grenth", RaidEvent::Type::Boss},
+                      {"voice_in_the_void", RaidEvent::Type::Boss}}}}},
+          Raid{"Mythwright Gambit",
+               "MG",
+               "showraid_mythwright_gambit",
+               {Wing{"mythwright_gambit",
+                     {{"conjured_amalgamate", RaidEvent::Type::Boss},
+                      {"twin_largos", RaidEvent::Type::Boss},
+                      {"qadim", RaidEvent::Type::Boss}}}}},
+
+          Raid{"The Key of Ahdashim",
+               "TKoA",
+               "showraid_the_key_of_ahdashim",
+               {Wing{"the_key_of_ahdashim",
+                     {{"gate", RaidEvent::Type::Checkpoint},
+                      {"adina", RaidEvent::Type::Boss},
+                      {"sabir", RaidEvent::Type::Boss},
+                      {"qadim_the_peerless", RaidEvent::Type::Boss}}}}},
+      } {}
 
 RaidProgress::~RaidProgress() {
   if (fetchThread.joinable()) fetchThread.join();
