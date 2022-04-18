@@ -343,7 +343,7 @@ void CWBTextBox::Paste() {
       s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
 
       RemoveSelectedText();
-      InsertText(CursorPos, s.c_str(), s.size(), CursorPos + s.size());
+      InsertText(CursorPos, s, s.size(), CursorPos + s.size());
       GlobalUnlock(Handle);
       DesiredCursorPosXinPixels = GetCursorXinPixels();
     } else {

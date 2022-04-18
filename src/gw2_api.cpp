@@ -309,7 +309,7 @@ void APIKeyManager::RebuildConfigValues() {
   while (true) {
     std::string cfgName = "GW2APIKey" + std::to_string(x++);
     if (HasConfigString(cfgName))
-      RemoveConfigEntry(cfgName.c_str());
+      RemoveConfigEntry(cfgName);
     else
       break;
   }

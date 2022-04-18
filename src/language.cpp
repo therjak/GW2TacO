@@ -171,7 +171,7 @@ void Localization::Import() {
   list.ExpandSearch("TacO_Language_*.xml", ".", false);
   for (const auto& f : list.Files)
     if (str_tolower(f.FileName) == taco_lang_en) {
-      ImportFile((f.Path + f.FileName).c_str());
+      ImportFile((f.Path + f.FileName));
     }
 
   if (HasConfigString("language")) {

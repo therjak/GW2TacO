@@ -163,24 +163,22 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
     int32_t posx = 0;
     if (compact) {
       for (const auto& r : raids)
-        posx = std::max(posx, f->GetWidth(r.shortName.c_str()));
+        posx = std::max(posx, f->GetWidth(r.shortName));
     }
     posx += 3;
     int32_t oposx = posx;
 
     int32_t posy = 0;
     for (auto& r : raids) {
-      if (HasConfigValue(r.configName.c_str()) &&
-          !GetConfigValue(r.configName.c_str()))
+      if (HasConfigValue(r.configName) && !GetConfigValue(r.configName))
         continue;
 
       if (!compact) {
-        f->Write(API, DICT(r.configName.c_str(), r.name.c_str()),
-                 CPoint(0, posy + 1), CColor{0xffffffff});
+        f->Write(API, DICT(r.configName, r.name), CPoint(0, posy + 1),
+                 CColor{0xffffffff});
         posy += f->GetLineHeight();
       } else {
-        f->Write(API, r.shortName.c_str(), CPoint(0, posy + 1),
-                 CColor{0xffffffff});
+        f->Write(API, r.shortName, CPoint(0, posy + 1), CColor{0xffffffff});
       }
       for (size_t y = 0; y < r.wings.size(); y++) {
         auto& w = r.wings[y];

@@ -643,9 +643,8 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
     std::string wvwObjectiveName;
 
     if (poi.wvwObjectiveID < wvwObjectives.size())
-      wvwObjectiveName =
-          DICT(wvwObjectives[poi.wvwObjectiveID].nameToken.c_str(),
-               wvwObjectives[poi.wvwObjectiveID].name.c_str());
+      wvwObjectiveName = DICT(wvwObjectives[poi.wvwObjectiveID].nameToken,
+                              wvwObjectives[poi.wvwObjectiveID].name);
 
     if (!wvwObjectiveName.empty()) {
       p = f->GetTextPosition(wvwObjectiveName, rect,
@@ -990,8 +989,8 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 
   if (GetConfigValue("TacticalInfoTextVisible")) {
     auto font = GetApplication()->GetRoot()->GetFont(GetState());
-    int32_t width = font->GetWidth(infoText.c_str());
-    font->Write(API, infoText.c_str(),
+    int32_t width = font->GetWidth(infoText);
+    font->Write(API, infoText,
                 CPoint(int((GetClientRect().Width() - width) / 2.0f),
                        int(GetClientRect().Height() * 0.15f)));
   }

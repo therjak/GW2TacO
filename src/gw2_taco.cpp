@@ -628,7 +628,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                               !GetConfigValue(r.configName))
                                  ? "[ ] "
                                  : "[x] ") +
-                                DICT(r.configName.c_str(), r.name.c_str()),
+                                DICT(r.configName, r.name),
                             Menu_RaidToggles + x, false, false);
             }
           }
@@ -777,7 +777,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                 ((HasConfigValue(r.configName) && !GetConfigValue(r.configName))
                      ? "[ ] "
                      : "[x] ") +
-                DICT(r.configName.c_str(), r.name.c_str()));
+                DICT(r.configName, r.name));
           }
         }
       }
@@ -2000,7 +2000,7 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
       break;
     case APIKeys::GW2APIKey: {
       auto key = GW2::apiKeyManager.GetKey(idx);
-      APIKeyInput->SetText(key->apiKey.c_str());
+      APIKeyInput->SetText(key->apiKey);
     } break;
     default:
       break;
