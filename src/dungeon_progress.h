@@ -10,7 +10,7 @@
 class DungeonPath {
  public:
   DungeonPath(std::string name, std::string type, int32_t id)
-      : name(name), type(type), id(id) {}
+      : name(std::move(name)), type(std::move(type)), id(id) {}
   DungeonPath(const DungeonPath& p) : name(p.name), type(p.type), id(p.id) {}
   const std::string_view name;
   const std::string_view type;
