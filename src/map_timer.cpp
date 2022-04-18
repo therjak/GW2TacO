@@ -56,16 +56,16 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
       fetchThread = std::thread([key, this]() {
         Object json;
 
-        auto lastDungeonStatus =
+        const auto& lastWorldBosses =
             "{\"worldbosses\":" + key->QueryAPI("/v2/account/worldbosses") +
             "}";
-        json.parse(lastDungeonStatus);
+        json.parse(lastWorldBosses);
 
         if (json.has<Array>("worldbosses")) {
-          auto dungeonData = json.get<Array>("worldbosses").values();
+          auto worldBossData = json.get<Array>("worldbosses").values();
 
           std::vector<std::string> localWorldBosses;
-          for (auto& x : dungeonData) {
+          for (auto& x : worldBossData) {
             if (!x->is<String>()) continue;
 
             auto eventName = x->get<String>();
@@ -76,15 +76,15 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
           std::swap(localWorldBosses, worldBosses);
         }
 
-        lastDungeonStatus =
+        const auto& lastMapChests =
             "{\"mapchests\":" + key->QueryAPI("/v2/account/mapchests") + "}";
-        json.parse(lastDungeonStatus);
+        json.parse(lastMapChests);
 
         if (json.has<Array>("mapchests")) {
-          auto dungeonData = json.get<Array>("mapchests").values();
+          const auto& mapChestData = json.get<Array>("mapchests").values();
 
           std::vector<std::string> localMapchests;
-          for (auto& x : dungeonData) {
+          for (auto& x : mapChestData) {
             if (!x->is<String>()) continue;
 
             auto eventName = x->get<String>();

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -42,10 +43,9 @@ class GW2MapTimer : public CWBItem {
 
   std::thread fetchThread;
 
+  std::mutex mtx;
   std::vector<std::string> worldBosses;
   std::vector<std::string> mapchests;
-
-  std::mutex mtx;
 
   bool IsScrollbarVisible();
   void OnResize(const math::CSize& s) override;
