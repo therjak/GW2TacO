@@ -29,13 +29,7 @@ CWBItem* GW2MarkerEditor::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
 }
 
 void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("AutoHideMarkerEditor"))
-    SetConfigValue("AutoHideMarkerEditor", 1);
-
   bool autoHide = GetConfigValue("AutoHideMarkerEditor");
-
-  if (!HasConfigValue("TacticalLayerVisible"))
-    SetConfigValue("TacticalLayerVisible", 1);
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
 

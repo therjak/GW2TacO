@@ -261,3 +261,190 @@ void RemoveConfigEntry(std::string_view name) {
   ConfigStrings.erase(std::string(name));
   ConfigNums.erase(std::string(name));
 }
+
+void InitConfig() {
+  if (!HasConfigValue("CheckForUpdates")) {
+    SetConfigValue("CheckForUpdates", 1);
+  }
+
+  if (!HasConfigValue("HideOnLoadingScreens"))
+    SetConfigValue("HideOnLoadingScreens", 1);
+
+  if (!HasConfigValue("KeybindsEnabled")) {
+    SetConfigValue("KeybindsEnabled", 1);
+  }
+
+  if (!HasConfigValue("Vsync")) {
+    SetConfigValue("Vsync", 1);
+  }
+
+  if (!HasConfigValue("SmoothCharacterPos")) {
+    SetConfigValue("SmoothCharacterPos", 1);
+  }
+
+  if (!HasConfigValue("FrameThrottling")) {
+    SetConfigValue("FrameThrottling", 1);
+  }
+
+  if (!HasConfigValue("EnableTPNotificationIcon")) {
+    SetConfigValue("EnableTPNotificationIcon", 1);
+  }
+
+  if (!HasConfigValue("LogTrails")) {
+    SetConfigValue("LogTrails", 0);
+  }
+
+  if (!HasConfigValue("CloseWithGW2")) {
+    SetConfigValue("CloseWithGW2", 1);
+  }
+
+  if (!HasConfigValue("InfoLineVisible")) {
+    SetConfigValue("InfoLineVisible", 0);
+  }
+
+  if (!HasConfigValue("TacticalIconsOnEdge")) {
+    SetConfigValue("TacticalIconsOnEdge", 1);
+  }
+
+  if (!HasConfigValue("TacticalLayerVisible")) {
+    SetConfigValue("TacticalLayerVisible", 1);
+  }
+
+  if (!HasConfigValue("DrawWvWNames")) {
+    SetConfigValue("DrawWvWNames", 1);
+  }
+
+  if (!HasConfigValue("TacticalDrawDistance")) {
+    SetConfigValue("TacticalDrawDistance", 0);
+  }
+
+  if (!HasConfigValue("UseMetricDisplay")) {
+    SetConfigValue("UseMetricDisplay", 0);
+  }
+
+  if (!HasConfigValue("OpacityIngame")) {
+    SetConfigValue("OpacityIngame", 0);
+  }
+
+  if (!HasConfigValue("OpacityMap")) {
+    SetConfigValue("OpacityMap", 0);
+  }
+
+  if (!HasConfigValue("TacticalInfoTextVisible")) {
+    SetConfigValue("TacticalInfoTextVisible", 1);
+  }
+
+  if (!HasConfigValue("ShowMinimapMarkers")) {
+    SetConfigValue("ShowMinimapMarkers", 1);
+  }
+
+  if (!HasConfigValue("ShowBigmapMarkers")) {
+    SetConfigValue("ShowBigmapMarkers", 1);
+  }
+
+  if (!HasConfigValue("ShowInGameMarkers")) {
+    SetConfigValue("ShowInGameMarkers", 1);
+  }
+
+  if (!HasConfigValue("HPGridVisible")) {
+    SetConfigValue("HPGridVisible", 1);
+  }
+
+  if (!HasConfigValue("LocationalTimersVisible")) {
+    SetConfigValue("LocationalTimersVisible", 1);
+  }
+
+  if (!HasConfigValue("MapTimerVisible")) {
+    SetConfigValue("MapTimerVisible", 1);
+  }
+
+  if (!HasConfigValue("MapTimerCompact")) {
+    SetConfigValue("MapTimerCompact", 1);
+  }
+
+  if (!HasConfigValue("MapTimerCategories")) {
+    SetConfigValue("MapTimerCategories", 1);
+  }
+
+  if (!HasConfigValue("MapTimerCategoryLineWidth")) {
+    SetConfigValue("MapTimerCategoryLineWidth", 3);
+  }
+
+  if (!HasConfigValue("AutoHideMarkerEditor")) {
+    SetConfigValue("AutoHideMarkerEditor", 1);
+  }
+  if (!HasConfigValue("TacticalLayerVisible")) {
+    SetConfigValue("TacticalLayerVisible", 1);
+  }
+  if (!HasConfigValue("MouseHighlightVisible")) {
+    SetConfigValue("MouseHighlightVisible", 0);
+  }
+
+  if (!HasConfigValue("MouseHighlightColor")) {
+    SetConfigValue("MouseHighlightColor", 0);
+  }
+
+  if (!HasConfigValue("MouseHighlightOutline")) {
+    SetConfigValue("MouseHighlightOutline", 0);
+  }
+
+  if (!HasConfigValue("CompactRaidWindow")) {
+    SetConfigValue("CompactRaidWindow", 0);
+  }
+
+  if (!HasConfigValue("RangeCirclesVisible")) {
+    SetConfigValue("RangeCirclesVisible", 0);
+  }
+
+  if (!HasConfigValue("RangeCircleTransparency")) {
+    SetConfigValue("RangeCircleTransparency", 100);
+  }
+
+  if (!HasConfigValue("RangeCircle90")) {
+    SetConfigValue("RangeCircle90", 0);
+  }
+
+  if (!HasConfigValue("RangeCircle120")) {
+    SetConfigValue("RangeCircle120", 1);
+  }
+
+  if (!HasConfigValue("RangeCircle180")) {
+    SetConfigValue("RangeCircle180", 0);
+  }
+
+  if (!HasConfigValue("RangeCircle240")) {
+    SetConfigValue("RangeCircle240", 0);
+  }
+
+  if (!HasConfigValue("RangeCircle300")) {
+    SetConfigValue("RangeCircle300", 1);
+  }
+
+  if (!HasConfigValue("RangeCircle400")) {
+    SetConfigValue("RangeCircle400", 1);
+  }
+
+  if (!HasConfigValue("RangeCircle600")) {
+    SetConfigValue("RangeCircle600", 1);
+  }
+
+  if (!HasConfigValue("RangeCircle900")) {
+    SetConfigValue("RangeCircle900", 1);
+  }
+
+  if (!HasConfigValue("RangeCircle1200")) {
+    SetConfigValue("RangeCircle1200", 1);
+  }
+
+  if (!HasConfigValue("RangeCircle1500")) {
+    SetConfigValue("RangeCircle1500", 0);
+  }
+
+  if (!HasConfigValue("RangeCircle1600")) {
+    SetConfigValue("RangeCircle1600", 0);
+  }
+
+  if (!HasConfigValue("TacticalCompassVisible")) {
+    SetConfigValue("TacticalCompassVisible", 0);
+  }
+}

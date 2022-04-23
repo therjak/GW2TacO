@@ -811,28 +811,6 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
 }
 
 void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
-  // default values
-  if (!HasConfigValue("TacticalIconsOnEdge"))
-    SetConfigValue("TacticalIconsOnEdge", 1);
-
-  if (!HasConfigValue("TacticalLayerVisible"))
-    SetConfigValue("TacticalLayerVisible", 1);
-
-  if (!HasConfigValue("DrawWvWNames")) SetConfigValue("DrawWvWNames", 1);
-
-  if (!HasConfigValue("TacticalDrawDistance"))
-    SetConfigValue("TacticalDrawDistance", 0);
-
-  if (!HasConfigValue("UseMetricDisplay"))
-    SetConfigValue("UseMetricDisplay", 0);
-
-  if (!HasConfigValue("OpacityIngame")) SetConfigValue("OpacityIngame", 0);
-
-  if (!HasConfigValue("OpacityMap")) SetConfigValue("OpacityMap", 0);
-
-  if (!HasConfigValue("TacticalInfoTextVisible"))
-    SetConfigValue("TacticalInfoTextVisible", 1);
-
   int opac = GetConfigValue("OpacityIngame");
   if (opac == 0) globalOpacity = 1.0f;
   if (opac == 1) globalOpacity = 2 / 3.0f;
@@ -851,16 +829,10 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 
   uiScale = GetUIScale();
 
-  if (!HasConfigValue("ShowMinimapMarkers"))
-    SetConfigValue("ShowMinimapMarkers", 1);
   int showMinimapMarkers = GetConfigValue("ShowMinimapMarkers");
 
-  if (!HasConfigValue("ShowBigmapMarkers"))
-    SetConfigValue("ShowBigmapMarkers", 1);
   int showBigmapMarkers = GetConfigValue("ShowBigmapMarkers");
 
-  if (!HasConfigValue("ShowInGameMarkers"))
-    SetConfigValue("ShowInGameMarkers", 1);
   int showIngameMarkers = GetConfigValue("ShowInGameMarkers");
 
   FetchAchievements();

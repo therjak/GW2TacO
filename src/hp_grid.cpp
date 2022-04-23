@@ -10,10 +10,6 @@ using math::CPoint;
 using math::CRect;
 
 void GW2HPGrid::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("HPGridVisible")) {
-    SetConfigValue("HPGridVisible", 1);
-  }
-
   if (!GetConfigValue("HPGridVisible")) {
     return;
   }

@@ -736,6 +736,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   typedef BOOL (*SetProcessDPIAwareFunc)();
 
   LoadConfig();
+  InitConfig();
 
   if (cmdLine.find("-forcedpiaware") != cmdLine.npos ||
       (HasConfigValue("ForceDPIAware") && GetConfigValue("ForceDPIAware"))) {
@@ -847,17 +848,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   HWND handle = (HWND)App->GetHandle();
 
-  if (!HasConfigValue("CheckForUpdates")) {
-    SetConfigValue("CheckForUpdates", 1);
-  }
-
-  if (!HasConfigValue("HideOnLoadingScreens"))
-    SetConfigValue("HideOnLoadingScreens", 1);
-
-  if (!HasConfigValue("KeybindsEnabled")) {
-    SetConfigValue("KeybindsEnabled", 1);
-  }
-
   SetConfigValue("LogTrails", 0);
 
   SetLayeredWindowAttributes(handle, 0, 255, LWA_ALPHA);
@@ -865,14 +855,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   ShowWindow(handle, nCmdShow);
 
   bool FoundGW2Window = false;
-
-  if (!HasConfigValue("Vsync")) {
-    SetConfigValue("Vsync", 1);
-  }
-
-  if (!HasConfigValue("SmoothCharacterPos")) {
-    SetConfigValue("SmoothCharacterPos", 1);
-  }
 
   App->SetVSync(GetConfigValue("Vsync"));
   CRect pos;
@@ -889,9 +871,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   taco->InitScriptEngines();
 
   auto lastRenderTime = globalTimer.GetTime();
-  if (!HasConfigValue("FrameThrottling")) {
-    SetConfigValue("FrameThrottling", 1);
-  }
 
   bool frameThrottling = GetConfigValue("FrameThrottling") != 0;
 

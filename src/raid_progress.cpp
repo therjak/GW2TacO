@@ -18,9 +18,6 @@ using math::CPoint;
 using math::CRect;
 
 void RaidProgress::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("CompactRaidWindow"))
-    SetConfigValue("CompactRaidWindow", 0);
-
   bool compact = GetConfigValue("CompactRaidWindow");
 
   CWBFont* f = GetFont(GetState());

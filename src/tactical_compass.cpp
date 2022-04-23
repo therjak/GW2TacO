@@ -101,9 +101,6 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
 void GW2TacticalCompass::OnDraw(CWBDrawAPI* API) {
   if (!mumbleLink.IsValid()) return;
 
-  if (!HasConfigValue("TacticalCompassVisible"))
-    SetConfigValue("TacticalCompassVisible", 0);
-
   if (GetConfigValue("TacticalCompassVisible")) DrawTacticalCompass(API);
 }
 

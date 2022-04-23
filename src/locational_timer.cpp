@@ -100,8 +100,6 @@ void LocationalTimer::ImportData(const CXMLNode& node) {
 }
 
 void TimerDisplay::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("LocationalTimersVisible"))
-    SetConfigValue("LocationalTimersVisible", 1);
   if (!GetConfigValue("LocationalTimersVisible")) return;
 
   int32_t tme = GetTime();

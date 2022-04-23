@@ -1533,9 +1533,6 @@ float GetWindowTooSmallScale() {
 void GW2TacO::OnDraw(CWBDrawAPI* API) {
   mouseToolTip = "";
 
-  if (!HasConfigValue("EnableTPNotificationIcon"))
-    SetConfigValue("EnableTPNotificationIcon", 1);
-
   float windowTooSmallScale = GetWindowTooSmallScale();
   if (windowTooSmallScale != lastScaleValue || scaleCountDownHack == 0) {
     StoreIconSizes();
@@ -1602,18 +1599,6 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       API->DrawAtlasElementRotated(e->GetHandle(), r, CColor{0x80ffffff},
                                    -GetTime() / 1000.0f);
     }
-  }
-
-  if (!HasConfigValue("LogTrails")) {
-    SetConfigValue("LogTrails", 0);
-  }
-
-  if (!HasConfigValue("CloseWithGW2")) {
-    SetConfigValue("CloseWithGW2", 1);
-  }
-
-  if (!HasConfigValue("InfoLineVisible")) {
-    SetConfigValue("InfoLineVisible", 0);
   }
 
   int ypos = 0;

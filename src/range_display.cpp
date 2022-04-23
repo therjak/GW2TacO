@@ -130,34 +130,6 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
 void GW2RangeDisplay::OnDraw(CWBDrawAPI* API) {
   if (!mumbleLink.IsValid()) return;
 
-  if (!HasConfigValue("RangeCirclesVisible"))
-    SetConfigValue("RangeCirclesVisible", 0);
-
-  if (!HasConfigValue("RangeCircleTransparency"))
-    SetConfigValue("RangeCircleTransparency", 100);
-
-  if (!HasConfigValue("RangeCircle90")) SetConfigValue("RangeCircle90", 0);
-
-  if (!HasConfigValue("RangeCircle120")) SetConfigValue("RangeCircle120", 1);
-
-  if (!HasConfigValue("RangeCircle180")) SetConfigValue("RangeCircle180", 0);
-
-  if (!HasConfigValue("RangeCircle240")) SetConfigValue("RangeCircle240", 0);
-
-  if (!HasConfigValue("RangeCircle300")) SetConfigValue("RangeCircle300", 1);
-
-  if (!HasConfigValue("RangeCircle400")) SetConfigValue("RangeCircle400", 1);
-
-  if (!HasConfigValue("RangeCircle600")) SetConfigValue("RangeCircle600", 1);
-
-  if (!HasConfigValue("RangeCircle900")) SetConfigValue("RangeCircle900", 1);
-
-  if (!HasConfigValue("RangeCircle1200")) SetConfigValue("RangeCircle1200", 1);
-
-  if (!HasConfigValue("RangeCircle1500")) SetConfigValue("RangeCircle1500", 0);
-
-  if (!HasConfigValue("RangeCircle1600")) SetConfigValue("RangeCircle1600", 0);
-
   if (GetConfigValue("RangeCirclesVisible")) {
     float circ = GetConfigValue("RangeCircleTransparency") / 100.0f;
     if (GetConfigValue("RangeCircle90")) DrawRangeCircle(API, 90, circ);

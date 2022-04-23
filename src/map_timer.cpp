@@ -28,18 +28,6 @@ void GW2MapTimer::OnResize(const CSize& s) {
 }
 
 void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("MapTimerVisible")) {
-    SetConfigValue("MapTimerVisible", 1);
-  }
-
-  if (!HasConfigValue("MapTimerCompact")) {
-    SetConfigValue("MapTimerCompact", 1);
-  }
-
-  if (!HasConfigValue("MapTimerCategories")) {
-    SetConfigValue("MapTimerCategories", 1);
-  }
-
   if (!GetConfigValue("MapTimerVisible")) {
     return;
   }
@@ -112,8 +100,6 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
   int32_t mapheight = 40;
   int32_t barheight = 20;
 
-  if (!HasConfigValue("MapTimerCategoryLineWidth"))
-    SetConfigValue("MapTimerCategoryLineWidth", 3);
   int32_t categoryLineWidth = GetConfigValue("MapTimerCategoryLineWidth");
   int32_t paddingLeft = showCategories ? categoryLineWidth + 4 : 0;
 

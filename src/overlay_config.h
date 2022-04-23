@@ -8,6 +8,7 @@
 
 void LoadConfig();
 void SaveConfig();
+void InitConfig();
 void ToggleConfigValue(std::string_view value);
 int32_t GetConfigValue(std::string_view value);
 void SetConfigValue(std::string_view value, int32_t val);

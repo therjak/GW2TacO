@@ -7,15 +7,6 @@ using math::CPoint;
 using math::CRect;
 
 void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("MouseHighlightVisible"))
-    SetConfigValue("MouseHighlightVisible", 0);
-
-  if (!HasConfigValue("MouseHighlightColor"))
-    SetConfigValue("MouseHighlightColor", 0);
-
-  if (!HasConfigValue("MouseHighlightOutline"))
-    SetConfigValue("MouseHighlightOutline", 0);
-
   if (!GetConfigValue("MouseHighlightVisible")) return;
 
   POINT pos;
