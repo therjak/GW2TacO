@@ -526,7 +526,9 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
   if (poi.routeMember && ((poi.position - mumbleLink.charPosition).Length() <=
                           poi.typeData.triggerRange)) {
     for (auto& r : Routes) {
-      if (r.activeItem < 0) return;
+      if (r.activeItem < 0) {
+        continue;
+      }
 
       if (r.route[r.activeItem] == poi.guid) {
         // progress route
