@@ -119,13 +119,13 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
   Atlas = nullptr;
   TextureUpdateNeeded = false;
 
-  int32_t White[4];
-  memset(White, 0xff, 4 * 4);
+  uint8_t White[4 * 4];
+  memset(&White[0], 0xff, 4 * 4);
 
   {
     std::lock_guard<std::mutex> lockGuard(mtx);
-    auto img = std::make_unique<CAtlasImage>(reinterpret_cast<uint8_t*>(&White),
-                                             2, 2, CRect(0, 0, 2, 2));
+    auto img =
+        std::make_unique<CAtlasImage>(&White[0], 2, 2, CRect(0, 0, 2, 2));
     WhitePixel = img.get();
     ImageStorage[img->GetHandle()] = std::move(img);
   }

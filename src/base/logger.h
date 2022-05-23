@@ -67,27 +67,27 @@ class CLogger {
 
 extern CLogger Logger;
 
-template <class... Args>
-void Log(LOGVERBOSITY v, const std::string_view fmt, Args&&... args) {
-  Logger.Log(v, true, true, std::format(fmt, args...));
+template <typename T, class... Args>
+inline void Log(LOGVERBOSITY v, T&& fmt, Args&&... args) {
+  Logger.Log(v, true, true, std::vformat(fmt, std::make_format_args(args...)));
+}
+
+template <typename T, class... Args>
+inline void Log_Warn(T&& fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_WARNING, fmt, std::forward<Args>(args)...);
+}
+
+template <typename T, class... Args>
+inline void Log_Err(T&& fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_ERROR, fmt, std::forward<Args>(args)...);
 }
 
 template <class... Args>
-void Log_Warn(const std::string_view fmt, Args&&... args) {
-  Log(LOGVERBOSITY::LOG_WARNING, fmt, args...);
+inline void Log_Dbg(std::string_view fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_DEBUG, fmt, std::forward<Args>(args)...);
 }
 
 template <class... Args>
-void Log_Err(const std::string_view fmt, Args&&... args) {
-  Log(LOGVERBOSITY::LOG_ERROR, fmt, args...);
-}
-
-template <class... Args>
-void Log_Dbg(const std::string_view fmt, Args&&... args) {
-  Log(LOGVERBOSITY::LOG_DEBUG, fmt, args...);
-}
-
-template <class... Args>
-void Log_Nfo(const std::string_view fmt, Args&&... args) {
-  Log(LOGVERBOSITY::LOG_INFO, fmt, args...);
+inline void Log_Nfo(std::string_view fmt, Args&&... args) {
+  Log(LOGVERBOSITY::LOG_INFO, fmt, std::forward<Args>(args)...);
 }
