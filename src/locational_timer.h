@@ -47,7 +47,6 @@ class TimerDisplay : public CWBItem {
   static inline std::shared_ptr<TimerDisplay> Create(CWBItem* Parent,
                                                      math::CRect Position) {
     auto p = std::make_shared<TimerDisplay>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

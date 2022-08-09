@@ -43,7 +43,6 @@ class CWBBox : public CWBItem {
   static inline std::shared_ptr<CWBBox> Create(CWBItem* Parent,
                                                const math::CRect& Pos) {
     auto p = std::make_shared<CWBBox>(Parent, Pos);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

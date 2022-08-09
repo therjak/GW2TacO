@@ -22,7 +22,6 @@ class GW2MarkerEditor : public CWBItem {
   static inline std::shared_ptr<GW2MarkerEditor> Create(CWBItem* Parent,
                                                         math::CRect Position) {
     auto p = std::make_shared<GW2MarkerEditor>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

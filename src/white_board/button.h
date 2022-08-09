@@ -18,7 +18,6 @@ class CWBButton : public CWBItem {
                                                   const math::CRect& Pos,
                                                   std::string_view txt = "") {
     auto p = std::make_shared<CWBButton>(Parent, Pos, txt);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

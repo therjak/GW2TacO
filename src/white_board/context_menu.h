@@ -65,7 +65,6 @@ class CWBContextMenu : public CWBItem {
                                                        const math::CRect& Pos,
                                                        WBGUID Target) {
     auto p = std::make_shared<CWBContextMenu>(Parent, Pos, Target);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

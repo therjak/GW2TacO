@@ -102,7 +102,6 @@ class CWBTextBox : public CWBItem {
       CWBItem* Parent, const math::CRect& Pos,
       int32_t flags = WB_TEXTBOX_SINGLELINE, std::string_view txt = "") {
     auto p = std::make_shared<CWBTextBox>(Parent, Pos, flags, txt);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

@@ -223,7 +223,6 @@ class GW2TacticalDisplay : public CWBItem {
   static inline std::shared_ptr<GW2TacticalDisplay> Create(
       CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2TacticalDisplay>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

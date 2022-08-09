@@ -232,7 +232,6 @@ class CWBItem : public IWBCSS {
   }
 
  protected:
-  std::weak_ptr<CWBItem> SelfRef;
   CWBApplication* App = nullptr;
   CWBItem* ChildInFocus = nullptr;
 
@@ -312,7 +311,8 @@ class CWBItem : public IWBCSS {
   ~CWBItem() override;
 
   virtual void AddChild(const std::shared_ptr<CWBItem>& Item);
-  virtual void RemoveChild(const std::shared_ptr<CWBItem>& Item);
+  void RemoveChild(const std::shared_ptr<CWBItem>& Item);
+  void RemoveChild(const CWBItem* Item);
   virtual bool Initialize(CWBItem* Parent, const math::CRect& Position);
   // return true if this item handled the message
   virtual bool MessageProc(const CWBMessage& Message);

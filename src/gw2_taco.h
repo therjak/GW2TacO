@@ -102,7 +102,6 @@ class GW2TacO : public CWBItem {
   static inline std::shared_ptr<GW2TacO> Create(CWBItem* Parent,
                                                 math::CRect Position) {
     auto p = std::make_shared<GW2TacO>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

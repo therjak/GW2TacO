@@ -15,7 +15,6 @@ class GW2RangeDisplay : public CWBItem {
   static inline std::shared_ptr<GW2RangeDisplay> Create(CWBItem* Parent,
                                                         math::CRect Position) {
     auto p = std::make_shared<GW2RangeDisplay>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

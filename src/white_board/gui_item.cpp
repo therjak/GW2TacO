@@ -684,6 +684,15 @@ void CWBItem::RemoveChild(const std::shared_ptr<CWBItem>& Item) {
   }
 }
 
+void CWBItem::RemoveChild(const CWBItem* Item) {
+  auto it = std::find_if(
+      Children.begin(), Children.end(),
+      [Item](const std::shared_ptr<CWBItem>& si) { return si.get() == Item; });
+  if (it != Children.end()) {
+    App->AddToTrash(*it);
+  }
+}
+
 int32_t CWBItem::GetChildIndex(CWBItem* Item) {
   auto it = std::find_if(
       Children.begin(), Children.end(),
@@ -866,10 +875,7 @@ void CWBItem::SetData(void* data) { Data = data; }
 
 void* CWBItem::GetData() { return Data; }
 
-void CWBItem::MarkForDeletion() {
-  auto sr = SelfRef.lock();
-  App->AddToTrash(sr);
-}
+void CWBItem::MarkForDeletion() { this->Parent->RemoveChild(this); }
 
 CWBContextMenu* CWBItem::OpenContextMenu(CPoint pos) {
   if (!App) return nullptr;

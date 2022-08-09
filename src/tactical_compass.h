@@ -15,7 +15,6 @@ class GW2TacticalCompass : public CWBItem {
   static inline std::shared_ptr<GW2TacticalCompass> Create(
       CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2TacticalCompass>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

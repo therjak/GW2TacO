@@ -15,7 +15,6 @@ class CWBLabel : public CWBItem {
                                                  const math::CRect& Pos,
                                                  std::string_view txt = "") {
     auto p = std::make_shared<CWBLabel>(Parent, Pos, txt);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

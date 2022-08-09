@@ -55,7 +55,6 @@ class CWBWindow : public CWBItem {
       CWBItem* Parent, const math::CRect& Pos, const TCHAR* txt = "",
       uint32_t style = WB_WINDOW_DEFAULT) {
     auto p = std::make_shared<CWBWindow>(Parent, Pos, txt, style);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

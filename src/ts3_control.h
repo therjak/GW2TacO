@@ -16,7 +16,6 @@ class TS3Control : public CWBItem {
   static inline std::shared_ptr<TS3Control> Create(CWBItem* Parent,
                                                    math::CRect Position) {
     auto p = std::make_shared<TS3Control>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

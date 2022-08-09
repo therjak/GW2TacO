@@ -14,7 +14,6 @@ class ClickThroughButton : public CWBButton {
   static inline std::shared_ptr<ClickThroughButton> Create(
       CWBItem* Parent, const math::CRect& Pos, std::string_view txt = "") {
     auto p = std::make_shared<ClickThroughButton>(Parent, Pos, txt);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

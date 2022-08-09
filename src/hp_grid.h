@@ -36,7 +36,6 @@ class GW2HPGrid : public CWBItem {
   static inline std::shared_ptr<GW2HPGrid> Create(CWBItem* Parent,
                                                   math::CRect Position) {
     auto p = std::make_shared<GW2HPGrid>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

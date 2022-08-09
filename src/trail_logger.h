@@ -104,7 +104,6 @@ class GW2TrailDisplay : public CWBItem {
   static inline std::shared_ptr<GW2TrailDisplay> Create(CWBItem* Parent,
                                                         math::CRect Position) {
     auto p = std::make_shared<GW2TrailDisplay>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

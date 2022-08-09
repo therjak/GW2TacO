@@ -44,7 +44,6 @@ class DungeonProgress : public CWBItem {
   static inline std::shared_ptr<DungeonProgress> Create(CWBItem* Parent,
                                                         math::CRect Position) {
     auto p = std::make_shared<DungeonProgress>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }

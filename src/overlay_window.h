@@ -19,7 +19,6 @@ class OverlayWindow : public CWBWindow {
   static inline std::shared_ptr<OverlayWindow> Create(CWBItem* Parent,
                                                       math::CRect Position) {
     auto p = std::make_shared<OverlayWindow>(Parent, Position);
-    p->SelfRef = p;
     if (Parent) {
       Parent->AddChild(p);
     }
