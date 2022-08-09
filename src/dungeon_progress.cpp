@@ -225,7 +225,7 @@ DungeonProgress::~DungeonProgress() {
 }
 
 CWBItem* DungeonProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  return DungeonProgress::Create(Root, Pos).get();
+  return DungeonProgress::Create(Root, Pos);
 }
 
 bool DungeonProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,

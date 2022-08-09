@@ -40,7 +40,7 @@ bool CWBLabel::Initialize(CWBItem* Parent, const CRect& Position) {
 CWBItem* CWBLabel::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto label = CWBLabel::Create(Root, Pos);
   if (node.HasAttribute("text")) label->SetText(node.GetAttribute("text"));
-  return label.get();
+  return label;
 }
 
 void CWBLabel::SetText(std::string_view val) {

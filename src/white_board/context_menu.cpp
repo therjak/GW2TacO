@@ -331,7 +331,7 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
   // We need to select the parent as we are restricted to draw within the parent
   // rect.
   auto sm = CWBContextMenu::Create(GetParent(), newpos, Target);
-  SubMenu = sm.get();
+  SubMenu = sm;
   SubMenuIdx = itemidx;
   App->ApplyStyle(SubMenu);
   SubMenu->ParentMenu = this;

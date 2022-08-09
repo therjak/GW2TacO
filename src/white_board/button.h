@@ -14,14 +14,13 @@ class CWBButton : public CWBItem {
 
  public:
   CWBButton(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
-  static inline std::shared_ptr<CWBButton> Create(CWBItem* Parent,
-                                                  const math::CRect& Pos,
-                                                  std::string_view txt = "") {
+  static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
+                                  std::string_view txt = "") {
     auto p = std::make_shared<CWBButton>(Parent, Pos, txt);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    CWBButton* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~CWBButton() override;
 

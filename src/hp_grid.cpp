@@ -41,7 +41,7 @@ GW2HPGrid::GW2HPGrid(CWBItem* Parent, CRect Position)
 GW2HPGrid::~GW2HPGrid() = default;
 
 CWBItem* GW2HPGrid::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
-  return GW2HPGrid::Create(Root, Pos).get();
+  return GW2HPGrid::Create(Root, Pos);
 }
 
 bool GW2HPGrid::IsMouseTransparent(const CPoint& ClientSpacePoint,

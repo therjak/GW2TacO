@@ -50,13 +50,12 @@ class RaidProgress : public CWBItem {
 
  public:
   RaidProgress(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<RaidProgress> Create(CWBItem* Parent,
-                                                     math::CRect Position) {
+  static inline RaidProgress* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<RaidProgress>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    RaidProgress* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~RaidProgress() override;
 

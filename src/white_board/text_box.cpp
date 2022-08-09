@@ -1005,7 +1005,7 @@ CWBItem* CWBTextBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
     textbox->EnableVScrollbar(false, false);
   }
 
-  return textbox.get();
+  return textbox;
 }
 
 void CWBTextBox::SelectWord(int32_t CharacterInWord) {

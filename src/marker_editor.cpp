@@ -25,7 +25,7 @@ GW2MarkerEditor::GW2MarkerEditor(CWBItem* Parent, CRect Position)
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
 CWBItem* GW2MarkerEditor::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  return GW2MarkerEditor::Create(Root, Pos).get();
+  return GW2MarkerEditor::Create(Root, Pos);
 }
 
 void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {

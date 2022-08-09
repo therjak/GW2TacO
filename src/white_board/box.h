@@ -40,13 +40,12 @@ class CWBBox : public CWBItem {
 
  public:
   CWBBox(CWBItem* Parent, const math::CRect& Pos);
-  static inline std::shared_ptr<CWBBox> Create(CWBItem* Parent,
-                                               const math::CRect& Pos) {
+  static inline CWBBox* Create(CWBItem* Parent, const math::CRect& Pos) {
     auto p = std::make_shared<CWBBox>(Parent, Pos);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    CWBBox* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
 
   ~CWBBox() override;

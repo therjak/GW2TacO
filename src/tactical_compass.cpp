@@ -110,7 +110,7 @@ GW2TacticalCompass::~GW2TacticalCompass() = default;
 
 CWBItem* GW2TacticalCompass::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
-  return GW2TacticalCompass::Create(Root, Pos).get();
+  return GW2TacticalCompass::Create(Root, Pos);
 }
 
 bool GW2TacticalCompass::IsMouseTransparent(const CPoint& ClientSpacePoint,

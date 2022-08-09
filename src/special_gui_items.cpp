@@ -25,5 +25,5 @@ CWBItem* ClickThroughButton::Factory(CWBItem* Root, const CXMLNode& node,
     button->Hide(x);
   }
 
-  return button.get();
+  return button;
 }

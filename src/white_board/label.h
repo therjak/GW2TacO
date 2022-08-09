@@ -11,14 +11,13 @@ class CWBLabel : public CWBItem {
 
  public:
   CWBLabel(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
-  static inline std::shared_ptr<CWBLabel> Create(CWBItem* Parent,
-                                                 const math::CRect& Pos,
-                                                 std::string_view txt = "") {
+  static inline CWBLabel* Create(CWBItem* Parent, const math::CRect& Pos,
+                                 std::string_view txt = "") {
     auto p = std::make_shared<CWBLabel>(Parent, Pos, txt);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    CWBLabel* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~CWBLabel() override;
 

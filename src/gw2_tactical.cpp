@@ -977,7 +977,7 @@ GW2TacticalDisplay::~GW2TacticalDisplay() = default;
 
 CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
-  return GW2TacticalDisplay::Create(Root, Pos).get();
+  return GW2TacticalDisplay::Create(Root, Pos);
 }
 
 bool GW2TacticalDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,

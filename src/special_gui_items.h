@@ -11,13 +11,14 @@ class ClickThroughButton : public CWBButton {
  public:
   ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
                      std::string_view txt);
-  static inline std::shared_ptr<ClickThroughButton> Create(
-      CWBItem* Parent, const math::CRect& Pos, std::string_view txt = "") {
+  static inline ClickThroughButton* Create(CWBItem* Parent,
+                                           const math::CRect& Pos,
+                                           std::string_view txt = "") {
     auto p = std::make_shared<ClickThroughButton>(Parent, Pos, txt);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    ClickThroughButton* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~ClickThroughButton() override;
 

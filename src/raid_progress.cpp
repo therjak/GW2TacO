@@ -192,7 +192,7 @@ RaidProgress::~RaidProgress() {
 }
 
 CWBItem* RaidProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  return RaidProgress::Create(Root, Pos).get();
+  return RaidProgress::Create(Root, Pos);
 }
 
 bool RaidProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,

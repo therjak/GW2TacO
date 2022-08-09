@@ -44,13 +44,12 @@ class TimerDisplay : public CWBItem {
                           WBMESSAGE MessageType) override;
 
   TimerDisplay(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<TimerDisplay> Create(CWBItem* Parent,
-                                                     math::CRect Position) {
+  static inline TimerDisplay* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<TimerDisplay>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    TimerDisplay* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~TimerDisplay() override;
 

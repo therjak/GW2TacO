@@ -135,7 +135,7 @@ TS3Control::TS3Control(CWBItem* Parent, CRect Position)
 TS3Control::~TS3Control() = default;
 
 CWBItem* TS3Control::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  return TS3Control::Create(Root, Pos).get();
+  return TS3Control::Create(Root, Pos);
 }
 
 bool TS3Control::IsMouseTransparent(const CPoint& ClientSpacePoint,

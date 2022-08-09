@@ -329,5 +329,5 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
 CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto window = CWBWindow::Create(Root, Pos);
   if (node.HasAttribute("title")) window->SetTitle(node.GetAttribute("title"));
-  return window.get();
+  return window;
 }

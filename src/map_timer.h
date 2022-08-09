@@ -61,13 +61,12 @@ class GW2MapTimer : public CWBItem {
   std::unordered_map<std::string, Category> categories;
 
   GW2MapTimer(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<GW2MapTimer> Create(CWBItem* Parent,
-                                                    math::CRect Position) {
+  static inline GW2MapTimer* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2MapTimer>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    GW2MapTimer* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~GW2MapTimer() override;
 

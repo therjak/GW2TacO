@@ -144,5 +144,5 @@ TimerDisplay::~TimerDisplay() = default;
 
 CWBItem* TimerDisplay::Factory(CWBItem* Root, const CXMLNode& node,
                                CRect& Pos) {
-  return TimerDisplay::Create(Root, Pos).get();
+  return TimerDisplay::Create(Root, Pos);
 }

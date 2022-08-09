@@ -12,13 +12,12 @@ class GW2RangeDisplay : public CWBItem {
 
  public:
   GW2RangeDisplay(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<GW2RangeDisplay> Create(CWBItem* Parent,
-                                                        math::CRect Position) {
+  static inline GW2RangeDisplay* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2RangeDisplay>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    GW2RangeDisplay* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~GW2RangeDisplay() override;
 

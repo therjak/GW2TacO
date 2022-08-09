@@ -61,14 +61,13 @@ class CWBContextMenu : public CWBItem {
 
  public:
   CWBContextMenu(CWBItem* Parent, const math::CRect& Pos, WBGUID Target);
-  static inline std::shared_ptr<CWBContextMenu> Create(CWBItem* Parent,
-                                                       const math::CRect& Pos,
-                                                       WBGUID Target) {
+  static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,
+                                       WBGUID Target) {
     auto p = std::make_shared<CWBContextMenu>(Parent, Pos, Target);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    CWBContextMenu* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~CWBContextMenu() override;
 

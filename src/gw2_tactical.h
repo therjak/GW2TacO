@@ -220,13 +220,13 @@ class GW2TacticalDisplay : public CWBItem {
 
  public:
   GW2TacticalDisplay(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<GW2TacticalDisplay> Create(
-      CWBItem* Parent, math::CRect Position) {
+  static inline GW2TacticalDisplay* Create(CWBItem* Parent,
+                                           math::CRect Position) {
     auto p = std::make_shared<GW2TacticalDisplay>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    GW2TacticalDisplay* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~GW2TacticalDisplay() override;
 

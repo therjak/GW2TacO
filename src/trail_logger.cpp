@@ -538,7 +538,7 @@ GW2TrailDisplay::~GW2TrailDisplay() { textureCache.clear(); }
 
 CWBItem* GW2TrailDisplay::Factory(CWBItem* Root, const CXMLNode& node,
                                   CRect& Pos) {
-  return GW2TrailDisplay::Create(Root, Pos).get();
+  return GW2TrailDisplay::Create(Root, Pos);
 }
 
 bool GW2TrailDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,

@@ -48,7 +48,7 @@ GW2MouseHighlight::~GW2MouseHighlight() = default;
 
 CWBItem* GW2MouseHighlight::Factory(CWBItem* Root, const CXMLNode& node,
                                     CRect& Pos) {
-  return GW2MouseHighlight::Create(Root, Pos).get();
+  return GW2MouseHighlight::Create(Root, Pos);
 }
 
 bool GW2MouseHighlight::IsMouseTransparent(const CPoint& ClientSpacePoint,

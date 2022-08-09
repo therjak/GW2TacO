@@ -20,7 +20,7 @@ OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
 CWBItem* OverlayWindow::Factory(CWBItem* Root, const CXMLNode& node,
                                 CRect& Pos) {
-  return OverlayWindow::Create(Root, Pos).get();
+  return OverlayWindow::Create(Root, Pos);
 }
 
 void OverlayWindow::OnDraw(CWBDrawAPI* API) {

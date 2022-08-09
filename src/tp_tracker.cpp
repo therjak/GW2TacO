@@ -395,7 +395,7 @@ TPTracker::~TPTracker() {
 }
 
 CWBItem* TPTracker::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  return TPTracker::Create(Root, Pos).get();
+  return TPTracker::Create(Root, Pos);
 }
 
 bool TPTracker::IsMouseTransparent(const CPoint& ClientSpacePoint,

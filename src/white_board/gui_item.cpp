@@ -881,8 +881,8 @@ CWBContextMenu* CWBItem::OpenContextMenu(CPoint pos) {
   if (!App) return nullptr;
   auto ctx = CWBContextMenu::Create(
       App->GetRoot(), CRect(pos, pos + CPoint(10, 10)), GetGuid());
-  App->ApplyStyle(ctx.get());
-  return ctx.get();
+  App->ApplyStyle(ctx);
+  return ctx;
 }
 
 void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,

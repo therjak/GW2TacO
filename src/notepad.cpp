@@ -45,7 +45,7 @@ GW2Notepad::~GW2Notepad() {
 }
 
 CWBItem* GW2Notepad::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
-  return GW2Notepad::Create(Root, Pos).get();
+  return GW2Notepad::Create(Root, Pos);
 }
 
 void GW2Notepad::StartEdit() {

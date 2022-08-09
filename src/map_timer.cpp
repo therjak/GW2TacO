@@ -487,5 +487,5 @@ GW2MapTimer::~GW2MapTimer() {
 }
 
 CWBItem* GW2MapTimer::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
-  return GW2MapTimer::Create(Root, Pos).get();
+  return GW2MapTimer::Create(Root, Pos);
 }

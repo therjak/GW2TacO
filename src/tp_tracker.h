@@ -40,13 +40,12 @@ class TPTracker : public CWBItem {
 
  public:
   TPTracker(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<TPTracker> Create(CWBItem* Parent,
-                                                  math::CRect Position) {
+  static inline TPTracker* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<TPTracker>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    TPTracker* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~TPTracker() override;
 

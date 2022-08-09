@@ -41,13 +41,12 @@ class DungeonProgress : public CWBItem {
 
  public:
   DungeonProgress(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<DungeonProgress> Create(CWBItem* Parent,
-                                                        math::CRect Position) {
+  static inline DungeonProgress* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<DungeonProgress>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    DungeonProgress* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~DungeonProgress() override;
 

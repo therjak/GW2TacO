@@ -69,7 +69,7 @@ class GW2TacO : public CWBItem {
   std::vector<GW2TacticalCategory*> CategoryList;
 
   void ApiKeyInputAction(APIKeys keyType, int32_t idx);
-  std::shared_ptr<CWBTextBox> APIKeyInput;
+  CWBTextBox* APIKeyInput = nullptr;
 
   bool menuHoverLastFrame = false;
   int32_t lastMenuHoverTransitionTime = 0;
@@ -102,6 +102,7 @@ class GW2TacO : public CWBItem {
   static inline std::shared_ptr<GW2TacO> Create(CWBItem* Parent,
                                                 math::CRect Position) {
     auto p = std::make_shared<GW2TacO>(Parent, Position);
+    assert(Parent);
     if (Parent) {
       Parent->AddChild(p);
     }

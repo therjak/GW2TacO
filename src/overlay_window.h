@@ -16,13 +16,12 @@ class OverlayWindow : public CWBWindow {
                           WBMESSAGE MessageType) override;
 
   OverlayWindow(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<OverlayWindow> Create(CWBItem* Parent,
-                                                      math::CRect Position) {
+  static inline OverlayWindow* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<OverlayWindow>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    OverlayWindow* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
 
   ~OverlayWindow() override;

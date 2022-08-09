@@ -128,5 +128,5 @@ bool CWBButton::IsPushed() { return Pushed; }
 CWBItem* CWBButton::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto button = CWBButton::Create(Root, Pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
-  return button.get();
+  return button;
 }

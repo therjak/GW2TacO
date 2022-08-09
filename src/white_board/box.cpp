@@ -435,7 +435,7 @@ CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
     box->ClickThrough = b != 0;
   }
 
-  return box.get();
+  return box;
 }
 
 void CWBBox::UpdateScrollbarData() {

@@ -1440,6 +1440,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             break;
         }
         APIKeyInput->MarkForDeletion();
+        APIKeyInput = nullptr;
         return true;
       }
       break;
@@ -1473,35 +1474,34 @@ void GW2TacO::OpenAboutWindow() {
   auto w = CWBWindow::Create(
       this, CRect(cl - CPoint(180, 160), cl + CPoint(180, 50 + 26)),
       "About GW2 TacO");
-  this->AddChild(w);
   w->SetID("About");
 
   w->ReapplyStyles();
 
-  auto l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 2),
+  auto l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 2),
                              "GW2 TacO - The Guild Wars 2 Tactical Overlay");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 16),
+  l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 16),
                         "Build " + TacOBuild + " built on " + buildDateTime);
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 32),
+  l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 32),
                         "(c) BoyC / Conspiracy");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = CWBLabel::Create(w.get(), w->GetClientRect() + CPoint(0, 48),
+  l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 48),
                         "Taco Icon from http://icons8.com");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = CWBLabel::Create(
-      w.get(), w->GetClientRect() + CPoint(0, 64),
+      w, w->GetClientRect() + CPoint(0, 64),
       "If you like TacO, send some Mystic Coins to BoyC.2653 :)");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
 
   auto TacoIcon = CWBButton::Create(
-      w.get(), CRect(-50, -40 + 16, 50, 72 + 16) + w->GetClientRect().Center());
+      w, CRect(-50, -40 + 16, 50, 72 + 16) + w->GetClientRect().Center());
   TacoIcon->ApplyStyleDeclarations(
       "background-color:none;background: skin(TacoIcon) center middle;");
 
@@ -1509,7 +1509,7 @@ void GW2TacO::OpenAboutWindow() {
   int32_t height = w->GetClientRect().Height();
 
   auto WebsiteButton = CWBButton::Create(
-      w.get(), CRect(3, height - 25, width / 2 - 1, height - 3), "WebSite");
+      w, CRect(3, height - 25, width / 2 - 1, height - 3), "WebSite");
   WebsiteButton->SetID("GoToWebsite");
   WebsiteButton->ApplyStyleDeclarations("font-family:ProFont;");
 }
@@ -1883,7 +1883,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = GW2MapTimer::Create(w.get(), w->GetClientRect());
+    auto mt = GW2MapTimer::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 
@@ -1891,7 +1891,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = TS3Control::Create(w.get(), w->GetClientRect());
+    auto mt = TS3Control::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 
@@ -1899,7 +1899,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = GW2MarkerEditor::Create(w.get(), w->GetClientRect());
+    auto mt = GW2MarkerEditor::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 
@@ -1907,7 +1907,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = GW2Notepad::Create(w.get(), w->GetClientRect());
+    auto mt = GW2Notepad::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 
@@ -1915,7 +1915,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = RaidProgress::Create(w.get(), w->GetClientRect());
+    auto mt = RaidProgress::Create(w, w->GetClientRect());
     mt->SetID("RaidProgressView");
     w->ReapplyStyles();
   }
@@ -1924,7 +1924,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = DungeonProgress::Create(w.get(), w->GetClientRect());
+    auto mt = DungeonProgress::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 
@@ -1932,7 +1932,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = TPTracker::Create(w.get(), w->GetClientRect());
+    auto mt = TPTracker::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 }

@@ -33,13 +33,12 @@ class GW2HPGrid : public CWBItem {
   virtual void LoadGrids();
 
   GW2HPGrid(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<GW2HPGrid> Create(CWBItem* Parent,
-                                                  math::CRect Position) {
+  static inline GW2HPGrid* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2HPGrid>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    GW2HPGrid* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~GW2HPGrid() override;
 

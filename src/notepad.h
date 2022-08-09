@@ -21,13 +21,12 @@ class GW2Notepad : public CWBItem {
                           WBMESSAGE MessageType) override;
 
   GW2Notepad(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<GW2Notepad> Create(CWBItem* Parent,
-                                                   math::CRect Position) {
+  static inline GW2Notepad* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_shared<GW2Notepad>(Parent, Position);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    GW2Notepad* r = p.get();
+    assert(Parent);
+    Parent->AddChild(p);
+    return r;
   }
   ~GW2Notepad() override;
 
