@@ -54,10 +54,10 @@ class CWBWindow : public CWBItem {
   static inline CWBWindow* Create(CWBItem* Parent, const math::CRect& Pos,
                                   const TCHAR* txt = "",
                                   uint32_t style = WB_WINDOW_DEFAULT) {
-    auto p = std::make_shared<CWBWindow>(Parent, Pos, txt, style);
+    auto p = std::make_unique<CWBWindow>(Parent, Pos, txt, style);
     CWBWindow* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~CWBWindow() override;

@@ -165,7 +165,7 @@ class CWBItem : public IWBCSS {
   math::CSize StoredContentSize;
 
   CWBItem* Parent = nullptr;
-  std::vector<std::shared_ptr<CWBItem>> Children;
+  std::vector<std::unique_ptr<CWBItem>> Children;
 
   int32_t SortLayer = 0;
   float OpacityMultiplier = 1;
@@ -310,8 +310,7 @@ class CWBItem : public IWBCSS {
  public:
   ~CWBItem() override;
 
-  virtual void AddChild(const std::shared_ptr<CWBItem>& Item);
-  void RemoveChild(const std::shared_ptr<CWBItem>& Item);
+  virtual void AddChild(std::unique_ptr<CWBItem>&& Item);
   void RemoveChild(const CWBItem* Item);
   virtual bool Initialize(CWBItem* Parent, const math::CRect& Position);
   // return true if this item handled the message

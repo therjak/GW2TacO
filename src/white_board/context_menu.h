@@ -63,10 +63,10 @@ class CWBContextMenu : public CWBItem {
   CWBContextMenu(CWBItem* Parent, const math::CRect& Pos, WBGUID Target);
   static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,
                                        WBGUID Target) {
-    auto p = std::make_shared<CWBContextMenu>(Parent, Pos, Target);
+    auto p = std::make_unique<CWBContextMenu>(Parent, Pos, Target);
     CWBContextMenu* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~CWBContextMenu() override;

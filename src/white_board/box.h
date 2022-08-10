@@ -23,7 +23,7 @@ enum class WBBOXSIZING : uint8_t {
 
 class CWBBox : public CWBItem {
  protected:
-  void AddChild(const std::shared_ptr<CWBItem>& Item) override;
+  void AddChild(std::unique_ptr<CWBItem>&& Item) override;
   bool MessageProc(const CWBMessage& Message) override;
   virtual void RearrangeChildren();
 
@@ -41,10 +41,10 @@ class CWBBox : public CWBItem {
  public:
   CWBBox(CWBItem* Parent, const math::CRect& Pos);
   static inline CWBBox* Create(CWBItem* Parent, const math::CRect& Pos) {
-    auto p = std::make_shared<CWBBox>(Parent, Pos);
+    auto p = std::make_unique<CWBBox>(Parent, Pos);
     CWBBox* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
 

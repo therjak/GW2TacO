@@ -99,14 +99,12 @@ class GW2TacO : public CWBItem {
                           WBMESSAGE MessageType) override;
 
   GW2TacO(CWBItem* Parent, math::CRect Position);
-  static inline std::shared_ptr<GW2TacO> Create(CWBItem* Parent,
-                                                math::CRect Position) {
-    auto p = std::make_shared<GW2TacO>(Parent, Position);
+  static inline GW2TacO* Create(CWBItem* Parent, math::CRect Position) {
+    auto p = std::make_unique<GW2TacO>(Parent, Position);
+    auto r = p.get();
     assert(Parent);
-    if (Parent) {
-      Parent->AddChild(p);
-    }
-    return p;
+    Parent->AddChild(std::move(p));
+    return r;
   }
   ~GW2TacO() override;
 

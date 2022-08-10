@@ -45,10 +45,10 @@ class TimerDisplay : public CWBItem {
 
   TimerDisplay(CWBItem* Parent, math::CRect Position);
   static inline TimerDisplay* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<TimerDisplay>(Parent, Position);
+    auto p = std::make_unique<TimerDisplay>(Parent, Position);
     TimerDisplay* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~TimerDisplay() override;

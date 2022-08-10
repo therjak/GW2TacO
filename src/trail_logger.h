@@ -102,11 +102,10 @@ class GW2TrailDisplay : public CWBItem {
  public:
   GW2TrailDisplay(CWBItem* Parent, math::CRect Position);
   static inline GW2TrailDisplay* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<GW2TrailDisplay>(Parent, Position);
+    auto p = std::make_unique<GW2TrailDisplay>(Parent, Position);
     GW2TrailDisplay* r = p.get();
     assert(Parent);
-
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~GW2TrailDisplay() override;

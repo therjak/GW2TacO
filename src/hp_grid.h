@@ -34,10 +34,10 @@ class GW2HPGrid : public CWBItem {
 
   GW2HPGrid(CWBItem* Parent, math::CRect Position);
   static inline GW2HPGrid* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<GW2HPGrid>(Parent, Position);
+    auto p = std::make_unique<GW2HPGrid>(Parent, Position);
     GW2HPGrid* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~GW2HPGrid() override;

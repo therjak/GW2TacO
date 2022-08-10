@@ -48,10 +48,10 @@ class GW2MouseHighlight : public CWBItem {
   GW2MouseHighlight(CWBItem* Parent, math::CRect Position);
   static inline GW2MouseHighlight* Create(CWBItem* Parent,
                                           math::CRect Position) {
-    auto p = std::make_shared<GW2MouseHighlight>(Parent, Position);
+    auto p = std::make_unique<GW2MouseHighlight>(Parent, Position);
     GW2MouseHighlight* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~GW2MouseHighlight() override;

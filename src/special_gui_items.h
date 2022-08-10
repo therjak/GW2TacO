@@ -14,10 +14,10 @@ class ClickThroughButton : public CWBButton {
   static inline ClickThroughButton* Create(CWBItem* Parent,
                                            const math::CRect& Pos,
                                            std::string_view txt = "") {
-    auto p = std::make_shared<ClickThroughButton>(Parent, Pos, txt);
+    auto p = std::make_unique<ClickThroughButton>(Parent, Pos, txt);
     ClickThroughButton* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~ClickThroughButton() override;

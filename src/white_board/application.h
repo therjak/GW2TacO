@@ -38,7 +38,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   std::recursive_mutex MessageBufferMutex;
   std::vector<CWBMessage> MessageBuffer;
   std::recursive_mutex TrashMutex;
-  std::vector<std::shared_ptr<CWBItem>> Trash;
+  std::vector<std::unique_ptr<CWBItem>> Trash;
 
   CWBItem* MouseCaptureItem;
   CWBItem* MouseItem;
@@ -141,7 +141,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   CWBFont* GetFont(std::string_view FontName);
   CWBFont* GetDefaultFont();
   bool SetDefaultFont(std::string_view FontName);
-  void AddToTrash(const std::shared_ptr<CWBItem>& item);
+  void AddToTrash(std::unique_ptr<CWBItem>&& item);
 
   bool GetCtrlState() { return Ctrl; }
   bool GetAltState() { return Alt; }

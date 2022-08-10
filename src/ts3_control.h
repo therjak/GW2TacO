@@ -14,10 +14,10 @@ class TS3Control : public CWBItem {
  public:
   TS3Control(CWBItem* Parent, math::CRect Position);
   static inline TS3Control* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<TS3Control>(Parent, Position);
+    auto p = std::make_unique<TS3Control>(Parent, Position);
     TS3Control* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~TS3Control() override;

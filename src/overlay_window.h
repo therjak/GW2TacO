@@ -17,10 +17,10 @@ class OverlayWindow : public CWBWindow {
 
   OverlayWindow(CWBItem* Parent, math::CRect Position);
   static inline OverlayWindow* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<OverlayWindow>(Parent, Position);
+    auto p = std::make_unique<OverlayWindow>(Parent, Position);
     OverlayWindow* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
 

@@ -101,10 +101,10 @@ class CWBTextBox : public CWBItem {
   static inline CWBTextBox* Create(CWBItem* Parent, const math::CRect& Pos,
                                    int32_t flags = WB_TEXTBOX_SINGLELINE,
                                    std::string_view txt = "") {
-    auto p = std::make_shared<CWBTextBox>(Parent, Pos, flags, txt);
+    auto p = std::make_unique<CWBTextBox>(Parent, Pos, flags, txt);
     CWBTextBox* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~CWBTextBox() override;

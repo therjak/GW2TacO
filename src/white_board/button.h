@@ -16,10 +16,10 @@ class CWBButton : public CWBItem {
   CWBButton(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
   static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
                                   std::string_view txt = "") {
-    auto p = std::make_shared<CWBButton>(Parent, Pos, txt);
+    auto p = std::make_unique<CWBButton>(Parent, Pos, txt);
     CWBButton* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~CWBButton() override;

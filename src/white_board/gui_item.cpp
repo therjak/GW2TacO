@@ -646,14 +646,14 @@ CWBItem::~CWBItem() {
 
   // Make sure Children is empty before we delete them, as they try to
   // unregister themselfes.
-  std::vector<std::shared_ptr<CWBItem>> c;
+  std::vector<std::unique_ptr<CWBItem>> c;
   std::swap(c, Children);
 
   if (Parent) {
     auto& pc = Parent->Children;
     auto it = std::find_if(
         pc.begin(), pc.end(),
-        [this](const std::shared_ptr<CWBItem>& i) { return i.get() == this; });
+        [this](const std::unique_ptr<CWBItem>& i) { return i.get() == this; });
     if (it != pc.end()) {
       pc.erase(it);
     }
@@ -669,34 +669,29 @@ CWBItem::~CWBItem() {
   c.clear();
 }
 
-void CWBItem::AddChild(const std::shared_ptr<CWBItem>& Item) {
-  Children.emplace_back(Item);
-}
-
-void CWBItem::RemoveChild(const std::shared_ptr<CWBItem>& Item) {
-  auto it = std::find(Children.begin(), Children.end(), Item);
-  if (it != Children.end()) {
-    if (ChildInFocus == Item.get()) {
-      ChildInFocus = nullptr;
-    }
-    Item->Parent = nullptr;
-    Children.erase(it);
-  }
+void CWBItem::AddChild(std::unique_ptr<CWBItem>&& Item) {
+  Children.emplace_back(std::move(Item));
 }
 
 void CWBItem::RemoveChild(const CWBItem* Item) {
   auto it = std::find_if(
       Children.begin(), Children.end(),
-      [Item](const std::shared_ptr<CWBItem>& si) { return si.get() == Item; });
+      [Item](const std::unique_ptr<CWBItem>& si) { return si.get() == Item; });
   if (it != Children.end()) {
-    App->AddToTrash(*it);
+    std::unique_ptr<CWBItem> item;
+    std::swap(item, *it);
+    if (ChildInFocus == Item) {
+      ChildInFocus = nullptr;
+    }
+    Children.erase(it);
+    App->AddToTrash(std::move(item));
   }
 }
 
 int32_t CWBItem::GetChildIndex(CWBItem* Item) {
   auto it = std::find_if(
       Children.begin(), Children.end(),
-      [Item](std::shared_ptr<CWBItem>& i) { return i.get() == Item; });
+      [Item](std::unique_ptr<CWBItem>& i) { return i.get() == Item; });
   if (it == Children.end()) {
     return -1;
   }
@@ -2277,6 +2272,6 @@ bool CWBItem::MarkedForDeletion() {
   std::scoped_lock l(App->TrashMutex);
   auto it = std::find_if(
       App->Trash.begin(), App->Trash.end(),
-      [this](const std::shared_ptr<CWBItem>& i) { return i.get() == this; });
+      [this](const std::unique_ptr<CWBItem>& i) { return i.get() == this; });
   return (it != App->Trash.end());
 }

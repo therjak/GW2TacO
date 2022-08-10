@@ -20,10 +20,10 @@ class GW2MarkerEditor : public CWBItem {
 
   GW2MarkerEditor(CWBItem* Parent, math::CRect Position);
   static inline GW2MarkerEditor* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<GW2MarkerEditor>(Parent, Position);
+    auto p = std::make_unique<GW2MarkerEditor>(Parent, Position);
     GW2MarkerEditor* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~GW2MarkerEditor() override;

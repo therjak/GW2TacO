@@ -5,8 +5,8 @@
 using math::CPoint;
 using math::CRect;
 
-void CWBBox::AddChild(const std::shared_ptr<CWBItem>& Item) {
-  CWBItem::AddChild(Item);
+void CWBBox::AddChild(std::unique_ptr<CWBItem>&& Item) {
+  CWBItem::AddChild(std::move(Item));
   RearrangeChildren();
 }
 

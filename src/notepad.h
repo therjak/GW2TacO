@@ -22,10 +22,10 @@ class GW2Notepad : public CWBItem {
 
   GW2Notepad(CWBItem* Parent, math::CRect Position);
   static inline GW2Notepad* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_shared<GW2Notepad>(Parent, Position);
+    auto p = std::make_unique<GW2Notepad>(Parent, Position);
     GW2Notepad* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~GW2Notepad() override;

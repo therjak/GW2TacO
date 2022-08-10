@@ -14,10 +14,10 @@ class GW2TacticalCompass : public CWBItem {
   GW2TacticalCompass(CWBItem* Parent, math::CRect Position);
   static inline GW2TacticalCompass* Create(CWBItem* Parent,
                                            math::CRect Position) {
-    auto p = std::make_shared<GW2TacticalCompass>(Parent, Position);
+    auto p = std::make_unique<GW2TacticalCompass>(Parent, Position);
     GW2TacticalCompass* r = p.get();
     assert(Parent);
-    Parent->AddChild(p);
+    Parent->AddChild(std::move(p));
     return r;
   }
   ~GW2TacticalCompass() override;

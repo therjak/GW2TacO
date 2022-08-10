@@ -223,7 +223,7 @@ CWBItem* GW2TacO::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();
 
-  return ret.get();
+  return ret;
 }
 
 bool iconSizesStored = false;

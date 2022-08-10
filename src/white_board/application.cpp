@@ -424,7 +424,7 @@ void CWBApplication::UnRegisterItem(CWBItem* Item) {
   std::scoped_lock l(TrashMutex);
   auto it = std::find_if(
       Trash.begin(), Trash.end(),
-      [Item](const std::shared_ptr<CWBItem>& i) { return i.get() == Item; });
+      [Item](const std::unique_ptr<CWBItem>& i) { return i.get() == Item; });
   if (it != Trash.end()) {
     Trash.erase(it);
   }
@@ -532,9 +532,6 @@ void CWBApplication::CleanTrash() {
   std::scoped_lock l(TrashMutex);
   for (auto i = Trash.size(); i > 0; i--) {
     auto& t = Trash[i - 1];
-    if (t->Parent) {
-      t->Parent->RemoveChild(t);
-    }
     t.reset();
   }
   Trash.clear();
@@ -579,11 +576,11 @@ bool CWBApplication::SetDefaultFont(std::string_view FontName) {
   return true;
 }
 
-void CWBApplication::AddToTrash(const std::shared_ptr<CWBItem>& item) {
+void CWBApplication::AddToTrash(std::unique_ptr<CWBItem>&& item) {
   std::scoped_lock l(TrashMutex);
   auto it = std::find(Trash.begin(), Trash.end(), item);
   if (it == Trash.end()) {
-    Trash.emplace_back(item);
+    Trash.emplace_back(std::move(item));
   }
 }
 
