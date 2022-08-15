@@ -12,7 +12,7 @@
 #include "src/overlay_config.h"
 
 typedef std::function<bool(uint32_t)> UTF8CHARCALLBACK;
-void DecodeUtf8(std::string_view Input, UTF8CHARCALLBACK callback) {
+void DecodeUtf8(std::string_view Input, const UTF8CHARCALLBACK& callback) {
   auto it = Input.begin();
   while (it != Input.end()) {
     int Char = *it;
@@ -80,9 +80,9 @@ void Localization::ImportLanguage(CXMLDocument& d) {
 
   std::string language;
 
-  if (root.HasAttribute("language"))
+  if (root.HasAttribute("language")) {
     language = root.GetAttributeAsString("language");
-  else {
+  } else {
     Log_Err("[GW2TacO] Language data file didn't specify the language.");
     return;
   }
@@ -169,10 +169,11 @@ void Localization::Import() {
 
   CFileList list;
   list.ExpandSearch("TacO_Language_*.xml", ".", false);
-  for (const auto& f : list.Files)
+  for (const auto& f : list.Files) {
     if (str_tolower(f.FileName) == taco_lang_en) {
       ImportFile((f.Path + f.FileName));
     }
+  }
 
   if (HasConfigString("language")) {
     SetActiveLanguage(GetConfigString("language"));
@@ -186,10 +187,11 @@ std::string Localization::Localize(std::string_view token,
                  [](unsigned char c) { return std::tolower(c); });
 
   std::string rawToken;
-  if (!fallback.empty())
+  if (!fallback.empty()) {
     rawToken = fallback;
-  else
+  } else {
     rawToken = "[" + tokenString + "]";
+  }
 
   if (activeLanguageIdx >= languages.size()) return rawToken;
 

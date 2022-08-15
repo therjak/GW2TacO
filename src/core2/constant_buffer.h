@@ -17,5 +17,5 @@ class CCoreConstantBuffer : public CCoreResource {
   void Reset();
   void AddData(const void* Data, int32_t Length);
   virtual void Upload();
-  virtual void* GetBufferPointer() const = 0;
+  [[nodiscard]] virtual void* GetBufferPointer() const = 0;
 };

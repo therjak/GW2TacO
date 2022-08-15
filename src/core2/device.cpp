@@ -73,8 +73,9 @@ bool CCoreDevice::ApplyRequestedRenderState() {
       RequestedVertexBufferOffset = 0;
     } else {
       if (!ApplyVertexBuffer(RequestedVertexBuffer,
-                             RequestedVertexBufferOffset))
+                             RequestedVertexBufferOffset)) {
         return false;
+      }
       // therjak: WTF? was there some reason for this? was this just a bug?
       //          should this be something with CurrentVertexBuffer*?
       // RequestedVertexBuffer = RequestedVertexBuffer;
@@ -234,15 +235,17 @@ int32_t CCoreDevice::GetVertexFormatSize() { return CurrentVertexFormatSize; }
 
 CCoreTexture* CCoreDevice::GetTexture(CORESAMPLER Sampler) {
   if (RequestedRenderState.find(IDFromRenderState(
-          CORERENDERSTATE::TEXTURE, Sampler)) != RequestedRenderState.end())
+          CORERENDERSTATE::TEXTURE, Sampler)) != RequestedRenderState.end()) {
     return RequestedRenderState[IDFromRenderState(CORERENDERSTATE::TEXTURE,
                                                   Sampler)]
         .Texture;
+  }
   if (CurrentRenderState.find(IDFromRenderState(
-          CORERENDERSTATE::TEXTURE, Sampler)) != CurrentRenderState.end())
+          CORERENDERSTATE::TEXTURE, Sampler)) != CurrentRenderState.end()) {
     return CurrentRenderState[IDFromRenderState(CORERENDERSTATE::TEXTURE,
                                                 Sampler)]
         .Texture;
+  }
   return nullptr;
 }
 

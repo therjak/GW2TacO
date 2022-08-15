@@ -48,53 +48,70 @@ void LocationalTimer::Update() {
   if (IsRunning) {
     if ((GetTime() - StartTime) / 1000.0f > TimerLength) IsRunning = false;
     if (!ExitSphere.Contains(mumbleLink.charPosition)) IsRunning = false;
-    if ((ResetPoint - mumbleLink.charPosition).Length() < 0.1)
+    if ((ResetPoint - mumbleLink.charPosition).Length() < 0.1) {
       IsRunning = false;
+    }
   }
 }
 
 void LocationalTimer::ImportData(const CXMLNode& node) {
   if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &MapID);
-  if (node.HasAttribute("length"))
+  if (node.HasAttribute("length")) {
     node.GetAttributeAsInteger("length", &TimerLength);
-  if (node.HasAttribute("startdelay"))
+  }
+  if (node.HasAttribute("startdelay")) {
     node.GetAttributeAsInteger("startdelay", &StartDelay);
+  }
 
-  if (node.HasAttribute("enterspherex"))
+  if (node.HasAttribute("enterspherex")) {
     node.GetAttributeAsFloat("enterspherex", &EnterSphere.Position.x);
-  if (node.HasAttribute("enterspherey"))
+  }
+  if (node.HasAttribute("enterspherey")) {
     node.GetAttributeAsFloat("enterspherey", &EnterSphere.Position.y);
-  if (node.HasAttribute("enterspherez"))
+  }
+  if (node.HasAttribute("enterspherez")) {
     node.GetAttributeAsFloat("enterspherez", &EnterSphere.Position.z);
-  if (node.HasAttribute("entersphererad"))
+  }
+  if (node.HasAttribute("entersphererad")) {
     node.GetAttributeAsFloat("entersphererad", &EnterSphere.Radius);
+  }
 
-  if (node.HasAttribute("exitspherex"))
+  if (node.HasAttribute("exitspherex")) {
     node.GetAttributeAsFloat("exitspherex", &ExitSphere.Position.x);
-  if (node.HasAttribute("exitspherey"))
+  }
+  if (node.HasAttribute("exitspherey")) {
     node.GetAttributeAsFloat("exitspherey", &ExitSphere.Position.y);
-  if (node.HasAttribute("exitspherez"))
+  }
+  if (node.HasAttribute("exitspherez")) {
     node.GetAttributeAsFloat("exitspherez", &ExitSphere.Position.z);
-  if (node.HasAttribute("exitsphererad"))
+  }
+  if (node.HasAttribute("exitsphererad")) {
     node.GetAttributeAsFloat("exitsphererad", &ExitSphere.Radius);
+  }
 
-  if (node.HasAttribute("resetpointx"))
+  if (node.HasAttribute("resetpointx")) {
     node.GetAttributeAsFloat("resetpointx", &ResetPoint.x);
-  if (node.HasAttribute("resetpointy"))
+  }
+  if (node.HasAttribute("resetpointy")) {
     node.GetAttributeAsFloat("resetpointy", &ResetPoint.y);
-  if (node.HasAttribute("resetpointz"))
+  }
+  if (node.HasAttribute("resetpointz")) {
     node.GetAttributeAsFloat("resetpointz", &ResetPoint.z);
+  }
 
   for (int32_t x = 0; x < node.GetChildCount("timeevent"); x++) {
     CXMLNode te = node.GetChild("timeevent", x);
     TimerEvent tmr;
     if (te.HasAttribute("text")) tmr.Text = te.GetAttributeAsString("text");
-    if (te.HasAttribute("timestamp"))
+    if (te.HasAttribute("timestamp")) {
       te.GetAttributeAsInteger("timestamp", &tmr.Time);
-    if (te.HasAttribute("countdown"))
+    }
+    if (te.HasAttribute("countdown")) {
       te.GetAttributeAsInteger("countdown", &tmr.CountdownLength);
-    if (te.HasAttribute("onscreentime"))
+    }
+    if (te.HasAttribute("onscreentime")) {
       te.GetAttributeAsInteger("onscreentime", &tmr.OnScreenLength);
+    }
     Events.push_back(tmr);
   }
 }
@@ -115,12 +132,14 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
 
     for (auto& e : t.Events) {
       if (!(timepos > e.Time - e.CountdownLength &&
-            timepos < e.Time + e.OnScreenLength))
+            timepos < e.Time + e.OnScreenLength)) {
         continue;
+      }
 
       auto s = e.Text;
-      if (timepos < e.Time && timepos > e.Time - e.CountdownLength)
+      if (timepos < e.Time && timepos > e.Time - e.CountdownLength) {
         s += std::format(" in {:d}", static_cast<int32_t>(e.Time - timepos));
+      }
 
       CPoint pos = f->GetTextPosition(
           s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),

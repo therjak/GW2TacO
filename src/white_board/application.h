@@ -63,7 +63,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   virtual int32_t GetKeyboardState();
 
   WBMOUSECLICKREPEATMODE ClickRepeaterMode;
-  int64_t NextRepeatedClickTime;
+  int64_t NextRepeatedClickTime{};
 
   //////////////////////////////////////////////////////////////////////////
   // gui layout and style

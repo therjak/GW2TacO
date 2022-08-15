@@ -37,20 +37,20 @@ CRect GetMinimapRectangle() {
   CRect size = App->GetRoot()->GetClientRect();
   float scale = GetWindowTooSmallScale();
 
-  pos.x1 = int(size.Width() - w * scale);
+  pos.x1 = static_cast<int>(size.Width() - w * scale);
   pos.x2 = size.Width();
 
   if (mumbleLink.isMinimapTopRight) {
     pos.y1 = 1;
-    pos.y2 = int(h * scale + 1);
+    pos.y2 = static_cast<int>(h * scale + 1);
   } else {
     int delta = 37;
     if (mumbleLink.uiSize == 0) delta = 33;
     if (mumbleLink.uiSize == 2) delta = 41;
     if (mumbleLink.uiSize == 3) delta = 45;
 
-    pos.y1 = int(size.Height() - h * scale - delta * scale);
-    pos.y2 = int(size.Height() - delta * scale);
+    pos.y1 = static_cast<int>(size.Height() - h * scale - delta * scale);
+    pos.y2 = static_cast<int>(size.Height() - delta * scale);
   }
 
   return pos;
@@ -124,8 +124,9 @@ bool CMumbleLink::Update() {
   camUpChanged = CVector3(prevData.fCameraTop) != CVector3(lastData.fCameraTop);
 
   if ((CVector3(lastData.fAvatarPosition) - CVector3(prevData.fAvatarPosition))
-          .Length() > GameToWorldCoords(2000))
+          .Length() > GameToWorldCoords(2000)) {
     FindClosestRouteMarkers(true);
+  }
 
   int32_t oldMapID = mapID;
   mapID = -1;
@@ -150,12 +151,16 @@ bool CMumbleLink::Update() {
   id = ident.find(L"\"uisz\":");
   if (id != ident.npos) {
     std::swscanf(ident.substr(id).c_str(), L"\"uisz\":%d", &uiSize);
-    if (oldUISize != uiSize) ChangeUIScale(uiSize);
+    if (oldUISize != uiSize) {
+      ChangeUIScale(uiSize);
+    }
   } else {
     id = ident.find(L"\"uisz\": ");
     if (id != ident.npos) {
       std::swscanf(ident.substr(id).c_str(), L"\"uisz\": %d", &uiSize);
-      if (oldUISize != uiSize) ChangeUIScale(uiSize);
+      if (oldUISize != uiSize) {
+        ChangeUIScale(uiSize);
+      }
     }
   }
 
@@ -164,21 +169,23 @@ bool CMumbleLink::Update() {
   }
 
   id = ident.find(L"\"world_id\":");
-  if (id != ident.npos)
+  if (id != ident.npos) {
     std::swscanf(ident.substr(id).c_str(), L"\"world_id\":%d", &worldID);
-  else {
+  } else {
     id = ident.find(L"\"world_id\": ");
-    if (id != ident.npos)
+    if (id != ident.npos) {
       std::swscanf(ident.substr(id).c_str(), L"\"world_id\": %d", &worldID);
+    }
   }
 
-  MumbleContext* ctx = reinterpret_cast<MumbleContext*>(lastData.context);
+  auto* ctx = reinterpret_cast<MumbleContext*>(lastData.context);
 
   mapType = ctx->mapType;
   mapInstance = ctx->shardId;
 
-  if (isMapOpen != (ctx->uiState & 0x01))
+  if (isMapOpen != (ctx->uiState & 0x01)) {
     lastMapChangeTime = globalTimer.GetTime();
+  }
 
   isMapOpen = (ctx->uiState & 0x01);
   isMinimapTopRight = (ctx->uiState & (0x01 << 1)) != 0;
@@ -192,8 +199,8 @@ bool CMumbleLink::Update() {
   float scale = GetUIScale();
 
   if (!isMapOpen) {
-    miniMap.compassWidth = int(ctx->compassWidth * scale);
-    miniMap.compassHeight = int(ctx->compassHeight * scale);
+    miniMap.compassWidth = static_cast<int>(ctx->compassWidth * scale);
+    miniMap.compassHeight = static_cast<int>(ctx->compassHeight * scale);
     miniMap.compassRotation = ctx->compassRotation;
     miniMap.playerX = ctx->playerX;
     miniMap.playerY = ctx->playerY;
@@ -201,8 +208,8 @@ bool CMumbleLink::Update() {
     miniMap.mapCenterY = ctx->mapCenterY;
     miniMap.mapScale = ctx->mapScale;
   } else {
-    bigMap.compassWidth = int(ctx->compassWidth * scale);
-    bigMap.compassHeight = int(ctx->compassHeight * scale);
+    bigMap.compassWidth = static_cast<int>(ctx->compassWidth * scale);
+    bigMap.compassHeight = static_cast<int>(ctx->compassHeight * scale);
     bigMap.compassRotation = ctx->compassRotation;
     bigMap.playerX = ctx->playerX;
     bigMap.playerY = ctx->playerY;
@@ -243,12 +250,13 @@ bool CMumbleLink::Update() {
   fov = 0;
 
   id = ident.find(L"\"fov\":");
-  if (id != ident.npos)
+  if (id != ident.npos) {
     std::swscanf(ident.substr(id).c_str(), L"\"fov\":%f", &fov);
-  else {
+  } else {
     id = ident.find(L"\"fov\": ");
-    if (id != ident.npos)
+    if (id != ident.npos) {
       std::swscanf(ident.substr(id).c_str(), L"\"fov\": %f", &fov);
+    }
   }
 
   CMatrix4x4 cam;
@@ -256,8 +264,9 @@ bool CMumbleLink::Update() {
 
   CMatrix4x4 cami = cam.Inverted();
 
-  for (int x = 0; x < AVGCAMCOUNTER - 1; x++)
+  for (int x = 0; x < AVGCAMCOUNTER - 1; x++) {
     camchardist[x] = camchardist[x + 1];
+  }
   camchardist[AVGCAMCOUNTER - 1] = charPosition * cam;
 
   CVector4 avgCamCharDist(0, 0, 0, 0);
@@ -297,7 +306,7 @@ CMumbleLink::CMumbleLink() {
 
 CMumbleLink::~CMumbleLink() = default;
 
-bool CMumbleLink::IsValid() { return lm != 0 && lastGW2ProcessID != 0; }
+bool CMumbleLink::IsValid() { return lm != nullptr && lastGW2ProcessID != 0; }
 
 CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
                                                   bool ignoreRotation) {
@@ -323,7 +332,8 @@ CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
   miniMapTrafo *=
       CMatrix4x4::Scaling(CVector3(1, 1, 1) / mapScale * GetUIScale());
   miniMapTrafo *= CMatrix4x4::Translation(
-      CVector3(float(miniRect.Center().x), float(miniRect.Center().y), 0.0));
+      CVector3(static_cast<float>(miniRect.Center().x),
+               static_cast<float>(miniRect.Center().y), 0.0));
 
   return miniMapTrafo;
 }

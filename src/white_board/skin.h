@@ -95,7 +95,7 @@ class CWBSkinElement {
   std::string Name;
   WBATLASHANDLE Handle;
   // x-y stretching behaviors
-  std::array<WBSKINELEMENTBEHAVIOR, 2> DefaultBehavior;
+  std::array<WBSKINELEMENTBEHAVIOR, 2> DefaultBehavior{};
 
  public:
   CWBSkinElement();

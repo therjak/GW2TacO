@@ -54,7 +54,7 @@ class GW2Trail {
 
   MarkerTypeData typeData;
   std::string Type;
-  GUID guid;
+  GUID guid{};
   bool External = false;
   std::string zipFile;
 

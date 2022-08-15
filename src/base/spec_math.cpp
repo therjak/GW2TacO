@@ -1,5 +1,7 @@
 #include "src/base/spec_math.h"
 
+#include <math.h>
+
 #include <cmath>
 
 namespace math {
@@ -17,12 +19,10 @@ float InvSqrt(float x) {
 float InvSqrt(float x) { return 1 / sqrtf(x); }
 
 float DeGamma(float c) {
-  float cs;
-  if (c < 0.04045f)
-    cs = c / 12.92f;
-  else
-    cs = powf((c + 0.055f) / 1.055f, 2.4f);
-  return cs;
+  if (c < 0.04045f) {
+    return c / 12.92f;
+  }
+  return powf((c + 0.055f) / 1.055f, 2.4f);
 }
 
 #endif

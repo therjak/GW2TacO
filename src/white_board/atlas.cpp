@@ -18,14 +18,15 @@ CAtlasNode::~CAtlasNode() = default;
 CRect& CAtlasNode::GetArea() { return Area; }
 
 CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
-  CAtlasNode* NewNode;
+  CAtlasNode* NewNode = nullptr;
   if (Children[0]) {
     NewNode = Children[0]->AddNode(width, height);
     return NewNode ? NewNode : Children[1]->AddNode(width, height);
   }
 
-  if (Occupied || Area.Width() < width || Area.Height() < height)
+  if (Occupied || Area.Width() < width || Area.Height() < height) {
     return nullptr;
+  }
 
   if (Area.Width() == width && Area.Height() == height) {
     Occupied = true;
@@ -153,7 +154,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
   CAtlasNode* n = Root->AddNode(s.x, s.y);
   if (!n) {
     Log_Warn("[gui] Atlas full. Image can't be added.");
-    return 0;
+    return false;
   }
 
   uint8_t* target = Image.get() + (n->Area.x1 + n->Area.y1 * XRes) * 4;
@@ -245,8 +246,9 @@ bool CAtlas::Optimize(bool DebugMode) {
   {
     std::lock_guard<std::mutex> lockGuard(mtx);
     int32_t RequiredCount = 0;
-    for (auto& x : ImageStorage)
+    for (auto& x : ImageStorage) {
       RequiredCount += x.second->IsRequired() ? 1 : 0;
+    }
 
     WhitePixel->TagRequired();
 

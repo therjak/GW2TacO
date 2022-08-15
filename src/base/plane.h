@@ -29,13 +29,13 @@ class CPlane {
     Normalize();
   }
 
-  constexpr CVector3 Project(const CVector3& v) const {
+  [[nodiscard]] constexpr CVector3 Project(const CVector3& v) const {
     return v - Normal * (Normal * v + D);  // optimized for a normalized plane
   }
-  constexpr float Distance(const CVector3& v) const {
+  [[nodiscard]] constexpr float Distance(const CVector3& v) const {
     return Normal * v + D;  // optimized for a normalized plane
   }
-  constexpr int32_t Side(const CVector3& v) const {
+  [[nodiscard]] constexpr int32_t Side(const CVector3& v) const {
     const float f = Distance(v);
     if (f > 0) return 1;
     if (f < 0) return -1;

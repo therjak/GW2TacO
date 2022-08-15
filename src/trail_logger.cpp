@@ -45,7 +45,7 @@ float GameToWorldCoords(float game);
 float GetMapFade();
 
 void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos) {
-  GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+  auto* trails = dynamic_cast<GW2TrailDisplay*>(
       App->GetRoot()->FindChildByID("trail", "gw2Trails"));
   if (trails) trails->DoTrailLogging(mapID, charPos);
 }
@@ -73,35 +73,40 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
   trailSampler->Apply(CORESAMPLER::PS0);
   trailDepthStencil->Apply();
 
-  if (!HasConfigValue("ShowMinimapTrails"))
+  if (!HasConfigValue("ShowMinimapTrails")) {
     SetConfigValue("ShowMinimapTrails", 1);
+  }
   int showMinimapTrails = GetConfigValue("ShowMinimapTrails");
 
-  if (!HasConfigValue("ShowBigmapTrails"))
+  if (!HasConfigValue("ShowBigmapTrails")) {
     SetConfigValue("ShowBigmapTrails", 1);
+  }
   int showBigmapTrails = GetConfigValue("ShowBigmapTrails");
 
-  if (!HasConfigValue("ShowInGameTrails"))
+  if (!HasConfigValue("ShowInGameTrails")) {
     SetConfigValue("ShowInGameTrails", 1);
+  }
   int showIngameTrails = GetConfigValue("ShowInGameTrails");
 
   float one = 1;
-  std::array<float, 8> data;
+  std::array<float, 8> data{};
 
-  if (!miniMaprender && showIngameTrails > 0)
+  if (!miniMaprender && showIngameTrails > 0) {
     for (int x = 0; x < 2; x++) {
-      if (x == 0)
+      if (x == 0) {
         trailRasterizer2->Apply();
-      else
+      } else {
         trailRasterizer1->Apply();
+      }
 
       std::lock_guard<std::mutex> lockGuard(mtx);
 
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.typeData.bits.inGameVisible && showIngameTrails != 2)
+        if (!trail.typeData.bits.inGameVisible && showIngameTrails != 2) {
           continue;
+        }
 
         CCoreTexture* texture = nullptr;
         if (!trail.texture) {
@@ -125,7 +130,7 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
                            width, width, 1.0f);
       }
 
-      if (editedTrail)
+      if (editedTrail) {
         if (editedTrail->map == mumbleLink.mapID) {
           data[0] = GetTime() / 1000.0f;
 
@@ -163,7 +168,7 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
           constBuffer->AddData(data.data(), 16);
           data[0] = 1000;
           data[1] = 1200;
-          data[2] = float(fadeoutBubble);
+          data[2] = static_cast<float>(fadeoutBubble);
           data[3] = GameToWorldCoords(20);
           data[4] = GameToWorldCoords(20);
           data[5] = 1.0f;
@@ -174,7 +179,9 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 
           editedTrail->Draw();
         }
+      }
     }
+  }
 
   // draw minimap
   if (miniMaprender) {
@@ -191,11 +198,11 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
       // -2.0f / clientRect.Height(), 0.0f ) ); camera *=
       // CMatrix4x4().Translation( CVector3( -1.0f, -1.0f, 0.5 ) );
 
-      camera *= CMatrix4x4::Translation(
-          -CVector3(float(miniRect.x1), float(miniRect.y1), 0));
-      camera *= CMatrix4x4::Scaling(
-          CVector3(clientRect.Width() / float(miniRect.Width()),
-                   clientRect.Height() / float(miniRect.Height()), 0));
+      camera *= CMatrix4x4::Translation(-CVector3(
+          static_cast<float>(miniRect.x1), static_cast<float>(miniRect.y1), 0));
+      camera *= CMatrix4x4::Scaling(CVector3(
+          clientRect.Width() / static_cast<float>(miniRect.Width()),
+          clientRect.Height() / static_cast<float>(miniRect.Height()), 0));
       camera *= CMatrix4x4::Scaling(CVector3(
           2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
       camera *= CMatrix4x4::Translation(CVector3(-1.0f, 1.0f, 0.5));
@@ -207,12 +214,14 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.typeData.bits.miniMapVisible && showMinimapTrails != 2)
+        if (!trail.typeData.bits.miniMapVisible && showMinimapTrails != 2) {
           continue;
+        }
 
         float trailWidth = trail.typeData.miniMapSize * 0.5f;
-        if (trail.typeData.bits.scaleWithZoom)
+        if (trail.typeData.bits.scaleWithZoom) {
           trailWidth /= mumbleLink.miniMap.mapScale;
+        }
 
         CCoreTexture* texture = nullptr;
         if (!trail.texture) {
@@ -258,12 +267,14 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.typeData.bits.bigMapVisible && showBigmapTrails != 2)
+        if (!trail.typeData.bits.bigMapVisible && showBigmapTrails != 2) {
           continue;
+        }
 
         float trailWidth = trail.typeData.miniMapSize * 0.5f;
-        if (trail.typeData.bits.scaleWithZoom)
+        if (trail.typeData.bits.scaleWithZoom) {
           trailWidth /= mumbleLink.miniMap.mapScale;
+        }
 
         CCoreTexture* texture = nullptr;
         if (!trail.texture) {
@@ -299,15 +310,17 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
 }
 
 void GW2TrailDisplay::OnDraw(CWBDrawAPI* API) {
-  if (!HasConfigValue("TrailLayerVisible"))
+  if (!HasConfigValue("TrailLayerVisible")) {
     SetConfigValue("TrailLayerVisible", 1);
+  }
 
   if (!GetConfigValue("TrailLayerVisible")) return;
 
   if (!HasConfigValue("FadeoutBubble")) SetConfigValue("FadeoutBubble", 1);
 
-  if (!HasConfigValue("TacticalLayerVisible"))
+  if (!HasConfigValue("TacticalLayerVisible")) {
     SetConfigValue("TacticalLayerVisible", 1);
+  }
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
 
@@ -425,8 +438,8 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(
     return trailTexture.get();
   }
 
-  auto texture =
-      App->GetDevice()->CreateTexture2D(f.GetData(), int32_t(f.GetLength()));
+  auto texture = App->GetDevice()->CreateTexture2D(
+      f.GetData(), static_cast<int32_t>(f.GetLength()));
   if (!texture) Log_Err("[GW2TacO] Failed to decompress image {:s}", s);
   textureCache[s] = std::move(texture);
   return textureCache[s].get();
@@ -438,8 +451,8 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
 
   CStreamReaderMemory tex;
   if (tex.Open("Data\\trail.png")) {
-    trailTexture = App->GetDevice()->CreateTexture2D(tex.GetData(),
-                                                     int32_t(tex.GetLength()));
+    trailTexture = App->GetDevice()->CreateTexture2D(
+        tex.GetData(), static_cast<int32_t>(tex.GetLength()));
     if (!trailTexture) {
       Log_Err("[GW2TacO] Failed to decompress trail texture image!");
     }
@@ -554,7 +567,7 @@ void GW2TrailDisplay::StartStopTrailRecording(bool start) {
 void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   trailRecordPaused = pause;
 
-  CWBButton* btn = App->GetRoot()->FindChildByID<CWBButton>("pausetrail");
+  auto* btn = App->GetRoot()->FindChildByID<CWBButton>("pausetrail");
   if (btn) {
     btn->Push(pause);
     btn->SetText(btn->IsPushed() ? "Resume Recording" : "Pause Recording");
@@ -563,8 +576,9 @@ void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   btn = App->GetRoot()->FindChildByID<CWBButton>("startnewsection");
   if (btn) btn->Hide(!pause);
 
-  if (!pause && newSection && editedTrail)
+  if (!pause && newSection && editedTrail) {
     editedTrail->positions.emplace_back(CVector3(0, 0, 0));
+  }
 }
 
 void GW2TrailDisplay::DeleteLastTrailSegment() {
@@ -589,7 +603,7 @@ void GW2TrailDisplay::ExportTrail() {
   char Filestring[256];
 
   OPENFILENAME opf;
-  opf.hwndOwner = (HWND)App->GetHandle();
+  opf.hwndOwner = App->GetHandle();
   opf.lpstrFilter = "GW2 Taco Trail Files\0*.trl\0\0";
   opf.lpstrCustomFilter = nullptr;
   opf.nMaxCustFilter = 0L;
@@ -636,7 +650,7 @@ void GW2TrailDisplay::ImportTrail() {
   char Filestring[256];
 
   OPENFILENAME opf;
-  opf.hwndOwner = (HWND)App->GetHandle();
+  opf.hwndOwner = App->GetHandle();
   opf.lpstrFilter = "GW2 Taco Trail Files\0*.trl\0\0";
   opf.lpstrCustomFilter = nullptr;
   opf.nMaxCustFilter = 0L;
@@ -669,7 +683,7 @@ void GW2TrailDisplay::ImportTrail() {
       ClearEditedTrail();
       PauseTrail(true);
 
-      CWBButton* btn = App->GetRoot()->FindChildByID<CWBButton>("starttrail");
+      auto* btn = App->GetRoot()->FindChildByID<CWBButton>("starttrail");
       if (btn) btn->Push(true);
       btn = App->GetRoot()->FindChildByID<CWBButton>("pausetrail");
       if (btn) btn->Push(true);
@@ -726,7 +740,7 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
   int vertexCount = 0;
   auto indices = std::make_unique<int32_t[]>((pointCount - 1) * 6);
 
-  CVector3 lastPos = CVector3(points);
+  auto lastPos = CVector3(points);
   CVector3 lastOrt = CVector3(0, 0, 0);
 
   float uvStretch = 0;
@@ -737,7 +751,7 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
   float twist = 1;
 
   for (int32_t x = 0; x < pointCount; x++) {
-    CVector3 pos = CVector3(points + x * 3);
+    auto pos = CVector3(points + x * 3);
 
     if (pos == CVector3(0, 0, 0)) {
       if (x + 1 >= pointCount) break;
@@ -758,8 +772,9 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
     dir /= dirLen;
     CVector3 ort = CVector3::Cross(dir, CVector3(0, 1, 0)).Normalized();
 
-    if (lastOrt != CVector3(0, 0, 0) && CVector3::Dot(ort, lastOrt) < 0)
+    if (lastOrt != CVector3(0, 0, 0) && CVector3::Dot(ort, lastOrt) < 0) {
       twist *= -1;
+    }
 
     CVector3 p1 = pos + ort * twist;
     CVector3 p2 = pos - ort * twist;
@@ -806,7 +821,7 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
   length = pointCount * 2;
   idxBuf = dev->CreateIndexBuffer((pointCount - 1) * 6, 4);
 
-  int32_t* idxData;
+  int32_t* idxData = nullptr;
 
   if (idxBuf && idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
     memcpy(idxData, indices.get(), sizeof(int32_t) * 6 * (pointCount - 1));
@@ -888,7 +903,7 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
 
   data[0] = GameToWorldCoords(typeData.fadeNear);
   data[1] = GameToWorldCoords(typeData.fadeFar);
-  data[2] = float(fadeoutBubble);
+  data[2] = static_cast<float>(fadeoutBubble);
   data[3] = width;
   data[4] = uvScale;
   data[5] = width2d;
@@ -910,14 +925,15 @@ void GW2Trail::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
 bool GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
   if (keepPoints) {
     positions.clear();
-    for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++)
+    for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++) {
       positions.emplace_back(
           CVector3(&(reinterpret_cast<float*>(f.GetData() + 8))[x * 3]));
+    }
   }
 
   Build(App->GetDevice(), *reinterpret_cast<int32_t*>(f.GetData() + 4),
         reinterpret_cast<float*>(f.GetData() + 8),
-        int32_t((f.GetLength() - 8) / 12));
+        static_cast<int32_t>((f.GetLength() - 8) / 12));
   return true;
 }
 
@@ -939,7 +955,7 @@ bool GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
                   zip, idx, data.get(),
                   static_cast<int32_t>(stat.m_uncomp_size), 0)) {
             CStreamReaderMemory f;
-            if (f.Open(data.get(), int32_t(stat.m_uncomp_size))) {
+            if (f.Open(data.get(), static_cast<int32_t>(stat.m_uncomp_size))) {
               if (Import(f, keepPoints)) return true;
             }
           }

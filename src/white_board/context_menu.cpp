@@ -10,7 +10,7 @@ using math::CSize;
 void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API, WB_STATE_NORMAL);
@@ -58,9 +58,10 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
       CColor textColor = CSSProperties.DisplayDescriptor.GetColor(
           WB_STATE_NORMAL, WB_ITEM_FONTCOLOR);
 
-      if (Items[x]->Highlighted)
+      if (Items[x]->Highlighted) {
         textColor = CSSProperties.DisplayDescriptor.GetColor(WB_STATE_ACTIVE,
                                                              WB_ITEM_FONTCOLOR);
+      }
 
       // highlight background
       if (MouseOver() &&
@@ -110,7 +111,7 @@ CWBContextMenu::~CWBContextMenu() {
 void CWBContextMenu::ResizeToContentSize() {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   CSize ContentSize = CSize(0, 0);
@@ -221,7 +222,7 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       break;
     case WBM_MOUSEMOVE:
       if (MouseOver()) {
-        for (int32_t x = 0; x < Items.size(); x++)
+        for (int32_t x = 0; x < Items.size(); x++) {
           if (!Items[x]->Separator) {
             const CRect EntryPos = GetItemRect(x);
             if (EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
@@ -229,6 +230,7 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
               return true;
             }
           }
+        }
       }
       if (SubMenu) SubMenu->MessageProc(Message);
       return true;
@@ -248,8 +250,9 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
 
       Pushed = true;
       App->SetCapture(GetContextRoot());
-      if (!MouseOver())
+      if (!MouseOver()) {
         if (SubMenu) SubMenu->MessageProc(Message);
+      }
       return true;
 
     case WBM_RIGHTBUTTONUP:
@@ -261,7 +264,7 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       }
 
       // check if any of the items are clicked on
-      for (int32_t x = 0; x < Items.size(); x++)
+      for (int32_t x = 0; x < Items.size(); x++) {
         if (!Items[x]->Separator) {
           const CRect EntryPos = GetItemRect(x);
           if (MouseOver() &&
@@ -272,16 +275,19 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
               MarkForDeletion();
               MarkParentForDeletion();
               App->ReleaseCapture();
-            } else
+            } else {
               App->SendMessage(CWBMessage(App, WBM_REBUILDCONTEXTITEM, Target,
                                           Items[x]->ReturnID, GetGuid()));
+            }
 
             return true;
           }
         }
+      }
 
-      if (MouseInContextHierarchy())
+      if (MouseInContextHierarchy()) {
         if (SubMenu) SubMenu->MessageProc(Message);
+      }
 
       // check for off item mouse releases
       if (!MouseInContextHierarchy() && Pushed) {
@@ -473,7 +479,8 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
 }
 
 CWBContextItem* CWBContextMenu::GetItem(int32_t ID) {
-  for (const auto& item : Items)
+  for (const auto& item : Items) {
     if (item->ReturnID == ID) return item.get();
+  }
   return nullptr;
 }

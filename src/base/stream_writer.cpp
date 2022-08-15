@@ -90,7 +90,7 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
       CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
                  nullptr, OPEN_ALWAYS | TRUNCATE_EXISTING, 0, nullptr);
   if (File == INVALID_HANDLE_VALUE) {
-    LPTSTR pMsgBuf;
+    LPTSTR pMsgBuf = nullptr;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
                   nullptr, GetLastError(),
                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),

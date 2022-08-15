@@ -64,8 +64,9 @@ void GW2HPGrid::LoadGrids() {
     CXMLNode node = root.GetChild("grid", x);
     GridData gd;
 
-    if (node.HasAttribute("mapid"))
+    if (node.HasAttribute("mapid")) {
       node.GetAttributeAsInteger("mapid", &gd.mapID);
+    }
 
     if (node.HasAttribute("centerx")) {
       node.GetAttributeAsFloat("centerx", &gd.bSphere.Position.x);

@@ -14,7 +14,7 @@ class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
   bool Apply(const uint32_t Offset) override;
 
  public:
-  CCoreDX11VertexBuffer(CCoreDX11Device* Device);
+  explicit CCoreDX11VertexBuffer(CCoreDX11Device* Device);
   ~CCoreDX11VertexBuffer() override;
 
   bool Create(const uint8_t* Data, const uint32_t Size) override;

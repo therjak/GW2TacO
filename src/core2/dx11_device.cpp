@@ -76,7 +76,7 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t XRes, int32_t YRes) {
   if (BackBufferView) BackBufferView->Release();
 
   HRESULT res = S_OK;
-  ID3D11Texture2D* bb;
+  ID3D11Texture2D* bb = nullptr;
 
   res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
                              reinterpret_cast<LPVOID*>(&bb));
@@ -172,7 +172,7 @@ bool CCoreDX11Device::CreateClassicSwapChain(
   scd.BufferCount = 1;
   scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
   scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  scd.OutputWindow = (HWND)hWnd;
+  scd.OutputWindow = hWnd;
   scd.SampleDesc.Count = 1;
   scd.Windowed = !FullScreen;
 
@@ -213,8 +213,9 @@ bool CCoreDX11Device::CreateClassicSwapChain(
 
   SetViewport(CRect(0, 0, XRes, YRes));
 
-  if (CreateDefaultRenderStates())
+  if (CreateDefaultRenderStates()) {
     Log_Nfo("[core] DirectX11 Device initialization successful.");
+  }
 
   D3D11_QUERY_DESC queryDesc;
   memset(&queryDesc, 0, sizeof(queryDesc));
@@ -233,12 +234,13 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   HRESULT res = S_OK;
 
-  IDXGIFactory2* dxgiFactory;
+  IDXGIFactory2* dxgiFactory = nullptr;
 #ifdef _DEBUG
   res = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, __uuidof(IDXGIFactory2),
                            reinterpret_cast<void**>(&dxgiFactory));
 #else
-  res = CreateDXGIFactory1(__uuidof(IDXGIFactory2), (void**)&dxgiFactory);
+  res = CreateDXGIFactory1(__uuidof(IDXGIFactory2),
+                           reinterpret_cast<void**>(&dxgiFactory));
 #endif
   if (res != S_OK) {
     _com_error error(res);
@@ -321,7 +323,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   }
 
   IDCompositionTarget* dcompTarget = nullptr;
-  res = dcompDevice->CreateTargetForHwnd(HWND(hWnd), true, &dcompTarget);
+  res = dcompDevice->CreateTargetForHwnd((hWnd), true, &dcompTarget);
 
   if (res != S_OK) {
     _com_error error(res);
@@ -369,7 +371,7 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
     return false;
   }
 
-  IDXGISwapChain2* swapChain2;
+  IDXGISwapChain2* swapChain2 = nullptr;
   if (SUCCEEDED(SwapChain->QueryInterface(__uuidof(IDXGISwapChain2),
                                           (void**)&swapChain2))) {
     swapChainRetraceObject = swapChain2->GetFrameLatencyWaitableObject();
@@ -388,8 +390,9 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
 
   SetViewport(CRect(0, 0, XRes, YRes));
 
-  if (CreateDefaultRenderStates())
+  if (CreateDefaultRenderStates()) {
     Log_Nfo("[core] DirectX11 Device initialization successful.");
+  }
 
   D3D11_QUERY_DESC queryDesc;
   memset(&queryDesc, 0, sizeof(queryDesc));
@@ -408,16 +411,18 @@ bool CCoreDX11Device::InitAPI(const HWND hWnd, const bool FullScreen,
   auto dcomp = LoadLibrary("dcomp.dll");
 
   if (dcomp) {
-    DCompositionCreateDeviceFunc = DCompositionCreateDeviceCallback(
-        GetProcAddress(dcomp, "DCompositionCreateDevice"));
+    DCompositionCreateDeviceFunc =
+        reinterpret_cast<DCompositionCreateDeviceCallback>(
+            GetProcAddress(dcomp, "DCompositionCreateDevice"));
   }
 
-  if (!dcomp || !DCompositionCreateDeviceFunc)
+  if (!dcomp || !DCompositionCreateDeviceFunc) {
     return CreateClassicSwapChain(hWnd, FullScreen, XRes, YRes, AALevel,
                                   RefreshRate);
-  else
+  } else {
     return CreateDirectCompositionSwapchain(hWnd, FullScreen, XRes, YRes,
                                             AALevel, RefreshRate);
+  }
 
   if (dcomp) {
     FreeLibrary(dcomp);
@@ -429,14 +434,15 @@ bool CCoreDX11Device::Initialize(CCoreWindowHandler* window,
   Window = window;
 
   if (!InitAPI(Window->GetHandle(), Window->GetInitParameters().FullScreen,
-               Window->GetXRes(), Window->GetYRes(), AALevel, 60))
+               Window->GetXRes(), Window->GetYRes(), AALevel, 60)) {
     return false;
+  }
 
-  ShowWindow((HWND)Window->GetHandle(), Window->GetInitParameters().Maximized
-                                            ? SW_SHOWMAXIMIZED
-                                            : SW_SHOWNORMAL);
-  SetForegroundWindow((HWND)Window->GetHandle());
-  SetFocus((HWND)Window->GetHandle());
+  ShowWindow(Window->GetHandle(), Window->GetInitParameters().Maximized
+                                      ? SW_SHOWMAXIMIZED
+                                      : SW_SHOWNORMAL);
+  SetForegroundWindow(Window->GetHandle());
+  SetFocus(Window->GetHandle());
   return true;
 }
 
@@ -511,7 +517,7 @@ void CCoreDX11Device::Resize(const int32_t xr, const int32_t yr) {
   if (swapChainRetraceObject) {
     CloseHandle(swapChainRetraceObject);
 
-    IDXGISwapChain2* swapChain2;
+    IDXGISwapChain2* swapChain2 = nullptr;
     if (SUCCEEDED(SwapChain->QueryInterface(__uuidof(IDXGISwapChain2),
                                             (void**)&swapChain2))) {
       swapChainRetraceObject = swapChain2->GetFrameLatencyWaitableObject();
@@ -543,8 +549,9 @@ std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
     const char BytesPerPixel, const COREFORMAT Format /* =COREFMT_A8R8G8B8 */,
     const bool RenderTarget /* =false */) {
   auto Result = std::make_unique<CCoreDX11Texture2D>(this);
-  if (!Result->Create(XRes, YRes, Data, BytesPerPixel, Format, RenderTarget))
+  if (!Result->Create(XRes, YRes, Data, BytesPerPixel, Format, RenderTarget)) {
     Result.reset();
+  }
   return Result;
 }
 
@@ -801,15 +808,18 @@ bool CCoreDX11Device::ApplyRenderState(const CORESAMPLER Sampler,
         ID3D11ShaderResourceView* null[1];
         null[0] = nullptr;
 
-        if (Sampler >= CORESAMPLER::PS0 && Sampler <= CORESAMPLER::PS15)
+        if (Sampler >= CORESAMPLER::PS0 && Sampler <= CORESAMPLER::PS15) {
           DeviceContext->PSSetShaderResources(Sampler - CORESAMPLER::PS0, 1,
                                               null);
-        if (Sampler >= CORESAMPLER::VS0 && Sampler <= CORESAMPLER::VS3)
+        }
+        if (Sampler >= CORESAMPLER::VS0 && Sampler <= CORESAMPLER::VS3) {
           DeviceContext->VSSetShaderResources(Sampler - CORESAMPLER::VS0, 1,
                                               null);
-        if (Sampler >= CORESAMPLER::GS0 && Sampler <= CORESAMPLER::GS3)
+        }
+        if (Sampler >= CORESAMPLER::GS0 && Sampler <= CORESAMPLER::GS3) {
           DeviceContext->GSSetShaderResources(Sampler - CORESAMPLER::GS0, 1,
                                               null);
+        }
         return true;
       }
       return ApplyTextureToSampler(Sampler, Value.Texture);
@@ -902,21 +912,23 @@ bool CCoreDX11Device::Clear(const bool clearPixels, const bool clearDepth,
     DeviceContext->ClearRenderTargetView(BackBufferView, col);
   }
 
-  if (clearDepth)
+  if (clearDepth) {
     DeviceContext->ClearDepthStencilView(
         DepthBufferView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, Depth,
         Stencil);
+  }
 
   return true;
 }
 
 bool CCoreDX11Device::Flip(bool Vsync) {
-  HRESULT res;
+  HRESULT res = 0;
 
-  if (Vsync)
+  if (Vsync) {
     res = SwapChain->Present(1, 0);
-  else
+  } else {
     res = SwapChain->Present(0, 0);
+  }
 
   return res == S_OK;
 }
@@ -1052,7 +1064,7 @@ void CCoreDX11Device::ForceStateReset() {
 }
 
 void CCoreDX11Device::TakeScreenShot(std::string_view Filename) {
-  ID3D11Texture2D* bb;
+  ID3D11Texture2D* bb = nullptr;
 
   const HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
                                            reinterpret_cast<LPVOID*>(&bb));
@@ -1105,7 +1117,7 @@ bool CCoreDX11Device::EndOcclusionQuery() {
     DeviceContext->End(OcclusionQuery);
 
     UINT64
-    queryData;  // This data type is different depending on the query type
+    queryData = 0;  // This data type is different depending on the query type
     while (S_OK != DeviceContext->GetData(OcclusionQuery, &queryData,
                                           sizeof(UINT64), 0)) {
     }
@@ -1113,16 +1125,17 @@ bool CCoreDX11Device::EndOcclusionQuery() {
     return queryData > 0;
   }
 
-  return 0;
+  return false;
 }
 
 void CCoreDX11Device::WaitRetrace() {
-  if (swapChainRetraceObject)
+  if (swapChainRetraceObject) {
     WaitForSingleObjectEx(swapChainRetraceObject, 1000, true);
+  }
 }
 
 ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
-  ID3D11Texture2D* bb;
+  ID3D11Texture2D* bb = nullptr;
 
   const HRESULT res = SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
                                            reinterpret_cast<LPVOID*>(&bb));

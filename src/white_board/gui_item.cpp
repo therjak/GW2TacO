@@ -50,8 +50,9 @@ WBSKINELEMENTID CWBDisplayProperties::GetSkin(WBITEMSTATE s,
   }
   // if (States.HasKey(WB_STATE_NORMAL))
   {
-    if (States[WB_STATE_NORMAL].IsSet(v))
+    if (States[WB_STATE_NORMAL].IsSet(v)) {
       return States[WB_STATE_NORMAL].GetSkin(v);
+    }
   }
 
   return 0xffffffff;
@@ -64,8 +65,9 @@ CColor CWBDisplayProperties::GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
   }
   // if (States.HasKey(WB_STATE_NORMAL))
   {
-    if (States[WB_STATE_NORMAL].IsSet(v))
+    if (States[WB_STATE_NORMAL].IsSet(v)) {
       return States[WB_STATE_NORMAL].GetColor(v);
+    }
   }
 
   switch (v) {
@@ -188,16 +190,21 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
         // mouse pos
         CPoint mp = Message.GetPosition();
         if (GetHScrollbarRectangles(b1, up, th, dn, b2)) {
-          if (ClientToScreen(b1).Contains(mp))
+          if (ClientToScreen(b1).Contains(mp)) {
             HScrollbar.Dragmode = WB_SCROLLDRAG_BUTTON1;
-          if (ClientToScreen(up).Contains(mp))
+          }
+          if (ClientToScreen(up).Contains(mp)) {
             HScrollbar.Dragmode = WB_SCROLLDRAG_UP;
-          if (ClientToScreen(th).Contains(mp))
+          }
+          if (ClientToScreen(th).Contains(mp)) {
             HScrollbar.Dragmode = WB_SCROLLDRAG_THUMB;
-          if (ClientToScreen(dn).Contains(mp))
+          }
+          if (ClientToScreen(dn).Contains(mp)) {
             HScrollbar.Dragmode = WB_SCROLLDRAG_DOWN;
-          if (ClientToScreen(b2).Contains(mp))
+          }
+          if (ClientToScreen(b2).Contains(mp)) {
             HScrollbar.Dragmode = WB_SCROLLDRAG_BUTTON2;
+          }
           if (HScrollbar.Dragmode != WB_SCROLLDRAG_NONE) {
             HScrollbar.DragStartPosition = HScrollbar.ScrollPos;
             HandleHScrollbarClick(HScrollbar.Dragmode);
@@ -206,16 +213,21 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
           }
         }
         if (GetVScrollbarRectangles(b1, up, th, dn, b2)) {
-          if (ClientToScreen(b1).Contains(mp))
+          if (ClientToScreen(b1).Contains(mp)) {
             VScrollbar.Dragmode = WB_SCROLLDRAG_BUTTON1;
-          if (ClientToScreen(up).Contains(mp))
+          }
+          if (ClientToScreen(up).Contains(mp)) {
             VScrollbar.Dragmode = WB_SCROLLDRAG_UP;
-          if (ClientToScreen(th).Contains(mp))
+          }
+          if (ClientToScreen(th).Contains(mp)) {
             VScrollbar.Dragmode = WB_SCROLLDRAG_THUMB;
-          if (ClientToScreen(dn).Contains(mp))
+          }
+          if (ClientToScreen(dn).Contains(mp)) {
             VScrollbar.Dragmode = WB_SCROLLDRAG_DOWN;
-          if (ClientToScreen(b2).Contains(mp))
+          }
+          if (ClientToScreen(b2).Contains(mp)) {
             VScrollbar.Dragmode = WB_SCROLLDRAG_BUTTON2;
+          }
           if (VScrollbar.Dragmode != WB_SCROLLDRAG_NONE) {
             VScrollbar.DragStartPosition = VScrollbar.ScrollPos;
             HandleVScrollbarClick(VScrollbar.Dragmode);
@@ -236,17 +248,21 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
           CPoint mp = Message.GetPosition();
           if (GetHScrollbarRectangles(b1, up, th, dn, b2)) {
             if (ClientToScreen(b1).Contains(mp) &&
-                HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1)
+                HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1) {
               HandleHScrollbarClick(HScrollbar.Dragmode);
+            }
             if (ClientToScreen(up).Contains(mp) &&
-                HScrollbar.Dragmode == WB_SCROLLDRAG_UP)
+                HScrollbar.Dragmode == WB_SCROLLDRAG_UP) {
               HandleHScrollbarClick(HScrollbar.Dragmode);
+            }
             if (ClientToScreen(dn).Contains(mp) &&
-                HScrollbar.Dragmode == WB_SCROLLDRAG_DOWN)
+                HScrollbar.Dragmode == WB_SCROLLDRAG_DOWN) {
               HandleHScrollbarClick(HScrollbar.Dragmode);
+            }
             if (ClientToScreen(b2).Contains(mp) &&
-                HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2)
+                HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2) {
               HandleHScrollbarClick(HScrollbar.Dragmode);
+            }
           }
 
           return true;
@@ -259,17 +275,21 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
           CPoint mp = Message.GetPosition();
           if (GetVScrollbarRectangles(b1, up, th, dn, b2)) {
             if (ClientToScreen(b1).Contains(mp) &&
-                VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1)
+                VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1) {
               HandleVScrollbarClick(VScrollbar.Dragmode);
+            }
             if (ClientToScreen(up).Contains(mp) &&
-                VScrollbar.Dragmode == WB_SCROLLDRAG_UP)
+                VScrollbar.Dragmode == WB_SCROLLDRAG_UP) {
               HandleVScrollbarClick(VScrollbar.Dragmode);
+            }
             if (ClientToScreen(dn).Contains(mp) &&
-                VScrollbar.Dragmode == WB_SCROLLDRAG_DOWN)
+                VScrollbar.Dragmode == WB_SCROLLDRAG_DOWN) {
               HandleVScrollbarClick(VScrollbar.Dragmode);
+            }
             if (ClientToScreen(b2).Contains(mp) &&
-                VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2)
+                VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2) {
               HandleVScrollbarClick(VScrollbar.Dragmode);
+            }
           }
 
           return true;
@@ -279,7 +299,7 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
 
     case WBM_MOUSEMOVE:
       // handle scrollbars only
-      if (App->GetMouseCaptureItem() == this)
+      if (App->GetMouseCaptureItem() == this) {
         if (ScrollbarDragged()) {
           // mouse delta
           const CPoint md = Message.GetPosition() - App->GetLeftDownPos();
@@ -299,18 +319,20 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
 
           return true;
         }
+      }
       return false;
       break;
 
     case WBM_LEFTBUTTONUP:
       // handle scrollbars only
-      if (App->GetMouseCaptureItem() == this)
+      if (App->GetMouseCaptureItem() == this) {
         if (ScrollbarDragged()) {
           HScrollbar.Dragmode = WB_SCROLLDRAG_NONE;
           VScrollbar.Dragmode = WB_SCROLLDRAG_NONE;
           App->ReleaseCapture();
           return true;
         }
+      }
       return false;
       break;
 
@@ -385,9 +407,9 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
       // skin element
       CWBSkinElement* e = App->GetSkin()->GetElement(id);
       if (e) {
-        const WBALIGNMENT AlignX = static_cast<WBALIGNMENT>(
+        const auto AlignX = static_cast<WBALIGNMENT>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_X));
-        const WBALIGNMENT AlignY = static_cast<WBALIGNMENT>(
+        const auto AlignY = static_cast<WBALIGNMENT>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_Y));
         const CSize elementsize = e->GetElementSize(API);
         CPoint offset = CPoint(0, 0);
@@ -395,19 +417,23 @@ void CWBItem::DrawBackgroundItem(CWBDrawAPI* API,
 
         if (e->GetBehavior(0) ==
             WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
-          if (AlignX == WBALIGNMENT::RIGHT)
+          if (AlignX == WBALIGNMENT::RIGHT) {
             offset.x = Pos.Width() - elementsize.x;
-          if (AlignX == WBALIGNMENT::CENTER)
+          }
+          if (AlignX == WBALIGNMENT::CENTER) {
             offset.x = (Pos.Width() - elementsize.x) / 2;
+          }
           size.x = elementsize.x;
         }
 
         if (e->GetBehavior(1) ==
             WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
-          if (AlignY == WBALIGNMENT::BOTTOM)
+          if (AlignY == WBALIGNMENT::BOTTOM) {
             offset.y = Pos.Height() - elementsize.y;
-          if (AlignY == WBALIGNMENT::MIDDLE)
+          }
+          if (AlignY == WBALIGNMENT::MIDDLE) {
             offset.y = (Pos.Height() - elementsize.y) / 2;
+          }
           size.y = elementsize.y;
         }
 
@@ -450,22 +476,26 @@ void CWBItem::DrawBorder(CWBDrawAPI* API, const CRect& r,
 
   API->SetCropRect(ClientToScreen(r));
 
-  if (cssProps.BorderSizes.x1 > 0)
+  if (cssProps.BorderSizes.x1 > 0) {
     API->DrawRect(
         CRect(r.TopLeft(), r.BottomLeft() + CPoint(cssProps.BorderSizes.x1, 0)),
         color);
-  if (cssProps.BorderSizes.y1 > 0)
+  }
+  if (cssProps.BorderSizes.y1 > 0) {
     API->DrawRect(
         CRect(r.TopLeft(), r.TopRight() + CPoint(0, cssProps.BorderSizes.y1)),
         color);
-  if (cssProps.BorderSizes.x2 > 0)
+  }
+  if (cssProps.BorderSizes.x2 > 0) {
     API->DrawRect(CRect(r.TopRight() - CPoint(cssProps.BorderSizes.x2, 0),
                         r.BottomRight()),
                   color);
-  if (cssProps.BorderSizes.y2 > 0)
+  }
+  if (cssProps.BorderSizes.y2 > 0) {
     API->DrawRect(CRect(r.BottomLeft() - CPoint(0, cssProps.BorderSizes.y2),
                         r.BottomRight()),
                   color);
+  }
 
   API->SetCropRect(crop);
 }
@@ -555,8 +585,10 @@ void CWBItem::ApplyPosition(const CRect& Pos) {
 
   const CRect r2 = GetScreenRect();
 
-  if (App && r.Contains(App->GetMousePos()) != r2.Contains(App->GetMousePos()))
+  if (App &&
+      r.Contains(App->GetMousePos()) != r2.Contains(App->GetMousePos())) {
     App->UpdateMouseItem();
+  }
 }
 
 bool CWBItem::Focusable() const { return true; }
@@ -764,18 +796,22 @@ void CWBItem::SetPosition(const CRect& Pos) {
 
 void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
                                int32_t bottom) {
-  if (left != WBMARGIN_KEEP)
+  if (left != WBMARGIN_KEEP) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_LEFT,
                                               0, static_cast<float>(left));
-  if (right != WBMARGIN_KEEP)
+  }
+  if (right != WBMARGIN_KEEP) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_RIGHT,
                                               0, static_cast<float>(right));
-  if (top != WBMARGIN_KEEP)
+  }
+  if (top != WBMARGIN_KEEP) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_TOP, 0,
                                               static_cast<float>(top));
-  if (bottom != WBMARGIN_KEEP)
+  }
+  if (bottom != WBMARGIN_KEEP) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_BOTTOM,
                                               0, static_cast<float>(bottom));
+  }
 
   CalculateClientPosition();
 }
@@ -889,7 +925,7 @@ void CWBItem::ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
   const int32_t mi = s.MinScroll;
   const int32_t ma = s.MaxScroll;
 
-  const float scrollsize = static_cast<float>(ma - mi);
+  const auto scrollsize = static_cast<float>(ma - mi);
   const float rs = std::max(0.0f, std::min(1.0f, s.ViewSize / scrollsize));
   float rp = std::max(
       0.0f, std::min(1.0f, (s.ScrollPos - mi) / (scrollsize - s.ViewSize)));
@@ -910,13 +946,12 @@ int32_t CWBItem::CalculateScrollbarMovement(CWBScrollbarParams& s,
 
   const int32_t mi = s.MinScroll;
   const int32_t ma = s.MaxScroll;
-  const float scrollsize = static_cast<float>(ma - mi);
+  const auto scrollsize = static_cast<float>(ma - mi);
 
   const float sp = std::max(
       0.0f,
       std::min(1.0f, (s.DragStartPosition - mi) / (scrollsize - s.ViewSize)));
-  const int32_t thumbposstart =
-      static_cast<int32_t>((a2 - thumbsize - a1) * sp);
+  const auto thumbposstart = static_cast<int32_t>((a2 - thumbsize - a1) * sp);
 
   const int32_t thumbposdelta =
       std::max(0, std::min(a2 - thumbsize - a1, thumbposstart + delta));
@@ -952,8 +987,9 @@ WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
       Component == WB_ITEM_SCROLL_HBAR || Component == WB_ITEM_SCROLL_HTHUMB ||
       Component == WB_ITEM_SCROLL_LEFT || Component == WB_ITEM_SCROLL_RIGHT;
   if (!MouseOver() && ((HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE) ||
-                       (!HBar && VScrollbar.Dragmode == WB_SCROLLDRAG_NONE)))
+                       (!HBar && VScrollbar.Dragmode == WB_SCROLLDRAG_NONE))) {
     return WB_STATE_NORMAL;
+  }
 
   CPoint MousePos = App->GetMousePos();
 
@@ -961,46 +997,56 @@ WBITEMSTATE CWBItem::GetScrollbarState(WBITEMVISUALCOMPONENT Component,
   const bool Hover = ScreenRect.Contains(MousePos);
 
   // don't highlight if something else uses the mouse (including this item)
-  if (App->GetMouseCaptureItem())
+  if (App->GetMouseCaptureItem()) {
     if (HScrollbar.Dragmode == WB_SCROLLDRAG_NONE &&
         VScrollbar.Dragmode == WB_SCROLLDRAG_NONE &&
-        !App->GetMouseCaptureItem()->AllowMouseHighlightWhileCaptureItem())
+        !App->GetMouseCaptureItem()->AllowMouseHighlightWhileCaptureItem()) {
       return WB_STATE_NORMAL;
+    }
+  }
 
   // scrollbar not clicked, return hover/normal mode
-  if (HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE)
+  if (HBar && HScrollbar.Dragmode == WB_SCROLLDRAG_NONE) {
     return Hover ? WB_STATE_HOVER : WB_STATE_NORMAL;
-  if (!HBar && VScrollbar.Dragmode == WB_SCROLLDRAG_NONE)
+  }
+  if (!HBar && VScrollbar.Dragmode == WB_SCROLLDRAG_NONE) {
     return Hover ? WB_STATE_HOVER : WB_STATE_NORMAL;
+  }
 
   // handle clicked modes
   switch (Component) {
     case WB_ITEM_SCROLL_UP:
-      if (VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1)
+      if (VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1) {
         return Hover ? WB_STATE_ACTIVE : WB_STATE_HOVER;
+      }
       break;
     case WB_ITEM_SCROLL_DOWN:
-      if (VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2)
+      if (VScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2) {
         return Hover ? WB_STATE_ACTIVE : WB_STATE_HOVER;
+      }
       break;
     case WB_ITEM_SCROLL_LEFT:
-      if (HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1)
+      if (HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON1) {
         return Hover ? WB_STATE_ACTIVE : WB_STATE_HOVER;
+      }
       break;
     case WB_ITEM_SCROLL_RIGHT:
-      if (HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2)
+      if (HScrollbar.Dragmode == WB_SCROLLDRAG_BUTTON2) {
         return Hover ? WB_STATE_ACTIVE : WB_STATE_HOVER;
+      }
       break;
     case WB_ITEM_SCROLL_HBAR:
       if (HScrollbar.Dragmode == WB_SCROLLDRAG_UP ||
-          HScrollbar.Dragmode == WB_SCROLLDRAG_DOWN)
+          HScrollbar.Dragmode == WB_SCROLLDRAG_DOWN) {
         return Hover ? WB_STATE_ACTIVE : WB_STATE_HOVER;
+      }
       if (HScrollbar.Dragmode == WB_SCROLLDRAG_THUMB) return WB_STATE_ACTIVE;
       break;
     case WB_ITEM_SCROLL_VBAR:
       if (VScrollbar.Dragmode == WB_SCROLLDRAG_UP ||
-          VScrollbar.Dragmode == WB_SCROLLDRAG_DOWN)
+          VScrollbar.Dragmode == WB_SCROLLDRAG_DOWN) {
         return Hover ? WB_STATE_ACTIVE : WB_STATE_HOVER;
+      }
       if (VScrollbar.Dragmode == WB_SCROLLDRAG_THUMB) return WB_STATE_ACTIVE;
       break;
     case WB_ITEM_SCROLL_HTHUMB:
@@ -1028,14 +1074,15 @@ bool CWBItem::GetHScrollbarRectangles(CRect& button1, CRect& Scrollup,
   button2 =
       CRect(r.TopRight() - CPoint(Scrollbar_ButtonSize, 0), r.BottomRight());
 
-  int32_t thumbsize, thumbpos;
+  int32_t thumbsize = 0, thumbpos = 0;
   ScrollbardisplayHelperFunct(HScrollbar, r.x1, r.x2, thumbsize, thumbpos);
   if (ScrollbarRequired(HScrollbar)) {
     Scrollup = CRect(r.x1, r.y1, thumbpos, r.y2);
     Thumb = CRect(thumbpos, r.y1, thumbpos + thumbsize, r.y2);
     Scrolldown = CRect(thumbpos + thumbsize, r.y1, r.x2, r.y2);
-  } else
+  } else {
     Scrollup = Thumb = Scrolldown = CRect(1, 1, -1, -1);
+  }
 
   return true;
 }
@@ -1054,8 +1101,9 @@ void CWBItem::DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
 
     const CPoint margin = CPoint(4, 4);
     API->DrawRect(CRect(r.TopLeft() + margin, r.BottomRight() - margin), color);
-  } else
+  } else {
     App->GetSkin()->RenderElement(API, ButtonSkin, r);
+  }
 }
 
 void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
@@ -1081,10 +1129,11 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
   const WBSKINELEMENTID Background = CSSProperties.DisplayDescriptor.GetSkin(
       BackgroundState, WB_ITEM_SCROLL_HBAR);
 
-  if (Background == 0xffffffff)
+  if (Background == 0xffffffff) {
     API->DrawRect(BackgroundRect, CColor{0xff3e3e42});
-  else
+  } else {
     App->GetSkin()->RenderElement(API, Background, BackgroundRect);
+  }
 
   // draw thumb
   const WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_HTHUMB, th);
@@ -1100,8 +1149,9 @@ void CWBItem::DrawHScrollbar(CWBDrawAPI* API) {
     API->DrawRect(
         CRect(th.TopLeft() + thumbmargin, th.BottomRight() - thumbmargin),
         color);
-  } else
+  } else {
     App->GetSkin()->RenderElement(API, Thumb, th);
+  }
 
   // draw buttons
   DrawScrollbarButton(API, HScrollbar, b2, WB_ITEM_SCROLL_RIGHT);
@@ -1121,14 +1171,15 @@ bool CWBItem::GetVScrollbarRectangles(CRect& button1, CRect& Scrollup,
   button2 =
       CRect(r.BottomLeft() - CPoint(0, Scrollbar_ButtonSize), r.BottomRight());
 
-  int32_t thumbsize, thumbpos;
+  int32_t thumbsize = 0, thumbpos = 0;
   ScrollbardisplayHelperFunct(VScrollbar, r.y1, r.y2, thumbsize, thumbpos);
   if (ScrollbarRequired(VScrollbar)) {
     Scrollup = CRect(r.x1, r.y1, r.x2, thumbpos);
     Thumb = CRect(r.x1, thumbpos, r.x2, thumbpos + thumbsize);
     Scrolldown = CRect(r.x1, thumbpos + thumbsize, r.x2, r.y2);
-  } else
+  } else {
     Scrollup = Thumb = Scrolldown = CRect(1, 1, -1, -1);
+  }
 
   return true;
 }
@@ -1156,10 +1207,11 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
   const WBSKINELEMENTID Background = CSSProperties.DisplayDescriptor.GetSkin(
       BackgroundState, WB_ITEM_SCROLL_VBAR);
 
-  if (Background == 0xffffffff)
+  if (Background == 0xffffffff) {
     API->DrawRect(BackgroundRect, CColor{0xff3e3e42});
-  else
+  } else {
     App->GetSkin()->RenderElement(API, Background, BackgroundRect);
+  }
 
   // draw thumb
   const WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_VTHUMB, th);
@@ -1175,8 +1227,9 @@ void CWBItem::DrawVScrollbar(CWBDrawAPI* API) {
     API->DrawRect(
         CRect(th.TopLeft() + thumbmargin, th.BottomRight() - thumbmargin),
         color);
-  } else
+  } else {
     App->GetSkin()->RenderElement(API, Thumb, th);
+  }
 
   // draw buttons
   DrawScrollbarButton(API, VScrollbar, b2, WB_ITEM_SCROLL_DOWN);
@@ -1236,8 +1289,9 @@ void CWBItem::AdjustClientAreaToFitScrollbars() {
   // y axis
   ScrollbarHelperFunct(HScrollbar, crect.y2, ScrollbarRequired(HScrollbar));
 
-  if (App && crect != ClientRect)
+  if (App && crect != ClientRect) {
     App->SendMessage(CWBMessage(App, WBM_CLIENTAREACHANGED, GetGuid()));
+  }
 
   ClientRect = crect;
 }
@@ -1296,9 +1350,10 @@ void CWBItem::GetVScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
 
 void CWBItem::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
   int32_t sc = ScrollPos;
-  if (Clamp)
+  if (Clamp) {
     sc = std::max(HScrollbar.MinScroll,
                   std::min(sc, HScrollbar.MaxScroll - HScrollbar.ViewSize));
+  }
   if (sc != HScrollbar.ScrollPos) {
     HScrollbar.ScrollPos = sc;
     App->SendMessage(CWBMessage(App, WBM_HSCROLL, GetGuid(), sc));
@@ -1308,9 +1363,10 @@ void CWBItem::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
 
 void CWBItem::SetVScrollbarPos(int32_t ScrollPos, bool Clamp) {
   int32_t sc = ScrollPos;
-  if (Clamp)
+  if (Clamp) {
     sc = std::max(VScrollbar.MinScroll,
                   std::min(sc, VScrollbar.MaxScroll - VScrollbar.ViewSize));
+  }
   if (sc != VScrollbar.ScrollPos) {
     VScrollbar.ScrollPos = sc;
     App->SendMessage(CWBMessage(App, WBM_VSCROLL, GetGuid(), sc));
@@ -1319,9 +1375,10 @@ void CWBItem::SetVScrollbarPos(int32_t ScrollPos, bool Clamp) {
 }
 
 void CWBItem::ApplyRelativePosition() {
-  if (Parent)
+  if (Parent) {
     SetPosition(CSSProperties.PositionDescriptor.GetPosition(
         Parent->GetClientRect().Size(), StoredContentSize, GetPosition()));
+  }
 }
 
 void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
@@ -1332,8 +1389,9 @@ void CWBItem::VisualStyleApplicator(CWBDisplayProperties& desc,
   for (size_t x = 1; x < pseudo.size(); x++) {
     const auto p = Trim(pseudo[x]);
     if (p == "active" || p == "hover" || p == "disabled" ||
-        p == "disabled-active" || p == "normal")
+        p == "disabled-active" || p == "normal") {
       StateCount++;
+    }
   }
 
   if (!StateCount) {
@@ -1496,8 +1554,10 @@ std::vector<std::string> CWBItem::ExplodeValueWithoutSplittingParameters(
   int32_t bracketcnt = 0;
 
   while (x < String.size()) {
-    while (x < String.size() && isspace(static_cast<unsigned char>(String[x])))
+    while (x < String.size() &&
+           isspace(static_cast<unsigned char>(String[x]))) {
       x++;
+    }
 
     if (String[x] == '(') bracketcnt++;
     if (String[x] == ')' && bracketcnt) bracketcnt--;
@@ -1525,9 +1585,10 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
 
     for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1)
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               dw | 0xff000000, pseudo);
+      }
       if (attrib == ("none")) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               0, pseudo);
@@ -1535,30 +1596,36 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
                               0xffffffff, pseudo);
       }
 
-      if (attrib == ("left"))
+      if (attrib == ("left")) {
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
                               static_cast<int32_t>(WBALIGNMENT::LEFT), pseudo);
-      if (attrib == ("center"))
+      }
+      if (attrib == ("center")) {
         VisualStyleApplicator(
             props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X,
             static_cast<int32_t>(WBALIGNMENT::CENTER), pseudo);
-      if (attrib == ("right"))
+      }
+      if (attrib == ("right")) {
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
                               static_cast<int32_t>(WBALIGNMENT::RIGHT), pseudo);
-      if (attrib == ("top"))
+      }
+      if (attrib == ("top")) {
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y,
                               static_cast<int32_t>(WBALIGNMENT::TOP), pseudo);
-      if (attrib == ("middle"))
+      }
+      if (attrib == ("middle")) {
         VisualStyleApplicator(
             props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
             static_cast<int32_t>(WBALIGNMENT::MIDDLE), pseudo);
-      if (attrib == ("bottom"))
+      }
+      if (attrib == ("bottom")) {
         VisualStyleApplicator(
             props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
             static_cast<int32_t>(WBALIGNMENT::BOTTOM), pseudo);
+      }
 
       if (attrib.find("rgba(") == 0) {
         CColor col;
@@ -1571,10 +1638,11 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
                               col.argb(), pseudo);
       }
 
-      WBSKINELEMENTID id;
-      if (ScanSkinValue(attrib, id, prop))
+      WBSKINELEMENTID id = 0;
+      if (ScanSkinValue(attrib, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
                               id, pseudo);
+      }
     }
 
     return true;
@@ -1585,12 +1653,14 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
 
     for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1)
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               dw | 0xff000000, pseudo);
-      if (attrib == ("none"))
+      }
+      if (attrib == ("none")) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDCOLOR,
                               0, pseudo);
+      }
 
       if (attrib.find("rgba(") == 0) {
         CColor col;
@@ -1612,12 +1682,14 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
 
     for (const auto& attrib : Attribs) {
       uint32_t dw = 0;
-      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1)
+      if (std::sscanf(attrib.c_str(), "#%x", &dw) == 1) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
                               dw | 0xff000000, pseudo);
-      if (attrib == ("none"))
+      }
+      if (attrib == ("none")) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FOREGROUNDCOLOR,
                               0, pseudo);
+      }
 
       if (attrib.find("rgba(") == 0) {
         CColor col;
@@ -1638,30 +1710,36 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     auto Attribs = SplitByWhitespace(value);
 
     for (const auto& attrib : Attribs) {
-      if (attrib == ("left"))
+      if (attrib == ("left")) {
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
                               static_cast<int32_t>(WBALIGNMENT::LEFT), pseudo);
-      if (attrib == ("center"))
+      }
+      if (attrib == ("center")) {
         VisualStyleApplicator(
             props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_X,
             static_cast<int32_t>(WBALIGNMENT::CENTER), pseudo);
-      if (attrib == ("right"))
+      }
+      if (attrib == ("right")) {
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
                               static_cast<int32_t>(WBALIGNMENT::RIGHT), pseudo);
-      if (attrib == ("top"))
+      }
+      if (attrib == ("top")) {
         VisualStyleApplicator(props.DisplayDescriptor,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y,
                               static_cast<int32_t>(WBALIGNMENT::TOP), pseudo);
-      if (attrib == ("middle"))
+      }
+      if (attrib == ("middle")) {
         VisualStyleApplicator(
             props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
             static_cast<int32_t>(WBALIGNMENT::MIDDLE), pseudo);
-      if (attrib == ("bottom"))
+      }
+      if (attrib == ("bottom")) {
         VisualStyleApplicator(
             props.DisplayDescriptor, WB_ITEM_BACKGROUNDALIGNMENT_Y,
             static_cast<int32_t>(WBALIGNMENT::BOTTOM), pseudo);
+      }
     }
 
     return true;
@@ -1671,14 +1749,16 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
     auto Attribs = ExplodeValueWithoutSplittingParameters(value);
 
     for (const auto& attrib : Attribs) {
-      if (attrib == ("none"))
+      if (attrib == ("none")) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
                               0xffffffff, pseudo);
+      }
 
-      WBSKINELEMENTID id;
-      if (ScanSkinValue(attrib, id, prop))
+      WBSKINELEMENTID id = 0;
+      if (ScanSkinValue(attrib, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_BACKGROUNDIMAGE,
                               id, pseudo);
+      }
     }
 
     return true;
@@ -1708,54 +1788,62 @@ bool CWBItem::InterpretDisplayString(CWBCSSPropertyBatch& props,
 
   // quick check for scrollbar related stuff
   if (prop[0] == 's') {
-    WBSKINELEMENTID id;
+    WBSKINELEMENTID id = 0;
 
     if (prop == "scrollbar-up") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_UP, id,
                               pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-down") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_DOWN, id,
                               pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-left") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_LEFT, id,
                               pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-right") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_RIGHT, id,
                               pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-background-horizontal") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_HBAR, id,
                               pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-background-vertical") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_VBAR, id,
                               pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-thumb-horizontal") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_HTHUMB,
                               id, pseudo);
+      }
       return true;
     }
     if (prop == "scrollbar-thumb-vertical") {
-      if (ScanSkinValue(value, id, prop))
+      if (ScanSkinValue(value, id, prop)) {
         VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_SCROLL_VTHUMB,
                               id, pseudo);
+      }
       return true;
     }
   }
@@ -1778,30 +1866,35 @@ bool CWBItem::InterpretFontString(CWBCSSPropertyBatch& props,
     }
 
     CColor col;
-    if (ParseRGBA(value, col))
+    if (ParseRGBA(value, col)) {
       VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_FONTCOLOR,
                             col.argb(), pseudo);
+    }
 
     return true;
   }
 
   if (prop == "text-transform") {
-    if (value == ("none"))
+    if (value == ("none")) {
       VisualStyleApplicator(props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
                             static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_NONE),
                             pseudo);
-    if (value == ("capitalize"))
+    }
+    if (value == ("capitalize")) {
       VisualStyleApplicator(
           props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
           static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_CAPITALIZE), pseudo);
-    if (value == ("uppercase"))
+    }
+    if (value == ("uppercase")) {
       VisualStyleApplicator(
           props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
           static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_UPPERCASE), pseudo);
-    if (value == ("lowercase"))
+    }
+    if (value == ("lowercase")) {
       VisualStyleApplicator(
           props.DisplayDescriptor, WB_ITEM_TEXTTRANSFORM,
           static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_LOWERCASE), pseudo);
+    }
 
     return true;
   }
@@ -2007,11 +2100,12 @@ void CWBItem::PositionApplicator(CWBPositionDescriptor& pos,
     return;
   }
 
-  if (std::sscanf(v.c_str(), "%fpx%f%%", &pxv, &pcv) != 2)
+  if (std::sscanf(v.c_str(), "%fpx%f%%", &pxv, &pcv) != 2) {
     if (std::sscanf(v.c_str(), "%f%%%fpx", &pcv, &pxv) != 2) {
       Log_Warn("[guiitem] Item style error: invalid value '{:s}' (px, %)", v);
       return;
     }
+  }
 
   pos.ClearMetrics(Type);
   pos.SetMetric(Type, WBMETRICTYPE::WB_PIXELS, pxv);
@@ -2067,10 +2161,12 @@ WBITEMSTATE CWBItem::GetState() {
   if (Disabled) i = WB_STATE_DISABLED;
   if (MouseOver() && !Disabled) i = WB_STATE_HOVER;
 
-  if (i == WB_STATE_HOVER && App->GetMouseCaptureItem())
+  if (i == WB_STATE_HOVER && App->GetMouseCaptureItem()) {
     if (App->GetMouseCaptureItem() != this &&
-        !App->GetMouseCaptureItem()->AllowMouseHighlightWhileCaptureItem())
+        !App->GetMouseCaptureItem()->AllowMouseHighlightWhileCaptureItem()) {
       i = WB_STATE_NORMAL;
+    }
+  }
 
   if (InFocus()) i = Disabled ? WB_STATE_DISABLED_ACTIVE : WB_STATE_ACTIVE;
   return i;
@@ -2132,8 +2228,9 @@ bool CWBItem::ParseRGBA(std::string_view description, CColor& output) {
 
   float a = 1;
 
-  if (Params.size() == 4)
+  if (Params.size() == 4) {
     if (std::sscanf(Params[3].c_str(), "%f", &a) != 1) return false;
+  }
 
   uint8_t Colors[3];
   for (int32_t y = 0; y < 3; y++) Colors[y] = std::max(0, std::min(255, c[y]));

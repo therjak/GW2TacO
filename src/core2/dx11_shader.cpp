@@ -1,9 +1,9 @@
 #include "src/core2/dx11_shader.h"
 
 #include <comdef.h>
-#include <float.h>
 
 #include <array>
+#include <cfloat>
 
 #include "src/base/logger.h"
 
@@ -102,21 +102,23 @@ bool CCoreDX11VertexShader::CompileAndCreate(std::string* Err) {
   ID3D10Blob* PS = nullptr;
   ID3D10Blob* Error = nullptr;
 
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
                      &Error) != S_OK) {
-    if (!Err)
+    if (!Err) {
       Log_Err("[core] VertexShader compilation error: {:s}",
               static_cast<char*>(Error->GetBufferPointer()));
+    }
     Success = false;
   }
 
-  if (Err)
+  if (Err) {
     *Err =
         Error ? std::string(static_cast<char*>(Error->GetBufferPointer())) : "";
+  }
 
   if (Success) {
     Success = Create(PS->GetBufferPointer(),
@@ -135,7 +137,7 @@ bool CCoreDX11VertexShader::CreateFromBlob(void* CodeBlob,
                                            int32_t CodeBlobSize) {
   Release();
   bool Success = true;
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
 #ifndef _WIN64
@@ -189,21 +191,23 @@ bool CCoreDX11PixelShader::CompileAndCreate(std::string* Err) {
   ID3D10Blob* PS = nullptr;
   ID3D10Blob* Error = nullptr;
 
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
                      &Error) != S_OK) {
-    if (!Err)
+    if (!Err) {
       Log_Err("[core] PixelShader compilation error: {:s}",
               static_cast<char*>(Error->GetBufferPointer()));
+    }
     Success = false;
   }
 
-  if (Err)
+  if (Err) {
     *Err =
         Error ? std::string(static_cast<char*>(Error->GetBufferPointer())) : "";
+  }
 
   if (Success) {
     Success = Create(PS->GetBufferPointer(),
@@ -222,7 +226,7 @@ bool CCoreDX11PixelShader::CreateFromBlob(void* CodeBlob,
                                           int32_t CodeBlobSize) {
   Release();
   bool Success = true;
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
 #ifndef _WIN64
@@ -276,21 +280,23 @@ bool CCoreDX11GeometryShader::CompileAndCreate(std::string* Err) {
   ID3D10Blob* PS = nullptr;
   ID3D10Blob* Error = nullptr;
 
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
                      &Error) != S_OK) {
-    if (!Err)
+    if (!Err) {
       Log_Err("[core] GeometryShader compilation error: {:s}",
               static_cast<char*>(Error->GetBufferPointer()));
+    }
     Success = false;
   }
 
-  if (Err)
+  if (Err) {
     *Err =
         Error ? std::string(static_cast<char*>(Error->GetBufferPointer())) : "";
+  }
 
   if (Success) {
     Success = Create(PS->GetBufferPointer(),
@@ -309,7 +315,7 @@ bool CCoreDX11GeometryShader::CreateFromBlob(void* CodeBlob,
                                              int32_t CodeBlobSize) {
   Release();
   bool Success = true;
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
 #ifndef _WIN64
@@ -363,21 +369,23 @@ bool CCoreDX11DomainShader::CompileAndCreate(std::string* Err) {
   ID3D10Blob* PS = nullptr;
   ID3D10Blob* Error = nullptr;
 
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
                      &Error) != S_OK) {
-    if (!Err)
+    if (!Err) {
       Log_Err("[core] DomainShader compilation error: {:s}",
               static_cast<char*>(Error->GetBufferPointer()));
+    }
     Success = false;
   }
 
-  if (Err)
+  if (Err) {
     *Err =
         Error ? std::string(static_cast<char*>(Error->GetBufferPointer())) : "";
+  }
 
   if (Success) {
     Success = Create(PS->GetBufferPointer(),
@@ -396,7 +404,7 @@ bool CCoreDX11DomainShader::CreateFromBlob(void* CodeBlob,
                                            int32_t CodeBlobSize) {
   Release();
   bool Success = true;
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
 #ifndef _WIN64
@@ -450,21 +458,23 @@ bool CCoreDX11HullShader::CompileAndCreate(std::string* Err) {
   ID3D10Blob* PS = nullptr;
   ID3D10Blob* Error = nullptr;
 
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
                      &Error) != S_OK) {
-    if (!Err)
+    if (!Err) {
       Log_Err("[core] HullShader compilation error: {:s}",
               static_cast<char*>(Error->GetBufferPointer()));
+    }
     Success = false;
   }
 
-  if (Err)
+  if (Err) {
     *Err =
         Error ? std::string(static_cast<char*>(Error->GetBufferPointer())) : "";
+  }
 
   if (Success) {
     Success = Create(PS->GetBufferPointer(),
@@ -482,7 +492,7 @@ bool CCoreDX11HullShader::CompileAndCreate(std::string* Err) {
 bool CCoreDX11HullShader::CreateFromBlob(void* CodeBlob, int32_t CodeBlobSize) {
   Release();
   bool Success = true;
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
 #ifndef _WIN64
@@ -536,21 +546,23 @@ bool CCoreDX11ComputeShader::CompileAndCreate(std::string* Err) {
   ID3D10Blob* PS = nullptr;
   ID3D10Blob* Error = nullptr;
 
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
 
   if (D3DCompileFunc(Code.c_str(), Code.size(), nullptr, nullptr, nullptr,
                      EntryFunction.c_str(), ShaderVersion.c_str(), 0, 0, &PS,
                      &Error) != S_OK) {
-    if (!Err)
+    if (!Err) {
       Log_Err("[core] ComputeShader compilation error: {:s}",
               static_cast<char*>(Error->GetBufferPointer()));
+    }
     Success = false;
   }
 
-  if (Err)
+  if (Err) {
     *Err =
         Error ? std::string(static_cast<char*>(Error->GetBufferPointer())) : "";
+  }
 
   if (Success) {
     Success = Create(PS->GetBufferPointer(),
@@ -569,7 +581,7 @@ bool CCoreDX11ComputeShader::CreateFromBlob(void* CodeBlob,
                                             int32_t CodeBlobSize) {
   Release();
   bool Success = true;
-  uint32_t tmp;
+  uint32_t tmp = 0;
   _controlfp_s(&tmp, _RC_NEAR, _MCW_RC);
   Success = Create(CodeBlob, CodeBlobSize);
 #ifndef _WIN64

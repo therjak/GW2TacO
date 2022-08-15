@@ -87,14 +87,16 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
     for (size_t y = 0; y < r.wings.size(); y++) {
       auto& w = r.wings[y];
 
-      if (!compact)
+      if (!compact) {
         posx = f->GetLineHeight() * 1;
-      else
+      } else {
         posx = oposx;
+      }
 
-      if (!compact)
+      if (!compact) {
         f->Write(API, DICT("raid_wing") + std::to_string(y + 1),
                  CPoint(posx, posy + 1), CColor{0xffffffff});
+      }
 
       if (!compact) posx = f->GetLineHeight() * 3;
 

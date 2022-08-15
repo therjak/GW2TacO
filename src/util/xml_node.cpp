@@ -16,7 +16,7 @@ using rapidxml::xml_node;
 int32_t GetStringHash(const char* string) {
   if (!string) return 0;
 
-  int32_t c;
+  int32_t c = 0;
   const char* str = string;
 
   int32_t Hash = 5381;
@@ -43,7 +43,7 @@ CXMLNode::CXMLNode(xml_node<char>* p, CXMLDocument* d, int32_t l) {
   nLevel = l;
 }
 
-CXMLNode& CXMLNode::operator=(const CXMLNode Original) {
+CXMLNode& CXMLNode::operator=(const CXMLNode& Original) {
   nLevel = Original.nLevel;
   pNode = Original.pNode;
   pDoc = Original.pDoc;
@@ -98,48 +98,48 @@ std::string CXMLNode::GetNodeName() const {
 }
 
 CXMLNode CXMLNode::GetChild(int32_t n) const {
-  if (!pNode) return CXMLNode();
+  if (!pNode) return {};
 
   auto node = pNode->first_node();
-  if (!node) return CXMLNode();
+  if (!node) return {};
 
-  if (n == 0) return CXMLNode(node, pDoc, nLevel + 1);
+  if (n == 0) return {node, pDoc, nLevel + 1};
 
   int32_t count = 1;
 
   while ((node = node->next_sibling())) {
-    if (n == count) return CXMLNode(node, pDoc, nLevel + 1);
+    if (n == count) return {node, pDoc, nLevel + 1};
     count++;
   }
 
-  return CXMLNode();
+  return {};
 }
 
 CXMLNode CXMLNode::GetChild(const char* szNodeName) const {
-  if (!pNode) return CXMLNode();
+  if (!pNode) return {};
 
   auto node = pNode->first_node(szNodeName);
-  if (!node) return CXMLNode();
+  if (!node) return {};
 
-  return CXMLNode(node, pDoc, nLevel + 1);
+  return {node, pDoc, nLevel + 1};
 }
 
 CXMLNode CXMLNode::GetChild(const char* szNodeName, int32_t n) const {
-  if (!pNode) return CXMLNode();
+  if (!pNode) return {};
 
   auto node = pNode->first_node(szNodeName);
-  if (!node) return CXMLNode();
+  if (!node) return {};
 
-  if (n == 0) return CXMLNode(node, pDoc, nLevel + 1);
+  if (n == 0) return {node, pDoc, nLevel + 1};
 
   int32_t count = 1;
 
   while ((node = node->next_sibling(szNodeName))) {
-    if (n == count) return CXMLNode(node, pDoc, nLevel + 1);
+    if (n == count) return {node, pDoc, nLevel + 1};
     count++;
   }
 
-  return CXMLNode();
+  return {};
 }
 
 bool CXMLNode::Next(CXMLNode& out, const char* szNodeName) {

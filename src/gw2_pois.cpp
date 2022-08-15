@@ -60,7 +60,7 @@ bool InitGUI(CWBApplication* App) {
   CreateProFont(App, "ProFont");
 
   if (!App->LoadSkinFromFile("UI.wbs", localization->GetUsedGlyphs())) {
-    MessageBox(NULL,
+    MessageBox(nullptr,
                "TacO can't find the UI.wbs ui skin file!\nPlease make sure you "
                "extracted all the files from the archive to a separate folder!",
                "Missing File!", MB_ICONERROR);
@@ -68,7 +68,7 @@ bool InitGUI(CWBApplication* App) {
   }
   if (!App->LoadXMLLayoutFromFile("UI.xml")) {
     MessageBox(
-        NULL,
+        nullptr,
         "TacO can't find the UI.xml ui layout file!\nPlease make sure you "
         "extracted all the files from the archive to a separate folder!",
         "Missing File!", MB_ICONERROR);
@@ -76,7 +76,7 @@ bool InitGUI(CWBApplication* App) {
   }
   if (!App->LoadCSSFromFile(UIFileNames[GetConfigValue("InterfaceSize")])) {
     MessageBox(
-        NULL,
+        nullptr,
         "TacO can't find a required UI css style file!\nPlease make sure you "
         "extracted all the files from the archive to a separate folder!",
         "Missing File!", MB_ICONERROR);
@@ -106,32 +106,39 @@ bool InitGUI(CWBApplication* App) {
 
 void OpenWindows(CWBApplication* App) {
   auto root = App->GetRoot();
-  GW2TacO* taco =
+  auto* taco =
       dynamic_cast<GW2TacO*>(root->FindChildByID("tacoroot", "GW2TacO"));
   if (!taco) {
     return;
   }
 
-  if (HasWindowData("MapTimer") && IsWindowOpen("MapTimer"))
+  if (HasWindowData("MapTimer") && IsWindowOpen("MapTimer")) {
     taco->OpenWindow("MapTimer");
+  }
 
-  if (HasWindowData("TS3Control") && IsWindowOpen("TS3Control"))
+  if (HasWindowData("TS3Control") && IsWindowOpen("TS3Control")) {
     taco->OpenWindow("TS3Control");
+  }
 
-  if (HasWindowData("MarkerEditor") && IsWindowOpen("MarkerEditor"))
+  if (HasWindowData("MarkerEditor") && IsWindowOpen("MarkerEditor")) {
     taco->OpenWindow("MarkerEditor");
+  }
 
-  if (HasWindowData("Notepad") && IsWindowOpen("Notepad"))
+  if (HasWindowData("Notepad") && IsWindowOpen("Notepad")) {
     taco->OpenWindow("Notepad");
+  }
 
-  if (HasWindowData("RaidProgress") && IsWindowOpen("RaidProgress"))
+  if (HasWindowData("RaidProgress") && IsWindowOpen("RaidProgress")) {
     taco->OpenWindow("RaidProgress");
+  }
 
-  if (HasWindowData("DungeonProgress") && IsWindowOpen("DungeonProgress"))
+  if (HasWindowData("DungeonProgress") && IsWindowOpen("DungeonProgress")) {
     taco->OpenWindow("DungeonProgress");
+  }
 
-  if (HasWindowData("TPTracker") && IsWindowOpen("TPTracker"))
+  if (HasWindowData("TPTracker") && IsWindowOpen("TPTracker")) {
     taco->OpenWindow("TPTracker");
+  }
 }
 
 bool ShiftState = false;
@@ -142,7 +149,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
   }
 
   if (ccode == HC_ACTION) {
-    KBDLLHOOKSTRUCT* pkbdllhook = (KBDLLHOOKSTRUCT*)lParam;
+    auto* pkbdllhook = (KBDLLHOOKSTRUCT*)lParam;
     HKL dwhkl = nullptr;
     BYTE dbKbdState[256];
     TCHAR szCharBuf[32];
@@ -164,8 +171,9 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
       // ToAsciiEx to return a value other than -1 by passing the same key
       // again. It should happen after 1 call.
       while (ToAsciiEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
-                       reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) < 0)
+                       reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) < 0) {
         ;
+      }
     } else {
       // Do something with szCharBuf here since this will overwrite it...
       // If we have a saved vkCode from last call, it was a dead key we need to
@@ -188,27 +196,31 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
   }
 
   if (wParam != WM_KEYDOWN && wParam != WM_KEYUP && wParam != WM_CHAR &&
-      wParam != WM_DEADCHAR && wParam != WM_UNICHAR)
+      wParam != WM_DEADCHAR && wParam != WM_UNICHAR) {
     return CallNextHookEx(nullptr, ccode, wParam, lParam);
+  }
 
   auto wnd = GetForegroundWindow();
   if (ccode != HC_ACTION || !lParam ||
-      (wnd != gw2Window && App && wnd != (HWND)App->GetHandle()))
+      (wnd != gw2Window && App && wnd != App->GetHandle())) {
     return CallNextHookEx(nullptr, ccode, wParam, lParam);
+  }
 
-  if (App && wnd == (HWND)App->GetHandle())
+  if (App && wnd == App->GetHandle()) {
     return CallNextHookEx(nullptr, ccode, wParam, lParam);
+  }
 
-  KBDLLHOOKSTRUCT* kbdat = (KBDLLHOOKSTRUCT*)lParam;
-  PostMessage((HWND)App->GetHandle(), wParam, kbdat->vkCode,
+  auto* kbdat = (KBDLLHOOKSTRUCT*)lParam;
+  PostMessage(App->GetHandle(), wParam, kbdat->vkCode,
               1 | (kbdat->scanCode << 16) + (kbdat->flags << 24));
 
   return (CallNextHookEx(nullptr, ccode, wParam, lParam));
 }
 
 LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks || mumbleLink.textboxHasFocus)
+  if (disableHooks || mumbleLink.textboxHasFocus) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
+  }
 
   // !!!!!!!!!!!!!
   // https://stackoverflow.com/questions/3548932/keyboard-hook-changes-the-behavior-of-keys
@@ -218,25 +230,29 @@ LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
   }
 
   if (wParam != WM_KEYDOWN && wParam != WM_KEYUP && wParam != WM_CHAR &&
-      wParam != WM_DEADCHAR && wParam != WM_UNICHAR)
+      wParam != WM_DEADCHAR && wParam != WM_UNICHAR) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
+  }
 
   auto wnd = GetForegroundWindow();
   if (code != HC_ACTION || !lParam ||
-      (wnd != gw2Window && App && wnd != (HWND)App->GetHandle()))
+      (wnd != gw2Window && App && wnd != App->GetHandle())) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
+  }
 
-  if (App && wnd == (HWND)App->GetHandle())
+  if (App && wnd == App->GetHandle()) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
+  }
 
-  KBDLLHOOKSTRUCT* kbdat = (KBDLLHOOKSTRUCT*)lParam;
+  auto* kbdat = (KBDLLHOOKSTRUCT*)lParam;
   UINT mapped = MapVirtualKey(kbdat->vkCode, MAPVK_VK_TO_CHAR);
 
   bool inFocus =
       App->GetFocusItem() && App->GetFocusItem()->InstanceOf("textbox");
 
-  if (mapped & (1 << 31) && !inFocus)
+  if (mapped & (1 << 31) && !inFocus) {
     return CallNextHookEx(nullptr, 0, wParam, lParam);
+  }
 
   if (!inFocus) {
     if (wParam == WM_KEYDOWN) {
@@ -246,7 +262,7 @@ LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
     return CallNextHookEx(nullptr, 0, wParam, lParam);
   }
 
-  PostMessage((HWND)App->GetHandle(), wParam, kbdat->vkCode,
+  PostMessage(App->GetHandle(), wParam, kbdat->vkCode,
               1 | (kbdat->scanCode << 16) + (kbdat->flags << 24));
   return 1;
 }
@@ -258,24 +274,26 @@ LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
 
   auto wnd = GetForegroundWindow();
   if (code < 0 || !lParam ||
-      (wnd != gw2Window && App && wnd != (HWND)App->GetHandle()))
+      (wnd != gw2Window && App && wnd != App->GetHandle())) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
+  }
 
-  MSLLHOOKSTRUCT* mousedat = (MSLLHOOKSTRUCT*)lParam;
+  auto* mousedat = (MSLLHOOKSTRUCT*)lParam;
 
   POINT ap = mousedat->pt;
-  ScreenToClient((HWND)App->GetHandle(), &ap);
+  ScreenToClient(App->GetHandle(), &ap);
 
   if (wParam == WM_LBUTTONDOWN || wParam == WM_RBUTTONDOWN) {
-    PostMessage((HWND)App->GetHandle(), wParam, 0, ap.x + (ap.y << 16));
+    PostMessage(App->GetHandle(), wParam, 0, ap.x + (ap.y << 16));
     if (App->GetMouseItem() && App->GetMouseItem() != App->GetRoot() &&
-        App->GetMouseItem()->GetType() != "clickthroughbutton")
+        App->GetMouseItem()->GetType() != "clickthroughbutton") {
       return 1;
+    }
   }
 
   if (wParam == WM_LBUTTONUP || wParam == WM_RBUTTONUP ||
       wParam == WM_MOUSEMOVE) {
-    PostMessage((HWND)App->GetHandle(), wParam, 0, ap.x + (ap.y << 16));
+    PostMessage(App->GetHandle(), wParam, 0, ap.x + (ap.y << 16));
     // let these through so we don't mess up dragging etc
     return CallNextHookEx(nullptr, code, wParam, lParam);
   }
@@ -284,9 +302,9 @@ LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
 }
 
 DWORD GetProcessIntegrityLevel(HANDLE hProcess) {
-  HANDLE hToken;
+  HANDLE hToken = nullptr;
 
-  DWORD dwLengthNeeded;
+  DWORD dwLengthNeeded = 0;
   DWORD dwError = ERROR_SUCCESS;
 
   PTOKEN_MANDATORY_LABEL pTIL = nullptr;
@@ -311,11 +329,13 @@ DWORD GetProcessIntegrityLevel(HANDLE hProcess) {
           LocalFree(pTIL);
         }
       }
-    } else
+    } else {
       return -1;
+    }
     CloseHandle(hToken);
-  } else
+  } else {
     return -1;
+  }
 
   return dwIntegrityLevel;
 }
@@ -323,7 +343,7 @@ DWORD GetProcessIntegrityLevel(HANDLE hProcess) {
 bool IsProcessRunning(DWORD pid) {
   bool procRunning = false;
 
-  HANDLE hProcessSnap;
+  HANDLE hProcessSnap = nullptr;
   PROCESSENTRY32 pe32;
   hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
@@ -366,17 +386,20 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
       WinHttpOpen(L"WinHTTPS Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
                   WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
 
-  if (hSession)
+  if (hSession) {
     hConnect = WinHttpConnect(hSession, wurl.c_str(), INTERNET_DEFAULT_PORT, 0);
+  }
 
-  if (hConnect)
+  if (hConnect) {
     hRequest =
         WinHttpOpenRequest(hConnect, L"GET", wpath.c_str(), nullptr,
                            WINHTTP_NO_REFERER, nullptr, WINHTTP_FLAG_SECURE);
+  }
 
-  if (hRequest)
+  if (hRequest) {
     bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
                                   WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
+  }
 
   if (bResults) {
     bResults = WinHttpReceiveResponse(hRequest, nullptr);
@@ -397,8 +420,9 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
     auto pszOutBuffer = std::make_unique<char[]>(dwSize + 1);
 
     if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer.get(), dwSize,
-                         &dwDownloaded))
+                         &dwDownloaded)) {
       return "";
+    }
 
     data.Write(std::string_view(pszOutBuffer.get(), dwSize));
 
@@ -484,50 +508,57 @@ bool SetupTacoProtocolHandling() {
   TCHAR szFileName[MAX_PATH + 1];
   GetModuleFileName(nullptr, szFileName, MAX_PATH + 1);
 
-  HKEY key;
+  HKEY key = nullptr;
 
   if (RegCreateKeyEx(HKEY_CLASSES_ROOT, "gw2taco", 0, nullptr,
                      REG_OPTION_NON_VOLATILE, 0, nullptr, &key,
                      nullptr) != ERROR_SUCCESS) {
-    if (RegOpenKey(HKEY_CLASSES_ROOT, "gw2taco", &key) != ERROR_SUCCESS)
+    if (RegOpenKey(HKEY_CLASSES_ROOT, "gw2taco", &key) != ERROR_SUCCESS) {
       return false;
+    }
   } else {
     RegCloseKey(key);
-    if (RegOpenKey(HKEY_CLASSES_ROOT, "gw2taco", &key) != ERROR_SUCCESS)
+    if (RegOpenKey(HKEY_CLASSES_ROOT, "gw2taco", &key) != ERROR_SUCCESS) {
       return false;
+    }
   }
 
   const char* urldesc = "URL:gw2taco protocol";
 
   if (RegSetKeyValue(key, nullptr, nullptr, REG_SZ, urldesc, strlen(urldesc)) !=
-      ERROR_SUCCESS)
+      ERROR_SUCCESS) {
     return false;
+  }
 
-  if (RegSetKeyValue(key, nullptr, "URL Protocol", REG_SZ, nullptr, 0))
+  if (RegSetKeyValue(key, nullptr, "URL Protocol", REG_SZ, nullptr, 0)) {
     return false;
+  }
 
   if (RegSetKeyValue(key, "DefaultIcon", nullptr, REG_SZ, szFileName,
-                     strlen(szFileName)) != ERROR_SUCCESS)
+                     strlen(szFileName)) != ERROR_SUCCESS) {
     return false;
+  }
 
   auto openMask = std::string("\"") + szFileName + "\" -fromurl %1";
 
   if (RegSetKeyValue(key, "shell\\open\\command", nullptr, REG_SZ,
-                     openMask.c_str(), openMask.size()) != ERROR_SUCCESS)
+                     openMask.c_str(), openMask.size()) != ERROR_SUCCESS) {
     return false;
+  }
 
   RegCloseKey(key);
   return true;
 }
 
 bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
-  LPSTREAM stream;
+  LPSTREAM stream = nullptr;
 
   HRESULT hr = URLOpenBlockingStream(
       nullptr, ("https://" + std::string(url)).c_str(), &stream, 0, nullptr);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     hr = URLOpenBlockingStream(nullptr, ("http://" + std::string(url)).c_str(),
                                &stream, 0, nullptr);
+  }
 
   if (FAILED(hr)) {
     return false;
@@ -595,11 +626,13 @@ void FetchMarkerPackOnline(std::string_view ourl) {
           return;
         }
 
-        if (fileName.find(".zip") == fileName.size() - 4)
+        if (fileName.find(".zip") == fileName.size() - 4) {
           fileName = fileName.substr(0, fileName.size() - 4);
+        }
 
-        if (fileName.find(".taco") == fileName.size() - 5)
+        if (fileName.find(".taco") == fileName.size() - 5) {
           fileName = fileName.substr(0, fileName.size() - 5);
+        }
 
         for (char& x : fileName) {
           if (!isalnum(x)) {
@@ -651,8 +684,8 @@ BOOL __stdcall gw2WindowCountFunc(HWND hwnd, LPARAM lParam) {
 }
 
 BOOL __stdcall gw2WindowFromPIDFunction(HWND hWnd, LPARAM a2) {
-  DWORD dwProcessId;    // [esp+4h] [ebp-198h]
-  CHAR ClassName[400];  // [esp+8h] [ebp-194h]
+  DWORD dwProcessId = 0;  // [esp+4h] [ebp-198h]
+  CHAR ClassName[400];    // [esp+8h] [ebp-194h]
 
   memset(&ClassName, 0, 400);
   GetClassNameA(hWnd, ClassName, 199);
@@ -687,11 +720,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     TCHAR szFileName[MAX_PATH + 1];
     GetModuleFileName(nullptr, szFileName, MAX_PATH + 1);
     std::string s(szFileName);
-    for (int32_t x = s.size() - 1; x >= 0; x--)
+    for (int32_t x = s.size() - 1; x >= 0; x--) {
       if (s[x] == '\\' || s[x] == '/') {
         s[x] = 0;
         break;
       }
+    }
     SetCurrentDirectory(s.c_str());
 
     auto TacoWindow = FindWindow("CoRE2", "Guild Wars 2 Tactical Overlay");
@@ -728,8 +762,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
   }
 
-  if (!SetupTacoProtocolHandling())
+  if (!SetupTacoProtocolHandling()) {
     Log_Err("[GW2TacO] Failed to register gw2taco:// protocol with windows.");
+  }
 
   typedef HRESULT(WINAPI *
                   SetProcessDpiAwareness)(_In_ PROCESS_DPI_AWARENESS value);
@@ -744,9 +779,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     HMODULE hShCore = LoadLibrary("Shcore.dll");
     if (hShCore) {
-      SetProcessDpiAwareness setDPIAwareness =
-          reinterpret_cast<SetProcessDpiAwareness>(
-              GetProcAddress(hShCore, "SetProcessDpiAwareness"));
+      auto setDPIAwareness = reinterpret_cast<SetProcessDpiAwareness>(
+          GetProcAddress(hShCore, "SetProcessDpiAwareness"));
       if (setDPIAwareness) {
         setDPIAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
         dpiSet = true;
@@ -757,9 +791,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
     if (!dpiSet) {
       HMODULE hUser32 = LoadLibrary("user32.dll");
-      SetProcessDPIAwareFunc setDPIAware =
-          reinterpret_cast<SetProcessDPIAwareFunc>(
-              GetProcAddress(hUser32, "SetProcessDPIAware"));
+      auto setDPIAware = reinterpret_cast<SetProcessDPIAwareFunc>(
+          GetProcAddress(hUser32, "SetProcessDPIAware"));
       if (setDPIAware) {
         setDPIAware();
         Log_Nfo("[GW2TacO] DPI Awareness set through SetProcessDpiAware");
@@ -797,10 +830,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   p.OverrideWindowStyleEx =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
       WS_EX_TOOLWINDOW;  // | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
-  if (dComp)
+  if (dComp) {
     p.OverrideWindowStyleEx = WS_EX_TOPMOST | WS_EX_TRANSPARENT |
                               WS_EX_TOOLWINDOW | WS_EX_LAYERED |
                               WS_EX_NOREDIRECTIONBITMAP;
+  }
 
   if (!App->Initialize(p)) {
     MessageBox(
@@ -813,11 +847,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     return false;
   }
 
-  if (!ChangeWindowMessageFilterEx((HWND)App->GetHandle(), WM_COPYDATA,
-                                   MSGFLT_ALLOW, nullptr))
+  if (!ChangeWindowMessageFilterEx(App->GetHandle(), WM_COPYDATA, MSGFLT_ALLOW,
+                                   nullptr)) {
     Log_Err(
         "[GW2TacO] Failed to change message filters for WM_COPYDATA - "
         "gw2taco:// protocol messages will NOT be processed!");
+  }
 
   DWORD hookThreadID = 0;
 
@@ -846,7 +881,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   OpenWindows(App.get());
 
-  HWND handle = (HWND)App->GetHandle();
+  HWND handle = App->GetHandle();
 
   SetConfigValue("LogTrails", 0);
 
@@ -861,7 +896,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   DWORD GW2Pid = 0;
 
-  GW2TacO* taco = dynamic_cast<GW2TacO*>(
+  auto* taco = dynamic_cast<GW2TacO*>(
       App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
 
   if (!taco) {
@@ -973,13 +1008,14 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                     currentProcessIntegrity, gw2ProcessIntegrity);
 
             if (gw2ProcessIntegrity > currentProcessIntegrity ||
-                gw2ProcessIntegrity == -1)
+                gw2ProcessIntegrity == -1) {
               MessageBox(nullptr,
                          "GW2 seems to have more elevated rights than GW2 "
                          "TacO.\nThis will probably result in TacO not being "
                          "interactive when GW2 is in focus.\nIf this is an "
                          "issue for you, restart TacO in Administrator mode.",
                          "Warning", MB_ICONWARNING);
+            }
           }
           FoundGW2Window = true;
 
@@ -991,7 +1027,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
           if (GW2ClientRect.right - GW2ClientRect.left != pos.Width() ||
               GW2ClientRect.bottom - GW2ClientRect.top != pos.Height() ||
               p.x != pos.x1 || p.y != pos.y1) {
-            Log_Err(
+            Log_Nfo(
                 "[GW2TacO] gw2 window size change: {:d} {:d} {:d} {:d} ({:d} "
                 "{:d})",
                 GW2ClientRect.left, GW2ClientRect.top, GW2ClientRect.right,
@@ -1020,13 +1056,13 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
           if (foregroundWindow == gw2Window && App->GetFocusItem() &&
               App->GetFocusItem()->InstanceOf("textbox")) {
-            SetForegroundWindow((HWND)App->GetHandle());
-            SetFocus((HWND)App->GetHandle());
-            ::SetWindowPos((HWND)App->GetHandle(), HWND_TOPMOST, 0, 0, 0, 0,
+            SetForegroundWindow(App->GetHandle());
+            SetFocus(App->GetHandle());
+            ::SetWindowPos(App->GetHandle(), HWND_TOPMOST, 0, 0, 0, 0,
                            SWP_NOMOVE | SWP_NOSIZE);
           }
 
-          if (foregroundWindow == (HWND)App->GetHandle() &&
+          if (foregroundWindow == App->GetHandle() &&
               !(App->GetFocusItem() &&
                 App->GetFocusItem()->InstanceOf("textbox"))) {
             SetForegroundWindow(gw2Window);
@@ -1035,8 +1071,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
           bool EditedButNotSelected =
               (foregroundWindow != gw2Window &&
-               foregroundWindow != (HWND)App->GetHandle() &&
-               App->GetFocusItem() &&
+               foregroundWindow != App->GetHandle() && App->GetFocusItem() &&
                App->GetFocusItem()->InstanceOf("textbox"));
           if (EditedButNotSelected) {
             App->GetRoot()->SetFocus();
@@ -1047,12 +1082,13 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                               EditedButNotSelected))) {
             HWND wnd = ::GetNextWindow(gw2Window, GW_HWNDPREV);
             if (wnd != handle) {
-              if (wnd)
+              if (wnd) {
                 ::SetWindowPos(handle, wnd, 0, 0, 0, 0,
                                SWP_NOMOVE | SWP_NOSIZE);
-              else
+              } else {
                 ::SetWindowPos(handle, HWND_TOPMOST, 0, 0, 0, 0,
                                SWP_NOMOVE | SWP_NOSIZE);
+              }
             }
 
             App->GetRoot()->Hide(
@@ -1061,8 +1097,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                  (GW2ClientRect.bottom - GW2ClientRect.top == 976) &&
                  (p.x != 0 || p.y != 0)));
           }
-        } else
+        } else {
           App->GetRoot()->Hide(!shortTick);
+        }
 
         taco->TickScriptEngine();
         AutoSaveConfig();
@@ -1130,10 +1167,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   SaveConfig();
 
-  while (keyboardHookActive)
+  while (keyboardHookActive) {
     ;
-  while (mouseHookActive)
+  }
+  while (mouseHookActive) {
     ;
+  }
 
   extern std::thread wvwPollThread;
   extern std::thread wvwUpdatThread;

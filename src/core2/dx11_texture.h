@@ -17,7 +17,7 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
   bool SetToSampler(const CORESAMPLER Sampler) override;
 
  public:
-  CCoreDX11Texture2D(CCoreDX11Device* Device);
+  explicit CCoreDX11Texture2D(CCoreDX11Device* Device);
   ~CCoreDX11Texture2D() override;
 
   void OnDeviceLost() override;
@@ -52,14 +52,14 @@ class CCoreDX11Texture3D : public CCoreTexture3D {
   // LPDIRECT3DDEVICE9 Dev;
 
  public:
-  CCoreDX11Texture3D(CCoreDX11Device* Device);
+  explicit CCoreDX11Texture3D(CCoreDX11Device* Device);
 };
 
 class CCoreDX11TextureCube : public CCoreTextureCube {
   // LPDIRECT3DDEVICE9 Dev;
 
  public:
-  CCoreDX11TextureCube(CCoreDX11Device* Device);
+  explicit CCoreDX11TextureCube(CCoreDX11Device* Device);
 };
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,

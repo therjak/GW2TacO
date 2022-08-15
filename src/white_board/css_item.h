@@ -20,12 +20,12 @@ class IWBCSS {
   bool HasClass(std::string_view s);
   bool IsFitForSelector(std::string_view selector);
 
-  virtual const std::string& GetType() const = 0;
+  [[nodiscard]] virtual const std::string& GetType() const = 0;
   static const std::string& GetClassName() {
     static const std::string type = "IWBCSS";
     return type;
   }
-  virtual bool InstanceOf(std::string_view name) const = 0;
+  [[nodiscard]] virtual bool InstanceOf(std::string_view name) const = 0;
 
   virtual bool ApplyStyle(std::string_view prop, std::string_view value,
                           const std::vector<std::string>& Pseudo);

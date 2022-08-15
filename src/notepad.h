@@ -11,7 +11,7 @@ class GW2Notepad : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
   bool Hidden = false;
-  GUID CurrentPOI;
+  GUID CurrentPOI{};
 
   bool ChangeDefault = false;
   bool canSetFocus = false;

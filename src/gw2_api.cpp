@@ -22,10 +22,11 @@ std::string FetchAPIData(std::string_view path, std::string_view apiKey) {
   }
 
   std::string ask(path);
-  if (hasquestionmark)
+  if (hasquestionmark) {
     ask += "&access_token=";
-  else
+  } else {
     ask += "?access_token=";
+  }
   ask += apiKey;
 
   return FetchHTTPS("api.guildwars2.com", ask);
@@ -64,9 +65,9 @@ void APIKey::FetchData() {
     Object json;
     json.parse(keyData);
 
-    if (json.has<String>("name"))
+    if (json.has<String>("name")) {
       keyName = json.get<String>("name");
-    else {
+    } else {
       valid = false;
     }
 
@@ -308,10 +309,11 @@ void APIKeyManager::RebuildConfigValues() {
   int x = 0;
   while (true) {
     std::string cfgName = "GW2APIKey" + std::to_string(x++);
-    if (HasConfigString(cfgName))
+    if (HasConfigString(cfgName)) {
       RemoveConfigEntry(cfgName);
-    else
+    } else {
       break;
+    }
   }
 
   std::scoped_lock l(keyMutex);

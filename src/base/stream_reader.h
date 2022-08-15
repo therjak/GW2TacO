@@ -10,7 +10,7 @@ class CStreamReader {
   uint8_t readerLastChar;
   // this reads nCount bytes from the stream
   virtual int32_t ReadStream(void* lpBuf, uint32_t nCount) = 0;
-  virtual int64_t GetOffset() const = 0;
+  [[nodiscard]] virtual int64_t GetOffset() const = 0;
   uint32_t ReadBits(uint32_t BitCount);
 
  public:
@@ -24,7 +24,7 @@ class CStreamReader {
   uint32_t ReadDWord();
   uint8_t ReadByte();
 
-  virtual int64_t GetLength() const = 0;
+  [[nodiscard]] virtual int64_t GetLength() const = 0;
   bool eof();
 };
 
@@ -34,7 +34,7 @@ class CStreamReaderMemory : public CStreamReader {
   uint64_t Offset;
 
   int32_t ReadStream(void* lpBuf, uint32_t nCount) override;
-  int64_t GetOffset() const override;
+  [[nodiscard]] int64_t GetOffset() const override;
 
  public:
   CStreamReaderMemory();
@@ -44,6 +44,6 @@ class CStreamReaderMemory : public CStreamReader {
   int32_t Open(std::string_view filename);
   std::string ReadLine();
 
-  uint8_t* GetData() const;
-  int64_t GetLength() const override;
+  [[nodiscard]] uint8_t* GetData() const;
+  [[nodiscard]] int64_t GetLength() const override;
 };

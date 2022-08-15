@@ -263,13 +263,15 @@ LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
         ((LPCREATESTRUCT)lParam)->lpCreateParams);
     SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)wnd);
     wnd->hWnd = hWnd;
-  } else
+  } else {
     wnd = (CCoreWindowHandlerWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+  }
 
-  if (wnd)
+  if (wnd) {
     return wnd->WindowProc(uMsg, wParam, lParam);
-  else
+  } else {
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
+  }
 }
 
 LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
@@ -295,8 +297,9 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
       HandleResize();
     } break;
     case WM_SIZE: {
-      if (Device && Device->IsWindowed() && hWnd)
+      if (Device && Device->IsWindowed() && hWnd) {
         dwStyle = GetWindowLong(hWnd, GWL_STYLE);
+      }
 
       if (wParam == SIZE_MINIMIZED) {
         Active = false;
@@ -330,8 +333,9 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
     } break;
     case WM_SYSKEYDOWN: {
       Log_Err("[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam);
-      if (wParam == VK_F10)
+      if (wParam == VK_F10) {
         return 0;  // if we dont do this, system menu opens up on F10 = bad for
+      }
                    // fraps
       if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
         return 0;
@@ -378,8 +382,9 @@ void CCoreWindowHandlerWin::HandleResize() {
   XRes = ClientRect.Width();
   YRes = ClientRect.Height();
 
-  if (Device && (old.Width() != XRes || old.Height() != YRes))
+  if (Device && (old.Width() != XRes || old.Height() != YRes)) {
     Device->Resize(XRes, YRes);
+  }
 }
 
 HWND CCoreWindowHandlerWin::GetHandle() { return hWnd; }
@@ -392,8 +397,9 @@ void CCoreWindowHandlerWin::FinalizeMouseCursor() {
   RECT ClientRect;
   GetClientRect(hWnd, &ClientRect);
 
-  if (CRect(0, 0, ClientRect.right, ClientRect.bottom).Contains(mp))
+  if (CRect(0, 0, ClientRect.right, ClientRect.bottom).Contains(mp)) {
     SetCursor(MouseCursorsAt(CurrentMouseCursor));
+  }
 }
 
 void CCoreWindowHandlerWin::SetWindowTitle(std::string_view Title) {

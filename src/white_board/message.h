@@ -40,8 +40,8 @@ class CWBMessage final {
   ~CWBMessage() = default;
 
   WBMESSAGE GetMessage() const { return Message; }
-  WBGUID GetTarget() const { return Target; }
-  math::CPoint GetPosition() const {
+  [[nodiscard]] WBGUID GetTarget() const { return Target; }
+  [[nodiscard]] math::CPoint GetPosition() const {
     return math::CPoint(Position[0], Position[1]);
   }
 

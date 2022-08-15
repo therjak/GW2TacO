@@ -34,7 +34,7 @@ bool TS3Connection::TryConnect() {
 }
 
 void TS3Connection::TryValidateClientID() {
-  for (const auto& handler : handlers)
+  for (const auto& handler : handlers) {
     if (handler.second.Connected && handler.second.clientIDInvalid) {
       currentHandlerID = handler.second.id;
       CommandResponse use =
@@ -45,8 +45,9 @@ void TS3Connection::TryValidateClientID() {
       CommandResponse whoami = SendCommand("whoami");
       handlers[currentHandlerID].Connected = whoami.ErrorCode != 1794;
 
-      if (whoami.ErrorCode == 512)
+      if (whoami.ErrorCode == 512) {
         handlers[currentHandlerID].clientIDInvalid = true;
+      }
 
       if (!whoami.ErrorCode) {
         handlers[currentHandlerID].clientIDInvalid = false;
@@ -59,20 +60,25 @@ void TS3Connection::TryValidateClientID() {
 
         CommandResponse serverName =
             SendCommand("servervariable virtualserver_name");
-        if (!serverName.ErrorCode)
-          if (serverName.Lines[0].find("virtualserver_name=") == 0)
+        if (!serverName.ErrorCode) {
+          if (serverName.Lines[0].find("virtualserver_name=") == 0) {
             handlers[currentHandlerID].name =
                 unescape(serverName.Lines[0].substr(19));
+          }
+        }
 
         CommandResponse channelList = SendCommand("channellist");
-        if (!channelList.ErrorCode)
+        if (!channelList.ErrorCode) {
           ProcessChannelList(channelList.Lines[0], currentHandlerID);
+        }
 
         CommandResponse clientList = SendCommand("clientlist -voice");
-        if (!clientList.ErrorCode)
+        if (!clientList.ErrorCode) {
           ProcessClientList(clientList.Lines[0], currentHandlerID);
+        }
       }
     }
+  }
 }
 
 void TS3Connection::Tick() {
@@ -115,10 +121,11 @@ void TS3Connection::InitConnection() {
     std::string apiKey = GetConfigString("TS3APIKey");
     auto response =
         SendCommand("auth apikey=" + apiKey);  // 3P9O-GWJ8-1TKI-OY1F-AX0T-BPQK
-    if (response.ErrorCode)
+    if (response.ErrorCode) {
       authenticated = false;
-    else
+    } else {
       authenticated = true;
+    }
   }
 
   if (!authenticated) {
@@ -133,7 +140,7 @@ void TS3Connection::InitConnection() {
   CommandResponse response = SendCommand("serverconnectionhandlerlist");
   if (!response.ErrorCode && !response.Lines.empty()) {
     auto schandlers = Split(response.Lines[0], "|");
-    for (auto& schandler : schandlers)
+    for (auto& schandler : schandlers) {
       if (schandler.find("schandlerid=") == 0) {
         TS3Schandler handler;
         std::sscanf(schandler.c_str(), "schandlerid=%d", &handler.id);
@@ -145,8 +152,9 @@ void TS3Connection::InitConnection() {
         CommandResponse whoami = SendCommand("whoami");
         handlers[handler.id].Connected = whoami.ErrorCode != 1794;
 
-        if (whoami.ErrorCode == 512)
+        if (whoami.ErrorCode == 512) {
           handlers[handler.id].clientIDInvalid = true;
+        }
 
         if (!whoami.ErrorCode) {
           handlers[handler.id].clientIDInvalid = false;
@@ -159,20 +167,25 @@ void TS3Connection::InitConnection() {
 
           CommandResponse serverName =
               SendCommand("servervariable virtualserver_name");
-          if (!serverName.ErrorCode)
-            if (serverName.Lines[0].find("virtualserver_name=") == 0)
+          if (!serverName.ErrorCode) {
+            if (serverName.Lines[0].find("virtualserver_name=") == 0) {
               handlers[handler.id].name =
                   unescape(serverName.Lines[0].substr(19));
+            }
+          }
 
           CommandResponse channelList = SendCommand("channellist");
-          if (!channelList.ErrorCode)
+          if (!channelList.ErrorCode) {
             ProcessChannelList(channelList.Lines[0], handler.id);
+          }
 
           CommandResponse clientList = SendCommand("clientlist -voice");
-          if (!clientList.ErrorCode)
+          if (!clientList.ErrorCode) {
             ProcessClientList(clientList.Lines[0], handler.id);
+          }
         }
       }
+    }
   }
 
   SendCommand(std::format("use {:d}", currentHandlerID));
@@ -202,8 +215,9 @@ TS3Connection::CommandResponse TS3Connection::SendCommand(
     response.Lines.push_back(nextline);
     if (nextline.find("error") == 0) {
       auto msg = SplitByWhitespace(nextline);
-      if (msg.size() >= 2)
+      if (msg.size() >= 2) {
         std::sscanf(msg[1].c_str(), "id=%d", &response.ErrorCode);
+      }
 
       if (response.ErrorCode == 1796) {
         authenticated = false;
@@ -213,9 +227,10 @@ TS3Connection::CommandResponse TS3Connection::SendCommand(
         response.Message = msg[2].substr(4);
       }
 
-      if (response.ErrorCode)
+      if (response.ErrorCode) {
         Log_Dbg("[GW2TacO] command {:s} response: {:d} {:s}", message,
                 response.ErrorCode, response.Message);
+      }
       break;
     }
   }
@@ -238,18 +253,22 @@ void TS3Connection::ProcessNotification(std::string_view s) {
   auto cmd = SplitByWhitespace(s);
 
   int32_t schandlerid = 0;
-  for (size_t x = 1; x < cmd.size(); x++)
-    if (cmd[x].find("schandlerid=") == 0)
+  for (size_t x = 1; x < cmd.size(); x++) {
+    if (cmd[x].find("schandlerid=") == 0) {
       std::sscanf(cmd[x].c_str(), "schandlerid=%d", &schandlerid);
+    }
+  }
 
   if (cmd[0] == "notifytalkstatuschange") {
     int32_t clientid = -1;
     int32_t status = -1;
     for (size_t x = 1; x < cmd.size(); x++) {
-      if (cmd[x].find("status=") == 0)
+      if (cmd[x].find("status=") == 0) {
         std::sscanf(cmd[x].c_str(), "status=%d", &status);
-      if (cmd[x].find("clid=") == 0)
+      }
+      if (cmd[x].find("clid=") == 0) {
         std::sscanf(cmd[x].c_str(), "clid=%d", &clientid);
+      }
     }
 
     if (clientid >= 0 && status >= 0) {
@@ -271,10 +290,12 @@ void TS3Connection::ProcessNotification(std::string_view s) {
     int32_t clientid = -1;
     int32_t channelid = -1;
     for (size_t x = 1; x < cmd.size(); x++) {
-      if (cmd[x].find("ctid=") == 0)
+      if (cmd[x].find("ctid=") == 0) {
         std::sscanf(cmd[x].c_str(), "ctid=%d", &channelid);
-      if (cmd[x].find("clid=") == 0)
+      }
+      if (cmd[x].find("clid=") == 0) {
         std::sscanf(cmd[x].c_str(), "clid=%d", &clientid);
+      }
     }
 
     if (clientid >= 0 && channelid >= 0) {
@@ -322,10 +343,12 @@ void TS3Connection::ProcessNotification(std::string_view s) {
           }
           CommandResponse serverName =
               SendCommand("servervariable virtualserver_name");
-          if (!serverName.ErrorCode)
-            if (serverName.Lines[0].find("virtualserver_name=") == 0)
+          if (!serverName.ErrorCode) {
+            if (serverName.Lines[0].find("virtualserver_name=") == 0) {
               handlers[schandlerid].name =
                   unescape(serverName.Lines[0].substr(19));
+            }
+          }
         }
       }
     }
@@ -414,7 +437,7 @@ std::string TS3Connection::ReadLine() {
 
   std::string lne = connection.ReadLine();
   if (connection.GetLength()) {
-    char c;
+    char c = 0;
     if (connection.Peek(&c, 1)) {
       if (c == '\r') {
         c = connection.ReadByte();

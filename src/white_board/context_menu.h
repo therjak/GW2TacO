@@ -15,8 +15,8 @@ class CWBContextItem {
   std::string Text;
   int32_t ReturnID;
   bool Separator;
-  bool Highlighted;
-  bool closesContext;
+  bool Highlighted{};
+  bool closesContext{};
 
   std::vector<std::unique_ptr<CWBContextItem>> Children;
   CWBContextItem* CopyOf = nullptr;

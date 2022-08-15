@@ -32,7 +32,7 @@ class CWBBox : public CWBItem {
   void RearrangeVertical();
   void UpdateScrollbarData();
 
-  int32_t Spacing;
+  int32_t Spacing{};
   WBBOXARRANGEMENT Arrangement;
   WBALIGNMENT AlignmentX, AlignmentY;
   WBBOXSIZING SizingX, SizingY;

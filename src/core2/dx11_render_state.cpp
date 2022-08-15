@@ -211,14 +211,17 @@ bool CCoreDX11SamplerState::Update() {
 bool CCoreDX11SamplerState::Apply(CORESAMPLER Smp) {
   Update();
 
-  if (Smp >= CORESAMPLER::PS0 && Smp <= CORESAMPLER::PS15)
+  if (Smp >= CORESAMPLER::PS0 && Smp <= CORESAMPLER::PS15) {
     Context->PSSetSamplers(Smp - CORESAMPLER::PS0, 1, &State);
+  }
 
-  if (Smp >= CORESAMPLER::VS0 && Smp <= CORESAMPLER::VS3)
+  if (Smp >= CORESAMPLER::VS0 && Smp <= CORESAMPLER::VS3) {
     Context->VSSetSamplers(Smp - CORESAMPLER::VS0, 1, &State);
+  }
 
-  if (Smp >= CORESAMPLER::GS0 && Smp <= CORESAMPLER::GS3)
+  if (Smp >= CORESAMPLER::GS0 && Smp <= CORESAMPLER::GS3) {
     Context->GSSetSamplers(Smp - CORESAMPLER::GS0, 1, &State);
+  }
 
   return true;
 }

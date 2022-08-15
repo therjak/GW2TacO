@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -7,7 +8,7 @@
 #include "src/util/xml_node.h"
 
 class CXMLDocument {
-  rapidxml::xml_document<> doc;
+  std::unique_ptr<rapidxml::xml_document<>> doc;
   std::string memString;
 
  public:

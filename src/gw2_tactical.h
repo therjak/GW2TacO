@@ -67,7 +67,7 @@ struct MarkerTypeData {
     bool keepOnMapEdgeSaved : 1;
     bool infoSaved : 1;
     bool infoRangeSaved : 1;
-  } bits;
+  } bits{};
 
   MarkerTypeData();
 
@@ -127,7 +127,7 @@ struct POI {
   std::string_view zipFile;
   std::string_view iconFile;
 
-  GUID guid;
+  GUID guid{};
 
   GW2TacticalCategory* category = nullptr;
   void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
@@ -139,7 +139,7 @@ struct POI {
 };
 
 struct POIActivationDataKey {
-  GUID guid;
+  GUID guid{};
   int uniqueData = 0;
 
   POIActivationDataKey() = default;
@@ -159,7 +159,7 @@ struct hash<POIActivationDataKey> {
 }  // namespace std
 
 struct POIActivationData {
-  GUID poiguid;
+  GUID poiguid{};
   int uniqueData = 0;
   time_t lastUpdateTime = 0;
 };
@@ -191,7 +191,7 @@ extern GW2TacticalCategory CategoryRoot;
 POISet& GetMapPOIs();
 
 class GW2TacticalDisplay : public CWBItem {
-  bool TacticalIconsOnEdge;
+  bool TacticalIconsOnEdge = false;
   float asp = 0;
   math::CMatrix4x4 cam;
   math::CMatrix4x4 persp;
@@ -258,7 +258,7 @@ class GW2TacticalCategory {
 
   bool IsDisplayed = true;
   bool cachedVisibility = true;
-  bool IsVisible() const;
+  [[nodiscard]] bool IsVisible() const;
   void CacheVisibility();
 
   static bool visibilityCached;

@@ -27,10 +27,12 @@ void CWBMetricValue::SetValue(float Relative, float Pixels) {
 float CWBMetricValue::GetValue(float ParentSize, int32_t ContentSize) {
   if (AutoSize) return ContentSize + 0.5f;
   float v = 0;
-  if (MetricsUsedAt(WBMETRICTYPE::WB_PIXELS))
+  if (MetricsUsedAt(WBMETRICTYPE::WB_PIXELS)) {
     v += MetricsAt(WBMETRICTYPE::WB_PIXELS);
-  if (MetricsUsedAt(WBMETRICTYPE::WB_RELATIVE))
+  }
+  if (MetricsUsedAt(WBMETRICTYPE::WB_RELATIVE)) {
     v += MetricsAt(WBMETRICTYPE::WB_RELATIVE) * ParentSize;
+  }
   return v;
 }
 
@@ -173,31 +175,35 @@ bool CWBPositionDescriptor::IsHeightSet() {
 int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize, CSize ContentSize) {
   const bool WidthSet =
       Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
-  if (WidthSet)
+  if (WidthSet) {
     return static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_WIDTH].GetValue(
         static_cast<float>(ParentSize.x), ContentSize.x));
+  }
   return 0;
 }
 
 int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
   const bool HeightSet =
       Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
-  if (HeightSet)
+  if (HeightSet) {
     return static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_HEIGHT].GetValue(
         static_cast<float>(ParentSize.y), ContentSize.y));
+  }
   return 0;
 }
 
 bool CWBPositionDescriptor::IsAutoResizer() {
   const bool WidthSet =
       Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
-  if (WidthSet && Positions[WBPOSITIONTYPE::WB_WIDTH].IsAutoResizer())
+  if (WidthSet && Positions[WBPOSITIONTYPE::WB_WIDTH].IsAutoResizer()) {
     return true;
+  }
 
   const bool HeightSet =
       Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
-  if (HeightSet && Positions[WBPOSITIONTYPE::WB_HEIGHT].IsAutoResizer())
+  if (HeightSet && Positions[WBPOSITIONTYPE::WB_HEIGHT].IsAutoResizer()) {
     return true;
+  }
 
   return false;
 }
@@ -290,12 +296,13 @@ void CWBMosaic::AddImage(const CWBMosaicImage& Image) {
 }
 
 void CWBMosaic::Render(CWBDrawAPI* API, const CRect& Position) {
-  for (auto& image : Images)
+  for (auto& image : Images) {
     image.Render(API,
                  Position + CRect(OvershootAt(WBRECTSIDE::WB_RECTSIDE_LEFT),
                                   OvershootAt(WBRECTSIDE::WB_RECTSIDE_TOP),
                                   OvershootAt(WBRECTSIDE::WB_RECTSIDE_RIGHT),
                                   OvershootAt(WBRECTSIDE::WB_RECTSIDE_BOTTOM)));
+  }
 }
 
 void CWBMosaic::SetName(std::string_view name) { Name = name; }
@@ -399,11 +406,13 @@ void CWBSkin::RenderElement(CWBDrawAPI* API, std::string_view Name,
 }
 
 WBSKINELEMENTID CWBSkin::GetElementID(std::string_view Name) {
-  for (uint32_t x = 0; x < Mosaics.size(); x++)
+  for (uint32_t x = 0; x < Mosaics.size(); x++) {
     if (Mosaics[x].GetName() == Name) return x;
+  }
 
-  for (uint32_t x = 0; x < SkinItems.size(); x++)
+  for (uint32_t x = 0; x < SkinItems.size(); x++) {
     if (SkinItems[x].GetName() == Name) return x | 0x80000000;
+  }
 
   return 0xffffffff;
 }
@@ -411,13 +420,14 @@ WBSKINELEMENTID CWBSkin::GetElementID(std::string_view Name) {
 void CWBSkin::AddElement(std::string_view Name, WBATLASHANDLE Handle,
                          WBSKINELEMENTBEHAVIOR Xbehav,
                          WBSKINELEMENTBEHAVIOR Ybehav) {
-  for (auto& skin : SkinItems)
+  for (auto& skin : SkinItems) {
     if (skin.GetName() == Name) {
       skin.SetHandle(Handle);
       skin.SetBehavior(0, Xbehav);
       skin.SetBehavior(1, Ybehav);
       return;
     }
+  }
 
   SkinItems.emplace_back(CWBSkinElement());
   SkinItems.back().SetName(Name);

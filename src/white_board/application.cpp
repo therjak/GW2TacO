@@ -69,8 +69,9 @@ bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
     Target = Target->GetParent();
   }
 
-  for (int32_t x = MessagePath.size() - 1; x >= 0; x--)
+  for (int32_t x = MessagePath.size() - 1; x >= 0; x--) {
     if (MessagePath[x]->MessageProc(Message)) return true;
+  }
 
   return false;
 }
@@ -89,12 +90,15 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
       UpdateMouseItem();
     }
 
-    if (Message.GetMessage() == WBM_LEFTBUTTONDOWN)
+    if (Message.GetMessage() == WBM_LEFTBUTTONDOWN) {
       LeftDownPos = CPoint(Message.Position);
-    if (Message.GetMessage() == WBM_RIGHTBUTTONDOWN)
+    }
+    if (Message.GetMessage() == WBM_RIGHTBUTTONDOWN) {
       RightDownPos = CPoint(Message.Position);
-    if (Message.GetMessage() == WBM_MIDDLEBUTTONDOWN)
+    }
+    if (Message.GetMessage() == WBM_MIDDLEBUTTONDOWN) {
       MidDownPos = CPoint(Message.Position);
+    }
 
     if (MouseCaptureItem)  // mouse messages are captured by this item, send
                            // them directly there
@@ -109,8 +113,9 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
       // handle focus change
       if (Message.GetMessage() == WBM_LEFTBUTTONDOWN ||
           Message.GetMessage() == WBM_MIDDLEBUTTONDOWN ||
-          Message.GetMessage() == WBM_RIGHTBUTTONDOWN)
+          Message.GetMessage() == WBM_RIGHTBUTTONDOWN) {
         mi->SetFocus();
+      }
 
       SendMessageToItem(Message, mi);
     }
@@ -137,8 +142,9 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
     Target = Target->GetChildInFocus();
   }
 
-  for (int32_t x = MessagePath.size() - 1; x >= 0; x--)
+  for (int32_t x = MessagePath.size() - 1; x >= 0; x--) {
     if (MessagePath[x]->MessageProc(Message)) return;
+  }
 }
 
 CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
@@ -149,7 +155,9 @@ CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
 void CWBApplication::HandleResize() {
   CCoreWindowHandlerWin::HandleResize();
 
-  if (Root) Root->SetPosition(CRect(0, 0, XRes, YRes));
+  if (Root) {
+    Root->SetPosition(CRect(0, 0, XRes, YRes));
+  }
 }
 
 LRESULT CWBApplication::InjectMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -177,15 +185,17 @@ int32_t CWBApplication::GetKeyboardState() {
 
 int32_t CWBApplication::GetInitialKeyboardDelay() {
   int32_t setting = 0;
-  if (!SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &setting, 0))
+  if (!SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &setting, 0)) {
     return (1 + 1) * 250;  // 1 by default
+  }
   return (setting + 1) * 250;
 }
 
 int32_t CWBApplication::GetKeyboardRepeatTime() {
   int32_t setting = 0;
-  if (!SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &setting, 0))
+  if (!SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &setting, 0)) {
     return 400 - (31 * 12);  // 31 by default
+  }
   return 400 - (setting * 12);
 }
 
@@ -212,12 +222,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       ScreenToClient(hWnd, &ap);
       SendMessage(CWBMessage(this, WBM_LEFTBUTTONDOWN, 0, ap.x, ap.y));
 
-      if (uMsg == WM_LBUTTONDBLCLK)
+      if (uMsg == WM_LBUTTONDBLCLK) {
         SendMessage(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
+      }
 
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_LEFT;
-      NextRepeatedClickTime =
-          int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
+      NextRepeatedClickTime = static_cast<int64_t>(globalTimer.GetTime()) +
+                              static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_LBUTTONUP: {
       Left = false;
@@ -237,12 +248,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       ScreenToClient(hWnd, &ap);
       SendMessage(CWBMessage(this, WBM_RIGHTBUTTONDOWN, 0, ap.x, ap.y));
 
-      if (uMsg == WM_RBUTTONDBLCLK)
+      if (uMsg == WM_RBUTTONDBLCLK) {
         SendMessage(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
+      }
 
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT;
-      NextRepeatedClickTime =
-          int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
+      NextRepeatedClickTime = static_cast<int64_t>(globalTimer.GetTime()) +
+                              static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_RBUTTONUP: {
       Right = false;
@@ -262,12 +274,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       ScreenToClient(hWnd, &ap);
       SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONDOWN, 0, ap.x, ap.y));
 
-      if (uMsg == WM_MBUTTONDBLCLK)
+      if (uMsg == WM_MBUTTONDBLCLK) {
         SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
+      }
 
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE;
-      NextRepeatedClickTime =
-          int64_t(globalTimer.GetTime()) + int64_t(GetInitialKeyboardDelay());
+      NextRepeatedClickTime = static_cast<int64_t>(globalTimer.GetTime()) +
+                              static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_MBUTTONUP: {
       Middle = false;
@@ -287,12 +300,15 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       // Log_Err( "[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam );
 
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
-          wParam == VK_RCONTROL)
+          wParam == VK_RCONTROL) {
         Ctrl = true;
-      if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT)
+      }
+      if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
         Shift = true;
-      if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU)
+      }
+      if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
         Alt = true;
+      }
 
       // UpdateControlKeyStates();
       // Log_Err( "[wndproc] WM_KEYDOWN/WM_SYSKEYDOWN: {:d} {:d} {:d} {:d} {:d}
@@ -303,12 +319,15 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_KEYUP:
       // Log_Dbg("[app] Keyup: {:d}",wParam);
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
-          wParam == VK_RCONTROL)
+          wParam == VK_RCONTROL) {
         Ctrl = false;
-      if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT)
+      }
+      if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
         Shift = false;
-      if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU)
+      }
+      if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
         Alt = false;
+      }
 
       // Log_Err( "[wndproc] WM_KEYUP/WM_SYSKEYUP: {:d} {:d} {:d}", uMsg,
       // wParam, lParam );
@@ -520,8 +539,9 @@ void CWBApplication::UpdateMouseItem() {
       while (newitem) {
         // find the new item in the tree of the old. if not found the mouse
         // entered the item
-        if (!MouseItemOld->FindItemInParentTree(newitem))
+        if (!MouseItemOld->FindItemInParentTree(newitem)) {
           newitem->OnMouseEnter();
+        }
         newitem = newitem->Parent;
       }
     }
@@ -721,7 +741,7 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     auto data = B64Decode(img);
 
     std::unique_ptr<uint8_t[]> Image;
-    int32_t XRes, YRes;
+    int32_t XRes = 0, YRes = 0;
     if (DecompressPNG((unsigned char*)data.c_str(), data.size(), Image, XRes,
                       YRes)) {
       ARGBtoABGR(Image.get(), XRes, YRes);
@@ -777,7 +797,7 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     auto dataimg = B64Decode(img);
     auto databin = B64Decode(bin);
 
-    int32_t XRes, YRes;
+    int32_t XRes = 0, YRes = 0;
     std::unique_ptr<uint8_t[]> Image;
     if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), Image,
                       XRes, YRes)) {
@@ -841,16 +861,18 @@ bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
   for (int32_t x = 0; x < root.GetChildCount("guitemplate"); x++) {
     CXMLNode t = root.GetChild("guitemplate", x);
 
-    if (t.HasAttribute("id"))
+    if (t.HasAttribute("id")) {
       if (t.GetAttributeAsString("id") == TemplateID) {
         if (t.HasAttribute("class")) {
           auto a = Split(t.GetAttribute("class"), " ");
-          for (const auto& s : a)
+          for (const auto& s : a) {
             if (s.size() > 1) Root->AddClass(s);
+          }
         }
 
         return ProcessGUIXML(Root, t);
       }
+    }
   }
 
   return false;
@@ -897,8 +919,9 @@ bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
 
   if (node.HasAttribute("class")) {
     auto a = Split(node.GetAttribute("class"), " ");
-    for (const auto& s : a)
+    for (const auto& s : a) {
       if (s.size() > 1) NewItem->AddClass(s);
+    }
   }
 
   return ProcessGUIXML(NewItem, node);

@@ -28,5 +28,5 @@ constexpr std::string_view FindNameByEnum(const T& Pairs, S Enum) {
   for (const auto& p : Pairs) {
     if (Enum == p.Value) return p.Name;
   }
-  return std::string_view();
+  return {};
 }

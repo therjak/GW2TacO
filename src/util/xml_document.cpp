@@ -22,7 +22,7 @@ std::string ReadFile(std::string_view name) {
       CreateFile(name.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
                  nullptr, OPEN_EXISTING, 0, nullptr);
   if (hFile == INVALID_HANDLE_VALUE) {
-    return std::string();
+    return {};
   }
   int32_t size = GetFileSize(hFile, nullptr);
   auto ret = std::string(size, 0);
@@ -30,13 +30,14 @@ std::string ReadFile(std::string_view name) {
   bool b = ::ReadFile(hFile, ret.data(), size, &nRead, nullptr);
   CloseHandle(hFile);
   if (!b || nRead != size) {
-    return std::string();
+    return {};
   }
   return ret;
 }
 }  // namespace
 
-CXMLDocument::CXMLDocument() = default;
+CXMLDocument::CXMLDocument()
+    : doc(std::make_unique<rapidxml::xml_document<>>()) {}
 
 CXMLDocument::~CXMLDocument() { CoUninitialize(); }
 
@@ -47,7 +48,7 @@ bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
   }
 
   try {
-    doc.parse<0>(memString.data());
+    doc->parse<0>(memString.data());
   } catch (const std::exception& e) {
     Log_Err("[XML] Failed to load document: {:s}", e.what());
     return false;
@@ -60,7 +61,7 @@ bool CXMLDocument::LoadFromString(std::string_view s) {
   memString = s;
 
   try {
-    doc.parse<0>(memString.data());
+    doc->parse<0>(memString.data());
   } catch (const std::exception& e) {
     Log_Err("[XML] Failed to load document: {:s}", e.what());
     return false;
@@ -69,11 +70,11 @@ bool CXMLDocument::LoadFromString(std::string_view s) {
   return true;
 }
 
-CXMLNode CXMLDocument::GetDocumentNode() { return CXMLNode(&doc, this, 0); }
+CXMLNode CXMLDocument::GetDocumentNode() { return {doc.get(), this, 0}; }
 
 std::string CXMLDocument::SaveToString() {
   std::stringstream ss;
-  rapidxml::print<char>(ss, *doc.first_node());
+  rapidxml::print<char>(ss, *doc->first_node());
   return ss.str();
 }
 
@@ -83,7 +84,7 @@ bool CXMLDocument::SaveToFile(std::string_view sz) {
   HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0,
                         nullptr);
   if (h == INVALID_HANDLE_VALUE) return false;
-  DWORD b;
+  DWORD b = 0;
   WriteFile(h, s.c_str(), s.length(), &b, nullptr);
   CloseHandle(h);
 

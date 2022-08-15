@@ -105,9 +105,9 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
   CRect cl = GetClientRect();
 
-  time_t rawtime;
+  time_t rawtime = 0;
   time(&rawtime);
-  struct tm ptm;
+  struct tm ptm {};
   gmtime_s(&ptm, &rawtime);
 
   WBITEMSTATE i = GetState();
@@ -132,7 +132,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
                            CPoint(cl.Width(), mapCount * mapheight + 1)),
                      GetState());
 
-  WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
@@ -193,17 +193,19 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
         CRect r = CRect(cl.x1, toppos, cl.x1 + paddingLeft, bottompos - 1)
                       .GetIntersection(cl);
-        if (ClientToScreen(r).Contains(GetApplication()->GetMousePos()))
+        if (ClientToScreen(r).Contains(GetApplication()->GetMousePos())) {
           mouseToolTip = category.name;
+        }
       }
 
       // highlight rect
       if (!map.chestId.empty()) {
         std::lock_guard<std::mutex> lockGuard(mtx);
         if (std::find(mapchests.begin(), mapchests.end(), map.chestId) !=
-            mapchests.end())
+            mapchests.end()) {
           highlightRects.emplace_back(
               CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
+        }
       }
 
       // map events
@@ -346,11 +348,13 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
       const CXMLNode& categoryNode = categoriesNode.GetChild("Category", x);
 
       Category category;
-      if (categoryNode.HasAttribute("id"))
+      if (categoryNode.HasAttribute("id")) {
         category.id = categoryNode.GetAttributeAsString("id");
+      }
 
-      if (categoryNode.HasAttribute("Name"))
+      if (categoryNode.HasAttribute("Name")) {
         category.name = categoryNode.GetAttributeAsString("Name");
+      }
 
       if (categoryNode.HasAttribute("Color")) {
         auto s = categoryNode.GetAttributeAsString("Color");
@@ -390,11 +394,13 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
         }
       }
 
-      if (mapNode.HasAttribute("Length"))
+      if (mapNode.HasAttribute("Length")) {
         mapNode.GetAttributeAsInteger("Length", &map.Length);
+      }
 
-      if (mapNode.HasAttribute("Start"))
+      if (mapNode.HasAttribute("Start")) {
         mapNode.GetAttributeAsInteger("Start", &map.Start);
+      }
 
       int start = 0;
 
@@ -405,14 +411,17 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
         event.length = 0;
         event.start = start;
 
-        if (eventNode.HasAttribute("Name"))
+        if (eventNode.HasAttribute("Name")) {
           event.name = eventNode.GetAttributeAsString("Name");
+        }
 
-        if (eventNode.HasAttribute("WorldBossAPIID"))
+        if (eventNode.HasAttribute("WorldBossAPIID")) {
           event.worldBossId = eventNode.GetAttributeAsString("WorldBossAPIID");
+        }
 
-        if (eventNode.HasAttribute("WayPoint"))
+        if (eventNode.HasAttribute("WayPoint")) {
           event.waypoint = eventNode.GetAttributeAsString("WayPoint");
+        }
 
         if (eventNode.HasAttribute("Length")) {
           eventNode.GetAttributeAsInteger("Length", &event.length);
@@ -438,9 +447,9 @@ void GW2MapTimer::SetLayout(CXMLNode& node) {
     }
 
     // categorized maps (group maps by category)
-    for (auto cat : _categories) {
+    for (const auto& cat : _categories) {
       std::vector<Map> ms = _categoryMapsDict[cat];
-      for (auto m : ms) {
+      for (const auto& m : ms) {
         maps.emplace_back(m);
       }
     }

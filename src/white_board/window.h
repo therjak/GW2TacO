@@ -31,9 +31,9 @@ enum class WBWINDOWELEMENT : char {
 };
 
 class CWBWindow : public CWBItem {
-  int32_t BorderWidth;
+  int32_t BorderWidth{3};
   int32_t TitleBarHeight;
-  int32_t CornerSelectionSize;
+  int32_t CornerSelectionSize{15};
 
   math::CSize MinSize;
 
@@ -43,7 +43,7 @@ class CWBWindow : public CWBItem {
 
  protected:
   uint32_t Style;
-  uint32_t DragMode;
+  uint32_t DragMode{0};
 
   void OnDraw(CWBDrawAPI* API) override;
   bool MessageProc(const CWBMessage& Message) override;
@@ -66,7 +66,7 @@ class CWBWindow : public CWBItem {
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
-  std::string GetTitle() const { return WindowTitle; }
+  [[nodiscard]] std::string GetTitle() const { return WindowTitle; }
   void SetTitle(std::string_view val) { WindowTitle = val; }
 
   uint32_t GetDragMode();

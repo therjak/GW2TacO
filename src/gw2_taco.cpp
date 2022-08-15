@@ -245,8 +245,9 @@ void ChangeUIScale(int size) {
   extern std::unique_ptr<CWBApplication> App;
   if (!App) return;
 
-  if (App->LoadCSSFromFile(UIFileNames[size], true))
+  if (App->LoadCSSFromFile(UIFileNames[size], true)) {
     SetConfigValue("InterfaceSize", size);
+  }
   App->ReApplyStyle();
 
   scaleCountDownHack = 2;
@@ -254,25 +255,26 @@ void ChangeUIScale(int size) {
 }
 
 std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
-  for (auto& kb : KeyBindings)
+  for (auto& kb : KeyBindings) {
     if (kb.second == action) {
       return std::format(" [{:c}]", kb.first);
       break;
     }
+  }
   return "";
 }
 
 bool GW2TacO::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_COMMAND: {
-      CWBButton* cb = dynamic_cast<CWBButton*>(
+      auto* cb = dynamic_cast<CWBButton*>(
           App->FindItemByGuid(Message.GetTarget(), "clickthroughbutton"));
       if (cb && cb->GetID() == "TPButton") {
         TurnOffTPLight();
         break;
       }
 
-      CWBButton* b = dynamic_cast<CWBButton*>(
+      auto* b = dynamic_cast<CWBButton*>(
           App->FindItemByGuid(Message.GetTarget(), "button"));
       if (!b) break;
 
@@ -524,16 +526,18 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           auto cols = ctx->AddItem(DICT("mousecolor"), 0);
 
           int mouseColor = 0;
-          if (HasConfigValue("MouseHighlightColor"))
+          if (HasConfigValue("MouseHighlightColor")) {
             mouseColor = GetConfigValue("MouseHighlightColor");
+          }
 
           for (int x = 0; x < CGAPaletteNames.size(); x++) {
-            if (mouseColor == x)
+            if (mouseColor == x) {
               cols->AddItem(("[x] " + DICT(CGAPaletteNames[x])),
                             Menu_MouseHighlightColor0 + x, true);
-            else
+            } else {
               cols->AddItem(("[ ] " + DICT(CGAPaletteNames[x])),
                             Menu_MouseHighlightColor0 + x, false);
+            }
           }
         }
         ctx->AddSeparator();
@@ -552,7 +556,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                   (GetConfigValue("MapTimerCategories") ? " [x]" : " [ ]"),
               Menu_ToggleMapTimerCategories);
 
-          GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+          auto* timer = dynamic_cast<GW2MapTimer*>(
               App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
           if (timer) {
@@ -589,14 +593,16 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           int cnt = 1;
           for (int32_t x = 1; x < ActionNames.size(); x++) {
             auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
-            for (auto& kb : KeyBindings)
+            for (auto& kb : KeyBindings) {
               if (static_cast<int32_t>(kb.second) == x) {
                 str = DICT(ActionNames[x]) + std::format(" [{:c}]", kb.first);
                 break;
               }
+            }
 
-            if (ActionNames[x][0] == '*')
+            if (ActionNames[x][0] == '*') {
               markerEditor->AddItem(str, Menu_RebindKey_Base + x);
+            }
             cnt++;
           }
         }
@@ -702,14 +708,16 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         int cnt = 1;
         for (int32_t x = 1; x < ActionNames.size(); x++) {
           auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
-          for (auto& kb : KeyBindings)
+          for (auto& kb : KeyBindings) {
             if (static_cast<int32_t>(kb.second) == x) {
               str = DICT(ActionNames[x]) + std::format(" [{:c}]", kb.first);
               break;
             }
+          }
 
-          if (ActionNames[x][0] != '*')
+          if (ActionNames[x][0] != '*') {
             bind->AddItem(str, Menu_RebindKey_Base + x);
+          }
           cnt++;
         }
         settings->AddSeparator();
@@ -739,12 +747,13 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
 
         auto languages = localization->GetLanguages();
         auto langs = settings->AddItem(DICT("language"), Menu_Language);
-        for (int x = 0; x < languages.size(); x++)
+        for (int x = 0; x < languages.size(); x++) {
           langs->AddItem(
               (x == localization->GetActiveLanguageIndex() ? "[x] " : "[ ] ") +
                   languages[x],
               Menu_Language_Base + x,
               x == localization->GetActiveLanguageIndex());
+        }
 
         ctx->AddSeparator();
         ctx->AddItem(DICT("abouttaco"), Menu_About);
@@ -753,7 +762,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         return true;
       }
       if (b->GetID() == "GoToWebsite") {
-        ShellExecute((HWND)App->GetHandle(), "open",
+        ShellExecute(App->GetHandle(), "open",
                      "https://github.com/therjak/GW2TacO/", nullptr, nullptr,
                      SW_SHOW);
         return true;
@@ -769,7 +778,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         if (rp) {
           auto& raids = rp->GetRaids();
           if (raidToggle < raids.size()) {
-            CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+            auto* ctxMenu = dynamic_cast<CWBContextMenu*>(
                 App->FindItemByGuid(Message.Position[1]));
             auto itm = ctxMenu->GetItem(Message.Data);
             auto& r = raids[raidToggle];
@@ -784,7 +793,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
 
       if (Message.Data >= Menu_MarkerFilter_Base &&
           Message.Data < Menu_MarkerFilter_Base + CategoryList.size()) {
-        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+        auto* ctxMenu = dynamic_cast<CWBContextMenu*>(
             App->FindItemByGuid(Message.Position[1]));
         if (ctxMenu) {
           auto itm = ctxMenu->GetItem(Message.Data);
@@ -793,10 +802,11 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
 
           if (!dta->IsOnlySeparator) {
             auto txt = "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
-            if (!dta->displayName.empty())
+            if (!dta->displayName.empty()) {
               txt += dta->displayName;
-            else
+            } else {
               txt += dta->name;
+            }
 
             itm->SetText(txt);
             itm->SetHighlight(dta->IsDisplayed);
@@ -805,12 +815,12 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         break;
       }
       if (Message.Data >= Menu_ToggleMapTimerMap) {
-        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+        auto* ctxMenu = dynamic_cast<CWBContextMenu*>(
             App->FindItemByGuid(Message.Position[1]));
         auto itm = ctxMenu->GetItem(Message.Data);
         int32_t mapIdx = Message.Data - Menu_ToggleMapTimerMap;
 
-        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+        auto* timer = dynamic_cast<GW2MapTimer*>(
             App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
         if (!timer) break;
 
@@ -826,65 +836,76 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
       }
 
       {
-        CWBContextMenu* ctxMenu = dynamic_cast<CWBContextMenu*>(
+        auto* ctxMenu = dynamic_cast<CWBContextMenu*>(
             App->FindItemByGuid(Message.Position[1]));
         auto itm = ctxMenu->GetItem(Message.Data);
 
         switch (Message.Data) {
           case Menu_ToggleRangeCircle90:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle90") ? "90 [x]"
                                                            : "90 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle120:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle120") ? "120 [x]"
                                                             : "120 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle180:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle180") ? "180 [x]"
                                                             : "180 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle240:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle240") ? "240 [x]"
                                                             : "240 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle300:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle300") ? "300 [x]"
                                                             : "300 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle400:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle400") ? "400 [x]"
                                                             : "400 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle600:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle600") ? "600 [x]"
                                                             : "600 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle900:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle900") ? "900 [x]"
                                                             : "900 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle1200:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle1200") ? "1200 [x]"
                                                              : "1200 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle1500:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle1500") ? "1500 [x]"
                                                              : "1500 [ ]");
+            }
             break;
           case Menu_ToggleRangeCircle1600:
-            if (itm)
+            if (itm) {
               itm->SetText(GetConfigValue("RangeCircle1600") ? "1600 [x]"
                                                              : "1600 [ ]");
+            }
             break;
         }
       }
@@ -915,10 +936,11 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         if (rp) {
           auto& raids = rp->GetRaids();
           if (raidToggle < raids.size()) {
-            if (!HasConfigValue(raids[raidToggle].configName))
+            if (!HasConfigValue(raids[raidToggle].configName)) {
               SetConfigValue(raids[raidToggle].configName, 0);
-            else
+            } else {
               ToggleConfigValue(raids[raidToggle].configName);
+            }
           }
         }
         break;
@@ -957,7 +979,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
       }
 
       if (Message.Data >= Menu_ToggleMapTimerMap) {
-        GW2MapTimer* timer = dynamic_cast<GW2MapTimer*>(
+        auto* timer = dynamic_cast<GW2MapTimer*>(
             App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
         if (timer) {
@@ -1044,7 +1066,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         //  return true;
         //  break;
         case Menu_DownloadNewBuild:
-          ShellExecute((HWND)App->GetHandle(), "open", "http://www.gw2taco.com",
+          ShellExecute(App->GetHandle(), "open", "http://www.gw2taco.com",
                        nullptr, nullptr, SW_SHOW);
           return true;
           break;
@@ -1263,7 +1285,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           SetConfigValue("OpacityMap", 2);
           return true;
         case Menu_DeleteMyMarkers: {
-          GW2TacticalDisplay* tactical = dynamic_cast<GW2TacticalDisplay*>(
+          auto* tactical = dynamic_cast<GW2TacticalDisplay*>(
               GetApplication()->GetRoot()->FindChildByID("tactical",
                                                          "gw2tactical"));
           if (tactical) tactical->RemoveUserMarkersFromMap();
@@ -1320,7 +1342,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             return true;
           }
           case TacOKeyAction::EditNotepad: {
-            GW2Notepad* d =
+            auto* d =
                 dynamic_cast<GW2Notepad*>(FindChildByID("notepad", "notepad"));
             if (d) {
               d->StartEdit();
@@ -1329,9 +1351,9 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             return true;
           }
           case TacOKeyAction::StartTrailRec: {
-            CWBButton* startTrail = dynamic_cast<CWBButton*>(
+            auto* startTrail = dynamic_cast<CWBButton*>(
                 App->GetRoot()->FindChildByID("starttrail", "button"));
-            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+            auto* trails = dynamic_cast<GW2TrailDisplay*>(
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (startTrail && trails) {
               // startTrail->Push( !startTrail->IsPushed() );
@@ -1341,9 +1363,9 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           }
             return true;
           case TacOKeyAction::PauseTrailRec: {
-            CWBButton* pauseTrail = dynamic_cast<CWBButton*>(
+            auto* pauseTrail = dynamic_cast<CWBButton*>(
                 App->GetRoot()->FindChildByID("pausetrail", "button"));
-            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+            auto* trails = dynamic_cast<GW2TrailDisplay*>(
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (pauseTrail && trails) {
               // pauseTrail->Push( !pauseTrail->IsPushed() );
@@ -1353,19 +1375,20 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           }
             return true;
           case TacOKeyAction::DeleteLastTrailSegment: {
-            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+            auto* trails = dynamic_cast<GW2TrailDisplay*>(
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (trails) trails->DeleteLastTrailSegment();
           }
             return true;
           case TacOKeyAction::ResumeTrailAndCreateNewSection: {
-            CWBButton* pauseTrail = dynamic_cast<CWBButton*>(
+            auto* pauseTrail = dynamic_cast<CWBButton*>(
                 App->GetRoot()->FindChildByID("startnewsection", "button"));
-            GW2TrailDisplay* trails = dynamic_cast<GW2TrailDisplay*>(
+            auto* trails = dynamic_cast<GW2TrailDisplay*>(
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
-            if (pauseTrail && !pauseTrail->IsHidden() && trails)
+            if (pauseTrail && !pauseTrail->IsHidden() && trails) {
               App->SendMessage(
                   CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
+            }
           }
             return true;
           case TacOKeyAction::Toggle_tactical_layer:
@@ -1413,8 +1436,9 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         }
       }
 
-      if (ScriptKeyBindings.find(Message.Key) != ScriptKeyBindings.end())
+      if (ScriptKeyBindings.find(Message.Key) != ScriptKeyBindings.end()) {
         TriggerScriptEngineKeyEvent(ScriptKeyBindings[Message.Key]);
+      }
 
       break;
     case WBM_FOCUSLOST:
@@ -1562,11 +1586,13 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
       if (App->GetRoot()->FindChildByID("TacOMenu", "contextmenu")) {
         hover = true;
         taco->Push(true);
-      } else
+      } else {
         taco->Push(false);
+      }
 
       if (hover != menuHoverLastFrame) {
-        lastMenuHoverTransitionTime = int32_t(currTime - (1 - delta) * speed);
+        lastMenuHoverTransitionTime =
+            static_cast<int32_t>(currTime - (1 - delta) * speed);
         delta = 1 - delta;
       }
 
@@ -1628,10 +1654,10 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
           mumbleLink.charPosition.x, mumbleLink.charPosition.y,
           mumbleLink.charPosition.z, mumbleLink.camDir.x, mumbleLink.camDir.y,
           mumbleLink.camDir.z, mumbleLink.GetFrameRate(), App->GetFrameRate(),
-          int(mumbleLink.isMapOpen), int(mumbleLink.isMinimapTopRight),
-          int(mumbleLink.isMinimapRotating),
-          int(mumbleLink.miniMap.compassWidth),
-          int(mumbleLink.miniMap.compassHeight),
+          static_cast<int>(mumbleLink.isMapOpen),
+          static_cast<int>(mumbleLink.isMinimapTopRight),
+          static_cast<int>(mumbleLink.isMinimapRotating),
+          (mumbleLink.miniMap.compassWidth), (mumbleLink.miniMap.compassHeight),
           mumbleLink.miniMap.compassRotation, mumbleLink.miniMap.playerX,
           mumbleLink.miniMap.playerY, mumbleLink.miniMap.mapCenterX,
           mumbleLink.miniMap.mapCenterY, mumbleLink.miniMap.mapScale);
@@ -1730,19 +1756,20 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
     if (!ScriptRebindMode) {
       int32_t key = -1;
-      for (const auto& kb : KeyBindings)
+      for (const auto& kb : KeyBindings) {
         if (kb.second == ActionToRebind) {
           key = kb.first;
           break;
         }
+      }
 
       if (key == -1) {
         line1 = DICT("action") + " '" +
-                DICT(ActionNames[(int32_t)ActionToRebind]) + "' " +
+                DICT(ActionNames[static_cast<int32_t>(ActionToRebind)]) + "' " +
                 DICT("currently_not_bound");
       } else {
         line1 = DICT("action") + " '" +
-                DICT(ActionNames[(int32_t)ActionToRebind]) + "' " +
+                DICT(ActionNames[static_cast<int32_t>(ActionToRebind)]) + "' " +
                 DICT("currently_bound") + std::format(" '{:c}'", key);
       }
     } else {
@@ -1778,7 +1805,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
     CWBFont* f = GetFont(GetState());
 
     auto line1 = DICT("enter_api") + " " +
-                 DICT(APIKeyNames[(int32_t)ApiKeyToSet]) + " " +
+                 DICT(APIKeyNames[static_cast<int32_t>(ApiKeyToSet)]) + " " +
                  DICT("below_and_press");
     CPoint line1p = f->GetTextPosition(
         line1, GetClientRect(), WBTEXTALIGNMENTX::WBTA_CENTERX,
@@ -1829,7 +1856,7 @@ void SetMouseToolTip(std::string_view toolTip) {
 
   if (!App) return;
 
-  GW2TacO* tacoRoot = dynamic_cast<GW2TacO*>(
+  auto* tacoRoot = dynamic_cast<GW2TacO*>(
       App->GetRoot()->FindChildByID("tacoroot", "GW2TacO"));
   if (!tacoRoot) return;
 
@@ -1856,10 +1883,11 @@ void GW2TacO::OnPostDraw(CWBDrawAPI* API) {
 
 void GW2TacO::OpenWindow(std::string_view s) {
   CRect pos;
-  if (!HasWindowData(s))
+  if (!HasWindowData(s)) {
     pos = CRect(-150, -150, 150, 150) + GetClientRect().Center();
-  else
+  } else {
     pos = GetWindowPosition(s);
+  }
 
   auto itm = FindChildByID(s);
   if (itm) {
@@ -1980,8 +2008,9 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
     case APIKeys::None:
       break;
     case APIKeys::TS3APIKey:
-      if (HasConfigString("TS3APIKey"))
+      if (HasConfigString("TS3APIKey")) {
         APIKeyInput->SetText(GetConfigString("TS3APIKey"));
+      }
       break;
     case APIKeys::GW2APIKey: {
       auto key = GW2::apiKeyManager.GetKey(idx);
@@ -2017,7 +2046,7 @@ void GW2TacO::CheckItemPickup() {
       int32_t itemCount = 0;
 
       if (json.has<Number>("coins")) {
-        coins = (int32_t)(json.get<Number>("coins"));
+        coins = static_cast<int32_t>(json.get<Number>("coins"));
 
         if (json.has<Array>("items")) {
           itemCount = json.get<Array>("items").size();
@@ -2031,10 +2060,12 @@ void GW2TacO::CheckItemPickup() {
               lastItemPickup = query;
             }
           }
-        } else
+        } else {
           TurnOffTPLight();
-      } else
+        }
+      } else {
         TurnOffTPLight();
+      }
 
       pickupsBeingFetched = false;
     });
@@ -2054,13 +2085,21 @@ void GW2TacO::StoreIconSizes() {
   CWBItem* v3 = App->GetRoot()->FindChildByID("TPButton");
   CWBItem* v4 = App->GetRoot()->FindChildByID("RedCircle");
 
-  if (v1) tacoIconRect = v1->GetPosition();
+  if (v1) {
+    tacoIconRect = v1->GetPosition();
+  }
 
-  if (v2) menuHoverRect = v2->GetPosition();
+  if (v2) {
+    menuHoverRect = v2->GetPosition();
+  }
 
-  if (v3) tpButtonRect = v3->GetPosition();
+  if (v3) {
+    tpButtonRect = v3->GetPosition();
+  }
 
-  if (v4) tpHighlightRect = v4->GetPosition();
+  if (v4) {
+    tpHighlightRect = v4->GetPosition();
+  }
 
   iconSizesStored = true;
 }
@@ -2079,8 +2118,10 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
         "background:skin(taco_stretch_dark) top left; }} "
         "#MenuButton:hover{{background:skin(taco_stretch_light) top left;}} "
         "#MenuButton:active{{background:skin(taco_stretch_light) top left;}}",
-        int(tacoIconRect.x1 * scale), int(tacoIconRect.y1 * scale),
-        int(tacoIconRect.Width() * scale), int(tacoIconRect.Height() * scale));
+        static_cast<int>(tacoIconRect.x1 * scale),
+        static_cast<int>(tacoIconRect.y1 * scale),
+        static_cast<int>(tacoIconRect.Width() * scale),
+        static_cast<int>(tacoIconRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
@@ -2088,17 +2129,20 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
     auto str = std::format(
         "#MenuHoverBox{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
         "}}",
-        int(menuHoverRect.x1 * scale), int(menuHoverRect.y1 * scale),
-        int(menuHoverRect.Width() * scale),
-        int(menuHoverRect.Height() * scale));
+        static_cast<int>(menuHoverRect.x1 * scale),
+        static_cast<int>(menuHoverRect.y1 * scale),
+        static_cast<int>(menuHoverRect.Width() * scale),
+        static_cast<int>(menuHoverRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
   if (v3) {
     auto str = std::format(
         "#TPButton{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; }}",
-        int(tpButtonRect.x1 * scale), int(tpButtonRect.y1 * scale),
-        int(tpButtonRect.Width() * scale), int(tpButtonRect.Height() * scale));
+        static_cast<int>(tpButtonRect.x1 * scale),
+        static_cast<int>(tpButtonRect.y1 * scale),
+        static_cast<int>(tpButtonRect.Width() * scale),
+        static_cast<int>(tpButtonRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 
@@ -2106,9 +2150,10 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
     auto str = std::format(
         "#RedCircle{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
         "background:skin(redcircle_stretch) top left; }}",
-        int(tpHighlightRect.x1 * scale), int(tpHighlightRect.y1 * scale),
-        int(tpHighlightRect.Width() * scale),
-        int(tpHighlightRect.Height() * scale));
+        static_cast<int>(tpHighlightRect.x1 * scale),
+        static_cast<int>(tpHighlightRect.y1 * scale),
+        static_cast<int>(tpHighlightRect.Width() * scale),
+        static_cast<int>(tpHighlightRect.Height() * scale));
     App->LoadCSS(str, false);
   }
 

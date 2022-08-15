@@ -120,10 +120,11 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
       ypos += size / 2;
     }
 
-    if (!cnt)
+    if (!cnt) {
       DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
                          CRect(0, 0, GetClientRect().Width(), ypos),
                          GetState());
+    }
   }
 
   DrawBorder(API);

@@ -37,10 +37,10 @@ std::thread wvwPollThread;
 #define SECFLAG 0x000001
 
 void parseISO8601(const char* text, time_t& isotime, char& flag) {
-  const char* c;
-  int num;
+  const char* c = nullptr;
+  int num = 0;
 
-  struct tm tmstruct;
+  struct tm tmstruct {};
 
   int year = 0;
   int month = 0;
@@ -199,7 +199,7 @@ void LoadWvWObjectives() {
 
       auto objid = obj.get<String>("id");
 
-      int mapID, objident;
+      int mapID = 0, objident = 0;
       if (std::sscanf(objid.c_str(), "%d-%d", &mapID, &objident) != 2) continue;
 
       if (!obj.has<Number>("map_id")) continue;
@@ -246,10 +246,11 @@ void LoadWvWObjectives() {
             }
           }
 
-          if (ok)
+          if (ok) {
             wvwContinentRects[mapID] =
                 CRect(continentRectValues[0], continentRectValues[1],
                       continentRectValues[2], continentRectValues[3]);
+          }
         }
 
         if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
@@ -299,14 +300,17 @@ void LoadWvWObjectives() {
 
       if (obj.has<String>("type")) o.type = obj.get<String>("type");
 
-      if (obj.has<String>("name"))
+      if (obj.has<String>("name")) {
         o.nameToken = o.name = obj.get<String>("name");
+      }
 
-      for (char& n : o.nameToken)
-        if (!isalnum(n))
+      for (char& n : o.nameToken) {
+        if (!isalnum(n)) {
           n = '_';
-        else
+        } else {
           n = tolower(n);
+        }
+      }
 
       extern WBATLASHANDLE DefaultIconHandle;
       extern CSize DefaultIconSize;
@@ -404,10 +408,11 @@ void UpdateWvWStatus() {
           auto objective = obj->get<Object>();
 
           std::string id;
-          if (objective.has<String>("id"))
+          if (objective.has<String>("id")) {
             id = objective.get<String>("id");
-          else
+          } else {
             continue;
+          }
 
           if (wvwPOIs.find(id) == wvwPOIs.end()) continue;
 
@@ -415,8 +420,9 @@ void UpdateWvWStatus() {
           poi.typeData.color = CColor{0xffffffff};
 
           std::string owner;
-          if (objective.has<String>("owner"))
+          if (objective.has<String>("owner")) {
             owner = objective.get<String>("owner");
+          }
 
           if (owner == "Red") poi.typeData.color = CColor{0xffe53b3b};
 
@@ -425,11 +431,12 @@ void UpdateWvWStatus() {
           if (owner == "Blue") poi.typeData.color = CColor{0xff3aa2fa};
 
           std::string lastFlipped;
-          if (objective.has<String>("last_flipped"))
+          if (objective.has<String>("last_flipped")) {
             lastFlipped = objective.get<String>("last_flipped");
+          }
 
-          time_t flipTime;
-          char flags;
+          time_t flipTime = 0;
+          char flags = 0;
           parseISO8601(lastFlipped.c_str(), flipTime, flags);
           poi.lastUpdateTime = flipTime;
         }

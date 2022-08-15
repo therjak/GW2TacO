@@ -23,9 +23,9 @@ CWBKerningPair::CWBKerningPair(uint16_t a, uint16_t b) {
   Second = b;
 }
 
-CWBFontDescription::CWBFontDescription() {}
+CWBFontDescription::CWBFontDescription() = default;
 
-CWBFontDescription::~CWBFontDescription() {}
+CWBFontDescription::~CWBFontDescription() = default;
 
 bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
                                           const uint8_t* img, int32_t xr,
@@ -155,7 +155,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
             reinterpret_cast<BMKERNINGDATA*>(BlockData.get());
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMKERNINGDATA); x++) {
-          WBKERNINGDATA d;
+          WBKERNINGDATA d{};
           d.First = k[x].first;
           d.Second = k[x].second;
           d.Amount = k[x].amount;
@@ -172,7 +172,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
   return true;
 }
 
-bool ReadInt(const std::string& s, std::string val, int32_t& result) {
+bool ReadInt(const std::string& s, const std::string& val, int32_t& result) {
   int p = s.find(val + "=");
   if (p == s.npos) return false;
   return std::sscanf(s.substr(p).c_str(), (val + "=%d").c_str(), &result) == 1;
@@ -219,7 +219,7 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       if (s.find("chars") == 0) continue;
 
       WBSYMBOLINPUT r;
-      int32_t v;
+      int32_t v = 0;
 
       if (!ReadInt(s, "id", v)) return false;
       r.Char = v;
@@ -233,7 +233,7 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       if (!ReadInt(s, "yoffset", v)) return false;
       r.Offset.y = v;
 
-      int x, y, width, height;
+      int x = 0, y = 0, width = 0, height = 0;
 
       if (!ReadInt(s, "x", x)) return false;
       if (!ReadInt(s, "y", y)) return false;
@@ -256,8 +256,8 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
     if (s.find("kerning") == 0) {
       if (s.find("kernings") == 0) continue;
 
-      WBKERNINGDATA d;
-      int32_t v;
+      WBKERNINGDATA d{};
+      int32_t v = 0;
 
       if (!ReadInt(s, "first", v)) return false;
       d.First = v;
@@ -280,8 +280,9 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
 CWBFont::CWBFont(CAtlas* atlas) { Atlas = atlas; }
 
 CWBFont::~CWBFont() {
-  for (int32_t x = 0; x < AlphabetSize; x++)
+  for (int32_t x = 0; x < AlphabetSize; x++) {
     if (Alphabet[x].Char == x) Atlas->DeleteImage(Alphabet[x].Handle);
+  }
 }
 
 void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const CSize& Size,
@@ -444,8 +445,9 @@ int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String,
 int32_t CWBFont::GetWidth(uint16_t Char, bool Advance) {
   if (Char >= AlphabetSize || Alphabet[Char].Char != Char)  // missing character
   {
-    if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar)
+    if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar) {
       return 0;
+    }
     return Alphabet[static_cast<uint16_t>(MissingChar)].Advance;
   }
   return Advance ? Alphabet[Char].Advance
@@ -474,20 +476,22 @@ int32_t CWBFont::GetWidth(std::string_view String, bool AdvanceLastChar,
     }
 
     if (firstCharHack && firstChar && !AdvanceLastChar) {
-      if (Char >= AlphabetSize || Alphabet[Char].Char != Char)
+      if (Char >= AlphabetSize || Alphabet[Char].Char != Char) {
         xp -= Alphabet[static_cast<uint16_t>(MissingChar)]
                   .calculatedContentRect.x1;
-      else
+      } else {
         xp -= Alphabet[Char].calculatedContentRect.x1;
+      }
     }
 
-    if (AdvanceLastChar)
+    if (AdvanceLastChar) {
       xp += GetWidth(Char);
-    else {
-      if (*Text)
+    } else {
+      if (*Text) {
         xp += GetWidth(Char);
-      else
+      } else {
         xp += GetWidth(Char, false);
+      }
     }
 
     if (DoKerning && *Text && !Kerning.empty()) {
@@ -513,15 +517,17 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
   if (!Description->Image) return false;
 
   AlphabetSize = 0;
-  for (const auto& abc : Description->Alphabet)
+  for (const auto& abc : Description->Alphabet) {
     AlphabetSize = std::max<int32_t>(AlphabetSize, abc.Char) + 1;
+  }
 
   Alphabet = std::make_unique<WBSYMBOL[]>(AlphabetSize);
   memset(Alphabet.get(), 0, AlphabetSize * sizeof(WBSYMBOL));
-  for (int32_t x = 0; x < AlphabetSize; x++)
+  for (int32_t x = 0; x < AlphabetSize; x++) {
     Alphabet[x].Char = static_cast<int16_t>(x - 1);
+  }
 
-  for (const auto& abc : Description->Alphabet)
+  for (const auto& abc : Description->Alphabet) {
     if (abc.UV.Area() > 0) {
       const WBATLASHANDLE h =
           Atlas->AddImage(Description->Image.get(), Description->XRes,
@@ -535,7 +541,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
       CRect content = CRect(abc.UV.x2, abc.UV.y2, abc.UV.x1, abc.UV.y1);
       bool hadContent = false;
 
-      for (int j = abc.UV.y1; j < abc.UV.y2; j++)
+      for (int j = abc.UV.y1; j < abc.UV.y2; j++) {
         for (int i = abc.UV.x1; i < abc.UV.x2; i++) {
           const uint8_t* c =
               &Description->Image[(j * Description->XRes + i) * 4];
@@ -548,14 +554,17 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
             content.y2 = std::max(content.y2, j);
           }
         }
+      }
 
-      if (hadContent)
+      if (hadContent) {
         content -= abc.UV.TopLeft();
-      else
+      } else {
         content = CRect(0, 0, abc.UV.Width(), abc.UV.Height());
+      }
 
       AddSymbol(abc.Char, h, abc.UV.Size(), abc.Offset, abc.Advance, content);
     }
+  }
 
   for (const auto& kd : Description->KerningData) {
     AddKerningPair(kd.First, kd.Second, kd.Amount);
@@ -573,22 +582,26 @@ int32_t CWBFont::GetBase() { return Base; }
 
 int32_t CWBFont::GetOffsetX(TCHAR Char) {
   if (Char >= AlphabetSize ||
-      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char) {
     Char = MissingChar;
+  }
   if (Char >= AlphabetSize ||
-      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char) {
     return 0;
+  }
 
   return Alphabet[static_cast<uint16_t>(Char)].OffsetX;
 }
 
 int32_t CWBFont::GetOffsetY(TCHAR Char) {
   if (Char >= AlphabetSize ||
-      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char) {
     Char = MissingChar;
+  }
   if (Char >= AlphabetSize ||
-      Alphabet[static_cast<uint16_t>(Char)].Char != Char)
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char) {
     return 0;
+  }
 
   return Alphabet[static_cast<uint16_t>(Char)].OffsetY;
 }
@@ -612,7 +625,7 @@ CPoint CWBFont::GetCenter(std::string_view Text, CRect Rect,
 int32_t CWBFont::GetMedian() { return Offset_X_Char + Height_X_Char / 2; }
 
 void CWBFont::ConvertToUppercase() {
-  for (int32_t x = 0; x < AlphabetSize; x++)
+  for (int32_t x = 0; x < AlphabetSize; x++) {
     if (Alphabet[x].Char == x) {
       WBSYMBOL& c = Alphabet[x];
       if (c.Char != towupper(c.Char)) {
@@ -629,6 +642,7 @@ void CWBFont::ConvertToUppercase() {
         }
       }
     }
+  }
 }
 
 char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
@@ -639,8 +653,9 @@ char CWBFont::ApplyTextTransform(const char* Text, const char* CurrPos,
       return *CurrPos;
       break;
     case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
-      if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1))))
+      if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1)))) {
         return std::toupper(*CurrPos);
+      }
       return std::tolower(*CurrPos);
       break;
     case WBTEXTTRANSFORM::WBTT_UPPERCASE:
@@ -664,8 +679,9 @@ uint16_t CWBFont::ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
       return decoded;
       break;
     case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
-      if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1))))
+      if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1)))) {
         return std::toupper(decoded);
+      }
       return std::tolower(decoded);
       break;
     case WBTEXTTRANSFORM::WBTT_UPPERCASE:
@@ -699,11 +715,13 @@ CPoint CWBFont::GetTextPosition(std::string_view String, const CRect& Container,
   const int32_t Width = GetWidth(String, false, Transform, DoKerning);
   const int32_t Height = GetLineHeight();
 
-  if (XAlign == WBTEXTALIGNMENTX::WBTA_CENTERX)
+  if (XAlign == WBTEXTALIGNMENTX::WBTA_CENTERX) {
     p.x = GetCenterWidth(Container.x1, Container.x2, String, Transform);
+  }
   if (XAlign == WBTEXTALIGNMENTX::WBTA_RIGHT) p.x = Container.x2 - Width;
-  if (YAlign == WBTEXTALIGNMENTY::WBTA_CENTERY)
+  if (YAlign == WBTEXTALIGNMENTY::WBTA_CENTERY) {
     p.y = GetCenterHeight(Container.y1, Container.y2);
+  }
   if (YAlign == WBTEXTALIGNMENTY::WBTA_BOTTOM) p.y = Container.y2 - Height;
 
   return p;

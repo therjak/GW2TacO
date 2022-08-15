@@ -775,9 +775,8 @@ static bool CreateTextureFromDDS(
 
   if ((header->ddspf.flags & DDS_FOURCC) &&
       (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC)) {
-    const DDS_HEADER_DXT10* d3d10ext =
-        reinterpret_cast<const DDS_HEADER_DXT10*>(
-            reinterpret_cast<const char*>(header) + sizeof(DDS_HEADER));
+    const auto* d3d10ext = reinterpret_cast<const DDS_HEADER_DXT10*>(
+        reinterpret_cast<const char*>(header) + sizeof(DDS_HEADER));
 
     arraySize = d3d10ext->arraySize;
     if (arraySize == 0) return false;
@@ -889,8 +888,9 @@ static bool CreateTextureFromDDS(
   size_t tdepth = 0;
   if (!FillInitData(width, height, depth, mipCount, arraySize, format, maxsize,
                     bitSize, bitData, twidth, theight, tdepth, skipMip,
-                    initData.get()))
+                    initData.get())) {
     return false;
+  }
 
   hr = CreateD3DResources(d3dDevice, resDim, twidth, theight, tdepth,
                           mipCount - skipMip, arraySize, format, isCubeMap,
@@ -925,8 +925,9 @@ static bool CreateTextureFromDDS(
 
     if (!FillInitData(width, height, depth, mipCount, arraySize, format,
                       maxsize, bitSize, bitData, twidth, theight, tdepth,
-                      skipMip, initData.get()))
+                      skipMip, initData.get())) {
       return false;
+    }
 
     hr = CreateD3DResources(d3dDevice, resDim, twidth, theight, tdepth,
                             mipCount - skipMip, arraySize, format, isCubeMap,
@@ -950,13 +951,14 @@ bool CreateDDSTextureFromMemory(
   const uint32_t dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData);
   if (dwMagicNumber != DDS_MAGIC) return false;
 
-  const DDS_HEADER* header =
+  const auto* header =
       reinterpret_cast<const DDS_HEADER*>(ddsData + sizeof(uint32_t));
 
   // Verify header to validate DDS file
   if (header->size != sizeof(DDS_HEADER) ||
-      header->ddspf.size != sizeof(DDS_PIXELFORMAT))
+      header->ddspf.size != sizeof(DDS_PIXELFORMAT)) {
     return false;
+  }
 
   // Check for DX10 extension
   bool bDXT10Header = false;
@@ -964,8 +966,9 @@ bool CreateDDSTextureFromMemory(
       (MAKEFOURCC('D', 'X', '1', '0') == header->ddspf.fourCC)) {
     // Must be long enough for both headers and magic value
     if (ddsDataSize <
-        (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_DXT10)))
+        (sizeof(DDS_HEADER) + sizeof(uint32_t) + sizeof(DDS_HEADER_DXT10))) {
       return false;
+    }
 
     bDXT10Header = true;
   }

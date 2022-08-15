@@ -2789,7 +2789,7 @@ bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
                                 int32_t ImageSize) {
   if (!Binary || !BinarySize || !image || !ImageSize) return false;
 
-  int32_t xr, yr;
+  int32_t xr = 0, yr = 0;
 
   auto img = DecompressImage(image, ImageSize, xr, yr);
   if (!img) {
@@ -2797,8 +2797,9 @@ bool LoadBMFontBinaryMonochrome(CWBFontDescription* fd, uint8_t* Binary,
     return false;
   }
 
-  for (int32_t x = 0; x < xr * yr; x++)
+  for (int32_t x = 0; x < xr * yr; x++) {
     img[x * 4 + 1] = img[x * 4 + 2] = img[x * 4 + 3] = img[x * 4];
+  }
 
   bool res = fd->LoadBMFontBinary(Binary, BinarySize, img.get(), xr, yr);
   return res;
@@ -2809,7 +2810,7 @@ bool LoadBMFontBinaryPNG(CWBFontDescription* fd, uint8_t* Binary,
                          int32_t ImageSize) {
   if (!Binary || !BinarySize || !image || !ImageSize) return false;
 
-  int32_t xr, yr;
+  int32_t xr = 0, yr = 0;
 
   std::unique_ptr<uint8_t[]> img = nullptr;
   bool result = DecompressPNG(image, ImageSize, img, xr, yr);

@@ -364,8 +364,9 @@ CCoreSamplerState::~CCoreSamplerState() = default;
 
 void CCoreSamplerState::SetBorderColor(float r, float g, float b, float a) {
   if (BorderColor[0] != r || BorderColor[1] != g || BorderColor[2] != b ||
-      BorderColor[3] != a)
+      BorderColor[3] != a) {
     Dirty = true;
+  }
   BorderColor[0] = r;
   BorderColor[1] = g;
   BorderColor[2] = b;

@@ -9,7 +9,7 @@ class GW2MarkerEditor : public CWBItem {
   bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
   bool Hidden = false;
-  GUID CurrentPOI;
+  GUID CurrentPOI{};
 
   std::vector<GW2TacticalCategory*> CategoryList;
   bool ChangeDefault = false;

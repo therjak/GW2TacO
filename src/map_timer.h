@@ -11,8 +11,8 @@ class GW2MapTimer : public CWBItem {
     std::string name;
     std::string waypoint;
     std::string worldBossId;
-    int length;
-    int start;
+    int length = 0;
+    int start = 0;
     CColor color;
   };
 
@@ -20,8 +20,8 @@ class GW2MapTimer : public CWBItem {
     std::string name;
     std::string chestId;
     std::string category;
-    int Length;
-    int Start;
+    int Length = 0;
+    int Start = 0;
     std::string id;
     bool display = true;
     std::vector<Event> events;

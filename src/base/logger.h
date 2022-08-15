@@ -36,7 +36,7 @@ class CLoggerOutput_DebugOutput : public CLoggerOutput {
 };
 
 class CLoggerOutput_File : public CLoggerOutput {
-  FILE* f;
+  FILE* f{};
   std::string fname;
   bool Append;
 

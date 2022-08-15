@@ -17,14 +17,17 @@ class CRect {
       : x1(a), y1(b), x2(c), y2(d) {}
   constexpr CRect(const CPoint p1, const CPoint p2)
       : x1(p1.x), y1(p1.y), x2(p2.x), y2(p2.y) {}
-  constexpr bool Contains(const int32_t x, const int32_t y) const {
+  [[nodiscard]] constexpr bool Contains(const int32_t x,
+                                        const int32_t y) const {
     return x >= x1 && x < x2 && y >= y1 && y < y2;
   }
-  constexpr bool Contains(const CPoint& p) const { return Contains(p.x, p.y); }
-  constexpr int32_t Width() const { return x2 - x1; }
-  constexpr int32_t Height() const { return y2 - y1; }
-  constexpr int32_t Area() const { return Width() * Height(); }
-  constexpr bool Intersects(const CRect& r) const {
+  [[nodiscard]] constexpr bool Contains(const CPoint& p) const {
+    return Contains(p.x, p.y);
+  }
+  [[nodiscard]] constexpr int32_t Width() const { return x2 - x1; }
+  [[nodiscard]] constexpr int32_t Height() const { return y2 - y1; }
+  [[nodiscard]] constexpr int32_t Area() const { return Width() * Height(); }
+  [[nodiscard]] constexpr bool Intersects(const CRect& r) const {
     return !(x2 <= r.x1 || x1 >= r.x2) && !(y2 <= r.y1 || y1 >= r.y2);
   }
 
@@ -111,17 +114,21 @@ class CRect {
     y1 = _y1 < _y2 ? _y1 : _y2;
     y2 = _y1 < _y2 ? _y2 : _y1;
   }
-  constexpr CPoint TopLeft() const { return CPoint(x1, y1); }
-  constexpr CPoint BottomRight() const { return CPoint(x2, y2); }
-  constexpr CPoint TopRight() const { return CPoint(x2, y1); }
-  constexpr CPoint BottomLeft() const { return CPoint(x1, y2); }
-  constexpr CSize Size() const { return CSize(Width(), Height()); }
-  constexpr CPoint Center() const { return CPoint(x1 + x2, y1 + y2) / 2; }
+  [[nodiscard]] constexpr CPoint TopLeft() const { return CPoint(x1, y1); }
+  [[nodiscard]] constexpr CPoint BottomRight() const { return CPoint(x2, y2); }
+  [[nodiscard]] constexpr CPoint TopRight() const { return CPoint(x2, y1); }
+  [[nodiscard]] constexpr CPoint BottomLeft() const { return CPoint(x1, y2); }
+  [[nodiscard]] constexpr CSize Size() const {
+    return CSize(Width(), Height());
+  }
+  [[nodiscard]] constexpr CPoint Center() const {
+    return CPoint(x1 + x2, y1 + y2) / 2;
+  }
   constexpr CRect GetCenterRect(const CSize& s) {
     return CRect(Center().x - s.x / 2, Center().y - s.y / 2,
                  Center().x - s.x / 2 + s.x, Center().y - s.y / 2 + s.y);
   }
-  constexpr CRect GetIntersection(const CRect& r) const {
+  [[nodiscard]] constexpr CRect GetIntersection(const CRect& r) const {
     return CRect(x1 > r.x1 ? x1 : r.x1, y1 > r.y1 ? y1 : r.y1,
                  x2 < r.x2 ? x2 : r.x2, y2 < r.y2 ? y2 : r.y2);
   }

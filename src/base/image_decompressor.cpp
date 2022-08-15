@@ -67,8 +67,8 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
 
   if (!gpPicture) return nullptr;
 
-  OLE_XSIZE_HIMETRIC hmWidth;
-  OLE_YSIZE_HIMETRIC hmHeight;
+  OLE_XSIZE_HIMETRIC hmWidth = 0;
+  OLE_YSIZE_HIMETRIC hmHeight = 0;
 
   gpPicture->get_Width(&hmWidth);
   gpPicture->get_Height(&hmHeight);

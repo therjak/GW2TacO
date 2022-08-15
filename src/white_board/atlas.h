@@ -45,7 +45,7 @@ class CAtlasImage {
 
   WBATLASHANDLE GetHandle();
   uint8_t* GetImage();
-  math::CSize GetSize() const;
+  [[nodiscard]] math::CSize GetSize() const;
   void TagRequired();
   void ClearRequired();
   bool IsRequired();
@@ -106,8 +106,8 @@ class CAtlas {
 
   void ClearImageUsageflags();
 
-  int32_t GetXRes() const { return XRes; }
-  int32_t GetYRes() const { return YRes; }
+  [[nodiscard]] int32_t GetXRes() const { return XRes; }
+  [[nodiscard]] int32_t GetYRes() const { return YRes; }
 
   bool Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize);
 };

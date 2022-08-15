@@ -25,13 +25,14 @@ CFileList::CFileList() = default;
 
 void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
                              bool Recursive, bool getDirectories) {
-  HANDLE hSearch;
+  HANDLE hSearch = nullptr;
   WIN32_FIND_DATA FileData;
 
   std::string ValidPath(Path);
   if (ValidPath[ValidPath.length() - 1] != '/' &&
-      ValidPath[ValidPath.length() - 1] != '\\')
+      ValidPath[ValidPath.length() - 1] != '\\') {
     ValidPath += "/";
+  }
 
   hSearch = FindFirstFile((ValidPath + Mask.data()).c_str(), &FileData);
 

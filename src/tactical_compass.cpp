@@ -64,10 +64,11 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
     float f1 = x / static_cast<float>(4) * PI * 2;
     CVector4 p1 = CVector4(rworld * sinf(f1), 1.0f, rworld * cosf(f1), 0.0f);
 
-    if (!zoomedin)
+    if (!zoomedin) {
       a1 = 1 -
            std::pow(std::max(0.f, camDir * CVector2(p1.x, p1.z).Normalized()),
                     10.0f);
+    }
 
     p1 = p1 + charpos;
     p1 = p1 * cam;
@@ -79,10 +80,11 @@ void GW2TacticalCompass::DrawTacticalCompass(CWBDrawAPI* API) {
     p1 = p1 * persp;
     p1 /= p1.w;
 
-    if (a1 < 1)
+    if (a1 < 1) {
       a1 = 1 - (1 - a1) * (1 - powf((p1.y - screenSpaceChar.y) /
                                         (screenSpaceEye.y - screenSpaceChar.y),
                                     10.0f));
+    }
 
     p1 = p1 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
 

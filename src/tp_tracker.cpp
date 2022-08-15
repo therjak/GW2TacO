@@ -29,9 +29,10 @@ bool HasGW2ItemData(int32_t itemID) {
 
 GW2ItemData GetGW2ItemData(int32_t itemID) {
   std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
-  if (itemDataCache.find(itemID) != itemDataCache.end())
+  if (itemDataCache.find(itemID) != itemDataCache.end()) {
     return itemDataCache[itemID];
-  return GW2ItemData();
+  }
+  return {};
 }
 
 void SetGW2ItemData(GW2ItemData& data) {
@@ -55,8 +56,9 @@ __inline std::string ToGold(int32_t value) {
     if (silver) {
       result = std::format("{:d}{:s} {:02d}{:s}", silver, DICT("silver"),
                            copper, DICT("copper"));
-    } else
+    } else {
       result = std::format("{:d}{:s}", copper, DICT("copper"));
+    }
   }
 
   return result;
@@ -66,17 +68,21 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
   CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
-  if (!HasConfigValue("TPTrackerOnlyShowOutbid"))
+  if (!HasConfigValue("TPTrackerOnlyShowOutbid")) {
     SetConfigValue("TPTrackerOnlyShowOutbid", 0);
+  }
 
-  if (!HasConfigValue("TPTrackerShowBuys"))
+  if (!HasConfigValue("TPTrackerShowBuys")) {
     SetConfigValue("TPTrackerShowBuys", 1);
+  }
 
-  if (!HasConfigValue("TPTrackerShowSells"))
+  if (!HasConfigValue("TPTrackerShowSells")) {
     SetConfigValue("TPTrackerShowSells", 1);
+  }
 
-  if (!HasConfigValue("TPTrackerNextSellOnly"))
+  if (!HasConfigValue("TPTrackerNextSellOnly")) {
     SetConfigValue("TPTrackerNextSellOnly", 0);
+  }
 
   int32_t onlyShowOutbid = GetConfigValue("TPTrackerOnlyShowOutbid");
   int32_t nextSellOnly = GetConfigValue("TPTrackerNextSellOnly");
@@ -185,7 +191,7 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
                     FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
 
                 std::unique_ptr<uint8_t[]> imageData = nullptr;
-                int32_t xres, yres;
+                int32_t xres = 0, yres = 0;
                 if (DecompressPNG((uint8_t*)png.c_str(), png.size(), imageData,
                                   xres, yres)) {
                   ARGBtoABGR(imageData.get(), xres, yres);
@@ -223,8 +229,9 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
             Object& item = x->get<Object>();
 
             if (!item.has<Number>("id") || !item.has<Object>("buys") ||
-                !item.has<Object>("sells"))
+                !item.has<Object>("sells")) {
               continue;
+            }
 
             int32_t id = int32_t(item.get<Number>("id"));
             if (!HasGW2ItemData(id)) continue;
@@ -232,8 +239,9 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
             Object buys = item.get<Object>("buys");
             Object sells = item.get<Object>("sells");
             if (!buys.has<Number>("unit_price") ||
-                !sells.has<Number>("unit_price"))
+                !sells.has<Number>("unit_price")) {
               continue;
+            }
 
             GW2ItemData itemData = GetGW2ItemData(id);
             itemData.buyPrice = int32_t(buys.get<Number>("unit_price"));
@@ -287,19 +295,23 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         if (!onlyShowOutbid || outbid) {
           int32_t price = buys[x].price;
           if (nextSellOnly) {
-            for (size_t y = x; y < buys.size(); y++)
-              if (buys[y].itemID == buys[x].itemID)
+            for (size_t y = x; y < buys.size(); y++) {
+              if (buys[y].itemID == buys[x].itemID) {
                 price = std::max(buys[y].price, buys[x].price);
+              }
+            }
           }
 
-          if (itemData.icon)
+          if (itemData.icon) {
             API->DrawAtlasElement(itemData.icon,
                                   CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
                                   false, false, true, true, CColor{0xffffffff});
+          }
           auto text = itemData.name + " " + ToGold(price);
-          if (buys[x].quantity > 1)
+          if (buys[x].quantity > 1) {
             text = std::format("{:d} ", buys[x].quantity) + text;
-          f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
+          }
+          f->Write(API, text, CPoint(static_cast<int>(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
           posy += lh + 6;
@@ -313,11 +325,12 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       }
       posy += 2;
 
-      if (writtenCount)
+      if (writtenCount) {
         f->Write(API, DICT(onlyShowOutbid ? "outbidbuys" : "buylist"),
                  CPoint(0, textPosy), CColor{0xffffffff});
-      else
+      } else {
         posy -= lh + 4;
+      }
     }
 
     if (!sells.empty() && GetConfigValue("TPTrackerShowSells")) {
@@ -342,19 +355,23 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         if (!onlyShowOutbid || outbid) {
           int32_t price = sells[x].price;
           if (nextSellOnly) {
-            for (size_t y = x; y < sells.size(); y++)
-              if (sells[y].itemID == sells[x].itemID)
+            for (size_t y = x; y < sells.size(); y++) {
+              if (sells[y].itemID == sells[x].itemID) {
                 price = std::min(sells[y].price, sells[x].price);
+              }
+            }
           }
 
-          if (itemData.icon)
+          if (itemData.icon) {
             API->DrawAtlasElement(itemData.icon,
                                   CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
                                   false, false, true, true, CColor{0xffffffff});
+          }
           auto text = itemData.name + " " + ToGold(price);
-          if (sells[x].quantity > 1)
+          if (sells[x].quantity > 1) {
             text = std::format("{:d} ", sells[x].quantity) + text;
-          f->Write(API, text, CPoint(int(lh * 2.5 + 3), posy + 3),
+          }
+          f->Write(API, text, CPoint(static_cast<int>(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
           posy += lh + 6;
@@ -367,9 +384,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         }
       }
 
-      if (writtenCount)
+      if (writtenCount) {
         f->Write(API, DICT(onlyShowOutbid ? "outbidsells" : "selllist"),
                  CPoint(0, textPosy), CColor{0xffffffff});
+      }
     }
   }
 
@@ -378,8 +396,9 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
 bool TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
   if (!object.has<Number>("id") || !object.has<Number>("item_id") ||
-      !object.has<Number>("price") || !object.has<Number>("quantity"))
+      !object.has<Number>("price") || !object.has<Number>("quantity")) {
     return false;
+  }
   output.transactionID = int32_t(object.get<Number>("id"));
   output.itemID = int32_t(object.get<Number>("item_id"));
   output.price = int32_t(object.get<Number>("price"));

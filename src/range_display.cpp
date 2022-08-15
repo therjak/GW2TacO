@@ -101,15 +101,17 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
     p1 /= p1.w;
     p2 /= p2.w;
 
-    if (a1 < 1)
+    if (a1 < 1) {
       a1 = 1 - (1 - a1) * (1 - powf((p1.y - screenSpaceChar.y) /
                                         (screenSpaceEye.y - screenSpaceChar.y),
                                     10.0f));
+    }
 
-    if (a2 < 1)
+    if (a2 < 1) {
       a2 = 1 - (1 - a2) * (1 - powf((p2.y - screenSpaceChar.y) /
                                         (screenSpaceEye.y - screenSpaceChar.y),
                                     10.0f));
+    }
 
     p1 = p1 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
     p2 = p2 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);

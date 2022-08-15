@@ -13,7 +13,7 @@
 bool DecompressPNG(const uint8_t* IData, int32_t IDataSize,
                    std::unique_ptr<uint8_t[]>& Image, int32_t& XRes,
                    int32_t& YRes) {
-  int32_t x, y, n;
+  int32_t x = 0, y = 0, n = 0;
   uint8_t* Data = stbi_load_from_memory(IData, IDataSize, &x, &y, &n, 4);
 
   if (!Data) {
@@ -56,8 +56,9 @@ bool ExportPNG(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
   auto Data = std::make_unique<uint8_t[]>(XRes * YRes * 4);
   memcpy(Data.get(), Image, XRes * YRes * 4);
 
-  if (ClearAlpha)
+  if (ClearAlpha) {
     for (int32_t x = 0; x < XRes * YRes; x++) Image[x * 4 + 3] = 255;
+  }
 
   std::string FileName(OutFile);
 
@@ -71,8 +72,9 @@ bool ExportPNG(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
 
 bool ExportTga(uint8_t* Image, int32_t XRes, int32_t YRes, bool ClearAlpha,
                std::string_view OutFile) {
-  if (ClearAlpha)
+  if (ClearAlpha) {
     for (int32_t x = 0; x < XRes * YRes; x++) Image[x * 4 + 3] = 255;
+  }
 
   std::string FileName(OutFile);
 

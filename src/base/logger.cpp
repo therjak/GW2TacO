@@ -38,10 +38,11 @@ void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
 
 bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
                                      bool Append /*= true*/) {
-  if (!Append)
+  if (!Append) {
     return (!fopen_s(&f, Filename.data(), "wt"));
-  else
+  } else {
     return (!fopen_s(&f, Filename.data(), "at"));
+  }
 }
 
 CLoggerOutput_File::~CLoggerOutput_File() {
@@ -80,8 +81,8 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
     if (!AddTimeStamp) {
       return "";
     }
-    time_t rawtime;
-    tm timeinfo;
+    time_t rawtime = 0;
+    tm timeinfo{};
 
     time(&rawtime);
     localtime_s(&timeinfo, &rawtime);
@@ -94,14 +95,15 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
 
   auto pf = [Prefix, v]() -> std::string {
     if (Prefix) {
-      if (v < LOGVERBOSITY::LOG_WARNING)
+      if (v < LOGVERBOSITY::LOG_WARNING) {
         return "(Err)  ";
-      else if (v < LOGVERBOSITY::LOG_INFO)
+      } else if (v < LOGVERBOSITY::LOG_INFO) {
         return "(Warn) ";
-      else if (v < LOGVERBOSITY::LOG_DEBUG)
+      } else if (v < LOGVERBOSITY::LOG_DEBUG) {
         return "(Info) ";
-      else
+      } else {
         return "(Dbg)  ";
+      }
     }
     return "";
   };

@@ -14,7 +14,7 @@ class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
   bool Apply() override;
 
  public:
-  CCoreDX11IndexBuffer(CCoreDX11Device* dev);
+  explicit CCoreDX11IndexBuffer(CCoreDX11Device* dev);
   ~CCoreDX11IndexBuffer() override;
 
   bool Create(const uint32_t IndexCount, const uint32_t IndexSize = 2) override;

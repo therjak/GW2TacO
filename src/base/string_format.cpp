@@ -12,7 +12,7 @@
 std::string_view whitespaces(" \t\f\v\n\r");
 
 std::vector<std::string> Split(std::string_view input, std::string_view delim) {
-  size_t start;
+  size_t start = 0;
   size_t end = 0;
   std::vector<std::string> out;
 
@@ -59,7 +59,8 @@ const std::string B64Encode(const void* data, const size_t& len) {
   const size_t last = len - pad;
 
   for (size_t i = 0; i < last; i += 3) {
-    int n = int(p[i]) << 16 | int(p[i + 1]) << 8 | p[i + 2];
+    int n = static_cast<int>(p[i]) << 16 | static_cast<int>(p[i + 1]) << 8 |
+            p[i + 2];
     str[j++] = B64chars[n >> 18];
     str[j++] = B64chars[n >> 12 & 0x3F];
     str[j++] = B64chars[n >> 6 & 0x3F];
@@ -67,7 +68,7 @@ const std::string B64Encode(const void* data, const size_t& len) {
   }
   /// Set padding
   if (pad) {
-    int n = --pad ? int(p[last]) << 8 | p[last + 1] : p[last];
+    int n = --pad ? static_cast<int>(p[last]) << 8 | p[last + 1] : p[last];
     str[j++] = B64chars[pad ? n >> 10 & 0x3F : n >> 2];
     str[j++] = B64chars[pad ? n >> 4 & 0x03F : n << 4 & 0x3F];
     str[j++] = pad ? B64chars[n << 2 & 0x3F] : '=';

@@ -26,7 +26,7 @@ class CWBButton : public CWBItem {
 
   bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
-  std::string GetText() const;
+  [[nodiscard]] std::string GetText() const;
   void SetText(std::string_view val);
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,

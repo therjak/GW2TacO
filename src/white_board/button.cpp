@@ -9,9 +9,9 @@ WBITEMSTATE CWBButton::GetState() {
   if (Pushed) {
     i = IsEnabled() ? WB_STATE_ACTIVE : WB_STATE_DISABLED_ACTIVE;
   } else {
-    if (App->GetMouseCaptureItem() == this && MouseOver())
+    if (App->GetMouseCaptureItem() == this && MouseOver()) {
       i = WB_STATE_ACTIVE;
-    else {
+    } else {
       if (IsEnabled()) {
         i = MouseOver() ? WB_STATE_HOVER : WB_STATE_NORMAL;
       } else {
@@ -20,10 +20,12 @@ WBITEMSTATE CWBButton::GetState() {
     }
   }
 
-  if (i == WB_STATE_HOVER && App->GetMouseCaptureItem())
+  if (i == WB_STATE_HOVER && App->GetMouseCaptureItem()) {
     if (App->GetMouseCaptureItem() != this &&
-        App->GetMouseCaptureItem()->GetType() != "contextmenu")
+        App->GetMouseCaptureItem()->GetType() != "contextmenu") {
       i = WB_STATE_NORMAL;
+    }
+  }
 
   return i;
 }
@@ -33,7 +35,7 @@ void CWBButton::OnDraw(CWBDrawAPI* API) {
 
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
@@ -87,8 +89,9 @@ bool CWBButton::MessageProc(const CWBMessage& Message) {
 
     case WBM_LEFTBUTTONUP:
       App->ReleaseCapture();
-      if (App->GetMouseItem() == this && IsEnabled())
+      if (App->GetMouseItem() == this && IsEnabled()) {
         App->SendMessage(CWBMessage(App, WBM_COMMAND, GetGuid()));
+      }
       return true;
 
     case WBM_RIGHTBUTTONUP:
@@ -106,7 +109,7 @@ bool CWBButton::MessageProc(const CWBMessage& Message) {
 CSize CWBButton::GetContentSize() {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return CSize(0, 0);

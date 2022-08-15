@@ -11,13 +11,14 @@ void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
 
   POINT pos;
   GetCursorPos(&pos);
-  ::ScreenToClient((HWND)App->GetHandle(), &pos);
+  ::ScreenToClient(App->GetHandle(), &pos);
   CPoint cp(pos.x, pos.y);
 
-  if ((GetKeyState(VK_RBUTTON) & 0x100) != 0)
+  if ((GetKeyState(VK_RBUTTON) & 0x100) != 0) {
     cp = lastpos;
-  else
+  } else {
     cp = ScreenToClient(cp);
+  }
 
   lastpos = cp;
 

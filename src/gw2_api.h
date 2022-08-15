@@ -20,7 +20,7 @@ class APIKey {
   int worldId = 0;
 
   APIKey() = default;
-  APIKey(std::string_view key);
+  explicit APIKey(std::string_view key);
   virtual ~APIKey();
 
   void FetchData();

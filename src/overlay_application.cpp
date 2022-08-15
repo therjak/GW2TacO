@@ -47,7 +47,7 @@ void FetchMarkerPackOnline(std::string_view ourl);
 LRESULT COverlayApp::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
     case WM_COPYDATA:
-      PCOPYDATASTRUCT pcpy = (PCOPYDATASTRUCT)lParam;
+      auto pcpy = (PCOPYDATASTRUCT)lParam;
       if (pcpy) {
         std::string_view incoming(static_cast<char*>(pcpy->lpData),
                                   pcpy->cbData);

@@ -16,10 +16,10 @@ class CSphere {
   constexpr CSphere(const CVector3& p, const float r)
       : Radius(r), Position(p) {}
 
-  bool Intersect(const CPlane& p) const {
+  [[nodiscard]] bool Intersect(const CPlane& p) const {
     return std::abs(p.Distance(Position)) < Radius;
   }
-  bool Contains(const CVector3& p) const {
+  [[nodiscard]] bool Contains(const CVector3& p) const {
     return (Position - p).Length() < Radius;
   }
 };

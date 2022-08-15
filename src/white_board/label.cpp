@@ -9,7 +9,7 @@ void CWBLabel::OnDraw(CWBDrawAPI* API) {
 
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
@@ -51,7 +51,7 @@ void CWBLabel::SetText(std::string_view val) {
 CSize CWBLabel::GetContentSize() {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
-  const WBTEXTTRANSFORM TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return CSize(0, 0);

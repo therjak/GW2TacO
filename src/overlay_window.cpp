@@ -31,7 +31,7 @@ void OverlayWindow::OnDraw(CWBDrawAPI* API) {
 bool OverlayWindow::MessageProc(const CWBMessage& Message) {
   switch (Message.GetMessage()) {
     case WBM_LEFTBUTTONDOWN:
-      if (CWBItem::MessageProc(Message)) return true;
+      if (CWBWindow::MessageProc(Message)) return true;
       if (App->GetMouseItem() == this) {
         SetCapture();
         SavePosition();

@@ -109,8 +109,9 @@ bool CCoreDX11VertexBuffer::Lock(void** Result, const uint32_t Offset,
 
   D3D11_MAPPED_SUBRESOURCE ms;
   if (DeviceContext->Map(VertexBufferHandle, 0, D3D11_MAP_WRITE_DISCARD, 0,
-                         &ms) != S_OK)
+                         &ms) != S_OK) {
     return false;
+  }
 
   *Result = ms.pData;
   return true;

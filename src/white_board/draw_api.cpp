@@ -38,8 +38,8 @@ void CWBDrawAPI::AddDisplayRect(
 
   // need to cull UV
   if (Pos != rect) {
-    const float xs = static_cast<float>(rect.Width());
-    const float ys = static_cast<float>(rect.Height());
+    const auto xs = static_cast<float>(rect.Width());
+    const auto ys = static_cast<float>(rect.Height());
     const float us = u2 - u1;
     const float vs = v2 - v1;
 
@@ -86,8 +86,8 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
   float t1 = 0;
   float t2 = 0;
 
-  const float xs = static_cast<float>(abs(p2.x - p1.x));
-  const float ys = static_cast<float>(abs(p2.y - p1.y));
+  const auto xs = static_cast<float>(abs(p2.x - p1.x));
+  const auto ys = static_cast<float>(abs(p2.y - p1.y));
 
   if (p1.x < rArea.x1) t1 = std::max(t1, (rArea.x1 - p1.x) / xs);
   if (p1.y < rArea.y1) t1 = std::max(t1, (rArea.y1 - p1.y) / ys);
@@ -144,8 +144,8 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
 
   // need to cull UV
   if (Pos != rect) {
-    const float xs = static_cast<float>(rect.Width());
-    const float ys = static_cast<float>(rect.Height());
+    const auto xs = static_cast<float>(rect.Width());
+    const auto ys = static_cast<float>(rect.Height());
     const float us = u2 - u1;
     const float vs = v2 - v1;
 
@@ -240,13 +240,15 @@ void CWBDrawAPI::ClipTriY(int32_t y, bool KeepBottom,
         (S.Pos.y > y && KeepBottom) || (S.Pos.y < y && !KeepBottom);
 
     if (eInside) {
-      if (!sInside)
+      if (!sInside) {
         NewVertices[NewVertexCount++] =
             Lerp(S, E, (y - S.Pos.y) / (E.Pos.y - S.Pos.y));
+      }
       NewVertices[NewVertexCount++] = E;
-    } else if (sInside)
+    } else if (sInside) {
       NewVertices[NewVertexCount++] =
           Lerp(S, E, (y - S.Pos.y) / (E.Pos.y - S.Pos.y));
+    }
     S = E;
   }
 
@@ -316,8 +318,9 @@ void CWBDrawAPI::RenderDisplayList() {
   if (!VertexBuffer) return;
 
   // update texture atlas if needed
-  if (Atlas && Device->GetTexture(CORESAMPLER::PS0) == Atlas->GetTexture())
+  if (Atlas && Device->GetTexture(CORESAMPLER::PS0) == Atlas->GetTexture()) {
     Atlas->UpdateTexture();
+  }
 
   Device->SetVertexBuffer(VertexBuffer.get(), 0);
 
@@ -787,15 +790,17 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
     if (!Atlas->RequestImageUse(h, UV)) {
       // atlas is really, really, really full. fail.
 
-      if (defragmentReportCount == 100)
+      if (defragmentReportCount == 100) {
         Log_Err(
             "[gui] MID-FRAME TEXTURE ATLAS OPTIMIZATION REPORT COUNT REACHED "
             "100, STOPPING REPORTING");
+      }
 
-      if (defragmentReportCount < 100)
+      if (defragmentReportCount < 100) {
         Log_Err(
             "[gui] GUI Texture Atlas too small to render current frame. "
             "Flushing mid-frame, thiss will result in reduced performance.");
+      }
 
       defragmentReportCount++;
 
@@ -857,9 +862,10 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
 
   // crop unneeded tiles
   if (TileX) {
-    if (target.x1 < CropRect.x1 - Offset.x)
+    if (target.x1 < CropRect.x1 - Offset.x) {
       target.x1 +=
           ((CropRect.x1 - Offset.x - target.x1) / tilesize.x) * tilesize.x;
+    }
     if (target.x2 > CropRect.x2 - Offset.x) target.x2 = CropRect.x2;
   }
 
@@ -868,9 +874,10 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
 
   // crop unneeded tiles
   if (TileY) {
-    if (target.y1 < CropRect.y1 - Offset.y)
+    if (target.y1 < CropRect.y1 - Offset.y) {
       target.y1 +=
           ((CropRect.y1 - Offset.y - target.y1) / tilesize.y) * tilesize.y;
+    }
     if (target.y2 > CropRect.y2 - Offset.y) target.y2 = CropRect.y2;
   }
 
@@ -879,7 +886,7 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
   const CRect cr = CropRect;
   SetCropRect(target + Offset);
 
-  for (int32_t x = target.x1; x < target.x2; x += tilesize.x)
+  for (int32_t x = target.x1; x < target.x2; x += tilesize.x) {
     for (int32_t y = target.y1; y < target.y2; y += tilesize.y) {
       DrawRect(p + CPoint(x, y),
                UVTRANSLATION(UV.x1 + uvmod.x, Atlas->GetXRes()),
@@ -887,6 +894,7 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
                UVTRANSLATION(UV.x2 - uvmod.x, Atlas->GetXRes()),
                UVTRANSLATION(UV.y2 - uvmod.y, Atlas->GetYRes()), Color);
     }
+  }
 
   CropRect = cr;
 }

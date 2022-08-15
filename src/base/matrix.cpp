@@ -94,11 +94,12 @@ CMatrix4x4 CMatrix4x4::Inverted() const {
   BASEASSERT(det != 0);
 
   for (int32_t i = 0; i < 4; i++) {
-    for (int32_t j = 0; j < 4; j++)
+    for (int32_t j = 0; j < 4; j++) {
       if (i != j) vec[j > i ? j - 1 : j] = Row(j);
+    }
 
-    CVector4 v =
-        CVector4::Cross(vec[0], vec[1], vec[2]) * (powf(-1.0f, float(i)) / det);
+    CVector4 v = CVector4::Cross(vec[0], vec[1], vec[2]) *
+                 (powf(-1.0f, static_cast<float>(i)) / det);
 
     out.m[0][i] = v.x;
     out.m[1][i] = v.y;
@@ -118,11 +119,22 @@ CMatrix4x4 CMatrix4x4::Rotation(const CVector3& Axis, const float Angle) {
   const float y = v.y;
   const float z = v.z;
 
-  return CMatrix4x4(                                                         //
-      1 - 2 * (y * y + z * z), 2 * (x * y + z * s), 2 * (x * z - y * s), 0,  //
-      2 * (x * y - z * s), 1 - 2 * (x * x + z * z), 2 * (y * z + x * s), 0,  //
-      2 * (x * z + y * s), 2 * (y * z - x * s), 1 - 2 * (x * x + y * y), 0,  //
-      0, 0, 0, 1);
+  return {1 - 2 * (y * y + z * z),
+          2 * (x * y + z * s),
+          2 * (x * z - y * s),
+          0,
+          2 * (x * y - z * s),
+          1 - 2 * (x * x + z * z),
+          2 * (y * z + x * s),
+          0,
+          2 * (x * z + y * s),
+          2 * (y * z - x * s),
+          1 - 2 * (x * x + y * y),
+          0,
+          0,
+          0,
+          0,
+          1};
 }
 
 }  // namespace math

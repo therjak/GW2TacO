@@ -71,8 +71,9 @@ void ToggleConfigValue(std::string_view key) {
   if (ConfigNums.find(k) != ConfigNums.end()) {
     int32_t v = ConfigNums[k];
     ConfigNums[k] = !v;
-  } else
+  } else {
     ConfigNums[k] = 0;
+  }
 }
 
 int32_t GetConfigValue(std::string_view value) {
@@ -150,7 +151,7 @@ void GetKeyBindings(std::unordered_map<int32_t, TacOKeyAction>& KeyBindings) {
 
   for (const auto& kdp : ConfigNums) {
     if (kdp.first.find("KeyboardKey_") != 0) continue;
-    int32_t key;
+    int32_t key = 0;
     if (std::sscanf(kdp.first.c_str(), "KeyboardKey_%d", &key) != 1) continue;
     if (kdp.second == static_cast<int32_t>(TacOKeyAction::NoAction)) continue;
     KeyBindings[key] = static_cast<TacOKeyAction>(kdp.second);
@@ -185,7 +186,7 @@ void DeleteKeyBinding(int32_t keyToDelete) {
       ++elm;
       continue;
     }
-    int32_t key;
+    int32_t key = 0;
     if (std::sscanf(elm->first.c_str(), "KeyboardKey_%d", &key) != 1) {
       ++elm;
       continue;
@@ -267,8 +268,9 @@ void InitConfig() {
     SetConfigValue("CheckForUpdates", 1);
   }
 
-  if (!HasConfigValue("HideOnLoadingScreens"))
+  if (!HasConfigValue("HideOnLoadingScreens")) {
     SetConfigValue("HideOnLoadingScreens", 1);
+  }
 
   if (!HasConfigValue("KeybindsEnabled")) {
     SetConfigValue("KeybindsEnabled", 1);

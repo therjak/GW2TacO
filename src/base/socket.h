@@ -35,8 +35,8 @@ class CSocket : public CStreamReader, public CStreamWriter {
   // streamreader functions
 
   // returns the currently available bytes in the socket
-  int64_t GetLength() const override;
-  int64_t GetOffset() const override;  // is always 0
+  [[nodiscard]] int64_t GetLength() const override;
+  [[nodiscard]] int64_t GetOffset() const override;  // is always 0
 
   std::string ReadLine();
 

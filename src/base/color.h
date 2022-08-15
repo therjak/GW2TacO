@@ -43,7 +43,7 @@ class CColor {
   constexpr bool operator!=(const CColor& c) const {
     return r != c.r || g != c.g || b != c.b || a != c.a;
   }
-  constexpr uint32_t argb() const {
+  [[nodiscard]] constexpr uint32_t argb() const {
     return (a << 24) | (r << 16) | (g << 8) | b;
   }
 
@@ -51,10 +51,10 @@ class CColor {
   constexpr uint8_t& G() noexcept { return g; }
   constexpr uint8_t& B() noexcept { return b; }
   constexpr uint8_t& A() noexcept { return a; }
-  constexpr uint8_t R() const { return r; }
-  constexpr uint8_t G() const { return g; }
-  constexpr uint8_t B() const { return b; }
-  constexpr uint8_t A() const { return a; }
+  [[nodiscard]] constexpr uint8_t R() const { return r; }
+  [[nodiscard]] constexpr uint8_t G() const { return g; }
+  [[nodiscard]] constexpr uint8_t B() const { return b; }
+  [[nodiscard]] constexpr uint8_t A() const { return a; }
 };
 
 constexpr CColor Lerp(const CColor a, const CColor b, const float t) {

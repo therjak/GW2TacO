@@ -8,10 +8,10 @@
 namespace math {
 
 class CMatrix4x4 {
-  std::array<std::array<float, 4>, 4> m = {{0}};
+  std::array<std::array<float, 4>, 4> m = {{{0}}};
 
  public:
-  constexpr CMatrix4x4() : m{{0}} {}
+  constexpr CMatrix4x4() : m{{{0}}} {}
 
   constexpr CMatrix4x4(const CMatrix4x4& mx) { m = mx.m; }
   constexpr CMatrix4x4(float f11, float f12, float f13, float f14,  //
@@ -19,14 +19,15 @@ class CMatrix4x4 {
                        float f31, float f32, float f33, float f34,  //
                        float f41, float f42, float f43, float f44);
 
-  constexpr const std::array<std::array<float, 4>, 4>& data() const {
+  [[nodiscard]] constexpr const std::array<std::array<float, 4>, 4>& data()
+      const {
     return m;
   }
 
-  constexpr CVector4 Row(int32_t x) const {
+  [[nodiscard]] constexpr CVector4 Row(int32_t x) const {
     return CVector4(m[x & 3][0], m[x & 3][1], m[x & 3][2], m[x & 3][3]);
   }
-  constexpr CVector4 Col(int32_t x) const {
+  [[nodiscard]] constexpr CVector4 Col(int32_t x) const {
     return CVector4(m[0][x & 3], m[1][x & 3], m[2][x & 3], m[3][x & 3]);
   }
   constexpr CMatrix4x4& operator*=(const CMatrix4x4& mat) {
@@ -48,15 +49,15 @@ class CMatrix4x4 {
   constexpr bool operator!=(const CMatrix4x4& mat) const { return m != mat.m; }
 
   constexpr void Transpose();
-  constexpr CMatrix4x4 Transposed() const;
+  [[nodiscard]] constexpr CMatrix4x4 Transposed() const;
   constexpr CMatrix4x4& SetIdentity();
-  constexpr CVector4 Apply(const CVector3& v) const;
-  constexpr CVector4 Apply(const CVector4& v) const;
-  constexpr float Determinant() const {
+  [[nodiscard]] constexpr CVector4 Apply(const CVector3& v) const;
+  [[nodiscard]] constexpr CVector4 Apply(const CVector4& v) const;
+  [[nodiscard]] constexpr float Determinant() const {
     return -Col(3) * CVector4::Cross(Col(0), Col(1), Col(2));
   }
   void Invert();
-  CMatrix4x4 Inverted() const;
+  [[nodiscard]] CMatrix4x4 Inverted() const;
   void SetLookAtLH(const CVector3& Eye, const CVector3& Target,
                    const CVector3& Up);
   void SetLookAtRH(const CVector3& Eye, const CVector3& Target,
@@ -122,9 +123,9 @@ constexpr CMatrix4x4& CMatrix4x4::SetIdentity() {
 }
 
 constexpr CMatrix4x4 CMatrix4x4::Transposed() const {
-  return CMatrix4x4(m[0][0], m[1][0], m[2][0], m[3][0], m[0][1], m[1][1],
-                    m[2][1], m[3][1], m[0][2], m[1][2], m[2][2], m[3][2],
-                    m[0][3], m[1][3], m[2][3], m[3][3]);
+  return {m[0][0], m[1][0], m[2][0], m[3][0], m[0][1], m[1][1],
+          m[2][1], m[3][1], m[0][2], m[1][2], m[2][2], m[3][2],
+          m[0][3], m[1][3], m[2][3], m[3][3]};
 }
 
 constexpr void CMatrix4x4::Transpose() { *this = Transposed(); }
@@ -249,62 +250,60 @@ constexpr CMatrix4x4& CMatrix4x4::operator/=(const float f) {
 constexpr CMatrix4x4 CMatrix4x4::operator+() const { return *this; }
 
 constexpr CMatrix4x4 CMatrix4x4::operator-() const {
-  return CMatrix4x4(-m[0][0], -m[0][1], -m[0][2], -m[0][3], -m[1][0], -m[1][1],
-                    -m[1][2], -m[1][3], -m[2][0], -m[2][1], -m[2][2], -m[2][3],
-                    -m[3][0], -m[3][1], -m[3][2], -m[3][3]);
+  return {-m[0][0], -m[0][1], -m[0][2], -m[0][3], -m[1][0], -m[1][1],
+          -m[1][2], -m[1][3], -m[2][0], -m[2][1], -m[2][2], -m[2][3],
+          -m[3][0], -m[3][1], -m[3][2], -m[3][3]};
 }
 
 constexpr CMatrix4x4 CMatrix4x4::operator*(const CMatrix4x4& mat) const {
   CMatrix4x4 matT;
-  for (int32_t i = 0; i < 4; i++)
-    for (int32_t j = 0; j < 4; j++)
+  for (int32_t i = 0; i < 4; i++) {
+    for (int32_t j = 0; j < 4; j++) {
       matT.m[i][j] = m[i][0] * mat.m[0][j] + m[i][1] * mat.m[1][j] +
                      m[i][2] * mat.m[2][j] + m[i][3] * mat.m[3][j];
+    }
+  }
   return matT;
 }
 
 constexpr CMatrix4x4 CMatrix4x4::operator+(const CMatrix4x4& mat) const {
-  return CMatrix4x4(
-      m[0][0] + mat.m[0][0], m[0][1] + mat.m[0][1], m[0][2] + mat.m[0][2],
-      m[0][3] + mat.m[0][3], m[1][0] + mat.m[1][0], m[1][1] + mat.m[1][1],
-      m[1][2] + mat.m[1][2], m[1][3] + mat.m[1][3], m[2][0] + mat.m[2][0],
-      m[2][1] + mat.m[2][1], m[2][2] + mat.m[2][2], m[2][3] + mat.m[2][3],
-      m[3][0] + mat.m[3][0], m[3][1] + mat.m[3][1], m[3][2] + mat.m[3][2],
-      m[3][3] + mat.m[3][3]);
+  return {m[0][0] + mat.m[0][0], m[0][1] + mat.m[0][1], m[0][2] + mat.m[0][2],
+          m[0][3] + mat.m[0][3], m[1][0] + mat.m[1][0], m[1][1] + mat.m[1][1],
+          m[1][2] + mat.m[1][2], m[1][3] + mat.m[1][3], m[2][0] + mat.m[2][0],
+          m[2][1] + mat.m[2][1], m[2][2] + mat.m[2][2], m[2][3] + mat.m[2][3],
+          m[3][0] + mat.m[3][0], m[3][1] + mat.m[3][1], m[3][2] + mat.m[3][2],
+          m[3][3] + mat.m[3][3]};
 }
 
 constexpr CMatrix4x4 CMatrix4x4::operator-(const CMatrix4x4& mat) const {
-  return CMatrix4x4(
-      m[0][0] - mat.m[0][0], m[0][1] - mat.m[0][1], m[0][2] - mat.m[0][2],
-      m[0][3] - mat.m[0][3], m[1][0] - mat.m[1][0], m[1][1] - mat.m[1][1],
-      m[1][2] - mat.m[1][2], m[1][3] - mat.m[1][3], m[2][0] - mat.m[2][0],
-      m[2][1] - mat.m[2][1], m[2][2] - mat.m[2][2], m[2][3] - mat.m[2][3],
-      m[3][0] - mat.m[3][0], m[3][1] - mat.m[3][1], m[3][2] - mat.m[3][2],
-      m[3][3] - mat.m[3][3]);
+  return {m[0][0] - mat.m[0][0], m[0][1] - mat.m[0][1], m[0][2] - mat.m[0][2],
+          m[0][3] - mat.m[0][3], m[1][0] - mat.m[1][0], m[1][1] - mat.m[1][1],
+          m[1][2] - mat.m[1][2], m[1][3] - mat.m[1][3], m[2][0] - mat.m[2][0],
+          m[2][1] - mat.m[2][1], m[2][2] - mat.m[2][2], m[2][3] - mat.m[2][3],
+          m[3][0] - mat.m[3][0], m[3][1] - mat.m[3][1], m[3][2] - mat.m[3][2],
+          m[3][3] - mat.m[3][3]};
 }
 
 constexpr CMatrix4x4 CMatrix4x4::operator*(const float f) const {
-  return CMatrix4x4(m[0][0] * f, m[0][1] * f, m[0][2] * f, m[0][3] * f,
-                    m[1][0] * f, m[1][1] * f, m[1][2] * f, m[1][3] * f,
-                    m[2][0] * f, m[2][1] * f, m[2][2] * f, m[2][3] * f,
-                    m[3][0] * f, m[3][1] * f, m[3][2] * f, m[3][3] * f);
+  return {m[0][0] * f, m[0][1] * f, m[0][2] * f, m[0][3] * f,
+          m[1][0] * f, m[1][1] * f, m[1][2] * f, m[1][3] * f,
+          m[2][0] * f, m[2][1] * f, m[2][2] * f, m[2][3] * f,
+          m[3][0] * f, m[3][1] * f, m[3][2] * f, m[3][3] * f};
 }
 
 constexpr CMatrix4x4 CMatrix4x4::operator/(const float f) const {
   float fInv = 1.0f / f;
-  return CMatrix4x4(
-      m[0][0] * fInv, m[0][1] * fInv, m[0][2] * fInv, m[0][3] * fInv,
-      m[1][0] * fInv, m[1][1] * fInv, m[1][2] * fInv, m[1][3] * fInv,
-      m[2][0] * fInv, m[2][1] * fInv, m[2][2] * fInv, m[2][3] * fInv,
-      m[3][0] * fInv, m[3][1] * fInv, m[3][2] * fInv, m[3][3] * fInv);
+  return {m[0][0] * fInv, m[0][1] * fInv, m[0][2] * fInv, m[0][3] * fInv,
+          m[1][0] * fInv, m[1][1] * fInv, m[1][2] * fInv, m[1][3] * fInv,
+          m[2][0] * fInv, m[2][1] * fInv, m[2][2] * fInv, m[2][3] * fInv,
+          m[3][0] * fInv, m[3][1] * fInv, m[3][2] * fInv, m[3][3] * fInv};
 }
 
 constexpr CMatrix4x4 operator*(const float f, const CMatrix4x4& mat) {
-  return CMatrix4x4(
-      f * mat.m[0][0], f * mat.m[0][1], f * mat.m[0][2], f * mat.m[0][3],
-      f * mat.m[1][0], f * mat.m[1][1], f * mat.m[1][2], f * mat.m[1][3],
-      f * mat.m[2][0], f * mat.m[2][1], f * mat.m[2][2], f * mat.m[2][3],
-      f * mat.m[3][0], f * mat.m[3][1], f * mat.m[3][2], f * mat.m[3][3]);
+  return {f * mat.m[0][0], f * mat.m[0][1], f * mat.m[0][2], f * mat.m[0][3],
+          f * mat.m[1][0], f * mat.m[1][1], f * mat.m[1][2], f * mat.m[1][3],
+          f * mat.m[2][0], f * mat.m[2][1], f * mat.m[2][2], f * mat.m[2][3],
+          f * mat.m[3][0], f * mat.m[3][1], f * mat.m[3][2], f * mat.m[3][3]};
 }
 
 }  // namespace math

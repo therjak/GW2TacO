@@ -18,12 +18,14 @@ CStreamReader::CStreamReader() {
 CStreamReader::~CStreamReader() = default;
 
 int32_t CStreamReader::Read(void* lpBuf, uint32_t nCount) {
-  if (readerBitOffset == 0)  // non bitstream mode
+  if (readerBitOffset == 0) {  // non bitstream mode
     return ReadStream(lpBuf, nCount);
+  }
 
   // bitstream mode
-  for (uint32_t x = 0; x < nCount; x++)
+  for (uint32_t x = 0; x < nCount; x++) {
     (static_cast<uint8_t*>(lpBuf))[x] = ReadBits(8);
+  }
 
   return nCount;
 }
@@ -90,7 +92,7 @@ CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {
   Offset = 0;
 }
 
-CStreamReaderMemory::~CStreamReaderMemory() {}
+CStreamReaderMemory::~CStreamReaderMemory() = default;
 
 int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
   int64_t bytestoread = std::max(

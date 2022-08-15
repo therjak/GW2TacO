@@ -15,10 +15,11 @@ bool CWBRoot::MessageProc(const CWBMessage& Message) {
         if (!Message.Resized) return true;  // ignore movement
 
         CWBItem::MessageProc(Message);
-        for (uint32_t x = 0; x < NumChildren(); x++)
+        for (uint32_t x = 0; x < NumChildren(); x++) {
           App->SendMessage(CWBMessage(
               App, WBM_ROOTRESIZE, GetChild(x)->GetGuid(),
               Message.Rectangle.Width(), Message.Rectangle.Height()));
+        }
         return true;
       }
     }

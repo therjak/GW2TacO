@@ -16,10 +16,11 @@ void IWBCSS::RemoveClass(std::string_view s) {
 }
 
 void IWBCSS::ToggleClass(std::string_view s) {
-  if (HasClass(s))
+  if (HasClass(s)) {
     RemoveClass(s);
-  else
+  } else {
     AddClass(s);
+  }
 }
 
 bool IWBCSS::HasClass(std::string_view s) {

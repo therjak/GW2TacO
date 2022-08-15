@@ -192,7 +192,7 @@ class CWBItem : public IWBCSS {
 
   void DrawTree(CWBDrawAPI* API);
 
-  virtual bool Focusable() const;
+  [[nodiscard]] virtual bool Focusable() const;
 
   void* Data = nullptr;
 
@@ -264,7 +264,7 @@ class CWBItem : public IWBCSS {
                                   WBMESSAGE MessageType);
 
   CWBItem* SetCapture();
-  bool ReleaseCapture() const;
+  [[nodiscard]] bool ReleaseCapture() const;
   virtual int32_t GetChildIndex(CWBItem* Item);
 
   virtual bool ScrollbarDragged();
@@ -317,18 +317,23 @@ class CWBItem : public IWBCSS {
   virtual bool MessageProc(const CWBMessage& Message);
   bool FindItemInParentTree(const CWBItem* Item);
 
-  const WBGUID GetGuid() const { return Guid; }
-  CWBApplication* GetApplication() const { return App; }
-  CWBItem* GetParent() const { return Parent; }
+  [[nodiscard]] const WBGUID GetGuid() const { return Guid; }
+  [[nodiscard]] CWBApplication* GetApplication() const { return App; }
+  [[nodiscard]] CWBItem* GetParent() const { return Parent; }
 
-  virtual math::CRect GetClientRect() const;  // returns value in client space
-  virtual math::CRect GetWindowRect() const;  // returns value in client space
-  virtual math::CRect GetScreenRect() const;  // returns value in screen space
+  [[nodiscard]] virtual math::CRect GetClientRect()
+      const;  // returns value in client space
+  [[nodiscard]] virtual math::CRect GetWindowRect()
+      const;  // returns value in client space
+  [[nodiscard]] virtual math::CRect GetScreenRect()
+      const;  // returns value in screen space
 
-  virtual math::CPoint ScreenToClient(const math::CPoint& p) const;
-  virtual math::CRect ScreenToClient(const math::CRect& p) const;
-  virtual math::CPoint ClientToScreen(const math::CPoint& p) const;
-  virtual math::CRect ClientToScreen(const math::CRect& p) const;
+  [[nodiscard]] virtual math::CPoint ScreenToClient(
+      const math::CPoint& p) const;
+  [[nodiscard]] virtual math::CRect ScreenToClient(const math::CRect& p) const;
+  [[nodiscard]] virtual math::CPoint ClientToScreen(
+      const math::CPoint& p) const;
+  [[nodiscard]] virtual math::CRect ClientToScreen(const math::CRect& p) const;
 
   virtual void SetPosition(const math::CRect& Pos);
   virtual void ApplyRelativePosition();
@@ -358,7 +363,7 @@ class CWBItem : public IWBCSS {
   virtual CWBItem* GetChildInFocus();
 
   void SavePosition();
-  math::CRect GetSavedPosition() const;
+  [[nodiscard]] math::CRect GetSavedPosition() const;
   void SetSavedPosition(const math::CRect& savedPos);
 
   void Hide(bool Hide);
@@ -373,12 +378,12 @@ class CWBItem : public IWBCSS {
 
   virtual CWBContextMenu* OpenContextMenu(math::CPoint Position);
 
-  const std::string& GetType() const override {
+  [[nodiscard]] const std::string& GetType() const override {
     static const std::string type = "guiitem";
     return type;
   }
 
-  bool InstanceOf(std::string_view name) const override {
+  [[nodiscard]] bool InstanceOf(std::string_view name) const override {
     return name == GetClassName();
   }
 

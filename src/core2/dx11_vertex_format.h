@@ -15,7 +15,7 @@ class CCoreDX11VertexFormat : public CCoreVertexFormat {
   bool Apply() override;
 
  public:
-  CCoreDX11VertexFormat(CCoreDX11Device* dev);
+  explicit CCoreDX11VertexFormat(CCoreDX11Device* dev);
   ~CCoreDX11VertexFormat() override;
 
   bool Create(const std::vector<COREVERTEXATTRIBUTE>& Attributes,

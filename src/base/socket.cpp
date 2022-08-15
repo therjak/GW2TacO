@@ -46,8 +46,9 @@ int32_t CSocket::Connect(std::string_view Server, const uint32_t Port) {
   serverInfo.sin_port = htons(Port);
 
   if (connect(Socket, reinterpret_cast<LPSOCKADDR>(&serverInfo),
-              sizeof(sockaddr)) == SOCKET_ERROR)
+              sizeof(sockaddr)) == SOCKET_ERROR) {
     return 0;
+  }
 
   LastActivity = GetTickCount64();
   return 1;
@@ -73,7 +74,7 @@ uint32_t CSocket::Resolve(std::string_view a) {
   if (addr == INADDR_NONE) {
     hostent* hostEntry = gethostbyname(Address.c_str());
     if (hostEntry) {
-      LPIN_ADDR pa = reinterpret_cast<LPIN_ADDR>(hostEntry->h_addr);
+      auto pa = reinterpret_cast<LPIN_ADDR>(hostEntry->h_addr);
       addr = pa->S_un.S_addr;
     }
   }
@@ -140,16 +141,17 @@ std::string CSocket::ReadLine() {
 
   while (true) {
     if (!IsConnected()) return result;
-    int32_t len = static_cast<int32_t>(GetLength());
+    auto len = static_cast<int32_t>(GetLength());
     if (len) {
       auto dat = std::make_unique<char[]>(len);
       if (Peek(dat.get(), len)) {
-        for (int32_t x = 0; x < len; x++)
+        for (int32_t x = 0; x < len; x++) {
           if (dat[x] == '\n') {
             ReadFull(dat.get(), x + 1);
             result += std::string(dat.get(), x);
             return result;
           }
+        }
       }
 
       ReadFull(dat.get(), len);

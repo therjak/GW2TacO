@@ -9,9 +9,9 @@ class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {
   int32_t AllocatedBufferSize;
 
  public:
-  CCoreDX11ConstantBuffer(CCoreDX11Device* Device);
+  explicit CCoreDX11ConstantBuffer(CCoreDX11Device* Device);
   ~CCoreDX11ConstantBuffer() override;
 
   void Upload() override;
-  void* GetBufferPointer() const override;
+  [[nodiscard]] void* GetBufferPointer() const override;
 };

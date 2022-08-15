@@ -55,19 +55,20 @@ void CStyleManager::Reset() { dRules.clear(); }
 void CStyleManager::CollectElementsBySimpleSelector(
     CWBItem* pItem, std::vector<CWBItem*>& itemset, std::string_view selector,
     bool bIncludeRoot) {
-  if (bIncludeRoot && pItem->IsFitForSelector(selector))
+  if (bIncludeRoot && pItem->IsFitForSelector(selector)) {
     itemset.emplace_back(pItem);
+  }
 
   for (unsigned int i = 0; i < pItem->NumChildren(); i++) {
-    CollectElementsBySimpleSelector((CWBItem*)pItem->GetChild(i), itemset,
-                                    selector, true);
+    CollectElementsBySimpleSelector(pItem->GetChild(i), itemset, selector,
+                                    true);
   }
 }
 
 std::vector<CWBItem*> CStyleManager::GetElementsBySelector(
     CWBItem* pRootItem, std::string_view selector) {
   std::vector<CWBItem*> result;
-  result.emplace_back((CWBItem*)pRootItem);
+  result.emplace_back(pRootItem);
   auto components = Split(selector, " ");
   for (size_t i = 0; i < components.size(); i++) {
     if (components[i].size() < 1) continue;

@@ -14,7 +14,7 @@
 class RaidEvent {
  public:
   enum class Type : char { Boss, Checkpoint };
-  RaidEvent(std::string name, Type type)
+  RaidEvent(const std::string& name, Type type)
       : name(std::move(name)), type(std::move(type)) {}
   RaidEvent(const RaidEvent& e) : name(e.name), type(e.type) {}
   std::string_view name;

@@ -69,9 +69,9 @@ class CVector2 {
 
   CVector2 Rotated(const CVector2& center, float rotation);
 
-  float Length() const;
-  constexpr float LengthSquared() const { return x * x + y * y; }
-  CVector2 Normalized() const;
+  [[nodiscard]] float Length() const;
+  [[nodiscard]] constexpr float LengthSquared() const { return x * x + y * y; }
+  [[nodiscard]] CVector2 Normalized() const;
   void Normalize();
   static constexpr float Dot(const CVector2& v1, const CVector2& v2) {
     return v1 * v2;
@@ -147,11 +147,11 @@ class CVector2I {
   constexpr int32_t operator*(const CVector2I& v) const {
     return x * v.x + y * v.y;
   }
-  float Length() const;
-  constexpr float LengthSquared() const {
+  [[nodiscard]] float Length() const;
+  [[nodiscard]] constexpr float LengthSquared() const {
     return static_cast<float>(x * x + y * y);
   }
-  CVector2I Normalized() const;
+  [[nodiscard]] CVector2I Normalized() const;
   void Normalize();
   static constexpr int32_t Dot(const CVector2I& v1, const CVector2I& v2) {
     return v1 * v2;
@@ -234,9 +234,11 @@ class CVector3 {
   }
   CVector4 operator*(const CMatrix4x4& q) const;  // transformation
 
-  float Length() const;
-  constexpr float LengthSquared() const { return x * x + y * y + z * z; }
-  CVector3 Normalized() const;
+  [[nodiscard]] float Length() const;
+  [[nodiscard]] constexpr float LengthSquared() const {
+    return x * x + y * y + z * z;
+  }
+  [[nodiscard]] CVector3 Normalized() const;
   void Normalize();
   static constexpr float Dot(const CVector3& v1, const CVector3& v2) {
     return v1 * v2;
@@ -318,13 +320,13 @@ class CVector4 {
     return x * v.x + y * v.y + z * v.z + w * v.w;
   }
   CVector4 operator*(const CMatrix4x4& q) const;  // transformation
-  float Length() const;
-  constexpr float LengthSquared() const {
+  [[nodiscard]] float Length() const;
+  [[nodiscard]] constexpr float LengthSquared() const {
     return x * x + y * y + z * z + w * w;
   }
-  CVector4 Normalized() const;
+  [[nodiscard]] CVector4 Normalized() const;
   void Normalize();
-  constexpr CVector4 Homogenized() const { return *this / w; }
+  [[nodiscard]] constexpr CVector4 Homogenized() const { return *this / w; }
   constexpr void Homogenize() { *this = Homogenized(); }
   static constexpr float Dot(const CVector4& v1, const CVector4& v2) {
     return v1 * v2;

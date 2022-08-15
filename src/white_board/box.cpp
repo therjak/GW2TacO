@@ -47,15 +47,18 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
 
         CRect BRect = CRect(0, 0, 0, 0);
 
-        for (uint32_t x = 0; x < NumChildren(); x++)
-          if (!GetChild(x)->IsHidden())
+        for (uint32_t x = 0; x < NumChildren(); x++) {
+          if (!GetChild(x)->IsHidden()) {
             BRect = BRect & GetChild(x)->GetPosition();
+          }
+        }
 
         SetVScrollbarPos(
-            std::max(BRect.y1, std::min(BRect.y2 - client.Height(),
-                                        GetVScrollbarPos() -
-                                            (int)(Message.Data *
-                                                  client.Height() / 5.0f))),
+            std::max(BRect.y1,
+                     std::min(BRect.y2 - client.Height(),
+                              GetVScrollbarPos() -
+                                  static_cast<int>(Message.Data *
+                                                   client.Height() / 5.0f))),
             false);
         return true;
       }
@@ -133,8 +136,9 @@ void CWBBox::RearrangeHorizontal() {
     if (!GetChild(x)->IsWidthSet()) {
       NumDynamicChildren++;
       LastDynamic = x;
-    } else
+    } else {
       NonDynamicWidth += GetChild(x)->GetCalculatedWidth(ClientRect.Size());
+    }
   }
 
   int32_t width = (NumChildren() - 1) * Spacing;
@@ -142,12 +146,14 @@ void CWBBox::RearrangeHorizontal() {
       GetClientRect().Width() - NonDynamicWidth - width;
   const float itemsizes = DynamicWidth / static_cast<float>(NumDynamicChildren);
 
-  for (uint32_t x = 0; x < NumChildren(); x++)
+  for (uint32_t x = 0; x < NumChildren(); x++) {
     width += GetChild(x)->GetPosition().Width();
+  }
 
   if (AlignmentX == WBALIGNMENT::RIGHT) pos = GetClientRect().Width() - width;
-  if (AlignmentX == WBALIGNMENT::CENTER)
+  if (AlignmentX == WBALIGNMENT::CENTER) {
     pos = (GetClientRect().Width() - width) / 2;
+  }
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
     CRect ChildPosition = GetChild(x)->GetPosition();
@@ -158,8 +164,9 @@ void CWBBox::RearrangeHorizontal() {
         Excess += itemsizes;
         ChildPosition.x2 = ChildPosition.x1 + static_cast<int32_t>(Excess);
         Excess -= static_cast<int32_t>(Excess);
-        if (x == LastDynamic && Excess >= 0.5)
+        if (x == LastDynamic && Excess >= 0.5) {
           ChildPosition.x2++;  // fucking float inaccuracies...
+        }
       } else {
         ChildPosition.x1 = pos;
         ChildPosition.x2 = ChildPosition.x1 +
@@ -177,10 +184,12 @@ void CWBBox::RearrangeHorizontal() {
     }
 
     int32_t off = 0;
-    if (AlignmentY == WBALIGNMENT::BOTTOM)
+    if (AlignmentY == WBALIGNMENT::BOTTOM) {
       off = ClientRect.Height() - ChildPosition.Height();
-    if (AlignmentY == WBALIGNMENT::CENTER)
+    }
+    if (AlignmentY == WBALIGNMENT::CENTER) {
       off = (ClientRect.Height() - ChildPosition.Height()) / 2;
+    }
 
     const CRect np = CRect(pos, off, pos + ChildPosition.Width(),
                            off + ChildPosition.Height());
@@ -207,8 +216,9 @@ void CWBBox::RearrangeVertical() {
     if (!GetChild(x)->IsHeightSet()) {
       NumDynamicChildren++;
       LastDynamic = x;
-    } else
+    } else {
       NonDynamicHeight += GetChild(x)->GetCalculatedHeight(ClientRect.Size());
+    }
   }
 
   int32_t height = (NumChildren() - 1) * Spacing;
@@ -217,13 +227,16 @@ void CWBBox::RearrangeVertical() {
   const float itemsizes =
       DynamicHeight / static_cast<float>(NumDynamicChildren);
 
-  for (uint32_t x = 0; x < NumChildren(); x++)
+  for (uint32_t x = 0; x < NumChildren(); x++) {
     height += GetChild(x)->GetPosition().Height();
+  }
 
-  if (AlignmentY == WBALIGNMENT::BOTTOM)
+  if (AlignmentY == WBALIGNMENT::BOTTOM) {
     pos = GetClientRect().Height() - height;
-  if (AlignmentY == WBALIGNMENT::CENTER)
+  }
+  if (AlignmentY == WBALIGNMENT::CENTER) {
     pos = (GetClientRect().Height() - height) / 2;
+  }
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
     CRect ChildPosition = GetChild(x)->GetPosition();
@@ -239,8 +252,9 @@ void CWBBox::RearrangeVertical() {
         Excess += itemsizes;
         ChildPosition.y2 = ChildPosition.y1 + static_cast<int32_t>(Excess);
         Excess -= static_cast<int32_t>(Excess);
-        if (x == LastDynamic && Excess >= 0.5)
+        if (x == LastDynamic && Excess >= 0.5) {
           ChildPosition.y2++;  // fucking float inaccuracies...
+        }
       } else {
         ChildPosition.y1 = pos;
         ChildPosition.y2 = ChildPosition.y1 +
@@ -253,10 +267,12 @@ void CWBBox::RearrangeVertical() {
     }
 
     int32_t off = 0;
-    if (AlignmentX == WBALIGNMENT::BOTTOM)
+    if (AlignmentX == WBALIGNMENT::BOTTOM) {
       off = ClientRect.Width() - ChildPosition.Width();
-    if (AlignmentX == WBALIGNMENT::CENTER)
+    }
+    if (AlignmentX == WBALIGNMENT::CENTER) {
       off = (ClientRect.Width() - ChildPosition.Width()) / 2;
+    }
 
     const CRect np = CRect(off, pos, off + ChildPosition.Width(),
                            pos + ChildPosition.Height());
@@ -443,8 +459,9 @@ void CWBBox::UpdateScrollbarData() {
 
   CRect BRect = CRect(0, 0, 0, 0);
 
-  for (uint32_t x = 0; x < NumChildren(); x++)
+  for (uint32_t x = 0; x < NumChildren(); x++) {
     if (!GetChild(x)->IsHidden()) BRect = BRect & GetChild(x)->GetPosition();
+  }
 
   SetHScrollbarParameters(BRect.x1, BRect.x2, GetClientRect().Width());
   SetVScrollbarParameters(BRect.y1, BRect.y2, GetClientRect().Height());

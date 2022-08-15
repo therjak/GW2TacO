@@ -45,7 +45,7 @@ class CCoreWindowParameters {
                         HICON Icon = nullptr, bool Maximized = false,
                         bool ResizeDisabled = false);
 
-  std::unique_ptr<CCoreDevice> CreateDevice() const;
+  [[nodiscard]] std::unique_ptr<CCoreDevice> CreateDevice() const;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
 
  protected:
   HWND hWnd = nullptr;
-  WINDOWPLACEMENT WindowPlacement;
+  WINDOWPLACEMENT WindowPlacement{};
   int32_t dwStyle = 0;
   int32_t FullScreenX = 0, FullScreenY = 0;
 

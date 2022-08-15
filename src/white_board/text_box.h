@@ -113,7 +113,7 @@ class CWBTextBox : public CWBItem {
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
-  std::string GetText() const {
+  [[nodiscard]] std::string GetText() const {
     return Text;
   }  // text returned here will always be in unix newline format ('\n' instead
      // of the windows '\r\n')

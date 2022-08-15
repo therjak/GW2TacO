@@ -18,10 +18,11 @@ void CTimer::Update() {
   int32_t CurrentTime = timeGetTime();
   double ElapsedTime = CurrentTime - LastUpdateTime;
 
-  if (!Paused)
+  if (!Paused) {
     TimeExtension += ElapsedTime * (1 - SpeedModifier);
-  else
+  } else {
     TimeExtension += ElapsedTime;
+  }
 
   Time = static_cast<int32_t>((CurrentTime - StartTime) - TimeExtension);
   LastUpdateTime = CurrentTime;

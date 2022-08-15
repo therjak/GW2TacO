@@ -35,12 +35,15 @@ void CCoreDX11Texture2D::Release() {
 }
 
 bool CCoreDX11Texture2D::SetToSampler(const CORESAMPLER smp) {
-  if (smp >= CORESAMPLER::PS0 && smp <= CORESAMPLER::PS15)
+  if (smp >= CORESAMPLER::PS0 && smp <= CORESAMPLER::PS15) {
     DeviceContext->PSSetShaderResources(smp - CORESAMPLER::PS0, 1, &View);
-  if (smp >= CORESAMPLER::VS0 && smp <= CORESAMPLER::VS3)
+  }
+  if (smp >= CORESAMPLER::VS0 && smp <= CORESAMPLER::VS3) {
     DeviceContext->VSSetShaderResources(smp - CORESAMPLER::VS0, 1, &View);
-  if (smp >= CORESAMPLER::GS0 && smp <= CORESAMPLER::GS3)
+  }
+  if (smp >= CORESAMPLER::GS0 && smp <= CORESAMPLER::GS3) {
     DeviceContext->GSSetShaderResources(smp - CORESAMPLER::GS0, 1, &View);
+  }
 
   return true;
 }
@@ -115,7 +118,7 @@ bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
   if (!Data || Size <= 0) return false;
   Release();
 
-  int32_t xr, yr;
+  int32_t xr = 0, yr = 0;
   auto Img = DecompressImage(Data, Size, xr, yr);
 
   if (!Img) {
@@ -169,8 +172,9 @@ void CCoreDX11Texture2D::OnDeviceLost() {
 }
 
 void CCoreDX11Texture2D::OnDeviceReset() {
-  if (RenderTarget && XRes > 0 && YRes > 0 && Format != COREFORMAT::UNKNOWN)
+  if (RenderTarget && XRes > 0 && YRes > 0 && Format != COREFORMAT::UNKNOWN) {
     BASEASSERT(Create(XRes, YRes, nullptr, 4, Format, RenderTarget));
+  }
 }
 
 bool CCoreDX11Texture2D::Update(const uint8_t* Data, const int32_t XRes,
@@ -250,7 +254,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
   };
 
   uint8_t* Data = Writer.GetData();
-  DDSHEAD head;
+  DDSHEAD head{};
   memcpy(&head, Data, sizeof(DDSHEAD));
   Data += head.dwSize + 4;
 
@@ -262,13 +266,14 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
         // rgba
         memcpy(image.get(), Data, head.dwWidth * head.dwHeight * 4);
 
-        if (head.dwRBitMask == 0x00ff0000 && head.dwBBitMask == 0x000000ff)
+        if (head.dwRBitMask == 0x00ff0000 && head.dwBBitMask == 0x000000ff) {
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
             const int32_t p = x * 4;
             const int32_t t = image[p];
             image[p] = image[p + 2];
             image[p + 2] = t;
           }
+        }
 
         break;
       } else {
@@ -279,8 +284,9 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       break;
     case 36: {
       const uint16_t* inimg = reinterpret_cast<uint16_t*>(Data);
-      for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++)
+      for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++) {
         image[x] = (!degamma ? inimg[x] : degammaint16(inimg[x])) / 256;
+      }
     } break;
     case 113: {
       // D3DXFloat16To32Array()
@@ -291,14 +297,16 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
           head.dwWidth * head.dwHeight * 4);
 
       if (!degamma) {
-        for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++)
+        for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++) {
           image[x] = static_cast<uint8_t>(
               std::max(0.f, std::min(255.f, img2[x] * 255.f)));
+        }
       } else {
         for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4;) {
-          for (int y = 0; y < 3; y++, x++)
+          for (int y = 0; y < 3; y++, x++) {
             image[x] = static_cast<uint8_t>(
                 std::max(0.f, std::min(255.f, degammafloat(img2[x]) * 255.f)));
+          }
 
           x++;
           image[x] = static_cast<uint8_t>(
@@ -782,10 +790,11 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
   D3D11_RESOURCE_DIMENSION resType = D3D11_RESOURCE_DIMENSION_UNKNOWN;
   pSource->GetType(&resType);
 
-  if (resType != D3D11_RESOURCE_DIMENSION_TEXTURE2D)
+  if (resType != D3D11_RESOURCE_DIMENSION_TEXTURE2D) {
     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+  }
 
-  ID3D11Texture2D* pTexture;
+  ID3D11Texture2D* pTexture = nullptr;
   HRESULT hr = pSource->QueryInterface(__uuidof(ID3D11Texture2D),
                                        reinterpret_cast<void**>(&pTexture));
   if (FAILED(hr)) return hr;
@@ -797,7 +806,7 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
 
-    ID3D11Texture2D* pTemp;
+    ID3D11Texture2D* pTemp = nullptr;
     hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pTemp);
     if (FAILED(hr)) {
       if (pTexture) pTexture->Release();
@@ -1166,7 +1175,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
   D3D11_TEXTURE2D_DESC desc = {0};
   ID3D11Texture2D* pStaging = nullptr;
 
-  ID3D11Device* d3dDevice;
+  ID3D11Device* d3dDevice = nullptr;
   pContext->GetDevice(&d3dDevice);
 
   HRESULT hr = CaptureTexture(d3dDevice, pContext, pSource, desc, pStaging);
@@ -1348,7 +1357,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
       break;
   }
 
-  size_t rowPitch, slicePitch, rowCount;
+  size_t rowPitch = 0, slicePitch = 0, rowCount = 0;
   GetSurfaceInfo(desc.Width, desc.Height, desc.Format, &slicePitch, &rowPitch,
                  &rowCount);
 
