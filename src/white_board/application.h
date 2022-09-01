@@ -31,77 +31,10 @@ typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
 class CWBApplication : public CCoreWindowHandlerWin {
   friend class CWBItem;
 
-  std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
-  int32_t LastFrameTime;
-
-  std::unordered_map<WBGUID, CWBItem*> Items;
-  std::recursive_mutex MessageBufferMutex;
-  std::vector<CWBMessage> MessageBuffer;
-  std::recursive_mutex TrashMutex;
-  std::vector<std::unique_ptr<CWBItem>> Trash;
-
-  CWBItem* MouseCaptureItem;
-  CWBItem* MouseItem;
-
-  std::unique_ptr<CWBSkin> Skin;
-  std::unordered_map<std::string, std::unique_ptr<CWBFont>> Fonts;
-  CWBFont* DefaultFont;
-
-  bool Alt, Ctrl, Shift, Left, Middle, Right;
-
-  bool Vsync;
-
-  std::string ScreenShotName;
-
-  bool SendMessageToItem(const CWBMessage& Message, CWBItem* Target);
-  void ProcessMessage(CWBMessage& Message);
-  CWBItem* GetItemUnderMouse(math::CPoint& Point, WBMESSAGE w);
-
-  virtual void UpdateMouseItem();
-  virtual void CleanTrash();
-  virtual void UpdateControlKeyStates();  // update ctrl alt shift states
-  virtual int32_t GetKeyboardState();
-
-  WBMOUSECLICKREPEATMODE ClickRepeaterMode;
-  int64_t NextRepeatedClickTime{};
-
-  //////////////////////////////////////////////////////////////////////////
-  // gui layout and style
-
-  std::unordered_map<std::string, std::unique_ptr<CXMLDocument>>
-      LayoutRepository;
-  CStyleManager StyleManager;
-
-  //////////////////////////////////////////////////////////////////////////
-  // ui generator
-
-  std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
-
-  bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
-  bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
-                              math::CRect& Pos);
-  bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
-                                  std::string_view TemplateID);
-  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
-
-  CColor ClearColor = CColor(0, 0, 0, 255);
-
- protected:
-  std::unique_ptr<CAtlas> Atlas;
-  std::unique_ptr<CWBRoot> Root;
-
-  std::unique_ptr<CWBDrawAPI> DrawAPI;
-
-  LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
-  bool GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc);
-  virtual bool Initialize();
-
  public:
-  bool Initialize(const CCoreWindowParameters& WindowParams) override;
-
   CWBApplication();
   ~CWBApplication() override;
+  bool Initialize(const CCoreWindowParameters& WindowParams) override;
 
   CWBItem* GetRoot();
   CWBItem* GetFocusItem();
@@ -197,4 +130,57 @@ class CWBApplication : public CCoreWindowHandlerWin {
   void HandleResize() override;
 
   LRESULT InjectMessage(UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+ protected:
+  LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
+
+  std::unique_ptr<CWBDrawAPI> DrawAPI;
+
+ private:
+  bool Initialize();
+  bool GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc);
+  bool SendMessageToItem(const CWBMessage& Message, CWBItem* Target);
+  void ProcessMessage(CWBMessage& Message);
+  CWBItem* GetItemUnderMouse(math::CPoint& Point, WBMESSAGE w);
+
+  virtual void UpdateMouseItem();
+  virtual void CleanTrash();
+  virtual void UpdateControlKeyStates();  // update ctrl alt shift states
+  virtual int32_t GetKeyboardState();
+  bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
+  bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
+                              math::CRect& Pos);
+  bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
+                                  std::string_view TemplateID);
+  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
+
+  std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
+  int32_t LastFrameTime;
+
+  std::unordered_map<WBGUID, CWBItem*> Items;
+  std::recursive_mutex MessageBufferMutex;
+  std::vector<CWBMessage> MessageBuffer;
+  std::recursive_mutex TrashMutex;
+  std::vector<std::unique_ptr<CWBItem>> Trash;
+
+  CWBItem* MouseCaptureItem;
+  CWBItem* MouseItem;
+
+  std::unique_ptr<CWBSkin> Skin;
+  std::unordered_map<std::string, std::unique_ptr<CWBFont>> Fonts;
+  std::unique_ptr<CAtlas> Atlas;
+  std::unique_ptr<CWBRoot> Root;
+
+  CWBFont* DefaultFont;
+  bool Alt, Ctrl, Shift, Left, Middle, Right;
+  bool Vsync;
+  std::string ScreenShotName;
+  WBMOUSECLICKREPEATMODE ClickRepeaterMode;
+  int64_t NextRepeatedClickTime{};
+  std::unordered_map<std::string, std::unique_ptr<CXMLDocument>>
+      LayoutRepository;
+  CStyleManager StyleManager;
+  std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
+  CColor ClearColor = CColor(0, 0, 0, 255);
 };

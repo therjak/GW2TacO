@@ -81,6 +81,14 @@ enum WBSCROLLDRAGMODE {
 
 class CWBScrollbarParams {
  public:
+  CWBScrollbarParams() {
+    DragStartPosition = 0;
+    Dragmode = WB_SCROLLDRAG_NONE;
+    Visible = Dynamic = Enabled = false;
+    MinScroll = MaxScroll = ScrollPos = 0;
+    ViewSize = 0;
+  }
+
   bool Enabled;  // determines whether the scrollbar will be displayed at all
   bool Dynamic;  // if true the scrollbar disappears when not needed
   bool Visible;  // if true the client area has been adjusted so the scrollbar
@@ -94,20 +102,9 @@ class CWBScrollbarParams {
   // dragging data
   WBSCROLLDRAGMODE Dragmode;
   int32_t DragStartPosition;
-
-  CWBScrollbarParams() {
-    DragStartPosition = 0;
-    Dragmode = WB_SCROLLDRAG_NONE;
-    Visible = Dynamic = Enabled = false;
-    MinScroll = MaxScroll = ScrollPos = 0;
-    ViewSize = 0;
-  }
 };
 
 class CWBDisplayState {
-  std::array<uint32_t, WB_ITEM_COUNT> Visuals = {0};
-  std::array<bool, WB_ITEM_COUNT> VisualSet = {false};
-
  public:
   CWBDisplayState();
   virtual ~CWBDisplayState();
@@ -117,11 +114,13 @@ class CWBDisplayState {
   WBSKINELEMENTID GetSkin(WBITEMVISUALCOMPONENT v);
   void SetValue(WBITEMVISUALCOMPONENT v, int32_t value);
   int32_t GetValue(WBITEMVISUALCOMPONENT v);
+
+ private:
+  std::array<uint32_t, WB_ITEM_COUNT> Visuals = {0};
+  std::array<bool, WB_ITEM_COUNT> VisualSet = {false};
 };
 
 class CWBDisplayProperties {
-  std::array<CWBDisplayState, WB_STATE_COUNT> States;
-
  public:
   CWBDisplayProperties();
   virtual ~CWBDisplayProperties();
@@ -130,183 +129,29 @@ class CWBDisplayProperties {
   WBSKINELEMENTID GetSkin(WBITEMSTATE s, WBITEMVISUALCOMPONENT v);
   void SetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v, int32_t value);
   int32_t GetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v);
+
+ private:
+  std::array<CWBDisplayState, WB_STATE_COUNT> States;
 };
 
 class CWBCSSPropertyBatch {
  public:
+  CWBCSSPropertyBatch();
+  CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
+  bool ApplyStyle(CWBItem* Owner, std::string_view prop, std::string_view value,
+                  const std::vector<std::string>& pseudo);
+
   math::CRect BorderSizes;
   WBTEXTALIGNMENTX TextAlignX;
   WBTEXTALIGNMENTY TextAlignY;
   CWBDisplayProperties DisplayDescriptor;
   CWBPositionDescriptor PositionDescriptor;
   std::unordered_map<WBITEMSTATE, std::string> Fonts;
-
-  CWBCSSPropertyBatch();
-  CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
-  bool ApplyStyle(CWBItem* Owner, std::string_view prop, std::string_view value,
-                  const std::vector<std::string>& pseudo);
 };
 
 class CWBItem : public IWBCSS {
   friend CWBApplication;  // so we don't directly expose the message handling
                           // functions to the user
-
-  const WBGUID Guid;
-
-  math::CRect Position;    // stored in parent space
-  math::CRect ClientRect;  // stored in window space
-  math::CRect ScreenRect;  // calculated automatically, stores the position in
-                           // screen space
-  math::CRect StoredPosition;
-  math::CPoint ContentOffset;  // describes how much the content is moved
-                               // relative to the item. used for easily sliding
-                               // content around by scrollbars
-
-  math::CSize StoredContentSize;
-
-  CWBItem* Parent = nullptr;
-  std::vector<std::unique_ptr<CWBItem>> Children;
-
-  int32_t SortLayer = 0;
-  float OpacityMultiplier = 1;
-
-  bool Hidden = false;
-  bool Disabled = false;
-  bool ForceMouseTransparent = false;
-  int32_t Scrollbar_Size = 16;
-  int32_t Scrollbar_ButtonSize = 16;
-  int32_t Scrollbar_ThumbMinimalSize = 4;
-  CWBScrollbarParams HScrollbar, VScrollbar;
-
-  //////////////////////////////////////////////////////////////////////////
-  // private functions
-
-  void UpdateScreenRect();
-
-  virtual void OnMove(const math::CPoint& p);
-  virtual void OnResize(const math::CSize& s);
-  virtual void OnMouseEnter();
-  virtual void OnMouseLeave();
-
-  virtual void CalculateClientPosition();
-
-  void DrawTree(CWBDrawAPI* API);
-
-  [[nodiscard]] virtual bool Focusable() const;
-
-  void* Data = nullptr;
-
-  virtual void AdjustClientAreaToFitScrollbars();
-  virtual void ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t& r,
-                                    bool ScrollbarNeeded);
-  virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
-                                           int32_t& a2, int32_t& thumbsize,
-                                           int32_t& thumbpos);
-  virtual bool ScrollbarRequired(CWBScrollbarParams& s);
-  virtual int32_t CalculateScrollbarMovement(CWBScrollbarParams& s,
-                                             int32_t scrollbarsize,
-                                             int32_t delta);
-  virtual void DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
-                                   math::CRect& r,
-                                   WBITEMVISUALCOMPONENT Button);
-  virtual void DrawHScrollbar(CWBDrawAPI* API);
-  virtual void DrawVScrollbar(CWBDrawAPI* API);
-  virtual void HandleHScrollbarClick(WBSCROLLDRAGMODE m);
-  virtual void HandleVScrollbarClick(WBSCROLLDRAGMODE m);
-  virtual bool AllowMouseHighlightWhileCaptureItem() { return false; }
-
-  bool ScanPXValue(std::string_view Value, int32_t& Result,
-                   std::string_view PropName);
-  bool ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
-                     std::string_view PropName);
-
-  CWBItem* ChildSearcherFunct(std::string_view value,
-                              std::string_view type = "");
-
-  WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, math::CRect r);
-  virtual void ChangeContentOffset(math::CPoint ContentOff);
-
-  static const std::string& GetClassName() {
-    static const std::string type = "guiitem";
-    return type;
-  }
-
- protected:
-  CWBApplication* App = nullptr;
-  CWBItem* ChildInFocus = nullptr;
-
-  // returns the highlight areas of the scrollbar in client space
-  virtual bool GetHScrollbarRectangles(math::CRect& button1,
-                                       math::CRect& Scrollup,
-                                       math::CRect& Thumb,
-                                       math::CRect& Scrolldown,
-                                       math::CRect& button2);
-  virtual bool GetVScrollbarRectangles(math::CRect& button1,
-                                       math::CRect& Scrollup,
-                                       math::CRect& Thumb,
-                                       math::CRect& Scrolldown,
-                                       math::CRect& button2);
-
-  virtual void OnDraw(CWBDrawAPI* API);
-  virtual void OnPostDraw(CWBDrawAPI* API);
-  virtual int32_t GetScrollbarStep();
-
-  //////////////////////////////////////////////////////////////////////////
-  // CSS modifiable properties
-
-  CWBCSSPropertyBatch CSSProperties;
-
-  virtual CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
-                                     WBMESSAGE MessageType);
-  virtual void SetChildAsTopmost(int32_t Index);
-  virtual void SetChildAsBottommost(int32_t Index);
-  virtual bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                                  WBMESSAGE MessageType);
-
-  CWBItem* SetCapture();
-  [[nodiscard]] bool ReleaseCapture() const;
-  virtual int32_t GetChildIndex(CWBItem* Item);
-
-  virtual bool ScrollbarDragged();
-
-  virtual void DrawBackgroundItem(
-      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, const math::CRect& Pos,
-      WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
-  virtual void DrawBackground(CWBDrawAPI* API, WBITEMSTATE State);
-  virtual void DrawBackground(CWBDrawAPI* API);
-  virtual void DrawBorder(CWBDrawAPI* API);
-  virtual void ApplyOpacity(CWBDrawAPI* API);
-
-  virtual void DrawBackground(CWBDrawAPI* API, const math::CRect& rect,
-                              WBITEMSTATE State, CWBCSSPropertyBatch& cssProps);
-  virtual void DrawBorder(CWBDrawAPI* API, const math::CRect& rect,
-                          CWBCSSPropertyBatch& cssProps);
-
-  virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
-      std::string_view String);
-  virtual bool ParseRGBA(std::string_view description, CColor& output);
-
-  static void PositionApplicator(CWBPositionDescriptor& pos,
-                                 WBPOSITIONTYPE Type, std::string_view Value);
-  static void VisualStyleApplicator(CWBDisplayProperties& desc,
-                                    WBITEMVISUALCOMPONENT TargetComponent,
-                                    int32_t Value,
-                                    const std::vector<std::string>& pseudo);
-  static void FontStyleApplicator(CWBCSSPropertyBatch& desc,
-                                  const std::vector<std::string>& pseudo,
-                                  std::string_view name);
-
-  // auto resize stuff
-  virtual math::CSize GetContentSize();
-  virtual void ContentChanged();
-  virtual void ChangeContentOffsetX(int32_t OffsetX);
-  virtual void ChangeContentOffsetY(int32_t OffsetY);
-  bool ScrollbarsEnabled();
-
-  virtual math::CPoint GetContentOffset() { return ContentOffset; }
-  CWBItem();
-  CWBItem(CWBItem* Parent, const math::CRect& Position);
-
  public:
   ~CWBItem() override;
 
@@ -476,6 +321,157 @@ class CWBItem : public IWBCSS {
   virtual void ReapplyStyles();
   virtual void SetForcedMouseTransparency(bool transparent);
   bool MarkedForDeletion();
+
+ protected:
+  CWBItem();
+  CWBItem(CWBItem* Parent, const math::CRect& Position);
+
+  // returns the highlight areas of the scrollbar in client space
+  virtual bool GetHScrollbarRectangles(math::CRect& button1,
+                                       math::CRect& Scrollup,
+                                       math::CRect& Thumb,
+                                       math::CRect& Scrolldown,
+                                       math::CRect& button2);
+  virtual bool GetVScrollbarRectangles(math::CRect& button1,
+                                       math::CRect& Scrollup,
+                                       math::CRect& Thumb,
+                                       math::CRect& Scrolldown,
+                                       math::CRect& button2);
+
+  virtual void OnDraw(CWBDrawAPI* API);
+  virtual void OnPostDraw(CWBDrawAPI* API);
+  virtual int32_t GetScrollbarStep();
+
+  virtual CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
+                                     WBMESSAGE MessageType);
+  virtual void SetChildAsTopmost(int32_t Index);
+  virtual void SetChildAsBottommost(int32_t Index);
+  virtual bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+                                  WBMESSAGE MessageType);
+
+  CWBItem* SetCapture();
+  [[nodiscard]] bool ReleaseCapture() const;
+  virtual int32_t GetChildIndex(CWBItem* Item);
+
+  virtual bool ScrollbarDragged();
+
+  virtual void DrawBackgroundItem(
+      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, const math::CRect& Pos,
+      WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
+  virtual void DrawBackground(CWBDrawAPI* API, WBITEMSTATE State);
+  virtual void DrawBackground(CWBDrawAPI* API);
+  virtual void DrawBorder(CWBDrawAPI* API);
+  virtual void ApplyOpacity(CWBDrawAPI* API);
+
+  virtual void DrawBackground(CWBDrawAPI* API, const math::CRect& rect,
+                              WBITEMSTATE State, CWBCSSPropertyBatch& cssProps);
+  virtual void DrawBorder(CWBDrawAPI* API, const math::CRect& rect,
+                          CWBCSSPropertyBatch& cssProps);
+
+  virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
+      std::string_view String);
+  virtual bool ParseRGBA(std::string_view description, CColor& output);
+
+  static void PositionApplicator(CWBPositionDescriptor& pos,
+                                 WBPOSITIONTYPE Type, std::string_view Value);
+  static void VisualStyleApplicator(CWBDisplayProperties& desc,
+                                    WBITEMVISUALCOMPONENT TargetComponent,
+                                    int32_t Value,
+                                    const std::vector<std::string>& pseudo);
+  static void FontStyleApplicator(CWBCSSPropertyBatch& desc,
+                                  const std::vector<std::string>& pseudo,
+                                  std::string_view name);
+
+  // auto resize stuff
+  virtual math::CSize GetContentSize();
+  virtual void ContentChanged();
+  virtual void ChangeContentOffsetX(int32_t OffsetX);
+  virtual void ChangeContentOffsetY(int32_t OffsetY);
+  bool ScrollbarsEnabled();
+
+  virtual math::CPoint GetContentOffset() { return ContentOffset; }
+
+  CWBApplication* App = nullptr;
+  CWBItem* ChildInFocus = nullptr;
+  CWBCSSPropertyBatch CSSProperties;
+
+ private:
+  void UpdateScreenRect();
+
+  virtual void OnMove(const math::CPoint& p);
+  virtual void OnResize(const math::CSize& s);
+  virtual void OnMouseEnter();
+  virtual void OnMouseLeave();
+
+  virtual void CalculateClientPosition();
+
+  void DrawTree(CWBDrawAPI* API);
+
+  [[nodiscard]] virtual bool Focusable() const;
+
+  virtual void AdjustClientAreaToFitScrollbars();
+  virtual void ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t& r,
+                                    bool ScrollbarNeeded);
+  virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
+                                           int32_t& a2, int32_t& thumbsize,
+                                           int32_t& thumbpos);
+  virtual bool ScrollbarRequired(CWBScrollbarParams& s);
+  virtual int32_t CalculateScrollbarMovement(CWBScrollbarParams& s,
+                                             int32_t scrollbarsize,
+                                             int32_t delta);
+  virtual void DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
+                                   math::CRect& r,
+                                   WBITEMVISUALCOMPONENT Button);
+  virtual void DrawHScrollbar(CWBDrawAPI* API);
+  virtual void DrawVScrollbar(CWBDrawAPI* API);
+  virtual void HandleHScrollbarClick(WBSCROLLDRAGMODE m);
+  virtual void HandleVScrollbarClick(WBSCROLLDRAGMODE m);
+  virtual bool AllowMouseHighlightWhileCaptureItem() { return false; }
+
+  bool ScanPXValue(std::string_view Value, int32_t& Result,
+                   std::string_view PropName);
+  bool ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
+                     std::string_view PropName);
+
+  CWBItem* ChildSearcherFunct(std::string_view value,
+                              std::string_view type = "");
+
+  WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, math::CRect r);
+  virtual void ChangeContentOffset(math::CPoint ContentOff);
+
+  static const std::string& GetClassName() {
+    static const std::string type = "guiitem";
+    return type;
+  }
+
+  const WBGUID Guid;
+
+  math::CRect Position;    // stored in parent space
+  math::CRect ClientRect;  // stored in window space
+  math::CRect ScreenRect;  // calculated automatically, stores the position in
+                           // screen space
+  math::CRect StoredPosition;
+  math::CPoint ContentOffset;  // describes how much the content is moved
+                               // relative to the item. used for easily sliding
+                               // content around by scrollbars
+
+  math::CSize StoredContentSize;
+
+  CWBItem* Parent = nullptr;
+  std::vector<std::unique_ptr<CWBItem>> Children;
+
+  int32_t SortLayer = 0;
+  float OpacityMultiplier = 1;
+
+  bool Hidden = false;
+  bool Disabled = false;
+  bool ForceMouseTransparent = false;
+  int32_t Scrollbar_Size = 16;
+  int32_t Scrollbar_ButtonSize = 16;
+  int32_t Scrollbar_ThumbMinimalSize = 4;
+  CWBScrollbarParams HScrollbar, VScrollbar;
+
+  void* Data = nullptr;
 };
 
 // OOP kung-fu follows to provide InstanceOf() functionality for use with CSS

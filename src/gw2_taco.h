@@ -47,57 +47,7 @@ enum class APIKeys {
 extern std::vector<std::string_view> ActionNames;
 
 class GW2TacO : public CWBItem {
-  std::string lastInfoLine;
-  bool RebindMode = false;
-  bool ScriptRebindMode = false;
-  TacOKeyAction ActionToRebind = TacOKeyAction::NoAction;
-  int32_t ScriptActionToRebind = 0;
-
-  bool ApiKeyInputMode = false;
-  APIKeys ApiKeyToSet = APIKeys::None;
-  int32_t ApiKeyIndex = 0;
-
-  void OpenAboutWindow();
-  void BuildChannelTree(TS3Connection::TS3Schandler& h,
-                        CWBContextItem* parentitm, int32_t ParentID);
-
-  std::unordered_map<int32_t, TacOKeyAction> KeyBindings;
-  std::unordered_map<int32_t, std::string> ScriptKeyBindings;
-
-  void RebindAction(TacOKeyAction Action);
-  void RebindScriptKey(int32_t evendIDX);
-  std::vector<GW2TacticalCategory*> CategoryList;
-
-  void ApiKeyInputAction(APIKeys keyType, int32_t idx);
-  CWBTextBox* APIKeyInput = nullptr;
-
-  bool menuHoverLastFrame = false;
-  int32_t lastMenuHoverTransitionTime = 0;
-
-  void TurnOnTPLight();
-  void TurnOffTPLight();
-
-  void CheckItemPickup();
-
-  std::string lastItemPickup;
-  bool pickupsBeingFetched = false;
-  std::thread pickupFetcherThread;
-  int32_t lastPickupFetchTime = 0;
-  bool showPickupHighlight = false;
-  float lastScaleValue = 1.0f;
-
-  void StoreIconSizes();
-  void AdjustMenuForWindowTooSmallScale(float scale);
-
-  std::string mouseToolTip;
-  std::string GetKeybindString(TacOKeyAction action);
-
  public:
-  void OnDraw(CWBDrawAPI* API) override;
-  void OnPostDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
-
   GW2TacO(CWBItem* Parent, math::CRect Position);
   static inline GW2TacO* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<GW2TacO>(Parent, Position);
@@ -112,6 +62,10 @@ class GW2TacO : public CWBItem {
                           math::CRect& Pos);
   WB_DECLARE_GUIITEM("GW2TacO", CWBItem);
   void OpenWindow(std::string_view s);
+  void OnDraw(CWBDrawAPI* API) override;
+  void OnPostDraw(CWBDrawAPI* API) override;
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
   // return true if this item handled the message
   bool MessageProc(const CWBMessage& Message) override;
@@ -123,6 +77,50 @@ class GW2TacO : public CWBItem {
   void TickScriptEngine();
   void TriggerScriptEngineAction(GUID& guid);
   void TriggerScriptEngineKeyEvent(std::string_view eventID);
+
+ private:
+  void OpenAboutWindow();
+  void BuildChannelTree(TS3Connection::TS3Schandler& h,
+                        CWBContextItem* parentitm, int32_t ParentID);
+  void RebindAction(TacOKeyAction Action);
+  void RebindScriptKey(int32_t evendIDX);
+  void ApiKeyInputAction(APIKeys keyType, int32_t idx);
+  void TurnOnTPLight();
+  void TurnOffTPLight();
+
+  void CheckItemPickup();
+  void StoreIconSizes();
+  void AdjustMenuForWindowTooSmallScale(float scale);
+  std::string GetKeybindString(TacOKeyAction action);
+
+  std::string lastInfoLine;
+  bool RebindMode = false;
+  bool ScriptRebindMode = false;
+  TacOKeyAction ActionToRebind = TacOKeyAction::NoAction;
+  int32_t ScriptActionToRebind = 0;
+
+  bool ApiKeyInputMode = false;
+  APIKeys ApiKeyToSet = APIKeys::None;
+  int32_t ApiKeyIndex = 0;
+
+  std::unordered_map<int32_t, TacOKeyAction> KeyBindings;
+  std::unordered_map<int32_t, std::string> ScriptKeyBindings;
+
+  std::vector<GW2TacticalCategory*> CategoryList;
+
+  CWBTextBox* APIKeyInput = nullptr;
+
+  bool menuHoverLastFrame = false;
+  int32_t lastMenuHoverTransitionTime = 0;
+
+  std::string lastItemPickup;
+  bool pickupsBeingFetched = false;
+  int32_t lastPickupFetchTime = 0;
+  bool showPickupHighlight = false;
+  float lastScaleValue = 1.0f;
+
+  std::string mouseToolTip;
+  std::thread pickupFetcherThread;
 };
 
 extern std::string_view UIFileNames[];

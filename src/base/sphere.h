@@ -9,9 +9,6 @@ namespace math {
 
 class CSphere {
  public:
-  float Radius = 0;
-  CVector3 Position = {0, 0, 0};
-
   constexpr CSphere() = default;
   constexpr CSphere(const CVector3& p, const float r)
       : Radius(r), Position(p) {}
@@ -22,6 +19,9 @@ class CSphere {
   [[nodiscard]] bool Contains(const CVector3& p) const {
     return (Position - p).Length() < Radius;
   }
+
+  float Radius = 0;
+  CVector3 Position = {0, 0, 0};
 };
 
 }  // namespace math

@@ -336,7 +336,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
       if (wParam == VK_F10) {
         return 0;  // if we dont do this, system menu opens up on F10 = bad for
       }
-                   // fraps
+      // fraps
       if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
         return 0;
       }

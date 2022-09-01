@@ -14,14 +14,6 @@ class Language {
 };
 
 class Localization {
-  size_t activeLanguageIdx = 0;
-  std::vector<Language> languages;
-
-  void ImportFile(std::string_view file);
-  void ImportLanguage(CXMLDocument& d);
-
-  std::vector<int> usedGlyphs;
-
  public:
   Localization();
 
@@ -35,6 +27,15 @@ class Localization {
   int GetActiveLanguageIndex();
   std::vector<int>& GetUsedGlyphs();
   void ProcessStringForUsedGlyphs(std::string_view string);
+
+ private:
+  void ImportFile(std::string_view file);
+  void ImportLanguage(CXMLDocument& d);
+
+  size_t activeLanguageIdx = 0;
+  std::vector<Language> languages;
+
+  std::vector<int> usedGlyphs;
 };
 
 extern std::unique_ptr<Localization> localization;

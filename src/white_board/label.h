@@ -6,9 +6,6 @@
 #include "src/white_board/application.h"
 
 class CWBLabel : public CWBItem {
-  std::string Text;
-  void OnDraw(CWBDrawAPI* API) override;
-
  public:
   CWBLabel(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
   static inline CWBLabel* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -35,4 +32,8 @@ class CWBLabel : public CWBItem {
     return true;
   }
   math::CSize GetContentSize() override;
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+  std::string Text;
 };

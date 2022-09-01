@@ -15,11 +15,6 @@ class CAtlasImage;
 // stores a node for the rectpacker
 class CAtlasNode {
   friend class CAtlas;
-  math::CRect Area;
-  std::array<std::unique_ptr<CAtlasNode>, 2> Children;
-  bool Occupied = false;
-
-  CAtlasImage* Image = nullptr;
 
  public:
   CAtlasNode();
@@ -27,16 +22,17 @@ class CAtlasNode {
   CAtlasNode* AddNode(int32_t width, int32_t height);
   math::CRect& GetArea();
   CAtlasImage* GetImage();
+
+ private:
+  math::CRect Area;
+  std::array<std::unique_ptr<CAtlasNode>, 2> Children;
+  bool Occupied = false;
+
+  CAtlasImage* Image = nullptr;
 };
 
 // stores image data not currently in the atlas
 class CAtlasImage {
-  std::unique_ptr<uint8_t[]> Image;
-  int32_t XRes, YRes;
-  WBATLASHANDLE Handle;
-
-  bool Required;
-
  public:
   CAtlasImage();
   CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
@@ -49,6 +45,13 @@ class CAtlasImage {
   void TagRequired();
   void ClearRequired();
   bool IsRequired();
+
+ private:
+  std::unique_ptr<uint8_t[]> Image;
+  int32_t XRes, YRes;
+  WBATLASHANDLE Handle;
+
+  bool Required;
 };
 
 struct CAtlasCacheElement {
@@ -58,29 +61,6 @@ struct CAtlasCacheElement {
 
 class CAtlas {
   friend class CWBDrawAPI;
-  int32_t XRes, YRes;
-  std::unique_ptr<uint8_t[]> Image;
-  std::unique_ptr<CCoreTexture2D> Atlas;
-
-  bool TextureUpdateNeeded;
-
-  std::array<CAtlasCacheElement, ATLASCACHESIZE> AtlasCache;
-
-  std::unordered_map<WBATLASHANDLE, CAtlasNode*> Dictionary;
-  std::unordered_map<WBATLASHANDLE, std::unique_ptr<CAtlasImage>> ImageStorage;
-
-  std::unique_ptr<CAtlasNode> Root;
-
-  CAtlasImage* WhitePixel;
-  // recalculated on each optimization and reset
-  math::CPoint WhitePixelPosition;
-
-  bool PackImage(CAtlasImage* img);
-
-  void FlushCache();
-  CAtlasNode* GetNodeCached(WBATLASHANDLE Handle);
-
-  std::mutex mtx;
 
  public:
   CAtlas(int32_t XSize, int32_t YSize);
@@ -110,4 +90,29 @@ class CAtlas {
   [[nodiscard]] int32_t GetYRes() const { return YRes; }
 
   bool Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize);
+
+ private:
+  bool PackImage(CAtlasImage* img);
+
+  void FlushCache();
+  CAtlasNode* GetNodeCached(WBATLASHANDLE Handle);
+
+  int32_t XRes, YRes;
+  std::unique_ptr<uint8_t[]> Image;
+  std::unique_ptr<CCoreTexture2D> Atlas;
+
+  bool TextureUpdateNeeded;
+
+  std::array<CAtlasCacheElement, ATLASCACHESIZE> AtlasCache;
+
+  std::unordered_map<WBATLASHANDLE, CAtlasNode*> Dictionary;
+  std::unordered_map<WBATLASHANDLE, std::unique_ptr<CAtlasImage>> ImageStorage;
+
+  std::unique_ptr<CAtlasNode> Root;
+
+  CAtlasImage* WhitePixel;
+  // recalculated on each optimization and reset
+  math::CPoint WhitePixelPosition;
+
+  std::mutex mtx;
 };

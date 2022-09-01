@@ -8,9 +8,6 @@
 #include "src/util/xml_node.h"
 
 class CXMLDocument {
-  std::unique_ptr<rapidxml::xml_document<>> doc;
-  std::string memString;
-
  public:
   CXMLDocument();
   ~CXMLDocument();
@@ -20,4 +17,8 @@ class CXMLDocument {
   bool SaveToFile(std::string_view);
   std::string SaveToString();
   CXMLNode GetDocumentNode();
+
+ private:
+  std::unique_ptr<rapidxml::xml_document<>> doc;
+  std::string memString;
 };

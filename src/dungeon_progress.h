@@ -13,6 +13,7 @@ class DungeonPath {
   DungeonPath(const std::string& name, const std::string& type, int32_t id)
       : name(std::move(name)), type(std::move(type)), id(id) {}
   DungeonPath(const DungeonPath& p) : name(p.name), type(p.type), id(p.id) {}
+
   const std::string_view name;
   const std::string_view type;
   const int32_t id;
@@ -29,16 +30,6 @@ class Dungeon {
 };
 
 class DungeonProgress : public CWBItem {
-  math::CPoint lastpos;
-  void OnDraw(CWBDrawAPI* API) override;
-
-  bool beingFetched = false;
-  int32_t lastFetchTime = 0;
-
-  std::thread fetchThread;
-
-  std::vector<Dungeon> dungeons;
-
  public:
   DungeonProgress(CWBItem* Parent, math::CRect Position);
   static inline DungeonProgress* Create(CWBItem* Parent, math::CRect Position) {
@@ -55,4 +46,15 @@ class DungeonProgress : public CWBItem {
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+
+  math::CPoint lastpos;
+
+  bool beingFetched = false;
+  int32_t lastFetchTime = 0;
+
+  std::vector<Dungeon> dungeons;
+  std::thread fetchThread;
 };

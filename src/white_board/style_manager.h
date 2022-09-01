@@ -6,9 +6,6 @@
 #include "src/white_board/gui_item.h"
 
 class CStyleManager {
-  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>
-      dRules;
-
  public:
   CStyleManager();
   ~CStyleManager();
@@ -28,4 +25,8 @@ class CStyleManager {
                                               bool bIncludeRoot);
   static void ApplyStylesFromDeclarations(CWBItem* pRootItem,
                                           std::string_view sDeclarations);
+
+ private:
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string>>
+      dRules;
 };

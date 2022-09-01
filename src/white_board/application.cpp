@@ -49,6 +49,7 @@ CWBApplication::~CWBApplication() {
   Atlas.reset();
   DrawAPI.reset();
   LayoutRepository.clear();
+  Root.reset();
 }
 
 bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
@@ -148,6 +149,9 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
 }
 
 CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
+  if (!Root) {
+      return nullptr;
+  }
   CRect r = Root->GetScreenRect();
   return Root->GetItemUnderMouse(Point, r, w);
 }

@@ -26,14 +26,21 @@ struct GW2TrailVertex {
 class GW2Trail {
   friend class GW2TrailDisplay;
 
-  std::vector<math::CVector3> positions;
-
-  void Reset(int32_t _mapID = 0);
-
-  bool SaveToFile(std::string_view fname);
-
  public:
   virtual ~GW2Trail();
+  void Build(CCoreDevice* dev, int32_t mapID, float* points, int pointCount);
+  void Draw();
+  void Update();
+  void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
+                    math::CMatrix4x4& cam, math::CMatrix4x4& persp, float& one,
+                    bool scaleData, int32_t fadeoutBubble,
+                    std::array<float, 8>& data, float fadeAlpha, float width,
+                    float uvScale, float width2d);
+  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
+
+  bool Import(CStreamReaderMemory& file, bool keepPoints = false);
+  bool Import(std::string_view fileName, std::string_view zipFile,
+              bool keepPoints = false);
 
   int32_t length = 0;
   std::unique_ptr<CCoreVertexBuffer> trailMesh;
@@ -43,15 +50,6 @@ class GW2Trail {
 
   int32_t map = 0;
 
-  void Build(CCoreDevice* dev, int32_t mapID, float* points, int pointCount);
-  void Draw();
-  void Update();
-  void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
-                    math::CMatrix4x4& cam, math::CMatrix4x4& persp, float& one,
-                    bool scaleData, int32_t fadeoutBubble,
-                    std::array<float, 8>& data, float fadeAlpha, float width,
-                    float uvScale, float width2d);
-
   MarkerTypeData typeData;
   std::string Type;
   GUID guid{};
@@ -59,48 +57,18 @@ class GW2Trail {
   std::string zipFile;
 
   GW2TacticalCategory* category = nullptr;
-  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
 
-  bool Import(CStreamReaderMemory& file, bool keepPoints = false);
-  bool Import(std::string_view fileName, std::string_view zipFile,
-              bool keepPoints = false);
+ private:
+  void Reset(int32_t _mapID = 0);
+  bool SaveToFile(std::string_view fname);
+
+  std::vector<math::CVector3> positions;
 };
 
 class GW2TrailDisplay : public CWBItem {
-  float asp = 0;
-  math::CMatrix4x4 cam;
-  math::CMatrix4x4 persp;
-  math::CRect drawrect;
-
-  void OnDraw(CWBDrawAPI* API) override;
-
-  std::unique_ptr<CCoreVertexShader> vxShader;
-  std::unique_ptr<CCoreVertexFormat> vertexFormat;
-  std::unique_ptr<CCorePixelShader> pxShader;
-  std::unique_ptr<CCoreConstantBuffer> constBuffer;
-  std::unique_ptr<CCoreTexture2D> trailTexture;
-  std::unique_ptr<CCoreSamplerState> trailSampler;
-  std::unique_ptr<CCoreRasterizerState> trailRasterizer1;
-  std::unique_ptr<CCoreRasterizerState> trailRasterizer2;
-  std::unique_ptr<CCoreRasterizerState> trailRasterizer3;
-  std::unique_ptr<CCoreDepthStencilState> trailDepthStencil;
-
-  std::unique_ptr<GW2Trail> editedTrail;
-
-  void ClearEditedTrail();
-  bool trailBeingRecorded = false;
-  bool trailRecordPaused = false;
-
-  std::mutex mtx;
-
-  CCoreTexture2D* GetTexture(const std::string_view& fname,
-                             const std::string_view& zipFile,
-                             const std::string_view& categoryZip);
-
-  std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
-
  public:
   GW2TrailDisplay(CWBItem* Parent, math::CRect Position);
+  ~GW2TrailDisplay() override;
   static inline GW2TrailDisplay* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<GW2TrailDisplay>(Parent, Position);
     GW2TrailDisplay* r = p.get();
@@ -108,7 +76,6 @@ class GW2TrailDisplay : public CWBItem {
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~GW2TrailDisplay() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
@@ -127,6 +94,38 @@ class GW2TrailDisplay : public CWBItem {
   void ImportTrail();
 
   void DrawProxy(CWBDrawAPI* API, bool miniMaprender);
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+  void ClearEditedTrail();
+  CCoreTexture2D* GetTexture(const std::string_view& fname,
+                             const std::string_view& zipFile,
+                             const std::string_view& categoryZip);
+
+  float asp = 0;
+  math::CMatrix4x4 cam;
+  math::CMatrix4x4 persp;
+  math::CRect drawrect;
+
+  std::unique_ptr<CCoreVertexShader> vxShader;
+  std::unique_ptr<CCoreVertexFormat> vertexFormat;
+  std::unique_ptr<CCorePixelShader> pxShader;
+  std::unique_ptr<CCoreConstantBuffer> constBuffer;
+  std::unique_ptr<CCoreTexture2D> trailTexture;
+  std::unique_ptr<CCoreSamplerState> trailSampler;
+  std::unique_ptr<CCoreRasterizerState> trailRasterizer1;
+  std::unique_ptr<CCoreRasterizerState> trailRasterizer2;
+  std::unique_ptr<CCoreRasterizerState> trailRasterizer3;
+  std::unique_ptr<CCoreDepthStencilState> trailDepthStencil;
+
+  std::unique_ptr<GW2Trail> editedTrail;
+
+  bool trailBeingRecorded = false;
+  bool trailRecordPaused = false;
+
+  std::mutex mtx;
+
+  std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 };
 
 typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;

@@ -7,16 +7,7 @@
 namespace math {
 
 class CPlane {
-  void Normalize() {
-    const float l = Normal.Length();
-    Normal /= l;
-    D /= l;
-  }
-
  public:
-  CVector3 Normal = {0, 0, 0};
-  float D = 0;
-
   constexpr CPlane() = default;
   CPlane(const CVector3& Point, const CVector3& n) {
     Normal = n;
@@ -40,6 +31,16 @@ class CPlane {
     if (f > 0) return 1;
     if (f < 0) return -1;
     return 0;
+  }
+
+  CVector3 Normal = {0, 0, 0};
+  float D = 0;
+
+ private:
+  void Normalize() {
+    const float l = Normal.Length();
+    Normal /= l;
+    D /= l;
   }
 };
 

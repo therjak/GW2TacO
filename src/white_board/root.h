@@ -4,9 +4,6 @@
 #include "src/white_board/gui_item.h"
 
 class CWBRoot : public CWBItem {
-  bool MessageProc(const CWBMessage& Message) override;
-  void OnDraw(CWBDrawAPI* API) override;
-
  public:
   CWBRoot(CWBItem* Parent, const math::CRect& Pos);
   static inline std::unique_ptr<CWBRoot> Create(const math::CRect& Pos) {
@@ -18,4 +15,8 @@ class CWBRoot : public CWBItem {
   bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
   WB_DECLARE_GUIITEM("root", CWBItem);
+
+ private:
+  bool MessageProc(const CWBMessage& Message) override;
+  void OnDraw(CWBDrawAPI* API) override;
 };

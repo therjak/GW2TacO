@@ -3,16 +3,6 @@
 #include "src/core2/vertex_buffer.h"
 
 class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11Buffer* VertexBufferHandle;
-
-  int32_t Size;
-  bool Dynamic;
-
-  virtual void Release();
-  bool Apply(const uint32_t Offset) override;
-
  public:
   explicit CCoreDX11VertexBuffer(CCoreDX11Device* Device);
   ~CCoreDX11VertexBuffer() override;
@@ -26,4 +16,15 @@ class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
             const int32_t Flags = 0) override;
   bool UnLock() override;
   void* GetHandle() override { return VertexBufferHandle; }
+
+ private:
+  virtual void Release();
+  bool Apply(const uint32_t Offset) override;
+
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11Buffer* VertexBufferHandle;
+
+  int32_t Size;
+  bool Dynamic;
 };

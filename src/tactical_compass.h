@@ -7,11 +7,9 @@
 #include "src/white_board/gui_item.h"
 
 class GW2TacticalCompass : public CWBItem {
-  void OnDraw(CWBDrawAPI* API) override;
-  void DrawTacticalCompass(CWBDrawAPI* API);
-
  public:
   GW2TacticalCompass(CWBItem* Parent, math::CRect Position);
+  ~GW2TacticalCompass() override;
   static inline GW2TacticalCompass* Create(CWBItem* Parent,
                                            math::CRect Position) {
     auto p = std::make_unique<GW2TacticalCompass>(Parent, Position);
@@ -20,7 +18,6 @@ class GW2TacticalCompass : public CWBItem {
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~GW2TacticalCompass() override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
@@ -28,4 +25,8 @@ class GW2TacticalCompass : public CWBItem {
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+  void DrawTacticalCompass(CWBDrawAPI* API);
 };

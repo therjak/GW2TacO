@@ -18,10 +18,6 @@ class CCoreDevice;
 
 class CCoreResource {
   friend class CCoreDevice;
-
- protected:
-  CCoreDevice* Device = nullptr;
-
  public:
   CCoreResource();
   explicit CCoreResource(CCoreDevice* Device);
@@ -29,4 +25,8 @@ class CCoreResource {
 
   virtual void OnDeviceLost();
   virtual void OnDeviceReset();
+
+protected:
+  CCoreDevice* Device = nullptr;
+
 };

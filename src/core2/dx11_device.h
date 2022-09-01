@@ -9,42 +9,6 @@
 #include "src/core2/dx11_enums.h"
 
 class CCoreDX11Device : public CCoreDevice {
-  IDXGISwapChain1* SwapChain = nullptr;
-  ID3D11Device* Device = nullptr;
-  ID3D11DeviceContext* DeviceContext = nullptr;
-
-  ID3D11RenderTargetView* BackBufferView = nullptr;
-  ID3D11Texture2D* DepthBuffer = nullptr;
-  ID3D11DepthStencilView* DepthBufferView = nullptr;
-
-  ID3D11BlendState* CurrentBlendState = nullptr;
-  ID3D11DepthStencilState* CurrentDepthStencilState = nullptr;
-  ID3D11RasterizerState* CurrentRasterizerState = nullptr;
-
-  ID3D11Query* OcclusionQuery = nullptr;
-  HANDLE swapChainRetraceObject = nullptr;
-
-  void ResetPrivateResources() override;
-  bool InitAPI(const HWND hWnd, const bool FullScreen, const int32_t XRes,
-               const int32_t YRes, const int32_t AALevel = 0,
-               const int32_t RefreshRate = 60) override;
-  bool ApplyRenderState(const CORESAMPLER Sampler,
-                        const CORERENDERSTATE RenderState,
-                        const CORERENDERSTATEVALUE Value) override;
-  bool SetNoVertexBuffer() override;
-  bool CommitRenderStates() override;
-
-  virtual bool CreateBackBuffer(int32_t XRes, int32_t YRes);
-  virtual bool CreateDepthBuffer(int32_t XRes, int32_t YRes);
-
-  bool CreateClassicSwapChain(const HWND hWnd, const bool FullScreen,
-                              const int32_t XRes, const int32_t YRes,
-                              const int32_t AALevel, const int32_t RefreshRate);
-  bool CreateDirectCompositionSwapchain(const HWND hWnd, const bool FullScreen,
-                                        const int32_t XRes, const int32_t YRes,
-                                        const int32_t AALevel,
-                                        const int32_t RefreshRate);
-
  public:
   CCoreDX11Device();
   ~CCoreDX11Device() override;
@@ -181,4 +145,41 @@ class CCoreDX11Device : public CCoreDevice {
   // dx11 specific functions
 
   ID3D11DepthStencilView* GetDepthBufferView() { return DepthBufferView; }
+
+ private:
+  void ResetPrivateResources() override;
+  bool InitAPI(const HWND hWnd, const bool FullScreen, const int32_t XRes,
+               const int32_t YRes, const int32_t AALevel = 0,
+               const int32_t RefreshRate = 60) override;
+  bool ApplyRenderState(const CORESAMPLER Sampler,
+                        const CORERENDERSTATE RenderState,
+                        const CORERENDERSTATEVALUE Value) override;
+  bool SetNoVertexBuffer() override;
+  bool CommitRenderStates() override;
+
+  virtual bool CreateBackBuffer(int32_t XRes, int32_t YRes);
+  virtual bool CreateDepthBuffer(int32_t XRes, int32_t YRes);
+
+  bool CreateClassicSwapChain(const HWND hWnd, const bool FullScreen,
+                              const int32_t XRes, const int32_t YRes,
+                              const int32_t AALevel, const int32_t RefreshRate);
+  bool CreateDirectCompositionSwapchain(const HWND hWnd, const bool FullScreen,
+                                        const int32_t XRes, const int32_t YRes,
+                                        const int32_t AALevel,
+                                        const int32_t RefreshRate);
+
+  IDXGISwapChain1* SwapChain = nullptr;
+  ID3D11Device* Device = nullptr;
+  ID3D11DeviceContext* DeviceContext = nullptr;
+
+  ID3D11RenderTargetView* BackBufferView = nullptr;
+  ID3D11Texture2D* DepthBuffer = nullptr;
+  ID3D11DepthStencilView* DepthBufferView = nullptr;
+
+  ID3D11BlendState* CurrentBlendState = nullptr;
+  ID3D11DepthStencilState* CurrentDepthStencilState = nullptr;
+  ID3D11RasterizerState* CurrentRasterizerState = nullptr;
+
+  ID3D11Query* OcclusionQuery = nullptr;
+  HANDLE swapChainRetraceObject = nullptr;
 };

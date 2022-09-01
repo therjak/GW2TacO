@@ -36,23 +36,20 @@ class CLoggerOutput_DebugOutput : public CLoggerOutput {
 };
 
 class CLoggerOutput_File : public CLoggerOutput {
-  FILE* f{};
-  std::string fname;
-  bool Append;
-
  public:
   CLoggerOutput_File();
   explicit CLoggerOutput_File(std::string_view Filename, bool append = true);
   ~CLoggerOutput_File() override;
   bool OpenLogFile(std::string_view Filename, bool Append = true);
   void Process(LOGVERBOSITY v, const std::string& String) override;
+
+ private:
+  FILE* f{};
+  std::string fname;
+  bool Append;
 };
 
 class CLogger {
-  std::vector<std::unique_ptr<CLoggerOutput>> Outputs;
-  LOGVERBOSITY Verbosity = LOGVERBOSITY::LOG_NONE;
-  int32_t NewEntryCount = 0;
-
  public:
   CLogger();
   virtual ~CLogger();
@@ -63,6 +60,11 @@ class CLogger {
   void AddOutput(std::unique_ptr<CLoggerOutput>&& Output);
   void ResetEntryCounter();
   int32_t GetNewEntryCount();
+
+ private:
+  std::vector<std::unique_ptr<CLoggerOutput>> Outputs;
+  LOGVERBOSITY Verbosity = LOGVERBOSITY::LOG_NONE;
+  int32_t NewEntryCount = 0;
 };
 
 extern CLogger Logger;

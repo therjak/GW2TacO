@@ -6,23 +6,6 @@
 #include "src/base/socket.h"
 
 class TS3Connection {
-  CSocket connection;
-
-  struct CommandResponse {
-    std::vector<std::string> Lines;
-    int32_t ErrorCode = -1;
-    std::string Message;
-  };
-
-  int32_t currentHandlerID = 1;
-
-  void ProcessNotification(std::string_view s);
-  void ProcessChannelList(std::string_view channeldata, int32_t handler);
-  void ProcessClientList(std::string_view clientdata, int32_t handler);
-  std::string ReadLine();
-
-  int32_t LastPingTime = 0;
-
  public:
   class TS3Client {
    public:
@@ -55,26 +38,36 @@ class TS3Connection {
     std::string name;
   };
 
-  std::unordered_map<int32_t, TS3Schandler> handlers;
+  struct CommandResponse {
+    std::vector<std::string> Lines;
+    int32_t ErrorCode = -1;
+    std::string Message;
+  };
 
   TS3Connection();
   virtual ~TS3Connection();
 
   bool TryConnect();
   void TryValidateClientID();
-
   void Tick();
   void InitConnection();
-
-  CommandResponse SendCommand(std::string_view message);
-
   void ProcessNotifications();
-
   bool IsConnected();
-
   std::string unescape(std::string_view string);
 
+  std::unordered_map<int32_t, TS3Schandler> handlers;
   bool authenticated = false;
+
+ private:
+  CommandResponse SendCommand(std::string_view message);
+  void ProcessNotification(std::string_view s);
+  void ProcessChannelList(std::string_view channeldata, int32_t handler);
+  void ProcessClientList(std::string_view clientdata, int32_t handler);
+  std::string ReadLine();
+
+  CSocket connection;
+  int32_t currentHandlerID = 1;
+  int32_t LastPingTime = 0;
 };
 
 extern TS3Connection teamSpeakConnection;

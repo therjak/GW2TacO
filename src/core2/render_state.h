@@ -47,22 +47,17 @@ struct COREBLENDDESCRIPTOR {
 };
 
 class CCoreRenderStateBatch : public CCoreResource {
- protected:
-  bool Dirty;
-
  public:
   explicit CCoreRenderStateBatch(CCoreDevice* Device);
   ~CCoreRenderStateBatch() override;
   virtual bool Import(CXMLNode* n) = 0;
   virtual void Export(CXMLNode* n) = 0;
+
+ protected:
+  bool Dirty;
 };
 
 class CCoreBlendState : public CCoreRenderStateBatch {
- protected:
-  bool AlphaToCoverage;
-  bool IndependentBlend;
-  std::array<COREBLENDDESCRIPTOR, 8> RenderTargetBlendStates;
-
  public:
   explicit CCoreBlendState(CCoreDevice* Device);
   ~CCoreBlendState() override;
@@ -84,14 +79,14 @@ class CCoreBlendState : public CCoreRenderStateBatch {
   bool Import(CXMLNode* n) override;
   void Export(CXMLNode* n) override;
   virtual void* GetHandle() = 0;
+
+ protected:
+  bool AlphaToCoverage;
+  bool IndependentBlend;
+  std::array<COREBLENDDESCRIPTOR, 8> RenderTargetBlendStates;
 };
 
 class CCoreDepthStencilState : public CCoreRenderStateBatch {
- protected:
-  bool DepthEnable;
-  bool ZWriteEnable;
-  CORECOMPARISONFUNCTION DepthFunc;
-
  public:
   explicit CCoreDepthStencilState(CCoreDevice* Device);
   ~CCoreDepthStencilState() override;
@@ -107,21 +102,14 @@ class CCoreDepthStencilState : public CCoreRenderStateBatch {
   void Export(CXMLNode* n) override;
 
   virtual void* GetHandle() = 0;
+
+ protected:
+  bool DepthEnable;
+  bool ZWriteEnable;
+  CORECOMPARISONFUNCTION DepthFunc;
 };
 
 class CCoreRasterizerState : public CCoreRenderStateBatch {
- protected:
-  COREFILLMODE FillMode;
-  CORECULLMODE CullMode;
-  bool FrontCounterClockwise;
-  int32_t DepthBias;
-  float DepthBiasClamp;
-  float SlopeScaledDepthBias;
-  bool DepthClipEnable;
-  bool ScissorEnable;
-  bool MultisampleEnable;
-  bool AntialiasedLineEnable;
-
  public:
   explicit CCoreRasterizerState(CCoreDevice* Device);
   ~CCoreRasterizerState() override;
@@ -143,21 +131,21 @@ class CCoreRasterizerState : public CCoreRenderStateBatch {
   bool Import(CXMLNode* n) override;
   void Export(CXMLNode* n) override;
   virtual void* GetHandle() = 0;
+
+ protected:
+  COREFILLMODE FillMode;
+  CORECULLMODE CullMode;
+  bool FrontCounterClockwise;
+  int32_t DepthBias;
+  float DepthBiasClamp;
+  float SlopeScaledDepthBias;
+  bool DepthClipEnable;
+  bool ScissorEnable;
+  bool MultisampleEnable;
+  bool AntialiasedLineEnable;
 };
 
 class CCoreSamplerState : public CCoreRenderStateBatch {
- protected:
-  COREFILTER Filter;
-  CORETEXTUREADDRESSMODE AddressU;
-  CORETEXTUREADDRESSMODE AddressV;
-  CORETEXTUREADDRESSMODE AddressW;
-  float MipLODBias;
-  int32_t MaxAnisotropy;
-  CORECOMPARISONFUNCTION ComparisonFunc;
-  std::array<float, 4> BorderColor = {0};
-  float MinLOD;
-  float MaxLOD;
-
  public:
   explicit CCoreSamplerState(CCoreDevice* Device);
   ~CCoreSamplerState() override;
@@ -182,4 +170,16 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
   bool Import(CXMLNode* n) override;
   void Export(CXMLNode* n) override;
   virtual void* GetHandle() = 0;
+
+ protected:
+  COREFILTER Filter;
+  CORETEXTUREADDRESSMODE AddressU;
+  CORETEXTUREADDRESSMODE AddressV;
+  CORETEXTUREADDRESSMODE AddressW;
+  float MipLODBias;
+  int32_t MaxAnisotropy;
+  CORECOMPARISONFUNCTION ComparisonFunc;
+  std::array<float, 4> BorderColor = {0};
+  float MinLOD;
+  float MaxLOD;
 };

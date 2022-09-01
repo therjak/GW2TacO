@@ -3,7 +3,6 @@
 
 class CCoreVertexBuffer : public CCoreResource {
   friend class CCoreDevice;
-  virtual bool Apply(const uint32_t Offset) = 0;
 
  public:
   explicit CCoreVertexBuffer(CCoreDevice* Device) : CCoreResource(Device) {}
@@ -17,4 +16,7 @@ class CCoreVertexBuffer : public CCoreResource {
   virtual bool Lock(void** Result) = 0;
   virtual bool UnLock() = 0;
   virtual void* GetHandle() = 0;
+
+ private:
+  virtual bool Apply(const uint32_t Offset) = 0;
 };

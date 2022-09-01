@@ -8,8 +8,6 @@ class CMatrix4x4;
 
 class CVector2 {
  public:
-  float x = 0, y = 0;
-
   constexpr CVector2() = default;
   constexpr CVector2(const float _x, const float _y) : x(_x), y(_y) {}
   constexpr explicit CVector2(const float* v) : x(v[0]), y(v[1]) {}
@@ -76,12 +74,12 @@ class CVector2 {
   static constexpr float Dot(const CVector2& v1, const CVector2& v2) {
     return v1 * v2;
   }
+
+  float x = 0, y = 0;
 };
 
 class CVector2I {
  public:
-  int32_t x = 0, y = 0;
-
   constexpr CVector2I() = default;
   constexpr CVector2I(const int32_t _x, const int32_t _y) : x(_x), y(_y) {}
   constexpr explicit CVector2I(const int32_t* v) : x(v[0]), y(v[1]) {}
@@ -156,6 +154,8 @@ class CVector2I {
   static constexpr int32_t Dot(const CVector2I& v1, const CVector2I& v2) {
     return v1 * v2;
   }
+
+  int32_t x = 0, y = 0;
 };
 
 using CPoint = CVector2I;
@@ -164,8 +164,6 @@ class CVector4;
 
 class CVector3 {
  public:
-  float x = 0, y = 0, z = 0;
-
   constexpr CVector3() = default;
   constexpr CVector3(const float _x, const float _y, const float _z)
       : x(_x), y(_y), z(_z) {}
@@ -246,12 +244,12 @@ class CVector3 {
   static constexpr CVector3 Cross(const CVector3& v1, const CVector3& v2) {
     return v1 % v2;
   }
+
+  float x = 0, y = 0, z = 0;
 };
 
 class CVector4 {
  public:
-  float x = 0, y = 0, z = 0, w = 0;
-
   constexpr CVector4() = default;
   constexpr CVector4(const float _x, const float _y, const float _z,
                      const float _w)
@@ -346,6 +344,8 @@ class CVector4 {
                       v1.y * (v2.x * v3.z - v3.x * v2.z) +
                       v1.z * (v2.x * v3.y - v3.x * v2.y)));
   }
+
+  float x = 0, y = 0, z = 0, w = 0;
 };
 
 constexpr CVector3::CVector3(const CVector4& v) : x(v.x), y(v.y), z(v.z) {}

@@ -45,61 +45,6 @@ class CWBDrawAPI {
   // screen space top left corner of the client rect for
   // the currently drawn item
 
-  math::CPoint Offset;
-  // screen space window rect for the currently drawn item
-  math::CRect CropRect;
-  WBDRAWMODE DrawMode;
-  uint8_t Opacity;
-  CWBApplication* App;
-
-  std::vector<WBGUIVERTEX> DisplayList;
-  CAtlas* Atlas;
-  CCoreDevice* Device;
-
-  float UVOffset = 0;  // texel offset to fix 0.5 texel shift in Directx9
-
-  math::CRect ParentCropRect;
-
-  std::unique_ptr<CCoreIndexBuffer> rectIndexBuffer;
-  std::unique_ptr<CCoreVertexBuffer> VertexBuffer;
-  std::unique_ptr<CCoreVertexFormat> VertexFormat;
-
-  std::unique_ptr<CCoreVertexShader> VxShader;
-  std::unique_ptr<CCorePixelShader> PxShader;
-
-  std::unique_ptr<CCoreSamplerState> GuiSampler;
-  std::unique_ptr<CCoreBlendState> GuiBlendState;
-  std::unique_ptr<CCoreRasterizerState> GuiRasterState;
-  std::unique_ptr<CCoreDepthStencilState> GuiZState;
-
-  std::unique_ptr<CCoreConstantBuffer> ResolutionData;
-
-  void AddDisplayRect(const math::CRect& r, const float u1, const float v1,
-                      const float u2, const float v3, const CColor a);
-  void AddDisplayRectRotated(const math::CRect& r, const float u1,
-                             const float v1, const float u2, const float v3,
-                             const CColor a, float rotation);
-  void AddDisplayLine(const math::CPoint& p1, const math::CPoint& p2,
-                      const float u1, const float v1, const float u2,
-                      const float v2, const CColor a, const CColor b);
-  void AddDisplayTri(const math::CPoint& p1, const math::CPoint& p2,
-                     const math::CPoint& p3, const float u1, const float v1,
-                     const float u2, const float v2, const float u3,
-                     const float v3, const CColor a, const CColor b,
-                     const CColor c);
-  void ClipTriX(int32_t x, bool KeepRight, std::array<WBGUIVERTEX, 6>& Vertices,
-                int32_t& VertexCount);
-  void ClipTriY(int32_t y, bool KeepBottom,
-                std::array<WBGUIVERTEX, 6>& Vertices, int32_t& VertexCount);
-  void RenderDisplayList();
-
-  bool RequestAtlasImageUse(WBATLASHANDLE h, math::CRect& r);
-
-  template <class UV, class RES>
-  float UVTRANSLATION(UV uv, RES res) {
-    return (uv + UVOffset) / static_cast<float>(res);
-  }
-
  public:
   CWBDrawAPI();
   virtual ~CWBDrawAPI();
@@ -158,6 +103,62 @@ class CWBDrawAPI {
   void SetRenderView(math::CRect r);
 
   void SetPixelShader(std::unique_ptr<CCorePixelShader>&& shader);
+
+ private:
+  void AddDisplayRect(const math::CRect& r, const float u1, const float v1,
+                      const float u2, const float v3, const CColor a);
+  void AddDisplayRectRotated(const math::CRect& r, const float u1,
+                             const float v1, const float u2, const float v3,
+                             const CColor a, float rotation);
+  void AddDisplayLine(const math::CPoint& p1, const math::CPoint& p2,
+                      const float u1, const float v1, const float u2,
+                      const float v2, const CColor a, const CColor b);
+  void AddDisplayTri(const math::CPoint& p1, const math::CPoint& p2,
+                     const math::CPoint& p3, const float u1, const float v1,
+                     const float u2, const float v2, const float u3,
+                     const float v3, const CColor a, const CColor b,
+                     const CColor c);
+  void ClipTriX(int32_t x, bool KeepRight, std::array<WBGUIVERTEX, 6>& Vertices,
+                int32_t& VertexCount);
+  void ClipTriY(int32_t y, bool KeepBottom,
+                std::array<WBGUIVERTEX, 6>& Vertices, int32_t& VertexCount);
+  void RenderDisplayList();
+
+  bool RequestAtlasImageUse(WBATLASHANDLE h, math::CRect& r);
+
+  template <class UV, class RES>
+  float UVTRANSLATION(UV uv, RES res) {
+    return (uv + UVOffset) / static_cast<float>(res);
+  }
+
+  math::CPoint Offset;
+  // screen space window rect for the currently drawn item
+  math::CRect CropRect;
+  WBDRAWMODE DrawMode;
+  uint8_t Opacity;
+  CWBApplication* App;
+
+  std::vector<WBGUIVERTEX> DisplayList;
+  CAtlas* Atlas;
+  CCoreDevice* Device;
+
+  float UVOffset = 0;  // texel offset to fix 0.5 texel shift in Directx9
+
+  math::CRect ParentCropRect;
+
+  std::unique_ptr<CCoreIndexBuffer> rectIndexBuffer;
+  std::unique_ptr<CCoreVertexBuffer> VertexBuffer;
+  std::unique_ptr<CCoreVertexFormat> VertexFormat;
+
+  std::unique_ptr<CCoreVertexShader> VxShader;
+  std::unique_ptr<CCorePixelShader> PxShader;
+
+  std::unique_ptr<CCoreSamplerState> GuiSampler;
+  std::unique_ptr<CCoreBlendState> GuiBlendState;
+  std::unique_ptr<CCoreRasterizerState> GuiRasterState;
+  std::unique_ptr<CCoreDepthStencilState> GuiZState;
+
+  std::unique_ptr<CCoreConstantBuffer> ResolutionData;
 };
 
 // helper functions for common use cases

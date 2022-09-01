@@ -5,9 +5,6 @@
 #include <vector>
 
 class IWBCSS {
-  std::vector<std::string> aClasses;
-  std::string sID;
-
  public:
   IWBCSS();
   virtual ~IWBCSS();
@@ -30,4 +27,8 @@ class IWBCSS {
   virtual bool ApplyStyle(std::string_view prop, std::string_view value,
                           const std::vector<std::string>& Pseudo);
   std::string GetClassString();
+
+ private:
+  std::vector<std::string> aClasses;
+  std::string sID;
 };

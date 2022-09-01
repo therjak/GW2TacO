@@ -14,61 +14,7 @@
 #include "src/util/xml_document.h"
 
 class CCoreDevice {
-  //////////////////////////////////////////////////////////////////////////
-  // resource management
-
   friend class CCoreResource;
-  void RemoveResource(CCoreResource* Resource);
-  void AddResource(CCoreResource* Resource);
-  std::vector<CCoreResource*> Resources;
-
- protected:
-  //////////////////////////////////////////////////////////////////////////
-  // device management
-
-  CCoreWindowHandler* Window = nullptr;
-
-  void ResetDevice();
-  virtual void ResetPrivateResources() = 0;
-  virtual bool InitAPI(const HWND hWnd, const bool FullScreen,
-                       const int32_t XRes, const int32_t YRes,
-                       const int32_t AALevel = 0,
-                       const int32_t RefreshRate = 60) = 0;
-
-  //////////////////////////////////////////////////////////////////////////
-  // renderstate management
-
-  std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
-      CurrentRenderState;
-  std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
-      RequestedRenderState;
-
-  CCoreVertexBuffer *CurrentVertexBuffer = nullptr,
-                    *RequestedVertexBuffer = nullptr;
-  uint32_t CurrentVertexBufferOffset = 0, RequestedVertexBufferOffset = 0;
-  int32_t CurrentVertexFormatSize = 0;
-
-  std::unique_ptr<CCoreBlendState> DefaultBlendState;
-  std::unique_ptr<CCoreDepthStencilState> DefaultDepthStencilState;
-  std::unique_ptr<CCoreRasterizerState> DefaultRasterizerState;
-
-  bool ApplyTextureToSampler(const CORESAMPLER Sampler, CCoreTexture* Texture);
-  bool ApplyVertexShader(CCoreVertexShader* Shader);
-  bool ApplyGeometryShader(CCoreGeometryShader* Shader);
-  bool ApplyHullShader(CCoreHullShader* Shader);
-  bool ApplyDomainShader(CCoreDomainShader* Shader);
-  bool ApplyComputeShader(CCoreComputeShader* Shader);
-  bool ApplyPixelShader(CCorePixelShader* Shader);
-  bool ApplyVertexFormat(CCoreVertexFormat* Format);
-  bool ApplyIndexBuffer(CCoreIndexBuffer* IdxBuffer);
-  bool ApplyVertexBuffer(CCoreVertexBuffer* VxBuffer, uint32_t Offset);
-  virtual bool ApplyRenderState(const CORESAMPLER Sampler,
-                                const CORERENDERSTATE RenderState,
-                                const CORERENDERSTATEVALUE Value) = 0;
-  virtual bool SetNoVertexBuffer() = 0;
-
-  virtual bool CommitRenderStates() = 0;
-  bool CreateDefaultRenderStates();
 
  public:
   CCoreDevice();
@@ -77,8 +23,6 @@ class CCoreDevice {
 
   bool ApplyRequestedRenderState();
 
-  // this initializer will change to accommodate multiple platforms at once once
-  // we get to that point:
   virtual bool Initialize(CCoreWindowHandler* Window,
                           const int32_t AALevel = 0) = 0;
 
@@ -88,9 +32,6 @@ class CCoreDevice {
   virtual void SetFullScreenMode(const bool FullScreen, const int32_t xr,
                                  const int32_t yr) = 0;
 
-  //////////////////////////////////////////////////////////////////////////
-  // texture functions
-
   virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const int32_t XRes, const int32_t YRes, const uint8_t* Data,
       const char BytesPerPixel = 4,
@@ -99,29 +40,17 @@ class CCoreDevice {
   virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
       const uint8_t* Data, const int32_t Size) = 0;
 
-  //////////////////////////////////////////////////////////////////////////
-  // vertexbuffer functions
-
   virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(
       const uint8_t* Data, const int32_t Size) = 0;
   virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(
       const int32_t Size) = 0;
 
-  //////////////////////////////////////////////////////////////////////////
-  // indexbuffer functions
-
   virtual std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(
       const int32_t IndexCount, const int32_t IndexSize = 2) = 0;
-
-  //////////////////////////////////////////////////////////////////////////
-  // vertexformat functions
 
   virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
       const std::vector<COREVERTEXATTRIBUTE>& Attributes,
       CCoreVertexShader* vs = nullptr) = 0;
-
-  //////////////////////////////////////////////////////////////////////////
-  // renderstate functions
 
   bool SetRenderState(CCoreRasterizerState* RasterizerState);
   bool SetRenderState(CCoreBlendState* BlendState);
@@ -141,9 +70,6 @@ class CCoreDevice {
 
   virtual bool SetRenderTarget(CCoreTexture2D* RT) = 0;
   virtual bool SetViewport(math::CRect Viewport) = 0;
-
-  //////////////////////////////////////////////////////////////////////////
-  // shader functions
 
   virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
       LPCSTR Code, int32_t CodeSize, LPCSTR EntryFunction, LPCSTR ShaderVersion,
@@ -181,9 +107,6 @@ class CCoreDevice {
   virtual std::unique_ptr<CCoreRasterizerState> CreateRasterizerState() = 0;
   virtual std::unique_ptr<CCoreSamplerState> CreateSamplerState() = 0;
 
-  //////////////////////////////////////////////////////////////////////////
-  // display functions
-
   virtual bool BeginScene() = 0;
   virtual bool EndScene() = 0;
   virtual bool Clear(const bool clearPixels = true,
@@ -196,9 +119,6 @@ class CCoreDevice {
   virtual bool DrawTriangles(int32_t Count) = 0;
   virtual bool DrawLines(int32_t Count) = 0;
 
-  //////////////////////////////////////////////////////////////////////////
-  // material import functions
-
   virtual void ForceStateReset() = 0;
 
   virtual void TakeScreenShot(std::string_view Filename) = 0;
@@ -208,10 +128,54 @@ class CCoreDevice {
 
   virtual float GetUVOffset() { return 0; }
 
-  //////////////////////////////////////////////////////////////////////////
-  // queries
-
   virtual void BeginOcclusionQuery() = 0;
   virtual bool EndOcclusionQuery() = 0;
   virtual void WaitRetrace() = 0;
+
+ protected:
+  void ResetDevice();
+  virtual void ResetPrivateResources() = 0;
+  virtual bool InitAPI(const HWND hWnd, const bool FullScreen,
+                       const int32_t XRes, const int32_t YRes,
+                       const int32_t AALevel = 0,
+                       const int32_t RefreshRate = 60) = 0;
+
+  bool ApplyTextureToSampler(const CORESAMPLER Sampler, CCoreTexture* Texture);
+  bool ApplyVertexShader(CCoreVertexShader* Shader);
+  bool ApplyGeometryShader(CCoreGeometryShader* Shader);
+  bool ApplyHullShader(CCoreHullShader* Shader);
+  bool ApplyDomainShader(CCoreDomainShader* Shader);
+  bool ApplyComputeShader(CCoreComputeShader* Shader);
+  bool ApplyPixelShader(CCorePixelShader* Shader);
+  bool ApplyVertexFormat(CCoreVertexFormat* Format);
+  bool ApplyIndexBuffer(CCoreIndexBuffer* IdxBuffer);
+  bool ApplyVertexBuffer(CCoreVertexBuffer* VxBuffer, uint32_t Offset);
+  virtual bool ApplyRenderState(const CORESAMPLER Sampler,
+                                const CORERENDERSTATE RenderState,
+                                const CORERENDERSTATEVALUE Value) = 0;
+  virtual bool SetNoVertexBuffer() = 0;
+
+  virtual bool CommitRenderStates() = 0;
+  bool CreateDefaultRenderStates();
+
+  CCoreWindowHandler* Window = nullptr;
+  std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
+      CurrentRenderState;
+  std::unordered_map<CORERENDERSTATEID, CORERENDERSTATEVALUE>
+      RequestedRenderState;
+
+  CCoreVertexBuffer *CurrentVertexBuffer = nullptr,
+                    *RequestedVertexBuffer = nullptr;
+  uint32_t CurrentVertexBufferOffset = 0, RequestedVertexBufferOffset = 0;
+  int32_t CurrentVertexFormatSize = 0;
+
+  std::unique_ptr<CCoreBlendState> DefaultBlendState;
+  std::unique_ptr<CCoreDepthStencilState> DefaultDepthStencilState;
+  std::unique_ptr<CCoreRasterizerState> DefaultRasterizerState;
+
+ private:
+  void RemoveResource(CCoreResource* Resource);
+  void AddResource(CCoreResource* Resource);
+
+  std::vector<CCoreResource*> Resources;
 };

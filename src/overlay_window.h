@@ -10,12 +10,8 @@
 
 class OverlayWindow : public CWBWindow {
  public:
-  bool MessageProc(const CWBMessage& Message) override;
-  void OnDraw(CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
-
   OverlayWindow(CWBItem* Parent, math::CRect Position);
+  ~OverlayWindow() override;
   static inline OverlayWindow* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<OverlayWindow>(Parent, Position);
     OverlayWindow* r = p.get();
@@ -24,9 +20,11 @@ class OverlayWindow : public CWBWindow {
     return r;
   }
 
-  ~OverlayWindow() override;
-
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
   WB_DECLARE_GUIITEM("OverlayWindow", CWBItem);
+  bool MessageProc(const CWBMessage& Message) override;
+  void OnDraw(CWBDrawAPI* API) override;
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 };

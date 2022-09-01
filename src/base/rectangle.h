@@ -9,8 +9,6 @@ namespace math {
 
 class CRect {
  public:
-  int32_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;
-
   constexpr CRect() = default;
   constexpr CRect(const int32_t a, const int32_t b, const int32_t c,
                   const int32_t d)
@@ -132,6 +130,8 @@ class CRect {
     return CRect(x1 > r.x1 ? x1 : r.x1, y1 > r.y1 ? y1 : r.y1,
                  x2 < r.x2 ? x2 : r.x2, y2 < r.y2 ? y2 : r.y2);
   }
+
+  int32_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;
 };
 
 constexpr bool IntervalIntersection(int32_t a1, int32_t a2, int32_t b1,

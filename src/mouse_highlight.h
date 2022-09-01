@@ -38,13 +38,7 @@ constexpr std::array CGAPaletteNames = {
     "brown", "yellow",     "lightgray", "white"};
 
 class GW2MouseHighlight : public CWBItem {
-  math::CPoint lastpos;
-  void OnDraw(CWBDrawAPI* API) override;
-
  public:
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
-
   GW2MouseHighlight(CWBItem* Parent, math::CRect Position);
   static inline GW2MouseHighlight* Create(CWBItem* Parent,
                                           math::CRect Position) {
@@ -59,7 +53,13 @@ class GW2MouseHighlight : public CWBItem {
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
   WB_DECLARE_GUIITEM("mousehighlight", CWBItem);
+  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+                          WBMESSAGE MessageType) override;
 
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+
+  math::CPoint lastpos;
   math::CPoint lastchangedpos;
   int numSameFrames = 0;
 };

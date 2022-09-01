@@ -5,7 +5,6 @@
 
 class CCoreIndexBuffer : public CCoreResource {
   friend class CCoreDevice;
-  virtual bool Apply() = 0;
 
  public:
   explicit CCoreIndexBuffer(CCoreDevice* Device) : CCoreResource(Device) {}
@@ -17,4 +16,7 @@ class CCoreIndexBuffer : public CCoreResource {
   virtual bool Lock(void** Result) = 0;
   virtual bool UnLock() = 0;
   virtual void* GetHandle() = 0;
+
+ private:
+  virtual bool Apply() = 0;
 };

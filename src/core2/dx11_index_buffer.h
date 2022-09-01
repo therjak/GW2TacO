@@ -3,16 +3,6 @@
 #include "src/core2/index_buffer.h"
 
 class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11Buffer* IndexBufferHandle;
-
-  int32_t IndexCount;
-  int32_t IndexSize;
-
-  virtual void Release();
-  bool Apply() override;
-
  public:
   explicit CCoreDX11IndexBuffer(CCoreDX11Device* dev);
   ~CCoreDX11IndexBuffer() override;
@@ -23,4 +13,15 @@ class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
             const int32_t IndexCount) override;
   bool UnLock() override;
   void* GetHandle() override { return IndexBufferHandle; }
+
+ private:
+  virtual void Release();
+  bool Apply() override;
+
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11Buffer* IndexBufferHandle;
+
+  int32_t IndexCount;
+  int32_t IndexSize;
 };

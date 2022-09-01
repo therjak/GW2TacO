@@ -8,11 +8,9 @@
 #include "src/white_board/gui_item.h"
 
 class TS3Control : public CWBItem {
-  math::CPoint lastpos;
-  void OnDraw(CWBDrawAPI* API) override;
-
  public:
   TS3Control(CWBItem* Parent, math::CRect Position);
+  ~TS3Control() override;
   static inline TS3Control* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<TS3Control>(Parent, Position);
     TS3Control* r = p.get();
@@ -20,11 +18,14 @@ class TS3Control : public CWBItem {
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~TS3Control() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("ts3control", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+  math::CPoint lastpos;
 };

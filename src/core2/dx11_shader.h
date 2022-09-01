@@ -3,13 +3,6 @@
 #include "src/core2/shader.h"
 
 class CCoreDX11VertexShader : public CCoreVertexShader {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11VertexShader* VertexShaderHandle;
-
-  virtual void Release();
-  bool Apply() override;
-
  public:
   explicit CCoreDX11VertexShader(CCoreDX11Device* Device);
   ~CCoreDX11VertexShader() override;
@@ -18,16 +11,17 @@ class CCoreDX11VertexShader : public CCoreVertexShader {
   bool CompileAndCreate(std::string* Err) override;
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return VertexShaderHandle; }
-};
 
-class CCoreDX11PixelShader : public CCorePixelShader {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11PixelShader* PixelShaderHandle;
-
+ private:
   virtual void Release();
   bool Apply() override;
 
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11VertexShader* VertexShaderHandle;
+};
+
+class CCoreDX11PixelShader : public CCorePixelShader {
  public:
   explicit CCoreDX11PixelShader(CCoreDX11Device* Device);
   ~CCoreDX11PixelShader() override;
@@ -36,16 +30,17 @@ class CCoreDX11PixelShader : public CCorePixelShader {
   bool CompileAndCreate(std::string* Err) override;
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return PixelShaderHandle; }
-};
 
-class CCoreDX11GeometryShader : public CCoreGeometryShader {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11GeometryShader* GeometryShaderHandle;
-
+ private:
   virtual void Release();
   bool Apply() override;
 
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11PixelShader* PixelShaderHandle;
+};
+
+class CCoreDX11GeometryShader : public CCoreGeometryShader {
  public:
   explicit CCoreDX11GeometryShader(CCoreDX11Device* Device);
   ~CCoreDX11GeometryShader() override;
@@ -54,16 +49,17 @@ class CCoreDX11GeometryShader : public CCoreGeometryShader {
   bool CompileAndCreate(std::string* Err) override;
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return GeometryShaderHandle; }
-};
 
-class CCoreDX11HullShader : public CCoreHullShader {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11HullShader* HullShaderHandle;
-
+ private:
   virtual void Release();
   bool Apply() override;
 
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11GeometryShader* GeometryShaderHandle;
+};
+
+class CCoreDX11HullShader : public CCoreHullShader {
  public:
   explicit CCoreDX11HullShader(CCoreDX11Device* Device);
   ~CCoreDX11HullShader() override;
@@ -72,16 +68,17 @@ class CCoreDX11HullShader : public CCoreHullShader {
   bool CompileAndCreate(std::string* Err) override;
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return HullShaderHandle; }
-};
 
-class CCoreDX11DomainShader : public CCoreDomainShader {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11DomainShader* DomainShaderHandle;
-
+ private:
   virtual void Release();
   bool Apply() override;
 
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11HullShader* HullShaderHandle;
+};
+
+class CCoreDX11DomainShader : public CCoreDomainShader {
  public:
   explicit CCoreDX11DomainShader(CCoreDX11Device* Device);
   ~CCoreDX11DomainShader() override;
@@ -90,16 +87,17 @@ class CCoreDX11DomainShader : public CCoreDomainShader {
   bool CompileAndCreate(std::string* Err) override;
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return DomainShaderHandle; }
-};
 
-class CCoreDX11ComputeShader : public CCoreComputeShader {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11ComputeShader* ComputeShaderHandle;
-
+ private:
   virtual void Release();
   bool Apply() override;
 
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11DomainShader* DomainShaderHandle;
+};
+
+class CCoreDX11ComputeShader : public CCoreComputeShader {
  public:
   explicit CCoreDX11ComputeShader(CCoreDX11Device* Device);
   ~CCoreDX11ComputeShader() override;
@@ -108,4 +106,12 @@ class CCoreDX11ComputeShader : public CCoreComputeShader {
   bool CompileAndCreate(std::string* Err) override;
   bool CreateFromBlob(void* Code, int32_t CodeSize) override;
   void* GetHandle() override { return ComputeShaderHandle; }
+
+ private:
+  virtual void Release();
+  bool Apply() override;
+
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11ComputeShader* ComputeShaderHandle;
 };

@@ -6,12 +6,6 @@
 #include "src/white_board/application.h"
 
 class CWBButton : public CWBItem {
-  std::string Text;
-  bool Pushed = false;
-
-  void OnDraw(CWBDrawAPI* API) override;
-  bool MessageProc(const CWBMessage& Message) override;
-
  public:
   CWBButton(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
   static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -39,4 +33,11 @@ class CWBButton : public CWBItem {
   virtual bool IsPushed();
 
   WBITEMSTATE GetState() override;
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(const CWBMessage& Message) override;
+
+  std::string Text;
+  bool Pushed = false;
 };

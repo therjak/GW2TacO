@@ -5,11 +5,6 @@
 #include "src/core2/resource.h"
 
 class CCoreConstantBuffer : public CCoreResource {
- protected:
-  std::unique_ptr<uint8_t[]> Data;
-  int32_t BufferLength = 0;
-  int32_t DataLength = 0;
-
  public:
   explicit CCoreConstantBuffer(CCoreDevice* Device);
   ~CCoreConstantBuffer() override;
@@ -18,4 +13,9 @@ class CCoreConstantBuffer : public CCoreResource {
   void AddData(const void* Data, int32_t Length);
   virtual void Upload();
   [[nodiscard]] virtual void* GetBufferPointer() const = 0;
+
+ protected:
+  std::unique_ptr<uint8_t[]> Data;
+  int32_t BufferLength = 0;
+  int32_t DataLength = 0;
 };

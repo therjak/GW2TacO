@@ -73,15 +73,6 @@ class CWBDrawAPI;
 class CWBFontDescription {
   friend class CWBFont;
 
-  std::unique_ptr<uint8_t[]> Image;
-  int32_t XRes = 0, YRes = 0;
-
-  std::vector<WBSYMBOLINPUT> Alphabet;
-  std::vector<WBKERNINGDATA> KerningData;
-
-  int32_t LineHeight = 0;
-  int32_t Base = 0;
-
  public:
   CWBFontDescription();
   ~CWBFontDescription();
@@ -104,29 +95,19 @@ class CWBFontDescription {
     std::vector<int> eg;
     return LoadBMFontText(Binary, BinarySize, Image, XRes, YRes, eg);
   }
-};
 
-class CWBFont {
-  CAtlas* Atlas;
-  int32_t AlphabetSize = 0;
-  std::unique_ptr<WBSYMBOL[]> Alphabet;
-  std::unordered_map<CWBKerningPair, int16_t, DHash> Kerning;
+ private:
+  std::unique_ptr<uint8_t[]> Image;
+  int32_t XRes = 0, YRes = 0;
+
+  std::vector<WBSYMBOLINPUT> Alphabet;
+  std::vector<WBKERNINGDATA> KerningData;
 
   int32_t LineHeight = 0;
   int32_t Base = 0;
+};
 
-  int32_t Offset_X_Char = 0;
-  int32_t Height_X_Char = 0;
-
-  TCHAR MissingChar = 0;
-
-  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const math::CSize& Size,
-                 const math::CPoint& Offset, int32_t Advance,
-                 math::CRect contentRect);
-  void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
-  uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
-                                  WBTEXTTRANSFORM Transform);
-
+class CWBFont {
  public:
   explicit CWBFont(CAtlas* Atlas);
   virtual ~CWBFont();
@@ -178,4 +159,25 @@ class CWBFont {
                           WBTEXTTRANSFORM Transform);
 
   void ConvertToUppercase();
+
+ private:
+  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const math::CSize& Size,
+                 const math::CPoint& Offset, int32_t Advance,
+                 math::CRect contentRect);
+  void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
+  uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
+                                  WBTEXTTRANSFORM Transform);
+
+  CAtlas* Atlas;
+  int32_t AlphabetSize = 0;
+  std::unique_ptr<WBSYMBOL[]> Alphabet;
+  std::unordered_map<CWBKerningPair, int16_t, DHash> Kerning;
+
+  int32_t LineHeight = 0;
+  int32_t Base = 0;
+
+  int32_t Offset_X_Char = 0;
+  int32_t Height_X_Char = 0;
+
+  TCHAR MissingChar = 0;
 };

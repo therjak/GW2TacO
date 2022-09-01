@@ -4,18 +4,6 @@
 #include "src/core2/texture.h"
 
 class CCoreDX11Texture2D : public CCoreTexture2D {
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11Texture2D* TextureHandle;
-  ID3D11ShaderResourceView* View;
-  ID3D11RenderTargetView* RTView;
-  ID3D11DepthStencilView* DepthView;
-
-  bool RenderTarget;
-
-  virtual void Release();
-  bool SetToSampler(const CORESAMPLER Sampler) override;
-
  public:
   explicit CCoreDX11Texture2D(CCoreDX11Device* Device);
   ~CCoreDX11Texture2D() override;
@@ -46,18 +34,27 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
 
   void ExportToImage(std::string_view Filename, bool ClearAlpha,
                      EXPORTIMAGEFORMAT Format, bool degamma) override;
+
+ private:
+  virtual void Release();
+  bool SetToSampler(const CORESAMPLER Sampler) override;
+
+  ID3D11Device* Dev;
+  ID3D11DeviceContext* DeviceContext;
+  ID3D11Texture2D* TextureHandle;
+  ID3D11ShaderResourceView* View;
+  ID3D11RenderTargetView* RTView;
+  ID3D11DepthStencilView* DepthView;
+
+  bool RenderTarget;
 };
 
 class CCoreDX11Texture3D : public CCoreTexture3D {
-  // LPDIRECT3DDEVICE9 Dev;
-
  public:
   explicit CCoreDX11Texture3D(CCoreDX11Device* Device);
 };
 
 class CCoreDX11TextureCube : public CCoreTextureCube {
-  // LPDIRECT3DDEVICE9 Dev;
-
  public:
   explicit CCoreDX11TextureCube(CCoreDX11Device* Device);
 };

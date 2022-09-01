@@ -8,8 +8,6 @@
 namespace math {
 
 class CMatrix4x4 {
-  std::array<std::array<float, 4>, 4> m = {{{0}}};
-
  public:
   constexpr CMatrix4x4() : m{{{0}}} {}
 
@@ -73,6 +71,9 @@ class CMatrix4x4 {
   constexpr static CMatrix4x4 Translation(const CVector3& v);
   constexpr static CMatrix4x4 Scaling(const CVector3& v);
   static CMatrix4x4 Rotation(const CVector3& Axis, const float Angle);
+
+ private:
+  std::array<std::array<float, 4>, 4> m = {{{0}}};
 };
 
 constexpr CMatrix4x4::CMatrix4x4(float f11, float f12, float f13, float f14,

@@ -8,21 +8,6 @@
 
 class CCoreShader : public CCoreResource {
   friend class CCoreDevice;
-  virtual bool Apply() = 0;
-
-  std::unique_ptr<uint8_t[]> Binary;
-  int32_t BinaryLength;
-
- protected:
-  std::string Code;
-  std::string EntryFunction;
-  std::string ShaderVersion;
-
-  void FetchBinary(void* binary, int32_t length) {
-    Binary = std::make_unique<uint8_t[]>(length);
-    memcpy(Binary.get(), binary, length);
-    BinaryLength = length;
-  }
 
  public:
   explicit CCoreShader(CCoreDevice* Device) : CCoreResource(Device) {
@@ -49,6 +34,23 @@ class CCoreShader : public CCoreResource {
   virtual bool CreateFromBlob(void* Code, int32_t CodeSize) = 0;
 
   virtual void* GetHandle() = 0;
+
+ protected:
+  void FetchBinary(void* binary, int32_t length) {
+    Binary = std::make_unique<uint8_t[]>(length);
+    memcpy(Binary.get(), binary, length);
+    BinaryLength = length;
+  }
+
+  std::string Code;
+  std::string EntryFunction;
+  std::string ShaderVersion;
+
+ private:
+  virtual bool Apply() = 0;
+
+  std::unique_ptr<uint8_t[]> Binary;
+  int32_t BinaryLength;
 };
 
 class CCorePixelShader : public CCoreShader {

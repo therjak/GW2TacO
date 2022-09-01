@@ -13,8 +13,6 @@ constexpr float clamp(float l, float v, float r) {
 }
 
 class CColor {
-  uint8_t b = 0, g = 0, r = 0, a = 0;
-
  public:
   constexpr CColor() = default;
   constexpr CColor(const uint8_t _r, const uint8_t _g, const uint8_t _b,
@@ -55,6 +53,9 @@ class CColor {
   [[nodiscard]] constexpr uint8_t G() const { return g; }
   [[nodiscard]] constexpr uint8_t B() const { return b; }
   [[nodiscard]] constexpr uint8_t A() const { return a; }
+
+ private:
+  uint8_t b = 0, g = 0, r = 0, a = 0;
 };
 
 constexpr CColor Lerp(const CColor a, const CColor b, const float t) {

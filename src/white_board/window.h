@@ -31,23 +31,6 @@ enum class WBWINDOWELEMENT : char {
 };
 
 class CWBWindow : public CWBItem {
-  int32_t BorderWidth{3};
-  int32_t TitleBarHeight;
-  int32_t CornerSelectionSize{15};
-
-  math::CSize MinSize;
-
-  std::string WindowTitle;
-
-  std::unordered_map<WBWINDOWELEMENT, CWBCSSPropertyBatch> Elements;
-
- protected:
-  uint32_t Style;
-  uint32_t DragMode{0};
-
-  void OnDraw(CWBDrawAPI* API) override;
-  bool MessageProc(const CWBMessage& Message) override;
-
  public:
   CWBWindow(CWBItem* Parent, const math::CRect& Pos, const TCHAR* txt = "",
             uint32_t style = WB_WINDOW_DEFAULT);
@@ -77,4 +60,22 @@ class CWBWindow : public CWBItem {
   uint32_t GetBorderSelectionArea(const math::CPoint& mousepos);
 
   WB_DECLARE_GUIITEM("window", CWBItem);
+
+ protected:
+  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(const CWBMessage& Message) override;
+
+  uint32_t Style;
+  uint32_t DragMode{0};
+
+ private:
+  int32_t BorderWidth{3};
+  int32_t TitleBarHeight;
+  int32_t CornerSelectionSize{15};
+
+  math::CSize MinSize;
+
+  std::string WindowTitle;
+
+  std::unordered_map<WBWINDOWELEMENT, CWBCSSPropertyBatch> Elements;
 };

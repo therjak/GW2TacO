@@ -63,15 +63,13 @@ struct LinkedMem {
 #define AVGCAMCOUNTER 6
 
 class CMumbleLink {
-  LinkedMem* lm = nullptr;
-  math::CVector4 camchardist[AVGCAMCOUNTER];
-
  public:
-  LinkedMem lastData;
-  LinkedMem prevData;
+  CMumbleLink();
+  virtual ~CMumbleLink();
 
-  int tick = 0;
-  double interpolation = 0;
+  bool Update();
+  bool IsValid();
+  float GetFrameRate();
 
   math::CVector3 charPosition;
   math::CVector3 charEye;
@@ -104,15 +102,9 @@ class CMumbleLink {
 
   math::CVector4 averagedCharPosition;
 
-  bool Update();
-  bool IsValid();
-
   std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
-  float GetFrameRate();
 
   int32_t LastFrameTime = 0;
-  CMumbleLink();
-  virtual ~CMumbleLink();
 
   uint64_t lastTickTime = 0;
   uint64_t lastTickLength = 0;
@@ -125,6 +117,16 @@ class CMumbleLink {
 
   std::string mumblePath = "MumbleLink";
   uint32_t lastGW2ProcessID = 0;
+
+ private:
+  LinkedMem lastData;
+  LinkedMem prevData;
+
+  int tick = 0;
+  double interpolation = 0;
+
+  LinkedMem* lm = nullptr;
+  math::CVector4 camchardist[AVGCAMCOUNTER];
 };
 
 extern CMumbleLink mumbleLink;

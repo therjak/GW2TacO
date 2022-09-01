@@ -4,30 +4,7 @@
 #include "src/white_board/message_enum.h"
 
 class CWBMessage final {
-  CWBApplication* App;
-  WBMESSAGE Message;
-  WBGUID Target;
-
  public:
-  union {
-    struct {
-      math::CRect Rectangle;
-      bool Moved;
-      bool Resized;
-    };
-    int32_t Position[2];
-    int32_t Data;
-    int32_t HumanEdit;
-    struct {
-      int32_t Key;
-      int32_t KeyboardState;
-    };
-    struct {
-      int32_t ID;
-      int32_t Flags;
-    };
-  };
-
   CWBMessage();
   CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target);
   CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x);
@@ -49,4 +26,28 @@ class CWBMessage final {
   std::string GetTargetID();
 
   bool IsMouseMessage();
+
+  union {
+    struct {
+      math::CRect Rectangle;
+      bool Moved;
+      bool Resized;
+    };
+    int32_t Position[2];
+    int32_t Data;
+    int32_t HumanEdit;
+    struct {
+      int32_t Key;
+      int32_t KeyboardState;
+    };
+    struct {
+      int32_t ID;
+      int32_t Flags;
+    };
+  };
+
+ private:
+  CWBApplication* App;
+  WBMESSAGE Message;
+  WBGUID Target;
 };

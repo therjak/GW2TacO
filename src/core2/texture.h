@@ -12,19 +12,17 @@ enum class EXPORTIMAGEFORMAT : uint8_t {
 
 class CCoreTexture : public CCoreResource {
   friend class CCoreDevice;
-  virtual bool SetToSampler(const CORESAMPLER Sampler) = 0;
 
  public:
   explicit CCoreTexture(CCoreDevice* Device) : CCoreResource(Device) {}
   // should remove this texture from the device render state here
   ~CCoreTexture() override = default;
+
+ private:
+  virtual bool SetToSampler(const CORESAMPLER Sampler) = 0;
 };
 
 class CCoreTexture2D : public CCoreTexture {
- protected:
-  int32_t XRes, YRes;
-  COREFORMAT Format;
-
  public:
   explicit CCoreTexture2D(CCoreDevice* Device) : CCoreTexture(Device) {
     XRes = YRes = 0;
@@ -49,6 +47,10 @@ class CCoreTexture2D : public CCoreTexture {
 
   virtual void ExportToImage(std::string_view Filename, bool ClearAlpha,
                              EXPORTIMAGEFORMAT Format, bool degamma) = 0;
+
+ protected:
+  int32_t XRes, YRes;
+  COREFORMAT Format;
 };
 
 class CCoreTexture3D : public CCoreTexture {

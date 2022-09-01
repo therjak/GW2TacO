@@ -28,6 +28,10 @@ enum class POIBehavior : int32_t {
 };
 
 struct MarkerTypeData {
+  MarkerTypeData();
+  void Read(const CXMLNode& n, bool StoreSaveState);
+  void Write(CXMLNode* n);
+
   struct {
     bool needsExportToUserData : 1;
     bool iconFileSaved : 1;
@@ -69,8 +73,6 @@ struct MarkerTypeData {
     bool infoRangeSaved : 1;
   } bits{};
 
-  MarkerTypeData();
-
   float size = 1.0;
   float alpha = 1.0f;
   float fadeNear = -1;
@@ -97,9 +99,6 @@ struct MarkerTypeData {
   int16_t achievementId = -1;
   int16_t achievementBit = -1;
   std::string_view info;
-
-  void Read(const CXMLNode& n, bool StoreSaveState);
-  void Write(CXMLNode* n);
 };
 
 class GW2TacticalCategory;
@@ -110,6 +109,13 @@ struct Achievement {
 };
 
 struct POI {
+  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
+
+  bool IsVisible(const tm& ptm, const time_t& currtime,
+                 bool achievementsFetched,
+                 std::unordered_map<int32_t, Achievement>& achievements,
+                 std::mutex& mtx);
+
   MarkerTypeData typeData;
   WBATLASHANDLE icon = 0;
 
@@ -130,18 +136,9 @@ struct POI {
   GUID guid{};
 
   GW2TacticalCategory* category = nullptr;
-  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
-
-  bool IsVisible(const tm& ptm, const time_t& currtime,
-                 bool achievementsFetched,
-                 std::unordered_map<int32_t, Achievement>& achievements,
-                 std::mutex& mtx);
 };
 
 struct POIActivationDataKey {
-  GUID guid{};
-  int uniqueData = 0;
-
   POIActivationDataKey() = default;
 
   POIActivationDataKey(GUID g, int inst) : guid(g), uniqueData(inst) {}
@@ -149,6 +146,9 @@ struct POIActivationDataKey {
   bool operator==(const POIActivationDataKey& d) const {
     return guid == d.guid && uniqueData == d.uniqueData;
   }
+
+  GUID guid{};
+  int uniqueData = 0;
 };
 
 namespace std {
@@ -191,33 +191,6 @@ extern GW2TacticalCategory CategoryRoot;
 POISet& GetMapPOIs();
 
 class GW2TacticalDisplay : public CWBItem {
-  bool TacticalIconsOnEdge = false;
-  float asp = 0;
-  math::CMatrix4x4 cam;
-  math::CMatrix4x4 persp;
-  math::CRect drawrect;
-
-  void FetchAchievements();
-  void InsertPOI(POI& poi);
-  void DrawPOI(CWBDrawAPI* API, const tm& ptm, const time_t& currtime, POI& poi,
-               bool drawDistance, std::string& infoText);
-  void DrawPOIMinimap(CWBDrawAPI* API, const math::CRect& miniRect,
-                      math::CVector2 pos, const tm& ptm, const time_t& currtime,
-                      POI& poi, float alpha, float zoomLevel);
-  void OnDraw(CWBDrawAPI* API) override;
-  math::CVector3 ProjectTacticalPos(math::CVector3 pos, float fov, float asp);
-  std::vector<POI*> mapPOIs;
-  std::vector<POI*> minimapPOIs;
-  bool drawWvWNames = false;
-
-  bool beingFetched = false;
-  bool achievementsFetched = false;
-  int32_t lastFetchTime = 0;
-  std::thread fetchThread;
-  std::mutex achievements_mtx;
-
-  std::unordered_map<int32_t, Achievement> achievements;
-
  public:
   GW2TacticalDisplay(CWBItem* Parent, math::CRect Position);
   static inline GW2TacticalDisplay* Create(CWBItem* Parent,
@@ -237,12 +210,47 @@ class GW2TacticalDisplay : public CWBItem {
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
   void RemoveUserMarkersFromMap();
+
+ private:
+  void FetchAchievements();
+  void InsertPOI(POI& poi);
+  void DrawPOI(CWBDrawAPI* API, const tm& ptm, const time_t& currtime, POI& poi,
+               bool drawDistance, std::string& infoText);
+  void DrawPOIMinimap(CWBDrawAPI* API, const math::CRect& miniRect,
+                      math::CVector2 pos, const tm& ptm, const time_t& currtime,
+                      POI& poi, float alpha, float zoomLevel);
+  void OnDraw(CWBDrawAPI* API) override;
+  math::CVector3 ProjectTacticalPos(math::CVector3 pos, float fov, float asp);
+
+  bool TacticalIconsOnEdge = false;
+  float asp = 0;
+  math::CMatrix4x4 cam;
+  math::CMatrix4x4 persp;
+  math::CRect drawrect;
+
+  std::vector<POI*> mapPOIs;
+  std::vector<POI*> minimapPOIs;
+  bool drawWvWNames = false;
+
+  bool beingFetched = false;
+  bool achievementsFetched = false;
+  int32_t lastFetchTime = 0;
+
+  std::unordered_map<int32_t, Achievement> achievements;
+  std::mutex achievements_mtx;
+  // on destruction the thread should be destroyed first
+  std::thread fetchThread;
 };
 
 class GW2TacticalCategory {
-  std::string cachedTypeName;
-
  public:
+  virtual ~GW2TacticalCategory() = default;
+
+  std::string GetFullTypeName();
+  [[nodiscard]] bool IsVisible() const;
+  void CacheVisibility();
+  void CalculateVisibilityCache();
+
   std::string name;
   std::string displayName;
 
@@ -254,16 +262,12 @@ class GW2TacticalCategory {
   GW2TacticalCategory* Parent = nullptr;
   std::vector<std::unique_ptr<GW2TacticalCategory>> children;
 
-  std::string GetFullTypeName();
-
   bool IsDisplayed = true;
   bool cachedVisibility = true;
-  [[nodiscard]] bool IsVisible() const;
-  void CacheVisibility();
-
   static bool visibilityCached;
-  void CalculateVisibilityCache();
-  virtual ~GW2TacticalCategory() = default;
+
+ private:
+  std::string cachedTypeName;
 };
 
 void AddPOI(CWBApplication* App);

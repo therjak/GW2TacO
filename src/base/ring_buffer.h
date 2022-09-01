@@ -7,10 +7,6 @@
 
 template <typename ItemType>
 class CRingBuffer {
-  std::unique_ptr<ItemType[]> Array;
-  int32_t Capacity;
-  int32_t Count = 0;
-
  public:
   explicit CRingBuffer(const uint32_t Size = 500) : Capacity(Size) {
     Array = std::make_unique<ItemType[]>(Size);
@@ -51,4 +47,9 @@ class CRingBuffer {
     Array = std::make_unique<ItemType[]>(Capacity);
     Count = 0;
   }
+
+ private:
+  std::unique_ptr<ItemType[]> Array;
+  int32_t Capacity;
+  int32_t Count = 0;
 };

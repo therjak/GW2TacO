@@ -26,20 +26,9 @@ struct GW2ItemData {
 };
 
 class TPTracker : public CWBItem {
-  void OnDraw(CWBDrawAPI* API) override;
-
-  bool beingFetched = false;
-  int32_t lastFetchTime = 0;
-
-  std::mutex transaction_mtx;
-  std::thread fetchThread;
-
-  std::vector<TransactionItem> buys;
-  std::vector<TransactionItem> sells;
-  static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
-
  public:
   TPTracker(CWBItem* Parent, math::CRect Position);
+  ~TPTracker() override;
   static inline TPTracker* Create(CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<TPTracker>(Parent, Position);
     TPTracker* r = p.get();
@@ -47,11 +36,23 @@ class TPTracker : public CWBItem {
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~TPTracker() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
   WB_DECLARE_GUIITEM("tptracker", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
+
+ private:
+  void OnDraw(CWBDrawAPI* API) override;
+  static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
+
+  bool beingFetched = false;
+  int32_t lastFetchTime = 0;
+
+  std::vector<TransactionItem> buys;
+  std::vector<TransactionItem> sells;
+
+  std::mutex transaction_mtx;
+  std::thread fetchThread;
 };

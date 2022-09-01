@@ -33,20 +33,25 @@ class GW2MapTimer : public CWBItem {
     CColor color;
   };
 
-  math::CPoint lastpos;
-  int32_t lastypos = -1;
+ public:
+  GW2MapTimer(CWBItem* Parent, math::CRect Position);
+  ~GW2MapTimer() override;
+  static inline GW2MapTimer* Create(CWBItem* Parent, math::CRect Position) {
+    auto p = std::make_unique<GW2MapTimer>(Parent, Position);
+    GW2MapTimer* r = p.get();
+    assert(Parent);
+    Parent->AddChild(std::move(p));
+    return r;
+  }
 
-  bool beingFetched = false;
-  int32_t lastFetchTime = 0;
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          math::CRect& Pos);
+  WB_DECLARE_GUIITEM("maptimer", CWBItem);
 
-  bool hasWorldBossInfo = false;
+  std::vector<Map> maps;
+  std::unordered_map<std::string, Category> categories;
 
-  std::thread fetchThread;
-
-  std::mutex mtx;
-  std::vector<std::string> worldBosses;
-  std::vector<std::string> mapchests;
-
+ private:
   bool IsScrollbarVisible();
   void OnResize(const math::CSize& s) override;
   int32_t GetScrollbarStep() override;
@@ -56,21 +61,17 @@ class GW2MapTimer : public CWBItem {
   void SetLayout(CXMLNode& node);
   void UpdateScrollbarData(int ypos, const math::CRect& cl);
 
- public:
-  std::vector<Map> maps;
-  std::unordered_map<std::string, Category> categories;
+  math::CPoint lastpos;
+  int32_t lastypos = -1;
 
-  GW2MapTimer(CWBItem* Parent, math::CRect Position);
-  static inline GW2MapTimer* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2MapTimer>(Parent, Position);
-    GW2MapTimer* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
-    return r;
-  }
-  ~GW2MapTimer() override;
+  bool beingFetched = false;
+  int32_t lastFetchTime = 0;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
-  WB_DECLARE_GUIITEM("maptimer", CWBItem);
+  bool hasWorldBossInfo = false;
+
+  std::mutex mtx;
+  std::vector<std::string> worldBosses;
+  std::vector<std::string> mapchests;
+
+  std::thread fetchThread;
 };

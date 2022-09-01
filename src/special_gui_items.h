@@ -11,6 +11,7 @@ class ClickThroughButton : public CWBButton {
  public:
   ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
                      std::string_view txt);
+  ~ClickThroughButton() override;
   static inline ClickThroughButton* Create(CWBItem* Parent,
                                            const math::CRect& Pos,
                                            std::string_view txt = "") {
@@ -20,7 +21,6 @@ class ClickThroughButton : public CWBButton {
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~ClickThroughButton() override;
 
   bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
