@@ -3,6 +3,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include <unordered_set>
 
 #include "src/white_board/gui_item.h"
 
@@ -61,17 +62,14 @@ class GW2MapTimer : public CWBItem {
   void SetLayout(CXMLNode& node);
   void UpdateScrollbarData(int ypos, const math::CRect& cl);
 
-  math::CPoint lastpos;
   int32_t lastypos = -1;
 
   bool beingFetched = false;
   int32_t lastFetchTime = 0;
 
-  bool hasWorldBossInfo = false;
-
   std::mutex mtx;
-  std::vector<std::string> worldBosses;
-  std::vector<std::string> mapchests;
+  std::unordered_set<std::string> worldBosses;
+  std::unordered_set<std::string> mapchests;
 
   std::thread fetchThread;
 };

@@ -4,22 +4,22 @@
 #include <string_view>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
 class DungeonPath {
  public:
-  DungeonPath(const std::string& name, const std::string& type, int32_t id)
-      : name(std::move(name)), type(std::move(type)), id(id) {}
+  DungeonPath(const std::string_view& name, const std::string_view& type, int32_t id)
+      : name(name), type(type), id(id) {}
   DungeonPath(const DungeonPath& p) : name(p.name), type(p.type), id(p.id) {}
 
   const std::string_view name;
   const std::string_view type;
   const int32_t id;
-  std::mutex mtx;
-  bool finished = false;
-  bool frequenter = false;
+  std::atomic<bool> finished = false;
+  std::atomic<bool> frequenter = false;
 };
 
 class Dungeon {

@@ -11,18 +11,18 @@
 #include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
-#include "src/util/jsonxx.h"
 
-using namespace jsonxx;
 using math::CPoint;
 using math::CRect;
 
 void DungeonProgress::OnDraw(CWBDrawAPI* API) {
   CWBFont* f = GetFont(GetState());
-  int32_t size = f->GetLineHeight();
 
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(API, f);
+  if (status != GW2::APIKeyManager::Status::OK) {
+    return;
+  }
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->valid &&
@@ -30,64 +30,21 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       !fetchThread.joinable()) {
     beingFetched = true;
     fetchThread = std::thread([this, key]() {
-      const auto& lastDungeonStatus =
-          "{\"dungeons\":" + key->QueryAPI("/v2/account/dungeons") + "}";
-      const auto& dungeonFrequenterStatus =
-          "{\"dungeons\":" +
-          key->QueryAPI("/v2/account/achievements?ids=2963") + "}";
-      Object json;
-      Object json2;
-      json.parse(lastDungeonStatus);
-      json2.parse(dungeonFrequenterStatus);
+      const auto& dungeonData = key->Dungeons();
+      const auto& dungeonFrequenterStatus = key->DungeonAchievements();
 
-      if (json.has<Array>("dungeons")) {
-        const auto& dungeonData = json.get<Array>("dungeons").values();
-
-        for (const auto& x : dungeonData) {
-          if (!x->is<String>()) continue;
-
-          auto eventName = x->get<String>();
-          for (auto& d : dungeons) {
-            for (auto& p : d.paths) {
-              if (p.name == eventName) {
-                std::lock_guard<std::mutex> lockGuard(p.mtx);
-                p.finished = true;
-              }
-            }
-          }
+      for (auto& d : dungeons) {
+        for (auto& p : d.paths) {
+          p.finished = dungeonData.contains(std::string(p.name));
         }
       }
 
-      if (json2.has<Array>("dungeons")) {
-        const auto& dungeonData = json2.get<Array>("dungeons").values();
-
-        std::vector<bool> fq(32, false);
-        if (!dungeonData.empty() && dungeonData[0]->is<Object>()) {
-          Object obj = dungeonData[0]->get<Object>();
-          if (obj.has<Array>("bits")) {
-            auto bits = obj.get<Array>("bits").values();
-            if (bits.size() > 0) {
-              for (auto& bit : bits) {
-                if (bit->is<Number>()) {
-                  auto frequentedID = static_cast<int32_t>(bit->get<Number>());
-                  if (frequentedID < 0 || frequentedID >= fq.size()) {
-                    Log_Err("unknown dungeon fequenterID: {:d}", frequentedID);
-                    continue;
-                  }
-                  fq[frequentedID] = true;
-                }
-              }
-            }
+      for (auto& d : dungeons) {
+        for (auto& p : d.paths) {
+          if (p.id < 0) {
+            continue;
           }
-        }
-        for (auto& d : dungeons) {
-          for (auto& p : d.paths) {
-            if (p.id < 0) {
-              continue;
-            }
-            std::lock_guard<std::mutex> lockGuard(p.mtx);
-            p.frequenter = fq[p.id];
-          }
+          p.frequenter = dungeonFrequenterStatus.contains(p.id);
         }
       }
 
@@ -123,7 +80,6 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
         posx += f->GetLineHeight() / 2;
       }
       {
-        std::lock_guard<std::mutex> lockGuard(p.mtx);
         API->DrawRect(r, p.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
       }
       std::string s = y == 0 ? "S" : std::format("P{:d}", y);
@@ -148,7 +104,6 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       tp.y = posy + 1;
       f->Write(API, s, tp, CColor{0xffffffff});
       {
-        std::lock_guard<std::mutex> lockGuard(p.mtx);
         API->DrawRectBorder(
             r, p.frequenter ? CColor{0xffffcc00} : CColor{0x80000000});
       }

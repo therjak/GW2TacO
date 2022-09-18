@@ -8,9 +8,6 @@
 
 #include "src/gw2_api.h"
 #include "src/overlay_config.h"
-#include "src/util/jsonxx.h"
-
-using namespace jsonxx;
 
 using math::CPoint;
 using math::CRect;
@@ -42,44 +39,11 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
         !beingFetched && !fetchThread.joinable()) {
       beingFetched = true;
       fetchThread = std::thread([key, this]() {
-        Object json;
-
-        const auto& lastWorldBosses =
-            "{\"worldbosses\":" + key->QueryAPI("/v2/account/worldbosses") +
-            "}";
-        json.parse(lastWorldBosses);
-
-        if (json.has<Array>("worldbosses")) {
-          auto worldBossData = json.get<Array>("worldbosses").values();
-
-          std::vector<std::string> localWorldBosses;
-          for (auto& x : worldBossData) {
-            if (!x->is<String>()) continue;
-
-            auto eventName = x->get<String>();
-            localWorldBosses.push_back(eventName);
-          }
-
+        auto localWorldBosses = key->WorldBosses();
+        auto localMapchests = key->Mapchests();
+        {
           std::lock_guard<std::mutex> lockGuard(mtx);
-          std::swap(localWorldBosses, worldBosses);
-        }
-
-        const auto& lastMapChests =
-            "{\"mapchests\":" + key->QueryAPI("/v2/account/mapchests") + "}";
-        json.parse(lastMapChests);
-
-        if (json.has<Array>("mapchests")) {
-          const auto& mapChestData = json.get<Array>("mapchests").values();
-
-          std::vector<std::string> localMapchests;
-          for (auto& x : mapChestData) {
-            if (!x->is<String>()) continue;
-
-            auto eventName = x->get<String>();
-            localMapchests.push_back(eventName);
-          }
-
-          std::lock_guard<std::mutex> lockGuard(mtx);
+          std::swap(worldBosses, localWorldBosses);
           std::swap(mapchests, localMapchests);
         }
 
@@ -201,10 +165,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
       // highlight rect
       if (!map.chestId.empty()) {
         std::lock_guard<std::mutex> lockGuard(mtx);
-        if (std::find(mapchests.begin(), mapchests.end(), map.chestId) !=
-            mapchests.end()) {
-          highlightRects.emplace_back(
-              CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
+        if (mapchests.contains(map.chestId)) {
+          highlightRects.emplace_back(CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
         }
       }
 
@@ -261,12 +223,10 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
           const auto& bossId = map.events[currevent].worldBossId;
           if (!map.events[currevent].worldBossId.empty()) {
             std::lock_guard<std::mutex> lockGuard(mtx);
-            if (std::find(worldBosses.begin(), worldBosses.end(), bossId) !=
-                worldBosses.end()) {
+            if (worldBosses.contains(bossId)) {
               isHighlighted = true;
             }
-            if (std::find(mapchests.begin(), mapchests.end(), bossId) !=
-                mapchests.end()) {
+            if (mapchests.contains(bossId)) {
               isHighlighted = true;
             }
           }

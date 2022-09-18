@@ -10,9 +10,6 @@
 #include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
-#include "src/util/jsonxx.h"
-
-using namespace jsonxx;
 
 using math::CPoint;
 using math::CRect;
@@ -21,10 +18,11 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
   bool compact = GetConfigValue("CompactRaidWindow");
 
   CWBFont* f = GetFont(GetState());
-  int32_t size = f->GetLineHeight();
-
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(API, f);
+  if (status != GW2::APIKeyManager::Status::OK) {
+    return;
+  }
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->valid &&
@@ -32,26 +30,13 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
       !fetchThread.joinable()) {
     beingFetched = true;
     fetchThread = std::thread([this, key]() {
-      auto lastRaidStatus =
-          "{\"raids\":" + key->QueryAPI("/v2/account/raids") + "}";
-      Object json;
-      json.parse(lastRaidStatus);
+      auto finishedEvents = key->Raids();
 
-      if (json.has<Array>("raids")) {
-        auto raidData = json.get<Array>("raids").values();
-
-        std::unordered_set<std::string> finishedEvents;
-        for (auto& x : raidData) {
-          if (!x->is<String>()) continue;
-          finishedEvents.emplace(x->get<String>());
-        }
-        for (auto& r : raids) {
-          for (auto& w : r.wings) {
-            for (auto& e : w.events) {
-              if (finishedEvents.contains(std::string(e.name))) {
-                std::lock_guard<std::mutex> lockGuard(e.mtx);
-                e.finished = true;
-              }
+      for (auto& r : raids) {
+        for (auto& w : r.wings) {
+          for (auto& e : w.events) {
+            if (finishedEvents.contains(std::string(e.name))) {
+              e.finished = true;
             }
           }
         }
@@ -108,11 +93,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
         CRect cr = API->GetCropRect();
         API->SetCropRect(ClientToScreen(r));
         posx += f->GetLineHeight() * 2 + 1;
-        {
-          std::lock_guard<std::mutex> lockGuard(e.mtx);
-          API->DrawRect(r,
-                        e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
-        }
+        API->DrawRect(r, e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
         auto s = e.type == RaidEvent::Type::Boss
                      ? (DICT("raid_boss") + std::to_string(cnt))
                      : DICT("raid_event");

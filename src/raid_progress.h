@@ -5,6 +5,7 @@
 #include <string_view>
 #include <thread>
 #include <vector>
+#include <atomic>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
@@ -19,8 +20,7 @@ class RaidEvent {
   RaidEvent(const RaidEvent& e) : name(e.name), type(e.type) {}
   std::string_view name;
   Type type;
-  std::mutex mtx;
-  bool finished = false;
+  std::atomic<bool> finished = false;
 };
 
 class Wing {

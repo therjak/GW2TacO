@@ -131,7 +131,7 @@ bool APIKey::HasCaps(std::string_view cap) {
   return false;
 }
 
-std::string APIKey::QueryAPI(std::string_view path) {
+std::string APIKey::QueryAPI(std::string_view path) const {
   Log_Nfo("[GW2TacO] Querying the API: {:s}", path);
 
   return FetchAPIData(path, apiKey);
@@ -145,6 +145,60 @@ void APIKey::SetKey(std::string_view key) {
   caps.clear();
   initialized = false;
   valid = true;
+}
+
+std::unordered_set<std::string> APIKey::QuerySet(std::string_view path) const {
+  const auto q = QueryAPI(path);
+  Array json;
+  json.parse(q);
+  std::unordered_set<std::string> ret;
+  for (auto& x : json.values()) {
+    if (!x->is<String>()) continue;
+    ret.emplace(x->get<String>());
+  }
+  return ret;
+}
+
+std::unordered_set<int32_t> APIKey::QueryAchievementBits(int id) const {
+  const auto q = QueryAPI("/v2/account/achievements?ids=" + std::to_string(id));
+  Array json;
+  json.parse(q);
+  std::unordered_set<int32_t> ret;
+  const auto& data = json.values();
+  if (!data.empty() && data[0]->is<Object>()) {
+    Object obj = data[0]->get<Object>();
+    if (obj.has<Array>("bits")) {
+      auto bits = obj.get<Array>("bits").values();
+      if (bits.size() > 0) {
+        for (auto& bit : bits) {
+          if (bit->is<Number>()) {
+            ret.emplace(static_cast<int32_t>(bit->get<Number>()));
+          }
+        }
+      }
+    }
+  }
+  return ret;
+}
+
+std::unordered_set<std::string> APIKey::Dungeons() const {
+  return QuerySet("/v2/account/dungeons");
+}
+
+std::unordered_set<int32_t> APIKey::DungeonAchievements() const {
+  return QueryAchievementBits(2963);
+}
+
+std::unordered_set<std::string> APIKey::Raids() const {
+  return QuerySet("/v2/account/raids");
+}
+
+std::unordered_set<std::string> APIKey::WorldBosses() const {
+  return QuerySet("/v2/account/worldbosses");
+}
+
+std::unordered_set<std::string> APIKey::Mapchests() const {
+  return QuerySet("/v2/account/mapchests");
 }
 
 APIKey* APIKeyManager::GetIdentifiedAPIKey() {
