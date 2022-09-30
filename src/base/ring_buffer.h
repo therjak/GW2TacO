@@ -1,55 +1,53 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <memory>
 
 #include "src/base/assert.h"
 
-template <typename ItemType>
+template <typename ItemType, int32_t SIZE>
 class CRingBuffer {
  public:
-  explicit CRingBuffer(const uint32_t Size = 500) : Capacity(Size) {
-    Array = std::make_unique<ItemType[]>(Size);
-  }
+  explicit CRingBuffer() = default;
 
   void Add(const ItemType& Item) {
-    Array[Count % Capacity] = Item;
+    Array[Count % SIZE] = Item;
     Count++;
   }
 
-  CRingBuffer<ItemType>& operator+=(const ItemType& i) {
+  CRingBuffer<ItemType, SIZE>& operator+=(const ItemType& i) {
     Add(i);
     return *this;
   }
 
-  ItemType const operator[](const int32_t idx) const {
-    int32_t start = Count - Capacity;
+  const ItemType& operator[](const int32_t idx) const {
+    int32_t start = Count - SIZE;
     if (start < 0) start = 0;
     int32_t realindex = start + idx;
     BASEASSERT(realindex < Count);
-    return (const ItemType)Array[realindex % Capacity];
+    return Array[realindex % SIZE];
   }
 
   ItemType& operator[](const int32_t idx) {
-    int32_t start = Count - Capacity;
+    int32_t start = Count - SIZE;
     if (start < 0) start = 0;
     const int32_t realindex = start + idx;
     BASEASSERT(realindex < Count);
-    return Array[realindex % Capacity];
+    return Array[realindex % SIZE];
   }
 
-  int32_t NumItems() {
-    if (Capacity < Count) return Capacity;
+  int32_t NumItems() const {
+    if (SIZE < Count) return SIZE;
     return Count;
   }
 
   void Flush() {
-    Array = std::make_unique<ItemType[]>(Capacity);
+    Array.fill({});
     Count = 0;
   }
 
  private:
-  std::unique_ptr<ItemType[]> Array;
-  int32_t Capacity;
+  std::array<ItemType, SIZE> Array{};
   int32_t Count = 0;
 };

@@ -29,7 +29,7 @@ CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
   DefaultFont = nullptr;
   Alt = Ctrl = Shift = Left = Middle = Right = false;
   Vsync = true;
-  FrameTimes = std::make_unique<CRingBuffer<int32_t>>(60);
+  FrameTimes = std::make_unique<CRingBuffer<int32_t, 60>>();
   LastFrameTime = 0;
 
   // initialize default factory calls
@@ -150,7 +150,7 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
 
 CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
   if (!Root) {
-      return nullptr;
+    return nullptr;
   }
   CRect r = Root->GetScreenRect();
   return Root->GetItemUnderMouse(Point, r, w);

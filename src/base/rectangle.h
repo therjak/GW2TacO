@@ -136,11 +136,12 @@ class CRect {
 
 constexpr bool IntervalIntersection(int32_t a1, int32_t a2, int32_t b1,
                                     int32_t b2) {
+  /*
   const int32_t _a1 = std::min(a1, a2);
   const int32_t _a2 = std::max(a1, a2);
   const int32_t _b1 = std::min(b1, b2);
   const int32_t _b2 = std::max(b1, b2);
-
+  */
   return !((a1 < b1 && a2 < b1) || (a1 > b2 && a2 > b2));
 }
 

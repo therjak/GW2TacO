@@ -102,7 +102,7 @@ class CMumbleLink {
 
   math::CVector4 averagedCharPosition;
 
-  std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
+  std::unique_ptr<CRingBuffer<int32_t, 60>> FrameTimes;
 
   int32_t LastFrameTime = 0;
 

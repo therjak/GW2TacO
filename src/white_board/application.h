@@ -155,7 +155,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
 
-  std::unique_ptr<CRingBuffer<int32_t>> FrameTimes;
+  std::unique_ptr<CRingBuffer<int32_t, 60>> FrameTimes;
   int32_t LastFrameTime;
 
   std::unordered_map<WBGUID, CWBItem*> Items;
