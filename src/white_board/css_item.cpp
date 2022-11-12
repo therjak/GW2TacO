@@ -29,7 +29,7 @@ bool IWBCSS::HasClass(std::string_view s) {
 
 void IWBCSS::SetID(std::string_view s) { sID = s; }
 
-std::string& IWBCSS::GetID() { return sID; }
+std::string_view IWBCSS::GetID() const { return sID; }
 
 bool IWBCSS::IsFitForSelector(std::string_view selector) {
   if (selector.empty()) {

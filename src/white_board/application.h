@@ -49,7 +49,7 @@ class CWBApplication : public CCoreWindowHandlerWin {
   CWBItem* FindItemByGuid(WBGUID Guid, const TCHAR* type = nullptr);
 
   template <typename... Args>
-  CWBItem* FindItemByGuids(WBGUID Guid, Args... args) {
+  CWBItem* FindItemByGuids(WBGUID Guid, Args... args) const {
     int len = sizeof...(Args);
     const TCHAR* vals[] = {args...};
 

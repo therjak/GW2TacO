@@ -146,25 +146,26 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
     } break;
 
     case WBM_CONTEXTMESSAGE:
-      if (Message.Data >= 0 && Message.Data < CategoryList.size()) {
+      if (Message.Data() >= 0 && Message.Data() < CategoryList.size()) {
         if (!ChangeDefault) {
           auto& mPOIs = GetMapPOIs();
-          mPOIs[CurrentPOI].SetCategory(App, CategoryList[Message.Data]);
+          mPOIs[CurrentPOI].SetCategory(App, CategoryList[Message.Data()]);
           ExportPOIS();
           auto* type =
               dynamic_cast<CWBLabel*>(FindChildByID("markertype", "label"));
           if (type) {
             type->SetText("Marker Type: " +
-                          CategoryList[Message.Data]->GetFullTypeName());
+                          CategoryList[Message.Data()]->GetFullTypeName());
           }
         } else {
           extern std::string DefaultMarkerCategory;
-          DefaultMarkerCategory = CategoryList[Message.Data]->GetFullTypeName();
+          DefaultMarkerCategory =
+              CategoryList[Message.Data()]->GetFullTypeName();
           auto* type = dynamic_cast<CWBLabel*>(
               FindChildByID("defaultmarkertype", "label"));
           if (type) {
             type->SetText("Default Marker Type: " +
-                          CategoryList[Message.Data]->GetFullTypeName());
+                          CategoryList[Message.Data()]->GetFullTypeName());
           }
         }
       }

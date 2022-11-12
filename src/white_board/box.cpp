@@ -57,7 +57,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
             std::max(BRect.y1,
                      std::min(BRect.y2 - client.Height(),
                               GetVScrollbarPos() -
-                                  static_cast<int>(Message.Data *
+                                  static_cast<int>(Message.Data() *
                                                    client.Height() / 5.0f))),
             false);
         return true;
@@ -67,7 +67,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
     case WBM_HSCROLL: {
       const bool Result = CWBItem::MessageProc(Message);
       if (Message.GetTarget() == GetGuid()) {
-        ChangeContentOffsetX(-Message.Data);
+        ChangeContentOffsetX(-Message.Data());
         return true;
       }
       return Result;
@@ -75,7 +75,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
     case WBM_VSCROLL: {
       const bool Result = CWBItem::MessageProc(Message);
       if (Message.GetTarget() == GetGuid()) {
-        ChangeContentOffsetY(-Message.Data);
+        ChangeContentOffsetY(-Message.Data());
         return true;
       }
       return Result;
@@ -95,7 +95,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
           break;  // do nothing here
         }
 
-        CRect r = Message.Rectangle;
+        CRect r = Message.Rectangle();
         const CRect o = i->GetPosition();
 
         if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
@@ -107,11 +107,8 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
           r.y1 = o.y1;
           r.y2 = o.y2;
         }
-        auto m = Message;
-        m.Rectangle = r;
-        m.Resized = true;
-        m.Moved = r.TopLeft() == o.TopLeft();
-
+        CWBMessage m(App, Message.GetMessage(), Message.GetTarget(), r,
+                     r.TopLeft() == o.TopLeft(), true);
         i->MessageProc(m);  // do the resize as the item sees fit
 
         RearrangeChildren();

@@ -87,18 +87,18 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
   // handle messages created by mouse events
   if (Message.IsMouseMessage()) {
     if (Message.GetMessage() == WBM_MOUSEMOVE) {
-      MousePos = CPoint(Message.Position);
+      MousePos = CPoint(Message.GetPosition());
       UpdateMouseItem();
     }
 
     if (Message.GetMessage() == WBM_LEFTBUTTONDOWN) {
-      LeftDownPos = CPoint(Message.Position);
+      LeftDownPos = CPoint(Message.GetPosition());
     }
     if (Message.GetMessage() == WBM_RIGHTBUTTONDOWN) {
-      RightDownPos = CPoint(Message.Position);
+      RightDownPos = CPoint(Message.GetPosition());
     }
     if (Message.GetMessage() == WBM_MIDDLEBUTTONDOWN) {
-      MidDownPos = CPoint(Message.Position);
+      MidDownPos = CPoint(Message.GetPosition());
     }
 
     if (MouseCaptureItem)  // mouse messages are captured by this item, send
@@ -317,7 +317,9 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       // UpdateControlKeyStates();
       // Log_Err( "[wndproc] WM_KEYDOWN/WM_SYSKEYDOWN: {:d} {:d} {:d} {:d} {:d}
       // {:d}", uMsg, wParam, lParam, Alt, Ctrl, Shift );
-      SendMessage(CWBMessage(this, WBM_KEYDOWN, 0, wParam, GetKeyboardState()));
+      SendMessage(CWBMessage(
+          this, WBM_KEYDOWN, 0,
+          CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
       break;
     case WM_SYSKEYUP:
     case WM_KEYUP:
@@ -342,7 +344,9 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       }
 
       // UpdateControlKeyStates();
-      SendMessage(CWBMessage(this, WBM_KEYUP, 0, wParam, GetKeyboardState()));
+      SendMessage(CWBMessage(
+          this, WBM_KEYUP, 0,
+          CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
       break;
     case WM_SYSCHAR:
     case WM_CHAR:
@@ -350,7 +354,9 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       // Log_Err("[wndproc] WM_CHAR/WM_SYSCHAR {:d} {:d}", uMsg, wParam,
       // lParam);
       // UpdateControlKeyStates();
-      SendMessage(CWBMessage(this, WBM_CHAR, 0, wParam, GetKeyboardState()));
+      SendMessage(CWBMessage(
+          this, WBM_CHAR, 0,
+          CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
       break;
     default:
       break;
@@ -665,8 +671,7 @@ bool CWBApplication::GenerateGUI(CWBItem* Root, std::string_view Layout) {
   if (!b) return false;
 
   StyleManager.ApplyStyles(Root);
-  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition());
-  m.Resized = true;
+  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
   return true;
 }
@@ -684,8 +689,7 @@ bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
   if (!b) return false;
 
   StyleManager.ApplyStyles(Root);
-  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition());
-  m.Resized = true;
+  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
 
   return true;
@@ -693,16 +697,14 @@ bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
 
 void CWBApplication::ApplyStyle(CWBItem* Target) {
   StyleManager.ApplyStyles(Target);
-  CWBMessage m = Target->BuildPositionMessage(Target->GetPosition());
-  m.Resized = true;
+  CWBMessage m = Target->BuildPositionMessage(Target->GetPosition(), true);
   Target->MessageProc(m);
 }
 
 void CWBApplication::ReApplyStyle() {
   CWBItem* Root = GetRoot();
   StyleManager.ApplyStyles(Root);
-  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition());
-  m.Resized = true;
+  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
 }
 

@@ -632,7 +632,8 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
     case WBM_MOUSEWHEEL: {
       CWBFont* Font = GetFont(GetState());
       SetVScrollbarPos(
-          GetVScrollbarPos() - Message.Data * 3 * Font->GetLineHeight(), true);
+          GetVScrollbarPos() - Message.Data() * 3 * Font->GetLineHeight(),
+          true);
     }
       return true;
 
@@ -643,36 +644,36 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
 
     case WBM_KEYDOWN: {
       if (!InFocus() || GetChildInFocus()) break;
-      if (Message.KeyboardState & WB_KBSTATE_ALT &&
-          Message.KeyboardState & WB_KBSTATE_CTRL) {
+      if (Message.KeyboardState() & WB_KBSTATE_ALT &&
+          Message.KeyboardState() & WB_KBSTATE_CTRL) {
         break;  // altgr
       }
 
       CWBFont* Font = GetFont(GetState());
 
       // handle cursor movement keys
-      switch (Message.Key) {
+      switch (Message.Key()) {
         case VK_LEFT:
           SetCursorPos(std::max(0, CursorPos - 1),
-                       Message.KeyboardState & WB_KBSTATE_SHIFT);
+                       Message.KeyboardState() & WB_KBSTATE_SHIFT);
           DesiredCursorPosXinPixels = GetCursorXinPixels();
           return true;
 
         case VK_RIGHT:
           SetCursorPos(
               std::min(static_cast<int32_t>(Text.size()), CursorPos + 1),
-              Message.KeyboardState & WB_KBSTATE_SHIFT);
+              Message.KeyboardState() & WB_KBSTATE_SHIFT);
           DesiredCursorPosXinPixels = GetCursorXinPixels();
           return true;
 
         case VK_UP:
           SetCursorPosXpxY(DesiredCursorPosXinPixels, GetCursorY() - 1,
-                           Message.KeyboardState & WB_KBSTATE_SHIFT);
+                           Message.KeyboardState() & WB_KBSTATE_SHIFT);
           return true;
 
         case VK_DOWN:
           SetCursorPosXpxY(DesiredCursorPosXinPixels, GetCursorY() + 1,
-                           Message.KeyboardState & WB_KBSTATE_SHIFT);
+                           Message.KeyboardState() & WB_KBSTATE_SHIFT);
           return true;
 
         case VK_PRIOR:  // page up
@@ -686,7 +687,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
                                ? GetCursorY() - GetClientRect().Height() /
                                                     Font->GetLineHeight()
                                : 0,
-                           Message.KeyboardState & WB_KBSTATE_SHIFT);
+                           Message.KeyboardState() & WB_KBSTATE_SHIFT);
           return true;
 
         case VK_NEXT:  // page down
@@ -698,13 +699,13 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
           SetCursorPosXpxY(
               DesiredCursorPosXinPixels,
               GetCursorY() + GetClientRect().Height() / Font->GetLineHeight(),
-              Message.KeyboardState & WB_KBSTATE_SHIFT);
+              Message.KeyboardState() & WB_KBSTATE_SHIFT);
           return true;
 
         case VK_HOME:
           SetHScrollbarPos(0);
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) {
-            SetCursorPos(0, Message.KeyboardState & WB_KBSTATE_SHIFT);
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) {
+            SetCursorPos(0, Message.KeyboardState() & WB_KBSTATE_SHIFT);
             DesiredCursorPosXinPixels = GetCursorXinPixels();
             return true;
           }
@@ -712,18 +713,19 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
           // skip to the start of the line
           if (GetCursorX() == GetLineLeadingWhiteSpaceSize()) {
             SetCursorPos(CursorPos - GetCursorX(),
-                         Message.KeyboardState & WB_KBSTATE_SHIFT);
+                         Message.KeyboardState() & WB_KBSTATE_SHIFT);
           } else {
             SetCursorPos(
                 CursorPos - GetCursorX() + GetLineLeadingWhiteSpaceSize(),
-                Message.KeyboardState & WB_KBSTATE_SHIFT);
+                Message.KeyboardState() & WB_KBSTATE_SHIFT);
           }
           DesiredCursorPosXinPixels = GetCursorXinPixels();
           return true;
 
         case VK_END:
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) {
-            SetCursorPos(Text.size(), Message.KeyboardState & WB_KBSTATE_SHIFT);
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) {
+            SetCursorPos(Text.size(),
+                         Message.KeyboardState() & WB_KBSTATE_SHIFT);
             DesiredCursorPosXinPixels = GetCursorXinPixels();
             return true;
           }
@@ -731,12 +733,13 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
           // skip to the end of the line
           for (; CursorPos < static_cast<int32_t>(Text.size()); CursorPos++) {
             if (Text[CursorPos] == '\n') {
-              SetCursorPos(CursorPos, Message.KeyboardState & WB_KBSTATE_SHIFT);
+              SetCursorPos(CursorPos,
+                           Message.KeyboardState() & WB_KBSTATE_SHIFT);
               DesiredCursorPosXinPixels = GetCursorXinPixels();
               break;
             }
           }
-          SetCursorPos(CursorPos, Message.KeyboardState & WB_KBSTATE_SHIFT);
+          SetCursorPos(CursorPos, Message.KeyboardState() & WB_KBSTATE_SHIFT);
           DesiredCursorPosXinPixels = GetCursorXinPixels();
           return true;
 
@@ -749,7 +752,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
           break;
 
         case VK_DELETE:
-          if (Message.KeyboardState & WB_KBSTATE_SHIFT) {
+          if (Message.KeyboardState() & WB_KBSTATE_SHIFT) {
             Cut();
           } else {
             if (CursorPos < 0 ||
@@ -780,38 +783,38 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
           return true;
 
         case VK_INSERT:
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) {
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) {
             Copy();
-          } else if (Message.KeyboardState & WB_KBSTATE_SHIFT) {
+          } else if (Message.KeyboardState() & WB_KBSTATE_SHIFT) {
             Paste();
           }
           return true;
 
         case 'X':
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) Cut();
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) Cut();
           return true;
 
         case 'C':
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) Copy();
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) Copy();
           return true;
 
         case 'V':
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) Paste();
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) Paste();
           return true;
 
         case 'A':  // select all
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) {
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) {
             SetCursorPos(0, false);
             SetCursorPos(Text.size(), true);
           }
           return true;
 
         case 'Z':
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) Undo();
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) Undo();
           return true;
 
         case 'Y':
-          if (Message.KeyboardState & WB_KBSTATE_CTRL) Redo();
+          if (Message.KeyboardState() & WB_KBSTATE_CTRL) Redo();
           return true;
       }
 
@@ -822,14 +825,14 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
     }
     case WBM_CHAR:
       if (!InFocus() || GetChildInFocus()) break;
-      if (!(Message.KeyboardState & WB_KBSTATE_CTRL &&
-            Message.KeyboardState & WB_KBSTATE_ALT)) {  // altgr
-        if (Message.KeyboardState & (WB_KBSTATE_ALT | WB_KBSTATE_CTRL)) {
+      if (!(Message.KeyboardState() & WB_KBSTATE_CTRL &&
+            Message.KeyboardState() & WB_KBSTATE_ALT)) {  // altgr
+        if (Message.KeyboardState() & (WB_KBSTATE_ALT | WB_KBSTATE_CTRL)) {
           return true;  // these should be handled by the keydown messages
         }
       }
 
-      if (Message.Key == VK_BACK) {
+      if (Message.Key() == VK_BACK) {
         if (SelectionStart == SelectionEnd) {
           if (!CursorPos) return true;
           RemoveText(CursorPos - 1, 1, CursorPos - 1);
@@ -841,26 +844,26 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
         return true;
       }
 
-      if (Message.Key == VK_ESCAPE) {
+      if (Message.Key() == VK_ESCAPE) {
         SelectionStart = SelectionEnd = SelectionOrigin = CursorPos;
         return true;  // shouldn't produce text
       }
 
-      if ((Flags & WB_TEXTBOX_SINGLELINE) && Message.Key == VK_RETURN) {
+      if ((Flags & WB_TEXTBOX_SINGLELINE) && Message.Key() == VK_RETURN) {
         return true;  // already handled in the keydown message
       }
 
       // translate VK_RETURN to '\n':
 
-      int32_t Key = Message.Key;
+      int32_t Key = Message.Key();
 
-      if (Message.Key == VK_RETURN) Key = '\n';
+      if (Message.Key() == VK_RETURN) Key = '\n';
 
       // insert character
       RemoveSelectedText();
       InsertText(CursorPos, reinterpret_cast<TCHAR*>(&Key), 1, CursorPos + 1);
 
-      PostCharInsertion(CursorPos, Message.Key);
+      PostCharInsertion(CursorPos, Message.Key());
 
       DesiredCursorPosXinPixels = GetCursorXinPixels();
       OnTextChange();

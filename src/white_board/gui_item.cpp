@@ -338,10 +338,10 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
 
     case WBM_REPOSITION:
       if (Message.GetTarget() == Guid) {
-        ApplyPosition(Message.Rectangle);
-        if (Message.Moved) OnMove(Message.Rectangle.TopLeft());
-        if (Message.Resized) {
-          OnResize(Message.Rectangle.Size());
+        ApplyPosition(Message.Rectangle());
+        if (Message.Moved()) OnMove(Message.Rectangle().TopLeft());
+        if (Message.Resized()) {
+          OnResize(Message.Rectangle().Size());
         }
         for (auto& c : Children) {
           c->CalculateWindowPosition(GetClientRect().Size());
@@ -780,13 +780,16 @@ CRect CWBItem::ScreenToClient(const CRect& p) const {
   return p - ScreenRect.TopLeft() - ClientRect.TopLeft();
 }
 
-CWBMessage CWBItem::BuildPositionMessage(const CRect& Pos) {
-  CWBMessage m(App, WBM_REPOSITION, Guid);
-  m.Rectangle = Pos;
-  m.Moved = Pos.x1 != Position.x1 || Pos.y1 != Position.y1;
-  m.Resized =
+CWBMessage CWBItem::BuildPositionMessage(const CRect& Pos) const {
+  const bool moved = Pos.x1 != Position.x1 || Pos.y1 != Position.y1;
+  const bool resized =
       Pos.Width() != Position.Width() || Pos.Height() != Position.Height();
-  return m;
+  return CWBMessage(App, WBM_REPOSITION, Guid, Pos, moved, resized);
+}
+
+CWBMessage CWBItem::BuildPositionMessage(const CRect& Pos, bool resized) const {
+  const bool moved = Pos.x1 != Position.x1 || Pos.y1 != Position.y1;
+  return CWBMessage(App, WBM_REPOSITION, Guid, Pos, moved, resized);
 }
 
 void CWBItem::SetPosition(const CRect& Pos) {
@@ -816,25 +819,25 @@ void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
   CalculateClientPosition();
 }
 
-bool CWBItem::IsWidthSet() {
+bool CWBItem::IsWidthSet() const {
   return CSSProperties.PositionDescriptor.IsWidthSet();
 }
 
-bool CWBItem::IsHeightSet() {
+bool CWBItem::IsHeightSet() const {
   return CSSProperties.PositionDescriptor.IsHeightSet();
 }
 
-int32_t CWBItem::GetCalculatedWidth(CSize ParentSize) {
+int32_t CWBItem::GetCalculatedWidth(CSize ParentSize) const {
   return CSSProperties.PositionDescriptor.GetWidth(ParentSize,
                                                    StoredContentSize);
 }
 
-int32_t CWBItem::GetCalculatedHeight(CSize ParentSize) {
+int32_t CWBItem::GetCalculatedHeight(CSize ParentSize) const {
   return CSSProperties.PositionDescriptor.GetHeight(ParentSize,
                                                     StoredContentSize);
 }
 
-CRect CWBItem::GetPosition() { return Position; }
+CRect CWBItem::GetPosition() const { return Position; }
 
 bool CWBItem::InFocus() {
   if (!Parent) return true;
@@ -847,7 +850,7 @@ bool CWBItem::InFocus() {
   return false;
 }
 
-bool CWBItem::InLocalFocus() {
+bool CWBItem::InLocalFocus() const {
   if (!Parent) return true;
   return Parent->ChildInFocus == this;
 }
@@ -890,7 +893,7 @@ void CWBItem::SetSavedPosition(const CRect& savedPos) {
   StoredPosition = savedPos;
 }
 
-uint32_t CWBItem::NumChildren() { return Children.size(); }
+uint32_t CWBItem::NumChildren() const { return Children.size(); }
 
 CWBItem* CWBItem::GetChild(uint32_t idx) { return Children[idx].get(); }
 
@@ -2318,10 +2321,11 @@ void CWBItem::ContentChanged() {
           .Size();
 
   StoredContentSize = GetContentSize() + ParentSize - ClientSize;
-  CWBMessage m = BuildPositionMessage(CRect(
-      GetPosition().TopLeft(), GetPosition().TopLeft() + StoredContentSize));
-  m.Resized = true;
-  m.Moved = true;
+
+  CWBMessage m(App, WBM_REPOSITION, Guid,
+               CRect(GetPosition().TopLeft(),
+                     GetPosition().TopLeft() + StoredContentSize),
+               true, true);
   App->SendMessage(m);
 }
 
@@ -2356,8 +2360,7 @@ float CWBItem::GetTreeOpacityMultiplier() { return OpacityMultiplier; }
 
 void CWBItem::ReapplyStyles() {
   App->StyleManager.ApplyStyles(this);
-  CWBMessage m = BuildPositionMessage(GetPosition());
-  m.Resized = true;
+  CWBMessage m = BuildPositionMessage(GetPosition(), true);
   MessageProc(m);
 }
 

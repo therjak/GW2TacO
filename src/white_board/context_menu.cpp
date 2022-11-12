@@ -209,14 +209,14 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
     case WBM_REPOSITION:
       if (Message.GetTarget() == GetGuid()) {
         // push position inside of parent
-        CRect p = Message.Rectangle;
+        CRect p = Message.Rectangle();
         const CRect r = GetParent()->GetClientRect();
         if (p.x1 < 0) p += CPoint(-p.x1, 0);
         if (p.y1 < 0) p += CPoint(0, -p.y1);
         if (p.x2 > r.x2) p -= CPoint(p.x2 - r.x2, 0);
         if (p.y2 > r.y2) p -= CPoint(0, p.y2 - r.y2);
-        auto m = Message;
-        m.Rectangle = p;
+        CWBMessage m(App, WBM_REPOSITION, Message.GetTarget(), p,
+                     Message.Moved(), Message.Resized());
         return CWBItem::MessageProc(m);
       }
       break;
@@ -276,8 +276,9 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
               MarkParentForDeletion();
               App->ReleaseCapture();
             } else {
-              App->SendMessage(CWBMessage(App, WBM_REBUILDCONTEXTITEM, Target,
-                                          Items[x]->ReturnID, GetGuid()));
+              App->SendMessage(CWBMessage(
+                  App, WBM_REBUILDCONTEXTITEM, Target,
+                  CWBMessage::menucontext{Items[x]->ReturnID, GetGuid()}));
             }
 
             return true;

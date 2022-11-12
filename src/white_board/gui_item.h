@@ -187,21 +187,21 @@ class CWBItem : public IWBCSS {
   virtual void SetClientPadding(int32_t left, int32_t top, int32_t right,
                                 int32_t bottom);
   // tells if the width has been specified in the style of the item
-  bool IsWidthSet();
+  bool IsWidthSet() const;
   // tells if the height has been specified in the style of the item
-  bool IsHeightSet();
+  bool IsHeightSet() const;
   // tells if the width has been specified in the style of the item
-  int32_t GetCalculatedWidth(math::CSize ParentSize);
+  int32_t GetCalculatedWidth(math::CSize ParentSize) const;
   // tells if the height has been specified in the style of the item
-  int32_t GetCalculatedHeight(math::CSize ParentSize);
+  int32_t GetCalculatedHeight(math::CSize ParentSize) const;
 
-  math::CRect GetPosition();
+  math::CRect GetPosition() const;
 
-  uint32_t NumChildren();
+  uint32_t NumChildren() const;
   CWBItem* GetChild(uint32_t idx);
 
   bool InFocus();
-  bool InLocalFocus();
+  bool InLocalFocus() const;
   void SetFocus();
   void ClearFocus();
   bool MouseOver();
@@ -284,7 +284,8 @@ class CWBItem : public IWBCSS {
   CWBItem* FindParentByID(std::string_view value, std::string_view type = "");
   virtual void CalculateWindowPosition(const math::CSize& s);
 
-  CWBMessage BuildPositionMessage(const math::CRect& Pos);
+  CWBMessage BuildPositionMessage(const math::CRect& Pos) const;
+  CWBMessage BuildPositionMessage(const math::CRect& Pos, bool resized) const;
   void ApplyStyleDeclarations(std::string_view String);
 
   virtual WBITEMSTATE GetState();

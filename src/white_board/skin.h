@@ -18,13 +18,19 @@ class CWBMetricValue {
   CWBMetricValue();
   void SetMetric(WBMETRICTYPE w, float Value);
   void SetValue(float Relative, float Pixels);
-  float GetValue(float ParentSize, int32_t ContentSize);
+  float GetValue(float ParentSize, int32_t ContentSize) const;
   void SetAutoSize(bool Auto);
   bool IsAutoResizer();
 
  private:
   float& MetricsAt(WBMETRICTYPE t) { return Metrics[static_cast<uint8_t>(t)]; }
+  const float& MetricsAt(WBMETRICTYPE t) const {
+    return Metrics[static_cast<uint8_t>(t)];
+  }
   bool& MetricsUsedAt(WBMETRICTYPE t) {
+    return MetricsUsed[static_cast<uint8_t>(t)];
+  }
+  const bool& MetricsUsedAt(WBMETRICTYPE t) const {
     return MetricsUsed[static_cast<uint8_t>(t)];
   }
   std::array<float, 3> Metrics{0};
@@ -55,10 +61,10 @@ class CWBPositionDescriptor {
                           const math::CRect& Original);
   math::CRect GetPadding(math::CSize ParentSize, const math::CRect& BorderSize);
 
-  bool IsWidthSet();
-  bool IsHeightSet();
-  int32_t GetWidth(math::CSize ParentSize, math::CSize ContentSize);
-  int32_t GetHeight(math::CSize ParentSize, math::CSize ContentSize);
+  bool IsWidthSet() const;
+  bool IsHeightSet() const;
+  int32_t GetWidth(math::CSize ParentSize, math::CSize ContentSize) const;
+  int32_t GetHeight(math::CSize ParentSize, math::CSize ContentSize) const;
 
   bool IsAutoResizer();
 

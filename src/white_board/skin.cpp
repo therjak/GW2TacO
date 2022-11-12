@@ -24,7 +24,7 @@ void CWBMetricValue::SetValue(float Relative, float Pixels) {
   MetricsUsedAt(WBMETRICTYPE::WB_PIXELS) = true;
 }
 
-float CWBMetricValue::GetValue(float ParentSize, int32_t ContentSize) {
+float CWBMetricValue::GetValue(float ParentSize, int32_t ContentSize) const {
   if (AutoSize) return ContentSize + 0.5f;
   float v = 0;
   if (MetricsUsedAt(WBMETRICTYPE::WB_PIXELS)) {
@@ -164,32 +164,32 @@ void CWBPositionDescriptor::ClearMetrics(WBPOSITIONTYPE p) {
   Positions.erase(p);
 }
 
-bool CWBPositionDescriptor::IsWidthSet() {
+bool CWBPositionDescriptor::IsWidthSet() const {
   return Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
 }
 
-bool CWBPositionDescriptor::IsHeightSet() {
+bool CWBPositionDescriptor::IsHeightSet() const {
   return Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
 }
 
-int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize, CSize ContentSize) {
-  const bool WidthSet =
-      Positions.find(WBPOSITIONTYPE::WB_WIDTH) != Positions.end();
-  if (WidthSet) {
-    return static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_WIDTH].GetValue(
-        static_cast<float>(ParentSize.x), ContentSize.x));
+int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize,
+                                        CSize ContentSize) const {
+  const auto pos = Positions.find(WBPOSITIONTYPE::WB_WIDTH);
+  if (pos == Positions.end()) {
+    return 0;
   }
-  return 0;
+  return static_cast<int32_t>(
+      pos->second.GetValue(static_cast<float>(ParentSize.x), ContentSize.x));
 }
 
-int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize, CSize ContentSize) {
-  const bool HeightSet =
-      Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
-  if (HeightSet) {
-    return static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_HEIGHT].GetValue(
-        static_cast<float>(ParentSize.y), ContentSize.y));
+int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize,
+                                         CSize ContentSize) const {
+  const auto pos = Positions.find(WBPOSITIONTYPE::WB_HEIGHT);
+  if (pos == Positions.end()) {
+    return 0;
   }
-  return 0;
+  return static_cast<int32_t>(
+      pos->second.GetValue(static_cast<float>(ParentSize.y), ContentSize.y));
 }
 
 bool CWBPositionDescriptor::IsAutoResizer() {
