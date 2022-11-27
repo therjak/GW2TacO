@@ -253,7 +253,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     UINT miscFlags2;
   };
 
-  uint8_t* Data = Writer.GetData();
+  const uint8_t* Data = Writer.GetData();
   DDSHEAD head{};
   memcpy(&head, Data, sizeof(DDSHEAD));
   Data += head.dwSize + 4;
@@ -283,7 +283,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       }
       break;
     case 36: {
-      const uint16_t* inimg = reinterpret_cast<uint16_t*>(Data);
+      const uint16_t* inimg = reinterpret_cast<const uint16_t*>(Data);
       for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++) {
         image[x] = (!degamma ? inimg[x] : degammaint16(inimg[x])) / 256;
       }
@@ -316,7 +316,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     } break;
     case '01XD':  // DX10
     {
-      const DDS_HEADER_DXT10* Head = reinterpret_cast<DDS_HEADER_DXT10*>(Data);
+      const DDS_HEADER_DXT10* Head = reinterpret_cast<const DDS_HEADER_DXT10*>(Data);
       Data += sizeof(DDS_HEADER_DXT10);
       switch (Head->dxgiFormat) {
         case DXGI_FORMAT_B8G8R8A8_UNORM:

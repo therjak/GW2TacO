@@ -7,6 +7,7 @@ WSADATA wsaData;
 #include <ws2tcpip.h>
 
 #include <memory>
+#include <vector>
 #pragma comment(lib, "Ws2_32.lib")
 
 CSocket::CSocket() : CStreamReader(), CStreamWriter() {
@@ -143,19 +144,19 @@ std::string CSocket::ReadLine() {
     if (!IsConnected()) return result;
     auto len = static_cast<int32_t>(GetLength());
     if (len) {
-      auto dat = std::make_unique<char[]>(len);
-      if (Peek(dat.get(), len)) {
+      auto dat = std::vector<char>(len);
+      if (Peek(&dat[0], len)) {
         for (int32_t x = 0; x < len; x++) {
           if (dat[x] == '\n') {
-            ReadFull(dat.get(), x + 1);
-            result += std::string(dat.get(), x);
+            ReadFull(&dat[0], x + 1);
+            result += std::string(&dat[0], x);
             return result;
           }
         }
       }
 
-      ReadFull(dat.get(), len);
-      result += std::string(dat.get(), len);
+      ReadFull(&dat[0], len);
+      result += std::string(&dat[0], len);
     }
 
     if (!Peek(&len, 1)) return result;

@@ -3,6 +3,7 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 
 #include "src/base/assert.h"
@@ -67,15 +68,14 @@ uint32_t CStreamReader::ReadBits(uint32_t BitCount) {
 std::string CStreamReaderMemory::ReadLine() {
   std::string result;
 
-  char s[2];
-  s[0] = s[1] = 0;
+  std::array<char, 2> s{{0, 0}};
 
   do {
     if (GetOffset() == GetLength()) break;
 
     s[0] = ReadByte();
 
-    if (s[0] != '\n' && s[0] != '\r') result += s;
+    if (s[0] != '\n' && s[0] != '\r') result += s[0];
 
   } while (s[0] && s[0] != '\n');
 
@@ -87,17 +87,16 @@ bool CStreamReader::eof() { return GetOffset() >= GetLength(); }
 //////////////////////////////////////////////////////////////////////////
 // streamreader memory
 
-CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {
-  DataSize = 0;
-  Offset = 0;
-}
+CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {}
 
 CStreamReaderMemory::~CStreamReaderMemory() = default;
 
 int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
-  int64_t bytestoread = std::max(
-      0ull, std::min(static_cast<uint64_t>(nCount), DataSize - Offset));
-  memcpy(lpBuf, Data.get() + Offset, static_cast<size_t>(bytestoread));
+  auto bytestoread =
+      std::max(static_cast<std::vector<uint8_t>::size_type>(0),
+               std::min(static_cast<std::vector<uint8_t>::size_type>(nCount),
+                        Data.size() - Offset));
+  memcpy(lpBuf, &Data[Offset], static_cast<size_t>(bytestoread));
   Offset += bytestoread;
   return static_cast<int32_t>(bytestoread);
 }
@@ -105,11 +104,9 @@ int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
 int32_t CStreamReaderMemory::Open(uint8_t* data, uint32_t size) {
   if (!data || !size) return 0;
 
-  DataSize = size;
   Offset = 0;
-
-  Data = std::make_unique<uint8_t[]>(size);
-  memcpy(Data.get(), data, size);
+  Data.resize(size);
+  memcpy(&Data[0], data, size);
 
   return 1;
 }
@@ -122,14 +119,13 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
 
   int32_t tDataSize = GetFileSize(hFile, nullptr);
 
-  auto tData = std::make_unique<uint8_t[]>(tDataSize);
+  auto tData = std::vector<uint8_t>(tDataSize);
   DWORD nRead = 0;
-  BOOL b = ReadFile(hFile, tData.get(), tDataSize, &nRead, nullptr);
+  BOOL b = ReadFile(hFile, &tData[0], tDataSize, &nRead, nullptr);
 
   if (b && nRead == tDataSize) {
     // all ok
     Data = std::move(tData);
-    DataSize = tDataSize;
     Offset = 0;
   }
 
@@ -137,8 +133,12 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
   return nRead == tDataSize;
 }
 
-uint8_t* CStreamReaderMemory::GetData() const { return Data.get(); }
+const uint8_t* CStreamReaderMemory::GetData() const { return &Data[0]; }
 
-int64_t CStreamReaderMemory::GetLength() const { return DataSize; }
+int64_t CStreamReaderMemory::GetLength() const {
+  return static_cast<int64_t>(Data.size());
+}
 
-int64_t CStreamReaderMemory::GetOffset() const { return Offset; }
+int64_t CStreamReaderMemory::GetOffset() const {
+  return static_cast<int64_t>(Offset);
+}

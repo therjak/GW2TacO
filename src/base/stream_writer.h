@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 using uint8_view = std::basic_string_view<uint8_t>;
 
@@ -31,17 +32,15 @@ class CStreamWriterMemory : public CStreamWriter {
   ~CStreamWriterMemory() override;
 
   // std::string_view GetData();
-  uint8_t* GetData();
-  uint32_t GetLength();
+  const uint8_t* GetData() const;
+  uint32_t GetLength() const;
 
   void Flush();
 
  private:
   int32_t WriteStream(std::string_view) override;
 
-  std::unique_ptr<uint8_t[]> Data;
-  uint32_t BufferSize;
-  uint32_t DataLength;
+  std::vector<uint8_t> Data;
 };
 
 class CStreamWriterFile : public CStreamWriter {

@@ -10,7 +10,7 @@ class IWBCSS {
   virtual ~IWBCSS();
 
   void SetID(std::string_view s);
-  std::string_view GetID() const;
+  [[nodiscard]] std::string_view GetID() const;
   void AddClass(std::string_view s);
   void RemoveClass(std::string_view s);
   void ToggleClass(std::string_view s);

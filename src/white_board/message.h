@@ -47,25 +47,31 @@ class CWBMessage final {
     auto& pos = std::get<std::array<int32_t, 2>>(data_);
     return math::CPoint(pos[0], pos[1]);
   }
-  int32_t Data() const { return std::get<int32_t>(data_); }
+  [[nodiscard]] int32_t Data() const { return std::get<int32_t>(data_); }
 
   // WBM_REPOSITION
-  math::CRect Rectangle() const {
+  [[nodiscard]] math::CRect Rectangle() const {
     return std::get<reposition>(data_).rectangle;
   };
   // WBM_REPOSITION
-  bool Moved() const { return std::get<reposition>(data_).moved; };
+  [[nodiscard]] bool Moved() const {
+    return std::get<reposition>(data_).moved;
+  };
   // WBM_REPOSITION
-  bool Resized() const { return std::get<reposition>(data_).resized; };
+  [[nodiscard]] bool Resized() const {
+    return std::get<reposition>(data_).resized;
+  };
 
   // WBM_KEYDOWN, WBM_KEYUP, WBM_CHAR
-  int32_t Key() const { return std::get<keyboard>(data_).key; };
+  [[nodiscard]] int32_t Key() const { return std::get<keyboard>(data_).key; };
   // WBM_KEYDOWN, WBM_KEYUP, WBM_CHAR
-  int32_t KeyboardState() const {
+  [[nodiscard]] int32_t KeyboardState() const {
     return std::get<keyboard>(data_).keyboard_state;
   };
   // WBM_REBUILDCONTEXTITEM
-  menucontext MenuContext() const { return std::get<menucontext>(data_); }
+  [[nodiscard]] menucontext MenuContext() const {
+    return std::get<menucontext>(data_);
+  }
 
   bool IsTargetID(std::string_view Name);
   std::string_view GetTargetID();

@@ -28,37 +28,24 @@ bool CStreamWriter::WriteDWord(uint32_t data) { return Write(&data, 4); }
 //////////////////////////////////////////////////////////////////////////
 // streamwritermemory
 
-CStreamWriterMemory::CStreamWriterMemory() : CStreamWriter() {
-  Data = std::make_unique<uint8_t[]>(1024);
-  BufferSize = 1024;
-  DataLength = 0;
+CStreamWriterMemory::CStreamWriterMemory() : CStreamWriter(), Data() {
+  Data.reserve(1024);
 }
 
 CStreamWriterMemory::~CStreamWriterMemory() = default;
 
 int32_t CStreamWriterMemory::WriteStream(std::string_view data) {
-  if (DataLength + data.size() > BufferSize) {
-    BufferSize = static_cast<uint32_t>((BufferSize + data.size()) * 1.2f);
-    auto temp = std::make_unique<uint8_t[]>(BufferSize);
-    std::swap(Data, temp);
-    memcpy(Data.get(), temp.get(), DataLength);
-  }
-
-  memcpy(Data.get() + DataLength, data.data(), data.size());
-  DataLength += data.size();
-
+  Data.insert(Data.end(), data.begin(), data.end());
   return data.size();
 }
 
-uint8_t* CStreamWriterMemory::GetData() { return Data.get(); }
+const uint8_t* CStreamWriterMemory::GetData() const { return &Data[0]; }
 
-uint32_t CStreamWriterMemory::GetLength() { return DataLength; }
-
-void CStreamWriterMemory::Flush() {
-  Data = std::make_unique<uint8_t[]>(1024);
-  BufferSize = 1024;
-  DataLength = 0;
+uint32_t CStreamWriterMemory::GetLength() const {
+  return static_cast<uint32_t>(Data.size());
 }
+
+void CStreamWriterMemory::Flush() { Data.clear(); }
 
 //////////////////////////////////////////////////////////////////////////
 // streamwriterfile

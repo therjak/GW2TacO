@@ -655,7 +655,7 @@ bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
     return false;
   }
 
-  const std::string_view s(reinterpret_cast<char*>(f.GetData()),
+  const std::string_view s(reinterpret_cast<const char*>(f.GetData()),
                            static_cast<int32_t>(f.GetLength()));
   return LoadXMLLayout(s);
 }
@@ -721,7 +721,7 @@ bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
     return false;
   }
 
-  const std::string_view s(reinterpret_cast<char*>(f.GetData()),
+  const std::string_view s(reinterpret_cast<const char*>(f.GetData()),
                            static_cast<int32_t>(f.GetLength()));
   const bool b = LoadCSS(s, ResetStyleManager);
 
@@ -833,7 +833,7 @@ bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
     return false;
   }
 
-  const std::string_view s(reinterpret_cast<char*>(f.GetData()),
+  const std::string_view s(reinterpret_cast<const char*>(f.GetData()),
                            static_cast<int32_t>(f.GetLength()));
   const bool b = LoadSkin(s, enabledGlyphs);
   if (b) Log_Nfo("[gui] Successfully loaded Skin '{:s}'", FileName);

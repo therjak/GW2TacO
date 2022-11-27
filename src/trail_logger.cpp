@@ -725,7 +725,7 @@ bool GW2Trail::SaveToFile(std::string_view fname) {
 
 GW2Trail::~GW2Trail() = default;
 
-void GW2Trail::Build(CCoreDevice* d, int32_t mapID, float* points,
+void GW2Trail::Build(CCoreDevice* d, int32_t mapID, const float* points,
                      int pointCount) {
   dev = d;
   map = mapID;
@@ -927,12 +927,12 @@ bool GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
     positions.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++) {
       positions.emplace_back(
-          CVector3(&(reinterpret_cast<float*>(f.GetData() + 8))[x * 3]));
+          CVector3(&(reinterpret_cast<const float*>(f.GetData() + 8))[x * 3]));
     }
   }
 
-  Build(App->GetDevice(), *reinterpret_cast<int32_t*>(f.GetData() + 4),
-        reinterpret_cast<float*>(f.GetData() + 8),
+  Build(App->GetDevice(), *reinterpret_cast<const int32_t*>(f.GetData() + 4),
+        reinterpret_cast<const float*>(f.GetData() + 8),
         static_cast<int32_t>((f.GetLength() - 8) / 12));
   return true;
 }

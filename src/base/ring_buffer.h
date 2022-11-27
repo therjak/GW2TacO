@@ -37,7 +37,7 @@ class CRingBuffer {
     return Array[realindex % SIZE];
   }
 
-  int32_t NumItems() const {
+  [[nodiscard]] int32_t NumItems() const {
     if (SIZE < Count) return SIZE;
     return Count;
   }

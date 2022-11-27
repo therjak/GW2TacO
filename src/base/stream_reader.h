@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 class CStreamReader {
  public:
@@ -39,14 +40,13 @@ class CStreamReaderMemory : public CStreamReader {
   int32_t Open(std::string_view filename);
   std::string ReadLine();
 
-  [[nodiscard]] uint8_t* GetData() const;
+  [[nodiscard]] const uint8_t* GetData() const;
   [[nodiscard]] int64_t GetLength() const override;
 
  private:
   int32_t ReadStream(void* lpBuf, uint32_t nCount) override;
   [[nodiscard]] int64_t GetOffset() const override;
 
-  std::unique_ptr<uint8_t[]> Data;
-  uint64_t DataSize;
-  uint64_t Offset;
+  std::vector<uint8_t> Data;
+  std::vector<uint8_t>::size_type Offset = 0;
 };

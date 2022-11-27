@@ -1,7 +1,5 @@
 #include "src/base/spec_math.h"
 
-#include <math.h>
-
 #include <cmath>
 
 namespace math {

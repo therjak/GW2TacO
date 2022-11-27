@@ -37,13 +37,13 @@ void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
   hSearch = FindFirstFile((ValidPath + Mask.data()).c_str(), &FileData);
 
   if (hSearch != INVALID_HANDLE_VALUE) {
-    BOOL fFinished = FALSE;
+    bool fFinished = false;
     while (!fFinished) {
       std::string FileName = FileData.cFileName;
 
       if (!(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
           FileName != "." && FileName != "..") {
-        Files.emplace_back(CFileListEntry(ValidPath, FileName));
+        Files.emplace_back(ValidPath, FileName);
       }
 
       if (getDirectories &&
@@ -63,7 +63,7 @@ void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
   if (Recursive) {
     hSearch = FindFirstFile((ValidPath + "*.*").c_str(), &FileData);
     if (hSearch != INVALID_HANDLE_VALUE) {
-      BOOL fFinished = FALSE;
+      bool fFinished = false;
       while (!fFinished) {
         std::string FileName = FileData.cFileName;
 

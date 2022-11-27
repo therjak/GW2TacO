@@ -28,7 +28,7 @@ class GW2Trail {
 
  public:
   virtual ~GW2Trail();
-  void Build(CCoreDevice* dev, int32_t mapID, float* points, int pointCount);
+  void Build(CCoreDevice* dev, int32_t mapID, const float* points, int pointCount);
   void Draw();
   void Update();
   void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
