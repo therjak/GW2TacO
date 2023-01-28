@@ -1,12 +1,12 @@
 #pragma once
 
+#include <BaseTsd.h>
+
 #include <string>
 #include <string_view>
 
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
-
-typedef _W64 unsigned int UINT_PTR, *PUINT_PTR;
 typedef UINT_PTR SOCKET;
 
 class CSocket : public CStreamReader, public CStreamWriter {

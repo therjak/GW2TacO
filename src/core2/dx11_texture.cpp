@@ -316,7 +316,8 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     } break;
     case '01XD':  // DX10
     {
-      const DDS_HEADER_DXT10* Head = reinterpret_cast<const DDS_HEADER_DXT10*>(Data);
+      const DDS_HEADER_DXT10* Head =
+          reinterpret_cast<const DDS_HEADER_DXT10*>(Data);
       Data += sizeof(DDS_HEADER_DXT10);
       switch (Head->dxgiFormat) {
         case DXGI_FORMAT_B8G8R8A8_UNORM:
@@ -710,11 +711,11 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
   if (bc) {
     size_t numBlocksWide = 0;
     if (width > 0) {
-      numBlocksWide = std::max(1u, (width + 3u) / 4u);
+      numBlocksWide = std::max<size_t>(1u, (width + 3u) / 4u);
     }
     size_t numBlocksHigh = 0;
     if (height > 0) {
-      numBlocksHigh = std::max(1u, (height + 3u) / 4u);
+      numBlocksHigh = std::max<size_t>(1u, (height + 3u) / 4u);
     }
     rowBytes = numBlocksWide * bpe;
     numRows = numBlocksHigh;
@@ -1392,7 +1393,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
 
   uint8_t* dptr = pixels.get();
 
-  const size_t msize = std::min(rowPitch, mapped.RowPitch);
+  const size_t msize = std::min<size_t>(rowPitch, mapped.RowPitch);
   for (size_t h = 0; h < rowCount; ++h) {
     memcpy_s(dptr, rowPitch, sptr, msize);
     sptr += mapped.RowPitch;

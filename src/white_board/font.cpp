@@ -173,7 +173,7 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
 }
 
 bool ReadInt(const std::string& s, const std::string& val, int32_t& result) {
-  int p = s.find(val + "=");
+  auto p = s.find(val + "=");
   if (p == s.npos) return false;
   return std::sscanf(s.substr(p).c_str(), (val + "=%d").c_str(), &result) == 1;
 }
