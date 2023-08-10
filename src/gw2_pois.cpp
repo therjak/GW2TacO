@@ -152,7 +152,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
     auto* pkbdllhook = (KBDLLHOOKSTRUCT*)lParam;
     HKL dwhkl = nullptr;
     BYTE dbKbdState[256];
-    TCHAR szCharBuf[32];
+    TCHAR szCharBuf[32] = {};
     static KBDLLHOOKSTRUCT lastState = {0};
 
     GetKeyboardState(dbKbdState);
@@ -344,7 +344,7 @@ bool IsProcessRunning(DWORD pid) {
   bool procRunning = false;
 
   HANDLE hProcessSnap = nullptr;
-  PROCESSENTRY32 pe32;
+  PROCESSENTRY32 pe32 = {};
   hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
   if (hProcessSnap == INVALID_HANDLE_VALUE) {
@@ -417,7 +417,7 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
       return "";
     }
 
-    auto pszOutBuffer = std::make_unique<char[]>(dwSize + 1);
+    auto pszOutBuffer = std::make_unique<char[]>(size_t(dwSize) + 1);
 
     if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer.get(), dwSize,
                          &dwDownloaded)) {
@@ -620,7 +620,7 @@ void FetchMarkerPackOnline(std::string_view ourl) {
           }
         }
 
-        auto fileName = url.substr(cnt + 1);
+        auto fileName = url.substr(size_t(cnt) + 1);
         if (fileName.empty()) {
           Log_Err("[GW2TacO] Package {:s} has a malformed name", url);
           return;
@@ -732,7 +732,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     Log_Nfo("[GW2TacO] TacO window id: {:d}",
             reinterpret_cast<int>(TacoWindow));
     if (TacoWindow) {
-      COPYDATASTRUCT MyCDS;
+      COPYDATASTRUCT MyCDS = {};
       MyCDS.dwData = 0;
       MyCDS.cbData = cmdLine.size();
       MyCDS.lpData = (PVOID)cmdLine.c_str();

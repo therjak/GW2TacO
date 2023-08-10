@@ -600,9 +600,9 @@ void GW2TrailDisplay::ExportTrail() {
 
   TCHAR dir[1024];
   if (!GetCurrentDirectory(1024, dir)) memset(dir, 0, sizeof(TCHAR) * 1024);
-  char Filestring[256];
+  char Filestring[256] = {};
 
-  OPENFILENAME opf;
+  OPENFILENAME opf = {};
   opf.hwndOwner = App->GetHandle();
   opf.lpstrFilter = "GW2 Taco Trail Files\0*.trl\0\0";
   opf.lpstrCustomFilter = nullptr;
@@ -647,9 +647,9 @@ void GW2TrailDisplay::ImportTrail() {
 
   TCHAR dir[1024];
   if (!GetCurrentDirectory(1024, dir)) memset(dir, 0, sizeof(TCHAR) * 1024);
-  char Filestring[256];
+  char Filestring[256] = {};
 
-  OPENFILENAME opf;
+  OPENFILENAME opf = {};
   opf.hwndOwner = App->GetHandle();
   opf.lpstrFilter = "GW2 Taco Trail Files\0*.trl\0\0";
   opf.lpstrCustomFilter = nullptr;
@@ -735,10 +735,10 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, const float* points,
 
   if (pointCount <= 1) return;
 
-  auto vertices = std::make_unique<GW2TrailVertex[]>(pointCount * 2);
+  auto vertices = std::make_unique<GW2TrailVertex[]>(size_t(pointCount) * 2);
   memset(vertices.get(), 0, sizeof(GW2TrailVertex) * pointCount * 2);
   int vertexCount = 0;
-  auto indices = std::make_unique<int32_t[]>((pointCount - 1) * 6);
+  auto indices = std::make_unique<int32_t[]>((size_t(pointCount) - 1) * 6);
 
   auto lastPos = CVector3(points);
   CVector3 lastOrt = CVector3(0, 0, 0);
@@ -779,14 +779,15 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, const float* points,
     CVector3 p1 = pos + ort * twist;
     CVector3 p2 = pos - ort * twist;
 
-    vertices[cnt * 2].Pos = CVector4(p1.x, p1.y, p1.z, 1);
-    vertices[cnt * 2 + 1].Pos = CVector4(p2.x, p2.y, p2.z, 1);
-    vertices[cnt * 2].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
-    vertices[cnt * 2 + 1].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
-    vertices[cnt * 2].Color = CColor{0xffffffff};
-    vertices[cnt * 2 + 1].Color = CColor{0xffffffff};
-    vertices[cnt * 2].UV = CVector2(0, -uvStretch);
-    vertices[cnt * 2 + 1].UV = CVector2(1, -uvStretch);
+    const auto vertPos = size_t(cnt) * 2;
+    vertices[vertPos].Pos = CVector4(p1.x, p1.y, p1.z, 1);
+    vertices[vertPos + 1].Pos = CVector4(p2.x, p2.y, p2.z, 1);
+    vertices[vertPos].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
+    vertices[vertPos + 1].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
+    vertices[vertPos].Color = CColor{0xffffffff};
+    vertices[vertPos + 1].Color = CColor{0xffffffff};
+    vertices[vertPos].UV = CVector2(0, -uvStretch);
+    vertices[vertPos + 1].UV = CVector2(1, -uvStretch);
 
     if (x < pointCount - 1) {
       indices[icnt++] = x * 2;
@@ -824,7 +825,8 @@ void GW2Trail::Build(CCoreDevice* d, int32_t mapID, const float* points,
   int32_t* idxData = nullptr;
 
   if (idxBuf && idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
-    memcpy(idxData, indices.get(), sizeof(int32_t) * 6 * (pointCount - 1));
+    memcpy(idxData, indices.get(),
+           sizeof(int32_t) * 6 * (size_t(pointCount) - 1));
     // int cnt = 0;
     // for ( int32_t x = 0; x < pointCount - 1; x++ )
     //{

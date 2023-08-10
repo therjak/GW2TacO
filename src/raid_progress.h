@@ -1,11 +1,11 @@
 ﻿#pragma once
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <thread>
 #include <vector>
-#include <atomic>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
@@ -15,8 +15,8 @@
 class RaidEvent {
  public:
   enum class Type : char { Boss, Checkpoint };
-  RaidEvent(const std::string& name, Type type)
-      : name(std::move(name)), type(std::move(type)) {}
+  RaidEvent(std::string_view name, Type type)
+      : name(name), type(std::move(type)) {}
   RaidEvent(const RaidEvent& e) : name(e.name), type(e.type) {}
   std::string_view name;
   Type type;

@@ -604,7 +604,7 @@ static HRESULT CreateD3DResources(
 
   switch (resDim) {
     case D3D11_RESOURCE_DIMENSION_TEXTURE1D: {
-      D3D11_TEXTURE1D_DESC desc;
+      D3D11_TEXTURE1D_DESC desc{};
       desc.Width = static_cast<UINT>(width);
       desc.MipLevels = static_cast<UINT>(mipCount);
       desc.ArraySize = static_cast<UINT>(arraySize);
@@ -649,7 +649,7 @@ static HRESULT CreateD3DResources(
     } break;
 
     case D3D11_RESOURCE_DIMENSION_TEXTURE2D: {
-      D3D11_TEXTURE2D_DESC desc;
+      D3D11_TEXTURE2D_DESC desc{};
       desc.Width = static_cast<UINT>(width);
       desc.Height = static_cast<UINT>(height);
       desc.MipLevels = static_cast<UINT>(mipCount);
@@ -709,7 +709,7 @@ static HRESULT CreateD3DResources(
     } break;
 
     case D3D11_RESOURCE_DIMENSION_TEXTURE3D: {
-      D3D11_TEXTURE3D_DESC desc;
+      D3D11_TEXTURE3D_DESC desc{};
       desc.Width = static_cast<UINT>(width);
       desc.Height = static_cast<UINT>(height);
       desc.Depth = static_cast<UINT>(depth);

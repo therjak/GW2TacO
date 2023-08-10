@@ -16,6 +16,9 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
   int32_t size = f->GetLineHeight();
 
   if (!teamSpeakConnection.authenticated) {
+    // If we got no ts running, just quit. Do not annoy with useless screen
+    // clutter.
+    return;
     if (HasConfigString("TS3APIKey")) {
       f->Write(API, DICT("ts3authfail1"), CPoint(0, 0), CColor{0xffffffff});
       f->Write(API, DICT("ts3authfail2"), CPoint(0, size), CColor{0xffffffff});
