@@ -40,7 +40,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 ################################################################################
 # Output directory
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32")
     set_target_properties(${PROJECT_NAME} PROPERTIES
         OUTPUT_DIRECTORY_DEBUG_MULTIBYTE   "${CMAKE_CURRENT_SOURCE_DIR}/$<CONFIG>/"
         OUTPUT_DIRECTORY_DEBUG             "${CMAKE_CURRENT_SOURCE_DIR}/$<CONFIG>/"
@@ -48,22 +48,15 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
         OUTPUT_DIRECTORY_RELEASE           "${CMAKE_CURRENT_SOURCE_DIR}/$<CONFIG>/"
     )
 endif()
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE_MULTIBYTE "TRUE"
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
-    )
-elseif("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
-    set_target_properties(${PROJECT_NAME} PROPERTIES
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE_MULTIBYTE "TRUE"
-        INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
-    )
-endif()
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE_MULTIBYTE "TRUE"
+    INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
+)
 ################################################################################
 # MSVC runtime library
 ################################################################################
 get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32")
     string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
         $<$<CONFIG:Release_MultiByte>:
             MultiThreaded
@@ -89,7 +82,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUN
 ################################################################################
 # Include directories
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32")
     target_include_directories(${PROJECT_NAME} PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/../..;"
         "${CMAKE_CURRENT_SOURCE_DIR}/ExternalLibraries/openssl/include"
@@ -104,7 +97,7 @@ endif()
 ################################################################################
 # Compile definitions
 ################################################################################
-if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32")
     target_compile_definitions(${PROJECT_NAME} PRIVATE
         "$<$<CONFIG:Debug_MultiByte>:"
             "_DEBUG"
@@ -153,7 +146,7 @@ endif()
 # Compile and link options
 ################################################################################
 if(MSVC)
-    if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+    if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32")
         target_compile_options(${PROJECT_NAME} PRIVATE
             $<$<CONFIG:Debug_MultiByte>:
                 /Gm-;
@@ -210,7 +203,7 @@ if(MSVC)
             /Y-
         )
     endif()
-    if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32")
+    if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32")
         target_link_options(${PROJECT_NAME} PRIVATE
             $<$<CONFIG:Release_MultiByte>:
                 /OPT:REF;

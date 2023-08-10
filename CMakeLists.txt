@@ -12,7 +12,7 @@ if(NOT CMAKE_VS_PLATFORM_NAME)
 endif()
 message("${CMAKE_VS_PLATFORM_NAME} architecture in use")
 
-if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "Win32"
+if(NOT ("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "win32"
      OR "${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64"))
     message(FATAL_ERROR "${CMAKE_VS_PLATFORM_NAME} arch is not supported!")
 endif()
