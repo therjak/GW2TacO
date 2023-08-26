@@ -96,9 +96,9 @@ maptimer
 
 #MenuButton
 {
-	width:35px;
+	width:36px;
 	height:35px;
-	left:320px;
+	left:360px;
 	top:0px;
 	opacity:0.5;
 	background-color:none;
@@ -121,7 +121,7 @@ maptimer
 {
 	width:38px;
 	height:38px;
-	left:292px;
+	left:330px;
 	top:8px;
 	opacity:1.0;
 	background-color:none;
@@ -132,7 +132,7 @@ maptimer
 {
 	width:36px;
 	height:35px;
-	left:286px;
+	left:324px;
 	top:0px;
 	background-color:none;
 }
@@ -327,7 +327,7 @@ tptracker
 {
 	left:0px;
 	top:0px;
-	width:355px;
+	width:396px;
 	height:35px;
 	background-color:none;
 }

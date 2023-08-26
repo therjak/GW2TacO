@@ -98,7 +98,7 @@ maptimer
 {
 	width:29px;
 	height:29px;
-	left:260px;
+	left:290px;
 	top:0px;
 	opacity:0.5;
 	background-color:none;
@@ -121,7 +121,7 @@ maptimer
 {
 	width:32px;
 	height:32px;
-	left:237px;
+	left:266px;
 	top:6px;
 	opacity:1.0;
 	background-color:none;
@@ -132,7 +132,7 @@ maptimer
 {
 	width:29px;
 	height:28px;
-	left:232px;
+	left:261px;
 	top:0px;
 	background-color:none;
 }
@@ -327,7 +327,7 @@ tptracker
 {
 	left:0px;
 	top:0px;
-	width:289px;
+	width:319px;
 	height:29px;
 	background-color:none;
 }
