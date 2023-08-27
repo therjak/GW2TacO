@@ -28,22 +28,6 @@ set(CMAKE_CONFIGURATION_TYPES
     CACHE STRING "" FORCE
 )
 
-################################################################################
-# Global compiler options
-################################################################################
-if(MSVC)
-    # remove default flags provided with CMake for MSVC
-    set(CMAKE_C_FLAGS "")
-    set(CMAKE_C_FLAGS_DEBUG "")
-    set(CMAKE_C_FLAGS_DEBUG_MULTIBYTE "")
-    set(CMAKE_C_FLAGS_RELEASE "")
-    set(CMAKE_C_FLAGS_RELEASE_MULTIBYTE "")
-    set(CMAKE_CXX_FLAGS "")
-    set(CMAKE_CXX_FLAGS_DEBUG "")
-    set(CMAKE_CXX_FLAGS_DEBUG_MULTIBYTE "")
-    set(CMAKE_CXX_FLAGS_RELEASE "")
-    set(CMAKE_CXX_FLAGS_RELEASE_MULTIBYTE "")
-endif()
 
 ################################################################################
 # Global linker options
