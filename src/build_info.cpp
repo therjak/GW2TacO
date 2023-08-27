@@ -1,16 +1,15 @@
 ﻿#include "src/build_info.h"
 
-#include <format>
-
 #include "src/build_count.h"
 
-#ifdef _DEBUG
-std::string TacOBuild = std::format("{:03d}.{:d}d", RELEASECOUNT, BUILDCOUNT);
+namespace {
+const std::string taco_version(TACO_VERSION);
+}
+
+#ifdef NDEBUG 
+const std::string TacOBuild = taco_version;
 #else
-std::string TacOBuild = std::format("{:03d}.{:d}r", RELEASECOUNT, BUILDCOUNT);
+const std::string TacOBuild = taco_version + ":d";
 #endif
 
-std::string buildDateTime(__DATE__ " " __TIME__);
-
-int32_t TacORelease = RELEASECOUNT;
-int32_t TacOBuildCount = BUILDCOUNT;
+const std::string buildDateTime(__DATE__ " " __TIME__);

@@ -1515,12 +1515,11 @@ void GW2TacO::OpenAboutWindow() {
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 48),
-                        "Taco Icon from http://icons8.com");
+                        "(c) therjak");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = CWBLabel::Create(
-      w, w->GetClientRect() + CPoint(0, 64),
-      "If you like TacO, send some Mystic Coins to BoyC.2653 :)");
+  l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 64),
+                        "Taco Icon from http://icons8.com");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
 

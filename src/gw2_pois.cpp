@@ -18,7 +18,7 @@
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/build_count.h"
+#include "src/build_info.h"
 #include "src/gw2_api.h"
 #include "src/gw2_taco.h"
 #include "src/gw2_tactical.h"
@@ -704,8 +704,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                    _In_ LPSTR lpCmdLine, _In_ INT nCmdShow) {
   ImmDisableIME(-1);
   lastSlowEventTime = globalTimer.GetTime();
-
-  extern std::string TacOBuild;
 
   Logger.AddOutput(std::make_unique<CLoggerOutput_File>("GW2TacO.log"));
   Logger.SetVerbosity(LOGVERBOSITY::LOG_DEBUG);

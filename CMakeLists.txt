@@ -178,7 +178,6 @@ source_group("Header Files\\System" FILES ${Header_Files__System})
 set(Header_Files__base
     "src/base/assert.h"
     "src/base/logger.h"
-    "src/build_count.h"
     "src/build_info.h"
 )
 source_group("Header Files\\base" FILES ${Header_Files__base})
@@ -325,6 +324,30 @@ set(ALL_FILES
     ${Source_Files__math}
     ${Source_Files__util}
 )
+
+# Add version information
+find_package(Git)
+if(GIT_EXECUTABLE)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} describe --tags --dirty --match "v*"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_DESCRIBE_VERSION
+    RESULT_VARIABLE GIT_DESCRIBE_ERROR_CODE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+  if(NOT GIT_DESCRIBE_ERROR_CODE)
+    set(TACO_VERSION ${GIT_DESCRIBE_VERSION})
+  endif()
+endif()
+
+if(NOT DEFINED TACO_VERSION)
+  set(TACO_VERSION v0.0.0-unknown)
+  message(WARNING "Failed to determine TACO_VERSION from Git tags. Using default version \"${TACO_VERSION}\".")
+endif()
+
+configure_file(src/build_count.h.in src/build_count.h @ONLY)
+
+include_directories(${CMAKE_BINARY_DIR})
 
 ################################################################################
 # Target
