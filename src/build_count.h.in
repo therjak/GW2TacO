@@ -1,0 +1,4 @@
+﻿#pragma once
+// Automatically generated file. DO NOT EDIT MANUALLY!
+
+#define TACO_VERSION "@TACO_VERSION@"
