@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Configure CMake
+      run: cmake -B ${{github.workspace}}/build
+
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+
+    - name: CPack
+      working-directory: build
+      run: cpack -C Release
+
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        draft: true
+        files: |
+          build/_CPack_Packages/win64/ZIP/GW2TacO.zip
