@@ -209,8 +209,17 @@ source_group("Header Files\\util" FILES ${Header_Files__util})
 set(Resources
     "maptimer.xml"
     "notepad.txt"
+    "categorydata.xml"
+    "hpgrids.xml"
+    "locationaltimers.xml"
+    "maptimer.xml"
     "TacO_Language_en.xml"
     "UI.css"
+    "UI_large.css"
+    "UI_larger.css"
+    "UI_small.css"
+    "UI_normal.css"
+    "UI.wbs"
     "UI.xml"
 )
 source_group("Resources" FILES ${Resources})
@@ -309,6 +318,98 @@ set(Source_Files__util
 )
 source_group("Source Files\\util" FILES ${Source_Files__util})
 
+set(Data_Files
+    "Data/Achievement.png"
+    "Data/airshippart.png"
+    "Data/aurillium.png"
+    "Data/bigmarker.png"
+    "Data/Bounty.png"
+    "Data/Bounty_bw.png"
+    "Data/Chest.png"
+    "Data/crystallineore.png"
+    "Data/east.png"
+    "Data/empty.png"
+    "Data/four.png"
+    "Data/gem.png"
+    "Data/Gold_coin.png"
+    "Data/leylinecrystal.png"
+    "Data/north.png"
+    "Data/northeast.png"
+    "Data/northwest.png"
+    "Data/one.png"
+    "Data/Ore.png"
+    "Data/Plant.png"
+    "Data/south.png"
+    "Data/southeast.png"
+    "Data/southwest.png"
+    "Data/spawn.png"
+    "Data/stack.png"
+    "Data/storyline_green.png"
+    "Data/storyline_purple.png"
+    "Data/three.png"
+    "Data/two.png"
+    "Data/west.png"
+    "Data/Wood.png"    
+)
+source_group("Data Files" FILES ${Data_Files})
+
+set(Poi_Files
+    "POIs/collectibles_astudyingold.xml"
+    "POIs/collectibles_goldenlostbadges.xml"
+    "POIs/firecracker.xml"
+    "POIs/GuildMission_Bounty_2Mult.xml"
+    "POIs/GuildMission_Bounty_BigMayana.xml"
+    "POIs/GuildMission_Bounty_BookwormBwikki.xml"
+    "POIs/GuildMission_Bounty_Brekkabek.xml"
+    "POIs/GuildMission_Bounty_Crusader_Michiele.xml"
+    "POIs/GuildMission_Bounty_Deputy_Brooke.xml"
+    "POIs/GuildMission_Bounty_Devious_Teesa.xml"
+    "POIs/GuildMission_Bounty_Diplomat_Tarban.xml"
+    "POIs/GuildMission_Bounty_Half_Baked_Komali.xml"
+    "POIs/GuildMission_Bounty_Poobadoo.xml"
+    "POIs/GuildMission_Bounty_Prisoner1141.xml"
+    "POIs/GuildMission_Bounty_Shaman_Arderus.xml"
+    "POIs/GuildMission_Bounty_Short_Fuse_Felix.xml"
+    "POIs/GuildMission_Bounty_Sotzz.xml"
+    "POIs/GuildMission_Bounty_Tricksy_Trekksa.xml"
+    "POIs/GuildMission_Bounty_Trillia_Midwell.xml"
+    "POIs/GuildMission_Bounty_Yanonka.xml"
+    "POIs/keyrequired_dragonsstand.xml"
+    "POIs/keyrequired_drytop.xml"
+    "POIs/keyrequired_silverwastes.xml"
+    "POIs/keyrequired_tangleddepths.xml"
+    "POIs/keyrequired_verdantbrink.xml"
+    "POIs/raid1_closure_achievement.xml"
+    "POIs/raid1_piecing_it_together_achievement.xml"
+    "POIs/raid1_salvationpass_markers.xml"
+    "POIs/raid1_scattered_memories.xml"
+    "POIs/raid1_spiritvale_markers.xml"
+    "POIs/raid1_stronghold_markers.xml"
+    "POIs/SAB_Bombs.xml"
+    "POIs/SAB_Dig_Locations.xml"
+    "POIs/SAB_EnvironmentalScience.xml"
+    "POIs/SAB_FluteDoor.xml"
+    "POIs/SAB_FurnitureShops.xml"
+    "POIs/SAB_Shops.xml"
+    "POIs/SAB_Tribulation.xml"
+    "POIs/wintersday_orphan_locations.xml"
+)
+source_group("Poi Files" FILES ${Poi_Files})
+
+set(Poi_Data_Files
+    "POIs/Data/Auric_Basin.png"
+    "POIs/Data/Bomb.png"
+    "POIs/Data/Herta.png"
+    "POIs/Data/Karma.png"
+    "POIs/Data/Lunar_New_Year_Dailies.png"   
+    "POIs/Data/Note.png"
+    "POIs/Data/raid1_achievements.png"       
+    "POIs/Data/SAB_achievement.png"
+    "POIs/Data/The_Silverwastes.png"
+)
+source_group("Poi Files\\Data" FILES ${Poi_Data_Files})
+
+
 set(ALL_FILES
     ${Header_Files}
     ${Header_Files__DX}
@@ -323,6 +424,9 @@ set(ALL_FILES
     ${Source_Files__dx}
     ${Source_Files__math}
     ${Source_Files__util}
+    ${Data_Files}
+    ${Poi_Files}
+    ${Poi_Data_Files}
 )
 
 # Add version information
@@ -474,3 +578,29 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     third_party
 )
 
+
+install(
+    TARGETS ${PROJECT_NAME} RUNTIME DESTINATION "."
+)
+install(
+    FILES ${Resources} DESTINATION "."
+)
+install(
+    FILES ${Data_Files} DESTINATION "./Data"
+)
+install(
+    FILES ${Poi_Files} DESTINATION "./POIs"
+)
+install(
+    FILES ${Poi_Data_Files} DESTINATION "./POIs/Data"
+)
+
+################################################################################
+# CPACK
+################################################################################
+
+set(CPACK_GENERATOR "ZIP")
+set(CPACK_PROJECT_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_VERSION ${TACO_VERSION})
+set(CPACK_PACKAGE_FILE_NAME ${PROJECT_NAME})
+include(CPack)
