@@ -21,6 +21,10 @@ jobs:
     - name: Build
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
+    - name: CPack
+      working-directory: build
+      run: cpack -C Release
+
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
