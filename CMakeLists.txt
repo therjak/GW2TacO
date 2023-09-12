@@ -209,7 +209,6 @@ source_group("Header Files\\util" FILES ${Header_Files__util})
 set(Resources
     "maptimer.xml"
     "notepad.txt"
-    "categorydata.xml"
     "hpgrids.xml"
     "locationaltimers.xml"
     "maptimer.xml"
