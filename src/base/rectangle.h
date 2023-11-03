@@ -61,12 +61,9 @@ class CRect {
     Move(-p);
     return *this;
   }
-  constexpr bool operator==(const CRect& r) const {
-    return x1 == r.x1 && y1 == r.y1 && x2 == r.x2 && y2 == r.y2;
-  }
-  constexpr bool operator!=(const CRect& r) const {
-    return x1 != r.x1 || y1 != r.y1 || x2 != r.x2 || y2 != r.y2;
-  }
+  constexpr friend bool operator==(const CRect& lhs,
+                                   const CRect& rhs) = default;
+
   constexpr CRect operator|(const CRect& r) const {
     if (!Intersects(r)) return CRect(1, 1, -1, -1);
     return GetIntersection(r);
