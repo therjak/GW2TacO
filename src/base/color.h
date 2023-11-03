@@ -35,12 +35,9 @@ class CColor {
                   static_cast<uint8_t>(clamp(0, _a, 1) * 255));
   }
 
-  constexpr bool operator==(const CColor& c) const {
-    return r == c.r && g == c.g && b == c.b && a == c.a;
-  }
-  constexpr bool operator!=(const CColor& c) const {
-    return r != c.r || g != c.g || b != c.b || a != c.a;
-  }
+  constexpr friend bool operator==(const CColor& lhs,
+                                   const CColor& rhs) = default;
+
   [[nodiscard]] constexpr uint32_t argb() const {
     return (a << 24) | (r << 16) | (g << 8) | b;
   }

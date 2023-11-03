@@ -43,8 +43,8 @@ class CMatrix4x4 {
   constexpr CMatrix4x4 operator*(const float f) const;
   constexpr CMatrix4x4 operator/(const float f) const;
   constexpr friend CMatrix4x4 operator*(const float f, const CMatrix4x4& mat);
-  constexpr bool operator==(const CMatrix4x4& mat) const { return m == mat.m; }
-  constexpr bool operator!=(const CMatrix4x4& mat) const { return m != mat.m; }
+  constexpr friend bool operator==(const CMatrix4x4& lhs,
+                                   const CMatrix4x4& rhs) = default;
 
   constexpr void Transpose();
   [[nodiscard]] constexpr CMatrix4x4 Transposed() const;

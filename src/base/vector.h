@@ -54,12 +54,9 @@ class CVector2 {
     const float fi = 1 / f;
     return CVector2(x * fi, y * fi);
   }
-  constexpr bool operator==(const CVector2& v) const {
-    return x == v.x && y == v.y;
-  }
-  constexpr bool operator!=(const CVector2& v) const {
-    return x != v.x || y != v.y;
-  }
+  constexpr friend bool operator==(const CVector2& lhs,
+                                   const CVector2& rhs) = default;
+
   // dot product
   constexpr float operator*(const CVector2& v) const {
     return x * v.x + y * v.y;
@@ -135,12 +132,9 @@ class CVector2I {
   constexpr CVector2I operator/(const int32_t f) const {
     return CVector2I(x / f, y / f);
   }
-  constexpr bool operator==(const CVector2I& v) const {
-    return x == v.x && y == v.y;
-  }
-  constexpr bool operator!=(const CVector2I& v) const {
-    return x != v.x || y != v.y;
-  }
+  constexpr friend bool operator==(const CVector2I& lhs,
+                                   const CVector2I& rhs) = default;
+
   // dot product
   constexpr int32_t operator*(const CVector2I& v) const {
     return x * v.x + y * v.y;
@@ -216,12 +210,9 @@ class CVector3 {
     const float fi = 1 / f;
     return CVector3(x * fi, y * fi, z * fi);
   }
-  constexpr bool operator==(const CVector3& v) {
-    return x == v.x && y == v.y && z == v.z;
-  }
-  constexpr bool operator!=(const CVector3& v) const {
-    return x != v.x || y != v.y || z != v.z;
-  }
+  constexpr friend bool operator==(const CVector3& lhs,
+                                   const CVector3& rhs) = default;
+
   // dot product
   constexpr float operator*(const CVector3& v) const {
     return x * v.x + y * v.y + z * v.z;
@@ -307,12 +298,9 @@ class CVector4 {
     const float fi = 1 / f;
     return CVector4(x * fi, y * fi, z * fi, w * fi);
   }
-  constexpr bool operator==(const CVector4& v) const {
-    return x == v.x && y == v.y && z == v.z && w == v.w;
-  }
-  constexpr bool operator!=(const CVector4& v) const {
-    return x != v.x || y != v.y || z != v.z || w != v.w;
-  }
+  constexpr friend bool operator==(const CVector4& lhs,
+                                   const CVector4& rhs) = default;
+
   // dot product
   constexpr float operator*(const CVector4& v) const {
     return x * v.x + y * v.y + z * v.z + w * v.w;
