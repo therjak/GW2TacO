@@ -143,9 +143,8 @@ struct POIActivationDataKey {
 
   POIActivationDataKey(GUID g, int inst) : guid(g), uniqueData(inst) {}
 
-  bool operator==(const POIActivationDataKey& d) const {
-    return guid == d.guid && uniqueData == d.uniqueData;
-  }
+  constexpr friend bool operator==(const POIActivationDataKey& lhs,
+                                   const POIActivationDataKey& rhs) = default;
 
   GUID guid{};
   int uniqueData = 0;

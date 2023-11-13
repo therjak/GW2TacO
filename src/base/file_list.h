@@ -13,9 +13,10 @@ class CFileListEntry {
   CFileListEntry();
   CFileListEntry(std::string&& pth, std::string&& fn);
   CFileListEntry(std::string pth, std::string fn);
-};
 
-const bool operator==(const CFileListEntry& f1, const CFileListEntry& f2);
+  constexpr friend bool operator==(const CFileListEntry& f1,
+                                   const CFileListEntry& f2) = default;
+};
 
 class CFileList {
  public:
