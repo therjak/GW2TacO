@@ -286,9 +286,19 @@
       <Event Name="Unlock the Wizard's Tower" Length="25" Color="80d29b49" />
       <Event Name="" Length="95" Color="00000000" />
     </Map>
+    <Map Category="soto" Name="Wizard's Tower" Length="120" Start="60" id="sotowt">
+      <Event Name="Target Practice" Length="40" Color="80d29b49" />
+      <Event Name="Target Practice &#038; Fly by Night" Length="15" Color="80d29b49" />
+      <Event Name="Fly by Night" Length="25" Color="80d29b49" />
+      <Event Name="" Length="40" Color="00000000" />
+    </Map>
     <Map Category="soto" Name="Amnytas" Length="120" Start="0" id="sotoa">
       <Event Name="Defense of Amnytas" Length="25" Color="80d29b49" />
       <Event Name="" Length="95" Color="00000000" />
+    </Map>
+    <Map Category="soto" Name="Convergences" Length="180" Start="90" id="sotoc">
+      <Event Name="Convergences" Length="10" Color="80d29b49" />
+      <Event Name="" Length="170" Color="00000000" />
     </Map>
   </Maps>
 </GW2MapTimer>

@@ -28,8 +28,9 @@ union CORERENDERSTATEVALUE {
   CCoreComputeShader* ComputeShader;
   CCoreHullShader* HullShader;
 
-  const bool operator!=(const CORERENDERSTATEVALUE& v) {
-    return SamplerState != v.SamplerState;
+  constexpr friend bool operator==(const CORERENDERSTATEVALUE& lhs,
+                                   const CORERENDERSTATEVALUE& rhs) {
+    return lhs.SamplerState == rhs.SamplerState;
   }
 };
 

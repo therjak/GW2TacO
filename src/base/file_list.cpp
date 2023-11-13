@@ -4,10 +4,6 @@
 
 #include <utility>
 
-const bool operator==(const CFileListEntry& f1, const CFileListEntry& f2) {
-  return f1.Path == f2.Path && f1.FileName == f2.FileName;
-}
-
 bool exists(std::string_view fname) {
   FILE* f = nullptr;
   if (fopen_s(&f, fname.data(), "rb")) return false;

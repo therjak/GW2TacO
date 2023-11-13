@@ -54,11 +54,10 @@ class CWBKerningPair {
 
   CWBKerningPair();
   CWBKerningPair(uint16_t a, uint16_t b);
-};
 
-inline bool operator==(const CWBKerningPair& lhs, const CWBKerningPair& rhs) {
-  return lhs.First == rhs.First && lhs.Second == rhs.Second;
-}
+  constexpr friend bool operator==(const CWBKerningPair& lhs,
+                                   const CWBKerningPair& rhs) = default;
+};
 
 uint32_t DictionaryHash(const CWBKerningPair& i);
 
