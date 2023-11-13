@@ -163,6 +163,18 @@
       <Event Name="Gendarran Fields" Length="20" Color="80c0392b" />
       <Event Name="" Length="100" Color="00000000" />
     </Map>
+    <Map Category="lws1" Name="Eye of the North" Length="120" Start="90" id="eoth">
+      <Event Name="Tower of Nightmares" Length="15" Color="80fb8498" />
+      <Event Name="" Length="15" Color="00000000" />
+      <Event Name="Twisted Marionette" Length="20" Color="80fb8498" />
+      <Event Name="" Length="10" Color="00000000" />
+      <Event Name="Battle for Lion's Arch" Length="15" Color="80fb8498" />
+      <Event Name="" Length="45" Color="00000000" />
+    </Map>
+    <Map Category="lws1" Name="Scarlet's Invasion" Length="120" Start="60" id="si">
+      <Event Name="Defeat Scarlet's minions" Length="15" Color="80fb8498" />
+      <Event Name="" Length="105" Color="00000000" />
+    </Map>
     <Map Category="lws2" Name="Dry Top" Length="60" Start="0" id="dt">
       <Event Name="Crash Site" Length="40" Color="80fcfadc" />
       <Event Name="Sandstorm" Length="20" Color="80ded98a" />
