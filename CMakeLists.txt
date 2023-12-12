@@ -1,8 +1,9 @@
-cmake_minimum_required(VERSION 3.16.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 
 project(GW2TacO C CXX)
+set(CMAKE_CXX_STANDARD 20)
 
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
@@ -91,12 +92,49 @@ set(PROJECT_NAME GW2TacO)
 # Source groups
 ################################################################################
 set(Header_Files
+    "src/base/assert.h"
+    "src/base/color.h"
     "src/base/enum_helpers.h"
+    "src/base/file_list.h"
+    "src/base/hasher.h"
     "src/base/image_decompressor.h"
+    "src/base/logger.h"
+    "src/base/matrix.h"
+    "src/base/plane.h"
+    "src/base/rectangle.h"
+    "src/base/ring_buffer.h"
+    "src/base/socket.h"
+    "src/base/spec_math.h"
+    "src/base/sphere.h"
+    "src/base/stream_reader.h"
+    "src/base/stream_writer.h"
+    "src/base/string_format.h"
+    "src/base/timer.h"
+    "src/base/vector.h"
+    "src/build_info.h"
+    "src/core2/constant_buffer.h"
     "src/core2/core2.h"
     "src/core2/core2_config.h"
+    "src/core2/device.h"
     "src/core2/dss_texture_loader.h"
+    "src/core2/dx11_constant_buffer.h"
+    "src/core2/dx11_device.h"
+    "src/core2/dx11_enums.h"
+    "src/core2/dx11_index_buffer.h"
+    "src/core2/dx11_render_state.h"
+    "src/core2/dx11_shader.h"
+    "src/core2/dx11_texture.h"
+    "src/core2/dx11_vertex_buffer.h"
+    "src/core2/dx11_vertex_format.h"
+    "src/core2/enums.h"
+    "src/core2/index_buffer.h"
+    "src/core2/render_state.h"
+    "src/core2/resource.h"
+    "src/core2/shader.h"
     "src/core2/texture.h"
+    "src/core2/vertex_buffer.h"
+    "src/core2/vertex_format.h"
+    "src/core2/window_handler.h"
     "src/dungeon_progress.h"
     "src/gw2_api.h"
     "src/gw2_taco.h"
@@ -112,6 +150,7 @@ set(Header_Files
     "src/overlay_application.h"
     "src/overlay_config.h"
     "src/overlay_window.h"
+    "src/pro_font.h"
     "src/raid_progress.h"
     "src/range_display.h"
     "src/resource.h"
@@ -121,90 +160,28 @@ set(Header_Files
     "src/trail_logger.h"
     "src/ts3_connection.h"
     "src/ts3_control.h"
-    "src/white_board/application.h"
-    "src/white_board/atlas.h"
-    "src/white_board/css_item.h"
-    "src/white_board/draw_api.h"
-    "src/white_board/message.h"
-    "src/white_board/skin.h"
-    "src/white_board/style_manager.h"
-    "src/wvw.h"
-)
-source_group("Header Files" FILES ${Header_Files})
-
-set(Header_Files__DX
-    "src/core2/dx11_constant_buffer.h"
-    "src/core2/dx11_device.h"
-    "src/core2/dx11_enums.h"
-    "src/core2/dx11_index_buffer.h"
-    "src/core2/dx11_render_state.h"
-    "src/core2/dx11_shader.h"
-    "src/core2/dx11_texture.h"
-    "src/core2/dx11_vertex_buffer.h"
-    "src/core2/dx11_vertex_format.h"
-)
-source_group("Header Files\\DX" FILES ${Header_Files__DX})
-
-set(Header_Files__GuiItems
-    "src/white_board/box.h"
-    "src/white_board/button.h"
-    "src/white_board/context_menu.h"
-    "src/white_board/gui_item.h"
-    "src/white_board/label.h"
-    "src/white_board/root.h"
-    "src/white_board/text_box.h"
-    "src/white_board/window.h"
-)
-source_group("Header Files\\GuiItems" FILES ${Header_Files__GuiItems})
-
-set(Header_Files__System
-    "src/base/hasher.h"
-    "src/base/socket.h"
-    "src/base/timer.h"
-    "src/core2/constant_buffer.h"
-    "src/core2/device.h"
-    "src/core2/enums.h"
-    "src/core2/index_buffer.h"
-    "src/core2/render_state.h"
-    "src/core2/resource.h"
-    "src/core2/shader.h"
-    "src/core2/vertex_buffer.h"
-    "src/core2/vertex_format.h"
-    "src/core2/window_handler.h"
-    "src/white_board/font.h"
-)
-source_group("Header Files\\System" FILES ${Header_Files__System})
-
-set(Header_Files__base
-    "src/base/assert.h"
-    "src/base/logger.h"
-    "src/build_info.h"
-)
-source_group("Header Files\\base" FILES ${Header_Files__base})
-
-set(Header_Files__math
-    "src/base/matrix.h"
-    "src/base/plane.h"
-    "src/base/rectangle.h"
-    "src/base/spec_math.h"
-    "src/base/sphere.h"
-    "src/base/vector.h"
-)
-source_group("Header Files\\math" FILES ${Header_Files__math})
-
-set(Header_Files__util
-    "src/base/color.h"
-    "src/base/file_list.h"
-    "src/base/ring_buffer.h"
-    "src/base/stream_reader.h"
-    "src/base/stream_writer.h"
-    "src/base/string_format.h"
-    "src/pro_font.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
+    "src/white_board/application.h"
+    "src/white_board/atlas.h"
+    "src/white_board/box.h"
+    "src/white_board/button.h"
+    "src/white_board/context_menu.h"
+    "src/white_board/css_item.h"
+    "src/white_board/draw_api.h"
+    "src/white_board/font.h"
+    "src/white_board/gui_item.h"
+    "src/white_board/label.h"
+    "src/white_board/message.h"
+    "src/white_board/root.h"
+    "src/white_board/skin.h"
+    "src/white_board/style_manager.h"
+    "src/white_board/text_box.h"
+    "src/white_board/window.h"
+    "src/wvw.h"
 )
-source_group("Header Files\\util" FILES ${Header_Files__util})
+source_group("Header Files" FILES ${Header_Files})
 
 set(Resources
     "maptimer.xml"
@@ -224,9 +201,31 @@ set(Resources
 source_group("Resources" FILES ${Resources})
 
 set(Source_Files
+    "src/base/file_list.cpp"
+    "src/base/hasher.cpp"
+    "src/base/image_decompressor.cpp"
+    "src/base/logger.cpp"
+    "src/base/matrix.cpp"
+    "src/base/socket.cpp"
+    "src/base/spec_math.cpp"
+    "src/base/stream_reader.cpp"
+    "src/base/stream_writer.cpp"
+    "src/base/string_format.cpp"
+    "src/base/timer.cpp"
+    "src/base/vector.cpp"
+    "src/build_info.cpp"
     "src/core2/constant_buffer.cpp"
     "src/core2/device.cpp"
     "src/core2/dss_texture_loader.cpp"
+    "src/core2/dx11_constant_buffer.cpp"
+    "src/core2/dx11_device.cpp"
+    "src/core2/dx11_enums.cpp"
+    "src/core2/dx11_index_buffer.cpp"
+    "src/core2/dx11_render_state.cpp"
+    "src/core2/dx11_shader.cpp"
+    "src/core2/dx11_texture.cpp"
+    "src/core2/dx11_vertex_buffer.cpp"
+    "src/core2/dx11_vertex_format.cpp"
     "src/core2/render_state.cpp"
     "src/core2/resource.cpp"
     "src/core2/shader.cpp"
@@ -247,6 +246,7 @@ set(Source_Files
     "src/overlay_application.cpp"
     "src/overlay_config.cpp"
     "src/overlay_window.cpp"
+    "src/pro_font.cpp"
     "src/raid_progress.cpp"
     "src/range_display.cpp"
     "src/special_gui_items.cpp"
@@ -255,6 +255,9 @@ set(Source_Files
     "src/trail_logger.cpp"
     "src/ts3_connection.cpp"
     "src/ts3_control.cpp"
+    "src/util/png_decompressor.cpp"
+    "src/util/xml_document.cpp"
+    "src/util/xml_node.cpp"
     "src/white_board/application.cpp"
     "src/white_board/atlas.cpp"
     "src/white_board/box.cpp"
@@ -262,6 +265,7 @@ set(Source_Files
     "src/white_board/context_menu.cpp"
     "src/white_board/css_item.cpp"
     "src/white_board/draw_api.cpp"
+    "src/white_board/font.cpp"
     "src/white_board/gui_item.cpp"
     "src/white_board/label.cpp"
     "src/white_board/message.cpp"
@@ -273,49 +277,6 @@ set(Source_Files
     "src/wvw.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
-
-set(Source_Files__base
-    "src/base/logger.cpp"
-    "src/build_info.cpp"
-)
-source_group("Source Files\\base" FILES ${Source_Files__base})
-
-set(Source_Files__dx
-    "src/core2/dx11_constant_buffer.cpp"
-    "src/core2/dx11_device.cpp"
-    "src/core2/dx11_enums.cpp"
-    "src/core2/dx11_index_buffer.cpp"
-    "src/core2/dx11_render_state.cpp"
-    "src/core2/dx11_shader.cpp"
-    "src/core2/dx11_texture.cpp"
-    "src/core2/dx11_vertex_buffer.cpp"
-    "src/core2/dx11_vertex_format.cpp"
-)
-source_group("Source Files\\dx" FILES ${Source_Files__dx})
-
-set(Source_Files__math
-    "src/base/matrix.cpp"
-    "src/base/spec_math.cpp"
-    "src/base/vector.cpp"
-)
-source_group("Source Files\\math" FILES ${Source_Files__math})
-
-set(Source_Files__util
-    "src/base/file_list.cpp"
-    "src/base/hasher.cpp"
-    "src/base/image_decompressor.cpp"
-    "src/base/socket.cpp"
-    "src/base/stream_reader.cpp"
-    "src/base/stream_writer.cpp"
-    "src/base/string_format.cpp"
-    "src/base/timer.cpp"
-    "src/pro_font.cpp"
-    "src/util/png_decompressor.cpp"
-    "src/util/xml_document.cpp"
-    "src/util/xml_node.cpp"
-    "src/white_board/font.cpp"
-)
-source_group("Source Files\\util" FILES ${Source_Files__util})
 
 set(Data_Files
     "Data/Achievement.png"
@@ -411,18 +372,8 @@ source_group("Poi Files\\Data" FILES ${Poi_Data_Files})
 
 set(ALL_FILES
     ${Header_Files}
-    ${Header_Files__DX}
-    ${Header_Files__GuiItems}
-    ${Header_Files__System}
-    ${Header_Files__base}
-    ${Header_Files__math}
-    ${Header_Files__util}
     ${Resources}
     ${Source_Files}
-    ${Source_Files__base}
-    ${Source_Files__dx}
-    ${Source_Files__math}
-    ${Source_Files__util}
     ${Data_Files}
     ${Poi_Files}
     ${Poi_Data_Files}
@@ -455,7 +406,16 @@ include_directories(${CMAKE_BINARY_DIR})
 ################################################################################
 # Target
 ################################################################################
-add_executable(${PROJECT_NAME} ${ALL_FILES})
+add_executable(${PROJECT_NAME})
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        ${Source_Files}
+    PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS
+        "${CMAKE_CURRENT_SOURCE_DIR}/."    
+    FILES ${Header_Files}
+)
 
 use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 set(ROOT_NAMESPACE GW2Overlay)
@@ -482,13 +442,6 @@ $<$<CONFIG:Release>:
 $<$<NOT:$<OR:$<CONFIG:Release_MultiByte>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
-
-################################################################################
-# Include directories
-################################################################################
-target_include_directories(${PROJECT_NAME} PUBLIC
-"${CMAKE_CURRENT_SOURCE_DIR}/."
-)
 
 ################################################################################
 # Compile definitions
@@ -537,9 +490,11 @@ if(MSVC)
             /MP;
             /std:c++latest;
             /W3;
+            /MD;
             ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
             /utf-8;
             ${DEFAULT_CXX_EXCEPTION_HANDLING};
+            ${DEFAULT_CXX_RUNTIME_LIBRARY};
             /Y-
         )
         target_link_options(${PROJECT_NAME} PRIVATE
