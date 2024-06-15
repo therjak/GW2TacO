@@ -12,7 +12,7 @@ using math::CVector2;
 using math::CVector3;
 using math::CVector4;
 
-CMumbleLink mumbleLink;
+CMumbleLink mumbleLink("MumbleLink");
 bool frameTriggered = false;
 extern std::unique_ptr<CWBApplication> App;
 
@@ -83,7 +83,6 @@ bool CMumbleLink::Update() {
   }
 
   if (tick == lm->uiTick) {
-    // memcpy(&lastData, lm, sizeof(LinkedMem));
     return false;
   } else {
     memcpy(&prevData, &lastData, sizeof(LinkedMem));
@@ -299,7 +298,7 @@ float CMumbleLink::GetFrameRate() {
   return 1000.0f / (FrameTimeAcc / static_cast<float>(FrameCount));
 }
 
-CMumbleLink::CMumbleLink() {
+CMumbleLink::CMumbleLink(std::string_view mumblePath) : mumblePath(mumblePath) {
   LastFrameTime = GetTime();
   FrameTimes = std::make_unique<CRingBuffer<int32_t, 60>>();
 }

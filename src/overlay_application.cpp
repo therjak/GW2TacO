@@ -41,24 +41,3 @@ bool COverlayApp::DeviceOK() {
   if (!Device) return false;
   return Device->DeviceOk();
 }
-
-void FetchMarkerPackOnline(std::string_view ourl);
-
-LRESULT COverlayApp::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  switch (uMsg) {
-    case WM_COPYDATA:
-      auto pcpy = (PCOPYDATASTRUCT)lParam;
-      if (pcpy) {
-        std::string_view incoming(static_cast<char*>(pcpy->lpData),
-                                  pcpy->cbData);
-        FetchMarkerPackOnline(incoming);
-      }
-      break;
-  }
-
-  if (uMsg > 0x60ff) {
-    int z = 0;
-  }
-
-  return CWBApplication::WindowProc(uMsg, wParam, lParam);
-}

@@ -1,9 +1,7 @@
 ﻿#include "src/gw2_tactical.h"
 
-#include <math.h>
-#include <mmsystem.h>
-
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <format>
 #include <iterator>
@@ -71,9 +69,13 @@ std::string_view AddStringToSet(std::string_view string) {
   return *p.first;
 }
 
-int32_t tacoStartTime = timeGetTime();
+auto tacoStartTime = std::chrono::system_clock::now();
 
-int32_t GetTime() { return timeGetTime() - tacoStartTime; }
+int32_t GetTime() {
+  auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now() - tacoStartTime);
+  return static_cast<int32_t>(milliseconds.count());
+}
 
 void UpdateWvWStatus();
 

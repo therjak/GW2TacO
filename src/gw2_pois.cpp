@@ -580,87 +580,6 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
   return true;
 }
 
-std::mutex loadListMutex;
-std::vector<std::string> loadList;
-
-void FetchMarkerPackOnline(std::string_view ourl) {
-  int32_t pos = ourl.find("gw2taco://markerpack/");
-  if (pos == ourl.npos) {
-    Log_Err("[GW2TacO] Trying to access malformed package url {:s}", ourl);
-    return;
-  }
-
-  Log_Nfo("[GW2TacO] Trying to fetch marker pack {:s}", ourl.substr(pos));
-
-  std::string url(ourl.substr(pos + 21));
-  std::thread downloadThread(
-      [](std::string url) {
-        CStreamWriterMemory mem;
-        if (!DownloadFile(url, mem)) {
-          Log_Err("[GW2TacO] Failed to download package {:s}", url);
-          return;
-        }
-
-        mz_zip_archive zip;
-        memset(&zip, 0, sizeof(zip));
-        if (!mz_zip_reader_init_mem(&zip, mem.GetData(), mem.GetLength(), 0)) {
-          Log_Err(
-              "[GW2TacO] Package {:s} doesn't seem to be a well formed zip "
-              "file",
-              url);
-          return;
-        }
-
-        mz_zip_reader_end(&zip);
-
-        int32_t cnt = 0;
-        for (uint32_t x = 0; x < url.size(); x++) {
-          if (url[x] == '\\' || url[x] == '/') {
-            cnt = x;
-          }
-        }
-
-        auto fileName = url.substr(size_t(cnt) + 1);
-        if (fileName.empty()) {
-          Log_Err("[GW2TacO] Package {:s} has a malformed name", url);
-          return;
-        }
-
-        if (fileName.find(".zip") == fileName.size() - 4) {
-          fileName = fileName.substr(0, fileName.size() - 4);
-        }
-
-        if (fileName.find(".taco") == fileName.size() - 5) {
-          fileName = fileName.substr(0, fileName.size() - 5);
-        }
-
-        for (char& x : fileName) {
-          if (!isalnum(x)) {
-            x = '_';
-          }
-        }
-
-        fileName = "POIs/" + fileName + ".taco";
-
-        CStreamWriterFile out;
-        if (!out.Open(fileName)) {
-          Log_Err("[GW2TacO] Failed to open file for writing: {:s}", fileName);
-          return;
-        }
-
-        if (!out.Write(uint8_view(mem.GetData(), mem.GetLength()))) {
-          Log_Err("[GW2TacO] Failed to write out data to file: {:s}", fileName);
-          remove(fileName.c_str());
-          return;
-        }
-        std::scoped_lock l(loadListMutex);
-        loadList.emplace_back(std::move(fileName));
-      },
-      url);
-  // TODO(therjak): this needs a fix
-  downloadThread.detach();
-}
-
 void ImportMarkerPack(CWBApplication* App, std::string_view zipFile);
 
 void FlushZipDict();
@@ -741,8 +660,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       Log_Nfo("[GW2TacO] WM_COPYDATA sent. Result code: {:d}", GetLastError());
       return 0;
     }
-
-    FetchMarkerPackOnline(cmdLine);
   }
 
   if (cmdLine.find("-forcenewinstance") == cmdLine.npos) {
@@ -925,14 +842,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             App->SetDone(true);
           }
         }
-      }
-    }
-    {
-      std::scoped_lock l(loadListMutex);
-      if (!loadList.empty()) {
-        auto file = loadList[0];
-        loadList.erase(loadList.begin());
-        ImportMarkerPack(App.get(), file);
       }
     }
 

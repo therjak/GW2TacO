@@ -13,6 +13,5 @@ class COverlayApp : public CWBApplication {
   std::unique_ptr<CCoreBlendState> holePunchBlendState;
 
  protected:
-  LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
   bool DeviceOK() override;
 };
