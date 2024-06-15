@@ -64,7 +64,7 @@ struct LinkedMem {
 
 class CMumbleLink {
  public:
-  CMumbleLink();
+  CMumbleLink(std::string_view mumblePath);
   virtual ~CMumbleLink();
 
   bool Update();
@@ -115,7 +115,7 @@ class CMumbleLink {
   bool camDirChanged = false;
   bool camUpChanged = false;
 
-  std::string mumblePath = "MumbleLink";
+  std::string mumblePath;
   uint32_t lastGW2ProcessID = 0;
 
  private:

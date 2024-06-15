@@ -1,11 +1,5 @@
 #include "xml_document.h"
 
-#include <windows.h>
-//
-#include <combaseapi.h>
-#include <fileapi.h>
-#include <objbase.h>
-
 #include <cstdio>
 #include <sstream>
 #include <string>
@@ -18,28 +12,24 @@
 
 namespace {
 std::string ReadFile(std::string_view name) {
-  HANDLE hFile =
-      CreateFile(name.data(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 nullptr, OPEN_EXISTING, 0, nullptr);
-  if (hFile == INVALID_HANDLE_VALUE) {
+  std::FILE* fp = std::fopen(name.data(), "rb");
+  if (!fp) {
     return {};
   }
-  int32_t size = GetFileSize(hFile, nullptr);
-  auto ret = std::string(size, 0);
-  DWORD nRead = 0;
-  bool b = ::ReadFile(hFile, ret.data(), size, &nRead, nullptr);
-  CloseHandle(hFile);
-  if (!b || nRead != size) {
-    return {};
-  }
-  return ret;
+  std::string contents;
+  std::fseek(fp, 0, SEEK_END);
+  contents.resize(std::ftell(fp));
+  std::rewind(fp);
+  std::fread(contents.data(), 1, contents.size(), fp);
+  std::fclose(fp);
+  return (contents);
 }
 }  // namespace
 
 CXMLDocument::CXMLDocument()
     : doc(std::make_unique<rapidxml::xml_document<>>()) {}
 
-CXMLDocument::~CXMLDocument() { CoUninitialize(); }
+CXMLDocument::~CXMLDocument() {}
 
 bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
   memString = ReadFile(szFileName);
@@ -80,13 +70,11 @@ std::string CXMLDocument::SaveToString() {
 
 bool CXMLDocument::SaveToFile(std::string_view sz) {
   auto s = SaveToString();
-
-  HANDLE h = CreateFile(sz.data(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0,
-                        nullptr);
-  if (h == INVALID_HANDLE_VALUE) return false;
-  DWORD b = 0;
-  WriteFile(h, s.c_str(), s.length(), &b, nullptr);
-  CloseHandle(h);
-
+  std::FILE* fp = std::fopen(sz.data(), "wb");
+  if (!fp) {
+    return false;
+  }
+  std::fwrite(s.c_str(), 1, s.size(), fp);
+  std::fclose(fp);
   return true;
 }
