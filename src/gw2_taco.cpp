@@ -1,6 +1,6 @@
 ﻿#include "src/gw2_taco.h"
 
-#include <shellapi.h>
+#include <shellapi.h>  // TODO: open web page
 
 #include <algorithm>
 #include <format>
@@ -1065,11 +1065,11 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         //  App->ReApplyStyle();
         //  return true;
         //  break;
-        case Menu_DownloadNewBuild:
-          ShellExecute(App->GetHandle(), "open", "http://www.gw2taco.com",
-                       nullptr, nullptr, SW_SHOW);
-          return true;
-          break;
+        // case Menu_DownloadNewBuild:
+        //   ShellExecute(App->GetHandle(), "open", "http://www.gw2taco.com",
+        //                nullptr, nullptr, SW_SHOW);
+        //   return true;
+        //   break;
         case Menu_ToggleRangeCircles:
           ToggleConfigValue("RangeCirclesVisible");
           return true;
@@ -1514,8 +1514,7 @@ void GW2TacO::OpenAboutWindow() {
                         "(c) BoyC / Conspiracy");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 48),
-                        "(c) therjak");
+  l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 48), "(c) therjak");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 64),

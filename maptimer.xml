@@ -2,6 +2,7 @@
 <GW2MapTimer>
   <Categories>
     <Category Color="C08AEAF4" Name="Core Tyria" id="core" />
+    <Category Color="C079afff" Name="Special Events" id="special" />
     <Category Color="C0FBE384" Name="Living World Season 2" id="lws2" />
     <Category Color="C0BED742" Name="Hearth of Thorns" id="hot" />
     <Category Color="C0D7425B" Name="Living World Season 3" id="lws3" />
@@ -11,6 +12,7 @@
     <Category Color="C06984E4" Name="Eye of the North" id="eotn" />
     <Category Color="C079afff" Name="End of Dragons" id="eod" />
     <Category Color="C0facd85" Name="Secrets of the Obscure" id="soto" />
+    <Category Color="C0c4ffd4" Name="Janthir Wilds" id="jw" />
   </Categories>
   <Maps>
     <Map Name="Daytime" Length="120" Start="25" id="daytime">
@@ -18,6 +20,20 @@
       <Event Name="Day" Length="70" Color="80ffe37f" />
       <Event Name="Dusk" Length="5" Color="80ffe37f" />
       <Event Name="Night" Length="40" Color="809f99cc" />
+    </Map>
+    <Map Category="special" Name="Labyrinthine Cliffs" Length="120" Start="0" id="se">
+      <Event Name="Skiff Race" Length="10" Color="8042c8d7" />
+      <Event Name="" Length="5" Color="00000000" />
+      <Event Name="Water Ballons" Length="10" Color="8042c8d7" />
+      <Event Name="" Length="5" Color="00000000" />
+      <Event Name="Treasure Hunt" Length="30" Color="8042c8d7" />
+      <Event Name="" Length="15" Color="00000000" />
+      <Event Name="Skimmer Race" Length="10" Color="8042c8d7" />
+      <Event Name="" Length="5" Color="00000000" />
+      <Event Name="Fishing" Length="10" Color="8042c8d7" />
+      <Event Name="" Length="5" Color="00000000" />
+      <Event Name="Dolyak Race" Length="10" Color="8042c8d7" />
+      <Event Name="" Length="5" Color="00000000" />
     </Map>
     <Map Category="core" Name="World Bosses" Length="1440" Start="0" id="wb">
       <Event Name="Taidha" Length="15" Color="8063471c" WorldBossAPIID="admiral_taidha_covington" />
@@ -311,6 +327,10 @@
     <Map Category="soto" Name="Convergences" Length="180" Start="90" id="sotoc">
       <Event Name="Convergences" Length="10" Color="80d29b49" />
       <Event Name="" Length="170" Color="00000000" />
+    </Map>
+    <Map Category="jw" Name="Janthir Syntri" Length="120" Start="30" id="jwjs">
+      <Event Name="" Length="30" Color="8092aaeb" />
+      <Event Name="" Length="90" Color="00000000" />
     </Map>
   </Maps>
 </GW2MapTimer>
