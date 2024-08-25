@@ -329,7 +329,7 @@
       <Event Name="" Length="170" Color="00000000" />
     </Map>
     <Map Category="jw" Name="Janthir Syntri" Length="120" Start="30" id="jwjs">
-      <Event Name="" Length="30" Color="8092aaeb" />
+      <Event Name="Of Mists and Monsters" Length="30" Color="8092aaeb" />
       <Event Name="" Length="90" Color="00000000" />
     </Map>
   </Maps>
