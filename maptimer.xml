@@ -324,13 +324,17 @@
       <Event Name="Defense of Amnytas" Length="25" Color="80d29b49" />
       <Event Name="" Length="95" Color="00000000" />
     </Map>
-    <Map Category="soto" Name="Convergences" Length="180" Start="90" id="sotoc">
+    <Map Category="soto" Name="Soto Convergences" Length="180" Start="90" id="sotoc">
       <Event Name="Convergences" Length="10" Color="80d29b49" />
       <Event Name="" Length="170" Color="00000000" />
     </Map>
     <Map Category="jw" Name="Janthir Syntri" Length="120" Start="30" id="jwjs">
       <Event Name="Of Mists and Monsters" Length="30" Color="8092aaeb" />
       <Event Name="" Length="90" Color="00000000" />
+    </Map>
+    <Map Category="jw" Name="Jw Convergences" Length="180" Start="0" id="jwc">
+      <Event Name="Mount Balrior" Length="10" Color="8092aaeb" />
+      <Event Name="" Length="170" Color="00000000" />
     </Map>
   </Maps>
 </GW2MapTimer>
