@@ -5,8 +5,10 @@
 #include <string>
 #include <string_view>
 #include <thread>
+#include <unordered_set>
 #include <vector>
 
+#include "src/base/lock_free_queue.h"
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
@@ -60,7 +62,8 @@ class RaidProgress : public CWBItem {
   void OnDraw(CWBDrawAPI* API) override;
 
   math::CPoint lastpos;
-  bool beingFetched = false;
+  LockFreeQueue<std::unordered_set<std::string>> raid_queue;
+  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
   std::vector<Raid> raids;
   std::thread fetchThread;

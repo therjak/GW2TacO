@@ -46,19 +46,18 @@ APIKey::~APIKey() {
 
 void APIKey::FetchData() {
   if (beingInitialized) return;
-
-  keyName = "";
-  accountName = "";
-  charNames.clear();
-  caps.clear();
-  worldId = 0;
-
-  valid = true;
-  initialized = false;
   beingInitialized = true;
 
+  // keyName = "";
+  // accountName = "";
+  // charNames.clear();
+  // caps.clear();
+  // worldId = 0;
+
+  initialized = false;
+
   fetcherThread = std::thread([this]() {
-    valid = true;
+    KeyData new_key_data;
 
     auto keyData = QueryAPI("/v2/tokeninfo");
 
@@ -66,33 +65,33 @@ void APIKey::FetchData() {
     json.parse(keyData);
 
     if (json.has<String>("name")) {
-      keyName = json.get<String>("name");
+      new_key_data.key_name = json.get<String>("name");
     } else {
-      valid = false;
+      new_key_data.valid = false;
     }
 
     if (json.has<Array>("permissions")) {
       auto& values = json.get<Array>("permissions").values();
       for (auto v : values) {
-        if (v->is<String>()) caps[v->get<String>()] = true;
+        if (v->is<String>()) new_key_data.caps.insert(v->get<String>());
       }
     } else {
-      valid = false;
+      new_key_data.valid = false;
     }
 
-    if (HasCaps("account")) {
+    if (new_key_data.caps.contains("account")) {
       auto accountData = QueryAPI("/v2/account");
       json.parse(accountData);
 
       if (json.has<String>("name")) {
-        accountName = json.get<String>("name");
+        new_key_data.account_name = json.get<String>("name");
       }
 
       if (json.has<Number>("world")) {
-        worldId = static_cast<int32_t>(json.get<Number>("world"));
+        new_key_data.world_id = static_cast<int32_t>(json.get<Number>("world"));
       }
     }
-    if (HasCaps("characters")) {
+    if (new_key_data.caps.contains("characters")) {
       auto characterData =
           "{\"characters\":" + QueryAPI("/v2/characters") + "}";
       json.parse(characterData);
@@ -100,13 +99,13 @@ void APIKey::FetchData() {
         Log_Err("[GW2TacO] Unexpected result from API characters endpoint: %s",
                 characterData);
         Log_Err("[GW2TacO] CHARACTERS WON'T BE RECOGNIZED FOR API KEY NAMED %s",
-                keyName);
+                new_key_data.key_name);
       } else {
         auto m = json.get<Array>("characters").values();
         for (auto& x : m) {
           if (x->is<String>()) {
             auto name = x->get<String>();
-            charNames.emplace_back(name);
+            new_key_data.char_names.emplace_back(name);
           }
         }
       }
@@ -115,8 +114,9 @@ void APIKey::FetchData() {
           "[GW2TacO] API error: API key '%s - %s (%s)' doesn't have the "
           "'characters' permission - account identification through Mumble "
           "Link will not be possible.",
-          accountName, keyName, apiKey);
+          new_key_data.account_name, new_key_data.key_name, apiKey);
     }
+    key_data_queue.push(new_key_data);
 
     initialized = true;
     beingInitialized = false;
@@ -124,11 +124,7 @@ void APIKey::FetchData() {
 }
 
 bool APIKey::HasCaps(std::string_view cap) {
-  if (caps.find(std::string(cap)) != caps.end()) {
-    return caps[cap.data()];
-  }
-
-  return false;
+  return key_data.caps.contains(std::string(cap));
 }
 
 std::string APIKey::QueryAPI(std::string_view path) const {
@@ -142,9 +138,21 @@ void APIKey::SetKey(std::string_view key) {
     fetcherThread.join();
   }
   apiKey = key;
-  caps.clear();
   initialized = false;
-  valid = true;
+  beingInitialized = false;
+  FetchData();
+}
+
+bool APIKey::Valid() {
+  if (!initialized) {
+    return false;
+  }
+  const auto& new_data = key_data_queue.pop();
+  if (new_data.has_value()) {
+    auto data = new_data.value();
+    std::swap(key_data, data);
+  }
+  return key_data.valid;
 }
 
 std::unordered_set<std::string> APIKey::QuerySet(std::string_view path) const {
@@ -181,26 +189,6 @@ std::unordered_set<int32_t> APIKey::QueryAchievementBits(int id) const {
   return ret;
 }
 
-std::unordered_set<std::string> APIKey::Dungeons() const {
-  return QuerySet("/v2/account/dungeons");
-}
-
-std::unordered_set<int32_t> APIKey::DungeonAchievements() const {
-  return QueryAchievementBits(2963);
-}
-
-std::unordered_set<std::string> APIKey::Raids() const {
-  return QuerySet("/v2/account/raids");
-}
-
-std::unordered_set<std::string> APIKey::WorldBosses() const {
-  return QuerySet("/v2/account/worldbosses");
-}
-
-std::unordered_set<std::string> APIKey::Mapchests() const {
-  return QuerySet("/v2/account/mapchests");
-}
-
 APIKey* APIKeyManager::GetIdentifiedAPIKey() {
   std::scoped_lock l(keyMutex);
   if (!mumbleLink.IsValid()) {
@@ -218,7 +206,7 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
   }
 
   for (auto& key : keys) {
-    if (!key->initialized) {
+    if (!key->Valid()) {
       continue;
     }
 
@@ -226,7 +214,7 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
       key->fetcherThread.join();
     }
 
-    auto& cn = key->charNames;
+    auto& cn = key->key_data.char_names;
     if (std::find(cn.begin(), cn.end(), mumbleLink.charName) != cn.end()) {
       return key.get();
     }

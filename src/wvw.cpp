@@ -1,5 +1,6 @@
 ﻿#include "src/wvw.h"
 
+#include <atomic>
 #include <ctime>
 #include <format>
 #include <string_view>
@@ -343,52 +344,52 @@ void LoadWvWObjectives() {
   });
 }
 
-bool wvwUpdating = false;
-int lastWvWUpdateTime = 0;
+std::atomic<bool> wvwupdating{false};
+std::atomic<int> lastWvWUpdateTime{0};
 std::thread wvwUpdatThread;
 
 #include "mumble_link.h"
 
 void UpdateWvWStatus() {
-  if (wvwUpdating) return;
+  if (wvwupdating.load()) return;
 
   if (wvwMapIDs.find(mumbleLink.mapID) == wvwMapIDs.end()) {
     return;
   }
 
   int currTime = GetTime();
-  if (currTime - lastWvWUpdateTime < 5000) return;
+  if (currTime - lastWvWUpdateTime.load() < 5000) return;
 
   if (wvwUpdatThread.joinable()) wvwUpdatThread.join();
 
-  wvwUpdating = true;
+  wvwupdating = true;
 
   wvwUpdatThread = std::thread([]() {
     GW2::APIKeyManager::Status status = GW2::apiKeyManager.GetStatus();
     if (status != GW2::APIKeyManager::Status::OK) {
       lastWvWUpdateTime = GetTime();
-      wvwUpdating = false;
+      wvwupdating = false;
       return;
     }
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
     if (!key) {
       lastWvWUpdateTime = GetTime();
-      wvwUpdating = false;
+      wvwupdating = false;
       return;
     }
 
-    if (!key->valid) {
+    if (!key->Valid()) {
       lastWvWUpdateTime = GetTime();
-      wvwUpdating = false;
+      wvwupdating = false;
       return;
     }
     if (!key->HasCaps("account")) {
       lastWvWUpdateTime = GetTime();
-      wvwUpdating = false;
+      wvwupdating = false;
       return;
     }
 
-    auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->worldId);
+    auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
     auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath);
 
     Object o;
@@ -444,6 +445,6 @@ void UpdateWvWStatus() {
     }
 
     lastWvWUpdateTime = GetTime();
-    wvwUpdating = false;
+    wvwupdating = false;
   });
 }

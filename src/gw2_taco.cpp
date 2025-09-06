@@ -215,8 +215,6 @@ GW2TacO::GW2TacO(CWBItem* Parent, CRect Position) : CWBItem(Parent, Position) {
 
 GW2TacO::~GW2TacO() {
   if (pickupFetcherThread.joinable()) pickupFetcherThread.join();
-
-  // scriptEngines.FreeArray();
 }
 
 CWBItem* GW2TacO::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
@@ -730,7 +728,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         for (int32_t x = 0; x < GW2::apiKeyManager.size(); x++) {
           auto key = GW2::apiKeyManager.GetKey(x);
           auto keyMenu = gw2keys->AddItem(
-              (!key->accountName.empty()) ? key->accountName : key->apiKey,
+              (key->AccountName().empty()) ? key->apiKey : key->AccountName(),
               Menu_GW2APIKey_Base + x, key == currKey);
           keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
         }
@@ -1073,63 +1071,48 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
         case Menu_ToggleRangeCircles:
           ToggleConfigValue("RangeCirclesVisible");
           return true;
-          break;
         case Menu_RangeCircleTransparency40:
           SetConfigValue("RangeCircleTransparency", 40);
           return true;
-          break;
         case Menu_RangeCircleTransparency60:
           SetConfigValue("RangeCircleTransparency", 60);
           return true;
-          break;
         case Menu_RangeCircleTransparency100:
           SetConfigValue("RangeCircleTransparency", 100);
           return true;
-          break;
         case Menu_ToggleRangeCircle90:
           ToggleConfigValue("RangeCircle90");
           return true;
-          break;
         case Menu_ToggleRangeCircle120:
           ToggleConfigValue("RangeCircle120");
           return true;
-          break;
         case Menu_ToggleRangeCircle180:
           ToggleConfigValue("RangeCircle180");
           return true;
-          break;
         case Menu_ToggleRangeCircle240:
           ToggleConfigValue("RangeCircle240");
           return true;
-          break;
         case Menu_ToggleRangeCircle300:
           ToggleConfigValue("RangeCircle300");
           return true;
-          break;
         case Menu_ToggleRangeCircle400:
           ToggleConfigValue("RangeCircle400");
           return true;
-          break;
         case Menu_ToggleRangeCircle600:
           ToggleConfigValue("RangeCircle600");
           return true;
-          break;
         case Menu_ToggleRangeCircle900:
           ToggleConfigValue("RangeCircle900");
           return true;
-          break;
         case Menu_ToggleRangeCircle1200:
           ToggleConfigValue("RangeCircle1200");
           return true;
-          break;
         case Menu_ToggleRangeCircle1500:
           ToggleConfigValue("RangeCircle1500");
           return true;
-          break;
         case Menu_ToggleRangeCircle1600:
           ToggleConfigValue("RangeCircle1600");
           return true;
-          break;
         case Menu_ToggleTacticalCompass:
           ToggleConfigValue("TacticalCompassVisible");
           return true;
@@ -1457,7 +1440,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           case APIKeys::GW2APIKey: {
             auto key = GW2::apiKeyManager.GetKey(ApiKeyIndex);
             key->SetKey(APIKeyInput->GetText());
-            key->FetchData();
+
             GW2::apiKeyManager.RebuildConfigValues();
           } break;
           default:
@@ -2029,7 +2012,7 @@ void GW2TacO::CheckItemPickup() {
 
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if (key && key->valid &&
+  if (key && key->Valid() &&
       (GetTime() - lastPickupFetchTime > 150000 || !lastPickupFetchTime) &&
       !pickupsBeingFetched && !pickupFetcherThread.joinable()) {
     pickupsBeingFetched = true;

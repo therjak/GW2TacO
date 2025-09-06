@@ -25,30 +25,33 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
   }
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if (key && key->valid &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
-      !fetchThread.joinable()) {
-    beingFetched = true;
+  if (key && key->Valid() &&
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
+      !being_fetched.load() && !fetchThread.joinable()) {
+    being_fetched = true;
     fetchThread = std::thread([this, key]() {
-      auto finishedEvents = key->Raids();
+      const auto& raid_data = key->QuerySet("/v2/account/raids");
+      raid_queue.push(raid_data);
 
-      for (auto& r : raids) {
-        for (auto& w : r.wings) {
-          for (auto& e : w.events) {
-            if (finishedEvents.contains(std::string(e.name))) {
-              e.finished = true;
-            }
-          }
-        }
-      }
-
-      beingFetched = false;
+      being_fetched = false;
     });
   }
 
-  if (!beingFetched && fetchThread.joinable()) {
+  if (!being_fetched.load() && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
+  }
+
+  const auto& new_raid_data = raid_queue.pop();
+  if (new_raid_data.has_value()) {
+    const auto& raid_data = new_raid_data.value();
+    for (auto& r : raids) {
+      for (auto& w : r.wings) {
+        for (auto& e : w.events) {
+          e.finished = raid_data.contains(std::string(e.name));
+        }
+      }
+    }
   }
 
   int32_t posx = 0;

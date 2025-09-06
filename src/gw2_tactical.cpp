@@ -77,8 +77,6 @@ int32_t GetTime() {
   return static_cast<int32_t>(milliseconds.count());
 }
 
-void UpdateWvWStatus();
-
 void FindClosestRouteMarkers(bool force) {
   const auto& pois = GetMapPOIs();
   for (auto& r : Routes) {
@@ -383,16 +381,16 @@ void GW2TacticalDisplay::FetchAchievements() {
 
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if (key && key->valid &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
-      !fetchThread.joinable()) {
-    beingFetched = true;
+  if (key && key->Valid() &&
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
+      !being_fetched.load() && !fetchThread.joinable()) {
+    being_fetched = true;
     fetchThread = std::thread([this, key]() {
-      auto dungeonFrequenterStatus =
+      auto achievements_data =
           "{\"achievements\":" + key->QueryAPI("/v2/account/achievements") +
           "}";
       Object json;
-      json.parse(dungeonFrequenterStatus);
+      json.parse(achievements_data);
 
       if (json.has<Array>("achievements")) {
         auto achiData = json.get<Array>("achievements").values();
@@ -423,19 +421,15 @@ void GW2TacticalDisplay::FetchAchievements() {
             incoming[achiId].bits.clear();
           }
         }
-
-        {
-          std::lock_guard<std::mutex> lockGuard(achievements_mtx);
-          achievements = incoming;
-        }
+        achievements_queue.push(incoming);
       }
 
-      beingFetched = false;
-      achievementsFetched = true;
+      being_fetched = false;
+      achievements_fetched = true;
     });
   }
 
-  if (!beingFetched && fetchThread.joinable()) {
+  if (!being_fetched.load() && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
   }
@@ -481,8 +475,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
   int32_t timeLeft = 0;
   float alphaMultiplier = 1;
 
-  if (!poi.IsVisible(ptm, currtime, achievementsFetched, achievements,
-                     achievements_mtx)) {
+  if (!poi.IsVisible(ptm, currtime, achievements)) {
     return;
   }
 
@@ -795,8 +788,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
                                         const time_t& currtime, POI& poi,
                                         float alpha, float zoomLevel) {
   if (alpha <= 0) return;
-  if (!poi.IsVisible(ptm, currtime, achievementsFetched, achievements,
-                     achievements_mtx)) {
+  if (!poi.IsVisible(ptm, currtime, achievements)) {
     return;
   }
 
@@ -962,6 +954,12 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 
   float mapFade = GetMapFade();
 
+  const auto& new_achievements = achievements_queue.pop();
+  if (new_achievements.has_value()) {
+    auto achievemenst_data = new_achievements.value();
+    std::swap(achievements, achievemenst_data);
+  }
+
   if (mapFade > 0 && showMinimapMarkers > 0) {
     CMatrix4x4 miniMapTrafo =
         mumbleLink.miniMap.BuildTransformationMatrix(miniRect, false);
@@ -969,8 +967,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
       if (!mmp->typeData.bits.miniMapVisible && showMinimapMarkers != 2) {
         continue;
       }
-      if (!mmp->IsVisible(ptm, currtime, achievementsFetched, achievements,
-                          achievements_mtx)) {
+      if (!mmp->IsVisible(ptm, currtime, achievements)) {
         continue;
       }
 
@@ -986,8 +983,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
         mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
     for (const auto& mmp : minimapPOIs) {
       if (!mmp->typeData.bits.bigMapVisible && showBigmapMarkers != 2) continue;
-      if (!mmp->IsVisible(ptm, currtime, achievementsFetched, achievements,
-                          achievements_mtx)) {
+      if (!mmp->IsVisible(ptm, currtime, achievements)) {
         continue;
       }
 
@@ -1010,7 +1006,9 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 GW2TacticalDisplay::GW2TacticalDisplay(CWBItem* Parent, CRect Position)
     : CWBItem(Parent, Position) {}
 
-GW2TacticalDisplay::~GW2TacticalDisplay() = default;
+GW2TacticalDisplay::~GW2TacticalDisplay() {
+  if (fetchThread.joinable()) fetchThread.join();
+}
 
 CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
@@ -1995,10 +1993,9 @@ void POI::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
   iconFile = typeData.iconFile;
 }
 
-bool POI::IsVisible(const tm& ptm, const time_t& currtime,
-                    bool achievementsFetched,
-                    std::unordered_map<int32_t, Achievement>& achievements,
-                    std::mutex& mtx) {
+bool POI::IsVisible(
+    const tm& ptm, const time_t& currtime,
+    const std::unordered_map<int32_t, Achievement>& achievements) {
   if (category && !category->IsVisible()) return false;
 
   if (typeData.behavior == POIBehavior::ReappearOnDailyReset) {
@@ -2059,8 +2056,7 @@ bool POI::IsVisible(const tm& ptm, const time_t& currtime,
     }
   }
 
-  if (achievementsFetched && typeData.achievementId != -1) {
-    std::lock_guard<std::mutex> lockGuard(mtx);
+  if (typeData.achievementId != -1) {
     const auto& achievement = achievements.find(typeData.achievementId);
     if (achievement != achievements.end()) {
       const bool done = !achievement->second.done;
