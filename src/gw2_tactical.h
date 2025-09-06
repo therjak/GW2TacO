@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <objbase.h>
 
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -10,6 +11,7 @@
 
 #include "src/base/color.h"
 #include "src/base/hasher.h"
+#include "src/base/lock_free_queue.h"
 #include "src/base/matrix.h"
 #include "src/white_board/context_menu.h"
 #include "src/white_board/gui_item.h"
@@ -112,9 +114,7 @@ struct POI {
   void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
 
   bool IsVisible(const tm& ptm, const time_t& currtime,
-                 bool achievementsFetched,
-                 std::unordered_map<int32_t, Achievement>& achievements,
-                 std::mutex& mtx);
+                 const std::unordered_map<int32_t, Achievement>& achievements);
 
   MarkerTypeData typeData;
   WBATLASHANDLE icon = 0;
@@ -231,10 +231,11 @@ class GW2TacticalDisplay : public CWBItem {
   std::vector<POI*> minimapPOIs;
   bool drawWvWNames = false;
 
-  bool beingFetched = false;
-  bool achievementsFetched = false;
+  std::atomic<bool> being_fetched = false;
+  std::atomic<bool> achievements_fetched = false;
   int32_t lastFetchTime = 0;
 
+  LockFreeQueue<std::unordered_map<int32_t, Achievement>> achievements_queue;
   std::unordered_map<int32_t, Achievement> achievements;
   std::mutex achievements_mtx;
   // on destruction the thread should be destroyed first

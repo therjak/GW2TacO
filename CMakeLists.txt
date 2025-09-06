@@ -99,6 +99,7 @@ set(Header_Files
     "src/base/hasher.h"
     "src/base/image_decompressor.h"
     "src/base/logger.h"
+    "src/base/lock_free_queue.h"
     "src/base/matrix.h"
     "src/base/plane.h"
     "src/base/rectangle.h"

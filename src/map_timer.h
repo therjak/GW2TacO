@@ -1,10 +1,12 @@
 ﻿#pragma once
+#include <atomic>
 #include <mutex>
 #include <string>
 #include <thread>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
+#include "src/base/lock_free_queue.h"
 #include "src/white_board/gui_item.h"
 
 class GW2MapTimer : public CWBItem {
@@ -64,11 +66,13 @@ class GW2MapTimer : public CWBItem {
 
   int32_t lastypos = -1;
 
-  bool beingFetched = false;
+  LockFreeQueue<std::unordered_set<std::string>> boss_queue;
+  LockFreeQueue<std::unordered_set<std::string>> mapchest_queue;
+
+  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
 
-  std::mutex mtx;
-  std::unordered_set<std::string> worldBosses;
+  std::unordered_set<std::string> world_bosses;
   std::unordered_set<std::string> mapchests;
 
   std::thread fetchThread;

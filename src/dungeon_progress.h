@@ -1,17 +1,20 @@
 ﻿#pragma once
+#include <atomic>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <thread>
+#include <unordered_set>
 #include <vector>
-#include <atomic>
 
+#include "src/base/lock_free_queue.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
 class DungeonPath {
  public:
-  DungeonPath(const std::string_view& name, const std::string_view& type, int32_t id)
+  DungeonPath(const std::string_view& name, const std::string_view& type,
+              int32_t id)
       : name(name), type(type), id(id) {}
   DungeonPath(const DungeonPath& p) : name(p.name), type(p.type), id(p.id) {}
 
@@ -52,7 +55,10 @@ class DungeonProgress : public CWBItem {
 
   math::CPoint lastpos;
 
-  bool beingFetched = false;
+  LockFreeQueue<std::unordered_set<std::string>> dungeon_queue;
+  LockFreeQueue<std::unordered_set<int32_t>> dungeon_achievements_queue;
+
+  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
 
   std::vector<Dungeon> dungeons;

@@ -34,27 +34,35 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
   if (GW2::apiKeyManager.GetStatus() == GW2::APIKeyManager::Status::OK) {
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-    if (key && key->valid &&
+    if (key && key->Valid() &&
         (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
-        !beingFetched && !fetchThread.joinable()) {
-      beingFetched = true;
+        !being_fetched.load() && !fetchThread.joinable()) {
+      being_fetched = true;
       fetchThread = std::thread([key, this]() {
-        auto localWorldBosses = key->WorldBosses();
-        auto localMapchests = key->Mapchests();
-        {
-          std::lock_guard<std::mutex> lockGuard(mtx);
-          std::swap(worldBosses, localWorldBosses);
-          std::swap(mapchests, localMapchests);
-        }
+        const auto& bosses = key->QuerySet("/v2/account/worldbosses");
+        boss_queue.push(bosses);
+        const auto& chests = key->QuerySet("/v2/account/mapchests");
+        mapchest_queue.push(chests);
 
-        beingFetched = false;
+        being_fetched = false;
       });
     }
   }
 
-  if (!beingFetched && fetchThread.joinable()) {
+  if (!being_fetched.load() && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
+  }
+
+  const auto& new_boss_data = boss_queue.pop();
+  if (new_boss_data.has_value()) {
+    auto boss_data = new_boss_data.value();
+    std::swap(world_bosses, boss_data);
+  }
+  const auto& new_mapchest_data = mapchest_queue.pop();
+  if (new_mapchest_data.has_value()) {
+    auto mapchest_data = new_mapchest_data.value();
+    std::swap(mapchests, mapchest_data);
   }
 
   bool compact = GetConfigValue("MapTimerCompact");
@@ -164,9 +172,9 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
       // highlight rect
       if (!map.chestId.empty()) {
-        std::lock_guard<std::mutex> lockGuard(mtx);
         if (mapchests.contains(map.chestId)) {
-          highlightRects.emplace_back(CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
+          highlightRects.emplace_back(
+              CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
         }
       }
 
@@ -222,8 +230,7 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
           const auto& bossId = map.events[currevent].worldBossId;
           if (!map.events[currevent].worldBossId.empty()) {
-            std::lock_guard<std::mutex> lockGuard(mtx);
-            if (worldBosses.contains(bossId)) {
+            if (world_bosses.contains(bossId)) {
               isHighlighted = true;
             }
             if (mapchests.contains(bossId)) {

@@ -25,36 +25,46 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
   }
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if (key && key->valid &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
-      !fetchThread.joinable()) {
-    beingFetched = true;
+  if (key && key->Valid() &&
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
+      !being_fetched.load() && !fetchThread.joinable()) {
+    being_fetched = true;
     fetchThread = std::thread([this, key]() {
-      const auto& dungeonData = key->Dungeons();
-      const auto& dungeonFrequenterStatus = key->DungeonAchievements();
+      const auto& dungeon_data = key->QuerySet("/v2/account/dungeons");
+      dungeon_queue.push(dungeon_data);
+      const auto& dungeon_frequenter_status = key->QueryAchievementBits(2963);
+      dungeon_achievements_queue.push(dungeon_frequenter_status);
 
-      for (auto& d : dungeons) {
-        for (auto& p : d.paths) {
-          p.finished = dungeonData.contains(std::string(p.name));
-        }
-      }
-
-      for (auto& d : dungeons) {
-        for (auto& p : d.paths) {
-          if (p.id < 0) {
-            continue;
-          }
-          p.frequenter = dungeonFrequenterStatus.contains(p.id);
-        }
-      }
-
-      beingFetched = false;
+      being_fetched = false;
     });
   }
 
-  if (!beingFetched && fetchThread.joinable()) {
+  if (!being_fetched.load() && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
+  }
+
+  const auto& new_dungeon_data = dungeon_queue.pop();
+  if (new_dungeon_data.has_value()) {
+    const auto& dungeon_data = new_dungeon_data.value();
+    for (auto& d : dungeons) {
+      for (auto& p : d.paths) {
+        p.finished = dungeon_data.contains(std::string(p.name));
+      }
+    }
+  }
+
+  const auto& new_dungeon_achievements = dungeon_achievements_queue.pop();
+  if (new_dungeon_achievements.has_value()) {
+    const auto& dungeon_frequenter_status = new_dungeon_achievements.value();
+    for (auto& d : dungeons) {
+      for (auto& p : d.paths) {
+        if (p.id < 0) {
+          continue;
+        }
+        p.frequenter = dungeon_frequenter_status.contains(p.id);
+      }
+    }
   }
 
   int32_t posy = 1;

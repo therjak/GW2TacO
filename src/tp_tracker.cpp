@@ -91,10 +91,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
       GW2::apiKeyManager.DisplayStatusText(API, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if (key && key->valid &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) && !beingFetched &&
-      !fetchThread.joinable()) {
-    beingFetched = true;
+  if (key && key->Valid() &&
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
+      !being_fetched.load() && !fetchThread.joinable()) {
+    being_fetched = true;
     fetchThread = std::thread([this, key]() {
       auto qbuys = "{\"buys\":" +
                    key->QueryAPI("/v2/commerce/transactions/current/buys");
@@ -257,11 +257,11 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         sells = outgoing;
       }
 
-      beingFetched = false;
+      being_fetched = false;
     });
   }
 
-  if (!beingFetched && fetchThread.joinable()) {
+  if (!being_fetched.load() && fetchThread.joinable()) {
     lastFetchTime = GetTime();
     fetchThread.join();
   }

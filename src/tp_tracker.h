@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <atomic>
 #include <memory>
 #include <mutex>
 #include <thread>
@@ -47,7 +48,7 @@ class TPTracker : public CWBItem {
   void OnDraw(CWBDrawAPI* API) override;
   static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
 
-  bool beingFetched = false;
+  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
 
   std::vector<TransactionItem> buys;
