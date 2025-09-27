@@ -774,7 +774,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   App->SetScreenshotName("GW2TacO");
   App->SetClearColor(CColor(0, 0, 0, 0));
 
-  ImportPOIS(App.get());
+  ImportPOIS();
 
   mumbleLink.Update();
 

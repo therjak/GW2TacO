@@ -25,23 +25,13 @@ int32_t GetStringHash(const char* string) {
   return Hash;
 }
 
-CXMLNode::CXMLNode() {
-  pNode = nullptr;
-  pDoc = nullptr;
-  nLevel = 0;
-}
+CXMLNode::CXMLNode() : pNode(nullptr), pDoc(nullptr), nLevel(0) {}
 
-CXMLNode::CXMLNode(const CXMLNode& Original) {
-  nLevel = Original.nLevel;
-  pNode = Original.pNode;
-  pDoc = Original.pDoc;
-}
+CXMLNode::CXMLNode(const CXMLNode& Original)
+    : nLevel(Original.nLevel), pNode(Original.pNode), pDoc(Original.pDoc) {}
 
-CXMLNode::CXMLNode(xml_node<char>* p, CXMLDocument* d, int32_t l) {
-  pNode = p;
-  pDoc = d;
-  nLevel = l;
-}
+CXMLNode::CXMLNode(xml_node<char>* p, CXMLDocument* d, int32_t l)
+    : pNode(p), pDoc(d), nLevel(l) {}
 
 CXMLNode& CXMLNode::operator=(const CXMLNode& Original) {
   nLevel = Original.nLevel;
@@ -152,9 +142,9 @@ bool CXMLNode::Next(CXMLNode& out, const char* szNodeName) {
   return true;
 }
 
-void CXMLNode::GetText(char* szBuffer, int32_t nBufferSize) { int x = 0; }
+void CXMLNode::GetText(char* szBuffer, int32_t nBufferSize) const { int x = 0; }
 
-std::string CXMLNode::GetText() { return {}; }
+std::string CXMLNode::GetText() const { return {}; }
 
 bool CXMLNode::GetAttribute(std::string_view szAttribute, char* szBuffer,
                             int32_t nBufferSize) const {
@@ -279,13 +269,13 @@ void CXMLNode::SetFloat(float Float) {
   SetText(s);
 }
 
-bool CXMLNode::GetValue(int32_t& Int) {
+bool CXMLNode::GetValue(int32_t& Int) const {
   char s[20] = {0};
   GetText(s, 20);
   return sscanf_s(s, "%d", &Int) == 1;
 }
 
-bool CXMLNode::GetValue(uint8_t& Int) {
+bool CXMLNode::GetValue(uint8_t& Int) const {
   char s[20] = {0};
   GetText(s, 20);
   int32_t x = 0;
@@ -294,7 +284,7 @@ bool CXMLNode::GetValue(uint8_t& Int) {
   return r == 1;
 }
 
-bool CXMLNode::GetValue(bool& Int) {
+bool CXMLNode::GetValue(bool& Int) const {
   char s[20] = {0};
   GetText(s, 20);
   int32_t x = 0;
@@ -303,7 +293,7 @@ bool CXMLNode::GetValue(bool& Int) {
   return r == 1;
 }
 
-bool CXMLNode::GetValue(float& Float) {
+bool CXMLNode::GetValue(float& Float) const {
   char s[20] = {0};
   GetText(s, 20);
   return sscanf_s(s, "%g", &Float) == 1;

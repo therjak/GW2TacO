@@ -28,7 +28,8 @@ class GW2Trail {
 
  public:
   virtual ~GW2Trail();
-  void Build(CCoreDevice* dev, int32_t mapID, const float* points, int pointCount);
+  void Build(CCoreDevice* dev, int32_t mapID, const float* points,
+             int pointCount);
   void Draw();
   void Update();
   void SetupAndDraw(CCoreConstantBuffer* constBuffer, CCoreTexture* texture,
@@ -36,7 +37,7 @@ class GW2Trail {
                     bool scaleData, int32_t fadeoutBubble,
                     std::array<float, 8>& data, float fadeAlpha, float width,
                     float uvScale, float width2d);
-  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
+  void SetCategory(GW2TacticalCategory* t);
 
   bool Import(CStreamReaderMemory& file, bool keepPoints = false);
   bool Import(std::string_view fileName, std::string_view zipFile,

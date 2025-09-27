@@ -149,7 +149,7 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
       if (Message.Data() >= 0 && Message.Data() < CategoryList.size()) {
         if (!ChangeDefault) {
           auto& mPOIs = GetMapPOIs();
-          mPOIs[CurrentPOI].SetCategory(App, CategoryList[Message.Data()]);
+          mPOIs[CurrentPOI].SetCategory(CategoryList[Message.Data()]);
           ExportPOIS();
           auto* type =
               dynamic_cast<CWBLabel*>(FindChildByID("markertype", "label"));
