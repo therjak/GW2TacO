@@ -918,7 +918,7 @@ void GW2Trail::SetupAndDraw(CCoreConstantBuffer* constBuffer,
   Draw();
 }
 
-void GW2Trail::SetCategory(CWBApplication* App, GW2TacticalCategory* t) {
+void GW2Trail::SetCategory(GW2TacticalCategory* t) {
   category = t;
   typeData = t->data;
   Type = t->GetFullTypeName();

@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
-
 project(GW2TacO C CXX)
 set(CMAKE_CXX_STANDARD 20)
 
@@ -541,13 +540,13 @@ install(
     FILES ${Resources} DESTINATION "."
 )
 install(
-    FILES ${Data_Files} DESTINATION "./Data"
+    FILES ${Data_Files} DESTINATION "Data"
 )
 install(
-    FILES ${Poi_Files} DESTINATION "./POIs"
+    FILES ${Poi_Files} DESTINATION "POIs"
 )
 install(
-    FILES ${Poi_Data_Files} DESTINATION "./POIs/Data"
+    FILES ${Poi_Data_Files} DESTINATION "POIs/Data"
 )
 
 ################################################################################

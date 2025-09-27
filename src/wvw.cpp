@@ -314,14 +314,12 @@ void LoadWvWObjectives() {
       }
 
       extern WBATLASHANDLE DefaultIconHandle;
-      extern CSize DefaultIconSize;
 
       POI poi;
       poi.position = o.coord;
       poi.mapID = o.mapID;
       poi.icon = DefaultIconHandle;
       poi.wvwObjectiveID = wvwObjectives.size();
-      // poi.iconSize = DefaultIconSize;
 
       wvwObjectives.push_back(o);
 
@@ -329,9 +327,7 @@ void LoadWvWObjectives() {
 
       auto cat = GetCategory("Tactical.WvW." + o.type);
 
-      extern std::unique_ptr<CWBApplication> App;
-
-      if (cat) poi.SetCategory(App.get(), cat);
+      if (cat) poi.SetCategory(cat);
 
       poi.typeData.behavior = POIBehavior::WvWObjective;
 
@@ -349,6 +345,8 @@ std::atomic<int> lastWvWUpdateTime{0};
 std::thread wvwUpdatThread;
 
 #include "mumble_link.h"
+
+LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
 
 void UpdateWvWStatus() {
   if (wvwupdating.load()) return;
@@ -396,6 +394,7 @@ void UpdateWvWStatus() {
     o.parse(wvwobjectiveids);
     if (o.has<Array>("maps")) {
       auto m = o.get<Array>("maps").values();
+      std::vector<WvWPOIUpdate> updates;
       for (auto& x : m) {
         if (!x->is<Object>()) continue;
 
@@ -415,21 +414,24 @@ void UpdateWvWStatus() {
             continue;
           }
 
-          if (wvwPOIs.find(id) == wvwPOIs.end()) continue;
-
-          auto& poi = wvwPOIs[id];
-          poi.typeData.color = CColor{0xffffffff};
+          WvWPOIUpdate update = {
+              .id = id,
+          };
 
           std::string owner;
           if (objective.has<String>("owner")) {
             owner = objective.get<String>("owner");
           }
 
-          if (owner == "Red") poi.typeData.color = CColor{0xffe53b3b};
-
-          if (owner == "Green") poi.typeData.color = CColor{0xff3dca67};
-
-          if (owner == "Blue") poi.typeData.color = CColor{0xff3aa2fa};
+          if (owner == "Red") {
+            update.owner = WvWPOIUpdate::Team::kRed;
+          } else if (owner == "Green") {
+            update.owner = WvWPOIUpdate::Team::kGreen;
+          } else if (owner == "Blue") {
+            update.owner = WvWPOIUpdate::Team::kBlue;
+          } else {
+            update.owner = WvWPOIUpdate::Team::kNone;
+          }
 
           std::string lastFlipped;
           if (objective.has<String>("last_flipped")) {
@@ -439,9 +441,12 @@ void UpdateWvWStatus() {
           time_t flipTime = 0;
           char flags = 0;
           parseISO8601(lastFlipped.c_str(), flipTime, flags);
-          poi.lastUpdateTime = flipTime;
+          update.lastFlipped = flipTime;
+
+          updates.push_back(update);
         }
       }
+      wvwPOIUpdates.push(updates);
     }
 
     lastWvWUpdateTime = GetTime();

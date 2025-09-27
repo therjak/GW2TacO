@@ -31,12 +31,12 @@ class CXMLNode {
 
   std::string GetNodeName() const;
 
-  void GetText(char*, int32_t);
-  std::string GetText();
-  bool GetValue(int32_t& Int);
-  bool GetValue(uint8_t& Int);
-  bool GetValue(bool& Int);
-  bool GetValue(float& Float);
+  void GetText(char*, int32_t) const;
+  std::string GetText() const;
+  bool GetValue(int32_t& Int) const;
+  bool GetValue(uint8_t& Int) const;
+  bool GetValue(bool& Int) const;
+  bool GetValue(float& Float) const;
 
   bool GetAttribute(std::string_view szAttribute, char* szBuffer,
                     int32_t nBufferSize) const;

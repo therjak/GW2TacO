@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include <string>
+#include <vector>
 
+#include "src/base/lock_free_queue.h"
 #include "src/base/vector.h"
 
 class WvWObjective {
@@ -17,6 +19,20 @@ class WvWObjective {
   std::string name;
   std::string nameToken;
 };
+
+struct WvWPOIUpdate {
+  enum class Team {
+    kRed,
+    kGreen,
+    kBlue,
+    kNone,
+  };
+  std::string id;
+  time_t lastFlipped = 0;
+  Team owner;
+};
+
+extern LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
 
 void LoadWvWObjectives();
 void UpdateWvWStatus();

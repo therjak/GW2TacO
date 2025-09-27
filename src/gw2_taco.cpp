@@ -1246,7 +1246,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           SetConfigValue("ShowInGameTrails", 2);
           return true;
         case Menu_ReloadMarkers:
-          ImportPOIS(GetApplication());
+          ImportPOIS();
           return true;
 
         case Menu_OpacityIngame_Solid:
@@ -1315,7 +1315,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
           KeyBindings.find(Message.Key()) != KeyBindings.end()) {
         switch (KeyBindings[Message.Key()]) {
           case TacOKeyAction::AddPOI:
-            AddPOI(App);
+            AddPOI();
             return true;
           case TacOKeyAction::RemovePOI:
             DeletePOI();

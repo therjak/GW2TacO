@@ -111,10 +111,11 @@ struct Achievement {
 };
 
 struct POI {
-  void SetCategory(CWBApplication* App, GW2TacticalCategory* t);
+  void SetCategory(GW2TacticalCategory* t);
 
-  bool IsVisible(const tm& ptm, const time_t& currtime,
-                 const std::unordered_map<int32_t, Achievement>& achievements);
+  bool IsVisible(
+      const tm& ptm, const time_t& currtime,
+      const std::unordered_map<int32_t, Achievement>& achievements) const;
 
   MarkerTypeData typeData;
   WBATLASHANDLE icon = 0;
@@ -185,7 +186,7 @@ extern std::unordered_map<int, POISet> POIs;
 extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
-extern std::unordered_map<std::string, POI> wvwPOIs;
+
 extern GW2TacticalCategory CategoryRoot;
 POISet& GetMapPOIs();
 
@@ -217,7 +218,7 @@ class GW2TacticalDisplay : public CWBItem {
                bool drawDistance, std::string& infoText);
   void DrawPOIMinimap(CWBDrawAPI* API, const math::CRect& miniRect,
                       math::CVector2 pos, const tm& ptm, const time_t& currtime,
-                      POI& poi, float alpha, float zoomLevel);
+                      const POI& poi, float alpha, float zoomLevel);
   void OnDraw(CWBDrawAPI* API) override;
   math::CVector3 ProjectTacticalPos(math::CVector3 pos, float fov, float asp);
 
@@ -270,10 +271,10 @@ class GW2TacticalCategory {
   std::string cachedTypeName;
 };
 
-void AddPOI(CWBApplication* App);
+void AddPOI();
 void DeletePOI();
 void UpdatePOI();
-void ImportPOIS(CWBApplication* App);
+void ImportPOIS();
 void ExportPOIS();
 void ImportPOIActivationData();
 
