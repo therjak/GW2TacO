@@ -171,6 +171,14 @@ RaidProgress::RaidProgress(CWBItem* Parent, CRect Position)
                       {"adina", RaidEvent::Type::Boss},
                       {"sabir", RaidEvent::Type::Boss},
                       {"qadim_the_peerless", RaidEvent::Type::Boss}}}}},
+          Raid{"Mount Balrior",
+               "MB",
+               "showraid_mount_balrior",
+               {Wing{"mount_balrior",
+                     {{"camp", RaidEvent::Type::Checkpoint},
+                      {"greer", RaidEvent::Type::Boss},
+                      {"decima", RaidEvent::Type::Boss},
+                      {"ura", RaidEvent::Type::Boss}}}}},
       } {}
 
 RaidProgress::~RaidProgress() {
