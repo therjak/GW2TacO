@@ -179,6 +179,16 @@
       <Event Name="Gendarran Fields" Length="20" Color="80c0392b" />
       <Event Name="" Length="100" Color="00000000" />
     </Map>
+    <Map Category="core" Name="Fractal Incursions" Length="240" Start="0" id="fi">
+      <Event Name="Kessex Hills" Length="15" Color="80c0392b" />
+      <Event Name="" Length="45" Color="00000000" />
+      <Event Name="Diessa Plateau" Length="15" Color="80c0392b" />
+      <Event Name="" Length="45" Color="00000000" />
+      <Event Name="Brisban Wildlands" Length="15" Color="80c0392b" />
+      <Event Name="" Length="45" Color="00000000" />
+      <Event Name="Snowden Drifts" Length="15" Color="80c0392b" />
+      <Event Name="" Length="45" Color="00000000" />
+    </Map>
     <Map Category="lws1" Name="Eye of the North" Length="120" Start="90" id="eoth">
       <Event Name="Tower of Nightmares" Length="15" Color="80fb8498" />
       <Event Name="" Length="15" Color="00000000" />
