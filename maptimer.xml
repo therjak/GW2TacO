@@ -13,6 +13,7 @@
     <Category Color="C079afff" Name="End of Dragons" id="eod" />
     <Category Color="C0facd85" Name="Secrets of the Obscure" id="soto" />
     <Category Color="C0c4ffd4" Name="Janthir Wilds" id="jw" />
+    <Category Color="C0f1a1b6" Name="Visions of Eternity" id="voe" />
   </Categories>
   <Maps>
     <Map Name="Daytime" Length="120" Start="25" id="daytime">
@@ -349,6 +350,14 @@
     <Map Category="jw" Name="Jw Convergences" Length="180" Start="0" id="jwc">
       <Event Name="Mount Balrior" Length="10" Color="8092aaeb" />
       <Event Name="" Length="170" Color="00000000" />
+    </Map>
+    <Map Category="voe" Name="Shipwreck Strand" Length="120" Start="40" id="voess">
+      <Event Name="Hammerhart Rumble" Length="20" Color="80df5b2c" />
+      <Event Name="" Length="100" Color="00000000" />
+    </Map>
+    <Map Category="voe" Name="Starlit Weald" Length="120" Start="100" id="voesw">
+      <Event Name="Secrets of the Weald" Length="35" Color="80df5b2c" />
+      <Event Name="" Length="85" Color="00000000" />
     </Map>
   </Maps>
 </GW2MapTimer>
