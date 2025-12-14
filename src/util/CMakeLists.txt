@@ -119,13 +119,8 @@ if(MSVC)
             /Gy
         >
         /MP;
-        /std:c++latest;
         /W3;
-        /MD;
-        ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
         /utf-8;
-        ${DEFAULT_CXX_EXCEPTION_HANDLING};
-        ${DEFAULT_CXX_RUNTIME_LIBRARY};
         /Y-
         )
     target_link_options(${PROJECT_NAME} PRIVATE

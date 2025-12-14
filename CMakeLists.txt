@@ -307,6 +307,7 @@ set(Data_Files
     "Data/storyline_green.png"
     "Data/storyline_purple.png"
     "Data/three.png"
+    "Data/trail.png"
     "Data/two.png"
     "Data/west.png"
     "Data/Wood.png"    
@@ -488,13 +489,8 @@ if(MSVC)
                 /Gy
             >
             /MP;
-            /std:c++latest;
             /W3;
-            /MD;
-            ${DEFAULT_CXX_DEBUG_INFORMATION_FORMAT};
             /utf-8;
-            ${DEFAULT_CXX_EXCEPTION_HANDLING};
-            ${DEFAULT_CXX_RUNTIME_LIBRARY};
             /Y-
         )
         target_link_options(${PROJECT_NAME} PRIVATE
