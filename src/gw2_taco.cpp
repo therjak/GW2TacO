@@ -11,7 +11,7 @@
 #include "src/build_count.h"
 #include "src/build_info.h"
 #include "src/dungeon_progress.h"
-#include "src/gw2_api.h"
+
 #include "src/gw2_tactical.h"
 #include "src/language.h"
 #include "src/map_timer.h"
@@ -32,6 +32,8 @@
 #include "src/white_board/label.h"
 #include "src/white_board/text_box.h"
 #include "src/white_board/window.h"
+
+import taco.gw2;
 
 using namespace jsonxx;
 

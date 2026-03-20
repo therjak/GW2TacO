@@ -136,7 +136,6 @@ set(Header_Files
     "src/core2/vertex_format.h"
     "src/core2/window_handler.h"
     "src/dungeon_progress.h"
-    "src/gw2_api.h"
     "src/gw2_taco.h"
     "src/gw2_tactical.h"
     "src/hp_grid.h"
@@ -414,7 +413,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         FILE_SET modules TYPE CXX_MODULES
         FILES
-        # module.ixx
+            src/gw2_api.ixx
     PUBLIC
     FILE_SET HEADERS
     BASE_DIRS

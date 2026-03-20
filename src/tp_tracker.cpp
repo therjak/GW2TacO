@@ -7,10 +7,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
 #include "src/util/png_decompressor.h"
+
+import taco.gw2;
 
 using namespace jsonxx;
 

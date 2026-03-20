@@ -1,18 +1,19 @@
-﻿#pragma once
+module;
 #include <atomic>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <thread>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
 #include "src/base/lock_free_queue.h"
 #include "src/white_board/draw_api.h"
 
-namespace GW2 {
+export module taco.gw2;
+
+export namespace GW2 {
 
 struct KeyData {
   std::unordered_set<std::string> caps;
@@ -45,7 +46,7 @@ class APIKey {
   std::string apiKey;
 
  private:
-  friend APIKeyManager;
+  friend class APIKeyManager;
   std::atomic<bool> initialized = false;
   std::thread fetcherThread;
   KeyData key_data;
@@ -81,5 +82,5 @@ class APIKeyManager {
   std::vector<std::unique_ptr<APIKey>> keys;
 };
 
-extern APIKeyManager apiKeyManager;
+export extern APIKeyManager apiKeyManager;
 }  // namespace GW2

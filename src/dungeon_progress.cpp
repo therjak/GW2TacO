@@ -8,9 +8,10 @@
 #include <unordered_map>
 
 #include "src/base/logger.h"
-#include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
+
+import taco.gw2;
 
 using math::CPoint;
 using math::CRect;
