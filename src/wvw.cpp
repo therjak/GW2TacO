@@ -8,11 +8,12 @@
 #include <unordered_map>
 #include <vector>
 
-#include "src/gw2_api.h"
 #include "src/gw2_tactical.h"
 #include "src/language.h"
 #include "src/overlay_config.h"
 #include "src/util/jsonxx.h"
+
+import taco.gw2;
 
 using namespace jsonxx;
 

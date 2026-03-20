@@ -17,7 +17,6 @@
 #include "src/base/plane.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/gw2_api.h"
 #include "src/language.h"
 #include "src/mumble_link.h"
 #include "src/overlay_application.h"
@@ -28,6 +27,8 @@
 #include "src/util/png_decompressor.h"
 #include "src/white_board/application.h"
 #include "src/wvw.h"
+
+import taco.gw2;
 
 using namespace jsonxx;
 using math::CMatrix4x4;

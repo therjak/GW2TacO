@@ -19,7 +19,6 @@
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/build_info.h"
-#include "src/gw2_api.h"
 #include "src/gw2_taco.h"
 #include "src/gw2_tactical.h"
 #include "src/hp_grid.h"
@@ -38,6 +37,8 @@
 #include "src/tactical_compass.h"
 #include "src/trail_logger.h"
 #include "src/util/miniz.h"
+
+import taco.gw2;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

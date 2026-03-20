@@ -1,15 +1,20 @@
-﻿#include "src/gw2_api.h"
-
+module;
 #include <algorithm>
 #include <string>
+#include <thread>
+#include <mutex>
+#include <vector>
+#include <utility>
 
 #include "src/base/logger.h"
 #include "src/language.h"
 #include "src/mumble_link.h"
 #include "src/overlay_config.h"
 #include "src/util/jsonxx.h"
-using namespace jsonxx;
 
+module taco.gw2;
+
+using namespace jsonxx;
 using math::CPoint;
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);
@@ -47,12 +52,6 @@ APIKey::~APIKey() {
 void APIKey::FetchData() {
   if (beingInitialized) return;
   beingInitialized = true;
-
-  // keyName = "";
-  // accountName = "";
-  // charNames.clear();
-  // caps.clear();
-  // worldId = 0;
 
   initialized = false;
 
