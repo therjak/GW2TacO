@@ -8,11 +8,10 @@
 #include <unordered_map>
 
 #include "src/base/logger.h"
-#include "src/language.h"
 #include "src/gw2_tactical.h"
 
 import taco.overlay_config;
-
+import taco.language;
 import taco.gw2;
 
 using math::CPoint;

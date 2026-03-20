@@ -21,7 +21,6 @@
 #include "src/build_info.h"
 #include "src/gw2_tactical.h"
 #include "src/hp_grid.h"
-#include "src/language.h"
 #include "src/locational_timer.h"
 #include "src/map_timer.h"
 #include "src/mouse_highlight.h"
@@ -41,6 +40,7 @@
 import taco.gw2;
 import taco.gw2taco;
 import taco.overlay_config;
+import taco.language;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

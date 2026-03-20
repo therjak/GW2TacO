@@ -7,13 +7,13 @@
 #include <unordered_map>
 #include <vector>
 
-#include "src/language.h"
 #include "src/white_board/application.h"
 #include "src/util/png_decompressor.h"
 #include "src/gw2_tactical.h"
 
 import taco.gw2;
 import taco.overlay_config;
+import taco.language;
 
 using namespace jsonxx;
 

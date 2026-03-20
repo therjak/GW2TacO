@@ -138,7 +138,6 @@ set(Header_Files
     "src/dungeon_progress.h"
     "src/gw2_tactical.h"
     "src/hp_grid.h"
-    "src/language.h"
     "src/locational_timer.h"
     "src/map_timer.h"
     "src/marker_editor.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/ts3_connection.ixx
             src/gw2_taco.ixx
             src/overlay_config.ixx
+            src/language.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
