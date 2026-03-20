@@ -17,7 +17,6 @@
 #include "src/base/plane.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/language.h"
 #include "src/mumble_link.h"
 #include "src/overlay_application.h"
 #include "src/trail_logger.h"
@@ -29,6 +28,7 @@
 
 import taco.gw2;
 import taco.overlay_config;
+import taco.language;
 
 using namespace jsonxx;
 using math::CMatrix4x4;

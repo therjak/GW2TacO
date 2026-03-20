@@ -1,4 +1,4 @@
-﻿#pragma once
+module;
 #include <memory>
 #include <string>
 #include <string_view>
@@ -7,13 +7,15 @@
 
 #include "src/util/xml_document.h"
 
-class Language {
+export module taco.language;
+
+export class Language {
  public:
   std::string name;
   std::unordered_map<std::string, std::string> dict;
 };
 
-class Localization {
+export class Localization {
  public:
   Localization();
 
@@ -38,9 +40,9 @@ class Localization {
   std::vector<int> usedGlyphs;
 };
 
-extern std::unique_ptr<Localization> localization;
+export extern std::unique_ptr<Localization> localization;
 
-template <class... Args>
+export template <class... Args>
 std::string DICT(const std::string_view token, Args&&... args) {
   return localization->Localize(token, args...);
 }

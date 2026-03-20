@@ -12,7 +12,6 @@ module;
 #include "src/dungeon_progress.h"
 
 #include "src/gw2_tactical.h"
-#include "src/language.h"
 #include "src/map_timer.h"
 #include "src/marker_editor.h"
 #include "src/mouse_highlight.h"
@@ -32,11 +31,12 @@ module;
 
 #include <shellapi.h>  // TODO: open web page
 
-module taco.gw2taco;
-
 import taco.gw2;
+import taco.language;
 import taco.ts3connection;
 import taco.overlay_config;
+
+module taco.gw2taco;
 
 using namespace jsonxx;
 

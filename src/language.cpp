@@ -1,15 +1,18 @@
-﻿#include "src/language.h"
-
+﻿module;
 #include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
+#include <cctype>
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
+
 import taco.overlay_config;
+
+module taco.language;
 
 typedef std::function<bool(uint32_t)> UTF8CHARCALLBACK;
 void DecodeUtf8(std::string_view Input, const UTF8CHARCALLBACK& callback) {

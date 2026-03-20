@@ -9,12 +9,12 @@
 #include <vector>
 
 #include "src/gw2_tactical.h"
-#include "src/language.h"
 
 #include "src/util/jsonxx.h"
 
 import taco.gw2;
 import taco.overlay_config;
+import taco.language;
 
 using namespace jsonxx;
 

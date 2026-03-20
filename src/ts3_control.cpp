@@ -3,11 +3,11 @@
 #include <algorithm>
 #include <format>
 
-#include "src/language.h"
 #include "src/white_board/application.h"
 
 import taco.ts3connection;
 import taco.overlay_config;
+import taco.language;
 
 using math::CPoint;
 using math::CRect;
