@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
-project(GW2TacO C CXX)
+project(GW2TacO LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 
 ################################################################################
@@ -411,6 +411,10 @@ add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
     PRIVATE
         ${Source_Files}
+    PRIVATE
+        FILE_SET modules TYPE CXX_MODULES
+        FILES
+        # module.ixx
     PUBLIC
     FILE_SET HEADERS
     BASE_DIRS
