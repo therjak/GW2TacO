@@ -11,10 +11,12 @@
 
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #include "src/base/logger.h"
-#include "src/overlay_config.h"
 #include "src/util/miniz.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
+#include "src/base/stream_writer.h"
+
+import taco.overlay_config;
 
 #pragma comment(lib, "Comdlg32.lib")
 

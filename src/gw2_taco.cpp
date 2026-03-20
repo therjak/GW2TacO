@@ -1,6 +1,5 @@
-﻿#include "src/gw2_taco.h"
+module;
 
-#include <shellapi.h>  // TODO: open web page
 
 #include <algorithm>
 #include <format>
@@ -19,12 +18,10 @@
 #include "src/mouse_highlight.h"
 #include "src/mumble_link.h"
 #include "src/notepad.h"
-#include "src/overlay_config.h"
 #include "src/overlay_window.h"
 #include "src/raid_progress.h"
 #include "src/tp_tracker.h"
 #include "src/trail_logger.h"
-#include "src/ts3_connection.h"
 #include "src/ts3_control.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
@@ -33,7 +30,13 @@
 #include "src/white_board/text_box.h"
 #include "src/white_board/window.h"
 
+#include <shellapi.h>  // TODO: open web page
+
+module taco.gw2taco;
+
 import taco.gw2;
+import taco.ts3connection;
+import taco.overlay_config;
 
 using namespace jsonxx;
 
@@ -2005,139 +2008,93 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   APIKeyInput->SetFocus();
 }
 
-void GW2TacO::TurnOnTPLight() { showPickupHighlight = true; }
-
-void GW2TacO::TurnOffTPLight() { showPickupHighlight = false; }
-
-void GW2TacO::CheckItemPickup() {
-  if (GW2::apiKeyManager.GetStatus() != GW2::APIKeyManager::Status::OK) return;
-
-  GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
-
-  if (key && key->Valid() &&
-      (GetTime() - lastPickupFetchTime > 150000 || !lastPickupFetchTime) &&
-      !pickupsBeingFetched && !pickupFetcherThread.joinable()) {
-    pickupsBeingFetched = true;
-    pickupFetcherThread = std::thread([this, key]() {
-      auto query = key->QueryAPI("v2/commerce/delivery");
-
-      Object json;
-      json.parse(query);
-
-      int32_t coins = 0;
-      int32_t itemCount = 0;
-
-      if (json.has<Number>("coins")) {
-        coins = static_cast<int32_t>(json.get<Number>("coins"));
-
-        if (json.has<Array>("items")) {
-          itemCount = json.get<Array>("items").size();
-
-          if ((!coins && !itemCount) || lastItemPickup.empty()) {
-            TurnOffTPLight();
-            if (lastItemPickup.empty()) lastItemPickup = query;
-          } else {
-            if (query != lastItemPickup) {
-              TurnOnTPLight();
-              lastItemPickup = query;
-            }
-          }
-        } else {
-          TurnOffTPLight();
-        }
-      } else {
-        TurnOffTPLight();
-      }
-
-      pickupsBeingFetched = false;
-    });
-  }
-
-  if (!pickupsBeingFetched && pickupFetcherThread.joinable()) {
-    lastPickupFetchTime = GetTime();
-    pickupFetcherThread.join();
+void GW2TacO::TurnOnTPLight() {
+  auto* tpButton = dynamic_cast<CWBButton*>(
+      App->GetRoot()->FindChildByID("TPButton", "clickthroughbutton"));
+  if (tpButton) {
+    tpButton->ApplyStyleDeclarations(
+        "background: skin(TPButtonHighlight) center middle;");
+    showPickupHighlight = true;
   }
 }
 
+void GW2TacO::TurnOffTPLight() {
+  auto* tpButton = dynamic_cast<CWBButton*>(
+      App->GetRoot()->FindChildByID("TPButton", "clickthroughbutton"));
+  if (tpButton) {
+    tpButton->ApplyStyleDeclarations(
+        "background: skin(TPButton) center middle;");
+    showPickupHighlight = false;
+  }
+}
+
+void GW2TacO::CheckItemPickup() {
+  if (pickupsBeingFetched) return;
+
+  if (GetTime() - lastPickupFetchTime < 1000 * 60) return;
+
+  pickupsBeingFetched = true;
+  lastPickupFetchTime = GetTime();
+
+  if (pickupFetcherThread.joinable()) pickupFetcherThread.join();
+
+  pickupFetcherThread = std::thread([this]() {
+    auto key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+    if (key && key->HasCaps("inventories")) {
+      auto pickupData = key->QueryAPI("/v2/account/inventory");
+      if (pickupData != lastItemPickup) {
+        if (!lastItemPickup.empty()) {
+          TurnOnTPLight();
+        }
+        lastItemPickup = pickupData;
+      }
+    }
+    pickupsBeingFetched = false;
+  });
+}
+
 void GW2TacO::StoreIconSizes() {
-  if (iconSizesStored || !App) return;
+  auto taco = dynamic_cast<CWBButton*>(FindChildByID("MenuButton", "button"));
+  if (taco) tacoIconRect = taco->GetClientRect();
 
-  CWBItem* v1 = App->GetRoot()->FindChildByID("MenuButton");
-  CWBItem* v2 = App->GetRoot()->FindChildByID("MenuHoverBox");
-  CWBItem* v3 = App->GetRoot()->FindChildByID("TPButton");
-  CWBItem* v4 = App->GetRoot()->FindChildByID("RedCircle");
+  auto menuHover = FindChildByID("MenuHoverBox");
+  if (menuHover) menuHoverRect = menuHover->GetClientRect();
 
-  if (v1) {
-    tacoIconRect = v1->GetPosition();
-  }
+  auto tpButton = dynamic_cast<CWBButton*>(
+      FindChildByID("TPButton", "clickthroughbutton"));
+  if (tpButton) tpButtonRect = tpButton->GetClientRect();
 
-  if (v2) {
-    menuHoverRect = v2->GetPosition();
-  }
-
-  if (v3) {
-    tpButtonRect = v3->GetPosition();
-  }
-
-  if (v4) {
-    tpHighlightRect = v4->GetPosition();
-  }
+  auto tpHighlight = FindChildByID("RedCircle");
+  if (tpHighlight) tpHighlightRect = tpHighlight->GetClientRect();
 
   iconSizesStored = true;
 }
 
 void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
-  if (!iconSizesStored || !App) return;
+  if (!iconSizesStored) return;
 
-  CWBItem* v1 = App->GetRoot()->FindChildByID("MenuButton");
-  CWBItem* v2 = App->GetRoot()->FindChildByID("MenuHoverBox");
-  CWBItem* v3 = App->GetRoot()->FindChildByID("TPButton");
-  CWBItem* v4 = App->GetRoot()->FindChildByID("RedCircle");
-
-  if (v1) {
-    auto str = std::format(
-        "#MenuButton{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
-        "background:skin(taco_stretch_dark) top left; }} "
-        "#MenuButton:hover{{background:skin(taco_stretch_light) top left;}} "
-        "#MenuButton:active{{background:skin(taco_stretch_light) top left;}}",
-        static_cast<int>(tacoIconRect.x1 * scale),
-        static_cast<int>(tacoIconRect.y1 * scale),
-        static_cast<int>(tacoIconRect.Width() * scale),
-        static_cast<int>(tacoIconRect.Height() * scale));
-    App->LoadCSS(str, false);
+  auto taco = dynamic_cast<CWBButton*>(FindChildByID("MenuButton", "button"));
+  if (taco) {
+    taco->SetPosition(CRect(tacoIconRect.TopLeft() * scale,
+                            tacoIconRect.BottomRight() * scale));
   }
 
-  if (v2) {
-    auto str = std::format(
-        "#MenuHoverBox{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
-        "}}",
-        static_cast<int>(menuHoverRect.x1 * scale),
-        static_cast<int>(menuHoverRect.y1 * scale),
-        static_cast<int>(menuHoverRect.Width() * scale),
-        static_cast<int>(menuHoverRect.Height() * scale));
-    App->LoadCSS(str, false);
+  auto menuHover = FindChildByID("MenuHoverBox");
+  if (menuHover) {
+    menuHover->SetPosition(CRect(menuHoverRect.TopLeft() * scale,
+                                 menuHoverRect.BottomRight() * scale));
   }
 
-  if (v3) {
-    auto str = std::format(
-        "#TPButton{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; }}",
-        static_cast<int>(tpButtonRect.x1 * scale),
-        static_cast<int>(tpButtonRect.y1 * scale),
-        static_cast<int>(tpButtonRect.Width() * scale),
-        static_cast<int>(tpButtonRect.Height() * scale));
-    App->LoadCSS(str, false);
+  auto tpButton = dynamic_cast<CWBButton*>(
+      FindChildByID("TPButton", "clickthroughbutton"));
+  if (tpButton) {
+    tpButton->SetPosition(
+        CRect(tpButtonRect.TopLeft() * scale, tpButtonRect.BottomRight() * scale));
   }
 
-  if (v4) {
-    auto str = std::format(
-        "#RedCircle{{ left:{:d}px; top:{:d}px; width:{:d}px; height:{:d}px; "
-        "background:skin(redcircle_stretch) top left; }}",
-        static_cast<int>(tpHighlightRect.x1 * scale),
-        static_cast<int>(tpHighlightRect.y1 * scale),
-        static_cast<int>(tpHighlightRect.Width() * scale),
-        static_cast<int>(tpHighlightRect.Height() * scale));
-    App->LoadCSS(str, false);
+  auto tpHighlight = FindChildByID("RedCircle");
+  if (tpHighlight) {
+    tpHighlight->SetPosition(CRect(tpHighlightRect.TopLeft() * scale,
+                                   tpHighlightRect.BottomRight() * scale));
   }
-
-  App->ReApplyStyle();
 }

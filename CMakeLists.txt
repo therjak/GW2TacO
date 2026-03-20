@@ -136,7 +136,6 @@ set(Header_Files
     "src/core2/vertex_format.h"
     "src/core2/window_handler.h"
     "src/dungeon_progress.h"
-    "src/gw2_taco.h"
     "src/gw2_tactical.h"
     "src/hp_grid.h"
     "src/language.h"
@@ -147,7 +146,6 @@ set(Header_Files
     "src/mumble_link.h"
     "src/notepad.h"
     "src/overlay_application.h"
-    "src/overlay_config.h"
     "src/overlay_window.h"
     "src/pro_font.h"
     "src/raid_progress.h"
@@ -157,7 +155,6 @@ set(Header_Files
     "src/tactical_compass.h"
     "src/tp_tracker.h"
     "src/trail_logger.h"
-    "src/ts3_connection.h"
     "src/ts3_control.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
@@ -414,8 +411,11 @@ target_sources(${PROJECT_NAME}
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/gw2_api.ixx
+            src/ts3_connection.ixx
+            src/gw2_taco.ixx
+            src/overlay_config.ixx
     PUBLIC
-    FILE_SET HEADERS
+        FILE_SET HEADERS
     BASE_DIRS
         "${CMAKE_CURRENT_SOURCE_DIR}/."    
     FILES ${Header_Files}

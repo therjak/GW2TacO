@@ -8,7 +8,9 @@
 
 #include "src/base/logger.h"
 #include "src/language.h"
-#include "src/overlay_config.h"
+#include "src/gw2_tactical.h"
+
+import taco.overlay_config;
 
 import taco.gw2;
 

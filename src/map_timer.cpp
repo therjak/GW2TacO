@@ -5,9 +5,11 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include "src/gw2_tactical.h"
+#include "src/white_board/application.h"
 
-#include "src/overlay_config.h"
-
+import taco.overlay_config;
+import taco.gw2taco;
 import taco.gw2;
 
 using math::CPoint;

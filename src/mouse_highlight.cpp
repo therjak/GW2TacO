@@ -1,7 +1,8 @@
 ﻿#include "src/mouse_highlight.h"
 
-#include "src/overlay_config.h"
 #include "src/white_board/application.h"
+
+import taco.overlay_config;
 
 using math::CPoint;
 using math::CRect;

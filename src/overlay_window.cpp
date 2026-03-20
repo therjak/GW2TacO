@@ -1,9 +1,9 @@
 ﻿#include "src/overlay_window.h"
 
-#include "src/overlay_config.h"
 #include "src/white_board/application.h"
 #include "src/white_board/window.h"
 
+import taco.overlay_config;
 using math::CPoint;
 using math::CRect;
 
