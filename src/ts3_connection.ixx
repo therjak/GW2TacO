@@ -1,11 +1,14 @@
-﻿#pragma once
+module;
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "src/base/socket.h"
 
-class TS3Connection {
+export module taco.ts3connection;
+
+export class TS3Connection {
  public:
   class TS3Client {
    public:
@@ -70,4 +73,4 @@ class TS3Connection {
   int32_t LastPingTime = 0;
 };
 
-extern TS3Connection teamSpeakConnection;
+export extern TS3Connection teamSpeakConnection;

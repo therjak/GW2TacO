@@ -1,14 +1,20 @@
-﻿#include "src/overlay_config.h"
-
+module;
 #include <format>
 #include <map>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <cstdio>
 
 #include "src/base/logger.h"
 #include "src/base/timer.h"
 #include "src/util/xml_document.h"
+#include "src/base/rectangle.h"
+#include "src/gw2_tactical.h"
+
+import taco.gw2taco;
+
+module taco.overlay_config;
 
 using math::CPoint;
 using math::CRect;
@@ -233,8 +239,6 @@ void DeleteScriptKeyBinding(std::string_view scriptEvent) {
     it = ConfigNums.erase(it);
   }
 }
-
-GW2TacticalCategory* GetCategory(std::string_view s);
 
 void LoadMarkerCategoryVisibilityInfo() {
   for (auto& kdp : ConfigNums) {

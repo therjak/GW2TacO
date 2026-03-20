@@ -9,8 +9,9 @@ module;
 #include "src/base/logger.h"
 #include "src/language.h"
 #include "src/mumble_link.h"
-#include "src/overlay_config.h"
 #include "src/util/jsonxx.h"
+
+import taco.overlay_config;
 
 module taco.gw2;
 

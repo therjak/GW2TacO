@@ -1,10 +1,19 @@
-﻿#include "src/ts3_connection.h"
-
+module;
 #include <format>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <vector>
+#include <cstdio>
 
+#include "src/base/socket.h"
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
-#include "src/overlay_config.h"
+#include "src/gw2_tactical.h"
+
+import taco.overlay_config;
+
+module taco.ts3connection;
 
 TS3Connection teamSpeakConnection;
 

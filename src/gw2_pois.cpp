@@ -19,7 +19,6 @@
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/build_info.h"
-#include "src/gw2_taco.h"
 #include "src/gw2_tactical.h"
 #include "src/hp_grid.h"
 #include "src/language.h"
@@ -28,7 +27,6 @@
 #include "src/mouse_highlight.h"
 #include "src/mumble_link.h"
 #include "src/overlay_application.h"
-#include "src/overlay_config.h"
 #include "src/overlay_window.h"
 #include "src/pro_font.h"
 #include "src/range_display.h"
@@ -37,8 +35,12 @@
 #include "src/tactical_compass.h"
 #include "src/trail_logger.h"
 #include "src/util/miniz.h"
+#include "src/base/stream_reader.h"
+#include "src/base/stream_writer.h"
 
 import taco.gw2;
+import taco.gw2taco;
+import taco.overlay_config;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

@@ -7,7 +7,9 @@
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
 #include "src/mumble_link.h"
-#include "src/overlay_config.h"
+#include "src/gw2_tactical.h"
+
+import taco.overlay_config;
 
 using math::CPoint;
 using math::CRect;

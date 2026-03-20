@@ -2,9 +2,13 @@
 
 #include "src/gw2_tactical.h"
 #include "src/mumble_link.h"
-#include "src/overlay_config.h"
 #include "src/white_board/application.h"
 #include "src/white_board/text_box.h"
+#include "src/base/stream_writer.h"
+#include "src/base/stream_reader.h"
+
+
+import taco.overlay_config;
 
 using math::CPoint;
 using math::CRect;

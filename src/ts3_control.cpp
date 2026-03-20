@@ -4,9 +4,10 @@
 #include <format>
 
 #include "src/language.h"
-#include "src/overlay_config.h"
-#include "src/ts3_connection.h"
 #include "src/white_board/application.h"
+
+import taco.ts3connection;
+import taco.overlay_config;
 
 using math::CPoint;
 using math::CRect;

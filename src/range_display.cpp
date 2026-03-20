@@ -3,7 +3,9 @@
 #include <algorithm>
 
 #include "src/mumble_link.h"
-#include "src/overlay_config.h"
+#include "src/gw2_tactical.h"
+
+import taco.overlay_config;
 
 using math::CMatrix4x4;
 using math::CPoint;

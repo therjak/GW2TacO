@@ -1,16 +1,20 @@
-﻿#pragma once
+module;
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
+#include <cassert>
 
 #include "src/gw2_tactical.h"
-#include "src/ts3_connection.h"
 #include "src/white_board/gui_item.h"
 #include "src/white_board/text_box.h"
 #include "src/white_board/window.h"
 
-enum class TacOKeyAction : int32_t {
+export module taco.gw2taco;
+
+import taco.ts3connection;
+
+export enum class TacOKeyAction : int32_t {
   NoAction = 0,
   AddPOI,
   RemovePOI,
@@ -38,15 +42,15 @@ enum class TacOKeyAction : int32_t {
   // if you add one here, add it to the ActionNames array in the .cpp as well!
 };
 
-enum class APIKeys {
+export enum class APIKeys {
   None = 0,
   TS3APIKey,
   GW2APIKey,
 };
 
-extern std::vector<std::string_view> ActionNames;
+export extern std::vector<std::string_view> ActionNames;
 
-class GW2TacO : public CWBItem {
+export class GW2TacO : public CWBItem {
  public:
   GW2TacO(CWBItem* Parent, math::CRect Position);
   static inline GW2TacO* Create(CWBItem* Parent, math::CRect Position) {
@@ -123,6 +127,6 @@ class GW2TacO : public CWBItem {
   std::thread pickupFetcherThread;
 };
 
-extern std::string_view UIFileNames[];
+export extern std::string_view UIFileNames[];
 
-void SetMouseToolTip(std::string_view toolTip);
+export void SetMouseToolTip(std::string_view toolTip);

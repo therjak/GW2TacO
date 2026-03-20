@@ -3,8 +3,10 @@
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/overlay_config.h"
 #include "src/trail_logger.h"
+#include "src/white_board/application.h"
+
+import taco.overlay_config;
 
 using math::CMatrix4x4;
 using math::CRect;
