@@ -1,7 +1,8 @@
-﻿#include "src/overlay_application.h"
-
+module;
 #include "src/base/logger.h"
 #include "src/white_board/application.h"
+
+module taco.overlay_application;
 
 COverlayApp::COverlayApp() = default;
 

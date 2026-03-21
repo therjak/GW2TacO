@@ -1,7 +1,10 @@
-﻿#pragma once
+module;
+#include <memory>
 #include "src/white_board/application.h"
 
-class COverlayApp : public CWBApplication {
+export module taco.overlay_application;
+
+export class COverlayApp : public CWBApplication {
  public:
   bool Initialize(const CCoreWindowParameters& WindowParams) override;
 
