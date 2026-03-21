@@ -1,7 +1,8 @@
-﻿#include "src/overlay_window.h"
-
+module;
 #include "src/white_board/application.h"
 #include "src/white_board/window.h"
+
+module taco.overlay_window;
 
 import taco.overlay_config;
 using math::CPoint;

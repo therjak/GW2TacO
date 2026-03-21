@@ -143,7 +143,6 @@ set(Header_Files
     "src/marker_editor.h"
     "src/mouse_highlight.h"
     "src/notepad.h"
-    "src/overlay_window.h"
     "src/pro_font.h"
     "src/raid_progress.h"
     "src/range_display.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/overlay_application.ixx
             src/ts3_control.ixx
             src/trail_logger.ixx
+            src/overlay_window.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

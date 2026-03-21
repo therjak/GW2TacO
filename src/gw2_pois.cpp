@@ -26,7 +26,6 @@
 #include "src/locational_timer.h"
 #include "src/map_timer.h"
 #include "src/mouse_highlight.h"
-#include "src/overlay_window.h"
 #include "src/pro_font.h"
 #include "src/range_display.h"
 #include "src/resource.h"
@@ -41,6 +40,7 @@ import taco.overlay_config;
 import taco.language;
 import taco.overlay_application;
 import taco.trail_logger;
+import taco.overlay_window;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")
