@@ -20,7 +20,6 @@
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/build_info.h"
 #include "src/gw2_tactical.h"
 #include "src/locational_timer.h"
 #include "src/map_timer.h"
@@ -41,6 +40,7 @@ import taco.overlay_window;
 import taco.special_gui_items;
 import taco.mouse_highlight;
 import taco.hp_grid;
+import taco.build_info;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

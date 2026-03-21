@@ -111,7 +111,6 @@ set(Header_Files
     "src/base/string_format.h"
     "src/base/timer.h"
     "src/base/vector.h"
-    "src/build_info.h"
     "src/core2/constant_buffer.h"
     "src/core2/core2.h"
     "src/core2/core2_config.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/special_gui_items.ixx
             src/mouse_highlight.ixx
             src/hp_grid.ixx
+            src/build_info.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
