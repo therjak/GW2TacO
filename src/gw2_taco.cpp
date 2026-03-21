@@ -10,7 +10,6 @@ module;
 
 #include "src/base/logger.h"
 #include "src/build_count.h"
-#include "src/build_info.h"
 #include "src/dungeon_progress.h"
 #include "src/gw2_tactical.h"
 #include "src/map_timer.h"
@@ -34,6 +33,7 @@ import taco.ts3_control;
 import taco.trail_logger;
 import taco.overlay_window;
 import taco.mouse_highlight;
+import taco.build_info;
 
 module taco.gw2taco;
 
