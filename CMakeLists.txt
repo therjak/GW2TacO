@@ -142,7 +142,6 @@ set(Header_Files
     "src/map_timer.h"
     "src/marker_editor.h"
     "src/mouse_highlight.h"
-    "src/mumble_link.h"
     "src/notepad.h"
     "src/overlay_application.h"
     "src/overlay_window.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/gw2_taco.ixx
             src/overlay_config.ixx
             src/language.ixx
+            src/mumble_link.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

@@ -17,7 +17,6 @@
 #include "src/base/plane.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/mumble_link.h"
 #include "src/overlay_application.h"
 #include "src/trail_logger.h"
 #include "src/util/jsonxx.h"
@@ -26,6 +25,7 @@
 #include "src/white_board/application.h"
 #include "src/wvw.h"
 
+import taco.mumble_link;
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;

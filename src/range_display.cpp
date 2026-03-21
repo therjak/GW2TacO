@@ -2,9 +2,9 @@
 
 #include <algorithm>
 
-#include "src/mumble_link.h"
 #include "src/gw2_tactical.h"
 
+import taco.mumble_link;
 import taco.overlay_config;
 
 using math::CMatrix4x4;

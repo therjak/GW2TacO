@@ -17,6 +17,7 @@
 #include "src/base/stream_writer.h"
 
 import taco.overlay_config;
+import taco.mumble_link;
 
 #pragma comment(lib, "Comdlg32.lib")
 

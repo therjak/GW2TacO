@@ -1,12 +1,12 @@
 ﻿#include "src/marker_editor.h"
 
 #include "src/gw2_tactical.h"
-#include "src/mumble_link.h"
 #include "src/trail_logger.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
 #include "src/white_board/label.h"
 
+import taco.mumble_link;
 import taco.overlay_config;
 
 using math::CPoint;

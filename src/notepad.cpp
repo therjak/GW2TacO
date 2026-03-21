@@ -1,13 +1,12 @@
 ﻿#include "src/notepad.h"
 
 #include "src/gw2_tactical.h"
-#include "src/mumble_link.h"
 #include "src/white_board/application.h"
 #include "src/white_board/text_box.h"
 #include "src/base/stream_writer.h"
 #include "src/base/stream_reader.h"
 
-
+import taco.mumble_link;
 import taco.overlay_config;
 
 using math::CPoint;

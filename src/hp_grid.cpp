@@ -3,7 +3,8 @@
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
-#include "src/mumble_link.h"
+
+import taco.mumble_link;
 import taco.overlay_config;
 
 using math::CPoint;
