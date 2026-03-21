@@ -1,14 +1,15 @@
-﻿#pragma once
-
+module;
 #include <memory>
-
+#include <cassert>
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 #include "src/white_board/window.h"
 
-class OverlayWindow : public CWBWindow {
+export module taco.overlay_window;
+
+export class OverlayWindow : public CWBWindow {
  public:
   OverlayWindow(CWBItem* Parent, math::CRect Position);
   ~OverlayWindow() override;

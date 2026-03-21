@@ -17,7 +17,6 @@ module;
 #include "src/marker_editor.h"
 #include "src/mouse_highlight.h"
 #include "src/notepad.h"
-#include "src/overlay_window.h"
 #include "src/raid_progress.h"
 #include "src/tp_tracker.h"
 #include "src/util/jsonxx.h"
@@ -34,6 +33,7 @@ import taco.ts3connection;
 import taco.overlay_config;
 import taco.ts3_control;
 import taco.trail_logger;
+import taco.overlay_window;
 
 module taco.gw2taco;
 
