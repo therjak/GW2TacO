@@ -29,7 +29,6 @@
 #include "src/pro_font.h"
 #include "src/range_display.h"
 #include "src/resource.h"
-#include "src/special_gui_items.h"
 #include "src/tactical_compass.h"
 #include "src/util/miniz.h"
 
@@ -41,6 +40,7 @@ import taco.language;
 import taco.overlay_application;
 import taco.trail_logger;
 import taco.overlay_window;
+import taco.special_gui_items;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

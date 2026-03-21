@@ -147,7 +147,6 @@ set(Header_Files
     "src/raid_progress.h"
     "src/range_display.h"
     "src/resource.h"
-    "src/special_gui_items.h"
     "src/tactical_compass.h"
     "src/tp_tracker.h"
     "src/util/png_decompressor.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/ts3_control.ixx
             src/trail_logger.ixx
             src/overlay_window.ixx
+            src/special_gui_items.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
