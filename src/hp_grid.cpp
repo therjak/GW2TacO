@@ -1,8 +1,15 @@
-﻿#include "src/hp_grid.h"
+module;
+
+#include <cstdio>
+#include <memory>
+#include <vector>
 
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
+#include "src/util/xml_document.h"
+
+module taco.hp_grid;
 
 import taco.mumble_link;
 import taco.overlay_config;
