@@ -1,7 +1,8 @@
-﻿#pragma once
+module;
 
 #include <memory>
 #include <vector>
+#include <cassert>
 
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
@@ -9,7 +10,9 @@
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-class GW2HPGrid : public CWBItem {
+export module taco.hp_grid;
+
+export class GW2HPGrid : public CWBItem {
  public:
   GW2HPGrid(CWBItem* Parent, math::CRect Position);
   static inline GW2HPGrid* Create(CWBItem* Parent, math::CRect Position) {

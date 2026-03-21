@@ -22,7 +22,6 @@
 #include "src/base/timer.h"
 #include "src/build_info.h"
 #include "src/gw2_tactical.h"
-#include "src/hp_grid.h"
 #include "src/locational_timer.h"
 #include "src/map_timer.h"
 #include "src/pro_font.h"
@@ -41,6 +40,7 @@ import taco.trail_logger;
 import taco.overlay_window;
 import taco.special_gui_items;
 import taco.mouse_highlight;
+import taco.hp_grid;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")
