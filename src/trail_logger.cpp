@@ -1,5 +1,6 @@
-﻿#include "src/trail_logger.h"
-
+module;
+#include <windows.h>
+// windows header are stupid
 #include <commdlg.h>
 
 #include <algorithm>
@@ -12,9 +13,12 @@
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #include "src/base/logger.h"
 #include "src/base/stream_writer.h"
+#include "src/gw2_tactical.h"
 #include "src/util/miniz.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
+
+module taco.trail_logger;
 
 import taco.overlay_config;
 import taco.mumble_link;

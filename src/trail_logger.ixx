@@ -1,4 +1,4 @@
-﻿#pragma once
+module;
 #include <array>
 #include <memory>
 #include <mutex>
@@ -6,6 +6,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <cassert>
 
 #include "src/base/hasher.h"
 #include "src/base/stream_reader.h"
@@ -13,18 +14,22 @@
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
+export module taco.trail_logger;
+
 import taco.mumble_link;
 
-void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);
+export void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);
 
-struct GW2TrailVertex {
+export struct GW2TrailVertex {
   math::CVector4 Pos;
   math::CVector2 UV;
   math::CVector4 CenterPos;
   CColor Color;
 };
 
-class GW2Trail {
+export class GW2TrailDisplay;
+
+export class GW2Trail {
   friend class GW2TrailDisplay;
 
  public:
@@ -67,7 +72,7 @@ class GW2Trail {
   std::vector<math::CVector3> positions;
 };
 
-class GW2TrailDisplay : public CWBItem {
+export class GW2TrailDisplay : public CWBItem {
  public:
   GW2TrailDisplay(CWBItem* Parent, math::CRect Position);
   ~GW2TrailDisplay() override;
@@ -130,6 +135,6 @@ class GW2TrailDisplay : public CWBItem {
   std::unordered_map<std::string, std::unique_ptr<CCoreTexture2D>> textureCache;
 };
 
-typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;
-extern std::unordered_map<int, TrailSet> trails;
-TrailSet& GetMapTrails();
+export typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;
+export extern std::unordered_map<int, TrailSet> trails;
+export TrailSet& GetMapTrails();

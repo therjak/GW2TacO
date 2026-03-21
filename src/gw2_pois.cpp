@@ -16,6 +16,8 @@
 
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #include "src/base/logger.h"
+#include "src/base/stream_reader.h"
+#include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/build_info.h"
@@ -30,10 +32,7 @@
 #include "src/resource.h"
 #include "src/special_gui_items.h"
 #include "src/tactical_compass.h"
-#include "src/trail_logger.h"
 #include "src/util/miniz.h"
-#include "src/base/stream_reader.h"
-#include "src/base/stream_writer.h"
 
 import taco.mumble_link;
 import taco.gw2;
@@ -41,6 +40,7 @@ import taco.gw2taco;
 import taco.overlay_config;
 import taco.language;
 import taco.overlay_application;
+import taco.trail_logger;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

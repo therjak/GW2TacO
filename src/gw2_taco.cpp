@@ -1,5 +1,7 @@
 module;
-
+#include <windows.h>
+// windows header are stupid
+#include <shellapi.h>  // TODO: open web page
 
 #include <algorithm>
 #include <format>
@@ -10,7 +12,6 @@ module;
 #include "src/build_count.h"
 #include "src/build_info.h"
 #include "src/dungeon_progress.h"
-
 #include "src/gw2_tactical.h"
 #include "src/map_timer.h"
 #include "src/marker_editor.h"
@@ -19,7 +20,6 @@ module;
 #include "src/overlay_window.h"
 #include "src/raid_progress.h"
 #include "src/tp_tracker.h"
-#include "src/trail_logger.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
@@ -27,14 +27,13 @@ module;
 #include "src/white_board/text_box.h"
 #include "src/white_board/window.h"
 
-#include <shellapi.h>  // TODO: open web page
-
 import taco.mumble_link;
 import taco.gw2;
 import taco.language;
 import taco.ts3connection;
 import taco.overlay_config;
 import taco.ts3_control;
+import taco.trail_logger;
 
 module taco.gw2taco;
 
@@ -2060,8 +2059,8 @@ void GW2TacO::StoreIconSizes() {
   auto menuHover = FindChildByID("MenuHoverBox");
   if (menuHover) menuHoverRect = menuHover->GetClientRect();
 
-  auto tpButton = dynamic_cast<CWBButton*>(
-      FindChildByID("TPButton", "clickthroughbutton"));
+  auto tpButton =
+      dynamic_cast<CWBButton*>(FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) tpButtonRect = tpButton->GetClientRect();
 
   auto tpHighlight = FindChildByID("RedCircle");
@@ -2085,11 +2084,11 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
                                  menuHoverRect.BottomRight() * scale));
   }
 
-  auto tpButton = dynamic_cast<CWBButton*>(
-      FindChildByID("TPButton", "clickthroughbutton"));
+  auto tpButton =
+      dynamic_cast<CWBButton*>(FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) {
-    tpButton->SetPosition(
-        CRect(tpButtonRect.TopLeft() * scale, tpButtonRect.BottomRight() * scale));
+    tpButton->SetPosition(CRect(tpButtonRect.TopLeft() * scale,
+                                tpButtonRect.BottomRight() * scale));
   }
 
   auto tpHighlight = FindChildByID("RedCircle");

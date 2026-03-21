@@ -151,7 +151,6 @@ set(Header_Files
     "src/special_gui_items.h"
     "src/tactical_compass.h"
     "src/tp_tracker.h"
-    "src/trail_logger.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/mumble_link.ixx
             src/overlay_application.ixx
             src/ts3_control.ixx
+            src/trail_logger.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
