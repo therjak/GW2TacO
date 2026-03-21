@@ -1,5 +1,6 @@
 module;
 #include <windows.h>
+
 #include <algorithm>
 #include <cstring>
 #include <cwchar>
@@ -10,11 +11,11 @@ module;
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/trail_logger.h"
+#include "src/gw2_tactical.h"
 #include "src/white_board/application.h"
 
+import taco.trail_logger;
 import taco.overlay_config;
-
 module taco.mumble_link;
 
 using math::CMatrix4x4;

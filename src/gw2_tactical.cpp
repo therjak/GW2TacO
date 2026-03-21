@@ -15,13 +15,14 @@
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
 #include "src/base/plane.h"
+#include "src/base/stream_reader.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/trail_logger.h"
 #include "src/util/jsonxx.h"
 #include "src/util/miniz.h"
 #include "src/util/png_decompressor.h"
 #include "src/white_board/application.h"
+#include "src/white_board/draw_api.h"
 #include "src/wvw.h"
 
 import taco.mumble_link;
@@ -29,6 +30,7 @@ import taco.gw2;
 import taco.overlay_config;
 import taco.language;
 import taco.overlay_application;
+import taco.trail_logger;
 
 using namespace jsonxx;
 using math::CMatrix4x4;
