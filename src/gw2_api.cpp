@@ -7,9 +7,10 @@ module;
 #include <utility>
 
 #include "src/base/logger.h"
-#include "src/mumble_link.h"
+#include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 
+import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;
 

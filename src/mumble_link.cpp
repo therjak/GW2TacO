@@ -1,4 +1,11 @@
-﻿#include "src/mumble_link.h"
+module;
+#include <windows.h>
+#include <algorithm>
+#include <cstring>
+#include <cwchar>
+#include <memory>
+#include <string>
+#include <string_view>
 
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
@@ -7,6 +14,8 @@
 #include "src/white_board/application.h"
 
 import taco.overlay_config;
+
+module taco.mumble_link;
 
 using math::CMatrix4x4;
 using math::CRect;

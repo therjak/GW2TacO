@@ -15,7 +15,6 @@ module;
 #include "src/map_timer.h"
 #include "src/marker_editor.h"
 #include "src/mouse_highlight.h"
-#include "src/mumble_link.h"
 #include "src/notepad.h"
 #include "src/overlay_window.h"
 #include "src/raid_progress.h"
@@ -31,6 +30,7 @@ module;
 
 #include <shellapi.h>  // TODO: open web page
 
+import taco.mumble_link;
 import taco.gw2;
 import taco.language;
 import taco.ts3connection;

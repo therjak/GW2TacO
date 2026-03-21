@@ -1,13 +1,16 @@
-﻿#pragma once
+module;
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "src/base/matrix.h"
 #include "src/base/rectangle.h"
 #include "src/base/ring_buffer.h"
 
-struct MumbleContext {
+export module taco.mumble_link;
+
+export struct MumbleContext {
   unsigned char serverAddress[28];  // contains sockaddr_in or sockaddr_in6
   uint32_t mapId;
   uint32_t mapType;
@@ -31,7 +34,7 @@ struct MumbleContext {
   uint8_t mountIndex;
 };
 
-struct CompassData {
+export struct CompassData {
   int compassWidth = 0;       // pixels
   int compassHeight = 0;      // pixels
   float compassRotation = 0;  // guessing... radians? :-P
@@ -44,7 +47,7 @@ struct CompassData {
                                              bool ignoreRotation);
 };
 
-struct LinkedMem {
+export struct LinkedMem {
   uint32_t uiVersion = 0;
   uint32_t uiTick = 0;
   float fAvatarPosition[3] = {0};
@@ -60,9 +63,9 @@ struct LinkedMem {
   wchar_t description[2048] = {0};
 };
 
-#define AVGCAMCOUNTER 6
+export constexpr int AVGCAMCOUNTER = 6;
 
-class CMumbleLink {
+export class CMumbleLink {
  public:
   CMumbleLink(std::string_view mumblePath);
   virtual ~CMumbleLink();
@@ -129,5 +132,5 @@ class CMumbleLink {
   math::CVector4 camchardist[AVGCAMCOUNTER];
 };
 
-extern CMumbleLink mumbleLink;
-math::CRect GetMinimapRectangle();
+export extern CMumbleLink mumbleLink;
+export math::CRect GetMinimapRectangle();

@@ -10,9 +10,10 @@
 #include "src/base/hasher.h"
 #include "src/base/stream_reader.h"
 #include "src/gw2_tactical.h"
-#include "src/mumble_link.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
+
+import taco.mumble_link;
 
 void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);
 

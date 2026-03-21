@@ -24,7 +24,6 @@
 #include "src/locational_timer.h"
 #include "src/map_timer.h"
 #include "src/mouse_highlight.h"
-#include "src/mumble_link.h"
 #include "src/overlay_application.h"
 #include "src/overlay_window.h"
 #include "src/pro_font.h"
@@ -37,6 +36,7 @@
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
 
+import taco.mumble_link;
 import taco.gw2;
 import taco.gw2taco;
 import taco.overlay_config;

@@ -15,6 +15,7 @@
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
+import taco.mumble_link;
 
 using namespace jsonxx;
 
@@ -345,8 +346,6 @@ void LoadWvWObjectives() {
 std::atomic<bool> wvwupdating{false};
 std::atomic<int> lastWvWUpdateTime{0};
 std::thread wvwUpdatThread;
-
-#include "mumble_link.h"
 
 LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
 
