@@ -1,6 +1,7 @@
-﻿#include "src/special_gui_items.h"
-
+module;
 #include "src/white_board/button.h"
+
+module taco.special_gui_items;
 
 using math::CRect;
 

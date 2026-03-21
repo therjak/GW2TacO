@@ -1,13 +1,15 @@
-﻿#pragma once
+module;
 #include <memory>
 #include <string_view>
-
+#include <cassert>
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/white_board/button.h"
 #include "src/white_board/gui_item.h"
 
-class ClickThroughButton : public CWBButton {
+export module taco.special_gui_items;
+
+export class ClickThroughButton : public CWBButton {
  public:
   ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
                      std::string_view txt);
