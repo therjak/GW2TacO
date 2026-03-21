@@ -1,12 +1,15 @@
-﻿#pragma once
-
+module;
 #include <string_view>
 #include <vector>
+#include <array>
+#include <cassert>
 
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-enum class MouseColor {
+export module taco.mouse_highlight;
+
+export enum class MouseColor {
   red,
   lightred,
   black,
@@ -24,7 +27,8 @@ enum class MouseColor {
   lightgray,
   white
 };
-constexpr std::array CGAPalette = {
+
+export constexpr std::array CGAPalette = {
     CColor{0xffaa0000}, CColor{0xffff5555}, CColor{0xff000000},
     CColor{0xff555555}, CColor{0xff0000aa}, CColor{0xff5555ff},
     CColor{0xff00aa00}, CColor{0xff55ff55}, CColor{0xff00aaaa},
@@ -32,12 +36,12 @@ constexpr std::array CGAPalette = {
     CColor{0xffaa5500}, CColor{0xffffff55}, CColor{0xffaaaaaa},
     CColor{0xffffffff}};
 
-constexpr std::array CGAPaletteNames = {
+export constexpr std::array CGAPaletteNames = {
     "red",   "lightred",   "black",     "gray",      "blue",    "lightblue",
     "green", "lightgreen", "cyan",      "lightcyan", "magenta", "lightmagenta",
     "brown", "yellow",     "lightgray", "white"};
 
-class GW2MouseHighlight : public CWBItem {
+export class GW2MouseHighlight : public CWBItem {
  public:
   GW2MouseHighlight(CWBItem* Parent, math::CRect Position);
   static inline GW2MouseHighlight* Create(CWBItem* Parent,

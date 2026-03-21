@@ -141,7 +141,6 @@ set(Header_Files
     "src/locational_timer.h"
     "src/map_timer.h"
     "src/marker_editor.h"
-    "src/mouse_highlight.h"
     "src/notepad.h"
     "src/pro_font.h"
     "src/raid_progress.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/trail_logger.ixx
             src/overlay_window.ixx
             src/special_gui_items.ixx
+            src/mouse_highlight.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

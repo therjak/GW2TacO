@@ -1,6 +1,7 @@
-﻿#include "src/mouse_highlight.h"
-
+module;
 #include "src/white_board/application.h"
+
+module taco.mouse_highlight;
 
 import taco.overlay_config;
 

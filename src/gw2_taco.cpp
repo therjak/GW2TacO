@@ -15,7 +15,6 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/map_timer.h"
 #include "src/marker_editor.h"
-#include "src/mouse_highlight.h"
 #include "src/notepad.h"
 #include "src/raid_progress.h"
 #include "src/tp_tracker.h"
@@ -34,6 +33,7 @@ import taco.overlay_config;
 import taco.ts3_control;
 import taco.trail_logger;
 import taco.overlay_window;
+import taco.mouse_highlight;
 
 module taco.gw2taco;
 
