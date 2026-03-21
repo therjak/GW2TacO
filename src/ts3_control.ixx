@@ -1,13 +1,14 @@
-﻿#pragma once
-
+module;
 #include <memory>
-
+#include <cassert>
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-class TS3Control : public CWBItem {
+export module taco.ts3_control;
+
+export class TS3Control : public CWBItem {
  public:
   TS3Control(CWBItem* Parent, math::CRect Position);
   ~TS3Control() override;

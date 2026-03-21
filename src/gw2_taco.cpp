@@ -20,7 +20,6 @@ module;
 #include "src/raid_progress.h"
 #include "src/tp_tracker.h"
 #include "src/trail_logger.h"
-#include "src/ts3_control.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
@@ -35,6 +34,7 @@ import taco.gw2;
 import taco.language;
 import taco.ts3connection;
 import taco.overlay_config;
+import taco.ts3_control;
 
 module taco.gw2taco;
 
