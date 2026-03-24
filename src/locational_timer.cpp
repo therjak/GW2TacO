@@ -1,5 +1,4 @@
-﻿#include "src/locational_timer.h"
-
+module;
 #include <format>
 #include <vector>
 
@@ -7,9 +6,14 @@
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
+#include "src/util/xml_document.h"
+#include "src/util/xml_node.h"
 
 import taco.mumble_link;
 import taco.overlay_config;
+import taco.language;
+
+module taco.locational_timer;
 
 using math::CPoint;
 using math::CRect;
@@ -124,7 +128,9 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
   int32_t tme = GetTime();
   CWBFont* f = GetFont(GetState());
 
-  int32_t ypos = math::Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
+  int32_t ypos = static_cast<int32_t>(math::Lerp(
+      static_cast<float>(GetClientRect().y1),
+      static_cast<float>(GetClientRect().y2), 0.25f));
 
   for (auto& t : LocationalTimers) {
     t.Update();
@@ -144,7 +150,11 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
       }
 
       CPoint pos = f->GetTextPosition(
-          s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
+          s,
+          CRect(static_cast<float>(GetClientRect().x1),
+                static_cast<float>(ypos),
+                static_cast<float>(GetClientRect().x2),
+                static_cast<float>(ypos)),
           WBTEXTALIGNMENTX::WBTA_CENTERX, WBTEXTALIGNMENTY::WBTA_CENTERY,
           WBTEXTTRANSFORM::WBTT_NONE, true);
       ypos += f->GetLineHeight();
