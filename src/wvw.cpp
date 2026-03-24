@@ -1,5 +1,4 @@
-﻿#include "src/wvw.h"
-
+module;
 #include <atomic>
 #include <ctime>
 #include <format>
@@ -9,13 +8,14 @@
 #include <vector>
 
 #include "src/gw2_tactical.h"
-
 #include "src/util/jsonxx.h"
 
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
 import taco.mumble_link;
+
+module taco.wvw;
 
 using namespace jsonxx;
 
