@@ -1,5 +1,4 @@
-﻿#include "src/tp_tracker.h"
-
+module;
 #include <algorithm>
 #include <format>
 #include <mutex>
@@ -7,13 +6,20 @@
 #include <unordered_map>
 #include <vector>
 
-#include "src/white_board/application.h"
-#include "src/util/png_decompressor.h"
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
+#include "src/util/jsonxx.h"
+#include "src/util/png_decompressor.h"
+#include "src/white_board/application.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
 
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
+
+module taco.tp_tracker;
 
 using namespace jsonxx;
 

@@ -16,7 +16,6 @@ module;
 #include "src/marker_editor.h"
 #include "src/notepad.h"
 #include "src/raid_progress.h"
-#include "src/tp_tracker.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
@@ -34,6 +33,7 @@ import taco.trail_logger;
 import taco.overlay_window;
 import taco.mouse_highlight;
 import taco.build_info;
+import taco.tp_tracker;
 
 module taco.gw2taco;
 
