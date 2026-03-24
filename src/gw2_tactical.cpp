@@ -23,14 +23,13 @@
 #include "src/util/png_decompressor.h"
 #include "src/white_board/application.h"
 #include "src/white_board/draw_api.h"
-#include "src/wvw.h"
-
 import taco.mumble_link;
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
 import taco.overlay_application;
 import taco.trail_logger;
+import taco.wvw;
 
 using namespace jsonxx;
 using math::CMatrix4x4;

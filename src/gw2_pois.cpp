@@ -41,6 +41,7 @@ import taco.special_gui_items;
 import taco.mouse_highlight;
 import taco.hp_grid;
 import taco.build_info;
+import taco.wvw;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")
@@ -462,8 +463,6 @@ int lastMainLoopTime = 0;
 using namespace jsonxx;
 
 #include <tlhelp32.h>
-
-#include "wvw.h"
 
 void GetFileName(CHAR pfname[MAX_PATH]) {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());

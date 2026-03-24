@@ -1,11 +1,14 @@
-﻿#pragma once
+module;
 #include <string>
 #include <vector>
+#include <ctime>
 
 #include "src/base/lock_free_queue.h"
 #include "src/base/vector.h"
 
-class WvWObjective {
+export module taco.wvw;
+
+export class WvWObjective {
  public:
   std::string id;
   std::string type;
@@ -20,7 +23,7 @@ class WvWObjective {
   std::string nameToken;
 };
 
-struct WvWPOIUpdate {
+export struct WvWPOIUpdate {
   enum class Team {
     kRed,
     kGreen,
@@ -32,7 +35,7 @@ struct WvWPOIUpdate {
   Team owner;
 };
 
-extern LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
+export extern LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
 
-void LoadWvWObjectives();
-void UpdateWvWStatus();
+export void LoadWvWObjectives();
+export void UpdateWvWStatus();

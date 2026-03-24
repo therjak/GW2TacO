@@ -165,7 +165,6 @@ set(Header_Files
     "src/white_board/style_manager.h"
     "src/white_board/text_box.h"
     "src/white_board/window.h"
-    "src/wvw.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/mouse_highlight.ixx
             src/hp_grid.ixx
             src/build_info.ixx
+            src/wvw.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
