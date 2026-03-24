@@ -1,7 +1,9 @@
-﻿#pragma once
+module;
 #include <cstdint>
 #include <memory>
 #include <vector>
+#include <string>
+#include <cassert>
 
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
@@ -9,7 +11,9 @@
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-class LocationalTimer {
+export module taco.locational_timer;
+
+export class LocationalTimer {
  public:
   struct TimerEvent {
     std::string Text;
@@ -37,7 +41,7 @@ class LocationalTimer {
   int32_t StartTime = 0;
 };
 
-class TimerDisplay : public CWBItem {
+export class TimerDisplay : public CWBItem {
  public:
   TimerDisplay(CWBItem* Parent, math::CRect Position);
   static inline TimerDisplay* Create(CWBItem* Parent, math::CRect Position) {
@@ -58,5 +62,5 @@ class TimerDisplay : public CWBItem {
                           WBMESSAGE MessageType) override;
 };
 
-extern std::vector<LocationalTimer> LocationalTimers;
-void ImportLocationalTimers();
+export extern std::vector<LocationalTimer> LocationalTimers;
+export void ImportLocationalTimers();

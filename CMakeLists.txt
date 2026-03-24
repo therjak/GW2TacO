@@ -136,7 +136,6 @@ set(Header_Files
     "src/core2/window_handler.h"
     "src/dungeon_progress.h"
     "src/gw2_tactical.h"
-    "src/locational_timer.h"
     "src/map_timer.h"
     "src/marker_editor.h"
     "src/notepad.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/build_info.ixx
             src/wvw.ixx
             src/tp_tracker.ixx
+            src/locational_timer.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
