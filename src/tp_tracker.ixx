@@ -1,9 +1,11 @@
-﻿#pragma once
+module;
 #include <atomic>
 #include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <string>
+#include <cassert>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
@@ -11,14 +13,16 @@
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-struct TransactionItem {
+export module taco.tp_tracker;
+
+export struct TransactionItem {
   int32_t transactionID = 0;
   int32_t itemID = 0;
   int32_t price = 0;
   int32_t quantity = 0;
 };
 
-struct GW2ItemData {
+export struct GW2ItemData {
   int32_t itemID = 0;
   std::string name;
   WBATLASHANDLE icon = 0;
@@ -26,7 +30,7 @@ struct GW2ItemData {
   int32_t sellPrice = 0;
 };
 
-class TPTracker : public CWBItem {
+export class TPTracker : public CWBItem {
  public:
   TPTracker(CWBItem* Parent, math::CRect Position);
   ~TPTracker() override;

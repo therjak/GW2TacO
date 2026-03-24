@@ -145,7 +145,6 @@ set(Header_Files
     "src/range_display.h"
     "src/resource.h"
     "src/tactical_compass.h"
-    "src/tp_tracker.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/hp_grid.ixx
             src/build_info.ixx
             src/wvw.ixx
+            src/tp_tracker.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
