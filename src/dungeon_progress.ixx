@@ -1,4 +1,4 @@
-﻿#pragma once
+module;
 #include <atomic>
 #include <mutex>
 #include <string>
@@ -6,12 +6,18 @@
 #include <thread>
 #include <unordered_set>
 #include <vector>
+#include <cassert>
 
 #include "src/base/lock_free_queue.h"
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
-class DungeonPath {
+export module taco.dungeon_progress;
+
+export class DungeonPath {
  public:
   DungeonPath(const std::string_view& name, const std::string_view& type,
               int32_t id)
@@ -25,14 +31,14 @@ class DungeonPath {
   std::atomic<bool> frequenter = false;
 };
 
-class Dungeon {
+export class Dungeon {
  public:
   const std::string_view name;
   const std::string_view shortName;
   std::vector<DungeonPath> paths;
 };
 
-class DungeonProgress : public CWBItem {
+export class DungeonProgress : public CWBItem {
  public:
   DungeonProgress(CWBItem* Parent, math::CRect Position);
   static inline DungeonProgress* Create(CWBItem* Parent, math::CRect Position) {
