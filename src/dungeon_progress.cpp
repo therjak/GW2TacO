@@ -1,5 +1,4 @@
-﻿#include "src/dungeon_progress.h"
-
+module;
 #include <algorithm>
 #include <cctype>
 #include <format>
@@ -7,8 +6,14 @@
 #include <thread>
 #include <unordered_map>
 
-#include "src/base/logger.h"
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 #include "src/gw2_tactical.h"
+
+module taco.dungeon_progress;
 
 import taco.overlay_config;
 import taco.language;
