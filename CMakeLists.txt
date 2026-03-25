@@ -140,7 +140,6 @@ set(Header_Files
     "src/marker_editor.h"
     "src/notepad.h"
     "src/raid_progress.h"
-    "src/range_display.h"
     "src/resource.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
@@ -395,6 +394,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         FILE_SET modules TYPE CXX_MODULES
         FILES
+            src/base/constants.ixx
             src/gw2_api.ixx
             src/ts3_connection.ixx
             src/gw2_taco.ixx
@@ -414,6 +414,7 @@ target_sources(${PROJECT_NAME}
             src/locational_timer.ixx
             src/pro_font.ixx
             src/tactical_compass.ixx
+            src/range_display.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

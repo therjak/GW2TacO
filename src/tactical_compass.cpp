@@ -4,16 +4,17 @@ module;
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
+#include "src/gw2_tactical.h"
+#include "src/util/xml_node.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
-#include "src/util/xml_node.h"
-#include "src/gw2_tactical.h"
 
 module taco.tactical_compass;
 
 import taco.overlay_config;
 import taco.language;
 import taco.mumble_link;
+import base.constants;
 
 using math::CMatrix4x4;
 using math::CPoint;
@@ -21,8 +22,7 @@ using math::CRect;
 using math::CVector2;
 using math::CVector3;
 using math::CVector4;
-
-constexpr float PI = 3.1415926535897932384626433832795f;
+using math::PI;
 
 float GetMapFade();
 

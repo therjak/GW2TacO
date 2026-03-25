@@ -22,7 +22,6 @@
 #include "src/base/timer.h"
 #include "src/gw2_tactical.h"
 #include "src/map_timer.h"
-#include "src/range_display.h"
 #include "src/resource.h"
 #include "src/util/miniz.h"
 
@@ -42,6 +41,7 @@ import taco.wvw;
 import taco.tactical_compass;
 import taco.locational_timer;
 import taco.pro_font;
+import taco.range_display;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")
