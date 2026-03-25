@@ -1,11 +1,18 @@
-﻿#pragma once
+module;
 #include <vector>
+#include <memory>
+#include <cassert>
 
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
-class GW2MarkerEditor : public CWBItem {
+export module taco.marker_editor;
+
+export class GW2MarkerEditor : public CWBItem {
  public:
   GW2MarkerEditor(CWBItem* Parent, math::CRect Position);
   static inline GW2MarkerEditor* Create(CWBItem* Parent, math::CRect Position) {
