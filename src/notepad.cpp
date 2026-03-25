@@ -1,10 +1,14 @@
-﻿#include "src/notepad.h"
-
+module;
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/application.h"
 #include "src/white_board/text_box.h"
 #include "src/base/stream_writer.h"
 #include "src/base/stream_reader.h"
+#include "src/util/xml_node.h"
+
+module taco.notepad;
 
 import taco.mumble_link;
 import taco.overlay_config;
