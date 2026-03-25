@@ -1,15 +1,23 @@
-﻿#pragma once
+module;
 #include <atomic>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_set>
 #include <vector>
+#include <unordered_map>
+#include <cassert>
 
 #include "src/base/lock_free_queue.h"
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
-class GW2MapTimer : public CWBItem {
+export module taco.map_timer;
+
+export class GW2MapTimer : public CWBItem {
+ public:
   struct Event {
     std::string name;
     std::string waypoint;
@@ -61,7 +69,7 @@ class GW2MapTimer : public CWBItem {
   CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
                              WBMESSAGE MessageType) override;
   void OnDraw(CWBDrawAPI* API) override;
-  void SetLayout(CXMLNode& node);
+  void SetLayout(const CXMLNode& node);
   void UpdateScrollbarData(int ypos, const math::CRect& cl);
 
   int32_t lastypos = -1;
