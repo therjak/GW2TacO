@@ -1,12 +1,24 @@
-﻿#include "src/map_timer.h"
-
+module;
 #include <algorithm>
 #include <format>
 #include <mutex>
 #include <string>
 #include <thread>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+#include <ctime>
+
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
+#include "src/white_board/draw_api.h"
+#include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
+#include "src/util/xml_document.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/application.h"
+
+module taco.map_timer;
 
 import taco.overlay_config;
 import taco.gw2taco;
@@ -307,7 +319,7 @@ CWBItem* GW2MapTimer::GetItemUnderMouse(CPoint& Pos, CRect& CropRect,
   return item;
 }
 
-void GW2MapTimer::SetLayout(CXMLNode& node) {
+void GW2MapTimer::SetLayout(const CXMLNode& node) {
   std::unordered_map<std::string, std::vector<Map>> _categoryMapsDict;
   std::vector<std::string> _categories;
 
