@@ -142,7 +142,6 @@ set(Header_Files
     "src/raid_progress.h"
     "src/range_display.h"
     "src/resource.h"
-    "src/tactical_compass.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
@@ -414,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/tp_tracker.ixx
             src/locational_timer.ixx
             src/pro_font.ixx
+            src/tactical_compass.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

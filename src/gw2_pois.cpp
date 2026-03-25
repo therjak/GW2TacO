@@ -24,7 +24,6 @@
 #include "src/map_timer.h"
 #include "src/range_display.h"
 #include "src/resource.h"
-#include "src/tactical_compass.h"
 #include "src/util/miniz.h"
 
 import taco.mumble_link;
@@ -40,6 +39,7 @@ import taco.mouse_highlight;
 import taco.hp_grid;
 import taco.build_info;
 import taco.wvw;
+import taco.tactical_compass;
 import taco.locational_timer;
 import taco.pro_font;
 
