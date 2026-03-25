@@ -1,8 +1,10 @@
-﻿#include "src/pro_font.h"
-
+﻿module;
 #include "src/base/image_decompressor.h"
 #include "src/base/logger.h"
 #include "src/util/png_decompressor.h"
+#include "src/white_board/application.h"
+
+module taco.pro_font;
 
 unsigned char raw_profont_bin[] = {
     66, 77,  70,  3,   1,   29,  0,   0,   0,   13,  0,   64,  0,   100, 0,
