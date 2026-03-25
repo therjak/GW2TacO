@@ -135,7 +135,6 @@ set(Header_Files
     "src/core2/vertex_format.h"
     "src/core2/window_handler.h"
     "src/gw2_tactical.h"
-    "src/notepad.h"
     "src/resource.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
@@ -415,6 +414,7 @@ target_sources(${PROJECT_NAME}
             src/dungeon_progress.ixx
             src/map_timer.ixx
             src/marker_editor.ixx
+            src/notepad.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

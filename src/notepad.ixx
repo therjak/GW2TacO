@@ -1,13 +1,17 @@
-﻿#pragma once
+module;
 #include <memory>
+#include <cassert>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
-class GW2Notepad : public CWBItem {
+export module taco.notepad;
+
+export class GW2Notepad : public CWBItem {
  public:
   GW2Notepad(CWBItem* Parent, math::CRect Position);
   ~GW2Notepad() override;

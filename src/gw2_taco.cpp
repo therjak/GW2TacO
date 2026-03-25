@@ -11,7 +11,6 @@ module;
 #include "src/base/logger.h"
 #include "src/build_count.h"
 #include "src/gw2_tactical.h"
-#include "src/notepad.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
@@ -34,6 +33,7 @@ import taco.raid_progress;
 import taco.dungeon_progress;
 import taco.map_timer;
 import taco.marker_editor;
+import taco.notepad;
 
 module taco.gw2taco;
 
