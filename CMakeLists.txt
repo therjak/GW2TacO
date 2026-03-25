@@ -139,7 +139,6 @@ set(Header_Files
     "src/map_timer.h"
     "src/marker_editor.h"
     "src/notepad.h"
-    "src/raid_progress.h"
     "src/resource.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
@@ -415,6 +414,7 @@ target_sources(${PROJECT_NAME}
             src/pro_font.ixx
             src/tactical_compass.ixx
             src/range_display.ixx
+            src/raid_progress.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
