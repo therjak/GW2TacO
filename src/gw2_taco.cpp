@@ -15,7 +15,6 @@ module;
 #include "src/map_timer.h"
 #include "src/marker_editor.h"
 #include "src/notepad.h"
-#include "src/raid_progress.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
 #include "src/white_board/button.h"
@@ -34,6 +33,7 @@ import taco.overlay_window;
 import taco.mouse_highlight;
 import taco.build_info;
 import taco.tp_tracker;
+import taco.raid_progress;
 
 module taco.gw2taco;
 

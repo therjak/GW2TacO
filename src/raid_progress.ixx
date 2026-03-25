@@ -1,4 +1,4 @@
-﻿#pragma once
+module;
 #include <atomic>
 #include <memory>
 #include <mutex>
@@ -7,14 +7,18 @@
 #include <thread>
 #include <unordered_set>
 #include <vector>
+#include <cassert>
 
 #include "src/base/lock_free_queue.h"
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
-class RaidEvent {
+export module taco.raid_progress;
+
+export class RaidEvent {
  public:
   enum class Type : char { Boss, Checkpoint };
   RaidEvent(std::string_view name, Type type)
@@ -25,13 +29,13 @@ class RaidEvent {
   std::atomic<bool> finished = false;
 };
 
-class Wing {
+export class Wing {
  public:
   std::string_view name;
   std::vector<RaidEvent> events;
 };
 
-class Raid {
+export class Raid {
  public:
   std::string_view name;
   std::string_view shortName;
@@ -39,7 +43,7 @@ class Raid {
   std::vector<Wing> wings;
 };
 
-class RaidProgress : public CWBItem {
+export class RaidProgress : public CWBItem {
  public:
   RaidProgress(CWBItem* Parent, math::CRect Position);
   ~RaidProgress() override;
