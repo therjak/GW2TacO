@@ -1,4 +1,7 @@
 module;
+
+#include <combaseapi.h>
+
 #include <atomic>
 #include <ctime>
 #include <format>
@@ -7,6 +10,8 @@ module;
 #include <unordered_map>
 #include <vector>
 
+#include "src/base/rectangle.h"
+#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
 

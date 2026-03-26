@@ -16,6 +16,7 @@
 
 #define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
 #include "src/base/logger.h"
+#include "src/base/rectangle.h"
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
@@ -23,6 +24,7 @@
 #include "src/gw2_tactical.h"
 #include "src/resource.h"
 #include "src/util/miniz.h"
+#include "src/white_board/application.h"
 
 import taco.mumble_link;
 import taco.gw2;

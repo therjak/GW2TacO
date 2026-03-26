@@ -2,6 +2,7 @@ module;
 #include <algorithm>
 #include <cmath>
 
+#include "src/base/matrix.h"
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"

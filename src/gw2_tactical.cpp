@@ -21,8 +21,10 @@
 #include "src/util/jsonxx.h"
 #include "src/util/miniz.h"
 #include "src/util/png_decompressor.h"
+#include "src/util/xml_document.h"
 #include "src/white_board/application.h"
 #include "src/white_board/draw_api.h"
+
 import taco.mumble_link;
 import taco.gw2;
 import taco.overlay_config;
