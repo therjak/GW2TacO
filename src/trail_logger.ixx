@@ -1,14 +1,15 @@
 module;
 #include <array>
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
-#include <cassert>
 
 #include "src/base/hasher.h"
+#include "src/base/matrix.h"
 #include "src/base/stream_reader.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/draw_api.h"
