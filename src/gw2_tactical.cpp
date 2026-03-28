@@ -51,7 +51,6 @@ WBATLASHANDLE DefaultIconHandle = -1;
 WBATLASHANDLE forbiddenIconHandle = -1;
 CSize forbiddenIconSize;
 std::unordered_map<std::string, WBATLASHANDLE> MapIcons;
-std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
 int32_t useMetricDisplay = 0;
 
 float GetUIScale();
@@ -98,16 +97,6 @@ void FindClosestRouteMarkers(bool force) {
       }
     }
   }
-}
-
-GW2TacticalCategory* GetCategory(std::string_view sv) {
-  std::string s(sv);
-  std::transform(s.begin(), s.end(), s.begin(),
-                 [](unsigned char c) { return std::tolower(c); });
-
-  const auto& fc = CategoryMap.find(s);
-  if (fc != CategoryMap.end()) return fc->second;
-  return nullptr;
 }
 
 std::unordered_map<std::string, std::unique_ptr<mz_zip_archive>> zipDict;
