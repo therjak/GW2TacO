@@ -229,6 +229,7 @@ set(Source_Files
     "src/range_display.cpp"
     "src/special_gui_items.cpp"
     "src/tactical_compass.cpp"
+    "src/tactical_category.cpp"
     "src/tp_tracker.cpp"
     "src/trail_logger.cpp"
     "src/ts3_connection.cpp"
@@ -412,6 +413,7 @@ target_sources(${PROJECT_NAME}
             src/locational_timer.ixx
             src/pro_font.ixx
             src/tactical_compass.ixx
+            src/tactical_category.ixx
             src/range_display.ixx
             src/raid_progress.ixx
             src/dungeon_progress.ixx
