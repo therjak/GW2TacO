@@ -22,6 +22,7 @@ module taco.trail_logger;
 
 import taco.overlay_config;
 import taco.mumble_link;
+import taco.time;
 
 #pragma comment(lib, "Comdlg32.lib")
 

@@ -16,6 +16,8 @@ module;
 
 import taco.trail_logger;
 import taco.overlay_config;
+import taco.time;
+
 module taco.mumble_link;
 
 using math::CMatrix4x4;

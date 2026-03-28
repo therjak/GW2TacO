@@ -19,6 +19,7 @@ import taco.gw2;
 import taco.overlay_config;
 import taco.language;
 import taco.mumble_link;
+import taco.time;
 
 module taco.wvw;
 
@@ -32,7 +33,6 @@ bool wvwCanBeRendered = false;
 std::vector<WvWObjective> wvwObjectives;
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 std::unordered_map<std::string, POI> wvwPOIs;
-GW2TacticalCategory* GetCategory(std::string_view s);
 std::unordered_map<int, bool> wvwMapIDs;
 
 std::thread wvwPollThread;

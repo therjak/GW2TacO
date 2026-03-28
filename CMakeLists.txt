@@ -221,6 +221,7 @@ set(Source_Files
     "src/overlay_application.cpp"
     "src/overlay_config.cpp"
     "src/overlay_window.cpp"
+    "src/string_set.cpp"
     "src/pro_font.cpp"
     "src/raid_progress.cpp"
     "src/range_display.cpp"
@@ -415,6 +416,8 @@ target_sources(${PROJECT_NAME}
             src/map_timer.ixx
             src/marker_editor.ixx
             src/notepad.ixx
+            src/string_set.ixx
+            src/time.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

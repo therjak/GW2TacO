@@ -32,6 +32,8 @@ import taco.language;
 import taco.overlay_application;
 import taco.trail_logger;
 import taco.wvw;
+import taco.string_set;
+import taco.time;
 
 using namespace jsonxx;
 using math::CMatrix4x4;
@@ -65,21 +67,6 @@ std::size_t hash<POIActivationDataKey>::operator()(
   return std::hash<std::string>()(ss.str());
 }
 }  // namespace std
-
-std::unordered_set<std::string> string_set;
-std::string_view AddStringToSet(std::string_view string) {
-  if (string.empty()) return {};
-  const auto& p = string_set.emplace(string);
-  return *p.first;
-}
-
-auto tacoStartTime = std::chrono::system_clock::now();
-
-int32_t GetTime() {
-  auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
-      std::chrono::system_clock::now() - tacoStartTime);
-  return static_cast<int32_t>(milliseconds.count());
-}
 
 void FindClosestRouteMarkers(bool force) {
   const auto& pois = GetMapPOIs();
