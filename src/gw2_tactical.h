@@ -179,5 +179,3 @@ float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
 void FindClosestRouteMarkers(bool force);
 GW2TacticalCategory* GetCategory(std::string_view sv);
-
-int32_t GetTime();
