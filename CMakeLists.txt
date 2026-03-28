@@ -215,6 +215,7 @@ set(Source_Files
     "src/language.cpp"
     "src/locational_timer.cpp"
     "src/map_timer.cpp"
+    "src/marker_data.cpp"
     "src/marker_editor.cpp"
     "src/mouse_highlight.cpp"
     "src/mumble_link.cpp"
@@ -416,6 +417,7 @@ target_sources(${PROJECT_NAME}
             src/dungeon_progress.ixx
             src/map_timer.ixx
             src/marker_editor.ixx
+            src/marker_data.ixx
             src/notepad.ixx
             src/string_set.ixx
             src/time.ixx
