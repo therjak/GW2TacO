@@ -20,8 +20,7 @@
 #include "src/white_board/gui_item.h"
 
 import taco.marker_data;
-
-class GW2TacticalCategory;
+import taco.tactical_category;
 
 struct Achievement {
   bool done = false;
@@ -105,7 +104,6 @@ extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
 
-extern GW2TacticalCategory CategoryRoot;
 POISet& GetMapPOIs();
 
 class GW2TacticalDisplay : public CWBItem {
@@ -159,34 +157,6 @@ class GW2TacticalDisplay : public CWBItem {
   std::mutex achievements_mtx;
   // on destruction the thread should be destroyed first
   std::thread fetchThread;
-};
-
-class GW2TacticalCategory {
- public:
-  virtual ~GW2TacticalCategory() = default;
-
-  std::string GetFullTypeName();
-  [[nodiscard]] bool IsVisible() const;
-  void CacheVisibility();
-  void CalculateVisibilityCache();
-
-  std::string name;
-  std::string displayName;
-
-  std::string_view zipFile;
-
-  MarkerTypeData data;
-  bool KeepSaveState = false;
-  bool IsOnlySeparator = false;
-  GW2TacticalCategory* Parent = nullptr;
-  std::vector<std::unique_ptr<GW2TacticalCategory>> children;
-
-  bool IsDisplayed = true;
-  bool cachedVisibility = true;
-  static bool visibilityCached;
-
- private:
-  std::string cachedTypeName;
 };
 
 void AddPOI();
