@@ -18,6 +18,7 @@ module;
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
+import taco.time;
 
 module taco.tp_tracker;
 

@@ -12,6 +12,7 @@ module;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;
+import taco.time;
 
 module taco.locational_timer;
 
@@ -128,9 +129,9 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
   int32_t tme = GetTime();
   CWBFont* f = GetFont(GetState());
 
-  int32_t ypos = static_cast<int32_t>(math::Lerp(
-      static_cast<float>(GetClientRect().y1),
-      static_cast<float>(GetClientRect().y2), 0.25f));
+  int32_t ypos = static_cast<int32_t>(
+      math::Lerp(static_cast<float>(GetClientRect().y1),
+                 static_cast<float>(GetClientRect().y2), 0.25f));
 
   for (auto& t : LocationalTimers) {
     t.Update();
@@ -151,10 +152,9 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
 
       CPoint pos = f->GetTextPosition(
           s,
-          CRect(static_cast<float>(GetClientRect().x1),
-                static_cast<float>(ypos),
-                static_cast<float>(GetClientRect().x2),
-                static_cast<float>(ypos)),
+          CRect(
+              static_cast<float>(GetClientRect().x1), static_cast<float>(ypos),
+              static_cast<float>(GetClientRect().x2), static_cast<float>(ypos)),
           WBTEXTALIGNMENTX::WBTA_CENTERX, WBTEXTALIGNMENTY::WBTA_CENTERY,
           WBTEXTTRANSFORM::WBTT_NONE, true);
       ypos += f->GetLineHeight();

@@ -1,16 +1,16 @@
 module;
+#include <cstdio>
 #include <format>
 #include <map>
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <cstdio>
 
 #include "src/base/logger.h"
-#include "src/base/timer.h"
-#include "src/util/xml_document.h"
 #include "src/base/rectangle.h"
+#include "src/base/timer.h"
 #include "src/gw2_tactical.h"
+#include "src/util/xml_document.h"
 
 import taco.gw2taco;
 

@@ -44,6 +44,7 @@ import taco.locational_timer;
 import taco.pro_font;
 import taco.range_display;
 import taco.map_timer;
+import taco.time;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

@@ -34,6 +34,7 @@ import taco.dungeon_progress;
 import taco.map_timer;
 import taco.marker_editor;
 import taco.notepad;
+import taco.time;
 
 module taco.gw2taco;
 

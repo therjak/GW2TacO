@@ -8,16 +8,17 @@ module;
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
+#include "src/gw2_tactical.h"
+#include "src/util/xml_node.h"
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
-#include "src/util/xml_node.h"
-#include "src/gw2_tactical.h"
 
 module taco.dungeon_progress;
 
 import taco.overlay_config;
 import taco.language;
 import taco.gw2;
+import taco.time;
 
 using math::CPoint;
 using math::CRect;
