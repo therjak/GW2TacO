@@ -13,22 +13,10 @@
 #include "src/base/hasher.h"
 #include "src/base/lock_free_queue.h"
 #include "src/base/matrix.h"
+#include "src/poi_behavior.h"
 #include "src/util/xml_document.h"
 #include "src/white_board/context_menu.h"
 #include "src/white_board/gui_item.h"
-
-enum class POIBehavior : int32_t {
-  AlwaysVisible,
-  ReappearOnMapChange,
-  ReappearOnDailyReset,
-  OnlyVisibleBeforeActivation,
-  ReappearAfterTimer,
-  ReappearOnMapReset,
-  OncePerInstance,
-  DailyPerChar,
-  OncePerInstancePerChar,
-  WvWObjective,
-};
 
 struct MarkerTypeData {
   MarkerTypeData();

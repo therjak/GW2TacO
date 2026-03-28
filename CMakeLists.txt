@@ -136,6 +136,7 @@ set(Header_Files
     "src/core2/window_handler.h"
     "src/gw2_tactical.h"
     "src/resource.h"
+    "src/poi_behavior.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
