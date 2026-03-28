@@ -178,4 +178,3 @@ void OpenTypeContextMenu(CWBContextItem* ctx,
 float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
 void FindClosestRouteMarkers(bool force);
-GW2TacticalCategory* GetCategory(std::string_view sv);

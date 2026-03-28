@@ -3,6 +3,7 @@ module;
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 export module taco.tactical_category;
@@ -38,3 +39,5 @@ export class GW2TacticalCategory {
 };
 
 export extern GW2TacticalCategory CategoryRoot;
+export extern std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
+export GW2TacticalCategory* GetCategory(std::string_view sv);

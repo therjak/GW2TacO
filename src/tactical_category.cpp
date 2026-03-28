@@ -4,11 +4,13 @@ module;
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 module taco.tactical_category;
 
 GW2TacticalCategory CategoryRoot;
+std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
 
 std::string GW2TacticalCategory::GetFullTypeName() {
   if (!cachedTypeName.empty()) return cachedTypeName;
@@ -52,4 +54,14 @@ void GW2TacticalCategory::CalculateVisibilityCache() {
   visibilityCached = false;
   CacheVisibility();
   visibilityCached = true;
+}
+
+GW2TacticalCategory* GetCategory(std::string_view sv) {
+  std::string s(sv);
+  std::transform(s.begin(), s.end(), s.begin(),
+                 [](unsigned char c) { return std::tolower(c); });
+
+  const auto& fc = CategoryMap.find(s);
+  if (fc != CategoryMap.end()) return fc->second;
+  return nullptr;
 }
