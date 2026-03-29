@@ -425,6 +425,7 @@ target_sources(${PROJECT_NAME}
             src/time.ixx
             src/white_board/window.ixx
             src/white_board/text_box.ixx
+            src/white_board/style_manager.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
