@@ -1,4 +1,13 @@
-#include "src/white_board/window.h"
+module;
+#include <algorithm>
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <vector>
+
+#include "src/white_board/application.h"
+
+module whiteboard.window;
 
 using math::CPoint;
 using math::CRect;
