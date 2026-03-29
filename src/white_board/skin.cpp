@@ -1,8 +1,14 @@
-#include "src/white_board/skin.h"
-
+module;
+#include <array>
+#include <cstdint>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include "src/base/string_format.h"
+#include "src/white_board/draw_api.h"
+
+module whiteboard.skin;
 
 using math::CRect;
 using math::CSize;
@@ -228,7 +234,7 @@ void CWBPositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
   SetAt(p) = true;
 }
 
-FORCEINLINE CRect CWBPositionDescriptorPixels::GetPosition(CSize ParentSize) {
+CRect CWBPositionDescriptorPixels::GetPosition(CSize ParentSize) {
   CRect r(0, 0, 0, 0);
 
   r.x1 = SetAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
@@ -277,7 +283,7 @@ void CWBMosaicImage::SetStretching(int32_t Axis, bool y) {
 
 void CWBMosaicImage::SetHandle(WBATLASHANDLE handle) { Handle = handle; }
 
-FORCEINLINE void CWBMosaicImage::Render(CWBDrawAPI* API, const CRect& Pos) {
+void CWBMosaicImage::Render(CWBDrawAPI* API, const CRect& Pos) {
   const CRect Croprect = API->GetCropRect();
   API->SetCropRect(Pos + API->GetOffset());
 
@@ -335,7 +341,7 @@ void CWBSkinElement::SetName(std::string_view name) { Name = name; }
 
 std::string& CWBSkinElement::GetName() { return Name; }
 
-FORCEINLINE void CWBSkinElement::Render(CWBDrawAPI* API, const CRect& Pos) {
+void CWBSkinElement::Render(CWBDrawAPI* API, const CRect& Pos) {
   API->DrawAtlasElement(
       Handle, Pos,
       DefaultBehavior[0] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE,
