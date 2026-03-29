@@ -1,7 +1,11 @@
-#include "src/white_board/root.h"
+module;
+#include <cstdint>
+#include <memory>
 
 #include "src/white_board/application.h"
 #include "src/white_board/message.h"
+
+module whiteboard.root;
 
 using math::CRect;
 
