@@ -1,11 +1,18 @@
-#include "src/white_board/text_box.h"
+module;
+#include <tchar.h>
+#include <windows.h>
 
 #include <algorithm>
 #include <cctype>
+#include <cstring>
+#include <memory>
 #include <regex>
 
 #include "src/base/logger.h"
 #include "src/base/timer.h"
+#include "src/white_board/application.h"
+
+module whiteboard.text_box;
 
 using math::CPoint;
 using math::CRect;
@@ -343,6 +350,7 @@ void CWBTextBox::Paste() {
 
     auto buffer = static_cast<wchar_t*>(GlobalLock(Handle));
     if (buffer) {
+      std::string s;
 #ifndef UNICODE
       const int32_t len = wcslen(buffer);
       auto b2 = std::make_unique<char[]>(len + 1);
@@ -354,9 +362,19 @@ void CWBTextBox::Paste() {
           b2[x] = '?';
         }
       }
-      std::string s(b2.get());
+      s = std::string(b2.get());
 #else
-      s = CString(buffer);
+      // s = CString(buffer); // CString might not be available without MFC/ATL
+      // For now, let's assume a similar conversion if UNICODE is defined,
+      // or just use the same logic if CString is not available.
+      // Given the context, let's keep it simple or use what's likely available.
+      int len =
+          WideCharToMultiByte(CP_UTF8, 0, buffer, -1, NULL, 0, NULL, NULL);
+      if (len > 0) {
+        auto b2 = std::make_unique<char[]>(len);
+        WideCharToMultiByte(CP_UTF8, 0, buffer, -1, b2.get(), len, NULL, NULL);
+        s = std::string(b2.get());
+      }
 #endif
       s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
 
@@ -493,7 +511,8 @@ int32_t CWBTextBox::GetLineLeadingWhiteSpaceSize() {
   const int32_t ls = CursorPos - GetCursorX();
   int32_t cnt = 0;
   for (int32_t x = ls; x < static_cast<int32_t>(Text.size()); x++) {
-    if (Text[x] == '\n' || !std::isspace(Text[x])) return cnt;
+    if (Text[x] == '\n' || !std::isspace(static_cast<unsigned char>(Text[x])))
+      return cnt;
     cnt++;
   }
   return cnt;
@@ -724,7 +743,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
 
         case VK_END:
           if (Message.KeyboardState() & WB_KBSTATE_CTRL) {
-            SetCursorPos(Text.size(),
+            SetCursorPos(static_cast<int32_t>(Text.size()),
                          Message.KeyboardState() & WB_KBSTATE_SHIFT);
             DesiredCursorPosXinPixels = GetCursorXinPixels();
             return true;
@@ -805,7 +824,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
         case 'A':  // select all
           if (Message.KeyboardState() & WB_KBSTATE_CTRL) {
             SetCursorPos(0, false);
-            SetCursorPos(Text.size(), true);
+            SetCursorPos(static_cast<int32_t>(Text.size()), true);
           }
           return true;
 
@@ -819,9 +838,6 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
       }
 
       return false;
-
-      return true;  // this captures all keydowns. might not be a good idea all
-                    // the time
     }
     case WBM_CHAR:
       if (!InFocus() || GetChildInFocus()) break;
@@ -887,14 +903,15 @@ void CWBTextBox::SetTextInternal(std::string_view val, bool EnableUndo,
     HistoryPosition = 0;
   } else {
     SelectionStart = 0;
-    SelectionEnd = Text.size();
+    SelectionEnd = static_cast<int32_t>(Text.size());
     RemoveSelectedText();
     std::string s(val);
     s.erase(std::remove(s.begin(), s.end(), '\r'), s.end());
-    InsertText(0, s, s.size(), s.size());
+    InsertText(0, s, static_cast<int32_t>(s.size()),
+               static_cast<int32_t>(s.size()));
   }
 
-  SetCursorPos(Text.size(), false);
+  SetCursorPos(static_cast<int32_t>(Text.size()), false);
   OnTextChange(nonHumanInteraction != 0);
 }
 
@@ -1056,8 +1073,10 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
     return;
   }
 
-  const bool IsWhiteSpace = std::isspace(Text[CharacterInWord]);
-  const bool IsAlNum = std::isalnum(Text[CharacterInWord]);
+  const bool IsWhiteSpace =
+      std::isspace(static_cast<unsigned char>(Text[CharacterInWord]));
+  const bool IsAlNum =
+      std::isalnum(static_cast<unsigned char>(Text[CharacterInWord]));
   if (!IsWhiteSpace && !IsAlNum) {
     SetCursorPos(CharacterInWord, false);
     SetCursorPos(CharacterInWord + 1, true);
@@ -1068,22 +1087,26 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
   int32_t End = CharacterInWord;
 
   if (IsWhiteSpace) {
-    while (Start >= 0 && std::isspace(Text[Start]) && Text[Start] != '\n' &&
-           Text[Start] != '\r') {
+    while (Start >= 0 &&
+           std::isspace(static_cast<unsigned char>(Text[Start])) &&
+           Text[Start] != '\n' && Text[Start] != '\r') {
       Start--;
     }
-    while (End < static_cast<int32_t>(Text.size()) && std::isspace(Text[End]) &&
+    while (End < static_cast<int32_t>(Text.size()) &&
+           std::isspace(static_cast<unsigned char>(Text[End])) &&
            Text[End] != '\n' && Text[End] != '\r') {
       End++;
     }
     End = std::min(static_cast<int32_t>(Text.size()) - 1, End);
   } else {
-    while ((Start >= 0 && std::isalnum(Text[Start])) || Text[Start] == '_') {
+    while (
+        (Start >= 0 && std::isalnum(static_cast<unsigned char>(Text[Start]))) ||
+        Text[Start] == '_') {
       Start--;
     }
-    while (
-        (End < static_cast<int32_t>(Text.size()) && std::isalnum(Text[End])) ||
-        Text[End] == '_') {
+    while ((End < static_cast<int32_t>(Text.size()) &&
+            std::isalnum(static_cast<unsigned char>(Text[End]))) ||
+           Text[End] == '_') {
       End++;
     }
     End = std::min(static_cast<int32_t>(Text.size()) - 1, End);
