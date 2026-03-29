@@ -423,6 +423,7 @@ target_sources(${PROJECT_NAME}
             src/notepad.ixx
             src/string_set.ixx
             src/time.ixx
+            src/white_board/window.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
