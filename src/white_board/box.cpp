@@ -1,9 +1,20 @@
-#include "src/white_board/box.h"
+module;
 
+#include <cstdint>
+#include <string_view>
+#include <cassert>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+#include "src/white_board/application.h"
 #include "src/base/logger.h"
+
+module whiteboard.box;
 
 using math::CPoint;
 using math::CRect;
+using math::CSize;
 
 void CWBBox::AddChild(std::unique_ptr<CWBItem>&& Item) {
   CWBItem::AddChild(std::move(Item));
@@ -121,7 +132,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
 }
 
 void CWBBox::RearrangeHorizontal() {
-  const CRect ClientRect = GetClientRect();
+  const CRect clientRect = GetClientRect();
   int32_t pos = 0;
   float Excess = 0;
 
@@ -134,7 +145,7 @@ void CWBBox::RearrangeHorizontal() {
       NumDynamicChildren++;
       LastDynamic = x;
     } else {
-      NonDynamicWidth += GetChild(x)->GetCalculatedWidth(ClientRect.Size());
+      NonDynamicWidth += GetChild(x)->GetCalculatedWidth(clientRect.Size());
     }
   }
 
@@ -167,7 +178,7 @@ void CWBBox::RearrangeHorizontal() {
       } else {
         ChildPosition.x1 = pos;
         ChildPosition.x2 = ChildPosition.x1 +
-                           GetChild(x)->GetCalculatedWidth(ClientRect.Size());
+                           GetChild(x)->GetCalculatedWidth(clientRect.Size());
       }
     } else {
       const int32_t posw = ChildPosition.Width();
@@ -182,10 +193,10 @@ void CWBBox::RearrangeHorizontal() {
 
     int32_t off = 0;
     if (AlignmentY == WBALIGNMENT::BOTTOM) {
-      off = ClientRect.Height() - ChildPosition.Height();
+      off = clientRect.Height() - ChildPosition.Height();
     }
     if (AlignmentY == WBALIGNMENT::CENTER) {
-      off = (ClientRect.Height() - ChildPosition.Height()) / 2;
+      off = (clientRect.Height() - ChildPosition.Height()) / 2;
     }
 
     const CRect np = CRect(pos, off, pos + ChildPosition.Width(),
@@ -201,7 +212,7 @@ void CWBBox::RearrangeHorizontal() {
 }
 
 void CWBBox::RearrangeVertical() {
-  const CRect ClientRect = GetClientRect();
+  const CRect clientRect = GetClientRect();
   int32_t pos = 0;
   float Excess = 0;
 
@@ -214,7 +225,7 @@ void CWBBox::RearrangeVertical() {
       NumDynamicChildren++;
       LastDynamic = x;
     } else {
-      NonDynamicHeight += GetChild(x)->GetCalculatedHeight(ClientRect.Size());
+      NonDynamicHeight += GetChild(x)->GetCalculatedHeight(clientRect.Size());
     }
   }
 
@@ -255,7 +266,7 @@ void CWBBox::RearrangeVertical() {
       } else {
         ChildPosition.y1 = pos;
         ChildPosition.y2 = ChildPosition.y1 +
-                           GetChild(x)->GetCalculatedHeight(ClientRect.Size());
+                           GetChild(x)->GetCalculatedHeight(clientRect.Size());
       }
     } else {
       const int32_t posh = ChildPosition.Height();
@@ -265,10 +276,10 @@ void CWBBox::RearrangeVertical() {
 
     int32_t off = 0;
     if (AlignmentX == WBALIGNMENT::BOTTOM) {
-      off = ClientRect.Width() - ChildPosition.Width();
+      off = clientRect.Width() - ChildPosition.Width();
     }
     if (AlignmentX == WBALIGNMENT::CENTER) {
-      off = (ClientRect.Width() - ChildPosition.Width()) / 2;
+      off = (clientRect.Width() - ChildPosition.Width()) / 2;
     }
 
     const CRect np = CRect(off, pos, off + ChildPosition.Width(),
