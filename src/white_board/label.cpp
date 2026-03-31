@@ -1,4 +1,12 @@
-#include "src/white_board/label.h"
+module;
+
+#include <string>
+#include <string_view>
+#include <cassert>
+
+#include "src/white_board/application.h"
+
+module whiteboard.label;
 
 using math::CPoint;
 using math::CRect;
