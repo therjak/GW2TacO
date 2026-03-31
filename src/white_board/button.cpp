@@ -1,4 +1,12 @@
-#include "src/white_board/button.h"
+module;
+
+#include <string>
+#include <string_view>
+#include <cassert>
+
+#include "src/white_board/application.h"
+
+module whiteboard.button;
 
 using math::CPoint;
 using math::CRect;

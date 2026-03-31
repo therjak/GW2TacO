@@ -4,10 +4,11 @@ module;
 #include <cassert>
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/white_board/button.h"
 #include "src/white_board/gui_item.h"
 
 export module taco.special_gui_items;
+
+import whiteboard.button;
 
 export class ClickThroughButton : public CWBButton {
  public:

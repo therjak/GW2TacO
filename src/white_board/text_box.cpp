@@ -3,6 +3,7 @@ module;
 #include <windows.h>
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstring>
 #include <memory>

@@ -11,6 +11,8 @@ module;
 
 export module whiteboard.text_box;
 
+import whiteboard.css_item;
+
 export constexpr uint32_t WB_TEXTBOX_SINGLELINE = 0x0000001;
 export constexpr uint32_t WB_TEXTBOX_PASSWORD = 0x0000002;
 export constexpr uint32_t WB_TEXTBOX_NOSELECTION = 0x0000004;
