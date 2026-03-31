@@ -1,4 +1,11 @@
-#include "src/white_board/css_item.h"
+module;
+
+#include <string>
+#include <string_view>
+#include <vector>
+#include <algorithm>
+
+module whiteboard.css_item;
 
 IWBCSS::IWBCSS() = default;
 
