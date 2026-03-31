@@ -142,7 +142,6 @@ set(Header_Files
     "src/util/xml_node.h"
     "src/white_board/application.h"
     "src/white_board/atlas.h"
-    "src/white_board/box.h"
     "src/white_board/button.h"
     "src/white_board/context_menu.h"
     "src/white_board/css_item.h"
@@ -431,6 +430,7 @@ target_sources(${PROJECT_NAME}
             src/white_board/label.ixx
             src/white_board/css_item.ixx
             src/white_board/button.ixx
+            src/white_board/box.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS
