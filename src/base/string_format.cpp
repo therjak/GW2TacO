@@ -3,6 +3,7 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <array>
 #include <cctype>
 #include <cstdarg>
 #include <string>

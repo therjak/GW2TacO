@@ -430,6 +430,7 @@ target_sources(${PROJECT_NAME}
             src/white_board/root.ixx
             src/white_board/label.ixx
             src/white_board/css_item.ixx
+            src/white_board/button.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

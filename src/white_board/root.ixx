@@ -5,6 +5,8 @@ module;
 
 export module whiteboard.root;
 
+import whiteboard.css_item;
+
 export class CWBApplication;
 
 export class CWBRoot : public CWBItem {

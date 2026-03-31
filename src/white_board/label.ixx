@@ -8,6 +8,8 @@ module;
 
 export module whiteboard.label;
 
+import whiteboard.css_item;
+
 export class CWBLabel : public CWBItem {
  public:
   CWBLabel(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);

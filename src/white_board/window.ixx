@@ -12,6 +12,8 @@ module;
 
 export module whiteboard.window;
 
+import whiteboard.css_item;
+
 export constexpr uint32_t WB_WINDOW_CLOSEABLE = 0x00000001;
 export constexpr uint32_t WB_WINDOW_MOVEABLE = 0x00000002;
 export constexpr uint32_t WB_WINDOW_RESIZABLE = 0x00000004;
