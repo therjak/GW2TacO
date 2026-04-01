@@ -9,7 +9,7 @@
 
 #pragma comment(lib, "Gdi32.lib")
 
-constexpr int32_t HIMETRIC_INCH = 2540;
+constexpr int32_t kHiMetricInch = 2540;
 
 std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
                                            int32_t ImageDataSize,
@@ -76,8 +76,8 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
   HDC hdc = GetDC(nullptr);
   HDC mdc = CreateCompatibleDC(hdc);
 
-  XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), HIMETRIC_INCH);
-  YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), HIMETRIC_INCH);
+  XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), kHiMetricInch);
+  YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), kHiMetricInch);
 
   auto Image = std::make_unique<uint8_t[]>(XSize * YSize * 4);
   memset(Image.get(), 0, XSize * YSize * 4);

@@ -365,7 +365,7 @@ void CAtlas::FlushCache() {
 }
 
 CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
-  const int32_t idx = Handle & (ATLASCACHESIZE - 1);
+  const int32_t idx = Handle & (kAtlasCacheSize - 1);
 
   if (AtlasCache[idx].Handle == Handle) return AtlasCache[idx].Node;
 
