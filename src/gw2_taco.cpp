@@ -1560,11 +1560,11 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   if (it) {
     auto taco = dynamic_cast<CWBButton*>(FindChildByID("MenuButton", "button"));
     if (taco) {
-      constexpr float speed = 500.0f;
+      constexpr float kSpeed = 500.0f;
 
       int32_t currTime = GetTime();
       float delta = std::max(
-          0.f, std::min(1.f, (currTime - lastMenuHoverTransitionTime) / speed));
+          0.f, std::min(1.f, (currTime - lastMenuHoverTransitionTime) / kSpeed));
 
       bool hover =
           ClientToScreen(it->GetClientRect()).Contains(App->GetMousePos());

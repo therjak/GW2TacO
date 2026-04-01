@@ -6,7 +6,7 @@
 #include "src/core2/core2.h"
 
 // cache size must be 2^x
-constexpr int32_t ATLASCACHESIZE = 32;
+constexpr int32_t kAtlasCacheSize = 32;
 
 typedef int32_t WBATLASHANDLE;
 
@@ -103,7 +103,7 @@ class CAtlas {
 
   bool TextureUpdateNeeded;
 
-  std::array<CAtlasCacheElement, ATLASCACHESIZE> AtlasCache;
+  std::array<CAtlasCacheElement, kAtlasCacheSize> AtlasCache;
 
   std::unordered_map<WBATLASHANDLE, CAtlasNode*> Dictionary;
   std::unordered_map<WBATLASHANDLE, std::unique_ptr<CAtlasImage>> ImageStorage;

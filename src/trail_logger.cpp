@@ -26,7 +26,7 @@ import taco.time;
 
 #pragma comment(lib, "Comdlg32.lib")
 
-constexpr int32_t TRAILFILEVERSION = 0;
+constexpr int32_t kTrailFileVersion = 0;
 
 using math::CMatrix4x4;
 using math::CPoint;
@@ -722,7 +722,7 @@ bool GW2Trail::SaveToFile(std::string_view fname) {
   CStreamWriterFile TrailLog;
   if (!TrailLog.Open(fname)) return false;
 
-  TrailLog.WriteDWord(TRAILFILEVERSION);
+  TrailLog.WriteDWord(kTrailFileVersion);
 
   TrailLog.WriteDWord(map);
   TrailLog.Write(std::string_view(reinterpret_cast<const char*>(&positions[0]),
