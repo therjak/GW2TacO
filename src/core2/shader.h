@@ -4,8 +4,6 @@
 
 #include "src/core2/resource.h"
 
-#define CORESHADERTYPECOUNT 5
-
 class CCoreShader : public CCoreResource {
   friend class CCoreDevice;
 

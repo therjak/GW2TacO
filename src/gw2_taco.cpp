@@ -1560,7 +1560,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
   if (it) {
     auto taco = dynamic_cast<CWBButton*>(FindChildByID("MenuButton", "button"));
     if (taco) {
-#define speed 500.0f
+      constexpr float speed = 500.0f;
 
       int32_t currTime = GetTime();
       float delta = std::max(

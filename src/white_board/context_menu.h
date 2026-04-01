@@ -1,13 +1,12 @@
 #pragma once
 
+#include <climits>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "src/white_board/gui_item.h"
-
-#define WB_CONTEXT_SEPARATOR ((void*)(INT_MIN))
 
 class CWBContextItem {
   friend class CWBContextMenu;

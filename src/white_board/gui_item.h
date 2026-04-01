@@ -19,8 +19,7 @@ class CWBApplication;
 class CWBMessage;
 enum WBMESSAGE;
 
-#define WBMARGIN_KEEP (INT_MAX)
-#define POSSIZETORECT(a, b) (CRect(a.x, a.y, a.x + b.x, a.y + b.y))
+constexpr int32_t WBMarginKeep = (INT_MAX);
 
 class CWBContextMenu;
 

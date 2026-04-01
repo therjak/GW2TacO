@@ -799,19 +799,19 @@ void CWBItem::SetPosition(const CRect& Pos) {
 
 void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
                                int32_t bottom) {
-  if (left != WBMARGIN_KEEP) {
+  if (left != WBMarginKeep) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_LEFT,
                                               0, static_cast<float>(left));
   }
-  if (right != WBMARGIN_KEEP) {
+  if (right != WBMarginKeep) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_RIGHT,
                                               0, static_cast<float>(right));
   }
-  if (top != WBMARGIN_KEEP) {
+  if (top != WBMarginKeep) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_TOP, 0,
                                               static_cast<float>(top));
   }
-  if (bottom != WBMARGIN_KEEP) {
+  if (bottom != WBMarginKeep) {
     CSSProperties.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_BOTTOM,
                                               0, static_cast<float>(bottom));
   }

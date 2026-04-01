@@ -38,13 +38,13 @@ std::unordered_map<int, bool> wvwMapIDs;
 
 std::thread wvwPollThread;
 
-#define DAYFLAG 0x001000
-#define DHMSFLAG 0x001111
-#define HOURFLAG 0x000100
-#define HMSFLAG 0x000111
-#define MINFLAG 0x000010
-#define MSFLAG 0x000011
-#define SECFLAG 0x000001
+constexpr int DayFlag = 0x001000;
+constexpr int DhmsFlag = 0x001111;
+constexpr int HourFlag = 0x000100;
+constexpr int HmsFlag = 0x000111;
+constexpr int MinFlag = 0x000010;
+constexpr int MsFlag = 0x000011;
+constexpr int SecFlag = 0x000001;
 
 void parseISO8601(const char* text, time_t& isotime, char& flag) {
   const char* c = nullptr;
@@ -76,38 +76,38 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
 
       switch (*c++) {
         case 'D':
-          if (dateflags & DHMSFLAG) {
+          if (dateflags & DhmsFlag) {
             /* day, hour, min or sec already set */
             return;
           } else {
-            dateflags |= DAYFLAG;
+            dateflags |= DayFlag;
             days = num;
           }
           break;
         case 'H':
-          if (dateflags & HMSFLAG) {
+          if (dateflags & HmsFlag) {
             /* hour, min or sec already set */
             return;
           } else {
-            dateflags |= DAYFLAG;
+            dateflags |= DayFlag;
             hours = num;
           }
           break;
         case 'M':
-          if (dateflags & MSFLAG) {
+          if (dateflags & MsFlag) {
             /* min or sec already set */
             return;
           } else {
-            dateflags |= MINFLAG;
+            dateflags |= MinFlag;
             minutes = num;
           }
           break;
         case 'S':
-          if (dateflags & SECFLAG) {
+          if (dateflags & SecFlag) {
             /* sec already set */
             return;
           } else {
-            dateflags |= SECFLAG;
+            dateflags |= SecFlag;
             seconds = num;
           }
           break;
