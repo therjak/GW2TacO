@@ -342,7 +342,7 @@ CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
 }
 
 float GetMapFade() {
-#define MAPFADELENGTH 250
+  constexpr int32_t MAPFADELENGTH = 250;
 
   int lastMapTime = globalTimer.GetTime() - mumbleLink.lastMapChangeTime;
   if (mumbleLink.isMapOpen && lastMapTime > MAPFADELENGTH) return 0.0f;

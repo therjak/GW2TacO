@@ -6,7 +6,7 @@
 #include "src/core2/core2.h"
 
 // cache size must be 2^x
-#define ATLASCACHESIZE 32
+constexpr int32_t ATLASCACHESIZE = 32;
 
 typedef int32_t WBATLASHANDLE;
 

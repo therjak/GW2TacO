@@ -9,7 +9,7 @@
 
 #pragma comment(lib, "Gdi32.lib")
 
-#define HIMETRIC_INCH 2540
+constexpr int32_t HIMETRIC_INCH = 2540;
 
 std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
                                            int32_t ImageDataSize,

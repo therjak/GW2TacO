@@ -26,7 +26,7 @@ import taco.time;
 
 #pragma comment(lib, "Comdlg32.lib")
 
-#define TRAILFILEVERSION 0
+constexpr int32_t TRAILFILEVERSION = 0;
 
 using math::CMatrix4x4;
 using math::CPoint;

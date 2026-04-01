@@ -6,8 +6,8 @@
 #include "src/base/logger.h"
 #include "src/white_board/application.h"
 
-#define VERTEXBUFFERRECTCOUNT 4096
-#define VERTEXBUFFERVERTEXCOUNT (VERTEXBUFFERRECTCOUNT * 4)
+constexpr int32_t VertexBufferRectCount = 4096;
+constexpr int32_t VertexBufferVertexCount = VertexBufferRectCount * 4;
 
 using math::CPoint;
 using math::CRect;
@@ -326,7 +326,7 @@ void CWBDrawAPI::RenderDisplayList() {
 
   int32_t VxCount = DisplayList.size();
   while (VxCount > 0) {
-    const int32_t Count = std::min(VxCount, VERTEXBUFFERVERTEXCOUNT);
+    const int32_t Count = std::min(VxCount, VertexBufferVertexCount);
 
     void* Buffer = nullptr;
 
@@ -396,13 +396,13 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   if (!Device || !Atlas) return false;
 
   VertexBuffer = Device->CreateVertexBufferDynamic(sizeof(WBGUIVERTEX) *
-                                                   VERTEXBUFFERRECTCOUNT * 4);
+                                                   VertexBufferRectCount * 4);
   if (!VertexBuffer) {
     Log_Err("[gui] Error creating UI Vertex Buffer");
     return false;
   }
 
-  rectIndexBuffer = Device->CreateIndexBuffer(VERTEXBUFFERRECTCOUNT * 6);
+  rectIndexBuffer = Device->CreateIndexBuffer(VertexBufferRectCount * 6);
   if (!rectIndexBuffer) {
     Log_Err("[gui] Error creating UI Index Buffer");
     return false;
@@ -411,7 +411,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, CCoreDevice* Dev,
   uint16_t* Locked = nullptr;
 
   if (rectIndexBuffer->Lock(reinterpret_cast<void**>(&Locked))) {
-    for (int32_t x = 0; x < VERTEXBUFFERRECTCOUNT; x++) {
+    for (int32_t x = 0; x < VertexBufferRectCount; x++) {
       Locked[x * 6 + 0] = x * 4;
       Locked[x * 6 + 1] = x * 4 + 1;
       Locked[x * 6 + 2] = x * 4 + 2;
