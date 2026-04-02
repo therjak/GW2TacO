@@ -128,7 +128,7 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
 }
 
 RaidProgress::RaidProgress(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position),
+    : CWBGuiType(Parent, Position),
       raids{
           Raid{"Forsaken Thicket",
                "FT",

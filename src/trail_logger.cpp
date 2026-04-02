@@ -454,7 +454,7 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(
 }
 
 GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {
+    : CWBGuiType(Parent, Position) {
   constBuffer = App->GetDevice()->CreateConstantBuffer();
 
   CStreamReaderMemory tex;

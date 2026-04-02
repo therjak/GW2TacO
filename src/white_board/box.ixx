@@ -28,7 +28,7 @@ export enum class WBBOXSIZING : uint8_t {
   WB_SIZING_FILL,
 };
 
-export class CWBBox : public CWBItem {
+export class CWBBox : public CWBGuiType<"box", CWBItem> {
  public:
   CWBBox(CWBItem* Parent, const math::CRect& Pos);
   static inline CWBBox* Create(CWBItem* Parent, const math::CRect& Pos) {
@@ -42,7 +42,6 @@ export class CWBBox : public CWBItem {
   bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("box", CWBItem);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
   WBBOXARRANGEMENT GetArrangement();

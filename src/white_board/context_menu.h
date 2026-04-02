@@ -33,7 +33,7 @@ class CWBContextItem {
   CWBContextItem* CopyOf = nullptr;
 };
 
-class CWBContextMenu : public CWBItem {
+class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
  public:
   CWBContextMenu(CWBItem* Parent, const math::CRect& Pos, WBGUID Target);
   static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -47,8 +47,6 @@ class CWBContextMenu : public CWBItem {
   ~CWBContextMenu() override;
 
   bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
-
-  WB_DECLARE_GUIITEM("contextmenu", CWBItem);
 
   virtual CWBContextItem* AddItem(std::string_view Text, int32_t ID,
                                   bool Highlighted = false,

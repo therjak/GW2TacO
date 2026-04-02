@@ -22,7 +22,7 @@ bool GW2Notepad::IsMouseTransparent(const CPoint& ClientSpacePoint,
 }
 
 GW2Notepad::GW2Notepad(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {
+    : CWBGuiType(Parent, Position) {
   App->GenerateGUITemplate(this, "gw2pois", "notepad");
 
   SetID("notepad");

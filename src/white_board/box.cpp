@@ -21,7 +21,7 @@ void CWBBox::AddChild(std::unique_ptr<CWBItem>&& Item) {
   RearrangeChildren();
 }
 
-CWBBox::CWBBox(CWBItem* Parent, const CRect& Pos) : CWBItem() {
+CWBBox::CWBBox(CWBItem* Parent, const CRect& Pos) : CWBGuiType() {
   Initialize(Parent, Pos);
 }
 

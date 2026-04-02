@@ -10,7 +10,7 @@ export module taco.special_gui_items;
 
 import whiteboard.button;
 
-export class ClickThroughButton : public CWBButton {
+export class ClickThroughButton : public CWBGuiType<"clickthroughbutton", CWBButton> {
  public:
   ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
                      std::string_view txt);
@@ -29,5 +29,4 @@ export class ClickThroughButton : public CWBButton {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("clickthroughbutton", CWBItem);
 };

@@ -97,7 +97,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
 }
 
 CWBContextMenu::CWBContextMenu(CWBItem* Parent, const CRect& Pos, WBGUID trg)
-    : CWBItem(), Target(trg) {
+    : CWBGuiType(), Target(trg) {
   CWBContextMenu::Initialize(Parent, Pos);
 }
 

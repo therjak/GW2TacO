@@ -11,7 +11,7 @@ module;
 
 export module taco.notepad;
 
-export class GW2Notepad : public CWBItem {
+export class GW2Notepad : public CWBGuiType<"notepad", CWBItem> {
  public:
   GW2Notepad(CWBItem* Parent, math::CRect Position);
   ~GW2Notepad() override;
@@ -24,7 +24,6 @@ export class GW2Notepad : public CWBItem {
   }
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
-  WB_DECLARE_GUIITEM("notepad", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

@@ -10,7 +10,7 @@ export module whiteboard.label;
 
 import whiteboard.css_item;
 
-export class CWBLabel : public CWBItem {
+export class CWBLabel : public CWBGuiType<"label", CWBItem> {
  public:
   CWBLabel(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
   static inline CWBLabel* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -30,7 +30,6 @@ export class CWBLabel : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("label", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override {

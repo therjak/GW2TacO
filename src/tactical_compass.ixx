@@ -10,7 +10,7 @@ module;
 
 export module taco.tactical_compass;
 
-export class GW2TacticalCompass : public CWBItem {
+export class GW2TacticalCompass : public CWBGuiType<"gw2rangecircles", CWBItem> {
  public:
   GW2TacticalCompass(CWBItem* Parent, math::CRect Position);
   ~GW2TacticalCompass() override;
@@ -25,7 +25,6 @@ export class GW2TacticalCompass : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("gw2rangecircles", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

@@ -137,7 +137,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
 
 CWBTextBox::CWBTextBox(CWBItem* Parent, const CRect& Pos, int32_t flags,
                        std::string_view Txt)
-    : CWBItem(), CursorBlinkStartTime(globalTimer.GetTime()), Flags(flags) {
+    : CWBGuiType(), CursorBlinkStartTime(globalTimer.GetTime()), Flags(flags) {
   Initialize(Parent, Pos);
   SetTextInternal(Txt, false, true);
 }

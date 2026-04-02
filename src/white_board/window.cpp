@@ -162,7 +162,7 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
 
 CWBWindow::CWBWindow(CWBItem* Parent, const CRect& Pos, const TCHAR* txt,
                      uint32_t style)
-    : CWBItem(),
+    : CWBGuiType(),
 
       TitleBarHeight(style & WB_WINDOW_TITLE ? 12 : 0),
 

@@ -9,9 +9,8 @@ import whiteboard.button;
 using math::CRect;
 
 ClickThroughButton::ClickThroughButton(CWBItem* Parent, const CRect& Pos,
-                                       std::string_view txt /*=  ""  */)
-    : CWBButton(Parent, Pos, txt) {}
-
+                                        std::string_view txt /*=  ""  */)
+    : CWBGuiType(Parent, Pos, txt) {}
 ClickThroughButton::~ClickThroughButton() = default;
 
 bool ClickThroughButton::Initialize(CWBItem* Parent, const CRect& Position) {

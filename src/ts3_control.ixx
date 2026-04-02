@@ -8,7 +8,7 @@ module;
 
 export module taco.ts3_control;
 
-export class TS3Control : public CWBItem {
+export class TS3Control : public CWBGuiType<"ts3control", CWBItem> {
  public:
   TS3Control(CWBItem* Parent, math::CRect Position);
   ~TS3Control() override;
@@ -21,7 +21,6 @@ export class TS3Control : public CWBItem {
   }
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
-  WB_DECLARE_GUIITEM("ts3control", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

@@ -26,7 +26,7 @@ bool GW2MarkerEditor::IsMouseTransparent(const CPoint& ClientSpacePoint,
 }
 
 GW2MarkerEditor::GW2MarkerEditor(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {
+    : CWBGuiType(Parent, Position) {
   App->GenerateGUITemplate(this, "gw2pois", "markereditor");
 }
 

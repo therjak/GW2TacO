@@ -106,7 +106,7 @@ extern std::vector<POIRoute> Routes;
 
 POISet& GetMapPOIs();
 
-class GW2TacticalDisplay : public CWBItem {
+class GW2TacticalDisplay : public CWBGuiType<"gw2tactical", CWBItem> {
  public:
   GW2TacticalDisplay(CWBItem* Parent, math::CRect Position);
   static inline GW2TacticalDisplay* Create(CWBItem* Parent,
@@ -121,7 +121,6 @@ class GW2TacticalDisplay : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("gw2tactical", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

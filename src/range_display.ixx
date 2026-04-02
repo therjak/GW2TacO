@@ -10,7 +10,7 @@ module;
 
 export module taco.range_display;
 
-export class GW2RangeDisplay : public CWBItem {
+export class GW2RangeDisplay : public CWBGuiType<"gw2rangecircles", CWBItem> {
  public:
   GW2RangeDisplay(CWBItem* Parent, math::CRect Position);
   ~GW2RangeDisplay() override;
@@ -24,7 +24,6 @@ export class GW2RangeDisplay : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("gw2rangecircles", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

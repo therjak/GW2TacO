@@ -41,7 +41,7 @@ export class LocationalTimer {
   int32_t StartTime = 0;
 };
 
-export class TimerDisplay : public CWBItem {
+export class TimerDisplay : public CWBGuiType<"TimerDisplay", CWBItem> {
  public:
   TimerDisplay(CWBItem* Parent, math::CRect Position);
   static inline TimerDisplay* Create(CWBItem* Parent, math::CRect Position) {
@@ -55,7 +55,6 @@ export class TimerDisplay : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("TimerDisplay", CWBItem);
 
   void OnDraw(CWBDrawAPI* API) override;
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,

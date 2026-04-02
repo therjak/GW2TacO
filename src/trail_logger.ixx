@@ -73,7 +73,7 @@ export class GW2Trail {
   std::vector<math::CVector3> positions;
 };
 
-export class GW2TrailDisplay : public CWBItem {
+export class GW2TrailDisplay : public CWBGuiType<"gw2Trails", CWBItem> {
  public:
   GW2TrailDisplay(CWBItem* Parent, math::CRect Position);
   ~GW2TrailDisplay() override;
@@ -87,7 +87,6 @@ export class GW2TrailDisplay : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("gw2Trails", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

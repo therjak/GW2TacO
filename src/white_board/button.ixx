@@ -10,7 +10,7 @@ export module whiteboard.button;
 
 import whiteboard.css_item;
 
-export class CWBButton : public CWBItem {
+export class CWBButton : public CWBGuiType<"button", CWBItem> {
  public:
   CWBButton(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
   static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -30,7 +30,6 @@ export class CWBButton : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("button", CWBItem);
 
   math::CSize GetContentSize() override;
 

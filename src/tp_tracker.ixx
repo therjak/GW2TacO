@@ -30,7 +30,7 @@ export struct GW2ItemData {
   int32_t sellPrice = 0;
 };
 
-export class TPTracker : public CWBItem {
+export class TPTracker : public CWBGuiType<"tptracker", CWBItem> {
  public:
   TPTracker(CWBItem* Parent, math::CRect Position);
   ~TPTracker() override;
@@ -43,7 +43,6 @@ export class TPTracker : public CWBItem {
   }
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
-  WB_DECLARE_GUIITEM("tptracker", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

@@ -9,7 +9,7 @@ import whiteboard.css_item;
 
 export class CWBApplication;
 
-export class CWBRoot : public CWBItem {
+export class CWBRoot : public CWBGuiType<"root", CWBItem> {
  public:
   CWBRoot(CWBItem* Parent, const math::CRect& Pos);
   static inline std::unique_ptr<CWBRoot> Create(const math::CRect& Pos) {
@@ -19,8 +19,6 @@ export class CWBRoot : public CWBItem {
 
   void SetApplication(CWBApplication* Application);
   bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
-
-  WB_DECLARE_GUIITEM("root", CWBItem);
 
  private:
   bool MessageProc(const CWBMessage& Message) override;

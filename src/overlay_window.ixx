@@ -9,7 +9,7 @@ module;
 
 export module taco.overlay_window;
 
-export class OverlayWindow : public CWBWindow {
+export class OverlayWindow : public CWBGuiType<"OverlayWindow", CWBWindow> {
  public:
   OverlayWindow(CWBItem* Parent, math::CRect Position);
   ~OverlayWindow() override;
@@ -23,7 +23,7 @@ export class OverlayWindow : public CWBWindow {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("OverlayWindow", CWBItem);
+
   bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,

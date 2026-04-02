@@ -12,7 +12,7 @@ module;
 
 export module taco.hp_grid;
 
-export class GW2HPGrid : public CWBItem {
+export class GW2HPGrid : public CWBGuiType<"hpgrid", CWBItem> {
  public:
   GW2HPGrid(CWBItem* Parent, math::CRect Position);
   static inline GW2HPGrid* Create(CWBItem* Parent, math::CRect Position) {
@@ -26,7 +26,6 @@ export class GW2HPGrid : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("hpgrid", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
