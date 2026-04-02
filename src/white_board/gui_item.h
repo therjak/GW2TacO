@@ -481,71 +481,33 @@ class CWBItem : public IWBCSS {
 // class is the typename we're comparing against if not we traverse up the
 // hierarchy by directly calling the InstanceOf() of the parent class
 
-#define WB_DECLARE_GUIITEM_1PARENTS(TYPE, PARENTCLASS)    \
-  const std::string& GetType() const override {           \
-    static const std::string type = TYPE;                 \
-    return type;                                          \
-  }                                                       \
-                                                          \
-  friend CWBItem;                                         \
-                                                          \
- private:                                                 \
-  static const std::string& GetClassName() {              \
-    static const std::string type = TYPE;                 \
-    return type;                                          \
-  }                                                       \
-                                                          \
- public:                                                  \
-  bool InstanceOf(std::string_view name) const override { \
-    if (name == GetClassName()) return true;              \
-    return PARENTCLASS::InstanceOf(name);                 \
+template <size_t N>
+struct WBFixedString {
+  char value[N]{};
+  consteval WBFixedString(const char (&str)[N]) {
+    for (size_t i = 0; i < N; ++i) value[i] = str[i];
+  }
+};
+
+template <WBFixedString TypeName, typename PrimaryParent, typename... OtherParents>
+class CWBGuiType : public PrimaryParent, public OtherParents... {
+ public:
+  template <typename... Args>
+  CWBGuiType(Args&&... args)
+      : PrimaryParent(std::forward<Args>(args)...), OtherParents()... {}
+
+  [[nodiscard]] const std::string& GetType() const override {
+    return GetClassName();
   }
 
-#define WB_DECLARE_GUIITEM_2PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2)        \
-  const std::string& GetType() const override {                              \
-    static const std::string type = TYPE;                                    \
-    return type;                                                             \
-  }                                                                          \
-                                                                             \
-  friend CWBItem;                                                            \
-                                                                             \
- private:                                                                    \
-  static const std::string& GetClassName() {                                 \
-    static const std::string type = TYPE;                                    \
-    return type;                                                             \
-  }                                                                          \
-                                                                             \
- public:                                                                     \
-  bool InstanceOf(std::string_view name) const override {                    \
-    if (name == GetClassName()) return true;                                 \
-    return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name); \
+  [[nodiscard]] bool InstanceOf(std::string_view name) const override {
+    if (name == TypeName.value) return true;
+    if (PrimaryParent::InstanceOf(name)) return true;
+    return (OtherParents::InstanceOf(name) || ... || false);
   }
 
-#define WB_DECLARE_GUIITEM_3PARENTS(TYPE, PARENTCLASS1, PARENTCLASS2,          \
-                                    PARENTCLASS3)                              \
-  const std::string& GetType() const override {                                \
-    static const std::string type = TYPE;                                      \
-    return type;                                                               \
-  }                                                                            \
-                                                                               \
-  friend CWBItem;                                                              \
-                                                                               \
- private:                                                                      \
-  static const std::string& GetClassName() {                                   \
-    static const std::string type = TYPE;                                      \
-    return type;                                                               \
-  }                                                                            \
-                                                                               \
- public:                                                                       \
-  bool InstanceOf(std::string_view name) const override {                      \
-    if (name == GetClassName()) return true;                                   \
-    return PARENTCLASS1::InstanceOf(name) || PARENTCLASS2::InstanceOf(name) || \
-           PARENTCLASS3::InstanceOf(name);                                     \
+  static const std::string& GetClassName() {
+    static const std::string type = TypeName.value;
+    return type;
   }
-
-#define EXPAND(x) x
-#define WB_DECLARE_MACRO_SELECTOR(_1, _2, _3, NAME, ...) NAME
-#define WB_DECLARE_GUIITEM(TYPE, ...)                                        \
-  EXPAND(EXPAND(WB_DECLARE_MACRO_SELECTOR(                                   \
-      __VA_ARGS__, WB_DECLARE_GUIITEM_3PARENTS, WB_DECLARE_GUIITEM_2PARENTS, \
-      WB_DECLARE_GUIITEM_1PARENTS))(TYPE, __VA_ARGS__))
+};

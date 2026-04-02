@@ -140,7 +140,7 @@ constexpr int32_t ignore = -1;  // does not count for dungeon frequenter
 }  // namespace
 
 DungeonProgress::DungeonProgress(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position),
+    : CWBGuiType(Parent, Position),
       dungeons{
           Dungeon{"ascalonian_catacombs",
                   "AC",

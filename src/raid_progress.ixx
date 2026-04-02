@@ -43,7 +43,7 @@ export class Raid {
   std::vector<Wing> wings;
 };
 
-export class RaidProgress : public CWBItem {
+export class RaidProgress : public CWBGuiType<"raidprogress", CWBItem> {
  public:
   RaidProgress(CWBItem* Parent, math::CRect Position);
   ~RaidProgress() override;
@@ -56,7 +56,6 @@ export class RaidProgress : public CWBItem {
   }
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
-  WB_DECLARE_GUIITEM("raidprogress", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

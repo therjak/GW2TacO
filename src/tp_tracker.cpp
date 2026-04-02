@@ -417,7 +417,7 @@ bool TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
 }
 
 TPTracker::TPTracker(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {}
+    : CWBGuiType(Parent, Position) {}
 
 TPTracker::~TPTracker() {
   if (fetchThread.joinable()) fetchThread.join();

@@ -41,7 +41,7 @@ export enum class WBWINDOWELEMENT : char {
   WB_WINELEMENT_TITLE,
 };
 
-export class CWBWindow : public CWBItem {
+export class CWBWindow : public CWBGuiType<"window", CWBItem> {
  public:
   CWBWindow(CWBItem* Parent, const math::CRect& Pos, const TCHAR* txt = "",
             uint32_t style = WB_WINDOW_DEFAULT);
@@ -69,8 +69,6 @@ export class CWBWindow : public CWBItem {
 
   math::CRect GetElementPos(WBWINDOWELEMENT Element);
   uint32_t GetBorderSelectionArea(const math::CPoint& mousepos);
-
-  WB_DECLARE_GUIITEM("window", CWBItem);
 
  protected:
   void OnDraw(CWBDrawAPI* API) override;

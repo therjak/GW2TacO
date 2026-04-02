@@ -158,7 +158,7 @@ void GW2RangeDisplay::OnDraw(CWBDrawAPI* API) {
 }
 
 GW2RangeDisplay::GW2RangeDisplay(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {}
+    : CWBGuiType(Parent, Position) {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
 CWBItem* GW2RangeDisplay::Factory(CWBItem* Root, const CXMLNode& node,

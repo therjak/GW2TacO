@@ -59,7 +59,7 @@ void CWBButton::OnDraw(CWBDrawAPI* API) {
 }
 
 CWBButton::CWBButton(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
-    : CWBItem(), Text(Txt) {
+    : CWBGuiType(), Text(Txt) {
   Initialize(Parent, Pos);
 }
 

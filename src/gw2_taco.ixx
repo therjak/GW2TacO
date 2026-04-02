@@ -50,7 +50,7 @@ export enum class APIKeys {
 
 export extern std::vector<std::string_view> ActionNames;
 
-export class GW2TacO : public CWBItem {
+export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
  public:
   GW2TacO(CWBItem* Parent, math::CRect Position);
   static inline GW2TacO* Create(CWBItem* Parent, math::CRect Position) {
@@ -64,7 +64,7 @@ export class GW2TacO : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("GW2TacO", CWBItem);
+
   void OpenWindow(std::string_view s);
   void OnDraw(CWBDrawAPI* API) override;
   void OnPostDraw(CWBDrawAPI* API) override;

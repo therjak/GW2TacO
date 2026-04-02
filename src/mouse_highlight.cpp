@@ -45,7 +45,7 @@ void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
 }
 
 GW2MouseHighlight::GW2MouseHighlight(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {}
+    : CWBGuiType(Parent, Position) {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 

@@ -213,7 +213,7 @@ bool GW2TacO::IsMouseTransparent(const CPoint& ClientSpacePoint,
   return true;
 }
 
-GW2TacO::GW2TacO(CWBItem* Parent, CRect Position) : CWBItem(Parent, Position) {
+GW2TacO::GW2TacO(CWBItem* Parent, CRect Position) : CWBGuiType(Parent, Position) {
   GetKeyBindings(KeyBindings);
   GetScriptKeyBindings(ScriptKeyBindings);
 }
@@ -1578,7 +1578,7 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
       if (hover != menuHoverLastFrame) {
         lastMenuHoverTransitionTime =
-            static_cast<int32_t>(currTime - (1 - delta) * speed);
+            static_cast<int32_t>(currTime - (1 - delta) * kSpeed);
         delta = 1 - delta;
       }
 

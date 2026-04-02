@@ -12,7 +12,7 @@ module;
 
 export module taco.marker_editor;
 
-export class GW2MarkerEditor : public CWBItem {
+export class GW2MarkerEditor : public CWBGuiType<"markereditor", CWBItem> {
  public:
   GW2MarkerEditor(CWBItem* Parent, math::CRect Position);
   static inline GW2MarkerEditor* Create(CWBItem* Parent, math::CRect Position) {
@@ -25,7 +25,6 @@ export class GW2MarkerEditor : public CWBItem {
   ~GW2MarkerEditor() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
-  WB_DECLARE_GUIITEM("markereditor", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

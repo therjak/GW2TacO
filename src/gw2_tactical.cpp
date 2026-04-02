@@ -1010,7 +1010,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 }
 
 GW2TacticalDisplay::GW2TacticalDisplay(CWBItem* Parent, CRect Position)
-    : CWBItem(Parent, Position) {}
+    : CWBGuiType(Parent, Position) {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() {
   if (fetchThread.joinable()) fetchThread.join();

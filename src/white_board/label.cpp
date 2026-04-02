@@ -33,7 +33,7 @@ void CWBLabel::OnDraw(CWBDrawAPI* API) {
 }
 
 CWBLabel::CWBLabel(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
-    : CWBItem(), Text(Txt) {
+    : CWBGuiType(), Text(Txt) {
   Initialize(Parent, Pos);
 }
 

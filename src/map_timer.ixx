@@ -16,7 +16,7 @@ module;
 
 export module taco.map_timer;
 
-export class GW2MapTimer : public CWBItem {
+export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
  public:
   struct Event {
     std::string name;
@@ -57,7 +57,6 @@ export class GW2MapTimer : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("maptimer", CWBItem);
 
   std::vector<Map> maps;
   std::unordered_map<std::string, Category> categories;

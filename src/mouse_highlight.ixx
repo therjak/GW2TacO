@@ -41,7 +41,7 @@ export constexpr std::array CGAPaletteNames = {
     "green", "lightgreen", "cyan",      "lightcyan", "magenta", "lightmagenta",
     "brown", "yellow",     "lightgray", "white"};
 
-export class GW2MouseHighlight : public CWBItem {
+export class GW2MouseHighlight : public CWBGuiType<"mousehighlight", CWBItem> {
  public:
   GW2MouseHighlight(CWBItem* Parent, math::CRect Position);
   static inline GW2MouseHighlight* Create(CWBItem* Parent,
@@ -56,7 +56,7 @@ export class GW2MouseHighlight : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("mousehighlight", CWBItem);
+
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 

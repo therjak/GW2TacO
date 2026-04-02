@@ -32,7 +32,7 @@ bool CWBRoot::MessageProc(const CWBMessage& Message) {
   return CWBItem::MessageProc(Message);
 }
 
-CWBRoot::CWBRoot(CWBItem* Parent, const CRect& Pos) : CWBItem() {
+CWBRoot::CWBRoot(CWBItem* Parent, const CRect& Pos) : CWBGuiType() {
   Initialize(Parent, Pos);
 }
 

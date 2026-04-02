@@ -38,7 +38,7 @@ export class Dungeon {
   std::vector<DungeonPath> paths;
 };
 
-export class DungeonProgress : public CWBItem {
+export class DungeonProgress : public CWBGuiType<"dungeonprogress", CWBItem> {
  public:
   DungeonProgress(CWBItem* Parent, math::CRect Position);
   static inline DungeonProgress* Create(CWBItem* Parent, math::CRect Position) {
@@ -51,7 +51,6 @@ export class DungeonProgress : public CWBItem {
   ~DungeonProgress() override;
 
   static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
-  WB_DECLARE_GUIITEM("dungeonprogress", CWBItem);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
                           WBMESSAGE MessageType) override;

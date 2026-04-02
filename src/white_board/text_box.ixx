@@ -38,7 +38,7 @@ export class CWBTextBoxHistoryEntry {
   int32_t SelectionEnd_Before = 0;
 };
 
-export class CWBTextBox : public CWBItem {
+export class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
  public:
   CWBTextBox(CWBItem* Parent, const math::CRect& Pos, int32_t flags,
              std::string_view txt);
@@ -62,7 +62,6 @@ export class CWBTextBox : public CWBItem {
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
-  WB_DECLARE_GUIITEM("textbox", CWBItem);
 
   virtual void SetSelection(int32_t start, int32_t end);
   void SetCursorPos(int32_t pos, bool Selecting);
