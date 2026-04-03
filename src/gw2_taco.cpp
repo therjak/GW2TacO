@@ -13,10 +13,11 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
-#include "src/white_board/button.h"
-#include "src/white_board/label.h"
-#include "src/white_board/text_box.h"
-#include "src/white_board/window.h"
+
+import whiteboard.button;
+import whiteboard.label;
+import whiteboard.text_box;
+import whiteboard.window;
 
 import taco.mumble_link;
 import taco.gw2;

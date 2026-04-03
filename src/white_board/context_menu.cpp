@@ -1,7 +1,8 @@
 #include "src/white_board/context_menu.h"
 
 #include "src/white_board/application.h"
-#include "src/white_board/button.h"
+
+import whiteboard.button;
 
 using math::CPoint;
 using math::CRect;

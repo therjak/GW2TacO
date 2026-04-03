@@ -11,11 +11,12 @@
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/util/png_decompressor.h"
-#include "src/white_board/box.h"
-#include "src/white_board/button.h"
-#include "src/white_board/label.h"
-#include "src/white_board/text_box.h"
-#include "src/white_board/window.h"
+
+import whiteboard.box;
+import whiteboard.button;
+import whiteboard.label;
+import whiteboard.text_box;
+import whiteboard.window;
 
 using math::CPoint;
 using math::CRect;

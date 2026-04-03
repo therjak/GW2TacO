@@ -8,16 +8,16 @@
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/white_board/css_item.h"
 #include "src/white_board/draw_api.h"
-#include "src/white_board/message_enum.h"
-#include "src/white_board/skin.h"
+
+import whiteboard.css_item;
+import whiteboard.message_enum;
+import whiteboard.skin;
 
 typedef uint32_t WBGUID;
 class CWBDrawAPI;
 class CWBApplication;
 class CWBMessage;
-enum WBMESSAGE;
 
 constexpr int32_t WBMarginKeep = (INT_MAX);
 
@@ -489,7 +489,8 @@ struct WBFixedString {
   }
 };
 
-template <WBFixedString TypeName, typename PrimaryParent, typename... OtherParents>
+template <WBFixedString TypeName, typename PrimaryParent,
+          typename... OtherParents>
 class CWBGuiType : public PrimaryParent, public OtherParents... {
  public:
   template <typename... Args>

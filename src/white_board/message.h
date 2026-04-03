@@ -3,7 +3,8 @@
 
 #include "src/base/rectangle.h"
 #include "src/white_board/gui_item.h"
-#include "src/white_board/message_enum.h"
+
+import whiteboard.message_enum;
 
 class CWBMessage final {
  public:

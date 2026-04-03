@@ -1,6 +1,7 @@
 module;
 #include "src/white_board/application.h"
-#include "src/white_board/window.h"
+
+import whiteboard.window;
 
 module taco.overlay_window;
 

@@ -7,8 +7,9 @@ module;
 
 #include "src/gw2_tactical.h"
 #include "src/white_board/gui_item.h"
-#include "src/white_board/text_box.h"
-#include "src/white_board/window.h"
+
+import whiteboard.text_box;
+import whiteboard.window;
 
 export module taco.gw2taco;
 
