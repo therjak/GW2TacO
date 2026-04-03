@@ -3,13 +3,15 @@ module;
 #include <cstdio>
 #include <cstring>
 #include <format>
+
 #include "base/color.h"
-#include "poi_behavior.h"
 #include "util/xml_node.h"
+
 
 module taco.marker_data;
 
 import taco.string_set;
+import taco.poi_behavior;
 
 MarkerTypeData::MarkerTypeData() {
   memset(&bits, 0, sizeof(bits));

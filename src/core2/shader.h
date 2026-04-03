@@ -15,7 +15,7 @@ class CCoreShader : public CCoreResource {
 
   virtual bool Create(void* Binary, int32_t Length) = 0;
 
-  void* GetBinary() { return Binary.get(); }
+  const uint8_t* GetBinary() { return Binary.get(); }
 
   int32_t GetBinaryLength() { return BinaryLength; }
 
@@ -34,7 +34,7 @@ class CCoreShader : public CCoreResource {
   virtual void* GetHandle() = 0;
 
  protected:
-  void FetchBinary(void* binary, int32_t length) {
+  void FetchBinary(const void* binary, int32_t length) {
     Binary = std::make_unique<uint8_t[]>(length);
     memcpy(Binary.get(), binary, length);
     BinaryLength = length;
