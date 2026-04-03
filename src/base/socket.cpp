@@ -1,10 +1,12 @@
 #include "src/base/socket.h"
 
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #include <winsock2.h>
 
 WSADATA wsaData;
 #include <mmsystem.h>
-#include <ws2tcpip.h>
+#include <ws2tcpip.h>  // This is where getaddrinfo is declared
 
 #include <memory>
 #include <vector>
@@ -23,7 +25,8 @@ CSocket::~CSocket() {
 
 int32_t CSocket::ReadStream(void* lpBuf, uint32_t nCount) {
   if (Socket == INVALID_SOCKET) return 0;
-  int32_t r = recv(Socket, static_cast<char*>(lpBuf), nCount, NULL);
+  int32_t r = recv(Socket, static_cast<char*>(lpBuf),
+                   static_cast<int32_t>(nCount), NULL);
   if (r != 0) LastActivity = GetTickCount64();
   return r;
 }
@@ -68,18 +71,35 @@ int32_t CSocket::Close() {
 uint32_t CSocket::Resolve(std::string_view a) {
   std::string Address(a);
   uint32_t addr = INADDR_NONE;
-  if (inet_pton(AF_INET, Address.c_str(), &addr) != 0) {
-    addr = INADDR_NONE;
-  }
 
-  if (addr == INADDR_NONE) {
-    hostent* hostEntry = gethostbyname(Address.c_str());
-    if (hostEntry) {
-      auto pa = reinterpret_cast<LPIN_ADDR>(hostEntry->h_addr);
-      addr = pa->S_un.S_addr;
+  // First, try to parse as an IP address directly (IPv4)
+  if (inet_pton(AF_INET, Address.c_str(), &addr) != 0) {
+    // If not a valid IP address, try to resolve the hostname using getaddrinfo
+    struct addrinfo hints = {};
+    hints.ai_family = AF_INET;        // We only want IPv4 addresses
+    hints.ai_socktype = SOCK_STREAM;  // We are using TCP sockets
+
+    struct addrinfo* result = nullptr;
+    // The second parameter (service name) can be nullptr if we are only
+    // resolving the host
+    int iResult = getaddrinfo(Address.c_str(), nullptr, &hints, &result);
+
+    if (iResult == 0 && result != nullptr) {
+      // Successfully resolved. Iterate through results to find an IPv4 address.
+      // We are interested in the first valid IPv4 address found.
+      for (struct addrinfo* ptr = result; ptr != nullptr; ptr = ptr->ai_next) {
+        if (ptr->ai_family == AF_INET && ptr->ai_socktype == SOCK_STREAM) {
+          SOCKADDR_IN* ipv4Addr = reinterpret_cast<SOCKADDR_IN*>(ptr->ai_addr);
+          addr = ipv4Addr->sin_addr.s_addr;
+          break;  // Found an IPv4 address, exit loop
+        }
+      }
+      freeaddrinfo(result);  // Free the address info structure
+    } else {
+      // getaddrinfo failed. The 'addr' remains INADDR_NONE.
+      // Optionally, log the error: WSAGetLastError() could provide more info.
     }
   }
-
   return addr;
 }
 
@@ -142,24 +162,26 @@ std::string CSocket::ReadLine() {
 
   while (true) {
     if (!IsConnected()) return result;
-    auto len = static_cast<int32_t>(GetLength());
-    if (len) {
-      auto dat = std::vector<char>(len);
-      if (Peek(&dat[0], len)) {
-        for (int32_t x = 0; x < len; x++) {
-          if (dat[x] == '\n') {
-            ReadFull(&dat[0], x + 1);
-            result += std::string(&dat[0], x);
+
+    auto available_bytes = static_cast<int32_t>(GetLength());
+
+    if (available_bytes > 0) {
+      auto data_buffer = std::vector<char>(available_bytes);
+
+      if (Peek(&data_buffer[0], available_bytes)) {
+        for (int32_t x = 0; x < available_bytes; x++) {
+          if (data_buffer[x] == '\n') {
+            ReadFull(&data_buffer[0], x + 1);
+            result += std::string(&data_buffer[0], x);
             return result;
           }
         }
       }
 
-      ReadFull(&dat[0], len);
-      result += std::string(&dat[0], len);
+      ReadFull(&data_buffer[0], available_bytes);
+      result += std::string(&data_buffer[0], available_bytes);
     }
-
-    if (!Peek(&len, 1)) return result;
+    if (!Peek(&available_bytes, 1)) return result;
   }
 }
 

@@ -10,7 +10,7 @@ module;
 #include <unordered_map>
 #include <vector>
 
-#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
+
 #include "src/base/logger.h"
 #include "src/base/stream_writer.h"
 #include "src/gw2_tactical.h"

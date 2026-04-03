@@ -5,9 +5,9 @@ module;
 
 #include "src/base/rectangle.h"
 
-import taco.gw2taco;
-
 export module taco.overlay_config;
+
+import taco.gw2taco;
 
 export void LoadConfig();
 export void SaveConfig();

@@ -36,7 +36,7 @@ CStreamWriterMemory::~CStreamWriterMemory() = default;
 
 int32_t CStreamWriterMemory::WriteStream(std::string_view data) {
   Data.insert(Data.end(), data.begin(), data.end());
-  return data.size();
+  return static_cast<int32_t>(data.size());
 }
 
 const uint8_t* CStreamWriterMemory::GetData() const { return &Data[0]; }
@@ -58,7 +58,7 @@ CStreamWriterFile::~CStreamWriterFile() {
 
 int32_t CStreamWriterFile::WriteStream(std::string_view data) {
   DWORD nWritten = 0;
-  BOOL b = WriteFile(File, data.data(), data.size(), &nWritten, nullptr);
+  BOOL b = WriteFile(File, data.data(), static_cast<DWORD>(data.size()), &nWritten, nullptr);
   if (!b) return 0;
   return nWritten;
 }
