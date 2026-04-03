@@ -136,7 +136,6 @@ set(Header_Files
     "src/core2/window_handler.h"
     "src/gw2_tactical.h"
     "src/resource.h"
-    "src/poi_behavior.h"
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
@@ -393,44 +392,45 @@ target_sources(${PROJECT_NAME}
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/base/constants.ixx
-            src/gw2_api.ixx
-            src/ts3_connection.ixx
-            src/gw2_taco.ixx
-            src/overlay_config.ixx
-            src/language.ixx
-            src/mumble_link.ixx
-            src/overlay_application.ixx
-            src/ts3_control.ixx
-            src/trail_logger.ixx
-            src/overlay_window.ixx
-            src/special_gui_items.ixx
-            src/mouse_highlight.ixx
-            src/hp_grid.ixx
             src/build_info.ixx
-            src/wvw.ixx
-            src/tp_tracker.ixx
-            src/locational_timer.ixx
-            src/pro_font.ixx
-            src/tactical_compass.ixx
-            src/tactical_category.ixx
-            src/range_display.ixx
-            src/raid_progress.ixx
             src/dungeon_progress.ixx
+            src/gw2_api.ixx
+            src/gw2_taco.ixx
+            src/hp_grid.ixx
+            src/language.ixx
+            src/locational_timer.ixx
             src/map_timer.ixx
-            src/marker_editor.ixx
             src/marker_data.ixx
+            src/marker_editor.ixx
+            src/mouse_highlight.ixx
+            src/mumble_link.ixx
             src/notepad.ixx
+            src/overlay_application.ixx
+            src/overlay_config.ixx
+            src/overlay_window.ixx
+            src/poi_behavior.ixx
+            src/pro_font.ixx
+            src/raid_progress.ixx
+            src/range_display.ixx
+            src/special_gui_items.ixx
             src/string_set.ixx
+            src/tactical_category.ixx
+            src/tactical_compass.ixx
             src/time.ixx
-            src/white_board/window.ixx
-            src/white_board/text_box.ixx
-            src/white_board/style_manager.ixx
-            src/white_board/skin.ixx
-            src/white_board/root.ixx
-            src/white_board/label.ixx
-            src/white_board/css_item.ixx
-            src/white_board/button.ixx
+            src/tp_tracker.ixx
+            src/trail_logger.ixx
+            src/ts3_connection.ixx
+            src/ts3_control.ixx
             src/white_board/box.ixx
+            src/white_board/button.ixx
+            src/white_board/css_item.ixx
+            src/white_board/label.ixx
+            src/white_board/root.ixx
+            src/white_board/skin.ixx
+            src/white_board/style_manager.ixx
+            src/white_board/text_box.ixx
+            src/white_board/window.ixx
+            src/wvw.ixx
     PUBLIC
         FILE_SET HEADERS
     BASE_DIRS

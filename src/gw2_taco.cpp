@@ -213,7 +213,8 @@ bool GW2TacO::IsMouseTransparent(const CPoint& ClientSpacePoint,
   return true;
 }
 
-GW2TacO::GW2TacO(CWBItem* Parent, CRect Position) : CWBGuiType(Parent, Position) {
+GW2TacO::GW2TacO(CWBItem* Parent, CRect Position)
+    : CWBGuiType(Parent, Position) {
   GetKeyBindings(KeyBindings);
   GetScriptKeyBindings(ScriptKeyBindings);
 }
@@ -593,8 +594,8 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                   (GetConfigValue("AutoHideMarkerEditor") ? " [x]" : " [ ]"),
               Menu_ToggleAutoHideMarkerEditor);
           markerEditor->AddSeparator();
-          int cnt = 1;
-          for (int32_t x = 1; x < ActionNames.size(); x++) {
+          int32_t cnt = 1;
+          for (int32_t x = 1; x < static_cast<int32_t>(ActionNames.size()); x++) {
             auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
             for (auto& kb : KeyBindings) {
               if (static_cast<int32_t>(kb.second) == x) {
@@ -708,8 +709,8 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                 (GetConfigValue("KeybindsEnabled") ? " [x]" : " [ ]"),
             Menu_KeyBindsEnabled);
         auto bind = settings->AddItem(DICT("rebindkeys"), 0);
-        int cnt = 1;
-        for (int32_t x = 1; x < ActionNames.size(); x++) {
+        int32_t cnt = 1;
+        for (int32_t x = 1; x < static_cast<int32_t>(ActionNames.size()); x++) {
           auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
           for (auto& kb : KeyBindings) {
             if (static_cast<int32_t>(kb.second) == x) {
@@ -1564,7 +1565,8 @@ void GW2TacO::OnDraw(CWBDrawAPI* API) {
 
       int32_t currTime = GetTime();
       float delta = std::max(
-          0.f, std::min(1.f, (currTime - lastMenuHoverTransitionTime) / kSpeed));
+          0.f,
+          std::min(1.f, (currTime - lastMenuHoverTransitionTime) / kSpeed));
 
       bool hover =
           ClientToScreen(it->GetClientRect()).Contains(App->GetMousePos());

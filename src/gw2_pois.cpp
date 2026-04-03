@@ -14,7 +14,7 @@
 #include <thread>
 #include <vector>
 
-#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
+
 #include "src/base/logger.h"
 #include "src/base/rectangle.h"
 #include "src/base/stream_reader.h"

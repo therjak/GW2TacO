@@ -11,7 +11,7 @@
 #include <unordered_set>
 #include <vector>
 
-#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
+
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
 #include "src/base/plane.h"

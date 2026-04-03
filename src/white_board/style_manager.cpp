@@ -20,7 +20,7 @@ void CStyleManager::ParseDeclarations(
   auto propertiesArr = Split(s, ";");
   for (const auto& p : propertiesArr) {
     auto prop = Split(p, ":");
-    if (prop.size() != 2) continue;
+    if (prop.size() != static_cast<size_t>(2)) continue;
     std::string key(Trim(prop[0]));
     std::string value(Trim(prop[1]));
     dRuleset[key] = value;

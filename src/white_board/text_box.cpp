@@ -245,7 +245,7 @@ void CWBTextBox::SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting) {
   if (!(y < 0 || (y == 0 && x < 0))) {
     int32_t yp = 0;
     while (yp < y) {
-      if (p == Text.size()) {
+      if (p == static_cast<int32_t>(Text.size())) {
         SetCursorPos(p, Selecting);
         return;
       }
@@ -422,10 +422,10 @@ void CWBTextBox::Undo() {
   auto& e = History[HistoryPosition];
 
   if (e->Remove) {
-    InsertText(e->StartPosition, e->Data, e->Data.size(), e->CursorPos_Before,
+    InsertText(e->StartPosition, e->Data, static_cast<int32_t>(e->Data.size()), e->CursorPos_Before,
                false);
   } else {
-    RemoveText(e->StartPosition, e->Data.size(), e->CursorPos_Before, false);
+    RemoveText(e->StartPosition, static_cast<int32_t>(e->Data.size()), e->CursorPos_Before, false);
   }
 
   SelectionStart = e->SelectionStart_Before;
@@ -442,9 +442,9 @@ void CWBTextBox::Redo() {
   auto& e = History[HistoryPosition++];
 
   if (e->Remove) {
-    RemoveText(e->StartPosition, e->Data.size(), e->StartPosition, false);
+    RemoveText(e->StartPosition, static_cast<int32_t>(e->Data.size()), e->StartPosition, false);
   } else {
-    InsertText(e->StartPosition, e->Data, e->Data.size(),
+    InsertText(e->StartPosition, e->Data, static_cast<int32_t>(e->Data.size()),
                e->StartPosition + e->Data.size(), false);
   }
 

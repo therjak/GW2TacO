@@ -47,7 +47,7 @@ bool CCoreDX11VertexFormat::Create(
 
   for (size_t x = 0; x < Attributes.size(); x++) {
     vxdecl[x].InputSlot = 0;
-    vxdecl[x].AlignedByteOffset = Size;
+    vxdecl[x].AlignedByteOffset = static_cast<UINT32>(Size);
     vxdecl[x].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
     vxdecl[x].InstanceDataStepRate = 0;
 
@@ -109,7 +109,7 @@ bool CCoreDX11VertexFormat::Create(
   }
 
   const HRESULT res =
-      Dev->CreateInputLayout(vxdecl.get(), Attributes.size(), vs->GetBinary(),
+      Dev->CreateInputLayout(vxdecl.get(), static_cast<UINT>(Attributes.size()), vs->GetBinary(),
                              vs->GetBinaryLength(), &VertexFormatHandle);
   if (res != S_OK) {
     _com_error err(res);
