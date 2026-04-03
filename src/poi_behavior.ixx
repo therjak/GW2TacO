@@ -1,7 +1,8 @@
-#pragma once
+module;
 #include <cstdint>
+export module taco.poi_behavior;
 
-enum class POIBehavior : int32_t {
+export enum class POIBehavior : int32_t {
   AlwaysVisible,
   ReappearOnMapChange,
   ReappearOnDailyReset,

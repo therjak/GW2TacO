@@ -13,7 +13,6 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/poi_behavior.h"
 #include "src/util/jsonxx.h"
 
 import taco.gw2;
@@ -21,6 +20,7 @@ import taco.overlay_config;
 import taco.language;
 import taco.mumble_link;
 import taco.time;
+import taco.poi_behavior;
 
 module taco.wvw;
 

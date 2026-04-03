@@ -3,11 +3,12 @@ module;
 #include <cstdint>
 #include <string_view>
 #include <vector>
+
 #include "base/color.h"
-#include "poi_behavior.h"
 #include "util/xml_node.h"
 
 export module taco.marker_data;
+import taco.poi_behavior;
 
 export struct MarkerTypeData {
   MarkerTypeData();
