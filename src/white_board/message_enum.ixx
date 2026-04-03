@@ -1,7 +1,9 @@
-#pragma once
+module;
 #include <cstdint>
 
-enum WBMESSAGE {
+export module whiteboard.message_enum;
+
+export enum WBMESSAGE {
   WBM_NONE = 0,
   WBM_REPOSITION = 0x100,
   WBM_ROOTRESIZE,
@@ -65,9 +67,8 @@ enum WBMESSAGE {
   WBM_GAMEPAD_LEFT_THUMB_Y,
   WBM_GAMEPAD_RIGHT_THUMB_X,
   WBM_GAMEPAD_RIGHT_THUMB_Y,
-
 };
 
-constexpr int32_t WB_KBSTATE_ALT = 0x00000001;
-constexpr int32_t WB_KBSTATE_CTRL = 0x00000002;
-constexpr int32_t WB_KBSTATE_SHIFT = 0x00000004;
+export constexpr int32_t WB_KBSTATE_ALT = 0x00000001;
+export constexpr int32_t WB_KBSTATE_CTRL = 0x00000002;
+export constexpr int32_t WB_KBSTATE_SHIFT = 0x00000004;

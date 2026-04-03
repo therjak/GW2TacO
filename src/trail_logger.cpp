@@ -16,7 +16,8 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/util/miniz.h"
 #include "src/white_board/application.h"
-#include "src/white_board/button.h"
+
+import whiteboard.button;
 
 module taco.trail_logger;
 

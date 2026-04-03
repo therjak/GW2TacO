@@ -141,19 +141,11 @@ set(Header_Files
     "src/util/xml_node.h"
     "src/white_board/application.h"
     "src/white_board/atlas.h"
-    "src/white_board/button.h"
     "src/white_board/context_menu.h"
-    "src/white_board/css_item.h"
     "src/white_board/draw_api.h"
     "src/white_board/font.h"
     "src/white_board/gui_item.h"
-    "src/white_board/label.h"
     "src/white_board/message.h"
-    "src/white_board/root.h"
-    "src/white_board/skin.h"
-    "src/white_board/style_manager.h"
-    "src/white_board/text_box.h"
-    "src/white_board/window.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -425,6 +417,7 @@ target_sources(${PROJECT_NAME}
             src/white_board/button.ixx
             src/white_board/css_item.ixx
             src/white_board/label.ixx
+            src/white_board/message_enum.ixx
             src/white_board/root.ixx
             src/white_board/skin.ixx
             src/white_board/style_manager.ixx

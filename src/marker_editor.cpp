@@ -6,9 +6,10 @@ module;
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/application.h"
-#include "src/white_board/button.h"
-#include "src/white_board/label.h"
 #include "src/util/xml_node.h"
+
+import whiteboard.button;
+import whiteboard.label;
 
 module taco.marker_editor;
 

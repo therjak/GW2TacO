@@ -3,10 +3,11 @@ module;
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/white_board/application.h"
-#include "src/white_board/text_box.h"
 #include "src/base/stream_writer.h"
 #include "src/base/stream_reader.h"
 #include "src/util/xml_node.h"
+
+import whiteboard.text_box;
 
 module taco.notepad;
 

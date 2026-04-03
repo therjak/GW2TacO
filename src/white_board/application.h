@@ -14,8 +14,9 @@
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 #include "src/white_board/message.h"
-#include "src/white_board/root.h"
-#include "src/white_board/style_manager.h"
+
+import whiteboard.root;
+import whiteboard.style_manager;
 
 enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_OFF = 0,
