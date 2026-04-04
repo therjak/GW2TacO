@@ -1,6 +1,14 @@
-#include "src/white_board/message.h"
+module;
 
-#include "src/white_board/application.h"
+#include <string_view>
+#include <utility>
+
+module whiteboard;
+
+import :application;
+import :gui_item;
+import :message;
+import :message_enum;
 
 CWBMessage::CWBMessage() : app_(nullptr), message_(WBM_NONE), target_(0) {}
 

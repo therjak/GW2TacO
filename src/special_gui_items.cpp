@@ -4,12 +4,12 @@ module;
 
 module taco.special_gui_items;
 
-import whiteboard.button;
+import whiteboard;
 
 using math::CRect;
 
 ClickThroughButton::ClickThroughButton(CWBItem* Parent, const CRect& Pos,
-                                        std::string_view txt /*=  ""  */)
+                                       std::string_view txt /*=  ""  */)
     : CWBGuiType(Parent, Pos, txt) {}
 ClickThroughButton::~ClickThroughButton() = default;
 

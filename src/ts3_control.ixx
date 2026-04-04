@@ -1,12 +1,14 @@
 module;
-#include <memory>
 #include <cassert>
+#include <memory>
+
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
 export module taco.ts3_control;
+
+import whiteboard;
 
 export class TS3Control : public CWBGuiType<"ts3control", CWBItem> {
  public:

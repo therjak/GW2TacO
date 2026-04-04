@@ -9,11 +9,14 @@ module;
 #include <memory>
 #include <regex>
 
+#include "src/base/color.h"
 #include "src/base/logger.h"
 #include "src/base/timer.h"
-#include "src/white_board/application.h"
 
-module whiteboard.text_box;
+module whiteboard;
+
+import :application;
+import :text_box;
 
 using math::CPoint;
 using math::CRect;
@@ -422,10 +425,11 @@ void CWBTextBox::Undo() {
   auto& e = History[HistoryPosition];
 
   if (e->Remove) {
-    InsertText(e->StartPosition, e->Data, static_cast<int32_t>(e->Data.size()), e->CursorPos_Before,
-               false);
+    InsertText(e->StartPosition, e->Data, static_cast<int32_t>(e->Data.size()),
+               e->CursorPos_Before, false);
   } else {
-    RemoveText(e->StartPosition, static_cast<int32_t>(e->Data.size()), e->CursorPos_Before, false);
+    RemoveText(e->StartPosition, static_cast<int32_t>(e->Data.size()),
+               e->CursorPos_Before, false);
   }
 
   SelectionStart = e->SelectionStart_Before;
@@ -442,7 +446,8 @@ void CWBTextBox::Redo() {
   auto& e = History[HistoryPosition++];
 
   if (e->Remove) {
-    RemoveText(e->StartPosition, static_cast<int32_t>(e->Data.size()), e->StartPosition, false);
+    RemoveText(e->StartPosition, static_cast<int32_t>(e->Data.size()),
+               e->StartPosition, false);
   } else {
     InsertText(e->StartPosition, e->Data, static_cast<int32_t>(e->Data.size()),
                e->StartPosition + e->Data.size(), false);
@@ -595,7 +600,7 @@ int32_t CWBTextBox::GetCursorPosMouse() {
 }
 
 bool CWBTextBox::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     default:
       break;
     case WBM_FOCUSGAINED:
@@ -765,7 +770,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
 
         case VK_RETURN:
           if (Flags & WB_TEXTBOX_SINGLELINE) {
-            App->SendMessage(CWBMessage(App, WBM_COMMAND, GetGuid()));
+            App->Send(CWBMessage(App, WBM_COMMAND, GetGuid()));
             ClearFocus();
             return true;
           }
@@ -795,7 +800,7 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
         case VK_ESCAPE:
           if ((Flags & WB_TEXTBOX_SINGLELINE)) {
             SetTextInternal(OriginalText, false, false);
-            App->SendMessage(CWBMessage(App, WBM_COMMAND, GetGuid()));
+            App->Send(CWBMessage(App, WBM_COMMAND, GetGuid()));
             ClearFocus();
             return true;
           }
@@ -924,9 +929,8 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
-  App->SendMessage(
-      CWBMessage(App, WBM_TEXTCHANGED, GetGuid(),
-                 App->GetFocusItem() == this && !nonHumanInteraction));
+  App->Send(CWBMessage(App, WBM_TEXTCHANGED, GetGuid(),
+                       App->GetFocusItem() == this && !nonHumanInteraction));
 
   CPoint Size = CPoint(0, Font->GetLineHeight());
   int32_t XSize = 0;

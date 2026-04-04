@@ -1,9 +1,6 @@
-module;
-#include "src/white_board/application.h"
-
 module taco.overlay_window;
 
-import whiteboard.window;
+import whiteboard;
 import taco.overlay_config;
 using math::CPoint;
 using math::CRect;
@@ -30,7 +27,7 @@ void OverlayWindow::OnDraw(CWBDrawAPI* API) {
 }
 
 bool OverlayWindow::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_LEFTBUTTONDOWN:
       if (CWBWindow::MessageProc(Message)) return true;
       if (App->GetMouseItem() == this) {

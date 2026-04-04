@@ -10,16 +10,14 @@ module;
 #include <unordered_map>
 #include <vector>
 
-
 #include "src/base/logger.h"
 #include "src/base/stream_writer.h"
 #include "src/gw2_tactical.h"
 #include "src/util/miniz.h"
-#include "src/white_board/application.h"
 
 module taco.trail_logger;
 
-import whiteboard.button;
+import whiteboard;
 import taco.overlay_config;
 import taco.mumble_link;
 import taco.time;

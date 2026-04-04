@@ -5,13 +5,11 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/white_board/application.h"
 #include "src/util/xml_node.h"
 
 module taco.marker_editor;
 
-import whiteboard.button;
-import whiteboard.label;
+import whiteboard;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.trail_logger;
@@ -94,7 +92,7 @@ void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
 }
 
 bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_COMMAND: {
       if (Hidden) break;
 

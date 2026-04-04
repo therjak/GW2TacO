@@ -1,18 +1,21 @@
 module;
+#include <tchar.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
-#include <tchar.h>
 #include <unordered_map>
 #include <vector>
 
-#include "src/white_board/application.h"
 
-export module whiteboard.window;
+export module whiteboard:window;
 
-import whiteboard.css_item;
+import :application;
+import :css_item;
+import :gui_item;
 
 export constexpr uint32_t WB_WINDOW_CLOSEABLE = 0x00000001;
 export constexpr uint32_t WB_WINDOW_MOVEABLE = 0x00000002;

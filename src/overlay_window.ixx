@@ -1,14 +1,13 @@
 module;
-#include <memory>
 #include <cassert>
+#include <memory>
+
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 
 export module taco.overlay_window;
 
-import whiteboard.window;
+import whiteboard;
 
 export class OverlayWindow : public CWBGuiType<"OverlayWindow", CWBWindow> {
  public:

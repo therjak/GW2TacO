@@ -1,16 +1,18 @@
 module;
 
-#include <cstdint>
-#include <string_view>
 #include <cassert>
-#include <vector>
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <string_view>
+#include <vector>
 
-#include "src/white_board/application.h"
 
-export module whiteboard.box;
+export module whiteboard:box;
 
-import whiteboard.css_item;
+import :application;
+import :css_item;
+import :gui_item;
 
 export enum class WBBOXAXIS : uint8_t {
   WB_HORIZONTAL = 0,

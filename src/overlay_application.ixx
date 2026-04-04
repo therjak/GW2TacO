@@ -1,8 +1,11 @@
 module;
 #include <memory>
-#include "src/white_board/application.h"
+
+#include "src/core2/render_state.h"
 
 export module taco.overlay_application;
+
+import whiteboard;
 
 export class COverlayApp : public CWBApplication {
  public:

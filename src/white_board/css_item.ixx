@@ -4,7 +4,7 @@ module;
 #include <string_view>
 #include <vector>
 
-export module whiteboard.css_item;
+export module whiteboard:css_item;
 
 export class IWBCSS {
  public:

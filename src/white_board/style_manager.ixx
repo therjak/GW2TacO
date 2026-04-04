@@ -1,12 +1,12 @@
 module;
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
-#include <string_view>
 
-#include "src/white_board/gui_item.h"
+export module whiteboard:style_manager;
 
-export module whiteboard.style_manager;
+import :gui_item;
 
 export class CStyleManager {
  public:

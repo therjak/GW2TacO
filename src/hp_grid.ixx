@@ -1,16 +1,17 @@
 module;
 
+#include <cassert>
 #include <memory>
 #include <vector>
-#include <cassert>
 
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
 
 export module taco.hp_grid;
+
+import whiteboard;
 
 export class GW2HPGrid : public CWBGuiType<"hpgrid", CWBItem> {
  public:

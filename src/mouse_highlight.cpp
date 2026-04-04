@@ -1,8 +1,10 @@
 module;
-#include "src/white_board/application.h"
+
+#include <windows.h>
 
 module taco.mouse_highlight;
 
+import whiteboard;
 import taco.overlay_config;
 
 using math::CPoint;

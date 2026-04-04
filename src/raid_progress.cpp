@@ -9,11 +9,10 @@ module;
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/util/xml_node.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 
 module taco.raid_progress;
 
+import whiteboard;
 import taco.overlay_config;
 import taco.language;
 import taco.gw2;

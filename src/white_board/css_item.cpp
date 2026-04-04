@@ -1,11 +1,13 @@
 module;
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <algorithm>
 
-module whiteboard.css_item;
+module whiteboard;
+
+import :css_item;
 
 IWBCSS::IWBCSS() = default;
 

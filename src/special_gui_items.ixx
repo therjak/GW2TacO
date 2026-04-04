@@ -1,16 +1,17 @@
 module;
+#include <cassert>
 #include <memory>
 #include <string_view>
-#include <cassert>
+
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/white_board/gui_item.h"
 
 export module taco.special_gui_items;
 
-import whiteboard.button;
+import whiteboard;
 
-export class ClickThroughButton : public CWBGuiType<"clickthroughbutton", CWBButton> {
+export class ClickThroughButton
+    : public CWBGuiType<"clickthroughbutton", CWBButton> {
  public:
   ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
                      std::string_view txt);

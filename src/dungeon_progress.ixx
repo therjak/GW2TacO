@@ -1,21 +1,21 @@
 module;
 #include <atomic>
+#include <cassert>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <thread>
 #include <unordered_set>
 #include <vector>
-#include <cassert>
 
 #include "src/base/lock_free_queue.h"
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 #include "src/util/xml_node.h"
 
 export module taco.dungeon_progress;
+
+import whiteboard;
 
 export class DungeonPath {
  public:

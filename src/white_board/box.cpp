@@ -1,16 +1,19 @@
 module;
 
-#include <cstdint>
-#include <string_view>
-#include <cassert>
-#include <vector>
-#include <string>
 #include <algorithm>
+#include <cassert>
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <vector>
 
-#include "src/white_board/application.h"
 #include "src/base/logger.h"
 
-module whiteboard.box;
+module whiteboard;
+
+import :application;
+import :box;
+import :message;
 
 using math::CPoint;
 using math::CRect;
@@ -40,7 +43,7 @@ bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
 }
 
 bool CWBBox::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     default:
       break;
 
@@ -118,7 +121,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
           r.y1 = o.y1;
           r.y2 = o.y2;
         }
-        CWBMessage m(App, Message.GetMessage(), Message.GetTarget(), r,
+        CWBMessage m(App, Message.Get(), Message.GetTarget(), r,
                      r.TopLeft() == o.TopLeft(), true);
         i->MessageProc(m);  // do the resize as the item sees fit
 

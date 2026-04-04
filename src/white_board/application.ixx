@@ -1,8 +1,9 @@
-#pragma once
+module;
 
 #include <cstdint>
 #include <memory>
 #include <mutex>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -10,26 +11,29 @@
 #include "src/base/ring_buffer.h"
 #include "src/core2/core2.h"
 #include "src/util/xml_document.h"
-#include "src/white_board/context_menu.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
-#include "src/white_board/message.h"
 
-import whiteboard.root;
-import whiteboard.style_manager;
+export module whiteboard:application;
 
-enum class WBMOUSECLICKREPEATMODE : uint8_t {
+import :root;
+import :style_manager;
+import :gui_item;
+import :message;
+import :context_menu;
+import :draw_api;
+import :font;
+
+export enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_OFF = 0,
   WB_MCR_LEFT = 1,
   WB_MCR_RIGHT = 2,
   WB_MCR_MIDDLE = 3
 };
 
-typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
-                                             const CXMLNode& node,
-                                             math::CRect& Pos);
+export typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
+                                                    const CXMLNode& node,
+                                                    math::CRect& Pos);
 
-class CWBApplication : public CCoreWindowHandlerWin {
+export class CWBApplication : public CCoreWindowHandlerWin {
   friend class CWBItem;
 
  public:
@@ -64,14 +68,14 @@ class CWBApplication : public CCoreWindowHandlerWin {
     return nullptr;
   }
 
-  virtual void SendMessage(const CWBMessage& Message);
+  virtual void Send(const CWBMessage& Message);
   CWBItem* SetCapture(CWBItem* Capturer);
   bool ReleaseCapture();
 
   CWBItem* GetMouseItem();
   CWBItem* GetMouseCaptureItem();
 
-  bool CreateFont(std::string_view FontName, CWBFontDescription* Font);
+  bool InitFont(std::string_view FontName, CWBFontDescription* Font);
   CWBFont* GetFont(std::string_view FontName);
   CWBFont* GetDefaultFont();
   bool SetDefaultFont(std::string_view FontName);
@@ -89,12 +93,9 @@ class CWBApplication : public CCoreWindowHandlerWin {
   bool LoadCSS(std::string_view CSS, bool ResetStyleManager = true);
   bool LoadCSSFromFile(std::string_view FileName,
                        bool ResetStyleManager = true);
-  // bool GenerateGUI( CWBItem *Root, const TCHAR *layout );
   bool GenerateGUI(CWBItem* Root, std::string_view Layout);
   bool GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
                            std::string_view TemplateID);
-  // bool GenerateGUITemplate( CWBItem *Root, TCHAR *Layout, TCHAR *TemplateID
-  // );
   bool LoadSkin(std::string_view XML, std::vector<int>& enabledGlyphs);
   bool LoadSkin(std::string_view XML) {
     std::vector<int> eg;
@@ -113,8 +114,6 @@ class CWBApplication : public CCoreWindowHandlerWin {
   void ApplyStyle(CWBItem* Target);
   void ReApplyStyle();
 
-  // void RegisterUIFactoryCallback( TCHAR *ElementName, WBFACTORYCALLBACK
-  // FactoryCallback );
   void RegisterUIFactoryCallback(std::string_view ElementName,
                                  WBFACTORYCALLBACK FactoryCallback);
 

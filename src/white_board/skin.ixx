@@ -7,9 +7,11 @@ module;
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/white_board/draw_api.h"
+#include "src/base/rectangle.h"
 
-export module whiteboard.skin;
+export module whiteboard:skin;
+
+import :draw_api;
 
 export enum class WBMETRICTYPE : uint8_t {
   WB_UNDEFINED = 0,
@@ -82,7 +84,7 @@ export class CWBPositionDescriptorPixels {
  public:
   CWBPositionDescriptorPixels();
   void SetValue(WBPOSITIONTYPE p, int32_t Pixels);
-  FORCEINLINE math::CRect GetPosition(math::CSize ParentSize);
+  inline math::CRect GetPosition(math::CSize ParentSize);
 
  private:
   bool& SetAt(WBPOSITIONTYPE p) { return Set[static_cast<uint16_t>(p)]; }
@@ -120,7 +122,7 @@ export class CWBSkinElement {
   WBATLASHANDLE GetHandle();
   std::string& GetName();
 
-  FORCEINLINE void Render(CWBDrawAPI* API, const math::CRect& Pos);
+  inline void Render(CWBDrawAPI* API, const math::CRect& Pos);
   math::CSize GetElementSize(CWBDrawAPI* API);
 
  private:
@@ -139,7 +141,7 @@ export class CWBMosaicImage {
   void SetHandle(WBATLASHANDLE handle);
   void SetColor(CColor color);
 
-  FORCEINLINE void Render(CWBDrawAPI* API, const math::CRect& Pos);
+  inline void Render(CWBDrawAPI* API, const math::CRect& Pos);
 
  private:
   CWBPositionDescriptorPixels Position;

@@ -1,15 +1,15 @@
 module;
-#include <memory>
 #include <cassert>
+#include <memory>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 #include "src/util/xml_node.h"
 
 export module taco.notepad;
+
+import whiteboard;
 
 export class GW2Notepad : public CWBGuiType<"notepad", CWBItem> {
  public:

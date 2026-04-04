@@ -1,10 +1,10 @@
 module;
 #include <algorithm>
 #include <format>
-#include "src/white_board/application.h"
 
 module taco.ts3_control;
 
+import whiteboard;
 import taco.ts3connection;
 import taco.overlay_config;
 import taco.language;

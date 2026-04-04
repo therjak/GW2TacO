@@ -12,14 +12,10 @@ module;
 #include "src/build_count.h"
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
-#include "src/white_board/application.h"
 
 module taco.gw2taco;
 
-import whiteboard.button;
-import whiteboard.label;
-import whiteboard.text_box;
-import whiteboard.window;
+import whiteboard;
 
 import taco.mumble_link;
 import taco.gw2;
@@ -270,7 +266,7 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
 }
 
 bool GW2TacO::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_COMMAND: {
       auto* cb = dynamic_cast<CWBButton*>(
           App->FindItemByGuid(Message.GetTarget(), "clickthroughbutton"));
@@ -596,7 +592,8 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
               Menu_ToggleAutoHideMarkerEditor);
           markerEditor->AddSeparator();
           int32_t cnt = 1;
-          for (int32_t x = 1; x < static_cast<int32_t>(ActionNames.size()); x++) {
+          for (int32_t x = 1; x < static_cast<int32_t>(ActionNames.size());
+               x++) {
             auto str = DICT(ActionNames[x]) + " " + DICT("action_no_key_bound");
             for (auto& kb : KeyBindings) {
               if (static_cast<int32_t>(kb.second) == x) {
@@ -1347,8 +1344,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (startTrail && trails) {
               // startTrail->Push( !startTrail->IsPushed() );
-              App->SendMessage(
-                  CWBMessage(App, WBM_COMMAND, startTrail->GetGuid()));
+              App->Send(CWBMessage(App, WBM_COMMAND, startTrail->GetGuid()));
             }
           }
             return true;
@@ -1359,8 +1355,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (pauseTrail && trails) {
               // pauseTrail->Push( !pauseTrail->IsPushed() );
-              App->SendMessage(
-                  CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
+              App->Send(CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
             }
           }
             return true;
@@ -1376,8 +1371,7 @@ bool GW2TacO::MessageProc(const CWBMessage& Message) {
             auto* trails = dynamic_cast<GW2TrailDisplay*>(
                 App->GetRoot()->FindChildByID("trail", "gw2Trails"));
             if (pauseTrail && !pauseTrail->IsHidden() && trails) {
-              App->SendMessage(
-                  CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
+              App->Send(CWBMessage(App, WBM_COMMAND, pauseTrail->GetGuid()));
             }
           }
             return true;
@@ -1989,7 +1983,7 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   APIKeyInput->EnableHScrollbar(false, false);
   APIKeyInput->EnableVScrollbar(false, false);
   CWBMessage m = BuildPositionMessage(GetClientRect(), true);
-  App->SendMessage(m);
+  App->Send(m);
   ApiKeyIndex = idx;
 
   switch (keyType) {

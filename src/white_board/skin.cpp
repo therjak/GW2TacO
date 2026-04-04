@@ -6,9 +6,11 @@ module;
 #include <vector>
 
 #include "src/base/string_format.h"
-#include "src/white_board/draw_api.h"
 
-module whiteboard.skin;
+module whiteboard;
+
+import :skin;
+import :draw_api;
 
 using math::CRect;
 using math::CSize;

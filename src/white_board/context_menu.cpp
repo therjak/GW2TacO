@@ -1,8 +1,15 @@
-#include "src/white_board/context_menu.h"
+module;
 
-#include "src/white_board/application.h"
+#include <algorithm>
+#include <memory>
+#include <string>
 
-import whiteboard.button;
+module whiteboard;
+
+import :application;
+import :button;
+import :context_menu;
+import :font;
 
 using math::CPoint;
 using math::CRect;
@@ -206,7 +213,7 @@ void CWBContextMenu::AddSeparator() {
 }
 
 bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_REPOSITION:
       if (Message.GetTarget() == GetGuid()) {
         // push position inside of parent
@@ -245,7 +252,7 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
         MarkParentForDeletion();
         App->ReleaseCapture();
         // resend message
-        App->SendMessage(Message);
+        App->Send(Message);
         return true;
       }
 
@@ -270,14 +277,14 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
           const CRect EntryPos = GetItemRect(x);
           if (MouseOver() &&
               EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
-            App->SendMessage(CWBMessage(App, WBM_CONTEXTMESSAGE, Target,
-                                        Items[x]->ReturnID));
+            App->Send(CWBMessage(App, WBM_CONTEXTMESSAGE, Target,
+                                 Items[x]->ReturnID));
             if (Items[x]->closesContext) {
               MarkForDeletion();
               MarkParentForDeletion();
               App->ReleaseCapture();
             } else {
-              App->SendMessage(CWBMessage(
+              App->Send(CWBMessage(
                   App, WBM_REBUILDCONTEXTITEM, Target,
                   CWBMessage::menucontext{Items[x]->ReturnID, GetGuid()}));
             }

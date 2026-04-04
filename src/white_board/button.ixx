@@ -1,14 +1,16 @@
 module;
 
+#include <cassert>
+#include <memory>
 #include <string>
 #include <string_view>
-#include <cassert>
 
-#include "src/white_board/application.h"
 
-export module whiteboard.button;
+export module whiteboard:button;
 
-import whiteboard.css_item;
+import :application;
+import :css_item;
+import :gui_item;
 
 export class CWBButton : public CWBGuiType<"button", CWBItem> {
  public:

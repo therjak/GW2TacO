@@ -2,15 +2,16 @@ module;
 #include <cstdint>
 #include <memory>
 
-#include "src/white_board/application.h"
-#include "src/white_board/message.h"
+module whiteboard;
 
-module whiteboard.root;
+import :application;
+import :root;
+import :message;
 
 using math::CRect;
 
 bool CWBRoot::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     default:
       break;
 
@@ -20,9 +21,9 @@ bool CWBRoot::MessageProc(const CWBMessage& Message) {
 
         CWBItem::MessageProc(Message);
         for (uint32_t x = 0; x < NumChildren(); x++) {
-          App->SendMessage(CWBMessage(
-              App, WBM_ROOTRESIZE, GetChild(x)->GetGuid(),
-              Message.Rectangle().Width(), Message.Rectangle().Height()));
+          App->Send(CWBMessage(App, WBM_ROOTRESIZE, GetChild(x)->GetGuid(),
+                               Message.Rectangle().Width(),
+                               Message.Rectangle().Height()));
         }
         return true;
       }

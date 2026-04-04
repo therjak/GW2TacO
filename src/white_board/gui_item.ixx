@@ -1,4 +1,6 @@
-#pragma once
+module;
+
+#include <tchar.h>
 
 #include <array>
 #include <memory>
@@ -8,22 +10,25 @@
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/white_board/draw_api.h"
 
-import whiteboard.css_item;
-import whiteboard.message_enum;
-import whiteboard.skin;
+export module whiteboard:gui_item;
+
+import :css_item;
+import :message_enum;
+import :skin;
+import :draw_api;
+import :font;
 
 typedef uint32_t WBGUID;
-class CWBDrawAPI;
-class CWBApplication;
-class CWBMessage;
+export class CWBDrawAPI;
+export class CWBApplication;
+export class CWBMessage;
 
-constexpr int32_t WBMarginKeep = (INT_MAX);
+export constexpr int32_t WBMarginKeep = (INT_MAX);
 
-class CWBContextMenu;
+export class CWBContextMenu;
 
-enum class WBALIGNMENT : uint8_t {
+export enum class WBALIGNMENT : uint8_t {
   TOP = 0,
   LEFT = 0,
   CENTER = 1,
@@ -32,7 +37,7 @@ enum class WBALIGNMENT : uint8_t {
   BOTTOM = 2,
 };
 
-enum WBITEMSTATE {
+export enum WBITEMSTATE {
   WB_STATE_NORMAL = 0,
   WB_STATE_ACTIVE = 1,
   WB_STATE_HOVER = 2,
@@ -42,7 +47,7 @@ enum WBITEMSTATE {
   WB_STATE_COUNT,  // don't remove this, used as array size
 };
 
-enum WBITEMVISUALCOMPONENT {
+export enum WBITEMVISUALCOMPONENT {
   WB_ITEM_BACKGROUNDCOLOR = 0,
   WB_ITEM_FOREGROUNDCOLOR,
   WB_ITEM_BORDERCOLOR,
@@ -69,7 +74,7 @@ enum WBITEMVISUALCOMPONENT {
   WB_ITEM_COUNT,  // don't remove this, used as array size
 };
 
-enum WBSCROLLDRAGMODE {
+export enum WBSCROLLDRAGMODE {
   WB_SCROLLDRAG_NONE = 0,
   WB_SCROLLDRAG_BUTTON1,
   WB_SCROLLDRAG_UP,
@@ -78,7 +83,7 @@ enum WBSCROLLDRAGMODE {
   WB_SCROLLDRAG_BUTTON2,
 };
 
-class CWBScrollbarParams {
+export class CWBScrollbarParams {
  public:
   CWBScrollbarParams() {
     DragStartPosition = 0;
@@ -103,7 +108,7 @@ class CWBScrollbarParams {
   int32_t DragStartPosition;
 };
 
-class CWBDisplayState {
+export class CWBDisplayState {
  public:
   CWBDisplayState();
   virtual ~CWBDisplayState();
@@ -119,7 +124,7 @@ class CWBDisplayState {
   std::array<bool, WB_ITEM_COUNT> VisualSet = {false};
 };
 
-class CWBDisplayProperties {
+export class CWBDisplayProperties {
  public:
   CWBDisplayProperties();
   virtual ~CWBDisplayProperties();
@@ -133,7 +138,7 @@ class CWBDisplayProperties {
   std::array<CWBDisplayState, WB_STATE_COUNT> States;
 };
 
-class CWBCSSPropertyBatch {
+export class CWBCSSPropertyBatch {
  public:
   CWBCSSPropertyBatch();
   CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
@@ -148,7 +153,7 @@ class CWBCSSPropertyBatch {
   std::unordered_map<WBITEMSTATE, std::string> Fonts;
 };
 
-class CWBItem : public IWBCSS {
+export class CWBItem : public IWBCSS {
   friend CWBApplication;  // so we don't directly expose the message handling
                           // functions to the user
  public:
@@ -481,7 +486,7 @@ class CWBItem : public IWBCSS {
 // class is the typename we're comparing against if not we traverse up the
 // hierarchy by directly calling the InstanceOf() of the parent class
 
-template <size_t N>
+export template <size_t N>
 struct WBFixedString {
   char value[N]{};
   consteval WBFixedString(const char (&str)[N]) {
@@ -489,8 +494,8 @@ struct WBFixedString {
   }
 };
 
-template <WBFixedString TypeName, typename PrimaryParent,
-          typename... OtherParents>
+export template <WBFixedString TypeName, typename PrimaryParent,
+                 typename... OtherParents>
 class CWBGuiType : public PrimaryParent, public OtherParents... {
  public:
   template <typename... Args>
@@ -502,7 +507,7 @@ class CWBGuiType : public PrimaryParent, public OtherParents... {
   }
 
   [[nodiscard]] bool InstanceOf(std::string_view name) const override {
-    if (name == TypeName.value) return true;
+    if (name == std::string(TypeName.value)) return true;
     if (PrimaryParent::InstanceOf(name)) return true;
     return (OtherParents::InstanceOf(name) || ... || false);
   }
