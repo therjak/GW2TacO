@@ -15,12 +15,12 @@ module;
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
+module taco.tp_tracker;
+
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
 import taco.time;
-
-module taco.tp_tracker;
 
 using namespace jsonxx;
 

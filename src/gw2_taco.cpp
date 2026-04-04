@@ -14,6 +14,8 @@ module;
 #include "src/util/jsonxx.h"
 #include "src/white_board/application.h"
 
+module taco.gw2taco;
+
 import whiteboard.button;
 import whiteboard.label;
 import whiteboard.text_box;
@@ -36,8 +38,6 @@ import taco.map_timer;
 import taco.marker_editor;
 import taco.notepad;
 import taco.time;
-
-module taco.gw2taco;
 
 using namespace jsonxx;
 

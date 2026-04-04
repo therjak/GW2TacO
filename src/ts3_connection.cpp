@@ -11,10 +11,10 @@ module;
 #include "src/base/string_format.h"
 #include "src/gw2_tactical.h"
 
+module taco.ts3connection;
+
 import taco.overlay_config;
 import taco.time;
-
-module taco.ts3connection;
 
 TS3Connection teamSpeakConnection;
 

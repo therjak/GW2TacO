@@ -7,10 +7,9 @@ module;
 #include "src/base/stream_reader.h"
 #include "src/util/xml_node.h"
 
-import whiteboard.text_box;
-
 module taco.notepad;
 
+import whiteboard.text_box;
 import taco.mumble_link;
 import taco.overlay_config;
 

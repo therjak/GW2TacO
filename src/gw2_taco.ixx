@@ -8,11 +8,10 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/white_board/gui_item.h"
 
-import whiteboard.text_box;
-import whiteboard.window;
-
 export module taco.gw2taco;
 
+import whiteboard.text_box;
+import whiteboard.window;
 import taco.ts3connection;
 
 export enum class TacOKeyAction : int32_t {

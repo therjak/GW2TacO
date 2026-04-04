@@ -1,10 +1,9 @@
 module;
 #include "src/white_board/application.h"
 
-import whiteboard.window;
-
 module taco.overlay_window;
 
+import whiteboard.window;
 import taco.overlay_config;
 using math::CPoint;
 using math::CRect;

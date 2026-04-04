@@ -15,14 +15,14 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
 
+module taco.wvw;
+
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;
 import taco.mumble_link;
 import taco.time;
 import taco.poi_behavior;
-
-module taco.wvw;
 
 using namespace jsonxx;
 

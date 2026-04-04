@@ -14,11 +14,11 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/white_board/application.h"
 
+module taco.mumble_link;
+
 import taco.trail_logger;
 import taco.overlay_config;
 import taco.time;
-
-module taco.mumble_link;
 
 using math::CMatrix4x4;
 using math::CRect;

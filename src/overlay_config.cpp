@@ -12,9 +12,9 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/util/xml_document.h"
 
-import taco.gw2taco;
-
 module taco.overlay_config;
+
+import taco.gw2taco;
 
 using math::CPoint;
 using math::CRect;

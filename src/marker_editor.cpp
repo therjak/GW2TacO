@@ -8,11 +8,10 @@ module;
 #include "src/white_board/application.h"
 #include "src/util/xml_node.h"
 
-import whiteboard.button;
-import whiteboard.label;
-
 module taco.marker_editor;
 
+import whiteboard.button;
+import whiteboard.label;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.trail_logger;
