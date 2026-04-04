@@ -7,11 +7,12 @@
 #include "src/core2/texture.h"
 #include "src/core2/vertex_format.h"
 
+import xml;
+
 class CCoreSamplerState;
 class CCoreDepthStencilState;
 class CCoreBlendState;
 class CCoreRasterizerState;
-class CXMLNode;
 
 union CORERENDERSTATEVALUE {
   CCoreSamplerState* SamplerState;

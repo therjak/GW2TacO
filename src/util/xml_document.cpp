@@ -1,4 +1,4 @@
-#include "xml_document.h"
+module;
 
 #include <cstdio>
 #include <sstream>
@@ -8,7 +8,10 @@
 #include "src/base/logger.h"
 #include "src/util/RapidXML/rapidxml.hpp"
 #include "src/util/RapidXML/rapidxml_print.hpp"
-#include "src/util/xml_node.h"
+
+module xml;
+
+import :node;
 
 namespace {
 std::string ReadFile(std::string_view name) {

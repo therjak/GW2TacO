@@ -1,4 +1,4 @@
-#include "src/util/xml_node.h"
+module;
 
 #include <algorithm>
 #include <cstdint>
@@ -7,8 +7,11 @@
 #include <string>
 #include <string_view>
 
-#include "src/util//RapidXML/rapidxml.hpp"
-#include "src/util/xml_document.h"
+#include "src/util/RapidXML/rapidxml.hpp"
+
+module xml;
+
+import :document;
 
 using rapidxml::node_type;
 using rapidxml::xml_node;

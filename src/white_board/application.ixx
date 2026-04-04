@@ -8,12 +8,13 @@ module;
 #include <vector>
 
 #include "src/base/color.h"
+#include "src/base/rectangle.h"
 #include "src/base/ring_buffer.h"
 #include "src/core2/core2.h"
-#include "src/util/xml_document.h"
 
 export module whiteboard:application;
 
+import xml;
 import :root;
 import :style_manager;
 import :gui_item;

@@ -10,10 +10,10 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/timer.h"
 #include "src/gw2_tactical.h"
-#include "src/util/xml_document.h"
 
 module taco.overlay_config;
 
+import xml;
 import taco.gw2taco;
 
 using math::CPoint;

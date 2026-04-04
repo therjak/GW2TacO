@@ -5,11 +5,10 @@ module;
 #include <format>
 
 #include "base/color.h"
-#include "util/xml_node.h"
-
 
 module taco.marker_data;
 
+import xml;
 import taco.string_set;
 import taco.poi_behavior;
 

@@ -6,10 +6,10 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/util/xml_node.h"
 
 export module taco.marker_editor;
 
+import xml;
 import whiteboard;
 
 export class GW2MarkerEditor : public CWBGuiType<"markereditor", CWBItem> {

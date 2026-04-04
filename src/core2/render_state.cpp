@@ -2,7 +2,7 @@
 
 #include <limits>
 
-#include "src/util/xml_document.h"
+import xml;
 
 CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* Device)
     : CCoreResource(Device) {

@@ -2,6 +2,7 @@
 #include <objbase.h>
 
 #include <atomic>
+#include <cassert>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -14,8 +15,8 @@
 #include "src/base/hasher.h"
 #include "src/base/lock_free_queue.h"
 #include "src/base/matrix.h"
-#include "src/util/xml_document.h"
 
+import xml;
 import whiteboard;
 import taco.marker_data;
 import taco.tactical_category;

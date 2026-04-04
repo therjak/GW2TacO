@@ -4,10 +4,10 @@ module;
 #include "src/base/stream_writer.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/util/xml_node.h"
 
 module taco.notepad;
 
+import xml;
 import whiteboard;
 import taco.mumble_link;
 import taco.overlay_config;

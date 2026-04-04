@@ -6,11 +6,10 @@ module;
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/util/xml_document.h"
-#include "src/util/xml_node.h"
 
 module taco.locational_timer;
 
+import xml;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;

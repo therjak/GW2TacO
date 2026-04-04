@@ -2,13 +2,20 @@ module;
 
 #include <windows.h>
 
+#include <algorithm>
 #include <clocale>
 #include <cstdio>
 #include <format>
 #include <mutex>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
+#include "src/base/rectangle.h"
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
@@ -17,6 +24,7 @@ module;
 
 module whiteboard;
 
+import xml;
 import :application;
 import :box;
 import :button;

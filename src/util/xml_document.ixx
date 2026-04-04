@@ -1,13 +1,16 @@
-#pragma once
+module;
 
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "src/util/RapidXML/rapidxml.hpp"
-#include "src/util/xml_node.h"
 
-class CXMLDocument {
+export module xml:document;
+
+import :node;
+
+export class CXMLDocument {
  public:
   CXMLDocument();
   ~CXMLDocument();
