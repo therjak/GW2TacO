@@ -1,19 +1,21 @@
 module;
 #include <atomic>
+#include <cassert>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
-#include <string>
-#include <cassert>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/util/jsonxx.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
+#include "src/util/xml_node.h"
+#include "src/white_board/atlas.h"
 
 export module taco.tp_tracker;
+
+import whiteboard;
 
 export struct TransactionItem {
   int32_t transactionID = 0;

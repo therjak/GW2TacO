@@ -1,14 +1,16 @@
 module;
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
-#include <string_view>
 
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
-#include "src/white_board/gui_item.h"
 
-module whiteboard.style_manager;
+module whiteboard;
+
+import :style_manager;
+import :gui_item;
 
 CStyleManager::CStyleManager() = default;
 

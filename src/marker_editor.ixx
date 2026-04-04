@@ -1,16 +1,16 @@
 module;
-#include <vector>
-#include <memory>
 #include <cassert>
+#include <memory>
+#include <vector>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 #include "src/util/xml_node.h"
 
 export module taco.marker_editor;
+
+import whiteboard;
 
 export class GW2MarkerEditor : public CWBGuiType<"markereditor", CWBItem> {
  public:

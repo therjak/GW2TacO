@@ -1,12 +1,14 @@
 module;
 
+#include <cassert>
 #include <string>
 #include <string_view>
-#include <cassert>
 
-#include "src/white_board/application.h"
+module whiteboard;
 
-module whiteboard.button;
+import :application;
+import :button;
+import :font;
 
 using math::CPoint;
 using math::CRect;
@@ -85,7 +87,7 @@ bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position) {
 }
 
 bool CWBButton::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     default:
       break;
 
@@ -98,7 +100,7 @@ bool CWBButton::MessageProc(const CWBMessage& Message) {
     case WBM_LEFTBUTTONUP:
       App->ReleaseCapture();
       if (App->GetMouseItem() == this && IsEnabled()) {
-        App->SendMessage(CWBMessage(App, WBM_COMMAND, GetGuid()));
+        App->Send(CWBMessage(App, WBM_COMMAND, GetGuid()));
       }
       return true;
 

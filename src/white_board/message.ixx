@@ -1,12 +1,17 @@
-#pragma once
+module;
+#include <string_view>
 #include <variant>
 
 #include "src/base/rectangle.h"
-#include "src/white_board/gui_item.h"
 
-import whiteboard.message_enum;
+export module whiteboard:message;
 
-class CWBMessage final {
+import :message_enum;
+import :gui_item;
+
+export class CWBApplication;
+
+export class CWBMessage final {
  public:
   struct reposition {
     math::CRect rectangle;
@@ -39,7 +44,7 @@ class CWBMessage final {
   CWBMessage& operator=(CWBMessage&&) = default;
   ~CWBMessage() = default;
 
-  WBMESSAGE GetMessage() const { return message_; }
+  WBMESSAGE Get() const { return message_; }
   [[nodiscard]] WBGUID GetTarget() const { return target_; }
 
   // WBM_CONTENTOFFSETCHANGE, yes, this is x,y but really?

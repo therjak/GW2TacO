@@ -2,9 +2,10 @@
 #include "src/base/image_decompressor.h"
 #include "src/base/logger.h"
 #include "src/util/png_decompressor.h"
-#include "src/white_board/application.h"
 
 module taco.pro_font;
+
+import whiteboard;
 
 unsigned char raw_profont_bin[] = {
     66, 77,  70,  3,   1,   29,  0,   0,   0,   13,  0,   64,  0,   100, 0,
@@ -2832,7 +2833,7 @@ bool CreateProFont(CWBApplication* App, std::string_view FontName) {
                                   raw_profontgifsmall_size)) {
     return NULL;
   }
-  bool f = App->CreateFont(FontName, fd.get());
+  bool f = App->InitFont(FontName, fd.get());
   return f;
 }
 
@@ -2842,7 +2843,7 @@ bool CreateUniFont(CWBApplication* App, std::string_view FontName) {
                                   raw_uni_png, raw_uni_png_size)) {
     return NULL;
   }
-  bool f = App->CreateFont(FontName, fd.get());
+  bool f = App->InitFont(FontName, fd.get());
   return f;
 }
 
@@ -2853,7 +2854,7 @@ bool CreateUniFontOutlined(CWBApplication* App, std::string_view FontName) {
           raw_unifont_outline_png, raw_unifont_outline_png_size)) {
     return NULL;
   }
-  bool f = App->CreateFont(FontName, fd.get());
+  bool f = App->InitFont(FontName, fd.get());
   return f;
 }
 
@@ -2864,6 +2865,6 @@ bool CreateProFontOutlined(CWBApplication* App, std::string_view FontName) {
           raw_profont_outlined_png, raw_profont_outlined_png_size)) {
     return NULL;
   }
-  bool f = App->CreateFont(FontName, fd.get());
+  bool f = App->InitFont(FontName, fd.get());
   return f;
 }

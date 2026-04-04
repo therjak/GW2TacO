@@ -1,8 +1,11 @@
-#include "src/white_board/application.h"
+module;
+
+#include <windows.h>
 
 #include <clocale>
 #include <cstdio>
 #include <format>
+#include <mutex>
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
@@ -12,11 +15,14 @@
 #include "src/base/timer.h"
 #include "src/util/png_decompressor.h"
 
-import whiteboard.box;
-import whiteboard.button;
-import whiteboard.label;
-import whiteboard.text_box;
-import whiteboard.window;
+module whiteboard;
+
+import :application;
+import :box;
+import :button;
+import :label;
+import :text_box;
+import :window;
 
 using math::CPoint;
 using math::CRect;
@@ -60,8 +66,6 @@ bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
   }
 
   if (!Target) {
-    // Log_Warn("[gui] Message target item {:d} not found. Message type:
-    // {:d}",Message.GetTarget(),Message.GetMessage());
     return false;
   }
 
@@ -87,18 +91,18 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
 
   // handle messages created by mouse events
   if (Message.IsMouseMessage()) {
-    if (Message.GetMessage() == WBM_MOUSEMOVE) {
+    if (Message.Get() == WBM_MOUSEMOVE) {
       MousePos = CPoint(Message.GetPosition());
       UpdateMouseItem();
     }
 
-    if (Message.GetMessage() == WBM_LEFTBUTTONDOWN) {
+    if (Message.Get() == WBM_LEFTBUTTONDOWN) {
       LeftDownPos = CPoint(Message.GetPosition());
     }
-    if (Message.GetMessage() == WBM_RIGHTBUTTONDOWN) {
+    if (Message.Get() == WBM_RIGHTBUTTONDOWN) {
       RightDownPos = CPoint(Message.GetPosition());
     }
-    if (Message.GetMessage() == WBM_MIDDLEBUTTONDOWN) {
+    if (Message.Get() == WBM_MIDDLEBUTTONDOWN) {
       MidDownPos = CPoint(Message.GetPosition());
     }
 
@@ -109,13 +113,13 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
       return;
     }
 
-    CWBItem* mi = GetItemUnderMouse(MousePos, Message.GetMessage());
+    CWBItem* mi = GetItemUnderMouse(MousePos, Message.Get());
 
     if (mi) {
       // handle focus change
-      if (Message.GetMessage() == WBM_LEFTBUTTONDOWN ||
-          Message.GetMessage() == WBM_MIDDLEBUTTONDOWN ||
-          Message.GetMessage() == WBM_RIGHTBUTTONDOWN) {
+      if (Message.Get() == WBM_LEFTBUTTONDOWN ||
+          Message.Get() == WBM_MIDDLEBUTTONDOWN ||
+          Message.Get() == WBM_RIGHTBUTTONDOWN) {
         mi->SetFocus();
       }
 
@@ -205,8 +209,6 @@ int32_t CWBApplication::GetKeyboardRepeatTime() {
 }
 
 LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  // Log_Dbg("[gui] WM_{:d} {:d} {:d}",uMsg,wParam,lParam);
-
   switch (uMsg) {
     case WM_ACTIVATE:
       if (LOWORD(wParam)) UpdateControlKeyStates();
@@ -215,7 +217,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_MOUSEMOVE, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_MOUSEMOVE, 0, ap.x, ap.y));
     } break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK: {
@@ -225,10 +227,10 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_LEFTBUTTONDOWN, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_LEFTBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_LBUTTONDBLCLK) {
-        SendMessage(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
+        Send(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_LEFT;
@@ -241,7 +243,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_RBUTTONDOWN:
@@ -251,10 +253,10 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_RIGHTBUTTONDOWN, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_RIGHTBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_RBUTTONDBLCLK) {
-        SendMessage(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
+        Send(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT;
@@ -267,7 +269,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MBUTTONDOWN:
@@ -277,10 +279,10 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONDOWN, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_MIDDLEBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_MBUTTONDBLCLK) {
-        SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
+        Send(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE;
@@ -293,17 +295,15 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(hWnd, &ap);
-      SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
+      Send(CWBMessage(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MOUSEWHEEL: {
-      SendMessage(CWBMessage(this, WBM_MOUSEWHEEL, 0,
-                             GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA));
+      Send(CWBMessage(this, WBM_MOUSEWHEEL, 0,
+                      GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA));
     } break;
     case WM_SYSKEYDOWN:
     case WM_KEYDOWN:
-      // Log_Err( "[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam );
-
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
           wParam == VK_RCONTROL) {
         Ctrl = true;
@@ -315,16 +315,12 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Alt = true;
       }
 
-      // UpdateControlKeyStates();
-      // Log_Err( "[wndproc] WM_KEYDOWN/WM_SYSKEYDOWN: {:d} {:d} {:d} {:d} {:d}
-      // {:d}", uMsg, wParam, lParam, Alt, Ctrl, Shift );
-      SendMessage(CWBMessage(
+      Send(CWBMessage(
           this, WBM_KEYDOWN, 0,
           CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
       break;
     case WM_SYSKEYUP:
     case WM_KEYUP:
-      // Log_Dbg("[app] Keyup: {:d}",wParam);
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
           wParam == VK_RCONTROL) {
         Ctrl = false;
@@ -336,26 +332,19 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Alt = false;
       }
 
-      // Log_Err( "[wndproc] WM_KEYUP/WM_SYSKEYUP: {:d} {:d} {:d}", uMsg,
-      // wParam, lParam );
       switch (wParam) {
         case VK_SNAPSHOT:
           TakeScreenshot();
           break;
       }
 
-      // UpdateControlKeyStates();
-      SendMessage(CWBMessage(
+      Send(CWBMessage(
           this, WBM_KEYUP, 0,
           CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
       break;
     case WM_SYSCHAR:
     case WM_CHAR:
-      // Log_Dbg("[app] Char: {:d}",wParam);
-      // Log_Err("[wndproc] WM_CHAR/WM_SYSCHAR {:d} {:d}", uMsg, wParam,
-      // lParam);
-      // UpdateControlKeyStates();
-      SendMessage(CWBMessage(
+      Send(CWBMessage(
           this, WBM_CHAR, 0,
           CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
       break;
@@ -415,13 +404,13 @@ bool CWBApplication::HandleMessages() {
 
       switch (ClickRepeaterMode) {
         case WBMOUSECLICKREPEATMODE::WB_MCR_LEFT:
-          SendMessage(CWBMessage(this, WBM_LEFTBUTTONREPEAT, 0, ap.x, ap.y));
+          Send(CWBMessage(this, WBM_LEFTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
         case WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT:
-          SendMessage(CWBMessage(this, WBM_RIGHTBUTTONREPEAT, 0, ap.x, ap.y));
+          Send(CWBMessage(this, WBM_RIGHTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
         case WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE:
-          SendMessage(CWBMessage(this, WBM_MIDDLEBUTTONREPEAT, 0, ap.x, ap.y));
+          Send(CWBMessage(this, WBM_MIDDLEBUTTONREPEAT, 0, ap.x, ap.y));
           break;
       }
       NextRepeatedClickTime += GetKeyboardRepeatTime();
@@ -470,8 +459,6 @@ void CWBApplication::SetDone(bool d) { Done = d; }
 void CWBApplication::Display() { Display(DrawAPI.get()); }
 
 void CWBApplication::Display(CWBDrawAPI* API) {
-  // Log_Dbg("Begin Frame");
-
   CleanTrash();
 
   FinalizeMouseCursor();
@@ -513,7 +500,7 @@ CWBItem* CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR* type) {
   return i;
 }
 
-void CWBApplication::SendMessage(const CWBMessage& Message) {
+void CWBApplication::Send(const CWBMessage& Message) {
   std::scoped_lock l(MessageBufferMutex);
   MessageBuffer.emplace_back(Message);
 }
@@ -572,8 +559,8 @@ CWBItem* CWBApplication::GetMouseItem() { return MouseItem; }
 
 CWBItem* CWBApplication::GetMouseCaptureItem() { return MouseCaptureItem; }
 
-bool CWBApplication::CreateFont(std::string_view FontName,
-                                CWBFontDescription* Font) {
+bool CWBApplication::InitFont(std::string_view FontName,
+                              CWBFontDescription* Font) {
   if (!Font) return false;
 
   auto f = std::make_unique<CWBFont>(Atlas.get());
@@ -797,8 +784,6 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     auto img = n.GetAttributeAsString("image");
     auto bin = n.GetAttributeAsString("binary");
 
-    // uint8_t* Dataimg = nullptr;
-    // uint8_t* Databin = nullptr;
     const int32_t Sizeimg = 0;
     const int32_t Sizebin = 0;
     auto dataimg = B64Decode(img);
@@ -812,11 +797,11 @@ bool CWBApplication::LoadSkin(std::string_view XML,
       auto fd = std::make_unique<CWBFontDescription>();
       if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
                                Image.get(), XRes, YRes, enabledGlyphs)) {
-        const bool f = CreateFont(Name, fd.get());
+        InitFont(Name, fd.get());
       } else if (fd->LoadBMFontText((unsigned char*)databin.c_str(),
                                     databin.size(), Image.get(), XRes, YRes,
                                     enabledGlyphs)) {
-        const bool f = CreateFont(Name, fd.get());
+        InitFont(Name, fd.get());
       }
 
       fd.reset();

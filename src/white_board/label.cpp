@@ -1,12 +1,14 @@
 module;
 
+#include <cassert>
 #include <string>
 #include <string_view>
-#include <cassert>
 
-#include "src/white_board/application.h"
+module whiteboard;
 
-module whiteboard.label;
+import :application;
+import :label;
+import :font;
 
 using math::CPoint;
 using math::CRect;

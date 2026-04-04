@@ -1,10 +1,10 @@
 module;
 #include <algorithm>
+#include <mutex>
 #include <string>
 #include <thread>
-#include <mutex>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "src/base/logger.h"
 #include "src/base/vector.h"
@@ -12,6 +12,7 @@ module;
 
 module taco.gw2;
 
+import whiteboard;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;

@@ -11,7 +11,6 @@
 #include <unordered_set>
 #include <vector>
 
-
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
 #include "src/base/plane.h"
@@ -22,8 +21,8 @@
 #include "src/util/miniz.h"
 #include "src/util/png_decompressor.h"
 #include "src/util/xml_document.h"
-#include "src/white_board/application.h"
-#include "src/white_board/draw_api.h"
+
+import whiteboard;
 
 import taco.mumble_link;
 import taco.gw2;

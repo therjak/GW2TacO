@@ -1,7 +1,7 @@
 module;
 #include <cstdint>
 
-export module whiteboard.message_enum;
+export module whiteboard:message_enum;
 
 export enum WBMESSAGE {
   WBM_NONE = 0,

@@ -1,4 +1,4 @@
-#pragma once
+module;
 
 #include <array>
 #include <cstdint>
@@ -7,18 +7,21 @@
 #include "src/base/color.h"
 #include "src/core2/core2.h"
 #include "src/white_board/atlas.h"
-#include "src/white_board/font.h"
 
-class CWBApplication;
-class CWBItem;
+export module whiteboard:draw_api;
 
-struct WBDISPLAYLINE {
+import :font;
+
+export class CWBApplication;
+export class CWBItem;
+
+export struct WBDISPLAYLINE {
   math::CPoint p1, p2;
   float u1 = 0, v1 = 0, u2 = 0, v2 = 0;
   CColor c1, c2;
 };
 
-struct WBGUIVERTEX {
+export struct WBGUIVERTEX {
   math::CVector4 Pos;
   math::CVector2 UV;
   CColor Color;
@@ -34,9 +37,13 @@ struct WBGUIVERTEX {
       : Pos(pos.x, pos.y, 0, 1), UV(uv.x, uv.y), Color(color) {}
 };
 
-enum class WBDRAWMODE : uint8_t { WBD_RECTANGLES, WBD_LINES, WBD_TRIANGLES };
+export enum class WBDRAWMODE : uint8_t {
+  WBD_RECTANGLES,
+  WBD_LINES,
+  WBD_TRIANGLES
+};
 
-class CWBDrawAPI {
+export class CWBDrawAPI {
   friend class CWBApplication;
   // these are the only things that need to access the
   // renderdisplaylist function
@@ -162,7 +169,7 @@ class CWBDrawAPI {
 };
 
 // helper functions for common use cases
-void ZoomToMouseCenter(math::CPoint& Offset, int32_t& Zoom, int32_t NewZoom,
-                       math::CPoint ZoomCenter);
-void ZoomToMouseCenter(math::CPoint& Offset, float& Zoom, float NewZoom,
-                       math::CPoint Pos);
+export void ZoomToMouseCenter(math::CPoint& Offset, int32_t& Zoom,
+                              int32_t NewZoom, math::CPoint ZoomCenter);
+export void ZoomToMouseCenter(math::CPoint& Offset, float& Zoom, float NewZoom,
+                              math::CPoint Pos);

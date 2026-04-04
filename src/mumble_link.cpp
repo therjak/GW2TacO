@@ -12,10 +12,10 @@ module;
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/gw2_tactical.h"
-#include "src/white_board/application.h"
 
 module taco.mumble_link;
 
+import whiteboard;
 import taco.trail_logger;
 import taco.overlay_config;
 import taco.time;

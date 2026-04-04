@@ -14,7 +14,6 @@
 #include <thread>
 #include <vector>
 
-
 #include "src/base/logger.h"
 #include "src/base/rectangle.h"
 #include "src/base/stream_reader.h"
@@ -24,7 +23,6 @@
 #include "src/gw2_tactical.h"
 #include "src/resource.h"
 #include "src/util/miniz.h"
-#include "src/white_board/application.h"
 
 import taco.mumble_link;
 import taco.gw2;
@@ -45,6 +43,7 @@ import taco.pro_font;
 import taco.range_display;
 import taco.map_timer;
 import taco.time;
+import whiteboard;
 
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")

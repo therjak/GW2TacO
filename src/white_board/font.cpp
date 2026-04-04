@@ -1,4 +1,4 @@
-#include "src/white_board/font.h"
+module;
 
 #include <algorithm>
 #include <cctype>
@@ -6,7 +6,10 @@
 
 #include "src/base/logger.h"
 #include "src/base/stream_reader.h"
-#include "src/white_board/draw_api.h"
+
+module whiteboard;
+
+import :font;
 
 using math::CPoint;
 using math::CRect;

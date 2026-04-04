@@ -11,12 +11,10 @@ module;
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
 #include "src/util/png_decompressor.h"
-#include "src/white_board/application.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 
 module taco.tp_tracker;
 
+import whiteboard;
 import taco.gw2;
 import taco.overlay_config;
 import taco.language;

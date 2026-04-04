@@ -1,14 +1,17 @@
-#pragma once
+module;
 
+#include <cassert>
 #include <climits>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "src/white_board/gui_item.h"
+export module whiteboard:context_menu;
 
-class CWBContextItem {
+import :gui_item;
+
+export class CWBContextItem {
   friend class CWBContextMenu;
 
  public:
@@ -33,7 +36,7 @@ class CWBContextItem {
   CWBContextItem* CopyOf = nullptr;
 };
 
-class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
+export class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
  public:
   CWBContextMenu(CWBItem* Parent, const math::CRect& Pos, WBGUID Target);
   static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,

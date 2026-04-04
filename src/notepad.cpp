@@ -1,15 +1,14 @@
 module;
 #include "src/base/rectangle.h"
+#include "src/base/stream_reader.h"
+#include "src/base/stream_writer.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/white_board/application.h"
-#include "src/base/stream_writer.h"
-#include "src/base/stream_reader.h"
 #include "src/util/xml_node.h"
 
 module taco.notepad;
 
-import whiteboard.text_box;
+import whiteboard;
 import taco.mumble_link;
 import taco.overlay_config;
 
@@ -65,7 +64,7 @@ void GW2Notepad::StartEdit() {
 void GW2Notepad::OnDraw(CWBDrawAPI* API) {}
 
 bool GW2Notepad::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_FOCUSGAINED: {
       CWBItem* tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == Message.GetTarget()) {

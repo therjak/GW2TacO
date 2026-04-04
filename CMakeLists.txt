@@ -139,13 +139,7 @@ set(Header_Files
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
-    "src/white_board/application.h"
     "src/white_board/atlas.h"
-    "src/white_board/context_menu.h"
-    "src/white_board/draw_api.h"
-    "src/white_board/font.h"
-    "src/white_board/gui_item.h"
-    "src/white_board/message.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -413,15 +407,22 @@ target_sources(${PROJECT_NAME}
             src/trail_logger.ixx
             src/ts3_connection.ixx
             src/ts3_control.ixx
+            src/white_board/application.ixx
             src/white_board/box.ixx
             src/white_board/button.ixx
+            src/white_board/context_menu.ixx
             src/white_board/css_item.ixx
+            src/white_board/draw_api.ixx
+            src/white_board/font.ixx
+            src/white_board/gui_item.ixx
             src/white_board/label.ixx
             src/white_board/message_enum.ixx
+            src/white_board/message.ixx
             src/white_board/root.ixx
             src/white_board/skin.ixx
             src/white_board/style_manager.ixx
             src/white_board/text_box.ixx
+            src/white_board/white_board.ixx
             src/white_board/window.ixx
             src/wvw.ixx
     PUBLIC

@@ -1,13 +1,16 @@
 module;
-#include <string_view>
-#include <vector>
 #include <array>
 #include <cassert>
+#include <memory>
+#include <string_view>
+#include <vector>
 
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
+#include "src/base/color.h"
+#include "src/util/xml_node.h"
 
 export module taco.mouse_highlight;
+
+import whiteboard;
 
 export enum class MouseColor {
   red,

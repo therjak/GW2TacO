@@ -1,10 +1,16 @@
-#include "src/white_board/gui_item.h"
-
+module;
 #include <algorithm>
+#include <mutex>
 
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
-#include "src/white_board/application.h"
+
+module whiteboard;
+
+import :application;
+import :context_menu;
+import :gui_item;
+import :font;
 
 using math::CPoint;
 using math::CRect;
@@ -177,7 +183,7 @@ void CWBItem::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
 }
 
 bool CWBItem::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_NONE:
       Log_Err("[gui] Message Type 0 Encountered. Message Target is {:d}",
               Message.GetTarget());
@@ -308,13 +314,13 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
             const int32_t newpos = CalculateScrollbarMovement(
                 HScrollbar, GetClientRect().Width(), md.x);
             HScrollbar.ScrollPos = newpos;
-            App->SendMessage(CWBMessage(App, WBM_HSCROLL, GetGuid(), newpos));
+            App->Send(CWBMessage(App, WBM_HSCROLL, GetGuid(), newpos));
           }
           if (VScrollbar.Dragmode == WB_SCROLLDRAG_THUMB) {
             const int32_t newpos = CalculateScrollbarMovement(
                 VScrollbar, GetClientRect().Height(), md.y);
             VScrollbar.ScrollPos = newpos;
-            App->SendMessage(CWBMessage(App, WBM_VSCROLL, GetGuid(), newpos));
+            App->Send(CWBMessage(App, WBM_VSCROLL, GetGuid(), newpos));
           }
 
           return true;
@@ -794,7 +800,7 @@ CWBMessage CWBItem::BuildPositionMessage(const CRect& Pos, bool resized) const {
 
 void CWBItem::SetPosition(const CRect& Pos) {
   const CWBMessage m = BuildPositionMessage(Pos);
-  App->SendMessage(m);
+  App->Send(m);
 }
 
 void CWBItem::SetClientPadding(int32_t left, int32_t top, int32_t right,
@@ -858,8 +864,8 @@ bool CWBItem::InLocalFocus() const {
 void CWBItem::SetFocus() {
   const CWBItem* fi = App->GetFocusItem();
   if (fi != this) {
-    App->SendMessage(CWBMessage(App, WBM_FOCUSGAINED, GetGuid()));
-    if (fi) App->SendMessage(CWBMessage(App, WBM_FOCUSLOST, fi->GetGuid()));
+    App->Send(CWBMessage(App, WBM_FOCUSGAINED, GetGuid()));
+    if (fi) App->Send(CWBMessage(App, WBM_FOCUSLOST, fi->GetGuid()));
   }
 
   CWBItem* p = Parent;
@@ -873,7 +879,7 @@ void CWBItem::SetFocus() {
 
 void CWBItem::ClearFocus() {
   // if (Parent) Parent->ChildInFocus = NULL;
-  App->SendMessage(CWBMessage(App, WBM_FOCUSLOST, GetGuid()));
+  App->Send(CWBMessage(App, WBM_FOCUSLOST, GetGuid()));
 }
 
 bool CWBItem::MouseOver() {
@@ -900,7 +906,7 @@ CWBItem* CWBItem::GetChild(uint32_t idx) { return Children[idx].get(); }
 CSize CWBItem::GetContentSize() { return GetClientRect().Size(); }
 
 void CWBItem::Hide(bool Hide) {
-  App->SendMessage(CWBMessage(App, Hide ? WBM_HIDE : WBM_UNHIDE, GetGuid()));
+  App->Send(CWBMessage(App, Hide ? WBM_HIDE : WBM_UNHIDE, GetGuid()));
 }
 
 bool CWBItem::IsHidden() { return Hidden; }
@@ -1293,7 +1299,7 @@ void CWBItem::AdjustClientAreaToFitScrollbars() {
   ScrollbarHelperFunct(HScrollbar, crect.y2, ScrollbarRequired(HScrollbar));
 
   if (App && crect != ClientRect) {
-    App->SendMessage(CWBMessage(App, WBM_CLIENTAREACHANGED, GetGuid()));
+    App->Send(CWBMessage(App, WBM_CLIENTAREACHANGED, GetGuid()));
   }
 
   ClientRect = crect;
@@ -1359,7 +1365,7 @@ void CWBItem::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
   }
   if (sc != HScrollbar.ScrollPos) {
     HScrollbar.ScrollPos = sc;
-    App->SendMessage(CWBMessage(App, WBM_HSCROLL, GetGuid(), sc));
+    App->Send(CWBMessage(App, WBM_HSCROLL, GetGuid(), sc));
     CalculateClientPosition();
   }
 }
@@ -1372,7 +1378,7 @@ void CWBItem::SetVScrollbarPos(int32_t ScrollPos, bool Clamp) {
   }
   if (sc != VScrollbar.ScrollPos) {
     VScrollbar.ScrollPos = sc;
-    App->SendMessage(CWBMessage(App, WBM_VSCROLL, GetGuid(), sc));
+    App->Send(CWBMessage(App, WBM_VSCROLL, GetGuid(), sc));
     CalculateClientPosition();
   }
 }
@@ -2326,7 +2332,7 @@ void CWBItem::ContentChanged() {
                CRect(GetPosition().TopLeft(),
                      GetPosition().TopLeft() + StoredContentSize),
                true, true);
-  App->SendMessage(m);
+  App->Send(m);
 }
 
 void CWBItem::ChangeContentOffset(CPoint ContentOff) {
@@ -2336,13 +2342,13 @@ void CWBItem::ChangeContentOffset(CPoint ContentOff) {
 }
 
 void CWBItem::ChangeContentOffsetX(int32_t OffsetX) {
-  App->SendMessage(CWBMessage(App, WBM_CONTENTOFFSETCHANGE, GetGuid(), OffsetX,
-                              ContentOffset.y));
+  App->Send(CWBMessage(App, WBM_CONTENTOFFSETCHANGE, GetGuid(), OffsetX,
+                       ContentOffset.y));
 }
 
 void CWBItem::ChangeContentOffsetY(int32_t OffsetY) {
-  App->SendMessage(CWBMessage(App, WBM_CONTENTOFFSETCHANGE, GetGuid(),
-                              ContentOffset.x, OffsetY));
+  App->Send(CWBMessage(App, WBM_CONTENTOFFSETCHANGE, GetGuid(), ContentOffset.x,
+                       OffsetY));
 }
 
 bool CWBItem::ScrollbarsEnabled() {

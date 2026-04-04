@@ -9,9 +9,10 @@ module;
 #include <vector>
 
 #include "src/base/lock_free_queue.h"
-#include "src/white_board/draw_api.h"
 
 export module taco.gw2;
+
+import whiteboard;
 
 export namespace GW2 {
 

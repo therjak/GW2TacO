@@ -1,10 +1,17 @@
-#include "src/white_board/draw_api.h"
+module;
 
 #include <array>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/base/logger.h"
-#include "src/white_board/application.h"
+#include "src/base/vector.h"
+#include "src/core2/enums.h"
+
+module whiteboard;
+
+import :application;
+import :draw_api;
 
 constexpr int32_t VertexBufferRectCount = 4096;
 constexpr int32_t VertexBufferVertexCount = VertexBufferRectCount * 4;

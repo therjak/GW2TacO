@@ -1,14 +1,16 @@
 module;
 
+#include <cassert>
+#include <memory>
 #include <string>
 #include <string_view>
-#include <cassert>
 
-#include "src/white_board/application.h"
 
-export module whiteboard.label;
+export module whiteboard:label;
 
-import whiteboard.css_item;
+import :application;
+import :css_item;
+import :gui_item;
 
 export class CWBLabel : public CWBGuiType<"label", CWBItem> {
  public:

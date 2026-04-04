@@ -15,9 +15,9 @@
 #include "src/base/lock_free_queue.h"
 #include "src/base/matrix.h"
 #include "src/util/xml_document.h"
-#include "src/white_board/context_menu.h"
-#include "src/white_board/gui_item.h"
+#include "src/white_board/atlas.h"
 
+import whiteboard;
 import taco.marker_data;
 import taco.tactical_category;
 import taco.poi_behavior;

@@ -1,11 +1,10 @@
 module;
 #include <memory>
 
-#include "src/white_board/gui_item.h"
+export module whiteboard:root;
 
-export module whiteboard.root;
-
-import whiteboard.css_item;
+import :css_item;
+import :gui_item;
 
 export class CWBApplication;
 

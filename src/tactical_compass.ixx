@@ -1,16 +1,17 @@
 module;
-#include <memory>
 #include <cassert>
+#include <memory>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 #include "src/util/xml_node.h"
 
 export module taco.tactical_compass;
 
-export class GW2TacticalCompass : public CWBGuiType<"gw2rangecircles", CWBItem> {
+import whiteboard;
+
+export class GW2TacticalCompass
+    : public CWBGuiType<"gw2rangecircles", CWBItem> {
  public:
   GW2TacticalCompass(CWBItem* Parent, math::CRect Position);
   ~GW2TacticalCompass() override;

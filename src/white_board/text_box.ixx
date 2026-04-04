@@ -1,17 +1,18 @@
 module;
+#include <tchar.h>
+
 #include <cassert>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
-#include <tchar.h>
 #include <vector>
 
-#include "src/white_board/application.h"
+export module whiteboard:text_box;
 
-export module whiteboard.text_box;
-
-import whiteboard.css_item;
+import :application;
+import :css_item;
+import :gui_item;
 
 export constexpr uint32_t WB_TEXTBOX_SINGLELINE = 0x0000001;
 export constexpr uint32_t WB_TEXTBOX_PASSWORD = 0x0000002;

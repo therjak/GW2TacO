@@ -11,12 +11,12 @@ module;
 #include "src/base/hasher.h"
 #include "src/base/matrix.h"
 #include "src/base/stream_reader.h"
+#include "src/core2/device.h"
 #include "src/gw2_tactical.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 
 export module taco.trail_logger;
 
+import whiteboard;
 import taco.mumble_link;
 
 export void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);

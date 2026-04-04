@@ -6,11 +6,10 @@ module;
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/util/xml_node.h"
-#include "src/white_board/draw_api.h"
-#include "src/white_board/gui_item.h"
 
 module taco.range_display;
 
+import whiteboard;
 import taco.mumble_link;
 import taco.overlay_config;
 import base.constants;

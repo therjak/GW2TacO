@@ -5,9 +5,11 @@ module;
 #include <string_view>
 #include <vector>
 
-#include "src/white_board/application.h"
+module whiteboard;
 
-module whiteboard.window;
+import :application;
+import :window;
+import :font;
 
 using math::CPoint;
 using math::CRect;
@@ -205,7 +207,7 @@ bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position) {
 }
 
 bool CWBWindow::MessageProc(const CWBMessage& Message) {
-  switch (Message.GetMessage()) {
+  switch (Message.Get()) {
     case WBM_LEFTBUTTONDOWN:
       if (CWBItem::MessageProc(Message)) return true;
       if (App->GetMouseItem() == this) {
@@ -272,14 +274,14 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
         if (DragMode == WB_DRAGMODE_CLOSEBUTTON) {
           if (GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
                   .Contains(ScreenToClient(Message.GetPosition()))) {
-            App->SendMessage(CWBMessage(App, WBM_CLOSE, GetGuid()));
+            App->Send(CWBMessage(App, WBM_CLOSE, GetGuid()));
           }
         }
 
         const bool b = ReleaseCapture();
         if (DragMode) {
           DragMode = 0;
-          App->SendMessage(CWBMessage(App, WBM_WINDOWDRAGSTOPPED, GetGuid()));
+          App->Send(CWBMessage(App, WBM_WINDOWDRAGSTOPPED, GetGuid()));
           return b;
         }
       }

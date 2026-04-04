@@ -1,17 +1,15 @@
 module;
+#include <cassert>
 #include <string>
 #include <thread>
 #include <unordered_map>
 #include <vector>
-#include <cassert>
 
 #include "src/gw2_tactical.h"
-#include "src/white_board/gui_item.h"
 
 export module taco.gw2taco;
 
-import whiteboard.text_box;
-import whiteboard.window;
+import whiteboard;
 import taco.ts3connection;
 
 export enum class TacOKeyAction : int32_t {
