@@ -10,10 +10,10 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/util/jsonxx.h"
-#include "src/util/xml_node.h"
 
 export module taco.tp_tracker;
 
+import xml;
 import whiteboard;
 
 export struct TransactionItem {

@@ -11,7 +11,8 @@
 #include "src/core2/vertex_buffer.h"
 #include "src/core2/vertex_format.h"
 #include "src/core2/window_handler.h"
-#include "src/util/xml_document.h"
+
+import xml;
 
 class CCoreDevice {
   friend class CCoreResource;

@@ -5,9 +5,9 @@ module;
 #include <unordered_map>
 #include <vector>
 
-#include "src/util/xml_document.h"
-
 export module taco.language;
+
+import xml;
 
 export class Language {
  public:

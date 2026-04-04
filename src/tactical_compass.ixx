@@ -4,10 +4,10 @@ module;
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/util/xml_node.h"
 
 export module taco.tactical_compass;
 
+import xml;
 import whiteboard;
 
 export class GW2TacticalCompass

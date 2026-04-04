@@ -4,10 +4,10 @@ module;
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
-#include "src/util/xml_node.h"
 
 export module taco.ts3_control;
 
+import xml;
 import whiteboard;
 
 export class TS3Control : public CWBGuiType<"ts3control", CWBItem> {

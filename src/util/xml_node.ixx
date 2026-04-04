@@ -1,4 +1,5 @@
-#pragma once
+module;
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -8,9 +9,11 @@
 
 #include "src/util/RapidXML/rapidxml.hpp"
 
-class CXMLDocument;
+export module xml:node;
 
-class CXMLNode {
+export class CXMLDocument;
+
+export class CXMLNode {
  public:
   CXMLNode();
   CXMLNode(const CXMLNode& Original);

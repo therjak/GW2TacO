@@ -6,10 +6,10 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/util/xml_node.h"
 
 module taco.tactical_compass;
 
+import xml;
 import whiteboard;
 import taco.overlay_config;
 import taco.language;

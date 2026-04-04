@@ -6,10 +6,10 @@ module;
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/util/xml_node.h"
 
 export module taco.mouse_highlight;
 
+import xml;
 import whiteboard;
 
 export enum class MouseColor {

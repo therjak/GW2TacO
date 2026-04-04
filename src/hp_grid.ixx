@@ -7,10 +7,10 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/sphere.h"
 #include "src/base/vector.h"
-#include "src/util/xml_node.h"
 
 export module taco.hp_grid;
 
+import xml;
 import whiteboard;
 
 export class GW2HPGrid : public CWBGuiType<"hpgrid", CWBItem> {

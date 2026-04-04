@@ -5,9 +5,10 @@ module;
 #include <vector>
 
 #include "base/color.h"
-#include "util/xml_node.h"
 
 export module taco.marker_data;
+
+import xml;
 import taco.poi_behavior;
 
 export struct MarkerTypeData {

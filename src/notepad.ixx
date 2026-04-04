@@ -5,10 +5,10 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/gw2_tactical.h"
-#include "src/util/xml_node.h"
 
 export module taco.notepad;
 
+import xml;
 import whiteboard;
 
 export class GW2Notepad : public CWBGuiType<"notepad", CWBItem> {
