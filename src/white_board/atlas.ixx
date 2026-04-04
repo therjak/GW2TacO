@@ -1,19 +1,24 @@
-#pragma once
+module;
+
 #include <array>
 #include <mutex>
 #include <unordered_map>
+#include <memory>
 
 #include "src/core2/core2.h"
+#include "src/base/rectangle.h"
+
+export module whiteboard:atlas;
 
 // cache size must be 2^x
-constexpr int32_t kAtlasCacheSize = 32;
+export constexpr int32_t kAtlasCacheSize = 32;
 
-typedef int32_t WBATLASHANDLE;
+export typedef int32_t WBATLASHANDLE;
 
-class CAtlasImage;
+export class CAtlasImage;
 
 // stores a node for the rectpacker
-class CAtlasNode {
+export class CAtlasNode {
   friend class CAtlas;
 
  public:
@@ -32,7 +37,7 @@ class CAtlasNode {
 };
 
 // stores image data not currently in the atlas
-class CAtlasImage {
+export class CAtlasImage {
  public:
   CAtlasImage();
   CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
@@ -54,12 +59,12 @@ class CAtlasImage {
   bool Required;
 };
 
-struct CAtlasCacheElement {
+export struct CAtlasCacheElement {
   WBATLASHANDLE Handle = 0;
   CAtlasNode* Node = nullptr;
 };
 
-class CAtlas {
+export class CAtlas {
   friend class CWBDrawAPI;
 
  public:

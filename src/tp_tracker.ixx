@@ -11,7 +11,6 @@ module;
 #include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 #include "src/util/xml_node.h"
-#include "src/white_board/atlas.h"
 
 export module taco.tp_tracker;
 

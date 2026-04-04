@@ -1,9 +1,15 @@
-#include "src/white_board/atlas.h"
+module;
 
 #include <algorithm>
 #include <mutex>
 
 #include "src/base/logger.h"
+#include "src/base/rectangle.h"
+#include "src/core2/core2.h"
+
+module whiteboard;
+
+import :atlas;
 
 using math::CPoint;
 using math::CRect;

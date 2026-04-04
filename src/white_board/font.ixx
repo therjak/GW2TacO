@@ -1,13 +1,16 @@
 module;
+#include <tchar.h>
+
 #include <cstdint>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/white_board/atlas.h"
 
 export module whiteboard:font;
+
+import :atlas;
 
 export enum class WBTEXTALIGNMENTX : uint8_t {
   WBTA_CENTERX,
