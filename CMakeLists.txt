@@ -139,7 +139,6 @@ set(Header_Files
     "src/util/png_decompressor.h"
     "src/util/xml_document.h"
     "src/util/xml_node.h"
-    "src/white_board/atlas.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -407,6 +406,7 @@ target_sources(${PROJECT_NAME}
             src/trail_logger.ixx
             src/ts3_connection.ixx
             src/ts3_control.ixx
+            src/white_board/atlas.ixx
             src/white_board/application.ixx
             src/white_board/box.ixx
             src/white_board/button.ixx

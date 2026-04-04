@@ -6,10 +6,10 @@ module;
 
 #include "src/base/color.h"
 #include "src/core2/core2.h"
-#include "src/white_board/atlas.h"
 
 export module whiteboard:draw_api;
 
+import :atlas;
 import :font;
 
 export class CWBApplication;

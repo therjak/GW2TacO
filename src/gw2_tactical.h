@@ -15,7 +15,6 @@
 #include "src/base/lock_free_queue.h"
 #include "src/base/matrix.h"
 #include "src/util/xml_document.h"
-#include "src/white_board/atlas.h"
 
 import whiteboard;
 import taco.marker_data;

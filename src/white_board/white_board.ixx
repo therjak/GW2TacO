@@ -1,6 +1,7 @@
 export module whiteboard;
 
 export import :application;
+export import :atlas;
 export import :box;
 export import :button;
 export import :context_menu;
