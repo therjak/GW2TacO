@@ -9,12 +9,12 @@ module;
 #include "src/util/xml_document.h"
 #include "src/util/xml_node.h"
 
+module taco.locational_timer;
+
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;
 import taco.time;
-
-module taco.locational_timer;
 
 using math::CPoint;
 using math::CRect;

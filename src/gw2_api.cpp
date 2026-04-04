@@ -10,11 +10,11 @@ module;
 #include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 
+module taco.gw2;
+
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;
-
-module taco.gw2;
 
 using namespace jsonxx;
 using math::CPoint;

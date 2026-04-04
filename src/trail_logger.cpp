@@ -17,10 +17,9 @@ module;
 #include "src/util/miniz.h"
 #include "src/white_board/application.h"
 
-import whiteboard.button;
-
 module taco.trail_logger;
 
+import whiteboard.button;
 import taco.overlay_config;
 import taco.mumble_link;
 import taco.time;

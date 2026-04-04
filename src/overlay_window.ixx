@@ -6,9 +6,9 @@ module;
 #include "src/white_board/draw_api.h"
 #include "src/white_board/gui_item.h"
 
-import whiteboard.window;
-
 export module taco.overlay_window;
+
+import whiteboard.window;
 
 export class OverlayWindow : public CWBGuiType<"OverlayWindow", CWBWindow> {
  public:
