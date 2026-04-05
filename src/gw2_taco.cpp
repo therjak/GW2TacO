@@ -210,8 +210,7 @@ bool GW2TacO::IsMouseTransparent(const CPoint& ClientSpacePoint,
   return true;
 }
 
-GW2TacO::GW2TacO(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {
+GW2TacO::GW2TacO() : CWBGuiType() {
   GetKeyBindings(KeyBindings);
   GetScriptKeyBindings(ScriptKeyBindings);
 }

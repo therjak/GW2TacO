@@ -13,10 +13,11 @@ import whiteboard;
 
 export class GW2Notepad : public CWBGuiType<"notepad", CWBItem> {
  public:
-  GW2Notepad(CWBItem* Parent, math::CRect Position);
+  GW2Notepad();
   ~GW2Notepad() override;
   static inline GW2Notepad* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2Notepad>(Parent, Position);
+    auto p = std::make_unique<GW2Notepad>();
+    p->Initialize(Parent, Position);
     GW2Notepad* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

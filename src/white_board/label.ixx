@@ -5,7 +5,6 @@ module;
 #include <string>
 #include <string_view>
 
-
 export module whiteboard:label;
 
 import :application;
@@ -14,10 +13,11 @@ import :gui_item;
 
 export class CWBLabel : public CWBGuiType<"label", CWBItem> {
  public:
-  CWBLabel(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
+  CWBLabel(std::string_view txt);
   static inline CWBLabel* Create(CWBItem* Parent, const math::CRect& Pos,
                                  std::string_view txt = "") {
-    auto p = std::make_unique<CWBLabel>(Parent, Pos, txt);
+    auto p = std::make_unique<CWBLabel>(txt);
+    p->Initialize(Parent, Pos);
     CWBLabel* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

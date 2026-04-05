@@ -5,7 +5,6 @@ module;
 #include <string>
 #include <string_view>
 
-
 export module whiteboard:button;
 
 import :application;
@@ -14,10 +13,11 @@ import :gui_item;
 
 export class CWBButton : public CWBGuiType<"button", CWBItem> {
  public:
-  CWBButton(CWBItem* Parent, const math::CRect& Pos, std::string_view txt);
+  CWBButton(std::string_view txt);
   static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
                                   std::string_view txt = "") {
-    auto p = std::make_unique<CWBButton>(Parent, Pos, txt);
+    auto p = std::make_unique<CWBButton>(txt);
+    p->Initialize(Parent, Pos);
     CWBButton* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

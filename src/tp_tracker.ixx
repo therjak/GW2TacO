@@ -33,10 +33,11 @@ export struct GW2ItemData {
 
 export class TPTracker : public CWBGuiType<"tptracker", CWBItem> {
  public:
-  TPTracker(CWBItem* Parent, math::CRect Position);
+  TPTracker();
   ~TPTracker() override;
   static inline TPTracker* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<TPTracker>(Parent, Position);
+    auto p = std::make_unique<TPTracker>();
+    p->Initialize(Parent, Position);
     TPTracker* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

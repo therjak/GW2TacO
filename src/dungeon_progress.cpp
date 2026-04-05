@@ -138,8 +138,8 @@ constexpr auto ex = "Explorable";
 constexpr int32_t ignore = -1;  // does not count for dungeon frequenter
 }  // namespace
 
-DungeonProgress::DungeonProgress(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position),
+DungeonProgress::DungeonProgress()
+    : CWBGuiType(),
       dungeons{
           Dungeon{"ascalonian_catacombs",
                   "AC",

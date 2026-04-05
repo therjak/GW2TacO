@@ -46,10 +46,11 @@ export constexpr std::array CGAPaletteNames = {
 
 export class GW2MouseHighlight : public CWBGuiType<"mousehighlight", CWBItem> {
  public:
-  GW2MouseHighlight(CWBItem* Parent, math::CRect Position);
+  GW2MouseHighlight();
   static inline GW2MouseHighlight* Create(CWBItem* Parent,
                                           math::CRect Position) {
-    auto p = std::make_unique<GW2MouseHighlight>(Parent, Position);
+    auto p = std::make_unique<GW2MouseHighlight>();
+    p->Initialize(Parent, Position);
     GW2MouseHighlight* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

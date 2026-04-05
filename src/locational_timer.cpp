@@ -167,8 +167,7 @@ bool TimerDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
   return true;
 }
 
-TimerDisplay::TimerDisplay(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {}
+TimerDisplay::TimerDisplay() : CWBGuiType() {}
 
 TimerDisplay::~TimerDisplay() = default;
 

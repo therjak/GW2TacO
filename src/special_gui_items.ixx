@@ -13,20 +13,18 @@ import whiteboard;
 export class ClickThroughButton
     : public CWBGuiType<"clickthroughbutton", CWBButton> {
  public:
-  ClickThroughButton(CWBItem* Parent, const math::CRect& Pos,
-                     std::string_view txt);
+  ClickThroughButton(std::string_view txt);
   ~ClickThroughButton() override;
   static inline ClickThroughButton* Create(CWBItem* Parent,
                                            const math::CRect& Pos,
                                            std::string_view txt = "") {
-    auto p = std::make_unique<ClickThroughButton>(Parent, Pos, txt);
+    auto p = std::make_unique<ClickThroughButton>(txt);
+    p->Initialize(Parent, Pos);
     ClickThroughButton* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
-
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);

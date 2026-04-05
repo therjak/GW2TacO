@@ -10,7 +10,6 @@ module;
 #include <unordered_map>
 #include <vector>
 
-
 export module whiteboard:window;
 
 import :application;
@@ -46,12 +45,12 @@ export enum class WBWINDOWELEMENT : char {
 
 export class CWBWindow : public CWBGuiType<"window", CWBItem> {
  public:
-  CWBWindow(CWBItem* Parent, const math::CRect& Pos, const TCHAR* txt = "",
-            uint32_t style = WB_WINDOW_DEFAULT);
+  CWBWindow(const TCHAR* txt = "", uint32_t style = WB_WINDOW_DEFAULT);
   static inline CWBWindow* Create(CWBItem* Parent, const math::CRect& Pos,
                                   const TCHAR* txt = "",
                                   uint32_t style = WB_WINDOW_DEFAULT) {
-    auto p = std::make_unique<CWBWindow>(Parent, Pos, txt, style);
+    auto p = std::make_unique<CWBWindow>(txt, style);
+    p->Initialize(Parent, Pos);
     CWBWindow* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

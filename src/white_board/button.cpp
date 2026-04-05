@@ -60,10 +60,7 @@ void CWBButton::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-CWBButton::CWBButton(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
-    : CWBGuiType(), Text(Txt) {
-  Initialize(Parent, Pos);
-}
+CWBButton::CWBButton(std::string_view Txt) : CWBGuiType(), Text(Txt) {}
 
 CWBButton::~CWBButton() = default;
 

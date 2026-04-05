@@ -104,10 +104,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-CWBContextMenu::CWBContextMenu(CWBItem* Parent, const CRect& Pos, WBGUID trg)
-    : CWBGuiType(), Target(trg) {
-  CWBContextMenu::Initialize(Parent, Pos);
-}
+CWBContextMenu::CWBContextMenu(WBGUID trg) : CWBGuiType(), Target(trg) {}
 
 CWBContextMenu::~CWBContextMenu() {
   if (ParentMenu) {

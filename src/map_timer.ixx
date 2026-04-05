@@ -46,10 +46,11 @@ export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
   };
 
  public:
-  GW2MapTimer(CWBItem* Parent, math::CRect Position);
+  GW2MapTimer();
   ~GW2MapTimer() override;
   static inline GW2MapTimer* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2MapTimer>(Parent, Position);
+    auto p = std::make_unique<GW2MapTimer>();
+    p->Initialize(Parent, Position);
     GW2MapTimer* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

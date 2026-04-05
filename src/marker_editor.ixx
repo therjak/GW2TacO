@@ -14,9 +14,10 @@ import whiteboard;
 
 export class GW2MarkerEditor : public CWBGuiType<"markereditor", CWBItem> {
  public:
-  GW2MarkerEditor(CWBItem* Parent, math::CRect Position);
+  GW2MarkerEditor();
   static inline GW2MarkerEditor* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2MarkerEditor>(Parent, Position);
+    auto p = std::make_unique<GW2MarkerEditor>();
+    p->Initialize(Parent, Position);
     GW2MarkerEditor* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

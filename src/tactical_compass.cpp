@@ -115,8 +115,7 @@ void GW2TacticalCompass::OnDraw(CWBDrawAPI* API) {
   if (GetConfigValue("TacticalCompassVisible")) DrawTacticalCompass(API);
 }
 
-GW2TacticalCompass::GW2TacticalCompass(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {}
+GW2TacticalCompass::GW2TacticalCompass() : CWBGuiType() {}
 GW2TacticalCompass::~GW2TacticalCompass() = default;
 
 CWBItem* GW2TacticalCompass::Factory(CWBItem* Root, const CXMLNode& node,

@@ -24,23 +24,16 @@ void CWBBox::AddChild(std::unique_ptr<CWBItem>&& Item) {
   RearrangeChildren();
 }
 
-CWBBox::CWBBox(CWBItem* Parent, const CRect& Pos) : CWBGuiType() {
-  Initialize(Parent, Pos);
-}
+CWBBox::CWBBox()
+    : CWBGuiType(),
+      Arrangement(WBBOXARRANGEMENT::WB_ARRANGE_NONE),
+      Spacing(0),
+      AlignmentX(WBALIGNMENT::LEFT),
+      AlignmentY(WBALIGNMENT::TOP),
+      SizingX(WBBOXSIZING::WB_SIZING_KEEP),
+      SizingY(WBBOXSIZING::WB_SIZING_KEEP) {}
 
 CWBBox::~CWBBox() = default;
-
-bool CWBBox::Initialize(CWBItem* Parent, const CRect& Position) {
-  Arrangement = WBBOXARRANGEMENT::WB_ARRANGE_NONE;
-  Spacing = 0;
-  AlignmentX = WBALIGNMENT::LEFT;
-  AlignmentY = WBALIGNMENT::TOP;
-  SizingX = WBBOXSIZING::WB_SIZING_KEEP;
-  SizingY = WBBOXSIZING::WB_SIZING_KEEP;
-
-  if (!CWBItem::Initialize(Parent, Position)) return false;
-  return true;
-}
 
 bool CWBBox::MessageProc(const CWBMessage& Message) {
   switch (Message.Get()) {

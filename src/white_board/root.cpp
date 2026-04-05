@@ -33,17 +33,10 @@ bool CWBRoot::MessageProc(const CWBMessage& Message) {
   return CWBItem::MessageProc(Message);
 }
 
-CWBRoot::CWBRoot(CWBItem* Parent, const CRect& Pos) : CWBGuiType() {
-  Initialize(Parent, Pos);
-}
+CWBRoot::CWBRoot() : CWBGuiType() {}
 
 CWBRoot::~CWBRoot() = default;
 
 void CWBRoot::SetApplication(CWBApplication* Application) { App = Application; }
-
-bool CWBRoot::Initialize(CWBItem* Parent, const CRect& Position) {
-  if (!CWBItem::Initialize(Parent, Position)) return false;
-  return true;
-}
 
 void CWBRoot::OnDraw(CWBDrawAPI* API) {}

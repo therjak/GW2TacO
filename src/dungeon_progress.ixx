@@ -40,9 +40,10 @@ export class Dungeon {
 
 export class DungeonProgress : public CWBGuiType<"dungeonprogress", CWBItem> {
  public:
-  DungeonProgress(CWBItem* Parent, math::CRect Position);
+  DungeonProgress();
   static inline DungeonProgress* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<DungeonProgress>(Parent, Position);
+    auto p = std::make_unique<DungeonProgress>();
+    p->Initialize(Parent, Position);
     DungeonProgress* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
