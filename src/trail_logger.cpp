@@ -451,8 +451,11 @@ CCoreTexture2D* GW2TrailDisplay::GetTexture(
   return textureCache[s].get();
 }
 
-GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {
+GW2TrailDisplay::GW2TrailDisplay() : CWBGuiType() {}
+
+bool GW2TrailDisplay::Initialize(CWBItem* Parent, const math::CRect& Position) {
+  if (!CWBItem::Initialize(Parent, Position)) return false;
+
   constBuffer = App->GetDevice()->CreateConstantBuffer();
 
   CStreamReaderMemory tex;
@@ -551,6 +554,7 @@ GW2TrailDisplay::GW2TrailDisplay(CWBItem* Parent, CRect Position)
   if (!vertexFormat) {
     Log_Err("[GW2TacO]  Error creating Trail Vertex Format");
   }
+  return true;
 }
 
 GW2TrailDisplay::~GW2TrailDisplay() { textureCache.clear(); }

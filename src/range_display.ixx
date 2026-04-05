@@ -12,10 +12,11 @@ import whiteboard;
 
 export class GW2RangeDisplay : public CWBGuiType<"gw2rangecircles", CWBItem> {
  public:
-  GW2RangeDisplay(CWBItem* Parent, math::CRect Position);
+  GW2RangeDisplay();
   ~GW2RangeDisplay() override;
   static inline GW2RangeDisplay* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2RangeDisplay>(Parent, Position);
+    auto p = std::make_unique<GW2RangeDisplay>();
+    p->Initialize(Parent, Position);
     GW2RangeDisplay* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

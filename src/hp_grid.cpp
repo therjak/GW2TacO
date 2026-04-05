@@ -41,10 +41,7 @@ void GW2HPGrid::OnDraw(CWBDrawAPI* API) {
   }
 }
 
-GW2HPGrid::GW2HPGrid(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {
-  LoadGrids();
-}
+GW2HPGrid::GW2HPGrid() : CWBGuiType() { LoadGrids(); }
 
 GW2HPGrid::~GW2HPGrid() = default;
 

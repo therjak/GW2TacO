@@ -38,10 +38,11 @@ export class CWBContextItem {
 
 export class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
  public:
-  CWBContextMenu(CWBItem* Parent, const math::CRect& Pos, WBGUID Target);
+  CWBContextMenu(WBGUID Target);
   static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,
                                        WBGUID Target) {
-    auto p = std::make_unique<CWBContextMenu>(Parent, Pos, Target);
+    auto p = std::make_unique<CWBContextMenu>(Target);
+    p->Initialize(Parent, Pos);
     CWBContextMenu* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

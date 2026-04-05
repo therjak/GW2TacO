@@ -134,8 +134,7 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-TS3Control::TS3Control(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {}
+TS3Control::TS3Control() : CWBGuiType() {}
 
 TS3Control::~TS3Control() = default;
 

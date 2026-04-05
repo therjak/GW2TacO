@@ -45,10 +45,11 @@ export class Raid {
 
 export class RaidProgress : public CWBGuiType<"raidprogress", CWBItem> {
  public:
-  RaidProgress(CWBItem* Parent, math::CRect Position);
+  RaidProgress();
   ~RaidProgress() override;
   static inline RaidProgress* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<RaidProgress>(Parent, Position);
+    auto p = std::make_unique<RaidProgress>();
+    p->Initialize(Parent, Position);
     RaidProgress* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

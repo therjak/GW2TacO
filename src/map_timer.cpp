@@ -452,8 +452,7 @@ void GW2MapTimer::UpdateScrollbarData(int ypos, const CRect& cl) {
   }
 }
 
-GW2MapTimer::GW2MapTimer(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {
+GW2MapTimer::GW2MapTimer() : CWBGuiType() {
   CXMLDocument d;
   if (!d.LoadFromFile("maptimer.xml")) {
     return;

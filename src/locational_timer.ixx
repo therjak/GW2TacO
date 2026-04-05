@@ -44,9 +44,10 @@ export class LocationalTimer {
 
 export class TimerDisplay : public CWBGuiType<"TimerDisplay", CWBItem> {
  public:
-  TimerDisplay(CWBItem* Parent, math::CRect Position);
+  TimerDisplay();
   static inline TimerDisplay* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<TimerDisplay>(Parent, Position);
+    auto p = std::make_unique<TimerDisplay>();
+    p->Initialize(Parent, Position);
     TimerDisplay* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

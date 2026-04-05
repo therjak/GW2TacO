@@ -7,7 +7,6 @@ module;
 #include <string_view>
 #include <vector>
 
-
 export module whiteboard:box;
 
 import :application;
@@ -32,16 +31,16 @@ export enum class WBBOXSIZING : uint8_t {
 
 export class CWBBox : public CWBGuiType<"box", CWBItem> {
  public:
-  CWBBox(CWBItem* Parent, const math::CRect& Pos);
+  CWBBox();
   static inline CWBBox* Create(CWBItem* Parent, const math::CRect& Pos) {
-    auto p = std::make_unique<CWBBox>(Parent, Pos);
+    auto p = std::make_unique<CWBBox>();
+    p->Initialize(Parent, Pos);
     CWBBox* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
   ~CWBBox() override;
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);
 

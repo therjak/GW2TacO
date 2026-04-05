@@ -34,10 +34,7 @@ void CWBLabel::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-CWBLabel::CWBLabel(CWBItem* Parent, const CRect& Pos, std::string_view Txt)
-    : CWBGuiType(), Text(Txt) {
-  Initialize(Parent, Pos);
-}
+CWBLabel::CWBLabel(std::string_view Txt) : CWBGuiType(), Text(Txt) {}
 
 CWBLabel::~CWBLabel() = default;
 

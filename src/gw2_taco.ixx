@@ -50,9 +50,10 @@ export extern std::vector<std::string_view> ActionNames;
 
 export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
  public:
-  GW2TacO(CWBItem* Parent, math::CRect Position);
+  GW2TacO();
   static inline GW2TacO* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2TacO>(Parent, Position);
+    auto p = std::make_unique<GW2TacO>();
+    p->Initialize(Parent, Position);
     auto r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

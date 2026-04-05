@@ -75,15 +75,18 @@ export class GW2Trail {
 
 export class GW2TrailDisplay : public CWBGuiType<"gw2Trails", CWBItem> {
  public:
-  GW2TrailDisplay(CWBItem* Parent, math::CRect Position);
+  GW2TrailDisplay();
   ~GW2TrailDisplay() override;
   static inline GW2TrailDisplay* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2TrailDisplay>(Parent, Position);
+    auto p = std::make_unique<GW2TrailDisplay>();
+    p->Initialize(Parent, Position);
     GW2TrailDisplay* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
+
+  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
                           math::CRect& Pos);

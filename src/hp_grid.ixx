@@ -15,9 +15,10 @@ import whiteboard;
 
 export class GW2HPGrid : public CWBGuiType<"hpgrid", CWBItem> {
  public:
-  GW2HPGrid(CWBItem* Parent, math::CRect Position);
+  GW2HPGrid();
   static inline GW2HPGrid* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<GW2HPGrid>(Parent, Position);
+    auto p = std::make_unique<GW2HPGrid>();
+    p->Initialize(Parent, Position);
     GW2HPGrid* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

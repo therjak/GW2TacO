@@ -12,10 +12,11 @@ import whiteboard;
 
 export class TS3Control : public CWBGuiType<"ts3control", CWBItem> {
  public:
-  TS3Control(CWBItem* Parent, math::CRect Position);
+  TS3Control();
   ~TS3Control() override;
   static inline TS3Control* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<TS3Control>(Parent, Position);
+    auto p = std::make_unique<TS3Control>();
+    p->Initialize(Parent, Position);
     TS3Control* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

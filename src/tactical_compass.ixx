@@ -13,11 +13,12 @@ import whiteboard;
 export class GW2TacticalCompass
     : public CWBGuiType<"gw2rangecircles", CWBItem> {
  public:
-  GW2TacticalCompass(CWBItem* Parent, math::CRect Position);
+  GW2TacticalCompass();
   ~GW2TacticalCompass() override;
   static inline GW2TacticalCompass* Create(CWBItem* Parent,
                                            math::CRect Position) {
-    auto p = std::make_unique<GW2TacticalCompass>(Parent, Position);
+    auto p = std::make_unique<GW2TacticalCompass>();
+    p->Initialize(Parent, Position);
     GW2TacticalCompass* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

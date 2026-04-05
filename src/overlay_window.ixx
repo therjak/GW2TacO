@@ -11,10 +11,11 @@ import whiteboard;
 
 export class OverlayWindow : public CWBGuiType<"OverlayWindow", CWBWindow> {
  public:
-  OverlayWindow(CWBItem* Parent, math::CRect Position);
+  OverlayWindow();
   ~OverlayWindow() override;
   static inline OverlayWindow* Create(CWBItem* Parent, math::CRect Position) {
-    auto p = std::make_unique<OverlayWindow>(Parent, Position);
+    auto p = std::make_unique<OverlayWindow>();
+    p->Initialize(Parent, Position);
     OverlayWindow* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));

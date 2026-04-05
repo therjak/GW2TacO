@@ -11,8 +11,7 @@ bool OverlayWindow::IsMouseTransparent(const CPoint& ClientSpacePoint,
   return true;
 }
 
-OverlayWindow::OverlayWindow(CWBItem* Parent, CRect Position)
-    : CWBGuiType(Parent, Position) {}
+OverlayWindow::OverlayWindow() : CWBGuiType() {}
 
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 

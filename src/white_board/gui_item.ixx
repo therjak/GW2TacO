@@ -330,7 +330,6 @@ export class CWBItem : public IWBCSS {
 
  protected:
   CWBItem();
-  CWBItem(CWBItem* Parent, const math::CRect& Position);
 
   // returns the highlight areas of the scrollbar in client space
   virtual bool GetHScrollbarRectangles(math::CRect& button1,

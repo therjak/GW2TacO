@@ -108,10 +108,11 @@ POISet& GetMapPOIs();
 
 class GW2TacticalDisplay : public CWBGuiType<"gw2tactical", CWBItem> {
  public:
-  GW2TacticalDisplay(CWBItem* Parent, math::CRect Position);
+  GW2TacticalDisplay();
   static inline GW2TacticalDisplay* Create(CWBItem* Parent,
                                            math::CRect Position) {
-    auto p = std::make_unique<GW2TacticalDisplay>(Parent, Position);
+    auto p = std::make_unique<GW2TacticalDisplay>();
+    p->Initialize(Parent, Position);
     GW2TacticalDisplay* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
