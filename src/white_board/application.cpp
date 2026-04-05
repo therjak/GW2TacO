@@ -35,18 +35,24 @@ import :window;
 using math::CPoint;
 using math::CRect;
 
-CWBApplication::CWBApplication() : CCoreWindowHandlerWin() {
-  Root = nullptr;
-  MouseCaptureItem = nullptr;
-  MouseItem = nullptr;
-  DrawAPI = std::make_unique<CWBDrawAPI>();
-  Skin = std::make_unique<CWBSkin>();
-  DefaultFont = nullptr;
-  Alt = Ctrl = Shift = Left = Middle = Right = false;
-  Vsync = true;
-  FrameTimes = std::make_unique<CRingBuffer<int32_t, 60>>();
-  LastFrameTime = 0;
-
+CWBApplication::CWBApplication()
+    : CCoreWindowHandlerWin(),
+      DrawAPI(std::make_unique<CWBDrawAPI>()),
+      FrameTimes(std::make_unique<CRingBuffer<int32_t, 60>>()),
+      LastFrameTime(0),
+      MouseCaptureItem(nullptr),
+      MouseItem(nullptr),
+      Skin(std::make_unique<CWBSkin>()),
+      Root(nullptr),
+      DefaultFont(nullptr),
+      Alt(false),
+      Ctrl(false),
+      Shift(false),
+      Left(false),
+      Middle(false),
+      Right(false),
+      Vsync(true),
+      ClickRepeaterMode(WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
   // initialize default factory calls
 
   RegisterUIFactoryCallback("window", CWBWindow::Factory);
