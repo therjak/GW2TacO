@@ -55,21 +55,16 @@ CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
 
 CAtlasImage* CAtlasNode::GetImage() { return Image; }
 
-CAtlasImage::CAtlasImage() {
-  Image = nullptr;
-  XRes = YRes = 0;
-  Handle = AtlasHandle++;
-  Required = false;
-}
+CAtlasImage::CAtlasImage()
+    : Image(nullptr), XRes(0), YRes(0), Handle(AtlasHandle++), Required(false) {}
 
 CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
-                         int32_t SrcYRes, const CRect& Source) {
-  Image = nullptr;
-  XRes = Source.Width();
-  YRes = Source.Height();
-  Handle = AtlasHandle++;
-  Required = false;
-
+                         int32_t SrcYRes, const CRect& Source)
+    : Image(nullptr),
+      XRes(Source.Width()),
+      YRes(Source.Height()),
+      Handle(AtlasHandle++),
+      Required(false) {
   if (Source.Area() > 0) {
     Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
     memset(Image.get(), 0, XRes * YRes * 4);
@@ -114,17 +109,17 @@ void CAtlasImage::ClearRequired() { Required = false; }
 
 bool CAtlasImage::IsRequired() { return Required; }
 
-CAtlas::CAtlas(int32_t XSize, int32_t YSize) {
+CAtlas::CAtlas(int32_t XSize, int32_t YSize)
+    : XRes(XSize),
+      YRes(YSize),
+      Image(std::make_unique<uint8_t[]>(XSize * YSize * 4)),
+      Atlas(nullptr),
+      TextureUpdateNeeded(false),
+      Root(std::make_unique<CAtlasNode>()) {
   FlushCache();
-  XRes = XSize;
-  YRes = YSize;
-  Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
   memset(Image.get(), 0, XRes * YRes * 4);
-  Root = std::make_unique<CAtlasNode>();
   Root->Area = CRect(0, 0, XRes, YRes);
   Root->Occupied = false;
-  Atlas = nullptr;
-  TextureUpdateNeeded = false;
 
   uint8_t White[4 * 4];
   memset(&White[0], 0xff, 4 * 4);

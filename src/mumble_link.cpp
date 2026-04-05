@@ -312,10 +312,10 @@ float CMumbleLink::GetFrameRate() {
   return 1000.0f / (FrameTimeAcc / static_cast<float>(FrameCount));
 }
 
-CMumbleLink::CMumbleLink(std::string_view mumblePath) : mumblePath(mumblePath) {
-  LastFrameTime = GetTime();
-  FrameTimes = std::make_unique<CRingBuffer<int32_t, 60>>();
-}
+CMumbleLink::CMumbleLink(std::string_view mumblePath)
+    : FrameTimes(std::make_unique<CRingBuffer<int32_t, 60>>()),
+      LastFrameTime(GetTime()),
+      mumblePath(mumblePath) {}
 
 CMumbleLink::~CMumbleLink() = default;
 

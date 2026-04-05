@@ -381,17 +381,14 @@ void CWBDrawAPI::RenderDisplayList() {
   DisplayList.clear();
 }
 
-CWBDrawAPI::CWBDrawAPI() {
-  Offset = CPoint(0, 0);
-  CropRect = CRect(0, 0, 0, 0);
-  DrawMode = WBDRAWMODE::WBD_RECTANGLES;
-  Atlas = nullptr;
-
-  App = nullptr;
-  Opacity = 255;
-
-  Device = nullptr;
-}
+CWBDrawAPI::CWBDrawAPI()
+    : Offset(0, 0),
+      CropRect(0, 0, 0, 0),
+      DrawMode(WBDRAWMODE::WBD_RECTANGLES),
+      Opacity(255),
+      App(nullptr),
+      Atlas(nullptr),
+      Device(nullptr) {}
 
 CWBDrawAPI::~CWBDrawAPI() = default;
 

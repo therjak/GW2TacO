@@ -223,12 +223,7 @@ void CWBPositionDescriptor::SetAutoSize(WBPOSITIONTYPE p) {
 //////////////////////////////////////////////////////////////////////////
 // position descriptor - pixels
 
-CWBPositionDescriptorPixels::CWBPositionDescriptorPixels() {
-  for (int32_t x = 0; x < 6; x++) {
-    Set[x] = false;
-    Positions[x] = 0;
-  }
-}
+CWBPositionDescriptorPixels::CWBPositionDescriptorPixels() = default;
 
 void CWBPositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
   if (static_cast<int32_t>(p) < 0 || p > WBPOSITIONTYPE::WB_HEIGHT) return;
@@ -317,11 +312,8 @@ void CWBMosaic::SetName(std::string_view name) { Name = name; }
 
 std::string& CWBMosaic::GetName() { return Name; }
 
-CWBMosaic::CWBMosaic(const CWBMosaic& Copy) {
-  Name = Copy.Name;
-  Images = Copy.Images;
-  Overshoot = Copy.Overshoot;
-}
+CWBMosaic::CWBMosaic(const CWBMosaic& Copy)
+    : Name(Copy.Name), Images(Copy.Images), Overshoot(Copy.Overshoot) {}
 
 CWBMosaic::CWBMosaic() = default;
 
@@ -371,18 +363,15 @@ CWBSkinElement& CWBSkinElement::operator=(const CWBSkinElement& Copy) {
   return *this;
 }
 
-CWBSkinElement::CWBSkinElement(const CWBSkinElement& Copy) {
-  Name = Copy.Name;
-  Handle = Copy.Handle;
-  DefaultBehavior[0] = Copy.DefaultBehavior[0];
-  DefaultBehavior[1] = Copy.DefaultBehavior[1];
-}
+CWBSkinElement::CWBSkinElement(const CWBSkinElement& Copy)
+    : Name(Copy.Name),
+      Handle(Copy.Handle),
+      DefaultBehavior(Copy.DefaultBehavior) {}
 
-CWBSkinElement::CWBSkinElement() {
-  Handle = 0;
-  DefaultBehavior[0] = WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT;
-  DefaultBehavior[1] = WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT;
-}
+CWBSkinElement::CWBSkinElement()
+    : Handle(0),
+      DefaultBehavior{WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT,
+                      WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT} {}
 
 WBATLASHANDLE CWBSkinElement::GetHandle() { return Handle; }
 

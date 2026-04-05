@@ -19,12 +19,9 @@ uint32_t DictionaryHash(const CWBKerningPair& i) {
   return i.First + (i.Second << 16);
 }
 
-CWBKerningPair::CWBKerningPair() { First = Second = 0; }
+CWBKerningPair::CWBKerningPair() : First(0), Second(0) {}
 
-CWBKerningPair::CWBKerningPair(uint16_t a, uint16_t b) {
-  First = a;
-  Second = b;
-}
+CWBKerningPair::CWBKerningPair(uint16_t a, uint16_t b) : First(a), Second(b) {}
 
 CWBFontDescription::CWBFontDescription() = default;
 
@@ -280,7 +277,7 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
   return true;
 }
 
-CWBFont::CWBFont(CAtlas* atlas) { Atlas = atlas; }
+CWBFont::CWBFont(CAtlas* atlas) : Atlas(atlas) {}
 
 CWBFont::~CWBFont() {
   for (int32_t x = 0; x < AlphabetSize; x++) {

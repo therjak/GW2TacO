@@ -100,11 +100,10 @@ int32_t CWBDisplayProperties::GetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
   return -1;
 }
 
-CWBCSSPropertyBatch::CWBCSSPropertyBatch() {
-  BorderSizes = CRect(0, 0, 0, 0);
-  TextAlignX = WBTEXTALIGNMENTX::WBTA_CENTERX;
-  TextAlignY = WBTEXTALIGNMENTY::WBTA_CENTERY;
-}
+CWBCSSPropertyBatch::CWBCSSPropertyBatch()
+    : BorderSizes(0, 0, 0, 0),
+      TextAlignX(WBTEXTALIGNMENTX::WBTA_CENTERX),
+      TextAlignY(WBTEXTALIGNMENTY::WBTA_CENTERY) {}
 
 CWBFont* CWBCSSPropertyBatch::GetFont(CWBApplication* App, WBITEMSTATE State) {
   if (Fonts.find(State) != Fonts.end()) {

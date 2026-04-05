@@ -411,11 +411,12 @@ CWBContextMenu* CWBContextMenu::GetContextRoot() {
   return ParentMenu->GetContextRoot();
 }
 
-CWBContextItem::CWBContextItem() {
-  Text = "";
-  ReturnID = 0;
-  Separator = false;
-}
+CWBContextItem::CWBContextItem()
+    : Text(""),
+      ReturnID(0),
+      Separator(false),
+      Highlighted(false),
+      closesContext(false) {}
 
 CWBContextItem::~CWBContextItem() = default;
 
