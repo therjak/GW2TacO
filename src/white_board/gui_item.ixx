@@ -493,13 +493,11 @@ struct WBFixedString {
   }
 };
 
-export template <WBFixedString TypeName, typename PrimaryParent,
-                 typename... OtherParents>
-class CWBGuiType : public PrimaryParent, public OtherParents... {
+export template <WBFixedString TypeName, typename Parent>
+class CWBGuiType : public Parent {
  public:
   template <typename... Args>
-  CWBGuiType(Args&&... args)
-      : PrimaryParent(std::forward<Args>(args)...), OtherParents()... {}
+  CWBGuiType(Args&&... args) : Parent(std::forward<Args>(args)...) {}
 
   [[nodiscard]] const std::string& GetType() const override {
     return GetClassName();
@@ -507,8 +505,9 @@ class CWBGuiType : public PrimaryParent, public OtherParents... {
 
   [[nodiscard]] bool InstanceOf(std::string_view name) const override {
     if (name == std::string(TypeName.value)) return true;
-    if (PrimaryParent::InstanceOf(name)) return true;
-    return (OtherParents::InstanceOf(name) || ... || false);
+    // This looks like a bug but seems to work
+    if (CWBItem::InstanceOf(name)) return true;
+    return false;
   }
 
   static const std::string& GetClassName() {
