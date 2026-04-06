@@ -1,4 +1,6 @@
 #pragma once
+#include <d3d11.h>
+
 #include "src/core2/dx11_device.h"
 #include "src/core2/render_state.h"
 

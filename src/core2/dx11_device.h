@@ -1,9 +1,14 @@
 #pragma once
+#include <d3d11.h>
 #include <dxgi1_3.h>
 
+#include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "src/base/color.h"
+#include "src/base/rectangle.h"
 #include "src/core2/core2_config.h"
 #include "src/core2/device.h"
 #include "src/core2/dx11_enums.h"

@@ -1,4 +1,9 @@
 #pragma once
+#include <d3d11.h>
+
+#include <cstdint>
+#include <string_view>
+
 #include "src/base/stream_writer.h"
 #include "src/core2/dx11_device.h"
 #include "src/core2/texture.h"

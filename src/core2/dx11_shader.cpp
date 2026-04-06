@@ -1,9 +1,11 @@
 #include "src/core2/dx11_shader.h"
 
 #include <comdef.h>
+#include <d3d11.h>
 
 #include <array>
 #include <cfloat>
+#include <string>
 
 #include "src/base/logger.h"
 
@@ -56,9 +58,6 @@ bool InitShaderCompiler() {
       GetFunctionFromD3DCompileDLL("D3DCompile"));
   return D3DCompileFunc != nullptr;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// vertex shader
 
 CCoreDX11VertexShader::CCoreDX11VertexShader(CCoreDX11Device* dev)
     : CCoreVertexShader(dev) {
@@ -146,9 +145,6 @@ bool CCoreDX11VertexShader::CreateFromBlob(void* CodeBlob,
   return Success;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Pixel shader
-
 CCoreDX11PixelShader::CCoreDX11PixelShader(CCoreDX11Device* dev)
     : CCorePixelShader(dev) {
   Dev = dev->GetDevice();
@@ -234,9 +230,6 @@ bool CCoreDX11PixelShader::CreateFromBlob(void* CodeBlob,
 #endif
   return Success;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Geometry shader
 
 CCoreDX11GeometryShader::CCoreDX11GeometryShader(CCoreDX11Device* dev)
     : CCoreGeometryShader(dev) {
@@ -324,9 +317,6 @@ bool CCoreDX11GeometryShader::CreateFromBlob(void* CodeBlob,
   return Success;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Domain shader
-
 CCoreDX11DomainShader::CCoreDX11DomainShader(CCoreDX11Device* dev)
     : CCoreDomainShader(dev) {
   Dev = dev->GetDevice();
@@ -413,9 +403,6 @@ bool CCoreDX11DomainShader::CreateFromBlob(void* CodeBlob,
   return Success;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Hull shader
-
 CCoreDX11HullShader::CCoreDX11HullShader(CCoreDX11Device* dev)
     : CCoreHullShader(dev) {
   Dev = dev->GetDevice();
@@ -500,9 +487,6 @@ bool CCoreDX11HullShader::CreateFromBlob(void* CodeBlob, int32_t CodeBlobSize) {
 #endif
   return Success;
 }
-
-//////////////////////////////////////////////////////////////////////////
-// Compute shader
 
 CCoreDX11ComputeShader::CCoreDX11ComputeShader(CCoreDX11Device* dev)
     : CCoreComputeShader(dev) {

@@ -1,5 +1,7 @@
 #include "src/core2/dx11_constant_buffer.h"
 
+#include <d3d11.h>
+
 #include <cstring>
 
 #include "src/base/logger.h"
@@ -48,7 +50,7 @@ void CCoreDX11ConstantBuffer::Upload() {
   if (DeviceContext->Map(Buffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &map) != S_OK) {
     Log_Err("[core] Failed to map constant buffer resource!");
   } else {
-    memcpy(map.pData, Data.get(), DataLength);
+    std::memcpy(map.pData, Data.get(), DataLength);
     DeviceContext->Unmap(Buffer, 0);
   }
 }
