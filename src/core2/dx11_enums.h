@@ -1,4 +1,7 @@
 #pragma once
+
+#include <d3d11.h>
+
 #include <array>
 
 #include "src/core2/core2_config.h"

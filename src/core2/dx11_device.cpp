@@ -1,6 +1,7 @@
 #include "src/core2/dx11_device.h"
 
 #include <comdef.h>
+#include <d3d11.h>
 #include <dcomp.h>
 
 #include <algorithm>
@@ -15,7 +16,7 @@
 #include "src/core2/dx11_vertex_buffer.h"
 #include "src/core2/dx11_vertex_format.h"
 #pragma comment(lib, "DXGI.lib")
-//#pragma comment(lib,"dcomp.lib")
+// #pragma comment(lib,"dcomp.lib")
 
 using math::CRect;
 

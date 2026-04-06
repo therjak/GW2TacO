@@ -1,5 +1,8 @@
 #pragma once
 
+#include <d3d11.h>
+
+#include <cstdint>
 #include <vector>
 
 #include "src/core2/dx11_device.h"

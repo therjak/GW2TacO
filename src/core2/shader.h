@@ -1,6 +1,8 @@
 #pragma once
+#include <cstring>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "src/core2/resource.h"
 

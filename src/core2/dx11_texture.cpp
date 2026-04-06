@@ -1,8 +1,12 @@
 #include "src/core2/dx11_texture.h"
 
+#include <DirectXMath.h>
+#include <DirectXPackedVector.h>
 #include <comdef.h>
+#include <d3d11.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "src/base/assert.h"
 #include "src/base/image_decompressor.h"
@@ -60,7 +64,6 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
   tex.ArraySize = 1;
   tex.Width = xres;
   tex.Height = yres;
-  // tex.MipLevels = 1;// rendertarget ? 0 : 1;
   tex.MipLevels = rendertarget ? 0 : 1;
   tex.MiscFlags = rendertarget ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
   tex.Format = DX11FormatsAt(format);
@@ -68,8 +71,6 @@ bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
   tex.SampleDesc.Quality = 0;
   tex.BindFlags = D3D11_BIND_SHADER_RESOURCE |
                   (rendertarget ? D3D11_BIND_RENDER_TARGET : 0);
-  // if ( rendertarget )
-  //  tex.MiscFlags |= D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
   D3D11_SUBRESOURCE_DATA data;
   data.pSysMem = Data;
@@ -187,11 +188,6 @@ bool CCoreDX11Texture2D::Update(const uint8_t* Data, const int32_t XRes,
 
   return true;
 }
-
-#include <DirectXMath.h>
-#include <DirectXPackedVector.h>
-
-#include "src/util/png_decompressor.h"
 
 float degammafloat(float f) {
   if (f < 0.0031308f) return 12.92f * f;
@@ -611,19 +607,6 @@ constexpr static size_t BitsPerPixel(_In_ DXGI_FORMAT fmt) noexcept {
     case DXGI_FORMAT_BC7_UNORM_SRGB:
       return 8;
 
-#if defined(_XBOX_ONE) && defined(_TITLE)
-
-    case DXGI_FORMAT_R10G10B10_7E3_A2_FLOAT:
-    case DXGI_FORMAT_R10G10B10_6E4_A2_FLOAT:
-      return 32;
-
-    case DXGI_FORMAT_D16_UNORM_S8_UINT:
-    case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
-    case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
-      return 24;
-
-#endif  // _XBOX_ONE && _TITLE
-
     default:
       return 0;
   }
@@ -695,17 +678,6 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
       planar = true;
       bpe = 4;
       break;
-
-#if defined(_XBOX_ONE) && defined(_TITLE)
-
-    case DXGI_FORMAT_D16_UNORM_S8_UINT:
-    case DXGI_FORMAT_R16_UNORM_X8_TYPELESS:
-    case DXGI_FORMAT_X16_TYPELESS_G8_UINT:
-      planar = true;
-      bpe = 4;
-      break;
-
-#endif
   }
 
   if (bc) {
@@ -726,8 +698,9 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
     numBytes = rowBytes * height;
   } else if (fmt == DXGI_FORMAT_NV11) {
     rowBytes = ((width + 3) >> 2) * 4;
-    numRows = height * 2;  // Direct3D makes this simplifying assumption,
-                           // although it is larger than the 4:1:1 data
+    // Direct3D makes this simplifying assumption,
+    // although it is larger than the 4:1:1 data
+    numRows = height * 2;
     numBytes = rowBytes * numRows;
   } else if (planar) {
     rowBytes = ((width + 1) >> 1) * bpe;
@@ -735,7 +708,8 @@ static void GetSurfaceInfo(_In_ size_t width, _In_ size_t height,
     numRows = height + ((height + 1) >> 1);
   } else {
     const size_t bpp = BitsPerPixel(fmt);
-    rowBytes = (width * bpp + 7) / 8;  // round up to nearest byte
+    // round up to nearest byte
+    rowBytes = (width * bpp + 7) / 8;
     numRows = height;
     numBytes = rowBytes * height;
   }

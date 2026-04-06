@@ -1,6 +1,7 @@
 #include "src/core2/dx11_vertex_format.h"
 
 #include <comdef.h>
+#include <d3d11.h>
 
 #include <vector>
 
@@ -108,9 +109,9 @@ bool CCoreDX11VertexFormat::Create(
     }
   }
 
-  const HRESULT res =
-      Dev->CreateInputLayout(vxdecl.get(), static_cast<UINT>(Attributes.size()), vs->GetBinary(),
-                             vs->GetBinaryLength(), &VertexFormatHandle);
+  const HRESULT res = Dev->CreateInputLayout(
+      vxdecl.get(), static_cast<UINT>(Attributes.size()), vs->GetBinary(),
+      static_cast<SIZE_T>(vs->GetBinaryLength()), &VertexFormatHandle);
   if (res != S_OK) {
     _com_error err(res);
     Log_Err("[core] CreateInputLayout failed ({:s})", err.ErrorMessage());

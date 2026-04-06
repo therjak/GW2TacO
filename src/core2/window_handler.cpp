@@ -1,5 +1,13 @@
 #include "src/core2/window_handler.h"
 
+#include <windows.h>
+
+#include <array>
+#include <cstdint>
+#include <memory>
+#include <string_view>
+#include <vector>
+
 #include "src/base/logger.h"
 #include "src/base/rectangle.h"
 #include "src/base/timer.h"
@@ -334,9 +342,10 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
     case WM_SYSKEYDOWN: {
       Log_Err("[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam);
       if (wParam == VK_F10) {
-        return 0;  // if we dont do this, system menu opens up on F10 = bad for
+        // if we dont do this, system menu opens up on F10 = bad for fraps
+        return 0;
       }
-      // fraps
+
       if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
         return 0;
       }
@@ -351,7 +360,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
       switch (wParam) {
         case SC_SCREENSAVE:
         case SC_MONITORPOWER:
-        case SC_KEYMENU:  // don't ding on alt+enter dammit
+        case SC_KEYMENU:  // don't ding on alt+enter
           return 0;
       }
       break;

@@ -17,13 +17,13 @@ void CCoreConstantBuffer::AddData(const void* DataIn, int32_t Length) {
     Data = std::make_unique<uint8_t[]>(DataLength + Length);
 
     if (OldData) {
-      memcpy(Data.get(), OldData.get(), DataLength);
+      std::memcpy(Data.get(), OldData.get(), DataLength);
     }
 
     BufferLength = DataLength + Length;
   }
 
-  memcpy(Data.get() + DataLength, DataIn, Length);
+  std::memcpy(Data.get() + DataLength, DataIn, Length);
   DataLength += Length;
 }
 

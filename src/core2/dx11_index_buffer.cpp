@@ -1,6 +1,7 @@
 #include "src/core2/dx11_index_buffer.h"
 
 #include <comdef.h>
+#include <d3d11.h>
 
 #include "src/base/logger.h"
 

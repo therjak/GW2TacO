@@ -1,6 +1,7 @@
 #include "src/core2/render_state.h"
 
 #include <limits>
+#include <string>
 
 import xml;
 
@@ -352,8 +353,8 @@ CCoreSamplerState::CCoreSamplerState(CCoreDevice* Device)
   AddressU = CORETEXTUREADDRESSMODE::CLAMP;
   AddressV = CORETEXTUREADDRESSMODE::CLAMP;
   AddressW = CORETEXTUREADDRESSMODE::CLAMP;
-  MinLOD = std::numeric_limits<float>::lowest();  //-FLT_MAX;
-  MaxLOD = std::numeric_limits<float>::max();     // FLT_MAX;
+  MinLOD = std::numeric_limits<float>::lowest();
+  MaxLOD = std::numeric_limits<float>::max();
   MipLODBias = 0;
   MaxAnisotropy = 1;
   ComparisonFunc = CORECOMPARISONFUNCTION::NEVER;

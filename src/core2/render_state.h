@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
 
 #include "src/core2/index_buffer.h"
 #include "src/core2/shader.h"

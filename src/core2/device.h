@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "src/base/color.h"
+#include "src/base/rectangle.h"
 #include "src/core2/constant_buffer.h"
 #include "src/core2/enums.h"
 #include "src/core2/index_buffer.h"

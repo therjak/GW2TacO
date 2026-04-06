@@ -1,4 +1,8 @@
 #pragma once
+#include <d3d11.h>
+
+#include <cstdint>
+
 #include "src/core2/dx11_device.h"
 #include "src/core2/vertex_buffer.h"
 

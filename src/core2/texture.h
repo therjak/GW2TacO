@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <string_view>
 
 #include "src/core2/enums.h"
 #include "src/core2/resource.h"
