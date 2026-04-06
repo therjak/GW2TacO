@@ -137,12 +137,6 @@ void CWBItem::UpdateScreenRect() {
   }
 
   if (sr != ScreenRect) {
-    Log_Nfo(
-        "UpdateScreenRect {:d} {:d} {:d} {:d}, OldScreenRect {:d} {:d} {:d} "
-        "{:d}",
-        ScreenRect.x1, ScreenRect.y1, ScreenRect.x2, ScreenRect.y2, sr.x1,
-        sr.y1, sr.x2, sr.y2);
-
     for (auto& c : Children) {
       c->UpdateScreenRect();
     }
@@ -589,10 +583,6 @@ void CWBItem::DrawTree(CWBDrawAPI* API) {
 
 void CWBItem::ApplyPosition(const CRect& Pos) {
   const CRect r = GetScreenRect();
-  Log_Nfo("ScreenRect {:d} {:d} {:d} {:d}", r.x1, r.y1, r.x2, r.y2);
-  Log_Nfo("NewPos: {:d} {:d} {:d} {:d}", Pos.x1, Pos.y1, Pos.x2, Pos.y2);
-  Log_Nfo("OldPos: {:d} {:d} {:d} {:d}", Position.x1, Position.y1, Position.x2,
-          Position.y2);
 
   Position = Pos;
   CalculateClientPosition();
