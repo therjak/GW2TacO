@@ -138,10 +138,8 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
   }
 }
 
-CWBTextBox::CWBTextBox(int32_t flags, std::string_view Txt)
-    : CWBGuiType(), CursorBlinkStartTime(globalTimer.GetTime()), Flags(flags) {
-  SetTextInternal(Txt, false, true);
-}
+CWBTextBox::CWBTextBox(int32_t flags)
+    : CWBGuiType(), CursorBlinkStartTime(globalTimer.GetTime()), Flags(flags) {}
 
 CWBTextBox::~CWBTextBox() = default;
 
