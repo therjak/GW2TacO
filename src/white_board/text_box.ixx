@@ -41,12 +41,13 @@ export class CWBTextBoxHistoryEntry {
 
 export class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
  public:
-  CWBTextBox(int32_t flags, std::string_view txt);
+  CWBTextBox(int32_t flags);
   static inline CWBTextBox* Create(CWBItem* Parent, const math::CRect& Pos,
                                    int32_t flags = WB_TEXTBOX_SINGLELINE,
                                    std::string_view txt = "") {
-    auto p = std::make_unique<CWBTextBox>(flags, txt);
+    auto p = std::make_unique<CWBTextBox>(flags);
     p->Initialize(Parent, Pos);
+    p->SetTextInternal(txt, false, true);
     CWBTextBox* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
