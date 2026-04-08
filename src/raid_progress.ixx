@@ -1,11 +1,11 @@
 module;
 #include <atomic>
 #include <cassert>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
-#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -67,8 +67,7 @@ export class RaidProgress : public CWBGuiType<"raidprogress", CWBItem> {
 
   math::CPoint lastpos;
   LockFreeQueue<std::unordered_set<std::string>> raid_queue;
-  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
   std::vector<Raid> raids;
-  std::thread fetchThread;
+  std::future<void> fetchTask;
 };

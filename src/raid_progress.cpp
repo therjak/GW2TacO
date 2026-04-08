@@ -2,7 +2,7 @@ module;
 #include <algorithm>
 #include <cctype>
 #include <format>
-#include <thread>
+#include <future>
 #include <unordered_set>
 
 #include "src/base/rectangle.h"
@@ -33,20 +33,15 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
-      !being_fetched.load() && !fetchThread.joinable()) {
-    being_fetched = true;
-    fetchThread = std::thread([this, key]() {
-      const auto& raid_data = key->QuerySet("/v2/account/raids");
-      raid_queue.push(raid_data);
-
-      being_fetched = false;
-    });
-  }
-
-  if (!being_fetched.load() && fetchThread.joinable()) {
-    lastFetchTime = GetTime();
-    fetchThread.join();
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
+    if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+                                  std::future_status::ready) {
+      lastFetchTime = GetTime();
+      fetchTask = std::async(std::launch::async, [this, key]() {
+        const auto& raid_data = key->QuerySet("/v2/account/raids");
+        raid_queue.push(raid_data);
+      });
+    }
   }
 
   const auto& new_raid_data = raid_queue.pop();
@@ -188,9 +183,7 @@ RaidProgress::RaidProgress()
                       {"ura", RaidEvent::Type::Boss}}}}},
       } {}
 
-RaidProgress::~RaidProgress() {
-  if (fetchThread.joinable()) fetchThread.join();
-}
+RaidProgress::~RaidProgress() {}
 
 CWBItem* RaidProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return RaidProgress::Create(Root, Pos);

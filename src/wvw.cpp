@@ -5,6 +5,7 @@ module;
 #include <atomic>
 #include <ctime>
 #include <format>
+#include <future>
 #include <string_view>
 #include <thread>
 #include <unordered_map>
@@ -35,8 +36,6 @@ std::vector<WvWObjective> wvwObjectives;
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 std::unordered_map<std::string, POI> wvwPOIs;
 std::unordered_map<int, bool> wvwMapIDs;
-
-std::thread wvwPollThread;
 
 constexpr int DayFlag = 0x001000;
 constexpr int DhmsFlag = 0x001111;
@@ -189,7 +188,7 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
 void LoadWvWObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
-  wvwPollThread = std::thread([]() {
+  static std::future<void> wvwPollTask = std::async(std::launch::async, []() {
     std::unordered_map<int, CVector3> wvwObjectiveCoords;
     std::unordered_map<int, CRect> wvwContinentRects;
 
@@ -349,48 +348,44 @@ void LoadWvWObjectives() {
   });
 }
 
-std::atomic<bool> wvwupdating{false};
-std::atomic<int> lastWvWUpdateTime{0};
-std::thread wvwUpdatThread;
-
 LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
 
 void UpdateWvWStatus() {
-  if (wvwupdating.load()) return;
-
   if (wvwMapIDs.find(mumbleLink.mapID) == wvwMapIDs.end()) {
     return;
   }
 
-  int currTime = GetTime();
-  if (currTime - lastWvWUpdateTime.load() < 5000) return;
+  static std::future<void> wvwUpdateTask;
+  static std::chrono::steady_clock::time_point lastUpdateTime;
 
-  if (wvwUpdatThread.joinable()) wvwUpdatThread.join();
+  if (wvwUpdateTask.valid()) {
+    if (wvwUpdateTask.wait_for(std::chrono::seconds(0)) !=
+        std::future_status::ready) {
+      return;
+    }
+  }
 
-  wvwupdating = true;
+  auto now = std::chrono::steady_clock::now();
+  if (std::chrono::duration_cast<std::chrono::milliseconds>(now -
+                                                            lastUpdateTime)
+          .count() < 5000) {
+    return;
+  }
 
-  wvwUpdatThread = std::thread([]() {
+  wvwUpdateTask = std::async(std::launch::async, []() {
     GW2::APIKeyManager::Status status = GW2::apiKeyManager.GetStatus();
     if (status != GW2::APIKeyManager::Status::OK) {
-      lastWvWUpdateTime = GetTime();
-      wvwupdating = false;
       return;
     }
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
     if (!key) {
-      lastWvWUpdateTime = GetTime();
-      wvwupdating = false;
       return;
     }
 
     if (!key->Valid()) {
-      lastWvWUpdateTime = GetTime();
-      wvwupdating = false;
       return;
     }
     if (!key->HasCaps("account")) {
-      lastWvWUpdateTime = GetTime();
-      wvwupdating = false;
       return;
     }
 
@@ -455,8 +450,7 @@ void UpdateWvWStatus() {
       }
       wvwPOIUpdates.push(updates);
     }
-
-    lastWvWUpdateTime = GetTime();
-    wvwupdating = false;
   });
+
+  lastUpdateTime = now;
 }

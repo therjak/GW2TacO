@@ -1,10 +1,10 @@
 module;
 #include <atomic>
 #include <cassert>
+#include <future>
 #include <mutex>
 #include <string>
 #include <string_view>
-#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -68,5 +68,5 @@ export class DungeonProgress : public CWBGuiType<"dungeonprogress", CWBItem> {
   int32_t lastFetchTime = 0;
 
   std::vector<Dungeon> dungeons;
-  std::thread fetchThread;
+  std::future<void> fetchTask;
 };
