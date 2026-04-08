@@ -2,8 +2,8 @@ module;
 #include <algorithm>
 #include <cctype>
 #include <format>
+#include <future>
 #include <string>
-#include <thread>
 #include <unordered_map>
 
 #include "src/base/rectangle.h"
@@ -33,22 +33,17 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
-      !being_fetched.load() && !fetchThread.joinable()) {
-    being_fetched = true;
-    fetchThread = std::thread([this, key]() {
-      const auto& dungeon_data = key->QuerySet("/v2/account/dungeons");
-      dungeon_queue.push(dungeon_data);
-      const auto& dungeon_frequenter_status = key->QueryAchievementBits(2963);
-      dungeon_achievements_queue.push(dungeon_frequenter_status);
-
-      being_fetched = false;
-    });
-  }
-
-  if (!being_fetched.load() && fetchThread.joinable()) {
-    lastFetchTime = GetTime();
-    fetchThread.join();
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
+    if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+                                  std::future_status::ready) {
+      lastFetchTime = GetTime();
+      fetchTask = std::async(std::launch::async, [this, key]() {
+        const auto& dungeon_data = key->QuerySet("/v2/account/dungeons");
+        dungeon_queue.push(dungeon_data);
+        const auto& dungeon_frequenter_status = key->QueryAchievementBits(2963);
+        dungeon_achievements_queue.push(dungeon_frequenter_status);
+      });
+    }
   }
 
   const auto& new_dungeon_data = dungeon_queue.pop();
@@ -192,9 +187,7 @@ DungeonProgress::DungeonProgress()
                    {"seer", ex, 11}}},
       } {}
 
-DungeonProgress::~DungeonProgress() {
-  if (fetchThread.joinable()) fetchThread.join();
-}
+DungeonProgress::~DungeonProgress() {}
 
 CWBItem* DungeonProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return DungeonProgress::Create(Root, Pos);

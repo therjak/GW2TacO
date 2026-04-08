@@ -1,4 +1,4 @@
-﻿#include <dwmapi.h>
+#include <dwmapi.h>
 #include <process.h>
 #include <windowsx.h>
 
@@ -505,8 +505,8 @@ BOOL AppIsAllreadyRunning() {
   return bRunning;
 }
 
-bool keyboardHookActive = false;
-bool mouseHookActive = false;
+std::atomic<bool> keyboardHookActive = false;
+std::atomic<bool> mouseHookActive = false;
 
 bool SetupTacoProtocolHandling() {
   TCHAR szFileName[MAX_PATH + 1];
@@ -1085,16 +1085,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     ;
   }
 
-  extern std::thread wvwPollThread;
-  extern std::thread wvwUpdatThread;
 
-  if (wvwPollThread.joinable()) {
-    wvwPollThread.join();
-    Sleep(1000);
-  }
-  if (wvwUpdatThread.joinable()) {
-    wvwUpdatThread.join();
-  }
 
   trails.clear();
 
