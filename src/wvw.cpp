@@ -1,7 +1,5 @@
 module;
 
-#include <combaseapi.h>
-
 #include <atomic>
 #include <ctime>
 #include <format>
@@ -24,8 +22,6 @@ import taco.language;
 import taco.mumble_link;
 import taco.time;
 import taco.poi_behavior;
-
-using namespace jsonxx;
 
 using math::CRect;
 using math::CSize;
@@ -195,38 +191,39 @@ void LoadWvWObjectives() {
     auto wvwobjectives =
         FetchHTTPS("api.guildwars2.com", "/v2/wvw/objectives?ids=all");
 
-    Array wvwobjs;
+    jsonxx::Array wvwobjs;
     wvwobjs.parse(wvwobjectives);
     auto objs = wvwobjs.values();
 
     for (auto& x : objs) {
-      if (!x->is<Object>()) continue;
+      if (!x->is<jsonxx::Object>()) continue;
 
-      auto obj = x->get<Object>();
+      auto obj = x->get<jsonxx::Object>();
 
-      if (!obj.has<String>("id")) continue;
+      if (!obj.has<jsonxx::String>("id")) continue;
 
-      auto objid = obj.get<String>("id");
+      auto objid = obj.get<jsonxx::String>("id");
 
       int mapID = 0, objident = 0;
       if (std::sscanf(objid.c_str(), "%d-%d", &mapID, &objident) != 2) continue;
 
-      if (!obj.has<Number>("map_id")) continue;
+      if (!obj.has<jsonxx::Number>("map_id")) continue;
 
-      if (obj.get<Number>("map_id") != mapID) continue;
+      if (obj.get<jsonxx::Number>("map_id") != mapID) continue;
 
       wvwMapIDs[mapID] = true;
 
-      if (obj.has<Array>("coord")) {
+      if (obj.has<jsonxx::Array>("coord")) {
         if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
           auto mapPath = std::format("/v2/maps?id={:d}", mapID);
           auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
 
-          Object map;
+          jsonxx::Object map;
           map.parse(wvwMapData);
-          if (!map.has<Array>("continent_rect")) continue;
+          if (!map.has<jsonxx::Array>("continent_rect")) continue;
 
-          auto continentRectArray = map.get<Array>("continent_rect").values();
+          auto continentRectArray =
+              map.get<jsonxx::Array>("continent_rect").values();
           if (continentRectArray.size() != 2) continue;
 
           int continentRectCnt = 0;
@@ -234,24 +231,24 @@ void LoadWvWObjectives() {
           bool ok = true;
 
           for (int x = 0; x < 2; x++) {
-            if (!continentRectArray[x]->is<Array>()) {
+            if (!continentRectArray[x]->is<jsonxx::Array>()) {
               ok = false;
               break;
             }
             auto continentRectCoords =
-                continentRectArray[x]->get<Array>().values();
+                continentRectArray[x]->get<jsonxx::Array>().values();
             if (continentRectCoords.size() != 2) {
               ok = false;
               break;
             }
 
             for (int y = 0; y < 2; y++) {
-              if (!continentRectCoords[y]->is<Number>()) {
+              if (!continentRectCoords[y]->is<jsonxx::Number>()) {
                 ok = false;
                 break;
               }
-              continentRectValues[continentRectCnt++] =
-                  static_cast<int>(continentRectCoords[y]->get<Number>());
+              continentRectValues[continentRectCnt++] = static_cast<int>(
+                  continentRectCoords[y]->get<jsonxx::Number>());
             }
           }
 
@@ -266,16 +263,16 @@ void LoadWvWObjectives() {
           continue;
         }
 
-        auto coord = obj.get<Array>("coord").values();
+        auto coord = obj.get<jsonxx::Array>("coord").values();
         if (coord.size() == 3) {
-          CVector3 v(coord[0]->is<Number>()
-                         ? static_cast<float>(coord[0]->get<Number>())
+          CVector3 v(coord[0]->is<jsonxx::Number>()
+                         ? static_cast<float>(coord[0]->get<jsonxx::Number>())
                          : 0,
-                     coord[1]->is<Number>()
-                         ? static_cast<float>(coord[1]->get<Number>())
+                     coord[1]->is<jsonxx::Number>()
+                         ? static_cast<float>(coord[1]->get<jsonxx::Number>())
                          : 0,
-                     coord[2]->is<Number>()
-                         ? static_cast<float>(coord[2]->get<Number>())
+                     coord[2]->is<jsonxx::Number>()
+                         ? static_cast<float>(coord[2]->get<jsonxx::Number>())
                          : 0);
 
           CRect& r = wvwContinentRects[mapID];
@@ -307,10 +304,11 @@ void LoadWvWObjectives() {
       o.objectiveID = objident;
       o.coord = wvwObjectiveCoords[objident];
 
-      if (obj.has<String>("type")) o.type = obj.get<String>("type");
+      if (obj.has<jsonxx::String>("type"))
+        o.type = obj.get<jsonxx::String>("type");
 
-      if (obj.has<String>("name")) {
-        o.nameToken = o.name = obj.get<String>("name");
+      if (obj.has<jsonxx::String>("name")) {
+        o.nameToken = o.name = obj.get<jsonxx::String>("name");
       }
 
       for (char& n : o.nameToken) {
@@ -392,26 +390,26 @@ void UpdateWvWStatus() {
     auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
     auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath);
 
-    Object o;
+    jsonxx::Object o;
     o.parse(wvwobjectiveids);
-    if (o.has<Array>("maps")) {
-      auto m = o.get<Array>("maps").values();
+    if (o.has<jsonxx::Array>("maps")) {
+      auto m = o.get<jsonxx::Array>("maps").values();
       std::vector<WvWPOIUpdate> updates;
       for (auto& x : m) {
-        if (!x->is<Object>()) continue;
+        if (!x->is<jsonxx::Object>()) continue;
 
-        auto map = x->get<Object>();
+        auto map = x->get<jsonxx::Object>();
 
-        if (!map.has<Array>("objectives")) continue;
+        if (!map.has<jsonxx::Array>("objectives")) continue;
 
-        auto objs = map.get<Array>("objectives").values();
+        auto objs = map.get<jsonxx::Array>("objectives").values();
         for (auto& obj : objs) {
-          if (!obj->is<Object>()) continue;
-          auto objective = obj->get<Object>();
+          if (!obj->is<jsonxx::Object>()) continue;
+          auto objective = obj->get<jsonxx::Object>();
 
           std::string id;
-          if (objective.has<String>("id")) {
-            id = objective.get<String>("id");
+          if (objective.has<jsonxx::String>("id")) {
+            id = objective.get<jsonxx::String>("id");
           } else {
             continue;
           }
@@ -421,8 +419,8 @@ void UpdateWvWStatus() {
           };
 
           std::string owner;
-          if (objective.has<String>("owner")) {
-            owner = objective.get<String>("owner");
+          if (objective.has<jsonxx::String>("owner")) {
+            owner = objective.get<jsonxx::String>("owner");
           }
 
           if (owner == "Red") {
@@ -436,8 +434,8 @@ void UpdateWvWStatus() {
           }
 
           std::string lastFlipped;
-          if (objective.has<String>("last_flipped")) {
-            lastFlipped = objective.get<String>("last_flipped");
+          if (objective.has<jsonxx::String>("last_flipped")) {
+            lastFlipped = objective.get<jsonxx::String>("last_flipped");
           }
 
           time_t flipTime = 0;

@@ -35,8 +35,6 @@ import taco.marker_editor;
 import taco.notepad;
 import taco.time;
 
-using namespace jsonxx;
-
 using math::CPoint;
 using math::CRect;
 using math::CVector3;

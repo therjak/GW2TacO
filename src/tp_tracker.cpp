@@ -20,8 +20,6 @@ import taco.overlay_config;
 import taco.language;
 import taco.time;
 
-using namespace jsonxx;
-
 using math::CPoint;
 using math::CRect;
 
@@ -110,8 +108,8 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         auto qsells = "{\"sells\":" +
                       key->QueryAPI("/v2/commerce/transactions/current/sells");
 
-        Object json;
-        Object json2;
+        jsonxx::Object json;
+        jsonxx::Object json2;
         json.parse(qbuys);
         json2.parse(qsells);
 
@@ -121,13 +119,13 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
         std::vector<int32_t> unknownItems;
         std::vector<int32_t> priceCheckList;
 
-        if (json.has<Array>("buys")) {
-          auto buyData = json.get<Array>("buys").values();
+        if (json.has<jsonxx::Array>("buys")) {
+          auto buyData = json.get<jsonxx::Array>("buys").values();
 
           for (auto& x : buyData) {
-            if (!x->is<Object>()) continue;
+            if (!x->is<jsonxx::Object>()) continue;
 
-            Object& item = x->get<Object>();
+            jsonxx::Object& item = x->get<jsonxx::Object>();
 
             TransactionItem itemData;
             if (!TPTracker::ParseTransaction(item, itemData)) continue;
@@ -144,13 +142,13 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           }
         }
 
-        if (json2.has<Array>("sells")) {
-          auto buyData = json2.get<Array>("sells").values();
+        if (json2.has<jsonxx::Array>("sells")) {
+          auto buyData = json2.get<jsonxx::Array>("sells").values();
 
           for (auto& x : buyData) {
-            if (!x->is<Object>()) continue;
+            if (!x->is<jsonxx::Object>()) continue;
 
-            Object& item = x->get<Object>();
+            jsonxx::Object& item = x->get<jsonxx::Object>();
 
             TransactionItem itemData;
             if (!TPTracker::ParseTransaction(item, itemData)) continue;
@@ -178,24 +176,24 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
           auto items =
               "{\"items\":" + key->QueryAPI("/v2/items?ids=" + itemIds) + "}";
 
-          Object itemjson;
+          jsonxx::Object itemjson;
           itemjson.parse(items);
 
-          if (itemjson.has<Array>("items")) {
-            auto items = itemjson.get<Array>("items").values();
+          if (itemjson.has<jsonxx::Array>("items")) {
+            auto items = itemjson.get<jsonxx::Array>("items").values();
 
             for (auto& x : items) {
-              if (!x->is<Object>()) continue;
+              if (!x->is<jsonxx::Object>()) continue;
 
-              Object& item = x->get<Object>();
+              jsonxx::Object& item = x->get<jsonxx::Object>();
 
               GW2ItemData itemData;
-              if (!item.has<String>("name") || !item.has<Number>("id"))
+              if (!item.has<jsonxx::String>("name") || !item.has<jsonxx::Number>("id"))
                 continue;
-              itemData.name = item.get<String>("name");
-              itemData.itemID = int32_t(item.get<Number>("id"));
-              if (item.has<String>("icon")) {
-                auto iconFile = item.get<String>("icon");
+              itemData.name = item.get<jsonxx::String>("name");
+              itemData.itemID = int32_t(item.get<jsonxx::Number>("id"));
+              if (item.has<jsonxx::String>("icon")) {
+                auto iconFile = item.get<jsonxx::String>("icon");
                 if (iconFile.find("https://render.guildwars2.com/") == 0) {
                   auto png =
                       FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
@@ -227,35 +225,35 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
                        key->QueryAPI(("/v2/commerce/prices?ids=" + itemIds)) +
                        "}";
 
-          Object itemjson;
+          jsonxx::Object itemjson;
           itemjson.parse(items);
 
-          if (itemjson.has<Array>("items")) {
-            auto items = itemjson.get<Array>("items").values();
+          if (itemjson.has<jsonxx::Array>("items")) {
+            auto items = itemjson.get<jsonxx::Array>("items").values();
 
             for (auto& x : items) {
-              if (!x->is<Object>()) continue;
+              if (!x->is<jsonxx::Object>()) continue;
 
-              Object& item = x->get<Object>();
+              jsonxx::Object& item = x->get<jsonxx::Object>();
 
-              if (!item.has<Number>("id") || !item.has<Object>("buys") ||
-                  !item.has<Object>("sells")) {
+              if (!item.has<jsonxx::Number>("id") || !item.has<jsonxx::Object>("buys") ||
+                  !item.has<jsonxx::Object>("sells")) {
                 continue;
               }
 
-              int32_t id = int32_t(item.get<Number>("id"));
+              int32_t id = int32_t(item.get<jsonxx::Number>("id"));
               if (!HasGW2ItemData(id)) continue;
 
-              Object buys = item.get<Object>("buys");
-              Object sells = item.get<Object>("sells");
-              if (!buys.has<Number>("unit_price") ||
-                  !sells.has<Number>("unit_price")) {
+              jsonxx::Object buys = item.get<jsonxx::Object>("buys");
+              jsonxx::Object sells = item.get<jsonxx::Object>("sells");
+              if (!buys.has<jsonxx::Number>("unit_price") ||
+                  !sells.has<jsonxx::Number>("unit_price")) {
                 continue;
               }
 
               GW2ItemData itemData = GetGW2ItemData(id);
-              itemData.buyPrice = int32_t(buys.get<Number>("unit_price"));
-              itemData.sellPrice = int32_t(sells.get<Number>("unit_price"));
+              itemData.buyPrice = int32_t(buys.get<jsonxx::Number>("unit_price"));
+              itemData.sellPrice = int32_t(sells.get<jsonxx::Number>("unit_price"));
               SetGW2ItemData(itemData);
             }
           }
@@ -398,15 +396,15 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-bool TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
-  if (!object.has<Number>("id") || !object.has<Number>("item_id") ||
-      !object.has<Number>("price") || !object.has<Number>("quantity")) {
+bool TPTracker::ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
+  if (!object.has<jsonxx::Number>("id") || !object.has<jsonxx::Number>("item_id") ||
+      !object.has<jsonxx::Number>("price") || !object.has<jsonxx::Number>("quantity")) {
     return false;
   }
-  output.transactionID = int32_t(object.get<Number>("id"));
-  output.itemID = int32_t(object.get<Number>("item_id"));
-  output.price = int32_t(object.get<Number>("price"));
-  output.quantity = int32_t(object.get<Number>("quantity"));
+  output.transactionID = int32_t(object.get<jsonxx::Number>("id"));
+  output.itemID = int32_t(object.get<jsonxx::Number>("item_id"));
+  output.price = int32_t(object.get<jsonxx::Number>("price"));
+  output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
   return true;
 }
 

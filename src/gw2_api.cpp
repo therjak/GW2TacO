@@ -17,7 +17,6 @@ import taco.mumble_link;
 import taco.overlay_config;
 import taco.language;
 
-using namespace jsonxx;
 using math::CPoint;
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);
@@ -59,19 +58,19 @@ void APIKey::FetchData() {
 
     auto keyData = QueryAPI("/v2/tokeninfo");
 
-    Object json;
+    jsonxx::Object json;
     json.parse(keyData);
 
-    if (json.has<String>("name")) {
-      new_key_data.key_name = json.get<String>("name");
+    if (json.has<jsonxx::String>("name")) {
+      new_key_data.key_name = json.get<jsonxx::String>("name");
     } else {
       new_key_data.valid = false;
     }
 
-    if (json.has<Array>("permissions")) {
-      auto& values = json.get<Array>("permissions").values();
+    if (json.has<jsonxx::Array>("permissions")) {
+      auto& values = json.get<jsonxx::Array>("permissions").values();
       for (auto v : values) {
-        if (v->is<String>()) new_key_data.caps.insert(v->get<String>());
+        if (v->is<jsonxx::String>()) new_key_data.caps.insert(v->get<jsonxx::String>());
       }
     } else {
       new_key_data.valid = false;
@@ -81,19 +80,19 @@ void APIKey::FetchData() {
       auto accountData = QueryAPI("/v2/account");
       json.parse(accountData);
 
-      if (json.has<String>("name")) {
-        new_key_data.account_name = json.get<String>("name");
+      if (json.has<jsonxx::String>("name")) {
+        new_key_data.account_name = json.get<jsonxx::String>("name");
       }
 
-      if (json.has<Number>("world")) {
-        new_key_data.world_id = static_cast<int32_t>(json.get<Number>("world"));
+      if (json.has<jsonxx::Number>("world")) {
+        new_key_data.world_id = static_cast<int32_t>(json.get<jsonxx::Number>("world"));
       }
     }
     if (new_key_data.caps.contains("characters")) {
       auto characterData =
           "{\"characters\":" + QueryAPI("/v2/characters") + "}";
       json.parse(characterData);
-      if (!json.has<Array>("characters")) {
+      if (!json.has<jsonxx::Array>("characters")) {
         Log_Err(
             "[GW2TacO] Unexpected result from API characters endpoint: {:s}",
             characterData);
@@ -101,10 +100,10 @@ void APIKey::FetchData() {
             "[GW2TacO] CHARACTERS WON'T BE RECOGNIZED FOR API KEY NAMED {:s}",
             new_key_data.key_name);
       } else {
-        auto m = json.get<Array>("characters").values();
+        auto m = json.get<jsonxx::Array>("characters").values();
         for (auto& x : m) {
-          if (x->is<String>()) {
-            auto name = x->get<String>();
+          if (x->is<jsonxx::String>()) {
+            auto name = x->get<jsonxx::String>();
             new_key_data.char_names.emplace_back(name);
           }
         }
@@ -155,30 +154,30 @@ bool APIKey::Valid() {
 
 std::unordered_set<std::string> APIKey::QuerySet(std::string_view path) const {
   const auto q = QueryAPI(path);
-  Array json;
+  jsonxx::Array json;
   json.parse(q);
   std::unordered_set<std::string> ret;
   for (auto& x : json.values()) {
-    if (!x->is<String>()) continue;
-    ret.emplace(x->get<String>());
+    if (!x->is<jsonxx::String>()) continue;
+    ret.emplace(x->get<jsonxx::String>());
   }
   return ret;
 }
 
 std::unordered_set<int32_t> APIKey::QueryAchievementBits(int id) const {
   const auto q = QueryAPI("/v2/account/achievements?ids=" + std::to_string(id));
-  Array json;
+  jsonxx::Array json;
   json.parse(q);
   std::unordered_set<int32_t> ret;
   const auto& data = json.values();
-  if (!data.empty() && data[0]->is<Object>()) {
-    Object obj = data[0]->get<Object>();
-    if (obj.has<Array>("bits")) {
-      auto bits = obj.get<Array>("bits").values();
+  if (!data.empty() && data[0]->is<jsonxx::Object>()) {
+    jsonxx::Object obj = data[0]->get<jsonxx::Object>();
+    if (obj.has<jsonxx::Array>("bits")) {
+      auto bits = obj.get<jsonxx::Array>("bits").values();
       if (bits.size() > 0) {
         for (auto& bit : bits) {
-          if (bit->is<Number>()) {
-            ret.emplace(static_cast<int32_t>(bit->get<Number>()));
+          if (bit->is<jsonxx::Number>()) {
+            ret.emplace(static_cast<int32_t>(bit->get<jsonxx::Number>()));
           }
         }
       }
