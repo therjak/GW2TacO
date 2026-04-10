@@ -462,8 +462,6 @@ int lastMainLoopTime = 0;
 
 #include "src/util/jsonxx.h"
 
-using namespace jsonxx;
-
 #include <tlhelp32.h>
 
 void GetFileName(CHAR pfname[MAX_PATH]) {
