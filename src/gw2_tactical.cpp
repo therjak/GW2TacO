@@ -6,7 +6,7 @@
 #include <format>
 #include <iterator>
 #include <string>
-#include <thread>
+#include <future>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -361,11 +361,12 @@ void GW2TacticalDisplay::FetchAchievements() {
 
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
+  if (fetchTask.valid() && fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return;
+
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
-      !being_fetched.load() && !fetchThread.joinable()) {
-    being_fetched = true;
-    fetchThread = std::thread([this, key]() {
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
+    lastFetchTime = GetTime();
+    fetchTask = std::async(std::launch::async, [this, key]() {
       auto achievements_data =
           "{\"achievements\":" + key->QueryAPI("/v2/account/achievements") +
           "}";
@@ -403,15 +404,7 @@ void GW2TacticalDisplay::FetchAchievements() {
         }
         achievements_queue.push(incoming);
       }
-
-      being_fetched = false;
-      achievements_fetched = true;
     });
-  }
-
-  if (!being_fetched.load() && fetchThread.joinable()) {
-    lastFetchTime = GetTime();
-    fetchThread.join();
   }
 }
 
@@ -1011,7 +1004,6 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 GW2TacticalDisplay::GW2TacticalDisplay() : CWBGuiType() {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() {
-  if (fetchThread.joinable()) fetchThread.join();
 }
 
 CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, const CXMLNode& node,

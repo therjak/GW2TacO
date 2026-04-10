@@ -4,7 +4,7 @@ module;
 #include <format>
 #include <mutex>
 #include <string>
-#include <thread>
+#include <future>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -48,23 +48,17 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
     if (key && key->Valid() &&
-        (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
-        !being_fetched.load() && !fetchThread.joinable()) {
-      being_fetched = true;
-      fetchThread = std::thread([key, this]() {
-        const auto& bosses = key->QuerySet("/v2/account/worldbosses");
-        boss_queue.push(bosses);
-        const auto& chests = key->QuerySet("/v2/account/mapchests");
-        mapchest_queue.push(chests);
-
-        being_fetched = false;
-      });
+        (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
+      if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+        lastFetchTime = GetTime();
+        fetchTask = std::async(std::launch::async, [this, key]() {
+          const auto& bosses = key->QuerySet("/v2/account/worldbosses");
+          boss_queue.push(bosses);
+          const auto& chests = key->QuerySet("/v2/account/mapchests");
+          mapchest_queue.push(chests);
+        });
+      }
     }
-  }
-
-  if (!being_fetched.load() && fetchThread.joinable()) {
-    lastFetchTime = GetTime();
-    fetchThread.join();
   }
 
   const auto& new_boss_data = boss_queue.pop();
@@ -469,9 +463,6 @@ GW2MapTimer::GW2MapTimer() : CWBGuiType() {
 }
 
 GW2MapTimer::~GW2MapTimer() {
-  if (fetchThread.joinable()) {
-    fetchThread.join();
-  }
 }
 
 CWBItem* GW2MapTimer::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {

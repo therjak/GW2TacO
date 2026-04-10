@@ -1,8 +1,8 @@
 module;
 #include <algorithm>
 #include <format>
+#include <future>
 #include <mutex>
-#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -100,178 +100,174 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime) &&
-      !being_fetched.load() && !fetchThread.joinable()) {
-    being_fetched = true;
-    fetchThread = std::thread([this, key]() {
-      auto qbuys = "{\"buys\":" +
-                   key->QueryAPI("/v2/commerce/transactions/current/buys");
-      auto qsells = "{\"sells\":" +
-                    key->QueryAPI("/v2/commerce/transactions/current/sells");
+      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
+    if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+                                  std::future_status::ready) {
+      lastFetchTime = GetTime();
+      fetchTask = std::async(std::launch::async, [this, key]() {
+        auto qbuys = "{\"buys\":" +
+                     key->QueryAPI("/v2/commerce/transactions/current/buys");
+        auto qsells = "{\"sells\":" +
+                      key->QueryAPI("/v2/commerce/transactions/current/sells");
 
-      Object json;
-      Object json2;
-      json.parse(qbuys);
-      json2.parse(qsells);
+        Object json;
+        Object json2;
+        json.parse(qbuys);
+        json2.parse(qsells);
 
-      std::vector<TransactionItem> incoming;
-      std::vector<TransactionItem> outgoing;
+        std::vector<TransactionItem> incoming;
+        std::vector<TransactionItem> outgoing;
 
-      std::vector<int32_t> unknownItems;
-      std::vector<int32_t> priceCheckList;
+        std::vector<int32_t> unknownItems;
+        std::vector<int32_t> priceCheckList;
 
-      if (json.has<Array>("buys")) {
-        auto buyData = json.get<Array>("buys").values();
+        if (json.has<Array>("buys")) {
+          auto buyData = json.get<Array>("buys").values();
 
-        for (auto& x : buyData) {
-          if (!x->is<Object>()) continue;
-
-          Object& item = x->get<Object>();
-
-          TransactionItem itemData;
-          if (!TPTracker::ParseTransaction(item, itemData)) continue;
-          incoming.push_back(itemData);
-
-          if (!HasGW2ItemData(itemData.itemID)) {
-            unknownItems.push_back(itemData.itemID);
-          }
-
-          if (std::find(priceCheckList.begin(), priceCheckList.end(),
-                        itemData.itemID) == priceCheckList.end()) {
-            priceCheckList.push_back(itemData.itemID);
-          }
-        }
-      }
-
-      if (json2.has<Array>("sells")) {
-        auto buyData = json2.get<Array>("sells").values();
-
-        for (auto& x : buyData) {
-          if (!x->is<Object>()) continue;
-
-          Object& item = x->get<Object>();
-
-          TransactionItem itemData;
-          if (!TPTracker::ParseTransaction(item, itemData)) continue;
-          outgoing.push_back(itemData);
-
-          if (!HasGW2ItemData(itemData.itemID)) {
-            unknownItems.push_back(itemData.itemID);
-          }
-
-          if (std::find(priceCheckList.begin(), priceCheckList.end(),
-                        itemData.itemID) == priceCheckList.end()) {
-            priceCheckList.push_back(itemData.itemID);
-          }
-        }
-      }
-
-      std::string itemIds;
-
-      if (!unknownItems.empty()) {
-        for (const auto& i : unknownItems) {
-          itemIds += std::to_string(i) + ',';
-        }
-
-        // https://api.guildwars2.com/v2/items?ids=28445,12452
-        auto items =
-            "{\"items\":" + key->QueryAPI("/v2/items?ids=" + itemIds) + "}";
-
-        Object itemjson;
-        itemjson.parse(items);
-
-        if (itemjson.has<Array>("items")) {
-          auto items = itemjson.get<Array>("items").values();
-
-          for (auto& x : items) {
+          for (auto& x : buyData) {
             if (!x->is<Object>()) continue;
 
             Object& item = x->get<Object>();
 
-            GW2ItemData itemData;
-            if (!item.has<String>("name") || !item.has<Number>("id")) continue;
-            itemData.name = item.get<String>("name");
-            itemData.itemID = int32_t(item.get<Number>("id"));
-            if (item.has<String>("icon")) {
-              auto iconFile = item.get<String>("icon");
-              if (iconFile.find("https://render.guildwars2.com/") == 0) {
-                auto png =
-                    FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
+            TransactionItem itemData;
+            if (!TPTracker::ParseTransaction(item, itemData)) continue;
+            incoming.push_back(itemData);
 
-                std::unique_ptr<uint8_t[]> imageData = nullptr;
-                int32_t xres = 0, yres = 0;
-                if (DecompressPNG((uint8_t*)png.c_str(), png.size(), imageData,
-                                  xres, yres)) {
-                  ARGBtoABGR(imageData.get(), xres, yres);
-                  CRect area = CRect(0, 0, xres, yres);
-                  itemData.icon = GetApplication()->GetAtlas()->AddImage(
-                      imageData.get(), xres, yres, area);
+            if (!HasGW2ItemData(itemData.itemID)) {
+              unknownItems.push_back(itemData.itemID);
+            }
+
+            if (std::find(priceCheckList.begin(), priceCheckList.end(),
+                          itemData.itemID) == priceCheckList.end()) {
+              priceCheckList.push_back(itemData.itemID);
+            }
+          }
+        }
+
+        if (json2.has<Array>("sells")) {
+          auto buyData = json2.get<Array>("sells").values();
+
+          for (auto& x : buyData) {
+            if (!x->is<Object>()) continue;
+
+            Object& item = x->get<Object>();
+
+            TransactionItem itemData;
+            if (!TPTracker::ParseTransaction(item, itemData)) continue;
+            outgoing.push_back(itemData);
+
+            if (!HasGW2ItemData(itemData.itemID)) {
+              unknownItems.push_back(itemData.itemID);
+            }
+
+            if (std::find(priceCheckList.begin(), priceCheckList.end(),
+                          itemData.itemID) == priceCheckList.end()) {
+              priceCheckList.push_back(itemData.itemID);
+            }
+          }
+        }
+
+        std::string itemIds;
+
+        if (!unknownItems.empty()) {
+          for (const auto& i : unknownItems) {
+            itemIds += std::to_string(i) + ',';
+          }
+
+          // https://api.guildwars2.com/v2/items?ids=28445,12452
+          auto items =
+              "{\"items\":" + key->QueryAPI("/v2/items?ids=" + itemIds) + "}";
+
+          Object itemjson;
+          itemjson.parse(items);
+
+          if (itemjson.has<Array>("items")) {
+            auto items = itemjson.get<Array>("items").values();
+
+            for (auto& x : items) {
+              if (!x->is<Object>()) continue;
+
+              Object& item = x->get<Object>();
+
+              GW2ItemData itemData;
+              if (!item.has<String>("name") || !item.has<Number>("id"))
+                continue;
+              itemData.name = item.get<String>("name");
+              itemData.itemID = int32_t(item.get<Number>("id"));
+              if (item.has<String>("icon")) {
+                auto iconFile = item.get<String>("icon");
+                if (iconFile.find("https://render.guildwars2.com/") == 0) {
+                  auto png =
+                      FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
+
+                  std::unique_ptr<uint8_t[]> imageData = nullptr;
+                  int32_t xres = 0, yres = 0;
+                  if (DecompressPNG((uint8_t*)png.c_str(), png.size(),
+                                    imageData, xres, yres)) {
+                    ARGBtoABGR(imageData.get(), xres, yres);
+                    CRect area = CRect(0, 0, xres, yres);
+                    itemData.icon = GetApplication()->GetAtlas()->AddImage(
+                        imageData.get(), xres, yres, area);
+                  }
                 }
               }
-            }
 
-            SetGW2ItemData(itemData);
+              SetGW2ItemData(itemData);
+            }
           }
         }
-      }
 
-      {
-        for (const auto& i : priceCheckList) {
-          itemIds += std::to_string(i) + ',';
-        }
+        {
+          for (const auto& i : priceCheckList) {
+            itemIds += std::to_string(i) + ',';
+          }
 
-        // https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
-        auto items = "{\"items\":" +
-                     key->QueryAPI(("/v2/commerce/prices?ids=" + itemIds)) +
-                     "}";
+          // https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
+          auto items = "{\"items\":" +
+                       key->QueryAPI(("/v2/commerce/prices?ids=" + itemIds)) +
+                       "}";
 
-        Object itemjson;
-        itemjson.parse(items);
+          Object itemjson;
+          itemjson.parse(items);
 
-        if (itemjson.has<Array>("items")) {
-          auto items = itemjson.get<Array>("items").values();
+          if (itemjson.has<Array>("items")) {
+            auto items = itemjson.get<Array>("items").values();
 
-          for (auto& x : items) {
-            if (!x->is<Object>()) continue;
+            for (auto& x : items) {
+              if (!x->is<Object>()) continue;
 
-            Object& item = x->get<Object>();
+              Object& item = x->get<Object>();
 
-            if (!item.has<Number>("id") || !item.has<Object>("buys") ||
-                !item.has<Object>("sells")) {
-              continue;
+              if (!item.has<Number>("id") || !item.has<Object>("buys") ||
+                  !item.has<Object>("sells")) {
+                continue;
+              }
+
+              int32_t id = int32_t(item.get<Number>("id"));
+              if (!HasGW2ItemData(id)) continue;
+
+              Object buys = item.get<Object>("buys");
+              Object sells = item.get<Object>("sells");
+              if (!buys.has<Number>("unit_price") ||
+                  !sells.has<Number>("unit_price")) {
+                continue;
+              }
+
+              GW2ItemData itemData = GetGW2ItemData(id);
+              itemData.buyPrice = int32_t(buys.get<Number>("unit_price"));
+              itemData.sellPrice = int32_t(sells.get<Number>("unit_price"));
+              SetGW2ItemData(itemData);
             }
-
-            int32_t id = int32_t(item.get<Number>("id"));
-            if (!HasGW2ItemData(id)) continue;
-
-            Object buys = item.get<Object>("buys");
-            Object sells = item.get<Object>("sells");
-            if (!buys.has<Number>("unit_price") ||
-                !sells.has<Number>("unit_price")) {
-              continue;
-            }
-
-            GW2ItemData itemData = GetGW2ItemData(id);
-            itemData.buyPrice = int32_t(buys.get<Number>("unit_price"));
-            itemData.sellPrice = int32_t(sells.get<Number>("unit_price"));
-            SetGW2ItemData(itemData);
           }
         }
-      }
 
-      {
-        std::lock_guard<std::mutex> lockGuard(transaction_mtx);
-        buys = incoming;
-        sells = outgoing;
-      }
-
-      being_fetched = false;
-    });
-  }
-
-  if (!being_fetched.load() && fetchThread.joinable()) {
-    lastFetchTime = GetTime();
-    fetchThread.join();
+        {
+          std::lock_guard<std::mutex> lockGuard(transaction_mtx);
+          buys = incoming;
+          sells = outgoing;
+        }
+      });
+    }
   }
 
   {
@@ -416,9 +412,7 @@ bool TPTracker::ParseTransaction(Object& object, TransactionItem& output) {
 
 TPTracker::TPTracker() : CWBGuiType() {}
 
-TPTracker::~TPTracker() {
-  if (fetchThread.joinable()) fetchThread.join();
-}
+TPTracker::~TPTracker() {}
 
 CWBItem* TPTracker::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
   return TPTracker::Create(Root, Pos);

@@ -1,15 +1,16 @@
 module;
 #include <atomic>
 #include <cassert>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 #include "src/util/jsonxx.h"
+
 
 export module taco.tp_tracker;
 
@@ -53,12 +54,11 @@ export class TPTracker : public CWBGuiType<"tptracker", CWBItem> {
   void OnDraw(CWBDrawAPI* API) override;
   static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
 
-  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
 
   std::vector<TransactionItem> buys;
   std::vector<TransactionItem> sells;
 
   std::mutex transaction_mtx;
-  std::thread fetchThread;
+  std::future<void> fetchTask;
 };

@@ -7,7 +7,7 @@
 #include <mutex>
 #include <string>
 #include <string_view>
-#include <thread>
+#include <future>
 #include <unordered_map>
 #include <vector>
 
@@ -148,15 +148,12 @@ class GW2TacticalDisplay : public CWBGuiType<"gw2tactical", CWBItem> {
   std::vector<POI*> minimapPOIs;
   bool drawWvWNames = false;
 
-  std::atomic<bool> being_fetched = false;
-  std::atomic<bool> achievements_fetched = false;
   int32_t lastFetchTime = 0;
 
   LockFreeQueue<std::unordered_map<int32_t, Achievement>> achievements_queue;
   std::unordered_map<int32_t, Achievement> achievements;
   std::mutex achievements_mtx;
-  // on destruction the thread should be destroyed first
-  std::thread fetchThread;
+  std::future<void> fetchTask;
 };
 
 void AddPOI();
