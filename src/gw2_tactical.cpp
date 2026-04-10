@@ -4,9 +4,9 @@
 #include <chrono>
 #include <cmath>
 #include <format>
+#include <future>
 #include <iterator>
 #include <string>
-#include <future>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -36,7 +36,6 @@ import taco.time;
 import taco.marker_data;
 import taco.tactical_category;
 
-using namespace jsonxx;
 using math::CMatrix4x4;
 using math::CPlane;
 using math::CPoint;
@@ -361,7 +360,9 @@ void GW2TacticalDisplay::FetchAchievements() {
 
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
-  if (fetchTask.valid() && fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return;
+  if (fetchTask.valid() &&
+      fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+    return;
 
   if (key && key->Valid() &&
       (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
@@ -370,33 +371,33 @@ void GW2TacticalDisplay::FetchAchievements() {
       auto achievements_data =
           "{\"achievements\":" + key->QueryAPI("/v2/account/achievements") +
           "}";
-      Object json;
+      jsonxx::Object json;
       json.parse(achievements_data);
 
-      if (json.has<Array>("achievements")) {
-        auto achiData = json.get<Array>("achievements").values();
+      if (json.has<jsonxx::Array>("achievements")) {
+        auto achiData = json.get<jsonxx::Array>("achievements").values();
 
         std::unordered_map<int32_t, Achievement> incoming;
 
         for (auto& x : achiData) {
-          if (!x->is<Object>()) continue;
-          auto& data = x->get<Object>();
+          if (!x->is<jsonxx::Object>()) continue;
+          auto& data = x->get<jsonxx::Object>();
 
-          if (!data.has<Boolean>("done")) continue;
+          if (!data.has<jsonxx::Boolean>("done")) continue;
 
-          bool done = data.get<Boolean>("done");
+          bool done = data.get<jsonxx::Boolean>("done");
 
-          if (!data.has<Number>("id")) continue;
+          if (!data.has<jsonxx::Number>("id")) continue;
 
-          int32_t achiId = int32_t(data.get<Number>("id"));
+          int32_t achiId = int32_t(data.get<jsonxx::Number>("id"));
           incoming[achiId].done = done;
 
-          if (!done && data.has<Array>("bits")) {
+          if (!done && data.has<jsonxx::Array>("bits")) {
             auto& bitArray = incoming[achiId].bits;
-            auto bits = data.get<Array>("bits").values();
+            auto bits = data.get<jsonxx::Array>("bits").values();
             for (auto& bit : bits) {
-              if (!bit->is<Number>()) continue;
-              bitArray.push_back(static_cast<int32_t>(bit->get<Number>()));
+              if (!bit->is<jsonxx::Number>()) continue;
+              bitArray.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
             }
           } else if (done) {
             incoming[achiId].bits.clear();
@@ -1003,8 +1004,7 @@ void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
 
 GW2TacticalDisplay::GW2TacticalDisplay() : CWBGuiType() {}
 
-GW2TacticalDisplay::~GW2TacticalDisplay() {
-}
+GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
 CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, const CXMLNode& node,
                                      CRect& Pos) {
