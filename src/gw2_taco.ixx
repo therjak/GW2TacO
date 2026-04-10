@@ -1,5 +1,6 @@
 module;
 #include <cassert>
+#include <future>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -117,13 +118,12 @@ export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
   int32_t lastMenuHoverTransitionTime = 0;
 
   std::string lastItemPickup;
-  bool pickupsBeingFetched = false;
   int32_t lastPickupFetchTime = 0;
   bool showPickupHighlight = false;
   float lastScaleValue = 1.0f;
 
   std::string mouseToolTip;
-  std::thread pickupFetcherThread;
+  std::future<void> pickupFetchTask;
 };
 
 export extern std::string_view UIFileNames[];

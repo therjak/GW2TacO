@@ -1,9 +1,9 @@
 module;
 #include <atomic>
 #include <cassert>
+#include <future>
 #include <mutex>
 #include <string>
-#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -11,6 +11,7 @@ module;
 #include "src/base/lock_free_queue.h"
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
+
 
 export module taco.map_timer;
 
@@ -78,11 +79,10 @@ export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
   LockFreeQueue<std::unordered_set<std::string>> boss_queue;
   LockFreeQueue<std::unordered_set<std::string>> mapchest_queue;
 
-  std::atomic<bool> being_fetched = false;
   int32_t lastFetchTime = 0;
 
   std::unordered_set<std::string> world_bosses;
   std::unordered_set<std::string> mapchests;
 
-  std::thread fetchThread;
+  std::future<void> fetchTask;
 };

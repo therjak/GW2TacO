@@ -5,8 +5,8 @@ module;
 
 #include <algorithm>
 #include <format>
+#include <future>
 #include <mutex>
-#include <thread>
 
 #include "src/base/logger.h"
 #include "src/build_count.h"
@@ -215,9 +215,7 @@ GW2TacO::GW2TacO() : CWBGuiType() {
   GetScriptKeyBindings(ScriptKeyBindings);
 }
 
-GW2TacO::~GW2TacO() {
-  if (pickupFetcherThread.joinable()) pickupFetcherThread.join();
-}
+GW2TacO::~GW2TacO() {}
 
 CWBItem* GW2TacO::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
@@ -2025,16 +2023,15 @@ void GW2TacO::TurnOffTPLight() {
 }
 
 void GW2TacO::CheckItemPickup() {
-  if (pickupsBeingFetched) return;
-
   if (GetTime() - lastPickupFetchTime < 1000 * 60) return;
 
-  pickupsBeingFetched = true;
+  if (pickupFetchTask.valid() && pickupFetchTask.wait_for(std::chrono::seconds(
+                                     0)) != std::future_status::ready)
+    return;
+
   lastPickupFetchTime = GetTime();
 
-  if (pickupFetcherThread.joinable()) pickupFetcherThread.join();
-
-  pickupFetcherThread = std::thread([this]() {
+  pickupFetchTask = std::async(std::launch::async, [this]() {
     auto key = GW2::apiKeyManager.GetIdentifiedAPIKey();
     if (key && key->HasCaps("inventories")) {
       auto pickupData = key->QueryAPI("/v2/account/inventory");
@@ -2045,7 +2042,6 @@ void GW2TacO::CheckItemPickup() {
         lastItemPickup = pickupData;
       }
     }
-    pickupsBeingFetched = false;
   });
 }
 

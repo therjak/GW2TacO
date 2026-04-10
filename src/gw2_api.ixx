@@ -4,7 +4,7 @@ module;
 #include <mutex>
 #include <string>
 #include <string_view>
-#include <thread>
+#include <future>
 #include <unordered_set>
 #include <vector>
 
@@ -49,10 +49,9 @@ class APIKey {
  private:
   friend class APIKeyManager;
   std::atomic<bool> initialized = false;
-  std::thread fetcherThread;
+  std::future<void> fetchTask;
   KeyData key_data;
   LockFreeQueue<KeyData> key_data_queue;
-  std::atomic<bool> beingInitialized = false;
 };
 
 class APIKeyManager {

@@ -2,7 +2,7 @@ module;
 #include <algorithm>
 #include <mutex>
 #include <string>
-#include <thread>
+#include <future>
 #include <utility>
 #include <vector>
 
@@ -47,18 +47,14 @@ APIKeyManager apiKeyManager;
 APIKey::APIKey(std::string_view key) : apiKey(key) {}
 
 APIKey::~APIKey() {
-  if (fetcherThread.joinable()) {
-    fetcherThread.join();
-  }
 }
 
 void APIKey::FetchData() {
-  if (beingInitialized) return;
-  beingInitialized = true;
+  if (fetchTask.valid() && fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return;
 
   initialized = false;
 
-  fetcherThread = std::thread([this]() {
+  fetchTask = std::async(std::launch::async, [this]() {
     KeyData new_key_data;
 
     auto keyData = QueryAPI("/v2/tokeninfo");
@@ -123,7 +119,6 @@ void APIKey::FetchData() {
     key_data_queue.push(new_key_data);
 
     initialized = true;
-    beingInitialized = false;
   });
 }
 
@@ -138,12 +133,11 @@ std::string APIKey::QueryAPI(std::string_view path) const {
 }
 
 void APIKey::SetKey(std::string_view key) {
-  if (fetcherThread.joinable()) {
-    fetcherThread.join();
+  if (fetchTask.valid()) {
+    fetchTask.wait();
   }
   apiKey = key;
   initialized = false;
-  beingInitialized = false;
   FetchData();
 }
 
@@ -214,8 +208,8 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
       continue;
     }
 
-    if (key->fetcherThread.joinable()) {
-      key->fetcherThread.join();
+    if (key->fetchTask.valid()) {
+      key->fetchTask.wait();
     }
 
     auto& cn = key->key_data.char_names;
