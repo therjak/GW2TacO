@@ -6,6 +6,8 @@
 #include "src/core2/enums.h"
 #include "src/core2/resource.h"
 
+namespace renderer {
+
 class CCoreVertexShader;
 
 class CCoreVertexFormat : public CCoreResource {
@@ -21,3 +23,5 @@ class CCoreVertexFormat : public CCoreResource {
  private:
   virtual bool Apply() = 0;
 };
+
+}  // namespace renderer

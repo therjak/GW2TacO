@@ -10,6 +10,8 @@
 
 import xml;
 
+namespace renderer {
+
 class CCoreSamplerState;
 class CCoreDepthStencilState;
 class CCoreBlendState;
@@ -186,3 +188,4 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
   float MinLOD;
   float MaxLOD;
 };
+}  // namespace renderer

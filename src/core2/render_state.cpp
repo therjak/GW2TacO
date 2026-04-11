@@ -5,6 +5,8 @@
 
 import xml;
 
+namespace renderer {
+
 CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* Device)
     : CCoreResource(Device) {
   Dirty = true;
@@ -472,3 +474,5 @@ void CCoreSamplerState::Export(CXMLNode* n) {
   n->AddChild("MaxLOD").SetFloat(MaxLOD);
   n->AddChild("MaxAnisotropy").SetInt(MaxAnisotropy);
 }
+
+} // namespace renderer

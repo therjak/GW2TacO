@@ -7,6 +7,8 @@
 #include "src/core2/constant_buffer.h"
 #include "src/core2/dx11_device.h"
 
+namespace renderer {
+
 class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {
  public:
   explicit CCoreDX11ConstantBuffer(CCoreDX11Device* Device);
@@ -21,3 +23,5 @@ class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {
   ID3D11DeviceContext* DeviceContext;
   int32_t AllocatedBufferSize;
 };
+
+}  // namespace renderer

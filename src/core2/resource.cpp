@@ -2,6 +2,8 @@
 
 #include "src/core2/device.h"
 
+namespace renderer {
+
 CCoreResource::CCoreResource() = default;
 
 CCoreResource::CCoreResource(CCoreDevice* h) {
@@ -16,3 +18,5 @@ CCoreResource::~CCoreResource() {
 void CCoreResource::OnDeviceLost() {}
 
 void CCoreResource::OnDeviceReset() {}
+
+}  // namespace renderer

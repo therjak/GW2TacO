@@ -6,6 +6,8 @@
 
 #include "src/core2/resource.h"
 
+namespace renderer {
+
 class CCoreShader : public CCoreResource {
   friend class CCoreDevice;
 
@@ -92,3 +94,5 @@ class CCoreComputeShader : public CCoreShader {
   ~CCoreComputeShader() override;
   void* GetHandle() override = 0;
 };
+
+}  // namespace renderer

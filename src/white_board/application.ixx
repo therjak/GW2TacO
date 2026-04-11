@@ -34,13 +34,13 @@ export typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
                                                     const CXMLNode& node,
                                                     math::CRect& Pos);
 
-export class CWBApplication : public CCoreWindowHandlerWin {
+export class CWBApplication : public renderer::CCoreWindowHandlerWin {
   friend class CWBItem;
 
  public:
   CWBApplication();
   ~CWBApplication() override;
-  bool Initialize(const CCoreWindowParameters& WindowParams) override;
+  bool Initialize(const renderer::CCoreWindowParameters& WindowParams) override;
 
   CWBItem* GetRoot();
   CWBItem* GetFocusItem();

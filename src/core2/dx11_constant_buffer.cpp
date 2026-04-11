@@ -6,6 +6,8 @@
 
 #include "src/base/logger.h"
 
+namespace renderer {
+
 CCoreDX11ConstantBuffer::CCoreDX11ConstantBuffer(CCoreDX11Device* dev)
     : CCoreConstantBuffer(dev) {
   Buffer = nullptr;
@@ -54,3 +56,5 @@ void CCoreDX11ConstantBuffer::Upload() {
     DeviceContext->Unmap(Buffer, 0);
   }
 }
+
+}  // namespace renderer

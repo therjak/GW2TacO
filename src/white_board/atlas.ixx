@@ -1,12 +1,12 @@
 module;
 
 #include <array>
+#include <memory>
 #include <mutex>
 #include <unordered_map>
-#include <memory>
 
-#include "src/core2/core2.h"
 #include "src/base/rectangle.h"
+#include "src/core2/core2.h"
 
 export module whiteboard:atlas;
 
@@ -71,9 +71,9 @@ export class CAtlas {
   CAtlas(int32_t XSize, int32_t YSize);
   virtual ~CAtlas();
 
-  bool InitializeTexture(CCoreDevice* Device);
+  bool InitializeTexture(renderer::CCoreDevice* Device);
   bool UpdateTexture();
-  CCoreTexture2D* GetTexture();
+  renderer::CCoreTexture2D* GetTexture();
 
   WBATLASHANDLE AddImage(uint8_t* Image, int32_t XRes, int32_t YRes,
                          const math::CRect& SourceArea);
@@ -94,7 +94,7 @@ export class CAtlas {
   [[nodiscard]] int32_t GetXRes() const { return XRes; }
   [[nodiscard]] int32_t GetYRes() const { return YRes; }
 
-  bool Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize);
+  bool Resize(renderer::CCoreDevice* Device, int32_t XSize, int32_t YSize);
 
  private:
   bool PackImage(CAtlasImage* img);
@@ -104,7 +104,7 @@ export class CAtlas {
 
   int32_t XRes, YRes;
   std::unique_ptr<uint8_t[]> Image;
-  std::unique_ptr<CCoreTexture2D> Atlas;
+  std::unique_ptr<renderer::CCoreTexture2D> Atlas;
 
   bool TextureUpdateNeeded;
 

@@ -1,5 +1,8 @@
 module;
 #include "src/base/logger.h"
+#include "src/core2/core2.h"
+
+using namespace renderer;
 
 module taco.overlay_application;
 

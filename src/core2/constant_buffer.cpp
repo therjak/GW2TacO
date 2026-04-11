@@ -3,6 +3,8 @@
 #include <cstring>
 #include <memory>
 
+namespace renderer {
+
 CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice* Device)
     : CCoreResource(Device) {}
 
@@ -28,3 +30,5 @@ void CCoreConstantBuffer::AddData(const void* DataIn, int32_t Length) {
 }
 
 void CCoreConstantBuffer::Upload() {}
+
+}  // namespace renderer

@@ -13,6 +13,8 @@
 #include "src/core2/device.h"
 #include "src/core2/dx11_enums.h"
 
+namespace renderer {
+
 class CCoreDX11Device : public CCoreDevice {
  public:
   CCoreDX11Device();
@@ -188,3 +190,5 @@ class CCoreDX11Device : public CCoreDevice {
   ID3D11Query* OcclusionQuery = nullptr;
   HANDLE swapChainRetraceObject = nullptr;
 };
+
+}  // namespace renderer

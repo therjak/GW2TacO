@@ -14,10 +14,13 @@
 //
 // resource types that need to be reallocated on a lost device MUST
 // implement the OnDeviceLost() and OnDeviceReset() functions
+namespace renderer {
+
 class CCoreDevice;
 
 class CCoreResource {
   friend class CCoreDevice;
+
  public:
   CCoreResource();
   explicit CCoreResource(CCoreDevice* Device);
@@ -26,7 +29,8 @@ class CCoreResource {
   virtual void OnDeviceLost();
   virtual void OnDeviceReset();
 
-protected:
+ protected:
   CCoreDevice* Device = nullptr;
-
 };
+
+}  // namespace renderer

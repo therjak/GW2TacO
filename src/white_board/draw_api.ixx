@@ -57,7 +57,8 @@ export class CWBDrawAPI {
   CWBDrawAPI();
   virtual ~CWBDrawAPI();
 
-  bool Initialize(CWBApplication* App, CCoreDevice* Device, CAtlas* Atlas);
+  bool Initialize(CWBApplication* App, renderer::CCoreDevice* Device,
+                  CAtlas* Atlas);
 
   void DrawRect(const math::CRect& r, CColor Color);
   void DrawRect(const math::CRect& r, float u1, float v1, float u2, float v2);
@@ -90,8 +91,9 @@ export class CWBDrawAPI {
   math::CPoint& GetOffset() { return Offset; }
 
   void SetUIRenderState();
-  void SetUIBlendState(std::unique_ptr<CCoreBlendState>&& BlendState);
-  void SetUISamplerState(std::unique_ptr<CCoreSamplerState>&& SamplerState);
+  void SetUIBlendState(std::unique_ptr<renderer::CCoreBlendState>&& BlendState);
+  void SetUISamplerState(
+      std::unique_ptr<renderer::CCoreSamplerState>&& SamplerState);
 
   math::CSize GetAtlasElementSize(WBATLASHANDLE h);
   void DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
@@ -104,13 +106,13 @@ export class CWBDrawAPI {
   void SetCropToClient(const CWBItem* i);
 
   void FlushDrawBuffer();
-  CCoreDevice* GetDevice();
-  CCoreConstantBuffer* GetResolutionData();
+  renderer::CCoreDevice* GetDevice();
+  renderer::CCoreConstantBuffer* GetResolutionData();
 
   void SetOpacity(uint8_t o);
   void SetRenderView(math::CRect r);
 
-  void SetPixelShader(std::unique_ptr<CCorePixelShader>&& shader);
+  void SetPixelShader(std::unique_ptr<renderer::CCorePixelShader>&& shader);
 
  private:
   void AddDisplayRect(const math::CRect& r, const float u1, const float v1,
@@ -148,25 +150,25 @@ export class CWBDrawAPI {
 
   std::vector<WBGUIVERTEX> DisplayList;
   CAtlas* Atlas;
-  CCoreDevice* Device;
+  renderer::CCoreDevice* Device;
 
   float UVOffset = 0;  // texel offset to fix 0.5 texel shift in Directx9
 
   math::CRect ParentCropRect;
 
-  std::unique_ptr<CCoreIndexBuffer> rectIndexBuffer;
-  std::unique_ptr<CCoreVertexBuffer> VertexBuffer;
-  std::unique_ptr<CCoreVertexFormat> VertexFormat;
+  std::unique_ptr<renderer::CCoreIndexBuffer> rectIndexBuffer;
+  std::unique_ptr<renderer::CCoreVertexBuffer> VertexBuffer;
+  std::unique_ptr<renderer::CCoreVertexFormat> VertexFormat;
 
-  std::unique_ptr<CCoreVertexShader> VxShader;
-  std::unique_ptr<CCorePixelShader> PxShader;
+  std::unique_ptr<renderer::CCoreVertexShader> VxShader;
+  std::unique_ptr<renderer::CCorePixelShader> PxShader;
 
-  std::unique_ptr<CCoreSamplerState> GuiSampler;
-  std::unique_ptr<CCoreBlendState> GuiBlendState;
-  std::unique_ptr<CCoreRasterizerState> GuiRasterState;
-  std::unique_ptr<CCoreDepthStencilState> GuiZState;
+  std::unique_ptr<renderer::CCoreSamplerState> GuiSampler;
+  std::unique_ptr<renderer::CCoreBlendState> GuiBlendState;
+  std::unique_ptr<renderer::CCoreRasterizerState> GuiRasterState;
+  std::unique_ptr<renderer::CCoreDepthStencilState> GuiZState;
 
-  std::unique_ptr<CCoreConstantBuffer> ResolutionData;
+  std::unique_ptr<renderer::CCoreConstantBuffer> ResolutionData;
 };
 
 // helper functions for common use cases

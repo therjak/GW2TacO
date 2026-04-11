@@ -16,6 +16,8 @@
 using math::CPoint;
 using math::CRect;
 
+namespace renderer {
+
 typedef CCoreDX11Device CCore;
 
 //////////////////////////////////////////////////////////////////////////
@@ -414,3 +416,5 @@ void CCoreWindowHandlerWin::FinalizeMouseCursor() {
 void CCoreWindowHandlerWin::SetWindowTitle(std::string_view Title) {
   SetWindowText(hWnd, Title.data());
 }
+
+}  // namespace renderer

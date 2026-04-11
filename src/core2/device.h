@@ -15,6 +15,8 @@
 
 import xml;
 
+namespace renderer {
+
 class CCoreDevice {
   friend class CCoreResource;
 
@@ -181,3 +183,5 @@ class CCoreDevice {
 
   std::vector<CCoreResource*> Resources;
 };
+
+}  // namespace renderer

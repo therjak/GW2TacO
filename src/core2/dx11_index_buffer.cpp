@@ -5,6 +5,8 @@
 
 #include "src/base/logger.h"
 
+namespace renderer {
+
 CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device* dev)
     : CCoreIndexBuffer(dev) {
   Dev = dev->GetDevice();
@@ -85,3 +87,5 @@ bool CCoreDX11IndexBuffer::UnLock() {
   DeviceContext->Unmap(IndexBufferHandle, 0);
   return true;
 }
+
+}  // namespace renderer

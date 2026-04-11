@@ -9,6 +9,8 @@
 
 #include "src/base/logger.h"
 
+namespace renderer {
+
 typedef HRESULT(__stdcall d3d_compile_func)(
     LPCVOID pSrcData, SIZE_T SrcDataSize, LPCSTR pSourceName,
     const D3D_SHADER_MACRO* pDefines, ID3DInclude* pInclude, LPCSTR pEntrypoint,
@@ -573,3 +575,5 @@ bool CCoreDX11ComputeShader::CreateFromBlob(void* CodeBlob,
 #endif
   return Success;
 }
+
+}  // namespace renderer

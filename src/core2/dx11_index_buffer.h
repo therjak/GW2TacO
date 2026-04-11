@@ -6,6 +6,8 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/index_buffer.h"
 
+namespace renderer {
+
 class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
  public:
   explicit CCoreDX11IndexBuffer(CCoreDX11Device* dev);
@@ -29,3 +31,5 @@ class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
   int32_t IndexCount;
   int32_t IndexSize;
 };
+
+}  // namespace renderer

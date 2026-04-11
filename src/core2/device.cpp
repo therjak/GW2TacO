@@ -4,6 +4,8 @@
 
 #include "src/core2/resource.h"
 
+namespace renderer {
+
 const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
                                           const CORESAMPLER Sampler) {
   return (static_cast<uint32_t>(State) << 16) + static_cast<uint32_t>(Sampler);
@@ -269,3 +271,5 @@ bool CCoreDevice::CreateDefaultRenderStates() {
 
   return Success;
 }
+
+}  // namespace renderer

@@ -14,6 +14,8 @@
 #include "src/core2/dss_texture_loader.h"
 #include "src/util/png_decompressor.h"
 
+namespace renderer {
+
 CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* dev)
     : CCoreTexture2D(dev) {
   Dev = dev->GetDevice();
@@ -1395,3 +1397,5 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
   if (pStaging) pStaging->Release();
   return S_OK;
 }
+
+}  // namespace renderer
