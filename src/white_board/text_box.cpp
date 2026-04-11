@@ -22,8 +22,6 @@ import :text_box;
 using math::CPoint;
 using math::CRect;
 
-using namespace renderer;
-
 void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   const WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2)) {
@@ -137,7 +135,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
   if (App->GetMouseCaptureItem() && App->GetMouseCaptureItem() != this) return;
   if (App->GetMouseItem() == this &&
       ClientToScreen(GetClientRect()).Contains(App->GetMousePos())) {
-    App->SelectMouseCursor(COREMOUSECURSOR::CM_TEXT);
+    App->SelectMouseCursor(renderer::COREMOUSECURSOR::CM_TEXT);
   }
 }
 

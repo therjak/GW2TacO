@@ -35,7 +35,6 @@ import :window;
 
 using math::CPoint;
 using math::CRect;
-using namespace renderer;
 
 CWBApplication::CWBApplication()
     : CCoreWindowHandlerWin(),
@@ -388,7 +387,8 @@ bool CWBApplication::Initialize() {
   return true;
 }
 
-bool CWBApplication::Initialize(const CCoreWindowParameters& WindowParams) {
+bool CWBApplication::Initialize(
+    const renderer::CCoreWindowParameters& WindowParams) {
   if (!CCoreWindowHandlerWin::Initialize(WindowParams)) return false;
   return Initialize();
 }
@@ -478,7 +478,7 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   CleanTrash();
 
   FinalizeMouseCursor();
-  SelectMouseCursor(COREMOUSECURSOR::CM_ARROW);
+  SelectMouseCursor(renderer::COREMOUSECURSOR::CM_ARROW);
 
   DrawAPI->SetUIRenderState();
   Device->Clear(true, true, ClearColor);
@@ -974,10 +974,10 @@ void CWBApplication::TakeScreenshot() {
   auto b = DrawAPI->GetDevice()->CreateBlendState();
   b->SetBlendEnable(0, true);
   b->SetIndependentBlend(true);
-  b->SetSrcBlend(0, COREBLENDFACTOR::ZERO);
-  b->SetDestBlend(0, COREBLENDFACTOR::ONE);
-  b->SetSrcBlendAlpha(0, COREBLENDFACTOR::ONE);
-  b->SetDestBlendAlpha(0, COREBLENDFACTOR::ZERO);
+  b->SetSrcBlend(0, renderer::COREBLENDFACTOR::ZERO);
+  b->SetDestBlend(0, renderer::COREBLENDFACTOR::ONE);
+  b->SetSrcBlendAlpha(0, renderer::COREBLENDFACTOR::ONE);
+  b->SetDestBlendAlpha(0, renderer::COREBLENDFACTOR::ZERO);
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
   DrawAPI->SetCropRect(CRect(0, 0, XRes, YRes));

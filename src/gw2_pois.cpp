@@ -60,8 +60,6 @@ import whiteboard;
 
 using math::CRect;
 
-using namespace renderer;
-
 std::unique_ptr<CWBApplication> App;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
@@ -739,7 +737,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   int32_t width = 1;
   int32_t height = 1;
 
-  CCoreWindowParameters p(GetModuleHandle(nullptr), false, width, height,
+  renderer::CCoreWindowParameters p(GetModuleHandle(nullptr), false, width, height,
                           "Guild Wars 2 Tactical Overlay",
                           LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
   p.OverrideWindowStyle = WS_POPUP;
