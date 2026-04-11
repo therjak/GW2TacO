@@ -4,6 +4,8 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/render_state.h"
 
+namespace renderer {
+
 class CCoreDX11BlendState : public CCoreBlendState {
  public:
   explicit CCoreDX11BlendState(CCoreDX11Device* Device);
@@ -67,3 +69,5 @@ class CCoreDX11SamplerState : public CCoreSamplerState {
   ID3D11DeviceContext* Context;
   ID3D11SamplerState* State;
 };
+
+}  // namespace renderer

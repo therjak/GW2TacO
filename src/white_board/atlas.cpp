@@ -15,6 +15,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+using namespace renderer;
+
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() = default;
@@ -56,7 +58,11 @@ CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
 CAtlasImage* CAtlasNode::GetImage() { return Image; }
 
 CAtlasImage::CAtlasImage()
-    : Image(nullptr), XRes(0), YRes(0), Handle(AtlasHandle++), Required(false) {}
+    : Image(nullptr),
+      XRes(0),
+      YRes(0),
+      Handle(AtlasHandle++),
+      Required(false) {}
 
 CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
                          int32_t SrcYRes, const CRect& Source)

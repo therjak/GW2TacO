@@ -12,6 +12,7 @@ module;
 #include "src/base/color.h"
 #include "src/base/logger.h"
 #include "src/base/timer.h"
+#include "src/core2/window_handler.h"
 
 module whiteboard;
 
@@ -20,6 +21,8 @@ import :text_box;
 
 using math::CPoint;
 using math::CRect;
+
+using namespace renderer;
 
 void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   const WBITEMSTATE s = GetState();

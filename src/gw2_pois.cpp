@@ -3,8 +3,11 @@
 #include <windowsx.h>
 
 // Needs windows
+#include <ShellScalingAPI.h>
 #include <TlHelp32.h>
+#include <Urlmon.h>  // URLOpenBlockingStreamW()
 #include <imm.h>
+#include <tlhelp32.h>
 #include <winhttp.h>
 
 #include <memory>
@@ -20,9 +23,13 @@
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
+#include "src/core2/window_handler.h"
 #include "src/gw2_tactical.h"
 #include "src/resource.h"
+#include "src/util/jsonxx.h"
 #include "src/util/miniz.h"
+
+#pragma comment(lib, "Urlmon.lib")
 
 import taco.mumble_link;
 import taco.gw2;
@@ -52,6 +59,8 @@ import whiteboard;
 #pragma comment(lib, "Shell32.lib")
 
 using math::CRect;
+
+using namespace renderer;
 
 std::unique_ptr<CWBApplication> App;
 HWND gw2Window;
@@ -448,21 +457,11 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
                      data.GetLength());
 }
 
-#include <Urlmon.h>  // URLOpenBlockingStreamW()
-#pragma comment(lib, "Urlmon.lib")
-
 bool HooksInitialized = false;
 
 volatile int mainLoopCounter = 0;
 volatile int lastCnt = 0;
 int lastMainLoopTime = 0;
-#include <ShellScalingAPI.h>
-
-#include <thread>
-
-#include "src/util/jsonxx.h"
-
-#include <tlhelp32.h>
 
 void GetFileName(CHAR pfname[MAX_PATH]) {
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());
@@ -1082,8 +1081,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   while (mouseHookActive) {
     ;
   }
-
-
 
   trails.clear();
 

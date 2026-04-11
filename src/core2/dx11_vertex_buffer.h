@@ -6,6 +6,8 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/vertex_buffer.h"
 
+namespace renderer {
+
 class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
  public:
   explicit CCoreDX11VertexBuffer(CCoreDX11Device* Device);
@@ -32,3 +34,5 @@ class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
   int32_t Size;
   bool Dynamic;
 };
+
+}  // namespace renderer

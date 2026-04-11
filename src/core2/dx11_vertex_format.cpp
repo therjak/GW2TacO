@@ -7,6 +7,8 @@
 
 #include "src/base/logger.h"
 
+namespace renderer {
+
 CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device* dev)
     : CCoreVertexFormat(dev) {
   Dev = dev->GetDevice();
@@ -122,3 +124,5 @@ bool CCoreDX11VertexFormat::Create(
 }
 
 int32_t CCoreDX11VertexFormat::GetSize() { return Size; }
+
+}  // namespace renderer

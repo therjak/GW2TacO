@@ -7,6 +7,8 @@
 #include "src/core2/core2_config.h"
 #include "src/core2/enums.h"
 
+namespace renderer {
+
 constexpr std::array<DXGI_FORMAT, 6> DX11Formats = {
     DXGI_FORMAT_UNKNOWN,
     DXGI_FORMAT_B8G8R8A8_UNORM,
@@ -94,3 +96,5 @@ constexpr std::array<D3D11_TEXTURE_ADDRESS_MODE, 5> DX11TextureAddressModes = {
 };
 
 COREFORMAT GetFormat(DXGI_FORMAT Format);
+
+}  // namespace renderer

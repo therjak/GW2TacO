@@ -3,6 +3,8 @@
 
 #include "src/core2/resource.h"
 
+namespace renderer {
+
 class CCoreVertexBuffer : public CCoreResource {
   friend class CCoreDevice;
 
@@ -22,3 +24,5 @@ class CCoreVertexBuffer : public CCoreResource {
  private:
   virtual bool Apply(const uint32_t Offset) = 0;
 };
+
+}  // namespace renderer

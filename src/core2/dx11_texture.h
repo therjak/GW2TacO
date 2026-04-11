@@ -8,6 +8,8 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/texture.h"
 
+namespace renderer {
+
 class CCoreDX11Texture2D : public CCoreTexture2D {
  public:
   explicit CCoreDX11Texture2D(CCoreDX11Device* Device);
@@ -66,3 +68,5 @@ class CCoreDX11TextureCube : public CCoreTextureCube {
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
                        _In_ ID3D11Resource* pSource, CStreamWriter& Writer);
+
+}  // namespace renderer

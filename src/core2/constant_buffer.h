@@ -4,6 +4,8 @@
 
 #include "src/core2/resource.h"
 
+namespace renderer {
+
 class CCoreConstantBuffer : public CCoreResource {
  public:
   explicit CCoreConstantBuffer(CCoreDevice* Device);
@@ -19,3 +21,5 @@ class CCoreConstantBuffer : public CCoreResource {
   int32_t BufferLength = 0;
   int32_t DataLength = 0;
 };
+
+}  // namespace renderer

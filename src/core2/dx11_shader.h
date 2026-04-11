@@ -7,6 +7,8 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/shader.h"
 
+namespace renderer {
+
 class CCoreDX11VertexShader : public CCoreVertexShader {
  public:
   explicit CCoreDX11VertexShader(CCoreDX11Device* Device);
@@ -120,3 +122,5 @@ class CCoreDX11ComputeShader : public CCoreComputeShader {
   ID3D11DeviceContext* DeviceContext;
   ID3D11ComputeShader* ComputeShaderHandle;
 };
+
+}  // namespace renderer

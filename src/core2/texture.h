@@ -5,6 +5,8 @@
 #include "src/core2/enums.h"
 #include "src/core2/resource.h"
 
+namespace renderer {
+
 enum class EXPORTIMAGEFORMAT : uint8_t {
   CORE_PNG = 0,
   CORE_TGA = 1,
@@ -63,3 +65,5 @@ class CCoreTextureCube : public CCoreTexture {
  public:
   explicit CCoreTextureCube(CCoreDevice* Device) : CCoreTexture(Device) {}
 };
+
+}  // namespace renderer

@@ -12,6 +12,7 @@ module;
 
 #include "src/base/logger.h"
 #include "src/base/stream_writer.h"
+#include "src/core2/enums.h"
 #include "src/gw2_tactical.h"
 #include "src/util/miniz.h"
 
@@ -23,6 +24,8 @@ import taco.mumble_link;
 import taco.time;
 
 #pragma comment(lib, "Comdlg32.lib")
+
+using namespace renderer;
 
 constexpr int32_t kTrailFileVersion = 0;
 

@@ -5,6 +5,8 @@
 
 #include "src/base/logger.h"
 
+namespace renderer {
+
 CCoreDX11BlendState::CCoreDX11BlendState(CCoreDX11Device* d)
     : CCoreBlendState(d) {
   Device = d;
@@ -226,3 +228,5 @@ bool CCoreDX11SamplerState::Apply(CORESAMPLER Smp) {
 
   return true;
 }
+
+}  // namespace renderer

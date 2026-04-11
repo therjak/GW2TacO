@@ -20,6 +20,7 @@ module;
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
+#include "src/core2/window_handler.h"
 #include "src/util/png_decompressor.h"
 
 module whiteboard;
@@ -34,6 +35,7 @@ import :window;
 
 using math::CPoint;
 using math::CRect;
+using namespace renderer;
 
 CWBApplication::CWBApplication()
     : CCoreWindowHandlerWin(),

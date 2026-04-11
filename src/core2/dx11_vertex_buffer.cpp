@@ -5,6 +5,8 @@
 
 #include "src/base/logger.h"
 
+namespace renderer {
+
 CCoreDX11VertexBuffer::CCoreDX11VertexBuffer(CCoreDX11Device* dev)
     : CCoreVertexBuffer(dev) {
   Dev = dev->GetDevice();
@@ -127,3 +129,5 @@ bool CCoreDX11VertexBuffer::UnLock() {
   DeviceContext->Unmap(VertexBufferHandle, 0);
   return true;
 }
+
+}  // namespace renderer

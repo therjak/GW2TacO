@@ -1,5 +1,7 @@
 #include "src/core2/shader.h"
 
+namespace renderer {
+
 //////////////////////////////////////////////////////////////////////////
 // base shader class
 
@@ -34,3 +36,5 @@ CCoreDomainShader::~CCoreDomainShader() = default;
 // base Computeshader class
 
 CCoreComputeShader::~CCoreComputeShader() = default;
+
+} // namespace renderer

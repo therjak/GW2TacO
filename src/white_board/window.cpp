@@ -7,6 +7,8 @@ module;
 
 module whiteboard;
 
+using namespace renderer;
+
 import :application;
 import :window;
 import :font;

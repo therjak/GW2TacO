@@ -8,6 +8,8 @@ module;
 #include "src/base/vector.h"
 #include "src/core2/enums.h"
 
+using namespace renderer;
+
 module whiteboard;
 
 import :application;

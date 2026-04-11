@@ -8,6 +8,8 @@
 #include "src/core2/dx11_device.h"
 #include "src/core2/vertex_format.h"
 
+namespace renderer {
+
 class CCoreDX11VertexFormat : public CCoreVertexFormat {
  public:
   explicit CCoreDX11VertexFormat(CCoreDX11Device* dev);
@@ -26,3 +28,5 @@ class CCoreDX11VertexFormat : public CCoreVertexFormat {
   ID3D11InputLayout* VertexFormatHandle;
   int32_t Size;
 };
+
+}  // namespace renderer

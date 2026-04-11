@@ -18,6 +18,8 @@
 #pragma comment(lib, "DXGI.lib")
 // #pragma comment(lib,"dcomp.lib")
 
+namespace renderer {
+
 using math::CRect;
 
 typedef HRESULT(__stdcall* DCompositionCreateDeviceCallback)(
@@ -1149,3 +1151,5 @@ ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
 
   return bb;
 }
+
+}  // namespace renderer

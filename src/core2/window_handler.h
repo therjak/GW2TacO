@@ -9,6 +9,8 @@
 
 #include "src/base/rectangle.h"
 
+namespace renderer {
+
 class CCoreDevice;
 
 enum class COREMOUSECURSOR : uint16_t {
@@ -148,3 +150,5 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
 
   std::array<HCURSOR, 8> MouseCursors = {0};
 };
+
+}  // namespace renderer

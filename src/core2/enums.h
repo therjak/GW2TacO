@@ -4,6 +4,8 @@
 
 #include "src/base/enum_helpers.h"
 
+namespace renderer {
+
 enum class COREDEVICEAPI : uint8_t {
   DX9,
   DX11,
@@ -274,3 +276,5 @@ constexpr int32_t CORELOCK_DISCARD = 0x00002000L;
 constexpr int32_t CORELOCK_NOOVERWRITE = 0x00001000L;
 constexpr int32_t CORELOCK_NOSYSLOCK = 0x00000800L;
 constexpr int32_t CORELOCK_DONOTWAIT = 0x00004000L;
+
+}  // namespace renderer

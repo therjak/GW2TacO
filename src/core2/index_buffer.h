@@ -3,6 +3,7 @@
 
 #include "src/core2/resource.h"
 
+namespace renderer {
 class CCoreIndexBuffer : public CCoreResource {
   friend class CCoreDevice;
 
@@ -20,3 +21,4 @@ class CCoreIndexBuffer : public CCoreResource {
  private:
   virtual bool Apply() = 0;
 };
+}  // namespace renderer
