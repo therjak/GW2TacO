@@ -15,8 +15,6 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
-using namespace renderer;
-
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() = default;
@@ -184,7 +182,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
   return img->GetHandle() != 0;
 }
 
-bool CAtlas::InitializeTexture(CCoreDevice* Device) {
+bool CAtlas::InitializeTexture(renderer::CCoreDevice* Device) {
   if (!Device) return false;
   Atlas = Device->CreateTexture2D(XRes, YRes, Image.get());
   return Atlas.operator bool();
@@ -308,7 +306,7 @@ void CAtlas::DeleteImage(const WBATLASHANDLE h) {
   return;
 }
 
-CCoreTexture2D* CAtlas::GetTexture() { return Atlas.get(); }
+renderer::CCoreTexture2D* CAtlas::GetTexture() { return Atlas.get(); }
 
 CSize CAtlas::GetSize(WBATLASHANDLE h) {
   CAtlasNode* n = GetNodeCached(h);
@@ -407,7 +405,7 @@ bool CAtlas::Reset() {
   return true;
 }
 
-bool CAtlas::Resize(CCoreDevice* Device, int32_t XSize, int32_t YSize) {
+bool CAtlas::Resize(renderer::CCoreDevice* Device, int32_t XSize, int32_t YSize) {
   Root.reset();
   Image.reset();
   Atlas.reset();
