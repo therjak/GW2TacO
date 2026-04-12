@@ -5,28 +5,28 @@
 
 namespace renderer {
 
-CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice* Device)
-    : CCoreResource(Device) {}
+CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice* device)
+    : CCoreResource(device) {}
 
 CCoreConstantBuffer::~CCoreConstantBuffer() = default;
 
-void CCoreConstantBuffer::Reset() { DataLength = 0; }
+void CCoreConstantBuffer::Reset() { data_length_ = 0; }
 
-void CCoreConstantBuffer::AddData(const void* DataIn, int32_t Length) {
-  if (DataLength + Length > BufferLength) {
-    std::unique_ptr<uint8_t[]> OldData;
-    OldData.swap(Data);
-    Data = std::make_unique<uint8_t[]>(DataLength + Length);
+void CCoreConstantBuffer::AddData(const void* data_in, int32_t length) {
+  if (data_length_ + length > buffer_length_) {
+    std::unique_ptr<uint8_t[]> old_data;
+    old_data.swap(data_);
+    data_ = std::make_unique<uint8_t[]>(data_length_ + length);
 
-    if (OldData) {
-      std::memcpy(Data.get(), OldData.get(), DataLength);
+    if (old_data) {
+      std::memcpy(data_.get(), old_data.get(), data_length_);
     }
 
-    BufferLength = DataLength + Length;
+    buffer_length_ = data_length_ + length;
   }
 
-  std::memcpy(Data.get() + DataLength, DataIn, Length);
-  DataLength += Length;
+  std::memcpy(data_.get() + data_length_, data_in, length);
+  data_length_ += length;
 }
 
 void CCoreConstantBuffer::Upload() {}
