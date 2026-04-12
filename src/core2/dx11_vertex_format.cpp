@@ -9,99 +9,99 @@
 
 namespace renderer {
 
-CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device* dev)
-    : CCoreVertexFormat(dev) {
-  Dev = dev->GetDevice();
-  DeviceContext = dev->GetDeviceContext();
-  VertexFormatHandle = nullptr;
-  Size = 0;
+CCoreDX11VertexFormat::CCoreDX11VertexFormat(CCoreDX11Device* device)
+    : CCoreVertexFormat(device) {
+  d3d_device_ = device->GetDevice();
+  d3d_device_context_ = device->GetDeviceContext();
+  vertex_format_handle_ = nullptr;
+  size_ = 0;
 }
 
 CCoreDX11VertexFormat::~CCoreDX11VertexFormat() { Release(); }
 
 void CCoreDX11VertexFormat::Release() {
-  if (VertexFormatHandle) VertexFormatHandle->Release();
-  VertexFormatHandle = nullptr;
+  if (vertex_format_handle_) vertex_format_handle_->Release();
+  vertex_format_handle_ = nullptr;
 }
 
 bool CCoreDX11VertexFormat::Apply() {
-  if (!VertexFormatHandle) return false;
-  DeviceContext->IASetInputLayout(VertexFormatHandle);
+  if (!vertex_format_handle_) return false;
+  d3d_device_context_->IASetInputLayout(vertex_format_handle_);
   return true;
 }
 
 bool CCoreDX11VertexFormat::Create(
-    const std::vector<COREVERTEXATTRIBUTE>& Attributes, CCoreVertexShader* vs) {
-  if (!vs) return false;
-  if (!Attributes.size()) return false;
+    const std::vector<CoreVertexAttribute>& attributes, CCoreVertexShader* vertex_shader) {
+  if (!vertex_shader) return false;
+  if (!attributes.size()) return false;
   Release();
 
-  int32_t PosUsages = 0;
-  int32_t NormUsages = 0;
-  int32_t UVUsages = 0;
-  int32_t ColUsages = 0;
+  int32_t pos_usages = 0;
+  int32_t norm_usages = 0;
+  int32_t uv_usages = 0;
+  int32_t col_usages = 0;
 
-  Size = 0;
+  size_ = 0;
 
-  auto vxdecl =
-      std::make_unique<D3D11_INPUT_ELEMENT_DESC[]>(Attributes.size() + 1);
-  memset(vxdecl.get(), 0,
-         sizeof(D3D11_INPUT_ELEMENT_DESC) * (Attributes.size() + 1));
+  auto vertex_decl =
+      std::make_unique<D3D11_INPUT_ELEMENT_DESC[]>(attributes.size() + 1);
+  memset(vertex_decl.get(), 0,
+         sizeof(D3D11_INPUT_ELEMENT_DESC) * (attributes.size() + 1));
 
-  for (size_t x = 0; x < Attributes.size(); x++) {
-    vxdecl[x].InputSlot = 0;
-    vxdecl[x].AlignedByteOffset = static_cast<UINT32>(Size);
-    vxdecl[x].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-    vxdecl[x].InstanceDataStepRate = 0;
+  for (size_t i = 0; i < attributes.size(); i++) {
+    vertex_decl[i].InputSlot = 0;
+    vertex_decl[i].AlignedByteOffset = static_cast<UINT32>(size_);
+    vertex_decl[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+    vertex_decl[i].InstanceDataStepRate = 0;
 
-    switch (Attributes[x]) {
-      case COREVERTEXATTRIBUTE::POSITION3: {
-        vxdecl[x].SemanticName = "Position";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-        vxdecl[x].SemanticIndex = PosUsages++;
-        Size += 12;
+    switch (attributes[i]) {
+      case CoreVertexAttribute::kPosition3: {
+        vertex_decl[i].SemanticName = "Position";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+        vertex_decl[i].SemanticIndex = pos_usages++;
+        size_ += 12;
       } break;
-      case COREVERTEXATTRIBUTE::POSITION4: {
-        vxdecl[x].SemanticName = "Position";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        vxdecl[x].SemanticIndex = PosUsages++;
-        Size += 16;
+      case CoreVertexAttribute::kPosition4: {
+        vertex_decl[i].SemanticName = "Position";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        vertex_decl[i].SemanticIndex = pos_usages++;
+        size_ += 16;
       } break;
-      case COREVERTEXATTRIBUTE::NORMAL3: {
-        vxdecl[x].SemanticName = "Normal";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-        vxdecl[x].SemanticIndex = NormUsages++;
-        Size += 12;
+      case CoreVertexAttribute::kNormal3: {
+        vertex_decl[i].SemanticName = "Normal";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+        vertex_decl[i].SemanticIndex = norm_usages++;
+        size_ += 12;
       } break;
-      case COREVERTEXATTRIBUTE::TEXCOORD2: {
-        vxdecl[x].SemanticName = "Texcoord";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32_FLOAT;
-        vxdecl[x].SemanticIndex = UVUsages++;
-        Size += 8;
+      case CoreVertexAttribute::kTexCoord2: {
+        vertex_decl[i].SemanticName = "Texcoord";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32_FLOAT;
+        vertex_decl[i].SemanticIndex = uv_usages++;
+        size_ += 8;
       } break;
-      case COREVERTEXATTRIBUTE::TEXCOORD4: {
-        vxdecl[x].SemanticName = "Texcoord";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        vxdecl[x].SemanticIndex = UVUsages++;
-        Size += 16;
+      case CoreVertexAttribute::kTexCoord4: {
+        vertex_decl[i].SemanticName = "Texcoord";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        vertex_decl[i].SemanticIndex = uv_usages++;
+        size_ += 16;
       } break;
-      case COREVERTEXATTRIBUTE::COLOR4: {
-        vxdecl[x].SemanticName = "Color";
-        vxdecl[x].Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-        vxdecl[x].SemanticIndex = ColUsages++;
-        Size += 4;
+      case CoreVertexAttribute::kColor4: {
+        vertex_decl[i].SemanticName = "Color";
+        vertex_decl[i].Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        vertex_decl[i].SemanticIndex = col_usages++;
+        size_ += 4;
       } break;
-      case COREVERTEXATTRIBUTE::COLOR16: {
-        vxdecl[x].SemanticName = "Color";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        vxdecl[x].SemanticIndex = ColUsages++;
-        Size += 16;
+      case CoreVertexAttribute::kColor16: {
+        vertex_decl[i].SemanticName = "Color";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        vertex_decl[i].SemanticIndex = col_usages++;
+        size_ += 16;
       } break;
-      case COREVERTEXATTRIBUTE::POSITIONT4: {
-        vxdecl[x].SemanticName = "PositionT";
-        vxdecl[x].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        vxdecl[x].SemanticIndex = PosUsages++;
-        Size += 16;
+      case CoreVertexAttribute::kPositionT4: {
+        vertex_decl[i].SemanticName = "PositionT";
+        vertex_decl[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        vertex_decl[i].SemanticIndex = pos_usages++;
+        size_ += 16;
       } break;
 
       default: {
@@ -111,18 +111,20 @@ bool CCoreDX11VertexFormat::Create(
     }
   }
 
-  const HRESULT res = Dev->CreateInputLayout(
-      vxdecl.get(), static_cast<UINT>(Attributes.size()), vs->GetBinary(),
-      static_cast<SIZE_T>(vs->GetBinaryLength()), &VertexFormatHandle);
-  if (res != S_OK) {
-    _com_error err(res);
-    Log_Err("[core] CreateInputLayout failed ({:s})", err.ErrorMessage());
+  const HRESULT result = d3d_device_->CreateInputLayout(
+      vertex_decl.get(), static_cast<UINT>(attributes.size()),
+      vertex_shader->GetBinary(),
+      static_cast<SIZE_T>(vertex_shader->GetBinaryLength()),
+      &vertex_format_handle_);
+  if (result != S_OK) {
+    _com_error error(result);
+    Log_Err("[core] CreateInputLayout failed ({:s})", error.ErrorMessage());
     return false;
   }
 
   return true;
 }
 
-int32_t CCoreDX11VertexFormat::GetSize() { return Size; }
+int32_t CCoreDX11VertexFormat::GetSize() { return size_; }
 
 }  // namespace renderer

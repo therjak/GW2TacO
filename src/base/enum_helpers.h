@@ -7,16 +7,16 @@
 
 template <class T>
 struct EnumNamePair {
-  T Value;
-  std::string_view Name;
+  T value;
+  std::string_view name;
 };
 
 template <class T, class S>
-constexpr bool FindEnumByName(const T& Pairs, std::string_view Name,
-                              S& Result) {
-  for (const auto& p : Pairs) {
-    if (Name == p.Name) {
-      Result = p.Value;
+constexpr bool FindEnumByName(const T& pairs, std::string_view name,
+                              S& result) {
+  for (const auto& p : pairs) {
+    if (name == p.name) {
+      result = p.value;
       return true;
     }
   }
@@ -24,9 +24,9 @@ constexpr bool FindEnumByName(const T& Pairs, std::string_view Name,
 }
 
 template <class T, class S>
-constexpr std::string_view FindNameByEnum(const T& Pairs, S Enum) {
-  for (const auto& p : Pairs) {
-    if (Enum == p.Value) return p.Name;
+constexpr std::string_view FindNameByEnum(const T& pairs, S enumeration) {
+  for (const auto& p : pairs) {
+    if (enumeration == p.value) return p.name;
   }
   return {};
 }

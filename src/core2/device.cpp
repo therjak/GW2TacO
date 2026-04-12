@@ -6,270 +6,266 @@
 
 namespace renderer {
 
-const CORERENDERSTATEID IDFromRenderState(const CORERENDERSTATE State,
-                                          const CORESAMPLER Sampler) {
-  return (static_cast<uint32_t>(State) << 16) + static_cast<uint32_t>(Sampler);
+const CoreRenderStateId IdFromRenderState(const CoreRenderState state,
+                                          const CoreSampler sampler) {
+  return (static_cast<uint32_t>(state) << 16) + static_cast<uint32_t>(sampler);
 }
 
-void RenderStateFromID(const CORERENDERSTATEID ID, CORERENDERSTATE& State,
-                       CORESAMPLER& Sampler) {
-  State = static_cast<CORERENDERSTATE>(ID >> 16);
-  Sampler = static_cast<CORESAMPLER>(ID & 0xffff);
+void RenderStateFromId(const CoreRenderStateId id, CoreRenderState& state,
+                       CoreSampler& sampler) {
+  state = static_cast<CoreRenderState>(id >> 16);
+  sampler = static_cast<CoreSampler>(id & 0xffff);
 }
 
-void CCoreDevice::AddResource(CCoreResource* Resource) {
-  Resources.push_back(Resource);
+void CCoreDevice::AddResource(CCoreResource* resource) {
+  resources_.push_back(resource);
 }
 
-void CCoreDevice::RemoveResource(CCoreResource* Resource) {
-  Resources.erase(std::remove(Resources.begin(), Resources.end(), Resource),
-                  Resources.end());
+void CCoreDevice::RemoveResource(CCoreResource* resource) {
+  resources_.erase(std::remove(resources_.begin(), resources_.end(), resource),
+                  resources_.end());
 }
 
 CCoreDevice::CCoreDevice() = default;
 
 CCoreDevice::~CCoreDevice() {
-  DefaultRasterizerState.reset();
-  DefaultBlendState.reset();
-  DefaultDepthStencilState.reset();
+  default_rasterizer_state_.reset();
+  default_blend_state_.reset();
+  default_depth_stencil_state_.reset();
 
   // remove remaining (leaked) resources:
-  for (auto r : Resources) {
+  for (auto r : resources_) {
     delete r;
   }
-  Resources.clear();
+  resources_.clear();
 }
 
 void CCoreDevice::ResetDevice() {
-  for (auto& r : Resources) r->OnDeviceLost();
+  for (auto& r : resources_) r->OnDeviceLost();
 
   ResetPrivateResources();
 
-  for (auto& r : Resources) r->OnDeviceReset();
+  for (auto& r : resources_) r->OnDeviceReset();
 
   // reload render state
-  RequestedRenderState.merge(CurrentRenderState);
-  CurrentRenderState.clear();
+  requested_render_state_.merge(current_render_state_);
+  current_render_state_.clear();
 }
 
 bool CCoreDevice::ApplyRequestedRenderState() {
-  for (const auto& x : RequestedRenderState) {
-    const CORERENDERSTATEID ID = x.first;
-    CORERENDERSTATEVALUE Value = x.second;
+  for (const auto& x : requested_render_state_) {
+    const CoreRenderStateId id = x.first;
+    CoreRenderStateValue value = x.second;
 
-    if (CurrentRenderState.find(ID) == CurrentRenderState.end() ||
-        CurrentRenderState[ID] != Value) {
-      CORERENDERSTATE RS;
-      CORESAMPLER Smp;
-      RenderStateFromID(ID, RS, Smp);
-      if (!ApplyRenderState(Smp, RS, Value)) return false;
-      CurrentRenderState[ID] = Value;
+    if (current_render_state_.find(id) == current_render_state_.end() ||
+        current_render_state_[id] != value) {
+      CoreRenderState rs;
+      CoreSampler sampler;
+      RenderStateFromId(id, rs, sampler);
+      if (!ApplyRenderState(sampler, rs, value)) return false;
+      current_render_state_[id] = value;
     }
   }
 
-  if (CurrentVertexBuffer != RequestedVertexBuffer ||
-      CurrentVertexBufferOffset != RequestedVertexBufferOffset) {
-    if (!RequestedVertexBuffer) {
+  if (current_vertex_buffer_ != requested_vertex_buffer_ ||
+      current_vertex_buffer_offset_ != requested_vertex_buffer_offset_) {
+    if (!requested_vertex_buffer_) {
       if (!SetNoVertexBuffer()) return false;
-      RequestedVertexBuffer = nullptr;
-      RequestedVertexBufferOffset = 0;
+      requested_vertex_buffer_ = nullptr;
+      requested_vertex_buffer_offset_ = 0;
     } else {
-      if (!ApplyVertexBuffer(RequestedVertexBuffer,
-                             RequestedVertexBufferOffset)) {
+      if (!ApplyVertexBuffer(requested_vertex_buffer_,
+                             requested_vertex_buffer_offset_)) {
         return false;
       }
-      // therjak: WTF? was there some reason for this? was this just a bug?
-      //          should this be something with CurrentVertexBuffer*?
-      // RequestedVertexBuffer = RequestedVertexBuffer;
-      // RequestedVertexBufferOffset = RequestedVertexBufferOffset;
     }
   }
 
-  RequestedRenderState.clear();
+  requested_render_state_.clear();
 
   return CommitRenderStates();
 }
 
-bool CCoreDevice::ApplyTextureToSampler(const CORESAMPLER Sampler,
-                                        CCoreTexture* Texture) {
-  if (!Texture) return false;
-  return Texture->SetToSampler(Sampler);
+bool CCoreDevice::ApplyTextureToSampler(const CoreSampler sampler,
+                                        CCoreTexture* texture) {
+  if (!texture) return false;
+  return texture->SetToSampler(sampler);
 }
 
-bool CCoreDevice::ApplyVertexShader(CCoreVertexShader* Shader) {
-  if (!Shader) return false;
-  return Shader->Apply();
+bool CCoreDevice::ApplyVertexShader(CCoreVertexShader* shader) {
+  if (!shader) return false;
+  return shader->Apply();
 }
 
-bool CCoreDevice::ApplyGeometryShader(CCoreGeometryShader* Shader) {
-  if (!Shader) return false;
-  return Shader->Apply();
+bool CCoreDevice::ApplyGeometryShader(CCoreGeometryShader* shader) {
+  if (!shader) return false;
+  return shader->Apply();
 }
 
-bool CCoreDevice::ApplyHullShader(CCoreHullShader* Shader) {
-  if (!Shader) return false;
-  return Shader->Apply();
+bool CCoreDevice::ApplyHullShader(CCoreHullShader* shader) {
+  if (!shader) return false;
+  return shader->Apply();
 }
 
-bool CCoreDevice::ApplyDomainShader(CCoreDomainShader* Shader) {
-  if (!Shader) return false;
-  return Shader->Apply();
+bool CCoreDevice::ApplyDomainShader(CCoreDomainShader* shader) {
+  if (!shader) return false;
+  return shader->Apply();
 }
 
-bool CCoreDevice::ApplyComputeShader(CCoreComputeShader* Shader) {
-  if (!Shader) return false;
-  return Shader->Apply();
+bool CCoreDevice::ApplyComputeShader(CCoreComputeShader* shader) {
+  if (!shader) return false;
+  return shader->Apply();
 }
 
-bool CCoreDevice::ApplyPixelShader(CCorePixelShader* Shader) {
-  if (!Shader) return false;
-  return Shader->Apply();
+bool CCoreDevice::ApplyPixelShader(CCorePixelShader* shader) {
+  if (!shader) return false;
+  return shader->Apply();
 }
 
-bool CCoreDevice::ApplyVertexFormat(CCoreVertexFormat* Format) {
-  if (!Format) return false;
-  return Format->Apply();
+bool CCoreDevice::ApplyVertexFormat(CCoreVertexFormat* vertex_format) {
+  if (!vertex_format) return false;
+  return vertex_format->Apply();
 }
 
-bool CCoreDevice::ApplyIndexBuffer(CCoreIndexBuffer* IdxBuffer) {
-  if (!IdxBuffer) return false;
-  return IdxBuffer->Apply();
+bool CCoreDevice::ApplyIndexBuffer(CCoreIndexBuffer* idx_buffer) {
+  if (!idx_buffer) return false;
+  return idx_buffer->Apply();
 }
 
-bool CCoreDevice::ApplyVertexBuffer(CCoreVertexBuffer* VxBuffer,
-                                    uint32_t Offset) {
-  if (!VxBuffer) return false;
-  return VxBuffer->Apply(Offset);
+bool CCoreDevice::ApplyVertexBuffer(CCoreVertexBuffer* vx_buffer,
+                                    uint32_t offset) {
+  if (!vx_buffer) return false;
+  return vx_buffer->Apply(offset);
 }
 
-bool CCoreDevice::SetSamplerState(CORESAMPLER Sampler,
-                                  CCoreSamplerState* SamplerState) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::SAMPLERSTATE,
-                                         Sampler)]
-      .SamplerState = SamplerState;
+bool CCoreDevice::SetSamplerState(CoreSampler sampler,
+                                  CCoreSamplerState* sampler_state) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kSamplerState,
+                                         sampler)]
+      .sampler_state = sampler_state;
   return true;
 }
 
-bool CCoreDevice::SetRenderState(CCoreRasterizerState* RasterizerState) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::RASTERIZERSTATE,
-                                         static_cast<CORESAMPLER>(0))]
-      .RasterizerState = RasterizerState;
+bool CCoreDevice::SetRenderState(CCoreRasterizerState* rasterizer_state) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kRasterizerState,
+                                         static_cast<CoreSampler>(0))]
+      .rasterizer_state = rasterizer_state;
   return true;
 }
 
-bool CCoreDevice::SetRenderState(CCoreBlendState* BlendState) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::BLENDSTATE,
-                                         static_cast<CORESAMPLER>(0))]
-      .BlendState = BlendState;
+bool CCoreDevice::SetRenderState(CCoreBlendState* blend_state) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kBlendState,
+                                         static_cast<CoreSampler>(0))]
+      .blend_state = blend_state;
   return true;
 }
 
-bool CCoreDevice::SetRenderState(CCoreDepthStencilState* DepthStencilState) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::DEPTHSTENCILSTATE,
-                                         static_cast<CORESAMPLER>(0))]
-      .DepthStencilState = DepthStencilState;
+bool CCoreDevice::SetRenderState(CCoreDepthStencilState* depth_stencil_state) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kDepthStencilState,
+                                         static_cast<CoreSampler>(0))]
+      .depth_stencil_state = depth_stencil_state;
   return true;
 }
 
-bool CCoreDevice::SetTexture(CORESAMPLER Sampler, CCoreTexture* Texture) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::TEXTURE, Sampler)]
-      .Texture = Texture;
+bool CCoreDevice::SetTexture(CoreSampler sampler, CCoreTexture* texture) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kTexture, sampler)]
+      .texture = texture;
   return true;
 }
 
-bool CCoreDevice::SetVertexShader(CCoreVertexShader* Shader) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::VERTEXSHADER,
-                                         static_cast<CORESAMPLER>(0))]
-      .VertexShader = Shader;
+bool CCoreDevice::SetVertexShader(CCoreVertexShader* shader) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kVertexShader,
+                                         static_cast<CoreSampler>(0))]
+      .vertex_shader = shader;
   return true;
 }
 
-bool CCoreDevice::SetPixelShader(CCorePixelShader* Shader) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::PIXELSHADER,
-                                         static_cast<CORESAMPLER>(0))]
-      .PixelShader = Shader;
+bool CCoreDevice::SetPixelShader(CCorePixelShader* shader) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kPixelShader,
+                                         static_cast<CoreSampler>(0))]
+      .pixel_shader = shader;
   return true;
 }
 
-bool CCoreDevice::SetGeometryShader(CCoreGeometryShader* Shader) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::GEOMETRYSHADER,
-                                         static_cast<CORESAMPLER>(0))]
-      .GeometryShader = Shader;
+bool CCoreDevice::SetGeometryShader(CCoreGeometryShader* shader) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kGeometryShader,
+                                         static_cast<CoreSampler>(0))]
+      .geometry_shader = shader;
   return true;
 }
 
-bool CCoreDevice::SetHullShader(CCoreHullShader* Shader) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::HULLSHADER,
-                                         static_cast<CORESAMPLER>(0))]
-      .HullShader = Shader;
+bool CCoreDevice::SetHullShader(CCoreHullShader* shader) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kHullShader,
+                                         static_cast<CoreSampler>(0))]
+      .hull_shader = shader;
   return true;
 }
 
-bool CCoreDevice::SetDomainShader(CCoreDomainShader* Shader) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::DOMAINSHADER,
-                                         static_cast<CORESAMPLER>(0))]
-      .DomainShader = Shader;
+bool CCoreDevice::SetDomainShader(CCoreDomainShader* shader) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kDomainShader,
+                                         static_cast<CoreSampler>(0))]
+      .domain_shader = shader;
   return true;
 }
 
-bool CCoreDevice::SetVertexBuffer(CCoreVertexBuffer* VertexBuffer,
-                                  uint32_t Offset) {
-  RequestedVertexBuffer = VertexBuffer;
-  RequestedVertexBufferOffset = Offset;
+bool CCoreDevice::SetVertexBuffer(CCoreVertexBuffer* vertex_buffer,
+                                  uint32_t offset) {
+  requested_vertex_buffer_ = vertex_buffer;
+  requested_vertex_buffer_offset_ = offset;
   return true;
 }
 
-bool CCoreDevice::SetIndexBuffer(CCoreIndexBuffer* IndexBuffer) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::INDEXBUFFER,
-                                         static_cast<CORESAMPLER>(0))]
-      .IndexBuffer = IndexBuffer;
+bool CCoreDevice::SetIndexBuffer(CCoreIndexBuffer* index_buffer) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kIndexBuffer,
+                                         static_cast<CoreSampler>(0))]
+      .index_buffer = index_buffer;
   return true;
 }
 
-bool CCoreDevice::SetVertexFormat(CCoreVertexFormat* VertexFormat) {
-  RequestedRenderState[IDFromRenderState(CORERENDERSTATE::VERTEXFORMAT,
-                                         static_cast<CORESAMPLER>(0))]
-      .VertexFormat = VertexFormat;
+bool CCoreDevice::SetVertexFormat(CCoreVertexFormat* vertex_format) {
+  requested_render_state_[IdFromRenderState(CoreRenderState::kVertexFormat,
+                                         static_cast<CoreSampler>(0))]
+      .vertex_format = vertex_format;
   return true;
 }
 
-int32_t CCoreDevice::GetVertexFormatSize() { return CurrentVertexFormatSize; }
+int32_t CCoreDevice::GetVertexFormatSize() { return current_vertex_format_size_; }
 
-CCoreTexture* CCoreDevice::GetTexture(CORESAMPLER Sampler) {
-  if (RequestedRenderState.find(IDFromRenderState(
-          CORERENDERSTATE::TEXTURE, Sampler)) != RequestedRenderState.end()) {
-    return RequestedRenderState[IDFromRenderState(CORERENDERSTATE::TEXTURE,
-                                                  Sampler)]
-        .Texture;
+CCoreTexture* CCoreDevice::GetTexture(CoreSampler sampler) {
+  if (requested_render_state_.find(IdFromRenderState(
+          CoreRenderState::kTexture, sampler)) != requested_render_state_.end()) {
+    return requested_render_state_[IdFromRenderState(CoreRenderState::kTexture,
+                                                   sampler)]
+        .texture;
   }
-  if (CurrentRenderState.find(IDFromRenderState(
-          CORERENDERSTATE::TEXTURE, Sampler)) != CurrentRenderState.end()) {
-    return CurrentRenderState[IDFromRenderState(CORERENDERSTATE::TEXTURE,
-                                                Sampler)]
-        .Texture;
+  if (current_render_state_.find(IdFromRenderState(
+          CoreRenderState::kTexture, sampler)) != current_render_state_.end()) {
+    return current_render_state_[IdFromRenderState(CoreRenderState::kTexture,
+                                                 sampler)]
+        .texture;
   }
   return nullptr;
 }
 
 bool CCoreDevice::CreateDefaultRenderStates() {
-  bool Success = true;
+  bool success = true;
 
-  DefaultBlendState = CreateBlendState();
-  DefaultBlendState->SetBlendEnable(0, true);
-  DefaultBlendState->SetSrcBlend(0, COREBLENDFACTOR::SRCALPHA);
-  DefaultBlendState->SetDestBlend(0, COREBLENDFACTOR::INVSRCALPHA);
-  Success |= DefaultBlendState->Apply();
+  default_blend_state_ = CreateBlendState();
+  default_blend_state_->SetBlendEnable(0, true);
+  default_blend_state_->SetSrcBlend(0, CoreBlendFactor::kSrcAlpha);
+  default_blend_state_->SetDestBlend(0, CoreBlendFactor::kInvSrcAlpha);
+  success |= default_blend_state_->Apply();
 
-  DefaultDepthStencilState = CreateDepthStencilState();
-  DefaultDepthStencilState->SetDepthEnable(true);
-  DefaultDepthStencilState->SetZWriteEnable(true);
-  DefaultDepthStencilState->SetDepthFunc(CORECOMPARISONFUNCTION::LEQUAL);
-  Success |= DefaultDepthStencilState->Apply();
+  default_depth_stencil_state_ = CreateDepthStencilState();
+  default_depth_stencil_state_->SetDepthEnable(true);
+  default_depth_stencil_state_->SetZWriteEnable(true);
+  default_depth_stencil_state_->SetDepthFunc(CoreComparisonFunction::kLessEqual);
+  success |= default_depth_stencil_state_->Apply();
 
-  DefaultRasterizerState = CreateRasterizerState();
-  Success |= DefaultRasterizerState->Apply();
+  default_rasterizer_state_ = CreateRasterizerState();
+  success |= default_rasterizer_state_->Apply();
 
-  return Success;
+  return success;
 }
 
 }  // namespace renderer

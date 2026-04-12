@@ -47,7 +47,7 @@ class CWBApplication : public renderer::CCoreWindowHandlerWin {
   CWBItem* GetRoot();
   CWBItem* GetFocusItem();
   bool HandleMessages() override;
-  virtual bool IsDone() { return Done; }
+  virtual bool IsDone() { return done_; }
   virtual void SetDone(bool d);
   virtual void Display();
   virtual void Display(CWBDrawAPI* DrawAPI);

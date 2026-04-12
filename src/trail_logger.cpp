@@ -77,7 +77,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
   App->GetDevice()->SetVertexShader(vxShader.get());
   App->GetDevice()->SetPixelShader(pxShader.get());
   App->GetDevice()->SetVertexFormat(vertexFormat.get());
-  trailSampler->Apply(renderer::CORESAMPLER::PS0);
+  trailSampler->Apply(renderer::CoreSampler::kPs0);
   trailDepthStencil->Apply();
 
   if (!HasConfigValue("ShowMinimapTrails")) {
@@ -141,7 +141,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
         if (editedTrail->map == mumbleLink.mapID) {
           data[0] = GetTime() / 1000.0f;
 
-          App->GetDevice()->SetTexture(renderer::CORESAMPLER::PS0,
+          App->GetDevice()->SetTexture(renderer::CoreSampler::kPs0,
                                        trailTexture.get());
 
           constBuffer->Reset();
@@ -475,21 +475,21 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
 
   App->GetDevice()->SetShaderConstants(constBuffer.get());
   trailSampler = App->GetDevice()->CreateSamplerState();
-  trailSampler->SetAddressU(renderer::CORETEXTUREADDRESSMODE::WRAP);
-  trailSampler->SetAddressV(renderer::CORETEXTUREADDRESSMODE::WRAP);
-  trailSampler->SetFilter(renderer::COREFILTER::ANISOTROPIC);
+  trailSampler->SetAddressU(renderer::CoreTextureAddressMode::kWrap);
+  trailSampler->SetAddressV(renderer::CoreTextureAddressMode::kWrap);
+  trailSampler->SetFilter(renderer::CoreFilter::kAnisotropic);
   trailSampler->Update();
 
   trailRasterizer1 = App->GetDevice()->CreateRasterizerState();
-  trailRasterizer1->SetCullMode(renderer::CORECULLMODE::CCW);
+  trailRasterizer1->SetCullMode(renderer::CoreCullMode::kCcw);
   trailRasterizer1->Update();
 
   trailRasterizer2 = App->GetDevice()->CreateRasterizerState();
-  trailRasterizer2->SetCullMode(renderer::CORECULLMODE::CW);
+  trailRasterizer2->SetCullMode(renderer::CoreCullMode::kCw);
   trailRasterizer2->Update();
 
   trailRasterizer3 = App->GetDevice()->CreateRasterizerState();
-  trailRasterizer3->SetCullMode(renderer::CORECULLMODE::NONE);
+  trailRasterizer3->SetCullMode(renderer::CoreCullMode::kNone);
   trailRasterizer3->Update();
 
   trailDepthStencil = App->GetDevice()->CreateDepthStencilState();
@@ -547,11 +547,11 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
   pxShader = App->GetDevice()->CreatePixelShader(
       code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
 
-  std::vector<renderer::COREVERTEXATTRIBUTE> Att{
-      renderer::COREVERTEXATTRIBUTE::POSITIONT4,
-      renderer::COREVERTEXATTRIBUTE::TEXCOORD2,
-      renderer::COREVERTEXATTRIBUTE::TEXCOORD4,
-      renderer::COREVERTEXATTRIBUTE::COLOR4,
+  std::vector<renderer::CoreVertexAttribute> Att{
+      renderer::CoreVertexAttribute::kPositionT4,
+      renderer::CoreVertexAttribute::kTexCoord2,
+      renderer::CoreVertexAttribute::kTexCoord4,
+      renderer::CoreVertexAttribute::kColor4,
   };
 
   vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
@@ -880,7 +880,7 @@ void GW2Trail::SetupAndDraw(renderer::CCoreConstantBuffer* constBuffer,
 
   if (map != mumbleLink.mapID) return;
 
-  App->GetDevice()->SetTexture(renderer::CORESAMPLER::PS0, texture);
+  App->GetDevice()->SetTexture(renderer::CoreSampler::kPs0, texture);
 
   data[0] = GetTime() / 1000.0f;
 

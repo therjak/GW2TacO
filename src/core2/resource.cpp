@@ -6,13 +6,13 @@ namespace renderer {
 
 CCoreResource::CCoreResource() = default;
 
-CCoreResource::CCoreResource(CCoreDevice* h) {
-  Device = h;
-  Device->AddResource(this);
+CCoreResource::CCoreResource(CCoreDevice* device) {
+  device_ = device;
+  device_->AddResource(this);
 }
 
 CCoreResource::~CCoreResource() {
-  if (Device) Device->RemoveResource(this);
+  if (device_) device_->RemoveResource(this);
 }
 
 void CCoreResource::OnDeviceLost() {}

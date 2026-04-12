@@ -6,275 +6,275 @@
 
 namespace renderer {
 
-enum class COREDEVICEAPI : uint8_t {
-  DX9,
-  DX11,
-  OPENGL,
-  CORE1WRAPPER,
+enum class CoreDeviceApi : uint8_t {
+  kDx9,
+  kDx11,
+  kOpenGl,
+  kCore1Wrapper,
 };
 
-enum class COREFORMAT : uint8_t {
-  UNKNOWN = 0,
-  A8R8G8B8 = 1,
-  A32B32G32R32F = 2,
-  R32F = 3,
-  G16R16F = 4,
-  R16G16B16A16_FLOAT = 5,
+enum class CoreFormat : uint8_t {
+  kUnknown = 0,
+  kA8R8G8B8 = 1,
+  kA32B32G32R32f = 2,
+  kR32f = 3,
+  kG16R16f = 4,
+  kR16G16B16A16Float = 5,
 };
 
-enum class COREVERTEXATTRIBUTE : int16_t {
-  STOP = -1,
-  POSITION3 = 0,
-  POSITION4 = 1,
-  NORMAL3 = 2,
-  TEXCOORD2 = 3,
-  COLOR4 = 4,
-  COLOR16 = 5,
-  POSITIONT4 = 6,
-  TEXCOORD4 = 7,
+enum class CoreVertexAttribute : int16_t {
+  kStop = -1,
+  kPosition3 = 0,
+  kPosition4 = 1,
+  kNormal3 = 2,
+  kTexCoord2 = 3,
+  kColor4 = 4,
+  kColor16 = 5,
+  kPositionT4 = 6,
+  kTexCoord4 = 7,
 };
 
-enum class CORECOMPARISONFUNCTION : uint16_t {
-  NEVER = 0,
-  LESS = 1,
-  EQUAL = 2,
-  LEQUAL = 3,
-  GREATER = 4,
-  NOTEQUAL = 5,
-  GEQUAL = 6,
-  ALWAYS = 7,
+enum class CoreComparisonFunction : uint16_t {
+  kNever = 0,
+  kLess = 1,
+  kEqual = 2,
+  kLessEqual = 3,
+  kGreater = 4,
+  kNotEqual = 5,
+  kGreaterEqual = 6,
+  kAlways = 7,
 };
 
-using CORECMP = EnumNamePair<CORECOMPARISONFUNCTION>;
+using CoreCmp = EnumNamePair<CoreComparisonFunction>;
 constexpr std::array ComparisonFunctionNames = {
-    CORECMP{CORECOMPARISONFUNCTION::NEVER, ("Never")},
-    CORECMP{CORECOMPARISONFUNCTION::LESS, ("Less")},
-    CORECMP{CORECOMPARISONFUNCTION::EQUAL, ("Equal")},
-    CORECMP{CORECOMPARISONFUNCTION::LEQUAL, ("LessEqual")},
-    CORECMP{CORECOMPARISONFUNCTION::GREATER, ("Greater")},
-    CORECMP{CORECOMPARISONFUNCTION::NOTEQUAL, ("NotEqual")},
-    CORECMP{CORECOMPARISONFUNCTION::GEQUAL, ("GreaterEqual")},
-    CORECMP{CORECOMPARISONFUNCTION::ALWAYS, ("Always")}};
+    CoreCmp{CoreComparisonFunction::kNever, ("Never")},
+    CoreCmp{CoreComparisonFunction::kLess, ("Less")},
+    CoreCmp{CoreComparisonFunction::kEqual, ("Equal")},
+    CoreCmp{CoreComparisonFunction::kLessEqual, ("LessEqual")},
+    CoreCmp{CoreComparisonFunction::kGreater, ("Greater")},
+    CoreCmp{CoreComparisonFunction::kNotEqual, ("NotEqual")},
+    CoreCmp{CoreComparisonFunction::kGreaterEqual, ("GreaterEqual")},
+    CoreCmp{CoreComparisonFunction::kAlways, ("Always")}};
 
-enum class COREBLENDFACTOR : uint16_t {
-  ZERO = 0,
-  ONE = 1,
-  SRCCOL = 2,
-  INVSRCCOL = 3,
-  SRCALPHA = 4,
-  INVSRCALPHA = 5,
-  DSTALPHA = 6,
-  INVDSTALPHA = 7,
-  DSTCOLOR = 8,
-  INVDSTCOLOR = 9,
-  SRCALPHASATURATE = 10,
-  BLENDFACTOR = 11,
-  INVBLENDFACTOR = 12,
+enum class CoreBlendFactor : uint16_t {
+  kZero = 0,
+  kOne = 1,
+  kSrcCol = 2,
+  kInvSrcCol = 3,
+  kSrcAlpha = 4,
+  kInvSrcAlpha = 5,
+  kDstAlpha = 6,
+  kInvDstAlpha = 7,
+  kDstColor = 8,
+  kInvDstColor = 9,
+  kSrcAlphaSaturate = 10,
+  kBlendFactor = 11,
+  kInvBlendFactor = 12,
 };
 
-using COREBLEND = EnumNamePair<COREBLENDFACTOR>;
+using CoreBlend = EnumNamePair<CoreBlendFactor>;
 constexpr std::array BlendFactorNames = {
-    COREBLEND{COREBLENDFACTOR::ZERO, ("Zero")},
-    COREBLEND{COREBLENDFACTOR::ONE, ("One")},
-    COREBLEND{COREBLENDFACTOR::SRCCOL, ("SrcCol")},
-    COREBLEND{COREBLENDFACTOR::INVSRCCOL, ("InvSrcCol")},
-    COREBLEND{COREBLENDFACTOR::SRCALPHA, ("SrcAlpha")},
-    COREBLEND{COREBLENDFACTOR::INVSRCALPHA, ("InvSrcAlpha")},
-    COREBLEND{COREBLENDFACTOR::DSTALPHA, ("DstAlpha")},
-    COREBLEND{COREBLENDFACTOR::INVDSTALPHA, ("InvDstAlpha")},
-    COREBLEND{COREBLENDFACTOR::DSTCOLOR, ("DstCol")},
-    COREBLEND{COREBLENDFACTOR::INVDSTCOLOR, ("InvDstCol")},
-    COREBLEND{COREBLENDFACTOR::SRCALPHASATURATE, ("SrcAlphaSaturate")},
-    COREBLEND{COREBLENDFACTOR::BLENDFACTOR, ("BlendFactor")},
-    COREBLEND{COREBLENDFACTOR::INVBLENDFACTOR, ("InvBlendFactor")}};
+    CoreBlend{CoreBlendFactor::kZero, ("Zero")},
+    CoreBlend{CoreBlendFactor::kOne, ("One")},
+    CoreBlend{CoreBlendFactor::kSrcCol, ("SrcCol")},
+    CoreBlend{CoreBlendFactor::kInvSrcCol, ("InvSrcCol")},
+    CoreBlend{CoreBlendFactor::kSrcAlpha, ("SrcAlpha")},
+    CoreBlend{CoreBlendFactor::kInvSrcAlpha, ("InvSrcAlpha")},
+    CoreBlend{CoreBlendFactor::kDstAlpha, ("DstAlpha")},
+    CoreBlend{CoreBlendFactor::kInvDstAlpha, ("InvDstAlpha")},
+    CoreBlend{CoreBlendFactor::kDstColor, ("DstCol")},
+    CoreBlend{CoreBlendFactor::kInvDstColor, ("InvDstCol")},
+    CoreBlend{CoreBlendFactor::kSrcAlphaSaturate, ("SrcAlphaSaturate")},
+    CoreBlend{CoreBlendFactor::kBlendFactor, ("BlendFactor")},
+    CoreBlend{CoreBlendFactor::kInvBlendFactor, ("InvBlendFactor")}};
 
-enum class COREBLENDOP : uint8_t {
-  ADD = 0,
-  SUB = 1,
-  REVSUB = 2,
-  MIN = 3,
-  MAX = 4,
+enum class CoreBlendOp : uint8_t {
+  kAdd = 0,
+  kSub = 1,
+  kRevSub = 2,
+  kMin = 3,
+  kMax = 4,
 };
-using COREBLENDO = EnumNamePair<COREBLENDOP>;
+using CoreBlendo = EnumNamePair<CoreBlendOp>;
 constexpr std::array BlendOpNames = {
-    COREBLENDO{COREBLENDOP::ADD, ("Add")},
-    COREBLENDO{COREBLENDOP::SUB, ("Sub")},
-    COREBLENDO{COREBLENDOP::REVSUB, ("RevSub")},
-    COREBLENDO{COREBLENDOP::MIN, ("Min")},
-    COREBLENDO{COREBLENDOP::MAX, ("Max")}};
+    CoreBlendo{CoreBlendOp::kAdd, ("Add")},
+    CoreBlendo{CoreBlendOp::kSub, ("Sub")},
+    CoreBlendo{CoreBlendOp::kRevSub, ("RevSub")},
+    CoreBlendo{CoreBlendOp::kMin, ("Min")},
+    CoreBlendo{CoreBlendOp::kMax, ("Max")}};
 
-enum class CORECULLMODE : uint8_t {
-  NONE = 0,
-  CW = 1,
-  CCW = 2,
+enum class CoreCullMode : uint8_t {
+  kNone = 0,
+  kCw = 1,
+  kCcw = 2,
 };
-using CORECULLMO = EnumNamePair<CORECULLMODE>;
-constexpr std::array CullModeNames = {CORECULLMO{CORECULLMODE::NONE, ("None")},
-                                      CORECULLMO{CORECULLMODE::CW, ("CW")},
-                                      CORECULLMO{CORECULLMODE::CCW, ("CCW")}};
+using CoreCullmo = EnumNamePair<CoreCullMode>;
+constexpr std::array CullModeNames = {CoreCullmo{CoreCullMode::kNone, ("None")},
+                                      CoreCullmo{CoreCullMode::kCw, ("CW")},
+                                      CoreCullmo{CoreCullMode::kCcw, ("CCW")}};
 
-enum class COREFILLMODE : uint8_t {
-  SOLID = 0,
-  EDGES = 1,
-  POINTS = 2,
+enum class CoreFillMode : uint8_t {
+  kSolid = 0,
+  kEdges = 1,
+  kPoints = 2,
 };
-using COREFILLMOD = EnumNamePair<COREFILLMODE>;
+using CoreFillmod = EnumNamePair<CoreFillMode>;
 constexpr std::array FillModeNames = {
-    COREFILLMOD{COREFILLMODE::SOLID, ("Solid")},
-    COREFILLMOD{COREFILLMODE::EDGES, ("Edges")},
-    COREFILLMOD{COREFILLMODE::POINTS, ("Points")}};
+    CoreFillmod{CoreFillMode::kSolid, ("Solid")},
+    CoreFillmod{CoreFillMode::kEdges, ("Edges")},
+    CoreFillmod{CoreFillMode::kPoints, ("Points")}};
 
-enum class CORETEXTUREADDRESSMODE : uint8_t {
-  WRAP = 0,
-  MIRROR = 1,
-  CLAMP = 2,
-  BORDER = 3,
-  MIRRORONCE = 4,
+enum class CoreTextureAddressMode : uint8_t {
+  kWrap = 0,
+  kMirror = 1,
+  kClamp = 2,
+  kBorder = 3,
+  kMirrorOnce = 4,
 };
-using CORETEXTUREADDRESSMOD = EnumNamePair<CORETEXTUREADDRESSMODE>;
+using CoreTextureAddressmod = EnumNamePair<CoreTextureAddressMode>;
 constexpr std::array AddressModeNames = {
-    CORETEXTUREADDRESSMOD{CORETEXTUREADDRESSMODE::WRAP, ("Wrap")},
-    CORETEXTUREADDRESSMOD{CORETEXTUREADDRESSMODE::MIRROR, ("Mirror")},
-    CORETEXTUREADDRESSMOD{CORETEXTUREADDRESSMODE::CLAMP, ("Clamp")},
-    CORETEXTUREADDRESSMOD{CORETEXTUREADDRESSMODE::BORDER, ("Border")},
-    CORETEXTUREADDRESSMOD{CORETEXTUREADDRESSMODE::MIRRORONCE, ("MirrorOnce")}};
+    CoreTextureAddressmod{CoreTextureAddressMode::kWrap, ("Wrap")},
+    CoreTextureAddressmod{CoreTextureAddressMode::kMirror, ("Mirror")},
+    CoreTextureAddressmod{CoreTextureAddressMode::kClamp, ("Clamp")},
+    CoreTextureAddressmod{CoreTextureAddressMode::kBorder, ("Border")},
+    CoreTextureAddressmod{CoreTextureAddressMode::kMirrorOnce, ("MirrorOnce")}};
 
-enum class CORERENDERSTATE : uint16_t {
-  VERTEXSHADER = 0,
-  PIXELSHADER,
-  GEOMETRYSHADER,
-  HULLSHADER,
-  DOMAINSHADER,
-  TEXTURE,
-  VERTEXFORMAT,
-  INDEXBUFFER,
-  SAMPLERSTATE,
-  BLENDSTATE,
-  RASTERIZERSTATE,
-  DEPTHSTENCILSTATE,
-  COMPUTESHADER,
+enum class CoreRenderState : uint16_t {
+  kVertexShader = 0,
+  kPixelShader,
+  kGeometryShader,
+  kHullShader,
+  kDomainShader,
+  kTexture,
+  kVertexFormat,
+  kIndexBuffer,
+  kSamplerState,
+  kBlendState,
+  kRasterizerState,
+  kDepthStencilState,
+  kComputeShader,
 };
 
-enum class CORESAMPLER : int16_t {
-  PS0 = 0,
-  PS1 = 1,
-  PS2 = 2,
-  PS3 = 3,
-  PS4 = 4,
-  PS5 = 5,
-  PS6 = 6,
-  PS7 = 7,
-  PS8 = 8,
-  PS9 = 9,
-  PS10 = 10,
-  PS11 = 11,
-  PS12 = 12,
-  PS13 = 13,
-  PS14 = 14,
-  PS15 = 15,
-  VS0 = 100,
-  VS1 = 101,
-  VS2 = 102,
-  VS3 = 103,
-  GS0 = 200,
-  GS1 = 201,
-  GS2 = 202,
-  GS3 = 203,
+enum class CoreSampler : int16_t {
+  kPs0 = 0,
+  kPs1 = 1,
+  kPs2 = 2,
+  kPs3 = 3,
+  kPs4 = 4,
+  kPs5 = 5,
+  kPs6 = 6,
+  kPs7 = 7,
+  kPs8 = 8,
+  kPs9 = 9,
+  kPs10 = 10,
+  kPs11 = 11,
+  kPs12 = 12,
+  kPs13 = 13,
+  kPs14 = 14,
+  kPs15 = 15,
+  kVs0 = 100,
+  kVs1 = 101,
+  kVs2 = 102,
+  kVs3 = 103,
+  kGs0 = 200,
+  kGs1 = 201,
+  kGs2 = 202,
+  kGs3 = 203,
 };
 
-constexpr uint32_t operator-(const CORESAMPLER& l, const CORESAMPLER& r) {
+constexpr uint32_t operator-(const CoreSampler& l, const CoreSampler& r) {
   return static_cast<int16_t>(l) - static_cast<int16_t>(r);
 }
 
 constexpr std::array SamplerNames = {
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS0, ("PS0")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS1, ("PS1")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS2, ("PS2")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS3, ("PS3")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS4, ("PS4")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS5, ("PS5")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS6, ("PS6")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS7, ("PS7")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS8, ("PS8")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS9, ("PS9")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS10, ("PS10")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS11, ("PS11")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS12, ("PS12")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS13, ("PS13")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS14, ("PS14")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::PS15, ("PS15")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::VS0, ("VS0")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::VS1, ("VS1")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::VS2, ("VS2")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::VS3, ("VS3")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::GS0, ("GS0")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::GS1, ("GS1")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::GS2, ("GS2")},
-    EnumNamePair<CORESAMPLER>{CORESAMPLER::GS3, ("GS3")}};
+    EnumNamePair<CoreSampler>{CoreSampler::kPs0, ("PS0")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs1, ("PS1")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs2, ("PS2")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs3, ("PS3")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs4, ("PS4")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs5, ("PS5")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs6, ("PS6")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs7, ("PS7")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs8, ("PS8")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs9, ("PS9")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs10, ("PS10")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs11, ("PS11")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs12, ("PS12")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs13, ("PS13")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs14, ("PS14")},
+    EnumNamePair<CoreSampler>{CoreSampler::kPs15, ("PS15")},
+    EnumNamePair<CoreSampler>{CoreSampler::kVs0, ("VS0")},
+    EnumNamePair<CoreSampler>{CoreSampler::kVs1, ("VS1")},
+    EnumNamePair<CoreSampler>{CoreSampler::kVs2, ("VS2")},
+    EnumNamePair<CoreSampler>{CoreSampler::kVs3, ("VS3")},
+    EnumNamePair<CoreSampler>{CoreSampler::kGs0, ("GS0")},
+    EnumNamePair<CoreSampler>{CoreSampler::kGs1, ("GS1")},
+    EnumNamePair<CoreSampler>{CoreSampler::kGs2, ("GS2")},
+    EnumNamePair<CoreSampler>{CoreSampler::kGs3, ("GS3")}};
 
-enum class COREFILTER : uint16_t {
-  MIN_MAG_MIP_POINT = 0,
-  MIN_MAG_POINT_MIP_LINEAR = 1,
-  MIN_POINT_MAG_LINEAR_MIP_POINT = 2,
-  MIN_POINT_MAG_MIP_LINEAR = 3,
-  MIN_LINEAR_MAG_MIP_POINT = 4,
-  MIN_LINEAR_MAG_POINT_MIP_LINEAR = 5,
-  MIN_MAG_LINEAR_MIP_POINT = 6,
-  MIN_MAG_MIP_LINEAR = 7,
-  ANISOTROPIC = 8,
-  COMPARISON_MIN_MAG_MIP_POINT = 9,
-  COMPARISON_MIN_MAG_POINT_MIP_LINEAR = 10,
-  COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT = 11,
-  COMPARISON_MIN_POINT_MAG_MIP_LINEAR = 12,
-  COMPARISON_MIN_LINEAR_MAG_MIP_POINT = 13,
-  COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR = 14,
-  COMPARISON_MIN_MAG_LINEAR_MIP_POINT = 15,
-  COMPARISON_MIN_MAG_MIP_LINEAR = 16,
-  COMPARISON_ANISOTROPIC = 17,
+enum class CoreFilter : uint16_t {
+  kMinMagMipPoint = 0,
+  kMinMagPointMipLinear = 1,
+  kMinPointMagLinearMipPoint = 2,
+  kMinPointMagMipLinear = 3,
+  kMinLinearMagMipPoint = 4,
+  kMinLinearMagPointMipLinear = 5,
+  kMinMagLinearMipPoint = 6,
+  kMinMagMipLinear = 7,
+  kAnisotropic = 8,
+  kComparisonMinMagMipPoint = 9,
+  kComparisonMinMagPointMipLinear = 10,
+  kComparisonMinPointMagLinearMipPoint = 11,
+  kComparisonMinPointMagMipLinear = 12,
+  kComparisonMinLinearMagMipPoint = 13,
+  kComparisonMinLinearMagPointMipLinear = 14,
+  kComparisonMinMagLinearMipPoint = 15,
+  kComparisonMinMagMipLinear = 16,
+  kComparisonAnisotropic = 17,
 };
 constexpr std::array FilterNames = {
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_MAG_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinMagMipPoint,
                              ("Min_Mag_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_MAG_POINT_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinMagPointMipLinear,
                              ("Min_Mag_Point_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_POINT_MAG_LINEAR_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinPointMagLinearMipPoint,
                              ("Min_Point_Mag_Linear_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_POINT_MAG_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinPointMagMipLinear,
                              ("Min_Point_Mag_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_LINEAR_MAG_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinLinearMagMipPoint,
                              ("Min_Linear_Mag_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinLinearMagPointMipLinear,
                              ("Min_Linear_Mag_Point_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_MAG_LINEAR_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinMagLinearMipPoint,
                              ("Min_Mag_Linear_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::MIN_MAG_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kMinMagMipLinear,
                              ("Min_Mag_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::ANISOTROPIC, ("Anisotropic")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_MIN_MAG_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kAnisotropic, ("Anisotropic")},
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonMinMagMipPoint,
                              ("Comparison_Min_Mag_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_MIN_MAG_POINT_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonMinMagPointMipLinear,
                              ("Comparison_Min_Mag_Point_Mip_Linear")},
-    EnumNamePair<COREFILTER>{
-        COREFILTER::COMPARISON_MIN_POINT_MAG_LINEAR_MIP_POINT,
+    EnumNamePair<CoreFilter>{
+        CoreFilter::kComparisonMinPointMagLinearMipPoint,
         ("Comparison_Min_Point_Mag_Linear_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_MIN_POINT_MAG_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonMinPointMagMipLinear,
                              ("Comparison_Min_Point_Mag_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_MIN_LINEAR_MAG_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonMinLinearMagMipPoint,
                              ("Comparison_Min_Linear_Mag_Mip_Point")},
-    EnumNamePair<COREFILTER>{
-        COREFILTER::COMPARISON_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{
+        CoreFilter::kComparisonMinLinearMagPointMipLinear,
         ("Comparison_Min_Linear_Mag_Point_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_MIN_MAG_LINEAR_MIP_POINT,
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonMinMagLinearMipPoint,
                              ("Comparison_Min_Mag_Linear_Mip_Point")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_MIN_MAG_MIP_LINEAR,
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonMinMagMipLinear,
                              ("Comparison_Min_Mag_Mip_Linear")},
-    EnumNamePair<COREFILTER>{COREFILTER::COMPARISON_ANISOTROPIC,
+    EnumNamePair<CoreFilter>{CoreFilter::kComparisonAnisotropic,
                              ("Comparison_Anisotropic")}};
 
-constexpr int32_t CORELOCK_READONLY = 0x00000010L;
-constexpr int32_t CORELOCK_DISCARD = 0x00002000L;
-constexpr int32_t CORELOCK_NOOVERWRITE = 0x00001000L;
-constexpr int32_t CORELOCK_NOSYSLOCK = 0x00000800L;
-constexpr int32_t CORELOCK_DONOTWAIT = 0x00004000L;
+constexpr int32_t kCoreLockReadonly = 0x00000010L;
+constexpr int32_t kCoreLockDiscard = 0x00002000L;
+constexpr int32_t kCoreLockNoOverwrite = 0x00001000L;
+constexpr int32_t kCoreLockNoSysLock = 0x00000800L;
+constexpr int32_t kCoreLockDoNotWait = 0x00004000L;
 
 }  // namespace renderer

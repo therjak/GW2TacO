@@ -13,15 +13,15 @@ namespace renderer {
 
 class CCoreDevice;
 
-enum class COREMOUSECURSOR : uint16_t {
-  CM_ARROW,
-  CM_CROSS,
-  CM_SIZEWE,
-  CM_SIZENS,
-  CM_SIZENESW,
-  CM_SIZENWSE,
-  CM_TEXT,
-  CM_WAIT,
+enum class CoreMouseCursor : uint16_t {
+  kArrow,
+  kCross,
+  kSizeWe,
+  kSizeNs,
+  kSizeNeSw,
+  kSizeNwSe,
+  kText,
+  kWait,
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -30,24 +30,24 @@ enum class COREMOUSECURSOR : uint16_t {
 class CCoreWindowParameters {
  public:
   CCoreWindowParameters();
-  CCoreWindowParameters(HINSTANCE hinst, bool FullScreen, int32_t XRes,
-                        int32_t YRes, const TCHAR* WindowTitle,
-                        HICON Icon = nullptr, bool Maximized = false,
-                        bool ResizeDisabled = false);
+  CCoreWindowParameters(HINSTANCE h_instance, bool full_screen, int32_t x_res,
+                        int32_t y_res, const TCHAR* window_title,
+                        HICON icon = nullptr, bool maximized = false,
+                        bool resize_disabled = false);
 
   [[nodiscard]] std::unique_ptr<CCoreDevice> CreateDevice() const;
 
-  HINSTANCE hInstance = nullptr;
-  bool FullScreen = false;
-  int32_t XRes = 800;
-  int32_t YRes = 600;
-  const TCHAR* WindowTitle = nullptr;
-  HICON Icon = nullptr;
-  bool Maximized = false;
-  bool ResizeDisabled = false;
+  HINSTANCE h_instance_ = nullptr;
+  bool full_screen_ = false;
+  int32_t x_res_ = 800;
+  int32_t y_res_ = 600;
+  const TCHAR* window_title_ = nullptr;
+  HICON icon_ = nullptr;
+  bool maximized_ = false;
+  bool resize_disabled_ = false;
 
-  DWORD OverrideWindowStyle = 0;
-  DWORD OverrideWindowStyleEx = 0;
+  DWORD override_window_style_ = 0;
+  DWORD override_window_style_ex_ = 0;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ class CCoreWindowHandler {
 
   // this initializer will change to accommodate multiple platforms at once once
   // we get to that point:
-  virtual bool Initialize(const CCoreWindowParameters& WindowParams) = 0;
+  virtual bool Initialize(const CCoreWindowParameters& window_params) = 0;
 
   virtual void Destroy();
   virtual bool HandleMessages() = 0;
@@ -74,40 +74,40 @@ class CCoreWindowHandler {
   virtual int32_t GetYRes();
   virtual CCoreWindowParameters& GetInitParameters();
 
-  virtual void SelectMouseCursor(COREMOUSECURSOR Cursor);
+  virtual void SelectMouseCursor(CoreMouseCursor cursor);
   virtual void FinalizeMouseCursor() = 0;
   math::CPoint GetMousePos();
   math::CPoint GetLeftDownPos();
   math::CPoint GetRightDownPos();
   math::CPoint GetMidDownPos();
 
-  CCoreDevice* GetDevice() { return Device.get(); }
+  CCoreDevice* GetDevice() { return device_.get(); }
 
-  virtual void SetWindowTitle(std::string_view Title) = 0;
+  virtual void SetWindowTitle(std::string_view title) = 0;
   virtual void SetInactiveFrameLimiter(bool set);
 
  protected:
   virtual void HandleResize() = 0;
   virtual void HandleAltEnter() = 0;
 
-  bool Done = false;
-  std::unique_ptr<CCoreDevice> Device;
-  bool Active = false;
-  bool Maximized = false;
-  bool Minimized = false;
-  math::CRect ClientRect;
+  bool done_ = false;
+  std::unique_ptr<CCoreDevice> device_;
+  bool active_ = false;
+  bool maximized_ = false;
+  bool minimized_ = false;
+  math::CRect client_rect_;
 
-  bool InactiveFrameLimiter = true;
-  int32_t LimitedFPS = 20;
-  int32_t LastRenderedFrame = 0;
+  bool inactive_frame_limiter_ = true;
+  int32_t limited_fps_ = 20;
+  int32_t last_rendered_frame_ = 0;
 
-  int32_t XRes = 0, YRes = 0;
+  int32_t x_res_ = 0, y_res_ = 0;
 
-  CCoreWindowParameters InitParameters;
+  CCoreWindowParameters init_parameters_;
 
-  COREMOUSECURSOR CurrentMouseCursor = COREMOUSECURSOR::CM_ARROW;
+  CoreMouseCursor current_mouse_cursor_ = CoreMouseCursor::kArrow;
 
-  math::CPoint MousePos, LeftDownPos, RightDownPos, MidDownPos;
+  math::CPoint mouse_pos_, left_down_pos_, right_down_pos_, mid_down_pos_;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   CCoreWindowHandlerWin();
   ~CCoreWindowHandlerWin() override;
 
-  bool Initialize(const CCoreWindowParameters& WindowParams) override;
+  bool Initialize(const CCoreWindowParameters& window_params) override;
   void Destroy() override;
   bool HandleMessages() override;
   bool HandleOSMessages() override;
@@ -128,27 +128,27 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   HWND GetHandle() override;
 
   void FinalizeMouseCursor() override;
-  void SetWindowTitle(std::string_view Title) override;
+  void SetWindowTitle(std::string_view title) override;
 
  protected:
-  static LRESULT CALLBACK WndProcProxy(HWND hWnd, UINT uMsg, WPARAM wParam,
-                                       LPARAM lParam);
-  virtual LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
+  static LRESULT CALLBACK WndProcProxy(HWND h_wnd, UINT u_msg, WPARAM w_param,
+                                       LPARAM l_param);
+  virtual LRESULT WindowProc(UINT u_msg, WPARAM w_param, LPARAM l_param);
 
   void HandleResize() override;
   void HandleAltEnter() override;
 
-  HWND hWnd = nullptr;
-  WINDOWPLACEMENT WindowPlacement{};
-  int32_t dwStyle = 0;
-  int32_t FullScreenX = 0, FullScreenY = 0;
+  HWND window_handle_ = nullptr;
+  WINDOWPLACEMENT window_placement_{};
+  int32_t dw_style_ = 0;
+  int32_t full_screen_x_ = 0, full_screen_y_ = 0;
 
  private:
-  HCURSOR& MouseCursorsAt(COREMOUSECURSOR c) {
-    return MouseCursors[static_cast<uint16_t>(c)];
+  HCURSOR& MouseCursorsAt(CoreMouseCursor c) {
+    return mouse_cursors_[static_cast<uint16_t>(c)];
   }
 
-  std::array<HCURSOR, 8> MouseCursors = {0};
+  std::array<HCURSOR, 8> mouse_cursors_ = {0};
 };
 
 }  // namespace renderer

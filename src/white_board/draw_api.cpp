@@ -329,7 +329,7 @@ void CWBDrawAPI::RenderDisplayList() {
 
   // update texture atlas if needed
   if (Atlas &&
-      Device->GetTexture(renderer::CORESAMPLER::PS0) == Atlas->GetTexture()) {
+      Device->GetTexture(renderer::CoreSampler::kPs0) == Atlas->GetTexture()) {
     Atlas->UpdateTexture();
   }
 
@@ -342,7 +342,7 @@ void CWBDrawAPI::RenderDisplayList() {
     void* Buffer = nullptr;
 
     if (!VertexBuffer->Lock(&Buffer, 0, Count * sizeof(WBGUIVERTEX),
-                            renderer::CORELOCK_DISCARD)) {
+                            renderer::kCoreLockDiscard)) {
       Log_Err("[gui] Error locking UI Vertex Buffer during draw.");
       return;
     }
@@ -577,7 +577,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application,
     Log_Warn(
         "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 "
         "functionality");
-    if (Device->GetAPIType() == renderer::COREDEVICEAPI::DX11) {
+    if (Device->GetAPIType() == renderer::CoreDeviceApi::kDx11) {
       return false;
     }
   }
@@ -588,15 +588,15 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application,
     Log_Warn(
         "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 "
         "functionality");
-    if (Device->GetAPIType() == renderer::COREDEVICEAPI::DX11) {
+    if (Device->GetAPIType() == renderer::CoreDeviceApi::kDx11) {
       return false;
     }
   }
 
-  std::vector<renderer::COREVERTEXATTRIBUTE> Att = {
-      renderer::COREVERTEXATTRIBUTE::POSITIONT4,
-      renderer::COREVERTEXATTRIBUTE::TEXCOORD2,
-      renderer::COREVERTEXATTRIBUTE::COLOR4,
+  std::vector<renderer::CoreVertexAttribute> Att = {
+      renderer::CoreVertexAttribute::kPositionT4,
+      renderer::CoreVertexAttribute::kTexCoord2,
+      renderer::CoreVertexAttribute::kColor4,
   };
 
   VertexFormat = Device->CreateVertexFormat(Att, VxShader.get());
@@ -613,10 +613,10 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application,
   }
 
   GuiBlendState->SetBlendEnable(0, true);
-  GuiBlendState->SetSrcBlend(0, renderer::COREBLENDFACTOR::SRCALPHA);
-  GuiBlendState->SetDestBlend(0, renderer::COREBLENDFACTOR::INVSRCALPHA);
-  GuiBlendState->SetSrcBlendAlpha(0, renderer::COREBLENDFACTOR::ONE);
-  GuiBlendState->SetDestBlendAlpha(0, renderer::COREBLENDFACTOR::INVSRCALPHA);
+  GuiBlendState->SetSrcBlend(0, renderer::CoreBlendFactor::kSrcAlpha);
+  GuiBlendState->SetDestBlend(0, renderer::CoreBlendFactor::kInvSrcAlpha);
+  GuiBlendState->SetSrcBlendAlpha(0, renderer::CoreBlendFactor::kOne);
+  GuiBlendState->SetDestBlendAlpha(0, renderer::CoreBlendFactor::kInvSrcAlpha);
 
   GuiRasterState = Device->CreateRasterizerState();
   if (!GuiRasterState) {
@@ -625,7 +625,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application,
   }
 
   GuiRasterState->SetAntialiasedLineEnable(true);
-  GuiRasterState->SetCullMode(renderer::CORECULLMODE::NONE);
+  GuiRasterState->SetCullMode(renderer::CoreCullMode::kNone);
 
   GuiZState = Device->CreateDepthStencilState();
   if (!GuiZState) {
@@ -633,7 +633,7 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application,
     return false;
   }
 
-  GuiZState->SetDepthFunc(renderer::CORECOMPARISONFUNCTION::LEQUAL);
+  GuiZState->SetDepthFunc(renderer::CoreComparisonFunction::kLessEqual);
 
   ResolutionData = Device->CreateConstantBuffer();
   if (!ResolutionData) {
@@ -747,11 +747,11 @@ void CWBDrawAPI::SetUIRenderState() {
   Device->SetHullShader(nullptr);
   Device->SetDomainShader(nullptr);
   Device->SetPixelShader(PxShader.get());
-  Device->SetTexture(renderer::CORESAMPLER::PS0, Atlas->GetTexture());
+  Device->SetTexture(renderer::CoreSampler::kPs0, Atlas->GetTexture());
 
   Device->SetRenderTarget(nullptr);
 
-  if (GuiSampler) GuiSampler->Apply(renderer::CORESAMPLER::PS0);
+  if (GuiSampler) GuiSampler->Apply(renderer::CoreSampler::kPs0);
 
   ResolutionData->Reset();
 

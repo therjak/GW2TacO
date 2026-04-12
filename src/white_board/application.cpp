@@ -109,18 +109,18 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
   // handle messages created by mouse events
   if (Message.IsMouseMessage()) {
     if (Message.Get() == WBM_MOUSEMOVE) {
-      MousePos = CPoint(Message.GetPosition());
+      mouse_pos_ = CPoint(Message.GetPosition());
       UpdateMouseItem();
     }
 
     if (Message.Get() == WBM_LEFTBUTTONDOWN) {
-      LeftDownPos = CPoint(Message.GetPosition());
+      left_down_pos_ = CPoint(Message.GetPosition());
     }
     if (Message.Get() == WBM_RIGHTBUTTONDOWN) {
-      RightDownPos = CPoint(Message.GetPosition());
+      right_down_pos_ = CPoint(Message.GetPosition());
     }
     if (Message.Get() == WBM_MIDDLEBUTTONDOWN) {
-      MidDownPos = CPoint(Message.GetPosition());
+      mid_down_pos_ = CPoint(Message.GetPosition());
     }
 
     if (MouseCaptureItem)  // mouse messages are captured by this item, send
@@ -130,7 +130,7 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
       return;
     }
 
-    CWBItem* mi = GetItemUnderMouse(MousePos, Message.Get());
+    CWBItem* mi = GetItemUnderMouse(mouse_pos_, Message.Get());
 
     if (mi) {
       // handle focus change
@@ -182,7 +182,7 @@ void CWBApplication::HandleResize() {
   CCoreWindowHandlerWin::HandleResize();
 
   if (Root) {
-    Root->SetPosition(CRect(0, 0, XRes, YRes));
+    Root->SetPosition(CRect(0, 0, x_res_, y_res_));
   }
 }
 
@@ -233,17 +233,17 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_MOUSEMOVE: {
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_MOUSEMOVE, 0, ap.x, ap.y));
     } break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK: {
       Left = true;
 
-      ::SetCapture(hWnd);
+      ::SetCapture(window_handle_);
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_LEFTBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_LBUTTONDBLCLK) {
@@ -259,17 +259,17 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       ::ReleaseCapture();
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK: {
       Right = true;
-      ::SetCapture(hWnd);
+      ::SetCapture(window_handle_);
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_RIGHTBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_RBUTTONDBLCLK) {
@@ -285,17 +285,17 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       ::ReleaseCapture();
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK: {
       Middle = true;
-      ::SetCapture(hWnd);
+      ::SetCapture(window_handle_);
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_MIDDLEBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_MBUTTONDBLCLK) {
@@ -311,7 +311,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       ::ReleaseCapture();
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
       ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
@@ -374,14 +374,14 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 bool CWBApplication::Initialize() {
   Atlas = std::make_unique<CAtlas>(2048, 2048);
-  if (!Atlas->InitializeTexture(Device.get())) {
+  if (!Atlas->InitializeTexture(device_.get())) {
     Log_Err("[gui] Error creating UI Texture Atlas");
     return false;
   }
 
-  if (!DrawAPI->Initialize(this, Device.get(), Atlas.get())) return false;
+  if (!DrawAPI->Initialize(this, device_.get(), Atlas.get())) return false;
 
-  Root = CWBRoot::Create(CRect(0, 0, XRes, YRes));
+  Root = CWBRoot::Create(CRect(0, 0, x_res_, y_res_));
   Root->SetApplication(this);
 
   setlocale(LC_NUMERIC, "C");
@@ -418,7 +418,7 @@ bool CWBApplication::HandleMessages() {
     if (globalTimer.GetTime() > NextRepeatedClickTime) {
       POINT ap;
       GetCursorPos(&ap);
-      ScreenToClient(hWnd, &ap);
+      ScreenToClient(window_handle_, &ap);
 
       switch (ClickRepeaterMode) {
         case WBMOUSECLICKREPEATMODE::WB_MCR_LEFT:
@@ -454,7 +454,7 @@ bool CWBApplication::HandleMessages() {
 void CWBApplication::RegisterItem(CWBItem* Item) {
   Items[Item->GetGuid()] = Item;
 
-  if (Item->GetScreenRect().Contains(MousePos)) UpdateMouseItem();
+  if (Item->GetScreenRect().Contains(mouse_pos_)) UpdateMouseItem();
 }
 
 void CWBApplication::UnRegisterItem(CWBItem* Item) {
@@ -469,10 +469,10 @@ void CWBApplication::UnRegisterItem(CWBItem* Item) {
   if (MouseCaptureItem == Item) ReleaseCapture();
   Items.erase(Item->GetGuid());
 
-  if (Item->GetScreenRect().Contains(MousePos)) UpdateMouseItem();
+  if (Item->GetScreenRect().Contains(mouse_pos_)) UpdateMouseItem();
 }
 
-void CWBApplication::SetDone(bool d) { Done = d; }
+void CWBApplication::SetDone(bool d) { done_ = d; }
 
 void CWBApplication::Display() { Display(DrawAPI.get()); }
 
@@ -480,11 +480,11 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   CleanTrash();
 
   FinalizeMouseCursor();
-  SelectMouseCursor(renderer::COREMOUSECURSOR::CM_ARROW);
+  SelectMouseCursor(renderer::CoreMouseCursor::kArrow);
 
   DrawAPI->SetUIRenderState();
-  Device->Clear(true, true, ClearColor);
-  Device->BeginScene();
+  device_->Clear(true, true, ClearColor);
+  device_->BeginScene();
 
   DrawAPI->SetOffset(Root->GetScreenRect().TopLeft());
   DrawAPI->SetParentCropRect(Root->GetScreenRect());
@@ -495,8 +495,8 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   Root->DrawTree(API);
 
   DrawAPI->RenderDisplayList();
-  Device->EndScene();
-  Device->Flip(Vsync);
+  device_->EndScene();
+  device_->Flip(Vsync);
 
   // Log_Dbg("End Frame");
 
@@ -536,7 +536,7 @@ bool CWBApplication::ReleaseCapture() {
 
 void CWBApplication::UpdateMouseItem() {
   CWBItem* MouseItemOld = MouseItem;
-  MouseItem = GetItemUnderMouse(MousePos, WBM_MOUSEMOVE);
+  MouseItem = GetItemUnderMouse(mouse_pos_, WBM_MOUSEMOVE);
   if (MouseItem != MouseItemOld) {
     // call onmouseleave for the old items
     if (MouseItem) {
@@ -976,14 +976,14 @@ void CWBApplication::TakeScreenshot() {
   auto b = DrawAPI->GetDevice()->CreateBlendState();
   b->SetBlendEnable(0, true);
   b->SetIndependentBlend(true);
-  b->SetSrcBlend(0, renderer::COREBLENDFACTOR::ZERO);
-  b->SetDestBlend(0, renderer::COREBLENDFACTOR::ONE);
-  b->SetSrcBlendAlpha(0, renderer::COREBLENDFACTOR::ONE);
-  b->SetDestBlendAlpha(0, renderer::COREBLENDFACTOR::ZERO);
+  b->SetSrcBlend(0, renderer::CoreBlendFactor::kZero);
+  b->SetDestBlend(0, renderer::CoreBlendFactor::kOne);
+  b->SetSrcBlendAlpha(0, renderer::CoreBlendFactor::kOne);
+  b->SetDestBlendAlpha(0, renderer::CoreBlendFactor::kZero);
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
-  DrawAPI->SetCropRect(CRect(0, 0, XRes, YRes));
-  DrawAPI->DrawRect(CRect(0, 0, XRes, YRes), CColor{0xff000000});
+  DrawAPI->SetCropRect(CRect(0, 0, x_res_, y_res_));
+  DrawAPI->DrawRect(CRect(0, 0, x_res_, y_res_), CColor{0xff000000});
   DrawAPI->FlushDrawBuffer();
 
   auto fname =

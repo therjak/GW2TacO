@@ -741,16 +741,15 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       GetModuleHandle(nullptr), false, width, height,
       "Guild Wars 2 Tactical Overlay",
       LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
-  p.OverrideWindowStyle = WS_POPUP;
-  p.OverrideWindowStyleEx =
+  p.override_window_style_ = WS_POPUP;
+  p.override_window_style_ex_ =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
       WS_EX_TOOLWINDOW;  // | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
   if (dComp) {
-    p.OverrideWindowStyleEx = WS_EX_TOPMOST | WS_EX_TRANSPARENT |
-                              WS_EX_TOOLWINDOW | WS_EX_LAYERED |
-                              WS_EX_NOREDIRECTIONBITMAP;
+    p.override_window_style_ex_ = WS_EX_TOPMOST | WS_EX_TRANSPARENT |
+                               WS_EX_TOOLWINDOW | WS_EX_LAYERED |
+                               WS_EX_NOREDIRECTIONBITMAP;
   }
-
   if (!App->Initialize(p)) {
     MessageBox(
         nullptr,
