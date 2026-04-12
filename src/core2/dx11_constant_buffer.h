@@ -11,17 +11,17 @@ namespace renderer {
 
 class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {
  public:
-  explicit CCoreDX11ConstantBuffer(CCoreDX11Device* Device);
+  explicit CCoreDX11ConstantBuffer(CCoreDX11Device* device);
   ~CCoreDX11ConstantBuffer() override;
 
   void Upload() override;
   [[nodiscard]] void* GetBufferPointer() const override;
 
  private:
-  ID3D11Buffer* Buffer;
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  int32_t AllocatedBufferSize;
+  ID3D11Buffer* buffer_ = nullptr;
+  ID3D11Device* device_ = nullptr;
+  ID3D11DeviceContext* device_context_ = nullptr;
+  int32_t allocated_buffer_size_ = 0;
 };
 
 }  // namespace renderer
