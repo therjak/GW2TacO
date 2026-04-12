@@ -122,11 +122,11 @@ void LocationalTimer::ImportData(const CXMLNode& node) {
   }
 }
 
-void TimerDisplay::OnDraw(CWBDrawAPI* API) {
+void TimerDisplay::OnDraw(gui::CWBDrawAPI* API) {
   if (!GetConfigValue("LocationalTimersVisible")) return;
 
   int32_t tme = GetTime();
-  CWBFont* f = GetFont(GetState());
+  gui::CWBFont* f = GetFont(GetState());
 
   int32_t ypos = static_cast<int32_t>(
       math::Lerp(static_cast<float>(GetClientRect().y1),
@@ -154,8 +154,9 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
           CRect(
               static_cast<float>(GetClientRect().x1), static_cast<float>(ypos),
               static_cast<float>(GetClientRect().x2), static_cast<float>(ypos)),
-          WBTEXTALIGNMENTX::WBTA_CENTERX, WBTEXTALIGNMENTY::WBTA_CENTERY,
-          WBTEXTTRANSFORM::WBTT_NONE, true);
+          gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE,
+          true);
       ypos += f->GetLineHeight();
       f->Write(API, s, pos);
     }
@@ -163,7 +164,7 @@ void TimerDisplay::OnDraw(CWBDrawAPI* API) {
 }
 
 bool TimerDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                      WBMESSAGE MessageType) {
+                                      gui::WBMESSAGE MessageType) {
   return true;
 }
 
@@ -171,7 +172,7 @@ TimerDisplay::TimerDisplay() : CWBGuiType() {}
 
 TimerDisplay::~TimerDisplay() = default;
 
-CWBItem* TimerDisplay::Factory(CWBItem* Root, const CXMLNode& node,
-                               CRect& Pos) {
+gui::CWBItem* TimerDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                    CRect& Pos) {
   return TimerDisplay::Create(Root, Pos);
 }

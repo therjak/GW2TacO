@@ -9,11 +9,13 @@ export module taco.overlay_window;
 
 import whiteboard;
 
-export class OverlayWindow : public CWBGuiType<"OverlayWindow", CWBWindow> {
+export class OverlayWindow
+    : public gui::CWBGuiType<"OverlayWindow", gui::CWBWindow> {
  public:
   OverlayWindow();
   ~OverlayWindow() override;
-  static inline OverlayWindow* Create(CWBItem* Parent, math::CRect Position) {
+  static inline OverlayWindow* Create(gui::CWBItem* Parent,
+                                      math::CRect Position) {
     auto p = std::make_unique<OverlayWindow>();
     p->Initialize(Parent, Position);
     OverlayWindow* r = p.get();
@@ -22,11 +24,11 @@ export class OverlayWindow : public CWBGuiType<"OverlayWindow", CWBWindow> {
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
-  bool MessageProc(const CWBMessage& Message) override;
-  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(const gui::CWBMessage& Message) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 };

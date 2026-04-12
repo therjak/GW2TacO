@@ -11,7 +11,9 @@ import :application;
 import :css_item;
 import :gui_item;
 
-export class CWBButton : public CWBGuiType<"button", CWBItem> {
+export namespace gui {
+
+class CWBButton : public CWBGuiType<"button", CWBItem> {
  public:
   CWBButton(std::string_view txt);
   static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -47,3 +49,5 @@ export class CWBButton : public CWBGuiType<"button", CWBItem> {
   std::string Text;
   bool Pushed = false;
 };
+
+}  // namespace gui

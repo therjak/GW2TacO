@@ -11,7 +11,9 @@ import :application;
 import :css_item;
 import :gui_item;
 
-export class CWBLabel : public CWBGuiType<"label", CWBItem> {
+export namespace gui {
+
+class CWBLabel : public CWBGuiType<"label", CWBItem> {
  public:
   CWBLabel(std::string_view txt);
   static inline CWBLabel* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -43,3 +45,5 @@ export class CWBLabel : public CWBGuiType<"label", CWBItem> {
   void OnDraw(CWBDrawAPI* API) override;
   std::string Text;
 };
+
+}  // namespace gui

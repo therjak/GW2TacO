@@ -10,15 +10,17 @@ module;
 
 export module whiteboard:atlas;
 
+export namespace gui {
+
 // cache size must be 2^x
-export constexpr int32_t kAtlasCacheSize = 32;
+constexpr int32_t kAtlasCacheSize = 32;
 
-export typedef int32_t WBATLASHANDLE;
+typedef int32_t WBATLASHANDLE;
 
-export class CAtlasImage;
+class CAtlasImage;
 
 // stores a node for the rectpacker
-export class CAtlasNode {
+class CAtlasNode {
   friend class CAtlas;
 
  public:
@@ -37,7 +39,7 @@ export class CAtlasNode {
 };
 
 // stores image data not currently in the atlas
-export class CAtlasImage {
+class CAtlasImage {
  public:
   CAtlasImage();
   CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
@@ -59,12 +61,12 @@ export class CAtlasImage {
   bool Required;
 };
 
-export struct CAtlasCacheElement {
+struct CAtlasCacheElement {
   WBATLASHANDLE Handle = 0;
   CAtlasNode* Node = nullptr;
 };
 
-export class CAtlas {
+class CAtlas {
   friend class CWBDrawAPI;
 
  public:
@@ -121,3 +123,5 @@ export class CAtlas {
 
   std::mutex mtx;
 };
+
+}  // namespace gui

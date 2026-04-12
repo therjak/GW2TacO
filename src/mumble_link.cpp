@@ -28,7 +28,7 @@ using math::CVector4;
 
 CMumbleLink mumbleLink("MumbleLink");
 bool frameTriggered = false;
-extern std::unique_ptr<CWBApplication> App;
+extern std::unique_ptr<gui::CWBApplication> App;
 
 void ChangeUIScale(int size);
 

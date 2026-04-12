@@ -11,11 +11,11 @@ export module taco.special_gui_items;
 import whiteboard;
 
 export class ClickThroughButton
-    : public CWBGuiType<"clickthroughbutton", CWBButton> {
+    : public gui::CWBGuiType<"clickthroughbutton", gui::CWBButton> {
  public:
   ClickThroughButton(std::string_view txt);
   ~ClickThroughButton() override;
-  static inline ClickThroughButton* Create(CWBItem* Parent,
+  static inline ClickThroughButton* Create(gui::CWBItem* Parent,
                                            const math::CRect& Pos,
                                            std::string_view txt = "") {
     auto p = std::make_unique<ClickThroughButton>(txt);
@@ -26,6 +26,6 @@ export class ClickThroughButton
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 };

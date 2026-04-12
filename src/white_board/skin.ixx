@@ -13,13 +13,15 @@ export module whiteboard:skin;
 
 import :draw_api;
 
-export enum class WBMETRICTYPE : uint8_t {
+export namespace gui {
+
+enum class WBMETRICTYPE : uint8_t {
   WB_UNDEFINED = 0,
   WB_PIXELS,
   WB_RELATIVE,
 };
 
-export class CWBMetricValue {
+class CWBMetricValue {
  public:
   CWBMetricValue();
   void SetMetric(WBMETRICTYPE w, float Value);
@@ -44,7 +46,7 @@ export class CWBMetricValue {
   bool AutoSize = false;
 };
 
-export enum class WBPOSITIONTYPE : uint16_t {
+enum class WBPOSITIONTYPE : uint16_t {
   WB_MARGIN_LEFT = 0,
   WB_MARGIN_RIGHT = 1,
   WB_MARGIN_TOP = 2,
@@ -57,7 +59,7 @@ export enum class WBPOSITIONTYPE : uint16_t {
   WB_PADDING_BOTTOM = 9
 };
 
-export class CWBPositionDescriptor {
+class CWBPositionDescriptor {
  public:
   void SetValue(WBPOSITIONTYPE p, float Relative, float Pixels);
   void SetMetric(WBPOSITIONTYPE p, WBMETRICTYPE m, float Value);
@@ -80,7 +82,7 @@ export class CWBPositionDescriptor {
   std::unordered_map<WBPOSITIONTYPE, CWBMetricValue> Positions;
 };
 
-export class CWBPositionDescriptorPixels {
+class CWBPositionDescriptorPixels {
  public:
   CWBPositionDescriptorPixels();
   void SetValue(WBPOSITIONTYPE p, int32_t Pixels);
@@ -96,20 +98,20 @@ export class CWBPositionDescriptorPixels {
   std::array<int32_t, 6> Positions = {0};
 };
 
-export enum class WBSKINELEMENTBEHAVIOR : uint8_t {
+enum class WBSKINELEMENTBEHAVIOR : uint8_t {
   WB_SKINBEHAVIOR_PIXELCORRECT = 0,
   WB_SKINBEHAVIOR_STRETCH,
   WB_SKINBEHAVIOR_TILE,
 };
 
-export enum class WBRECTSIDE : uint8_t {
+enum class WBRECTSIDE : uint8_t {
   WB_RECTSIDE_LEFT = 0,
   WB_RECTSIDE_TOP = 1,
   WB_RECTSIDE_RIGHT = 2,
   WB_RECTSIDE_BOTTOM = 3,
 };
 
-export class CWBSkinElement {
+class CWBSkinElement {
  public:
   CWBSkinElement();
   CWBSkinElement(const CWBSkinElement& Copy);
@@ -132,7 +134,7 @@ export class CWBSkinElement {
   std::array<WBSKINELEMENTBEHAVIOR, 2> DefaultBehavior{};
 };
 
-export class CWBMosaicImage {
+class CWBMosaicImage {
  public:
   CWBMosaicImage();
   void SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels);
@@ -151,7 +153,7 @@ export class CWBMosaicImage {
   CColor Color = CColor(0xffffffff);
 };
 
-export class CWBMosaic {
+class CWBMosaic {
  public:
   CWBMosaic();
   CWBMosaic(const CWBMosaic& Copy);
@@ -174,9 +176,9 @@ export class CWBMosaic {
   std::array<int32_t, 4> Overshoot = {0};
 };
 
-export typedef uint32_t WBSKINELEMENTID;
+typedef uint32_t WBSKINELEMENTID;
 
-export class CWBSkin {
+class CWBSkin {
  public:
   void AddElement(std::string_view Name, WBATLASHANDLE Handle,
                   WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav);
@@ -198,3 +200,5 @@ export class CWBSkin {
   std::vector<CWBSkinElement> SkinItems;
   std::vector<CWBMosaic> Mosaics;
 };
+
+}  // namespace gui

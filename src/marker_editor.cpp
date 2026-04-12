@@ -19,7 +19,7 @@ using math::CRect;
 using math::CVector3;
 
 bool GW2MarkerEditor::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                         WBMESSAGE MessageType) {
+                                         gui::WBMESSAGE MessageType) {
   return true;
 }
 
@@ -29,11 +29,12 @@ GW2MarkerEditor::GW2MarkerEditor() : CWBGuiType() {
 
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
-CWBItem* GW2MarkerEditor::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* Root, CXMLNode& node,
+                                       CRect& Pos) {
   return GW2MarkerEditor::Create(Root, Pos);
 }
 
-void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
+void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* API) {
   bool autoHide = GetConfigValue("AutoHideMarkerEditor");
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
@@ -60,7 +61,7 @@ void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
 
       if (CurrentPOI != cpoi.guid) {
         auto* type =
-            dynamic_cast<CWBLabel*>(FindChildByID("markertype", "label"));
+            dynamic_cast<gui::CWBLabel*>(FindChildByID("markertype", "label"));
         if (type) {
           std::string typeName;
           if (cpoi.category) typeName = cpoi.category->GetFullTypeName();
@@ -90,12 +91,12 @@ void GW2MarkerEditor::OnDraw(CWBDrawAPI* API) {
   }
 }
 
-bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
+bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& Message) {
   switch (Message.Get()) {
-    case WBM_COMMAND: {
+    case gui::WBM_COMMAND: {
       if (Hidden) break;
 
-      auto* b = dynamic_cast<CWBButton*>(
+      auto* b = dynamic_cast<gui::CWBButton*>(
           App->FindItemByGuid(Message.GetTarget(), "button"));
       if (!b) break;
       if (b->GetID() == "changemarkertype") {
@@ -150,14 +151,14 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
 
     } break;
 
-    case WBM_CONTEXTMESSAGE:
+    case gui::WBM_CONTEXTMESSAGE:
       if (Message.Data() >= 0 && Message.Data() < CategoryList.size()) {
         if (!ChangeDefault) {
           auto& mPOIs = GetMapPOIs();
           mPOIs[CurrentPOI].SetCategory(CategoryList[Message.Data()]);
           ExportPOIS();
-          auto* type =
-              dynamic_cast<CWBLabel*>(FindChildByID("markertype", "label"));
+          auto* type = dynamic_cast<gui::CWBLabel*>(
+              FindChildByID("markertype", "label"));
           if (type) {
             type->SetText("Marker Type: " +
                           CategoryList[Message.Data()]->GetFullTypeName());
@@ -166,7 +167,7 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
           extern std::string DefaultMarkerCategory;
           DefaultMarkerCategory =
               CategoryList[Message.Data()]->GetFullTypeName();
-          auto* type = dynamic_cast<CWBLabel*>(
+          auto* type = dynamic_cast<gui::CWBLabel*>(
               FindChildByID("defaultmarkertype", "label"));
           if (type) {
             type->SetText("Default Marker Type: " +
@@ -181,5 +182,5 @@ bool GW2MarkerEditor::MessageProc(const CWBMessage& Message) {
       break;
   }
 
-  return CWBItem::MessageProc(Message);
+  return gui::CWBItem::MessageProc(Message);
 }

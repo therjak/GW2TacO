@@ -70,8 +70,8 @@ __inline std::string ToGold(int32_t value) {
   return result;
 }
 
-void TPTracker::OnDraw(CWBDrawAPI* API) {
-  CWBFont* f = GetFont(GetState());
+void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
+  gui::CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
   if (!HasConfigValue("TPTrackerOnlyShowOutbid")) {
@@ -188,7 +188,8 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
               jsonxx::Object& item = x->get<jsonxx::Object>();
 
               GW2ItemData itemData;
-              if (!item.has<jsonxx::String>("name") || !item.has<jsonxx::Number>("id"))
+              if (!item.has<jsonxx::String>("name") ||
+                  !item.has<jsonxx::Number>("id"))
                 continue;
               itemData.name = item.get<jsonxx::String>("name");
               itemData.itemID = int32_t(item.get<jsonxx::Number>("id"));
@@ -236,7 +237,8 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
 
               jsonxx::Object& item = x->get<jsonxx::Object>();
 
-              if (!item.has<jsonxx::Number>("id") || !item.has<jsonxx::Object>("buys") ||
+              if (!item.has<jsonxx::Number>("id") ||
+                  !item.has<jsonxx::Object>("buys") ||
                   !item.has<jsonxx::Object>("sells")) {
                 continue;
               }
@@ -252,8 +254,10 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
               }
 
               GW2ItemData itemData = GetGW2ItemData(id);
-              itemData.buyPrice = int32_t(buys.get<jsonxx::Number>("unit_price"));
-              itemData.sellPrice = int32_t(sells.get<jsonxx::Number>("unit_price"));
+              itemData.buyPrice =
+                  int32_t(buys.get<jsonxx::Number>("unit_price"));
+              itemData.sellPrice =
+                  int32_t(sells.get<jsonxx::Number>("unit_price"));
               SetGW2ItemData(itemData);
             }
           }
@@ -396,9 +400,12 @@ void TPTracker::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-bool TPTracker::ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
-  if (!object.has<jsonxx::Number>("id") || !object.has<jsonxx::Number>("item_id") ||
-      !object.has<jsonxx::Number>("price") || !object.has<jsonxx::Number>("quantity")) {
+bool TPTracker::ParseTransaction(jsonxx::Object& object,
+                                 TransactionItem& output) {
+  if (!object.has<jsonxx::Number>("id") ||
+      !object.has<jsonxx::Number>("item_id") ||
+      !object.has<jsonxx::Number>("price") ||
+      !object.has<jsonxx::Number>("quantity")) {
     return false;
   }
   output.transactionID = int32_t(object.get<jsonxx::Number>("id"));
@@ -412,11 +419,12 @@ TPTracker::TPTracker() : CWBGuiType() {}
 
 TPTracker::~TPTracker() {}
 
-CWBItem* TPTracker::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+gui::CWBItem* TPTracker::Factory(gui::CWBItem* Root, CXMLNode& node,
+                                 CRect& Pos) {
   return TPTracker::Create(Root, Pos);
 }
 
 bool TPTracker::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                   WBMESSAGE MessageType) {
+                                   gui::WBMESSAGE MessageType) {
   return true;
 }

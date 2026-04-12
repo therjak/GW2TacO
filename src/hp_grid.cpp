@@ -17,7 +17,7 @@ import taco.overlay_config;
 using math::CPoint;
 using math::CRect;
 
-void GW2HPGrid::OnDraw(CWBDrawAPI* API) {
+void GW2HPGrid::OnDraw(gui::CWBDrawAPI* API) {
   if (!GetConfigValue("HPGridVisible")) {
     return;
   }
@@ -45,12 +45,13 @@ GW2HPGrid::GW2HPGrid() : CWBGuiType() { LoadGrids(); }
 
 GW2HPGrid::~GW2HPGrid() = default;
 
-CWBItem* GW2HPGrid::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
+gui::CWBItem* GW2HPGrid::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                 CRect& Pos) {
   return GW2HPGrid::Create(Root, Pos);
 }
 
 bool GW2HPGrid::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                   WBMESSAGE MessageType) {
+                                   gui::WBMESSAGE MessageType) {
   return true;
 }
 

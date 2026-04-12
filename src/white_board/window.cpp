@@ -15,6 +15,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 uint32_t CWBWindow::GetBorderSelectionArea(const CPoint& mousepos) {
   if (App->GetMouseItem() != this) return 0;
 
@@ -354,3 +356,5 @@ CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   if (node.HasAttribute("title")) window->SetTitle(node.GetAttribute("title"));
   return window;
 }
+
+}  // namespace gui

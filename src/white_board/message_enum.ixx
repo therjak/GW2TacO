@@ -3,7 +3,9 @@ module;
 
 export module whiteboard:message_enum;
 
-export enum WBMESSAGE {
+export namespace gui {
+
+enum WBMESSAGE {
   WBM_NONE = 0,
   WBM_REPOSITION = 0x100,
   WBM_ROOTRESIZE,
@@ -69,6 +71,8 @@ export enum WBMESSAGE {
   WBM_GAMEPAD_RIGHT_THUMB_Y,
 };
 
-export constexpr int32_t WB_KBSTATE_ALT = 0x00000001;
-export constexpr int32_t WB_KBSTATE_CTRL = 0x00000002;
-export constexpr int32_t WB_KBSTATE_SHIFT = 0x00000004;
+constexpr int32_t WB_KBSTATE_ALT = 0x00000001;
+constexpr int32_t WB_KBSTATE_CTRL = 0x00000002;
+constexpr int32_t WB_KBSTATE_SHIFT = 0x00000004;
+
+}  // namespace gui

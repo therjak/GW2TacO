@@ -15,6 +15,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 static WBATLASHANDLE AtlasHandle = 1;
 
 CAtlasNode::CAtlasNode() = default;
@@ -405,7 +407,8 @@ bool CAtlas::Reset() {
   return true;
 }
 
-bool CAtlas::Resize(renderer::CCoreDevice* Device, int32_t XSize, int32_t YSize) {
+bool CAtlas::Resize(renderer::CCoreDevice* Device, int32_t XSize,
+                    int32_t YSize) {
   Root.reset();
   Image.reset();
   Atlas.reset();
@@ -434,3 +437,5 @@ bool CAtlas::Resize(renderer::CCoreDevice* Device, int32_t XSize, int32_t YSize)
 
   return true;
 }
+
+}  // namespace gui

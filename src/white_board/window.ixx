@@ -16,34 +16,36 @@ import :application;
 import :css_item;
 import :gui_item;
 
-export constexpr uint32_t WB_WINDOW_CLOSEABLE = 0x00000001;
-export constexpr uint32_t WB_WINDOW_MOVEABLE = 0x00000002;
-export constexpr uint32_t WB_WINDOW_RESIZABLE = 0x00000004;
-export constexpr uint32_t WB_WINDOW_ALWAYSONTOP = 0x00000008;
-export constexpr uint32_t WB_WINDOW_TITLE = 0x00000010;
+export namespace gui {
 
-export constexpr uint32_t WB_WINDOW_DEFAULT =
+constexpr uint32_t WB_WINDOW_CLOSEABLE = 0x00000001;
+constexpr uint32_t WB_WINDOW_MOVEABLE = 0x00000002;
+constexpr uint32_t WB_WINDOW_RESIZABLE = 0x00000004;
+constexpr uint32_t WB_WINDOW_ALWAYSONTOP = 0x00000008;
+constexpr uint32_t WB_WINDOW_TITLE = 0x00000010;
+
+constexpr uint32_t WB_WINDOW_DEFAULT =
     (WB_WINDOW_CLOSEABLE | WB_WINDOW_RESIZABLE | WB_WINDOW_MOVEABLE |
      WB_WINDOW_TITLE);
 
-export constexpr uint32_t WB_DRAGMODE_TOP = 0x00000001;
-export constexpr uint32_t WB_DRAGMODE_BOTTOM = 0x00000002;
-export constexpr uint32_t WB_DRAGMODE_LEFT = 0x00000004;
-export constexpr uint32_t WB_DRAGMODE_RIGHT = 0x00000008;
+constexpr uint32_t WB_DRAGMODE_TOP = 0x00000001;
+constexpr uint32_t WB_DRAGMODE_BOTTOM = 0x00000002;
+constexpr uint32_t WB_DRAGMODE_LEFT = 0x00000004;
+constexpr uint32_t WB_DRAGMODE_RIGHT = 0x00000008;
 
-export constexpr uint32_t WB_DRAGMASK = 0x0000000F;
+constexpr uint32_t WB_DRAGMASK = 0x0000000F;
 
-export constexpr uint32_t WB_DRAGMODE_CLOSEBUTTON = 0x00000010;
-export constexpr uint32_t WB_DRAGMODE_MOVE = 0x00000020;
+constexpr uint32_t WB_DRAGMODE_CLOSEBUTTON = 0x00000010;
+constexpr uint32_t WB_DRAGMODE_MOVE = 0x00000020;
 
-export enum class WBWINDOWELEMENT : char {
+enum class WBWINDOWELEMENT : char {
   WB_WINELEMENT_CLOSE = 0,
   WB_WINELEMENT_MINIMIZE,
   WB_WINELEMENT_INFO,
   WB_WINELEMENT_TITLE,
 };
 
-export class CWBWindow : public CWBGuiType<"window", CWBItem> {
+class CWBWindow : public CWBGuiType<"window", CWBItem> {
  public:
   CWBWindow(const TCHAR* txt = "", uint32_t style = WB_WINDOW_DEFAULT);
   static inline CWBWindow* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -90,3 +92,5 @@ export class CWBWindow : public CWBGuiType<"window", CWBItem> {
 
   std::unordered_map<WBWINDOWELEMENT, CWBCSSPropertyBatch> Elements;
 };
+
+}  // namespace gui

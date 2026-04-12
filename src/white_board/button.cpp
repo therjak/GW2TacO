@@ -14,6 +14,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 WBITEMSTATE CWBButton::GetState() {
   WBITEMSTATE i = CWBItem::GetState();
   if (Pushed) {
@@ -140,3 +142,5 @@ CWBItem* CWBButton::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
   return button;
 }
+
+}  // namespace gui

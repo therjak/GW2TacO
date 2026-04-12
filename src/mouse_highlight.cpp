@@ -10,7 +10,7 @@ import taco.overlay_config;
 using math::CPoint;
 using math::CRect;
 
-void GW2MouseHighlight::OnDraw(CWBDrawAPI* API) {
+void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* API) {
   if (!GetConfigValue("MouseHighlightVisible")) return;
 
   POINT pos;
@@ -50,12 +50,12 @@ GW2MouseHighlight::GW2MouseHighlight() : CWBGuiType() {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
-CWBItem* GW2MouseHighlight::Factory(CWBItem* Root, const CXMLNode& node,
-                                    CRect& Pos) {
+gui::CWBItem* GW2MouseHighlight::Factory(gui::CWBItem* Root,
+                                         const CXMLNode& node, CRect& Pos) {
   return GW2MouseHighlight::Create(Root, Pos);
 }
 
 bool GW2MouseHighlight::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                           WBMESSAGE MessageType) {
+                                           gui::WBMESSAGE MessageType) {
   return true;
 }

@@ -11,7 +11,9 @@ export module whiteboard:context_menu;
 
 import :gui_item;
 
-export class CWBContextItem {
+export namespace gui {
+
+class CWBContextItem {
   friend class CWBContextMenu;
 
  public:
@@ -36,7 +38,7 @@ export class CWBContextItem {
   CWBContextItem* CopyOf = nullptr;
 };
 
-export class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
+class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
  public:
   CWBContextMenu(WBGUID Target);
   static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -85,3 +87,5 @@ export class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
 
   CWBCSSPropertyBatch SeparatorElements;
 };
+
+}  // namespace gui

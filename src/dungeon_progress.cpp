@@ -22,8 +22,8 @@ import taco.time;
 using math::CPoint;
 using math::CRect;
 
-void DungeonProgress::OnDraw(CWBDrawAPI* API) {
-  CWBFont* f = GetFont(GetState());
+void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
+  gui::CWBFont* f = GetFont(GetState());
 
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(API, f);
@@ -111,8 +111,8 @@ void DungeonProgress::OnDraw(CWBDrawAPI* API) {
       }
 
       CPoint tp = f->GetTextPosition(
-          s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
-          WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
+          s, r + CRect(-3, 0, 0, 0), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE);
       tp.y = posy + 1;
       f->Write(API, s, tp, CColor{0xffffffff});
       {
@@ -189,11 +189,12 @@ DungeonProgress::DungeonProgress()
 
 DungeonProgress::~DungeonProgress() {}
 
-CWBItem* DungeonProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* Root, CXMLNode& node,
+                                       CRect& Pos) {
   return DungeonProgress::Create(Root, Pos);
 }
 
 bool DungeonProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                         WBMESSAGE MessageType) {
+                                         gui::WBMESSAGE MessageType) {
   return true;
 }

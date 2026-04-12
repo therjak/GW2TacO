@@ -15,6 +15,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
@@ -491,3 +493,5 @@ CWBContextItem* CWBContextMenu::GetItem(int32_t ID) {
   }
   return nullptr;
 }
+
+}  // namespace gui

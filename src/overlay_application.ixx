@@ -7,7 +7,7 @@ export module taco.overlay_application;
 
 import whiteboard;
 
-export class COverlayApp : public CWBApplication {
+export class COverlayApp : public gui::CWBApplication {
  public:
   bool Initialize(const renderer::CCoreWindowParameters& WindowParams) override;
 

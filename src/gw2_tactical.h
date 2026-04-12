@@ -3,11 +3,11 @@
 
 #include <atomic>
 #include <cassert>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
-#include <future>
 #include <unordered_map>
 #include <vector>
 
@@ -35,7 +35,7 @@ struct POI {
       const std::unordered_map<int32_t, Achievement>& achievements) const;
 
   MarkerTypeData typeData;
-  WBATLASHANDLE icon = 0;
+  gui::WBATLASHANDLE icon = 0;
 
   math::CVector4 cameraSpacePosition;
 
@@ -103,13 +103,14 @@ extern std::unordered_map<int, POISet> POIs;
 extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
+extern gui::WBATLASHANDLE DefaultIconHandle;
 
 POISet& GetMapPOIs();
 
-class GW2TacticalDisplay : public CWBGuiType<"gw2tactical", CWBItem> {
+class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
  public:
   GW2TacticalDisplay();
-  static inline GW2TacticalDisplay* Create(CWBItem* Parent,
+  static inline GW2TacticalDisplay* Create(gui::CWBItem* Parent,
                                            math::CRect Position) {
     auto p = std::make_unique<GW2TacticalDisplay>();
     p->Initialize(Parent, Position);
@@ -120,22 +121,22 @@ class GW2TacticalDisplay : public CWBGuiType<"gw2tactical", CWBItem> {
   }
   ~GW2TacticalDisplay() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
   void RemoveUserMarkersFromMap();
 
  private:
   void FetchAchievements();
   void InsertPOI(POI& poi);
-  void DrawPOI(CWBDrawAPI* API, const tm& ptm, const time_t& currtime, POI& poi,
-               bool drawDistance, std::string& infoText);
-  void DrawPOIMinimap(CWBDrawAPI* API, const math::CRect& miniRect,
+  void DrawPOI(gui::CWBDrawAPI* API, const tm& ptm, const time_t& currtime,
+               POI& poi, bool drawDistance, std::string& infoText);
+  void DrawPOIMinimap(gui::CWBDrawAPI* API, const math::CRect& miniRect,
                       math::CVector2 pos, const tm& ptm, const time_t& currtime,
                       const POI& poi, float alpha, float zoomLevel);
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   math::CVector3 ProjectTacticalPos(math::CVector3 pos, float fov, float asp);
 
   bool TacticalIconsOnEdge = false;
@@ -163,11 +164,11 @@ void ImportPOIS();
 void ExportPOIS();
 void ImportPOIActivationData();
 
-void OpenTypeContextMenu(CWBContextMenu* ctx,
+void OpenTypeContextMenu(gui::CWBContextMenu* ctx,
                          std::vector<GW2TacticalCategory*>& CategoryList,
                          bool AddVisibilityMarkers = false, int32_t BaseID = 0,
                          bool closeOnClick = false);
-void OpenTypeContextMenu(CWBContextItem* ctx,
+void OpenTypeContextMenu(gui::CWBContextItem* ctx,
                          std::vector<GW2TacticalCategory*>& CategoryList,
                          bool AddVisibilityMarkers = false, int32_t BaseID = 0,
                          bool closeOnClick = false);

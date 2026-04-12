@@ -60,13 +60,13 @@ import whiteboard;
 
 using math::CRect;
 
-std::unique_ptr<CWBApplication> App;
+std::unique_ptr<gui::CWBApplication> App;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 
 bool disableHooks = false;
 
-bool InitGUI(CWBApplication* App) {
+bool InitGUI(gui::CWBApplication* App) {
   CreateUniFontOutlined(App, "UniFontOutlined");
   CreateUniFontOutlined(App, "ProFontOutlined");
   CreateUniFont(App, "UniFont");
@@ -117,7 +117,7 @@ bool InitGUI(CWBApplication* App) {
   return true;
 }
 
-void OpenWindows(CWBApplication* App) {
+void OpenWindows(gui::CWBApplication* App) {
   auto root = App->GetRoot();
   auto* taco =
       dynamic_cast<GW2TacO*>(root->FindChildByID("tacoroot", "GW2TacO"));
@@ -579,7 +579,7 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
   return true;
 }
 
-void ImportMarkerPack(CWBApplication* App, std::string_view zipFile);
+void ImportMarkerPack(gui::CWBApplication* App, std::string_view zipFile);
 
 void FlushZipDict();
 
@@ -737,9 +737,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   int32_t width = 1;
   int32_t height = 1;
 
-  renderer::CCoreWindowParameters p(GetModuleHandle(nullptr), false, width, height,
-                          "Guild Wars 2 Tactical Overlay",
-                          LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
+  renderer::CCoreWindowParameters p(
+      GetModuleHandle(nullptr), false, width, height,
+      "Guild Wars 2 Tactical Overlay",
+      LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
   p.OverrideWindowStyle = WS_POPUP;
   p.OverrideWindowStyleEx =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
@@ -782,7 +783,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     return -1;
   }
 
-  extern WBATLASHANDLE DefaultIconHandle;
   if (DefaultIconHandle == -1) {
     auto skinItem = App->GetSkin()->GetElementID("defaulticon");
     DefaultIconHandle = App->GetSkin()->GetElement(skinItem)->GetHandle();

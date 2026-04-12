@@ -41,7 +41,7 @@ std::unordered_map<int, TrailSet> trails;
 
 TrailSet& GetMapTrails() { return trails[mumbleLink.mapID]; }
 
-extern std::unique_ptr<CWBApplication> App;
+extern std::unique_ptr<gui::CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
@@ -57,7 +57,7 @@ void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos) {
   if (trails) trails->DoTrailLogging(mapID, charPos);
 }
 
-void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
+void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
   int32_t fadeoutBubble = GetConfigValue("FadeoutBubble");
 
   drawrect = GetClientRect();
@@ -317,7 +317,7 @@ void GW2TrailDisplay::DrawProxy(CWBDrawAPI* API, bool miniMaprender) {
   API->SetUIRenderState();
 }
 
-void GW2TrailDisplay::OnDraw(CWBDrawAPI* API) {
+void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
   if (!HasConfigValue("TrailLayerVisible")) {
     SetConfigValue("TrailLayerVisible", 1);
   }
@@ -337,15 +337,16 @@ void GW2TrailDisplay::OnDraw(CWBDrawAPI* API) {
   DrawProxy(API, false);
 
   if (GetConfigValue("LogTrails")) {
-    CWBFont* f = GetFont(GetState());
+    gui::CWBFont* f = GetFont(GetState());
     int32_t ypos = math::Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
 
     std::string_view s = "TacO is logging your trail.";
 
     CPoint pos = f->GetTextPosition(
         s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
-        WBTEXTALIGNMENTX::WBTA_CENTERX, WBTEXTALIGNMENTY::WBTA_CENTERY,
-        WBTEXTTRANSFORM::WBTT_NONE, true);
+        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+        gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE,
+        true);
     ypos += f->GetLineHeight();
     f->Write(API, s, pos, CColor{0xffff0000});
   }
@@ -455,8 +456,9 @@ renderer::CCoreTexture2D* GW2TrailDisplay::GetTexture(
 
 GW2TrailDisplay::GW2TrailDisplay() : CWBGuiType() {}
 
-bool GW2TrailDisplay::Initialize(CWBItem* Parent, const math::CRect& Position) {
-  if (!CWBItem::Initialize(Parent, Position)) return false;
+bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
+                                 const math::CRect& Position) {
+  if (!gui::CWBItem::Initialize(Parent, Position)) return false;
 
   constBuffer = App->GetDevice()->CreateConstantBuffer();
 
@@ -561,13 +563,13 @@ bool GW2TrailDisplay::Initialize(CWBItem* Parent, const math::CRect& Position) {
 
 GW2TrailDisplay::~GW2TrailDisplay() { textureCache.clear(); }
 
-CWBItem* GW2TrailDisplay::Factory(CWBItem* Root, const CXMLNode& node,
-                                  CRect& Pos) {
+gui::CWBItem* GW2TrailDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                       CRect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos);
 }
 
 bool GW2TrailDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                         WBMESSAGE MessageType) {
+                                         gui::WBMESSAGE MessageType) {
   return true;
 }
 
@@ -579,13 +581,13 @@ void GW2TrailDisplay::StartStopTrailRecording(bool start) {
 void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   trailRecordPaused = pause;
 
-  auto* btn = App->GetRoot()->FindChildByID<CWBButton>("pausetrail");
+  auto* btn = App->GetRoot()->FindChildByID<gui::CWBButton>("pausetrail");
   if (btn) {
     btn->Push(pause);
     btn->SetText(btn->IsPushed() ? "Resume Recording" : "Pause Recording");
   }
 
-  btn = App->GetRoot()->FindChildByID<CWBButton>("startnewsection");
+  btn = App->GetRoot()->FindChildByID<gui::CWBButton>("startnewsection");
   if (btn) btn->Hide(!pause);
 
   if (!pause && newSection && editedTrail) {
@@ -695,9 +697,9 @@ void GW2TrailDisplay::ImportTrail() {
       ClearEditedTrail();
       PauseTrail(true);
 
-      auto* btn = App->GetRoot()->FindChildByID<CWBButton>("starttrail");
+      auto* btn = App->GetRoot()->FindChildByID<gui::CWBButton>("starttrail");
       if (btn) btn->Push(true);
-      btn = App->GetRoot()->FindChildByID<CWBButton>("pausetrail");
+      btn = App->GetRoot()->FindChildByID<gui::CWBButton>("pausetrail");
       if (btn) btn->Push(true);
 
       if (!editedTrail) {

@@ -23,18 +23,20 @@ import :context_menu;
 import :draw_api;
 import :font;
 
-export enum class WBMOUSECLICKREPEATMODE : uint8_t {
+export namespace gui {
+
+enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_OFF = 0,
   WB_MCR_LEFT = 1,
   WB_MCR_RIGHT = 2,
   WB_MCR_MIDDLE = 3
 };
 
-export typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
-                                                    const CXMLNode& node,
-                                                    math::CRect& Pos);
+typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
+                                             const CXMLNode& node,
+                                             math::CRect& Pos);
 
-export class CWBApplication : public renderer::CCoreWindowHandlerWin {
+class CWBApplication : public renderer::CCoreWindowHandlerWin {
   friend class CWBItem;
 
  public:
@@ -185,3 +187,5 @@ export class CWBApplication : public renderer::CCoreWindowHandlerWin {
   std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
   CColor ClearColor = CColor(0, 0, 0, 255);
 };
+
+}  // namespace gui

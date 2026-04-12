@@ -14,15 +14,17 @@ import :application;
 import :css_item;
 import :gui_item;
 
-export constexpr uint32_t WB_TEXTBOX_SINGLELINE = 0x0000001;
-export constexpr uint32_t WB_TEXTBOX_PASSWORD = 0x0000002;
-export constexpr uint32_t WB_TEXTBOX_NOSELECTION = 0x0000004;
-export constexpr uint32_t WB_TEXTBOX_LINENUMS = 0x0000008;
-export constexpr uint32_t WB_TEXTBOX_DISABLECOPY = 0x0000010;
+export namespace gui {
 
-export class CWBTextBox;
+constexpr uint32_t WB_TEXTBOX_SINGLELINE = 0x0000001;
+constexpr uint32_t WB_TEXTBOX_PASSWORD = 0x0000002;
+constexpr uint32_t WB_TEXTBOX_NOSELECTION = 0x0000004;
+constexpr uint32_t WB_TEXTBOX_LINENUMS = 0x0000008;
+constexpr uint32_t WB_TEXTBOX_DISABLECOPY = 0x0000010;
 
-export class CWBTextBoxHistoryEntry {
+class CWBTextBox;
+
+class CWBTextBoxHistoryEntry {
   friend class CWBTextBox;
 
  public:
@@ -39,7 +41,7 @@ export class CWBTextBoxHistoryEntry {
   int32_t SelectionEnd_Before = 0;
 };
 
-export class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
+class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
  public:
   CWBTextBox(int32_t flags);
   static inline CWBTextBox* Create(CWBItem* Parent, const math::CRect& Pos,
@@ -131,3 +133,5 @@ export class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
 
   CWBCSSPropertyBatch Selection;
 };
+
+}  // namespace gui

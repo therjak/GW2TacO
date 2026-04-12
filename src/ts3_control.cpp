@@ -12,8 +12,8 @@ import taco.language;
 using math::CPoint;
 using math::CRect;
 
-void TS3Control::OnDraw(CWBDrawAPI* API) {
-  CWBFont* f = GetFont(GetState());
+void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
+  gui::CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
   if (!teamSpeakConnection.authenticated) {
@@ -35,10 +35,11 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
     }
   }
 
-  WBSKINELEMENTID playeroff = App->GetSkin()->GetElementID("ts3playeroff");
-  WBSKINELEMENTID playeron = App->GetSkin()->GetElementID("ts3playeron");
-  WBSKINELEMENTID outputoff = App->GetSkin()->GetElementID("ts3outputmuted");
-  WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID("ts3inputmuted");
+  gui::WBSKINELEMENTID playeroff = App->GetSkin()->GetElementID("ts3playeroff");
+  gui::WBSKINELEMENTID playeron = App->GetSkin()->GetElementID("ts3playeron");
+  gui::WBSKINELEMENTID outputoff =
+      App->GetSkin()->GetElementID("ts3outputmuted");
+  gui::WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID("ts3inputmuted");
 
   bool LeftAlign = true;
   CRect r = ClientToScreen(GetClientRect());
@@ -54,9 +55,10 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
           handler.Clients.find(handler.myclientid) != handler.Clients.end()) {
         CPoint p = f->GetTextPosition(
             handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
-            LeftAlign ? WBTEXTALIGNMENTX::WBTA_LEFT
-                      : WBTEXTALIGNMENTX::WBTA_RIGHT,
-            WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_NONE, true);
+            LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
+                      : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
+            gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
+            true);
         if (cnt) f->Write(API, handler.name, p);
         ypos += f->GetLineHeight();
 
@@ -74,9 +76,10 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
 
           CPoint p = f->GetTextPosition(
               channelText, GetClientRect() - CRect(size / 2, ypos, 0, 0),
-              LeftAlign ? WBTEXTALIGNMENTX::WBTA_LEFT
-                        : WBTEXTALIGNMENTX::WBTA_RIGHT,
-              WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_NONE, true);
+              LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
+                        : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
+              gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
+              true);
           if (cnt) f->Write(API, channelText, p);
           ypos += f->GetLineHeight();
         }
@@ -96,7 +99,7 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
           if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
           if (cl->channelid == mychannelid) {
-            WBSKINELEMENTID id = playeroff;
+            gui::WBSKINELEMENTID id = playeroff;
             if (cl->inputmuted) id = inputoff;
             if (cl->outputmuted) id = outputoff;
             if (cl->talkStatus) id = playeron;
@@ -111,9 +114,10 @@ void TS3Control::OnDraw(CWBDrawAPI* API) {
 
             CPoint p = f->GetTextPosition(
                 cl->name, GetClientRect() - CRect(2 * size, ypos, 2 * size, 0),
-                LeftAlign ? WBTEXTALIGNMENTX::WBTA_LEFT
-                          : WBTEXTALIGNMENTX::WBTA_RIGHT,
-                WBTEXTALIGNMENTY::WBTA_TOP, WBTEXTTRANSFORM::WBTT_NONE, true);
+                LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
+                          : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
+                gui::WBTEXTALIGNMENTY::WBTA_TOP,
+                gui::WBTEXTTRANSFORM::WBTT_NONE, true);
 
             if (cnt) f->Write(API, cl->name, p);
 
@@ -138,11 +142,12 @@ TS3Control::TS3Control() : CWBGuiType() {}
 
 TS3Control::~TS3Control() = default;
 
-CWBItem* TS3Control::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+gui::CWBItem* TS3Control::Factory(gui::CWBItem* Root, CXMLNode& node,
+                                  CRect& Pos) {
   return TS3Control::Create(Root, Pos);
 }
 
 bool TS3Control::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                    WBMESSAGE MessageType) {
+                                    gui::WBMESSAGE MessageType) {
   return true;
 }

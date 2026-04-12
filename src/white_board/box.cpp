@@ -19,6 +19,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 void CWBBox::AddChild(std::unique_ptr<CWBItem>&& Item) {
   CWBItem::AddChild(std::move(Item));
   RearrangeChildren();
@@ -479,3 +481,5 @@ void CWBBox::UpdateScrollbarData() {
     SetVScrollbarPos(BRect.y1, true);
   }
 }
+
+}  // namespace gui

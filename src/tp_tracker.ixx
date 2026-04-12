@@ -11,7 +11,6 @@ module;
 #include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 
-
 export module taco.tp_tracker;
 
 import xml;
@@ -27,16 +26,16 @@ export struct TransactionItem {
 export struct GW2ItemData {
   int32_t itemID = 0;
   std::string name;
-  WBATLASHANDLE icon = 0;
+  gui::WBATLASHANDLE icon = 0;
   int32_t buyPrice = 0;
   int32_t sellPrice = 0;
 };
 
-export class TPTracker : public CWBGuiType<"tptracker", CWBItem> {
+export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
  public:
   TPTracker();
   ~TPTracker() override;
-  static inline TPTracker* Create(CWBItem* Parent, math::CRect Position) {
+  static inline TPTracker* Create(gui::CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<TPTracker>();
     p->Initialize(Parent, Position);
     TPTracker* r = p.get();
@@ -45,13 +44,14 @@ export class TPTracker : public CWBGuiType<"tptracker", CWBItem> {
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
 
   int32_t lastFetchTime = 0;

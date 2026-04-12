@@ -10,6 +10,8 @@ import :message;
 
 using math::CRect;
 
+namespace gui {
+
 bool CWBRoot::MessageProc(const CWBMessage& Message) {
   switch (Message.Get()) {
     default:
@@ -40,3 +42,5 @@ CWBRoot::~CWBRoot() = default;
 void CWBRoot::SetApplication(CWBApplication* Application) { App = Application; }
 
 void CWBRoot::OnDraw(CWBDrawAPI* API) {}
+
+}  // namespace gui

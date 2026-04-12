@@ -8,7 +8,9 @@ export module whiteboard:style_manager;
 
 import :gui_item;
 
-export class CStyleManager {
+export namespace gui {
+
+class CStyleManager {
  public:
   CStyleManager();
   ~CStyleManager();
@@ -33,3 +35,5 @@ export class CStyleManager {
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>>
       dRules;
 };
+
+}  // namespace gui

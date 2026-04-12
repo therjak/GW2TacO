@@ -15,6 +15,8 @@ import :draw_api;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 //////////////////////////////////////////////////////////////////////////
 // metrics
 
@@ -549,3 +551,5 @@ CSize CWBSkin::GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID ID) {
 
   return CSize(0, 0);
 }
+
+}  // namespace gui

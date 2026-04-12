@@ -10,11 +10,11 @@ export module taco.ts3_control;
 import xml;
 import whiteboard;
 
-export class TS3Control : public CWBGuiType<"ts3control", CWBItem> {
+export class TS3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
  public:
   TS3Control();
   ~TS3Control() override;
-  static inline TS3Control* Create(CWBItem* Parent, math::CRect Position) {
+  static inline TS3Control* Create(gui::CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<TS3Control>();
     p->Initialize(Parent, Position);
     TS3Control* r = p.get();
@@ -23,12 +23,13 @@ export class TS3Control : public CWBGuiType<"ts3control", CWBItem> {
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   math::CPoint lastpos;
 };

@@ -12,6 +12,8 @@ module whiteboard;
 import :style_manager;
 import :gui_item;
 
+namespace gui {
+
 CStyleManager::CStyleManager() = default;
 
 CStyleManager::~CStyleManager() = default;
@@ -131,3 +133,5 @@ void CStyleManager::ApplyStylesFromDeclarations(
     }
   }
 }
+
+}  // namespace gui

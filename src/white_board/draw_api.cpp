@@ -14,6 +14,8 @@ module whiteboard;
 import :application;
 import :draw_api;
 
+namespace gui {
+
 constexpr int32_t VertexBufferRectCount = 4096;
 constexpr int32_t VertexBufferVertexCount = VertexBufferRectCount * 4;
 
@@ -967,3 +969,5 @@ void ZoomToMouseCenter(CPoint& Offset, float& Zoom, float NewZoom, CPoint Pos) {
 
   Zoom = NewZoom;
 }
+
+}  // namespace gui

@@ -22,6 +22,8 @@ import :text_box;
 using math::CPoint;
 using math::CRect;
 
+namespace gui {
+
 void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
   const WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2)) {
@@ -1122,3 +1124,5 @@ void CWBTextBox::SelectWord(int32_t CharacterInWord) {
 CWBTextBoxHistoryEntry::CWBTextBoxHistoryEntry() = default;
 
 CWBTextBoxHistoryEntry::~CWBTextBoxHistoryEntry() = default;
+
+}  // namespace gui
