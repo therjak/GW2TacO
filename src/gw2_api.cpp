@@ -1,8 +1,8 @@
 module;
 #include <algorithm>
+#include <future>
 #include <mutex>
 #include <string>
-#include <future>
 #include <utility>
 #include <vector>
 
@@ -45,11 +45,12 @@ APIKeyManager apiKeyManager;
 
 APIKey::APIKey(std::string_view key) : apiKey(key) {}
 
-APIKey::~APIKey() {
-}
+APIKey::~APIKey() {}
 
 void APIKey::FetchData() {
-  if (fetchTask.valid() && fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready) return;
+  if (fetchTask.valid() &&
+      fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+    return;
 
   initialized = false;
 
@@ -70,7 +71,8 @@ void APIKey::FetchData() {
     if (json.has<jsonxx::Array>("permissions")) {
       auto& values = json.get<jsonxx::Array>("permissions").values();
       for (auto v : values) {
-        if (v->is<jsonxx::String>()) new_key_data.caps.insert(v->get<jsonxx::String>());
+        if (v->is<jsonxx::String>())
+          new_key_data.caps.insert(v->get<jsonxx::String>());
       }
     } else {
       new_key_data.valid = false;
@@ -85,7 +87,8 @@ void APIKey::FetchData() {
       }
 
       if (json.has<jsonxx::Number>("world")) {
-        new_key_data.world_id = static_cast<int32_t>(json.get<jsonxx::Number>("world"));
+        new_key_data.world_id =
+            static_cast<int32_t>(json.get<jsonxx::Number>("world"));
       }
     }
     if (new_key_data.caps.contains("characters")) {
@@ -253,8 +256,8 @@ APIKeyManager::Status APIKeyManager::GetStatus() {
   return Status::OK;
 }
 
-APIKeyManager::Status APIKeyManager::DisplayStatusText(CWBDrawAPI* API,
-                                                       CWBFont* font) {
+APIKeyManager::Status APIKeyManager::DisplayStatusText(gui::CWBDrawAPI* API,
+                                                       gui::CWBFont* font) {
   APIKeyManager::Status status = GetStatus();
 
   switch (status) {

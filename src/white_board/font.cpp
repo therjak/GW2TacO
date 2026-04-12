@@ -15,6 +15,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 uint32_t DictionaryHash(const CWBKerningPair& i) {
   return i.First + (i.Second << 16);
 }
@@ -726,3 +728,5 @@ CPoint CWBFont::GetTextPosition(std::string_view String, const CRect& Container,
 
   return p;
 }
+
+}  // namespace gui

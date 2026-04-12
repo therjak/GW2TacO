@@ -6,7 +6,9 @@ module;
 
 export module whiteboard:css_item;
 
-export class IWBCSS {
+export namespace gui {
+
+class IWBCSS {
  public:
   IWBCSS();
   virtual ~IWBCSS();
@@ -34,3 +36,5 @@ export class IWBCSS {
   std::vector<std::string> aClasses;
   std::string sID;
 };
+
+}  // namespace gui

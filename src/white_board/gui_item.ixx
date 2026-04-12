@@ -19,16 +19,18 @@ import :skin;
 import :draw_api;
 import :font;
 
+export namespace gui {
+
 typedef uint32_t WBGUID;
-export class CWBDrawAPI;
-export class CWBApplication;
-export class CWBMessage;
+class CWBDrawAPI;
+class CWBApplication;
+class CWBMessage;
 
-export constexpr int32_t WBMarginKeep = (INT_MAX);
+constexpr int32_t WBMarginKeep = (INT_MAX);
 
-export class CWBContextMenu;
+class CWBContextMenu;
 
-export enum class WBALIGNMENT : uint8_t {
+enum class WBALIGNMENT : uint8_t {
   TOP = 0,
   LEFT = 0,
   CENTER = 1,
@@ -37,7 +39,7 @@ export enum class WBALIGNMENT : uint8_t {
   BOTTOM = 2,
 };
 
-export enum WBITEMSTATE {
+enum WBITEMSTATE {
   WB_STATE_NORMAL = 0,
   WB_STATE_ACTIVE = 1,
   WB_STATE_HOVER = 2,
@@ -47,7 +49,7 @@ export enum WBITEMSTATE {
   WB_STATE_COUNT,  // don't remove this, used as array size
 };
 
-export enum WBITEMVISUALCOMPONENT {
+enum WBITEMVISUALCOMPONENT {
   WB_ITEM_BACKGROUNDCOLOR = 0,
   WB_ITEM_FOREGROUNDCOLOR,
   WB_ITEM_BORDERCOLOR,
@@ -74,7 +76,7 @@ export enum WBITEMVISUALCOMPONENT {
   WB_ITEM_COUNT,  // don't remove this, used as array size
 };
 
-export enum WBSCROLLDRAGMODE {
+enum WBSCROLLDRAGMODE {
   WB_SCROLLDRAG_NONE = 0,
   WB_SCROLLDRAG_BUTTON1,
   WB_SCROLLDRAG_UP,
@@ -83,7 +85,7 @@ export enum WBSCROLLDRAGMODE {
   WB_SCROLLDRAG_BUTTON2,
 };
 
-export class CWBScrollbarParams {
+class CWBScrollbarParams {
  public:
   CWBScrollbarParams() {
     DragStartPosition = 0;
@@ -108,7 +110,7 @@ export class CWBScrollbarParams {
   int32_t DragStartPosition;
 };
 
-export class CWBDisplayState {
+class CWBDisplayState {
  public:
   CWBDisplayState();
   virtual ~CWBDisplayState();
@@ -124,7 +126,7 @@ export class CWBDisplayState {
   std::array<bool, WB_ITEM_COUNT> VisualSet = {false};
 };
 
-export class CWBDisplayProperties {
+class CWBDisplayProperties {
  public:
   CWBDisplayProperties();
   virtual ~CWBDisplayProperties();
@@ -138,7 +140,7 @@ export class CWBDisplayProperties {
   std::array<CWBDisplayState, WB_STATE_COUNT> States;
 };
 
-export class CWBCSSPropertyBatch {
+class CWBCSSPropertyBatch {
  public:
   CWBCSSPropertyBatch();
   CWBFont* GetFont(CWBApplication* App, WBITEMSTATE State);
@@ -153,7 +155,7 @@ export class CWBCSSPropertyBatch {
   std::unordered_map<WBITEMSTATE, std::string> Fonts;
 };
 
-export class CWBItem : public IWBCSS {
+class CWBItem : public IWBCSS {
   friend CWBApplication;  // so we don't directly expose the message handling
                           // functions to the user
  public:
@@ -485,7 +487,7 @@ export class CWBItem : public IWBCSS {
 // class is the typename we're comparing against if not we traverse up the
 // hierarchy by directly calling the InstanceOf() of the parent class
 
-export template <size_t N>
+template <size_t N>
 struct WBFixedString {
   char value[N]{};
   consteval WBFixedString(const char (&str)[N]) {
@@ -493,7 +495,7 @@ struct WBFixedString {
   }
 };
 
-export template <WBFixedString TypeName, typename Parent>
+template <WBFixedString TypeName, typename Parent>
 class CWBGuiType : public Parent {
  public:
   template <typename... Args>
@@ -515,3 +517,5 @@ class CWBGuiType : public Parent {
     return type;
   }
 };
+
+}  // namespace gui

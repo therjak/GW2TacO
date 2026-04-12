@@ -9,6 +9,8 @@ module whiteboard;
 
 import :css_item;
 
+namespace gui {
+
 IWBCSS::IWBCSS() = default;
 
 IWBCSS::~IWBCSS() = default;
@@ -71,3 +73,5 @@ std::string IWBCSS::GetClassString() {
   }
   return ret;
 }
+
+}  // namespace gui

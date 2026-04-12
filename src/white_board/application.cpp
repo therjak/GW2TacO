@@ -36,6 +36,8 @@ import :window;
 using math::CPoint;
 using math::CRect;
 
+namespace gui {
+
 CWBApplication::CWBApplication()
     : CCoreWindowHandlerWin(),
       DrawAPI(std::make_unique<CWBDrawAPI>()),
@@ -1004,3 +1006,5 @@ float CWBApplication::GetFrameRate() {
   if (!FrameTimeAcc) return 9999;
   return 1000.0f / (FrameTimeAcc / static_cast<float>(FrameCount));
 }
+
+}  // namespace gui

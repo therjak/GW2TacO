@@ -44,10 +44,11 @@ export constexpr std::array CGAPaletteNames = {
     "green", "lightgreen", "cyan",      "lightcyan", "magenta", "lightmagenta",
     "brown", "yellow",     "lightgray", "white"};
 
-export class GW2MouseHighlight : public CWBGuiType<"mousehighlight", CWBItem> {
+export class GW2MouseHighlight
+    : public gui::CWBGuiType<"mousehighlight", gui::CWBItem> {
  public:
   GW2MouseHighlight();
-  static inline GW2MouseHighlight* Create(CWBItem* Parent,
+  static inline GW2MouseHighlight* Create(gui::CWBItem* Parent,
                                           math::CRect Position) {
     auto p = std::make_unique<GW2MouseHighlight>();
     p->Initialize(Parent, Position);
@@ -58,14 +59,14 @@ export class GW2MouseHighlight : public CWBGuiType<"mousehighlight", CWBItem> {
   }
   ~GW2MouseHighlight() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
 
   math::CPoint lastpos;
   math::CPoint lastchangedpos;

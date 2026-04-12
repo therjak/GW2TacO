@@ -38,10 +38,12 @@ export class Dungeon {
   std::vector<DungeonPath> paths;
 };
 
-export class DungeonProgress : public CWBGuiType<"dungeonprogress", CWBItem> {
+export class DungeonProgress
+    : public gui::CWBGuiType<"dungeonprogress", gui::CWBItem> {
  public:
   DungeonProgress();
-  static inline DungeonProgress* Create(CWBItem* Parent, math::CRect Position) {
+  static inline DungeonProgress* Create(gui::CWBItem* Parent,
+                                        math::CRect Position) {
     auto p = std::make_unique<DungeonProgress>();
     p->Initialize(Parent, Position);
     DungeonProgress* r = p.get();
@@ -51,13 +53,14 @@ export class DungeonProgress : public CWBGuiType<"dungeonprogress", CWBItem> {
   }
   ~DungeonProgress() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
 
   math::CPoint lastpos;
 

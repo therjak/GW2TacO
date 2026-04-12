@@ -12,33 +12,35 @@ export module whiteboard:font;
 
 import :atlas;
 
-export enum class WBTEXTALIGNMENTX : uint8_t {
+export namespace gui {
+
+enum class WBTEXTALIGNMENTX : uint8_t {
   WBTA_CENTERX,
   WBTA_LEFT,
   WBTA_RIGHT,
 };
 
-export enum class WBTEXTALIGNMENTY : uint8_t {
+enum class WBTEXTALIGNMENTY : uint8_t {
   WBTA_CENTERY,
   WBTA_TOP,
   WBTA_BOTTOM,
 };
 
-export enum class WBTEXTTRANSFORM : uint8_t {
+enum class WBTEXTTRANSFORM : uint8_t {
   WBTT_NONE = 0,
   WBTT_CAPITALIZE,
   WBTT_UPPERCASE,
   WBTT_LOWERCASE,
 };
 
-export struct WBSYMBOLINPUT {
+struct WBSYMBOLINPUT {
   uint16_t Char = 0;
   math::CRect UV;
   math::CPoint Offset;
   int32_t Advance = 0;
 };
 
-export struct WBSYMBOL {
+struct WBSYMBOL {
   WBATLASHANDLE Handle = 0;
   int16_t OffsetX = 0, OffsetY = 0;
   uint16_t SizeX = 0, SizeY = 0;
@@ -48,12 +50,12 @@ export struct WBSYMBOL {
   math::CRect calculatedContentRect;
 };
 
-export struct WBKERNINGDATA {
+struct WBKERNINGDATA {
   uint16_t First, Second;
   int16_t Amount;
 };
 
-export class CWBKerningPair {
+class CWBKerningPair {
  public:
   uint32_t First, Second;
 
@@ -64,17 +66,17 @@ export class CWBKerningPair {
                                    const CWBKerningPair& rhs) = default;
 };
 
-export uint32_t DictionaryHash(const CWBKerningPair& i);
+uint32_t DictionaryHash(const CWBKerningPair& i);
 
-export struct DHash {
+struct DHash {
   std::size_t operator()(const CWBKerningPair& i) const {
     return DictionaryHash(i);
   }
 };
 
-export class CWBDrawAPI;
+class CWBDrawAPI;
 
-export class CWBFontDescription {
+class CWBFontDescription {
   friend class CWBFont;
 
  public:
@@ -111,7 +113,7 @@ export class CWBFontDescription {
   int32_t Base = 0;
 };
 
-export class CWBFont {
+class CWBFont {
  public:
   explicit CWBFont(CAtlas* Atlas);
   virtual ~CWBFont();
@@ -185,3 +187,5 @@ export class CWBFont {
 
   TCHAR MissingChar = 0;
 };
+
+}  // namespace gui

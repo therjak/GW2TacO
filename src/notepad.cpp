@@ -16,7 +16,7 @@ using math::CPoint;
 using math::CRect;
 
 bool GW2Notepad::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                    WBMESSAGE MessageType) {
+                                    gui::WBMESSAGE MessageType) {
   return true;
 }
 
@@ -28,7 +28,8 @@ GW2Notepad::GW2Notepad() : CWBGuiType() {
   CStreamReaderMemory nptext;
   if (!nptext.Open("notepad.txt")) return;
 
-  auto* tb = dynamic_cast<CWBTextBox*>(FindChildByID("notepad", "textbox"));
+  auto* tb =
+      dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   tb->SetForcedMouseTransparency(true);
@@ -38,7 +39,8 @@ GW2Notepad::GW2Notepad() : CWBGuiType() {
 }
 
 GW2Notepad::~GW2Notepad() {
-  auto* tb = dynamic_cast<CWBTextBox*>(FindChildByID("notepad", "textbox"));
+  auto* tb =
+      dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   CStreamWriterFile nptext;
@@ -47,12 +49,14 @@ GW2Notepad::~GW2Notepad() {
   nptext.Write(tb->GetText());
 }
 
-CWBItem* GW2Notepad::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+gui::CWBItem* GW2Notepad::Factory(gui::CWBItem* Root, CXMLNode& node,
+                                  CRect& Pos) {
   return GW2Notepad::Create(Root, Pos);
 }
 
 void GW2Notepad::StartEdit() {
-  auto* tb = dynamic_cast<CWBTextBox*>(FindChildByID("notepad", "textbox"));
+  auto* tb =
+      dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   canSetFocus = true;
@@ -60,18 +64,18 @@ void GW2Notepad::StartEdit() {
   tb->SetCursorPos(tb->GetText().size(), false);
 }
 
-void GW2Notepad::OnDraw(CWBDrawAPI* API) {}
+void GW2Notepad::OnDraw(gui::CWBDrawAPI* API) {}
 
-bool GW2Notepad::MessageProc(const CWBMessage& Message) {
+bool GW2Notepad::MessageProc(const gui::CWBMessage& Message) {
   switch (Message.Get()) {
-    case WBM_FOCUSGAINED: {
-      CWBItem* tb = FindChildByID("notepad", "textbox");
+    case gui::WBM_FOCUSGAINED: {
+      gui::CWBItem* tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == Message.GetTarget()) {
         tb->SetForcedMouseTransparency(false);
       }
     } break;
-    case WBM_FOCUSLOST: {
-      CWBItem* tb = FindChildByID("notepad", "textbox");
+    case gui::WBM_FOCUSLOST: {
+      gui::CWBItem* tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == Message.GetTarget()) {
         tb->SetForcedMouseTransparency(true);
       }

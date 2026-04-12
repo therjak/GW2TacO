@@ -73,11 +73,13 @@ export class GW2Trail {
   std::vector<math::CVector3> positions;
 };
 
-export class GW2TrailDisplay : public CWBGuiType<"gw2Trails", CWBItem> {
+export class GW2TrailDisplay
+    : public gui::CWBGuiType<"gw2Trails", gui::CWBItem> {
  public:
   GW2TrailDisplay();
   ~GW2TrailDisplay() override;
-  static inline GW2TrailDisplay* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2TrailDisplay* Create(gui::CWBItem* Parent,
+                                        math::CRect Position) {
     auto p = std::make_unique<GW2TrailDisplay>();
     p->Initialize(Parent, Position);
     GW2TrailDisplay* r = p.get();
@@ -86,13 +88,13 @@ export class GW2TrailDisplay : public CWBGuiType<"gw2Trails", CWBItem> {
     return r;
   }
 
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
+  bool Initialize(gui::CWBItem* Parent, const math::CRect& Position) override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
   void DoTrailLogging(int32_t mapID, math::CVector3 charPos);
 
@@ -103,10 +105,10 @@ export class GW2TrailDisplay : public CWBGuiType<"gw2Trails", CWBItem> {
   void ExportTrail();
   void ImportTrail();
 
-  void DrawProxy(CWBDrawAPI* API, bool miniMaprender);
+  void DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender);
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   void ClearEditedTrail();
   renderer::CCoreTexture2D* GetTexture(const std::string_view& fname,
                                        const std::string_view& zipFile,

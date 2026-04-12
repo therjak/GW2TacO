@@ -10,6 +10,8 @@ import :gui_item;
 import :message;
 import :message_enum;
 
+namespace gui {
+
 CWBMessage::CWBMessage() : app_(nullptr), message_(WBM_NONE), target_(0) {}
 
 CWBMessage::CWBMessage(CWBApplication* app, WBMESSAGE message, WBGUID target)
@@ -55,3 +57,5 @@ std::string_view CWBMessage::GetTargetID() {
   if (!i) return "";
   return i->GetID();
 }
+
+}  // namespace gui

@@ -12,13 +12,12 @@ module;
 #include "src/base/rectangle.h"
 #include "src/base/vector.h"
 
-
 export module taco.map_timer;
 
 import xml;
 import whiteboard;
 
-export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
+export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
  public:
   struct Event {
     std::string name;
@@ -49,7 +48,8 @@ export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
  public:
   GW2MapTimer();
   ~GW2MapTimer() override;
-  static inline GW2MapTimer* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2MapTimer* Create(gui::CWBItem* Parent,
+                                    math::CRect Position) {
     auto p = std::make_unique<GW2MapTimer>();
     p->Initialize(Parent, Position);
     GW2MapTimer* r = p.get();
@@ -58,8 +58,8 @@ export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   std::vector<Map> maps;
   std::unordered_map<std::string, Category> categories;
@@ -69,8 +69,8 @@ export class GW2MapTimer : public CWBGuiType<"maptimer", CWBItem> {
   void OnResize(const math::CSize& s) override;
   int32_t GetScrollbarStep() override;
   CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
-                             WBMESSAGE MessageType) override;
-  void OnDraw(CWBDrawAPI* API) override;
+                             gui::WBMESSAGE MessageType) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   void SetLayout(const CXMLNode& node);
   void UpdateScrollbarData(int ypos, const math::CRect& cl);
 

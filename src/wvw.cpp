@@ -319,8 +319,6 @@ void LoadWvWObjectives() {
         }
       }
 
-      extern WBATLASHANDLE DefaultIconHandle;
-
       POI poi;
       poi.position = o.coord;
       poi.mapID = o.mapID;

@@ -6,9 +6,11 @@ export module whiteboard:root;
 import :css_item;
 import :gui_item;
 
-export class CWBApplication;
+export namespace gui {
 
-export class CWBRoot : public CWBGuiType<"root", CWBItem> {
+class CWBApplication;
+
+class CWBRoot : public CWBGuiType<"root", CWBItem> {
  public:
   CWBRoot();
   static inline std::unique_ptr<CWBRoot> Create(const math::CRect& Pos) {
@@ -24,3 +26,5 @@ export class CWBRoot : public CWBGuiType<"root", CWBItem> {
   bool MessageProc(const CWBMessage& Message) override;
   void OnDraw(CWBDrawAPI* API) override;
 };
+
+}  // namespace gui

@@ -13,10 +13,10 @@ export module taco.hp_grid;
 import xml;
 import whiteboard;
 
-export class GW2HPGrid : public CWBGuiType<"hpgrid", CWBItem> {
+export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
  public:
   GW2HPGrid();
-  static inline GW2HPGrid* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2HPGrid* Create(gui::CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<GW2HPGrid>();
     p->Initialize(Parent, Position);
     GW2HPGrid* r = p.get();
@@ -26,16 +26,16 @@ export class GW2HPGrid : public CWBGuiType<"hpgrid", CWBItem> {
   }
   ~GW2HPGrid() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
   virtual void LoadGrids();
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
 
   math::CPoint lastpos;
 

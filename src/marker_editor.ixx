@@ -12,10 +12,12 @@ export module taco.marker_editor;
 import xml;
 import whiteboard;
 
-export class GW2MarkerEditor : public CWBGuiType<"markereditor", CWBItem> {
+export class GW2MarkerEditor
+    : public gui::CWBGuiType<"markereditor", gui::CWBItem> {
  public:
   GW2MarkerEditor();
-  static inline GW2MarkerEditor* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2MarkerEditor* Create(gui::CWBItem* Parent,
+                                        math::CRect Position) {
     auto p = std::make_unique<GW2MarkerEditor>();
     p->Initialize(Parent, Position);
     GW2MarkerEditor* r = p.get();
@@ -25,14 +27,15 @@ export class GW2MarkerEditor : public CWBGuiType<"markereditor", CWBItem> {
   }
   ~GW2MarkerEditor() override;
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
  private:
-  bool MessageProc(const CWBMessage& Message) override;
-  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(const gui::CWBMessage& Message) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
 
   bool Hidden = false;
   GUID CurrentPOI{};

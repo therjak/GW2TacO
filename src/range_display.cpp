@@ -22,7 +22,7 @@ using math::CVector3;
 using math::CVector4;
 using math::PI;
 
-void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
+void GW2RangeDisplay::DrawRangeCircle(gui::CWBDrawAPI* API, float range,
                                       float alpha) {
   if (!mumbleLink.IsValid()) return;
 
@@ -137,7 +137,7 @@ void GW2RangeDisplay::DrawRangeCircle(CWBDrawAPI* API, float range,
   }
 }
 
-void GW2RangeDisplay::OnDraw(CWBDrawAPI* API) {
+void GW2RangeDisplay::OnDraw(gui::CWBDrawAPI* API) {
   if (!mumbleLink.IsValid()) return;
 
   if (GetConfigValue("RangeCirclesVisible")) {
@@ -159,12 +159,12 @@ void GW2RangeDisplay::OnDraw(CWBDrawAPI* API) {
 GW2RangeDisplay::GW2RangeDisplay() : CWBGuiType() {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
-CWBItem* GW2RangeDisplay::Factory(CWBItem* Root, const CXMLNode& node,
-                                  CRect& Pos) {
+gui::CWBItem* GW2RangeDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                       CRect& Pos) {
   return GW2RangeDisplay::Create(Root, Pos);
 }
 
 bool GW2RangeDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                         WBMESSAGE MessageType) {
+                                         gui::WBMESSAGE MessageType) {
   return true;
 }

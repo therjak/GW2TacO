@@ -10,11 +10,13 @@ export module taco.range_display;
 import xml;
 import whiteboard;
 
-export class GW2RangeDisplay : public CWBGuiType<"gw2rangecircles", CWBItem> {
+export class GW2RangeDisplay
+    : public gui::CWBGuiType<"gw2rangecircles", gui::CWBItem> {
  public:
   GW2RangeDisplay();
   ~GW2RangeDisplay() override;
-  static inline GW2RangeDisplay* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2RangeDisplay* Create(gui::CWBItem* Parent,
+                                        math::CRect Position) {
     auto p = std::make_unique<GW2RangeDisplay>();
     p->Initialize(Parent, Position);
     GW2RangeDisplay* r = p.get();
@@ -23,13 +25,13 @@ export class GW2RangeDisplay : public CWBGuiType<"gw2rangecircles", CWBItem> {
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
-  void DrawRangeCircle(CWBDrawAPI* API, float range, float alpha);
+  void OnDraw(gui::CWBDrawAPI* API) override;
+  void DrawRangeCircle(gui::CWBDrawAPI* API, float range, float alpha);
 };

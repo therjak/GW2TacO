@@ -13,23 +13,25 @@ import :application;
 import :css_item;
 import :gui_item;
 
-export enum class WBBOXAXIS : uint8_t {
+export namespace gui {
+
+enum class WBBOXAXIS : uint8_t {
   WB_HORIZONTAL = 0,
   WB_VERTICAL,
 };
 
-export enum class WBBOXARRANGEMENT : uint8_t {
+enum class WBBOXARRANGEMENT : uint8_t {
   WB_ARRANGE_NONE = 0,
   WB_ARRANGE_HORIZONTAL,
   WB_ARRANGE_VERTICAL
 };
 
-export enum class WBBOXSIZING : uint8_t {
+enum class WBBOXSIZING : uint8_t {
   WB_SIZING_KEEP = 0,
   WB_SIZING_FILL,
 };
 
-export class CWBBox : public CWBGuiType<"box", CWBItem> {
+class CWBBox : public CWBGuiType<"box", CWBItem> {
  public:
   CWBBox();
   static inline CWBBox* Create(CWBItem* Parent, const math::CRect& Pos) {
@@ -70,3 +72,5 @@ export class CWBBox : public CWBGuiType<"box", CWBItem> {
   WBBOXSIZING SizingX, SizingY;
   bool ClickThrough = false;
 };
+
+}  // namespace gui

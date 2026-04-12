@@ -16,6 +16,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 static WBGUID WB_GUID_COUNTER = 1337;
 
 //////////////////////////////////////////////////////////////////////////
@@ -2375,3 +2377,5 @@ bool CWBItem::MarkedForDeletion() {
       [this](const std::unique_ptr<CWBItem>& i) { return i.get() == this; });
   return (it != App->Trash.end());
 }
+
+}  // namespace gui

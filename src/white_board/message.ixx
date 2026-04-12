@@ -9,9 +9,11 @@ export module whiteboard:message;
 import :message_enum;
 import :gui_item;
 
-export class CWBApplication;
+export namespace gui {
 
-export class CWBMessage final {
+class CWBApplication;
+
+class CWBMessage final {
  public:
   struct reposition {
     math::CRect rectangle;
@@ -92,3 +94,5 @@ export class CWBMessage final {
                menucontext>
       data_;
 };
+
+}  // namespace gui

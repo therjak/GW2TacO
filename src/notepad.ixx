@@ -11,11 +11,11 @@ export module taco.notepad;
 import xml;
 import whiteboard;
 
-export class GW2Notepad : public CWBGuiType<"notepad", CWBItem> {
+export class GW2Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
  public:
   GW2Notepad();
   ~GW2Notepad() override;
-  static inline GW2Notepad* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2Notepad* Create(gui::CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<GW2Notepad>();
     p->Initialize(Parent, Position);
     GW2Notepad* r = p.get();
@@ -24,16 +24,17 @@ export class GW2Notepad : public CWBGuiType<"notepad", CWBItem> {
     return r;
   }
 
-  static CWBItem* Factory(CWBItem* Root, CXMLNode& node, math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
+                               math::CRect& Pos);
 
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
   void StartEdit();
 
  private:
-  bool MessageProc(const CWBMessage& Message) override;
-  void OnDraw(CWBDrawAPI* API) override;
+  bool MessageProc(const gui::CWBMessage& Message) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
   bool Hidden = false;
   GUID CurrentPOI{};
 

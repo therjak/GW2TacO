@@ -21,10 +21,10 @@ import taco.time;
 using math::CPoint;
 using math::CRect;
 
-void RaidProgress::OnDraw(CWBDrawAPI* API) {
+void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
   bool compact = GetConfigValue("CompactRaidWindow");
 
-  CWBFont* f = GetFont(GetState());
+  gui::CWBFont* f = GetFont(GetState());
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(API, f);
   if (status != GW2::APIKeyManager::Status::OK) {
@@ -105,9 +105,10 @@ void RaidProgress::OnDraw(CWBDrawAPI* API) {
 
         if (e.type == RaidEvent::Type::Boss) cnt++;
 
-        CPoint tp = f->GetTextPosition(
-            s, r + CRect(-3, 0, 0, 0), WBTEXTALIGNMENTX::WBTA_CENTERX,
-            WBTEXTALIGNMENTY::WBTA_CENTERY, WBTEXTTRANSFORM::WBTT_NONE);
+        CPoint tp = f->GetTextPosition(s, r + CRect(-3, 0, 0, 0),
+                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                       gui::WBTEXTTRANSFORM::WBTT_NONE);
         tp.y = posy + 1;
         f->Write(API, s, tp, CColor{0xffffffff});
         API->DrawRectBorder(r, CColor{0x80000000});
@@ -185,12 +186,13 @@ RaidProgress::RaidProgress()
 
 RaidProgress::~RaidProgress() {}
 
-CWBItem* RaidProgress::Factory(CWBItem* Root, CXMLNode& node, CRect& Pos) {
+gui::CWBItem* RaidProgress::Factory(gui::CWBItem* Root, CXMLNode& node,
+                                    CRect& Pos) {
   return RaidProgress::Create(Root, Pos);
 }
 
 bool RaidProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                      WBMESSAGE MessageType) {
+                                      gui::WBMESSAGE MessageType) {
   return true;
 }
 

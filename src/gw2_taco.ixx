@@ -49,10 +49,10 @@ export enum class APIKeys {
 
 export extern std::vector<std::string_view> ActionNames;
 
-export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
+export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
  public:
   GW2TacO();
-  static inline GW2TacO* Create(CWBItem* Parent, math::CRect Position) {
+  static inline GW2TacO* Create(gui::CWBItem* Parent, math::CRect Position) {
     auto p = std::make_unique<GW2TacO>();
     p->Initialize(Parent, Position);
     auto r = p.get();
@@ -62,17 +62,17 @@ export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
   }
   ~GW2TacO() override;
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
+                               math::CRect& Pos);
 
   void OpenWindow(std::string_view s);
-  void OnDraw(CWBDrawAPI* API) override;
-  void OnPostDraw(CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* API) override;
+  void OnPostDraw(gui::CWBDrawAPI* API) override;
   bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          gui::WBMESSAGE MessageType) override;
 
   // return true if this item handled the message
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const gui::CWBMessage& Message) override;
 
   void SetInfoLine(std::string_view string);
   void SetMouseToolTip(std::string_view toolTip);
@@ -85,7 +85,7 @@ export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
  private:
   void OpenAboutWindow();
   void BuildChannelTree(TS3Connection::TS3Schandler& h,
-                        CWBContextItem* parentitm, int32_t ParentID);
+                        gui::CWBContextItem* parentitm, int32_t ParentID);
   void RebindAction(TacOKeyAction Action);
   void RebindScriptKey(int32_t evendIDX);
   void ApiKeyInputAction(APIKeys keyType, int32_t idx);
@@ -112,7 +112,7 @@ export class GW2TacO : public CWBGuiType<"GW2TacO", CWBItem> {
 
   std::vector<GW2TacticalCategory*> CategoryList;
 
-  CWBTextBox* APIKeyInput = nullptr;
+  gui::CWBTextBox* APIKeyInput = nullptr;
 
   bool menuHoverLastFrame = false;
   int32_t lastMenuHoverTransitionTime = 0;

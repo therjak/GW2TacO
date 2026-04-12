@@ -45,10 +45,10 @@ using math::CVector2;
 using math::CVector3;
 using math::CVector4;
 
-WBATLASHANDLE DefaultIconHandle = -1;
-WBATLASHANDLE forbiddenIconHandle = -1;
+gui::WBATLASHANDLE DefaultIconHandle = -1;
+gui::WBATLASHANDLE forbiddenIconHandle = -1;
 CSize forbiddenIconSize;
-std::unordered_map<std::string, WBATLASHANDLE> MapIcons;
+std::unordered_map<std::string, gui::WBATLASHANDLE> MapIcons;
 int32_t useMetricDisplay = 0;
 
 float GetUIScale();
@@ -123,9 +123,9 @@ mz_zip_archive* OpenZipFile(std::string_view zf) {
   return zipDict[zipFile].get();
 }
 
-WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
-                         std::string_view zipFile,
-                         std::string_view categoryZip) {
+gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
+                              std::string_view zipFile,
+                              std::string_view categoryZip) {
   std::string filename(fname);
   for (char& x : filename) {
     if (x == '\\') x = '/';
@@ -200,7 +200,7 @@ WBATLASHANDLE GetMapIcon(CWBApplication* App, std::string_view fname,
     }
 
     // zipfile load failed, fall back to regular load and add it as an alias
-    WBATLASHANDLE handle = GetMapIcon(App, filename, "", "");
+    gui::WBATLASHANDLE handle = GetMapIcon(App, filename, "", "");
     if (handle == DefaultIconHandle) return handle;
     MapIcons[s] = handle;
     return handle;
@@ -397,7 +397,8 @@ void GW2TacticalDisplay::FetchAchievements() {
             auto bits = data.get<jsonxx::Array>("bits").values();
             for (auto& bit : bits) {
               if (!bit->is<jsonxx::Number>()) continue;
-              bitArray.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
+              bitArray.push_back(
+                  static_cast<int32_t>(bit->get<jsonxx::Number>()));
             }
           } else if (done) {
             incoming[achiId].bits.clear();
@@ -442,7 +443,7 @@ void GW2TacticalDisplay::InsertPOI(POI& poi) {
   mapPOIs.push_back(&poi);
 }
 
-void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
+void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
                                  const time_t& currtime, POI& poi,
                                  bool drawDistance, std::string& infoText) {
   bool drawCountdown = false;
@@ -530,7 +531,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
 
   float mapFade = GetMapFade();
 
-  WBATLASHANDLE icon = poi.icon;
+  gui::WBATLASHANDLE icon = poi.icon;
   float size = poi.typeData.size;
   float Alpha = poi.typeData.alpha;
 
@@ -622,7 +623,7 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
   }
 
   if (drawWvWNames && poi.typeData.behavior == POIBehavior::WvWObjective) {
-    CWBFont* f = App->GetDefaultFont();
+    gui::CWBFont* f = App->GetDefaultFont();
     extern std::vector<WvWObjective> wvwObjectives;
     std::string wvwObjectiveName;
 
@@ -633,9 +634,9 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
 
     if (!wvwObjectiveName.empty()) {
       p = f->GetTextPosition(wvwObjectiveName, rect,
-                             WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             WBTEXTALIGNMENTY::WBTA_TOP,
-                             WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
+                             gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             gui::WBTEXTALIGNMENTY::WBTA_TOP,
+                             gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
           CPoint(0, f->GetLineHeight());
       /*
       for (int32_t x = 0; x < 3; x++)
@@ -644,18 +645,18 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
-                   WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
+                   gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
       */
       f->Write(API, wvwObjectiveName, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
                                            globalOpacity)),
-               WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
+               gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
     }
   }
 
   if (drawCountdown) {
-    CWBFont* f = GetFont(GetState());
+    gui::CWBFont* f = GetFont(GetState());
     if (!f) return;
 
     if (poi.typeData.behavior == POIBehavior::WvWObjective) {
@@ -690,9 +691,9 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                               true, col);
       }
 
-      p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             WBTEXTALIGNMENTY::WBTA_BOTTOM,
-                             WBTEXTTRANSFORM::WBTT_NONE, false) +
+      p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             gui::WBTEXTALIGNMENTY::WBTA_BOTTOM,
+                             gui::WBTEXTTRANSFORM::WBTT_NONE, false) +
           CPoint(0, f->GetLineHeight() + offset);
       /*
       for (int32_t x = 0; x < 3; x++)
@@ -701,27 +702,27 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
-                   WBTEXTTRANSFORM::WBTT_NONE, false);
+                   gui::WBTEXTTRANSFORM::WBTT_NONE, false);
       */
       f->Write(API, txt, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
                                            globalOpacity)),
-               WBTEXTTRANSFORM::WBTT_NONE, false);
+               gui::WBTEXTTRANSFORM::WBTT_NONE, false);
     } else {
-      p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             WBTEXTALIGNMENTY::WBTA_CENTERY,
-                             WBTEXTTRANSFORM::WBTT_NONE, false);
+      p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                             gui::WBTEXTTRANSFORM::WBTT_NONE, false);
       p.y += offset;
       f->Write(API, txt, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * mapFade * globalOpacity)),
-               WBTEXTTRANSFORM::WBTT_NONE, false);
+               gui::WBTEXTTRANSFORM::WBTT_NONE, false);
     }
   }
 
   if (drawDistance) {
-    CWBFont* f = App->GetDefaultFont();
+    gui::CWBFont* f = App->GetDefaultFont();
     if (!f) return;
 
     if (Alpha * alphaMultiplier > 0) {
@@ -737,25 +738,26 @@ void GW2TacticalDisplay::DrawPOI(CWBDrawAPI* API, const tm& ptm,
         txt = std::format("{:.1f}m", charDist);
       }
 
-      p = f->GetTextPosition(txt, rect, WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             WBTEXTALIGNMENTY::WBTA_BOTTOM,
-                             WBTEXTTRANSFORM::WBTT_NONE, false) +
+      p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                             gui::WBTEXTALIGNMENTY::WBTA_BOTTOM,
+                             gui::WBTEXTTRANSFORM::WBTT_NONE, false) +
           CPoint(0, f->GetLineHeight());
       f->Write(API, txt, p,
                CColor(255, 255, 255,
                       static_cast<uint8_t>(255 * Alpha * alphaMultiplier *
                                            mapFade * globalOpacity)),
-               WBTEXTTRANSFORM::WBTT_NONE, false);
+               gui::WBTEXTTRANSFORM::WBTT_NONE, false);
     }
   }
 }
 
 float uiScale = 1.0f;
 
-void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
-                                        CVector2 pos, const tm& ptm,
-                                        const time_t& currtime, const POI& poi,
-                                        float alpha, float zoomLevel) {
+void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
+                                        const CRect& miniRect, CVector2 pos,
+                                        const tm& ptm, const time_t& currtime,
+                                        const POI& poi, float alpha,
+                                        float zoomLevel) {
   if (alpha <= 0) return;
   if (!poi.IsVisible(ptm, currtime, achievements)) {
     return;
@@ -802,7 +804,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(CWBDrawAPI* API, const CRect& miniRect,
 extern std::unordered_map<std::string, POI> wvwPOIs;
 extern bool wvwCanBeRendered;
 
-void GW2TacticalDisplay::OnDraw(CWBDrawAPI* API) {
+void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   int opac = GetConfigValue("OpacityIngame");
   if (opac == 0) globalOpacity = 1.0f;
   if (opac == 1) globalOpacity = 2 / 3.0f;
@@ -1006,13 +1008,13 @@ GW2TacticalDisplay::GW2TacticalDisplay() : CWBGuiType() {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
-CWBItem* GW2TacticalDisplay::Factory(CWBItem* Root, const CXMLNode& node,
-                                     CRect& Pos) {
+gui::CWBItem* GW2TacticalDisplay::Factory(gui::CWBItem* Root,
+                                          const CXMLNode& node, CRect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos);
 }
 
 bool GW2TacticalDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                            WBMESSAGE MessageType) {
+                                            gui::WBMESSAGE MessageType) {
   return true;
 }
 
@@ -1600,7 +1602,7 @@ void UpdatePOI() {
   }
 }
 
-void AddTypeContextMenu(CWBContextItem* ctx,
+void AddTypeContextMenu(gui::CWBContextItem* ctx,
                         std::vector<GW2TacticalCategory*>& CategoryList,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
@@ -1637,7 +1639,7 @@ void AddTypeContextMenu(CWBContextItem* ctx,
   }
 }
 
-void AddTypeContextMenu(CWBContextMenu* ctx,
+void AddTypeContextMenu(gui::CWBContextMenu* ctx,
                         std::vector<GW2TacticalCategory*>& CategoryList,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
@@ -1674,7 +1676,7 @@ void AddTypeContextMenu(CWBContextMenu* ctx,
   }
 }
 
-void OpenTypeContextMenu(CWBContextItem* ctx,
+void OpenTypeContextMenu(gui::CWBContextItem* ctx,
                          std::vector<GW2TacticalCategory*>& CategoryList,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {
@@ -1683,7 +1685,7 @@ void OpenTypeContextMenu(CWBContextItem* ctx,
                      BaseID, closeOnClick);
 }
 
-void OpenTypeContextMenu(CWBContextMenu* ctx,
+void OpenTypeContextMenu(gui::CWBContextMenu* ctx,
                          std::vector<GW2TacticalCategory*>& CategoryList,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {

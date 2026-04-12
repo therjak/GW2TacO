@@ -2,9 +2,9 @@ module;
 #include <algorithm>
 #include <ctime>
 #include <format>
+#include <future>
 #include <mutex>
 #include <string>
-#include <future>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -37,7 +37,7 @@ void GW2MapTimer::OnResize(const CSize& s) {
   }
 }
 
-void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
+void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
   if (!GetConfigValue("MapTimerVisible")) {
     return;
   }
@@ -49,7 +49,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
     if (key && key->Valid() &&
         (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
-      if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+      if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+                                    std::future_status::ready) {
         lastFetchTime = GetTime();
         fetchTask = std::async(std::launch::async, [this, key]() {
           const auto& bosses = key->QuerySet("/v2/account/worldbosses");
@@ -89,8 +90,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
   struct tm ptm {};
   gmtime_s(&ptm, &rawtime);
 
-  WBITEMSTATE i = GetState();
-  CWBFont* f = GetFont(i);
+  gui::WBITEMSTATE i = GetState();
+  gui::CWBFont* f = GetFont(i);
 
   barheight = f->GetLineHeight();
   mapheight = barheight + f->GetLineHeight();
@@ -111,8 +112,8 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
                            CPoint(cl.Width(), mapCount * mapheight + 1)),
                      GetState());
 
-  auto TextTransform = static_cast<WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
+  auto TextTransform = static_cast<gui::WBTEXTTRANSFORM>(
+      CSSProperties.DisplayDescriptor.GetValue(i, gui::WB_ITEM_TEXTTRANSFORM));
 
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
   int32_t lefttime = minutes - timeWindow / 2;
@@ -292,9 +293,10 @@ void GW2MapTimer::OnDraw(CWBDrawAPI* API) {
 
 int32_t GW2MapTimer::GetScrollbarStep() { return 5; }
 
-CWBItem* GW2MapTimer::GetItemUnderMouse(CPoint& Pos, CRect& CropRect,
-                                        WBMESSAGE MessageType) {
-  CWBItem* item = CWBItem::GetItemUnderMouse(Pos, CropRect, MessageType);
+gui::CWBItem* GW2MapTimer::GetItemUnderMouse(CPoint& Pos, CRect& CropRect,
+                                             gui::WBMESSAGE MessageType) {
+  gui::CWBItem* item =
+      gui::CWBItem::GetItemUnderMouse(Pos, CropRect, MessageType);
   if (item && IsScrollbarVisible()) {
     // Only the scrollbar needs to be "visible"
 
@@ -462,9 +464,9 @@ GW2MapTimer::GW2MapTimer() : CWBGuiType() {
   ApplyStyle("overflow-y", "auto", std::vector<std::string>());
 }
 
-GW2MapTimer::~GW2MapTimer() {
-}
+GW2MapTimer::~GW2MapTimer() {}
 
-CWBItem* GW2MapTimer::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
+gui::CWBItem* GW2MapTimer::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                   CRect& Pos) {
   return GW2MapTimer::Create(Root, Pos);
 }

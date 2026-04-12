@@ -6,7 +6,7 @@ using math::CPoint;
 using math::CRect;
 
 bool OverlayWindow::IsMouseTransparent(const CPoint& ClientSpacePoint,
-                                       WBMESSAGE MessageType) {
+                                       gui::WBMESSAGE MessageType) {
   if (GetConfigValue("EditMode")) return false;
   return true;
 }
@@ -15,52 +15,52 @@ OverlayWindow::OverlayWindow() : CWBGuiType() {}
 
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
-CWBItem* OverlayWindow::Factory(CWBItem* Root, const CXMLNode& node,
-                                CRect& Pos) {
+gui::CWBItem* OverlayWindow::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                     CRect& Pos) {
   return OverlayWindow::Create(Root, Pos);
 }
 
-void OverlayWindow::OnDraw(CWBDrawAPI* API) {
+void OverlayWindow::OnDraw(gui::CWBDrawAPI* API) {
   if (!GetConfigValue("EditMode")) return;
-  CWBWindow::OnDraw(API);
+  gui::CWBWindow::OnDraw(API);
 }
 
-bool OverlayWindow::MessageProc(const CWBMessage& Message) {
+bool OverlayWindow::MessageProc(const gui::CWBMessage& Message) {
   switch (Message.Get()) {
-    case WBM_LEFTBUTTONDOWN:
-      if (CWBWindow::MessageProc(Message)) return true;
+    case gui::WBM_LEFTBUTTONDOWN:
+      if (gui::CWBWindow::MessageProc(Message)) return true;
       if (App->GetMouseItem() == this) {
         SetCapture();
         SavePosition();
 
-        if (Style & WB_WINDOW_CLOSEABLE) {
-          if (GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
+        if (Style & gui::WB_WINDOW_CLOSEABLE) {
+          if (GetElementPos(gui::WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
                   .Contains(ScreenToClient(Message.GetPosition()))) {
-            DragMode = WB_DRAGMODE_CLOSEBUTTON;
+            DragMode = gui::WB_DRAGMODE_CLOSEBUTTON;
             return true;
           }
         }
 
-        if (Style & WB_WINDOW_RESIZABLE) {
+        if (Style & gui::WB_WINDOW_RESIZABLE) {
           DragMode = GetBorderSelectionArea(Message.GetPosition());
-          if (DragMode & WB_DRAGMASK) return true;
+          if (DragMode & gui::WB_DRAGMASK) return true;
         }
 
-        if (Style & WB_WINDOW_MOVEABLE) {
-          DragMode = WB_DRAGMODE_MOVE;
+        if (Style & gui::WB_WINDOW_MOVEABLE) {
+          DragMode = gui::WB_DRAGMODE_MOVE;
           return true;
         }
 
         DragMode = 0;
       }
       break;
-    case WBM_REPOSITION:
+    case gui::WBM_REPOSITION:
       SetWindowPosition(GetID(), GetPosition());
       break;
-    case WBM_CLOSE:
+    case gui::WBM_CLOSE:
       SetWindowOpenState(GetID(), false);
       break;
   }
 
-  return CWBWindow::MessageProc(Message);
+  return gui::CWBWindow::MessageProc(Message);
 }

@@ -1,10 +1,10 @@
 module;
 #include <atomic>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
-#include <future>
 #include <unordered_set>
 #include <vector>
 
@@ -72,7 +72,7 @@ class APIKeyManager {
   size_t size();
   APIKey* GetIdentifiedAPIKey();
   Status GetStatus();
-  Status DisplayStatusText(CWBDrawAPI* API, CWBFont* font);
+  Status DisplayStatusText(gui::CWBDrawAPI* API, gui::CWBFont* font);
   void Initialize();
   void RebuildConfigValues();
 

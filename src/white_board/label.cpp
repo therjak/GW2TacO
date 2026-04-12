@@ -14,6 +14,8 @@ using math::CPoint;
 using math::CRect;
 using math::CSize;
 
+namespace gui {
+
 void CWBLabel::OnDraw(CWBDrawAPI* API) {
   DrawBackground(API);
 
@@ -65,3 +67,5 @@ CSize CWBLabel::GetContentSize() {
   return CSize(Font->GetWidth(Text, false, TextTransform),
                Font->GetLineHeight());
 }
+
+}  // namespace gui
