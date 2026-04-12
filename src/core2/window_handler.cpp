@@ -25,18 +25,19 @@ typedef CCoreDX11Device CCore;
 
 CCoreWindowParameters::CCoreWindowParameters() = default;
 
-CCoreWindowParameters::CCoreWindowParameters(HINSTANCE hinst, bool fs,
-                                             int32_t x, int32_t y,
-                                             const TCHAR* title, HICON icon,
-                                             bool maximize, bool noresize)
-    : hInstance(hinst),
-      FullScreen(fs),
-      XRes(x),
-      YRes(y),
-      WindowTitle(title),
-      Icon(icon),
-      Maximized(maximize),
-      ResizeDisabled(noresize) {}
+CCoreWindowParameters::CCoreWindowParameters(HINSTANCE h_instance,
+                                             bool full_screen, int32_t x_res,
+                                             int32_t y_res, const TCHAR* title,
+                                             HICON icon, bool maximize,
+                                             bool noresize)
+    : h_instance_(h_instance),
+      full_screen_(full_screen),
+      x_res_(x_res),
+      y_res_(y_res),
+      window_title_(title),
+      icon_(icon),
+      maximized_(maximize),
+      resize_disabled_(noresize) {}
 
 std::unique_ptr<CCoreDevice> CCoreWindowParameters::CreateDevice() const {
   return std::make_unique<CCore>();
@@ -46,144 +47,145 @@ std::unique_ptr<CCoreDevice> CCoreWindowParameters::CreateDevice() const {
 // windowhandler baseclass
 
 CCoreWindowHandler::CCoreWindowHandler() {
-  LastRenderedFrame = globalTimer.GetTime();
+  last_rendered_frame_ = globalTimer.GetTime();
 }
 
 CCoreWindowHandler::~CCoreWindowHandler() { Destroy(); }
 
-void CCoreWindowHandler::Destroy() { Done = true; }
+void CCoreWindowHandler::Destroy() { done_ = true; }
 
-int32_t CCoreWindowHandler::GetXRes() { return XRes; }
+int32_t CCoreWindowHandler::GetXRes() { return x_res_; }
 
-int32_t CCoreWindowHandler::GetYRes() { return YRes; }
+int32_t CCoreWindowHandler::GetYRes() { return y_res_; }
 
 CCoreWindowParameters& CCoreWindowHandler::GetInitParameters() {
-  return InitParameters;
+  return init_parameters_;
 }
 
-void CCoreWindowHandler::SelectMouseCursor(COREMOUSECURSOR m) {
-  CurrentMouseCursor = m;
+void CCoreWindowHandler::SelectMouseCursor(CoreMouseCursor m) {
+  current_mouse_cursor_ = m;
 }
 
-CPoint CCoreWindowHandler::GetMousePos() { return MousePos; }
+CPoint CCoreWindowHandler::GetMousePos() { return mouse_pos_; }
 
-CPoint CCoreWindowHandler::GetLeftDownPos() { return LeftDownPos; }
+CPoint CCoreWindowHandler::GetLeftDownPos() { return left_down_pos_; }
 
-CPoint CCoreWindowHandler::GetRightDownPos() { return RightDownPos; }
+CPoint CCoreWindowHandler::GetRightDownPos() { return right_down_pos_; }
 
-CPoint CCoreWindowHandler::GetMidDownPos() { return MidDownPos; }
+CPoint CCoreWindowHandler::GetMidDownPos() { return mid_down_pos_; }
 
 void CCoreWindowHandler::SetInactiveFrameLimiter(bool set) {
-  InactiveFrameLimiter = set;
+  inactive_frame_limiter_ = set;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // windows windowhandler
 
 CCoreWindowHandlerWin::CCoreWindowHandlerWin() : CCoreWindowHandler() {
-  WindowPlacement.length = sizeof(WINDOWPLACEMENT);
+  window_placement_.length = sizeof(WINDOWPLACEMENT);
 }
 
 CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
-  for (auto m : MouseCursors) {
+  for (auto m : mouse_cursors_) {
     DeleteObject(m);
   }
 }
 
-bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& wp) {
-  XRes = wp.XRes;
-  YRes = wp.YRes;
-  InitParameters = wp;
+bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& window_params) {
+  x_res_ = window_params.x_res_;
+  y_res_ = window_params.y_res_;
+  init_parameters_ = window_params;
 
   WNDCLASS wc;
   memset(&wc, 0, sizeof(wc));
   wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
   wc.lpfnWndProc = WndProcProxy;
-  wc.hInstance = wp.hInstance;
-  wc.hIcon = wp.Icon;
+  wc.hInstance = window_params.h_instance_;
+  wc.hIcon = window_params.icon_;
   wc.lpszClassName = "CoRE2";
   RegisterClass(&wc);
 
-  RECT WindowRect;
-  WindowRect.left = 0;
-  WindowRect.right = XRes;
-  WindowRect.top = 0;
-  WindowRect.bottom = YRes;
+  RECT window_rect;
+  window_rect.left = 0;
+  window_rect.right = x_res_;
+  window_rect.top = 0;
+  window_rect.bottom = y_res_;
 
-  if (!wp.FullScreen) {
-    dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_OVERLAPPED |
-              WS_MINIMIZEBOX |
-              ((WS_MAXIMIZEBOX | WS_SIZEBOX) * (!wp.ResizeDisabled)) |
-              (WS_MAXIMIZE * wp.Maximized);
-    FullScreenX = GetSystemMetrics(SM_CXSCREEN);
-    FullScreenY = GetSystemMetrics(SM_CYSCREEN);
+  if (!window_params.full_screen_) {
+    dw_style_ =
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_OVERLAPPED | WS_MINIMIZEBOX |
+        ((WS_MAXIMIZEBOX | WS_SIZEBOX) * (!window_params.resize_disabled_)) |
+        (WS_MAXIMIZE * window_params.maximized_);
+    full_screen_x_ = GetSystemMetrics(SM_CXSCREEN);
+    full_screen_y_ = GetSystemMetrics(SM_CYSCREEN);
   } else {
-    dwStyle = WS_POPUP | WS_OVERLAPPED;
-    FullScreenX = XRes;
-    FullScreenY = YRes;
+    dw_style_ = WS_POPUP | WS_OVERLAPPED;
+    full_screen_x_ = x_res_;
+    full_screen_y_ = y_res_;
   }
 
-  if (!wp.OverrideWindowStyleEx) {
-    dwStyle = dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-    if (wp.OverrideWindowStyle) dwStyle = wp.OverrideWindowStyle;
-    AdjustWindowRect(&WindowRect, dwStyle, FALSE);
-    hWnd = CreateWindow("CoRE2", wp.WindowTitle, dwStyle, CW_USEDEFAULT,
-                        CW_USEDEFAULT, WindowRect.right - WindowRect.left,
-                        WindowRect.bottom - WindowRect.top, nullptr, nullptr,
-                        wp.hInstance, this);
+  if (!window_params.override_window_style_ex_) {
+    dw_style_ = dw_style_ | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+    if (window_params.override_window_style_)
+      dw_style_ = window_params.override_window_style_;
+    AdjustWindowRect(&window_rect, dw_style_, FALSE);
+    window_handle_ = CreateWindow(
+        "CoRE2", window_params.window_title_, dw_style_, CW_USEDEFAULT,
+        CW_USEDEFAULT, window_rect.right - window_rect.left,
+        window_rect.bottom - window_rect.top, nullptr, nullptr,
+        window_params.h_instance_, this);
   } else {
-    dwStyle = wp.OverrideWindowStyle;
-    AdjustWindowRect(&WindowRect, dwStyle, FALSE);
-    hWnd = CreateWindowEx(wp.OverrideWindowStyleEx, "CoRE2", wp.WindowTitle,
-                          dwStyle, CW_USEDEFAULT, CW_USEDEFAULT,
-                          WindowRect.right - WindowRect.left,
-                          WindowRect.bottom - WindowRect.top, nullptr, nullptr,
-                          wp.hInstance, this);
+    dw_style_ = window_params.override_window_style_;
+    AdjustWindowRect(&window_rect, dw_style_, FALSE);
+    window_handle_ =
+        CreateWindowEx(window_params.override_window_style_ex_, "CoRE2",
+                       window_params.window_title_, dw_style_, CW_USEDEFAULT,
+                       CW_USEDEFAULT, window_rect.right - window_rect.left,
+                       window_rect.bottom - window_rect.top, nullptr, nullptr,
+                       window_params.h_instance_, this);
   }
 
-  Device = wp.CreateDevice();
+  device_ = window_params.CreateDevice();
 
-  if (!Device) {
+  if (!device_) {
     Log_Err("[init] Device object is NULL during init.");
     return false;
   }
 
-  if (!Device->Initialize(this)) {
-    Device.reset();
+  if (!device_->Initialize(this)) {
+    device_.reset();
     return false;
   }
 
-  ShowWindow(hWnd, Maximized ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
-  SetForegroundWindow(hWnd);
-  SetFocus(hWnd);
+  ShowWindow(window_handle_, maximized_ ? SW_SHOWMAXIMIZED : SW_SHOWNORMAL);
+  SetForegroundWindow(window_handle_);
+  SetFocus(window_handle_);
 
-  MouseCursorsAt(COREMOUSECURSOR::CM_ARROW) = (LoadCursor(nullptr, IDC_ARROW));
-  MouseCursorsAt(COREMOUSECURSOR::CM_CROSS) = (LoadCursor(nullptr, IDC_CROSS));
-  MouseCursorsAt(COREMOUSECURSOR::CM_SIZEWE) =
-      (LoadCursor(nullptr, IDC_SIZEWE));
-  MouseCursorsAt(COREMOUSECURSOR::CM_SIZENS) =
-      (LoadCursor(nullptr, IDC_SIZENS));
-  MouseCursorsAt(COREMOUSECURSOR::CM_SIZENESW) =
+  MouseCursorsAt(CoreMouseCursor::kArrow) = (LoadCursor(nullptr, IDC_ARROW));
+  MouseCursorsAt(CoreMouseCursor::kCross) = (LoadCursor(nullptr, IDC_CROSS));
+  MouseCursorsAt(CoreMouseCursor::kSizeWe) = (LoadCursor(nullptr, IDC_SIZEWE));
+  MouseCursorsAt(CoreMouseCursor::kSizeNs) = (LoadCursor(nullptr, IDC_SIZENS));
+  MouseCursorsAt(CoreMouseCursor::kSizeNeSw) =
       (LoadCursor(nullptr, IDC_SIZENESW));
-  MouseCursorsAt(COREMOUSECURSOR::CM_SIZENWSE) =
+  MouseCursorsAt(CoreMouseCursor::kSizeNwSe) =
       (LoadCursor(nullptr, IDC_SIZENWSE));
-  MouseCursorsAt(COREMOUSECURSOR::CM_TEXT) = (LoadCursor(nullptr, IDC_IBEAM));
-  MouseCursorsAt(COREMOUSECURSOR::CM_WAIT) = (LoadCursor(nullptr, IDC_WAIT));
+  MouseCursorsAt(CoreMouseCursor::kText) = (LoadCursor(nullptr, IDC_IBEAM));
+  MouseCursorsAt(CoreMouseCursor::kWait) = (LoadCursor(nullptr, IDC_WAIT));
 
-  Maximized = wp.Maximized;
-  Minimized = false;
-  Active = true;
+  maximized_ = window_params.maximized_;
+  minimized_ = false;
+  active_ = true;
 
   RECT r;
-  GetClientRect(hWnd, &r);
-  ClientRect = CRect(r.left, r.top, r.right, r.bottom);
+  GetClientRect(window_handle_, &r);
+  client_rect_ = CRect(r.left, r.top, r.right, r.bottom);
 
-  if (wp.Maximized) {
+  if (window_params.maximized_) {
     RECT r2;
-    GetClientRect(hWnd, &r2);
+    GetClientRect(window_handle_, &r2);
 
-    XRes = r2.right - r2.left;
-    YRes = r2.bottom - r2.top;
+    x_res_ = r2.right - r2.left;
+    y_res_ = r2.bottom - r2.top;
   }
 
   return true;
@@ -197,66 +199,66 @@ bool CCoreWindowHandlerWin::HandleOSMessages() {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
-  return !Done;
+  return !done_;
 }
 
 bool CCoreWindowHandlerWin::DeviceOK() {
-  if (!Active) {
-    if (!InactiveFrameLimiter) return Device && Device->DeviceOk();
+  if (!active_) {
+    if (!inactive_frame_limiter_) return device_ && device_->DeviceOk();
 
     const int32_t time = globalTimer.GetTime();
-    if (time - LastRenderedFrame >= 1000 / LimitedFPS) {
-      LastRenderedFrame = time;
+    if (time - last_rendered_frame_ >= 1000 / limited_fps_) {
+      last_rendered_frame_ = time;
       return true;
     }
     return false;
   }
 
-  if (!Device) return false;
-  return Device->DeviceOk();
+  if (!device_) return false;
+  return device_->DeviceOk();
 }
 
 void CCoreWindowHandlerWin::Destroy() {
-  Done = true;
-  if (hWnd) {
-    DestroyWindow(hWnd);
-    hWnd = nullptr;
+  done_ = true;
+  if (window_handle_) {
+    DestroyWindow(window_handle_);
+    window_handle_ = nullptr;
   }
 }
 
 void CCoreWindowHandlerWin::ToggleFullScreen() {
-  if (!Device) return;
-  if (Device->IsWindowed()) {
+  if (!device_) return;
+  if (device_->IsWindowed()) {
     // go to fullscreen
-    dwStyle = GetWindowLong(hWnd, GWL_STYLE);
-    GetWindowPlacement(hWnd, &WindowPlacement);
-    ShowWindow(hWnd, SW_HIDE);
-    SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
-    Device->SetFullScreenMode(true, FullScreenX, FullScreenY);
+    dw_style_ = GetWindowLong(window_handle_, GWL_STYLE);
+    GetWindowPlacement(window_handle_, &window_placement_);
+    ShowWindow(window_handle_, SW_HIDE);
+    SetWindowLongPtr(window_handle_, GWL_STYLE, WS_POPUP | WS_VISIBLE);
+    device_->SetFullScreenMode(true, full_screen_x_, full_screen_y_);
     // Device->Resize(FullScreenX,FullScreenY,false);
     HandleResize();
-    ShowWindow(hWnd, SW_SHOW);
+    ShowWindow(window_handle_, SW_SHOW);
   } else {
     // go to window mode
-    SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, 0);
-    SetWindowLongPtr(hWnd, GWL_STYLE, dwStyle);
-    SetWindowPlacement(hWnd, &WindowPlacement);
+    SetWindowPos(window_handle_, HWND_NOTOPMOST, 0, 0, 0, 0, 0);
+    SetWindowLongPtr(window_handle_, GWL_STYLE, dw_style_);
+    SetWindowPlacement(window_handle_, &window_placement_);
     // Device->Resize(0,0,true);
-    Device->SetFullScreenMode(false, 0, 0);
-    ShowWindow(hWnd, SW_SHOW);
+    device_->SetFullScreenMode(false, 0, 0);
+    ShowWindow(window_handle_, SW_SHOW);
     HandleResize();
   }
 }
 
 void CCoreWindowHandlerWin::HandleAltEnter() {
-  switch (Device->GetAPIType()) {
-    case COREDEVICEAPI::DX9:
+  switch (device_->GetAPIType()) {
+    case CoreDeviceApi::kDx9:
       ToggleFullScreen();
       break;
-    case COREDEVICEAPI::DX11:
+    case CoreDeviceApi::kDx11:
       // handled by dxgi <3
       break;
-    case COREDEVICEAPI::OPENGL:
+    case CoreDeviceApi::kOpenGl:
       break;
     default:
       break;
@@ -272,7 +274,7 @@ LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
     wnd = static_cast<CCoreWindowHandlerWin*>(
         ((LPCREATESTRUCT)lParam)->lpCreateParams);
     SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)wnd);
-    wnd->hWnd = hWnd;
+    wnd->window_handle_ = hWnd;
   } else {
     wnd = (CCoreWindowHandlerWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
   }
@@ -286,51 +288,51 @@ LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
 
 LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
                                           LPARAM lParam) {
-  if (!hWnd) return 0;
+  if (!window_handle_) return 0;
 
   switch (uMsg) {
     case WM_CLOSE:
-      Done = true;
+      done_ = true;
       return 0;
       break;
     case WM_ACTIVATE: {
-      Active = wParam != WA_INACTIVE;
+      active_ = wParam != WA_INACTIVE;
       break;
     }
 
     case WM_ENTERSIZEMOVE: {
-      Active = false;
+      active_ = false;
       break;
     }
     case WM_EXITSIZEMOVE: {
-      Active = true;
+      active_ = true;
       HandleResize();
     } break;
     case WM_SIZE: {
-      if (Device && Device->IsWindowed() && hWnd) {
-        dwStyle = GetWindowLong(hWnd, GWL_STYLE);
+      if (device_ && device_->IsWindowed() && window_handle_) {
+        dw_style_ = GetWindowLong(window_handle_, GWL_STYLE);
       }
 
       if (wParam == SIZE_MINIMIZED) {
-        Active = false;
-        Minimized = true;
-        Maximized = false;
+        active_ = false;
+        minimized_ = true;
+        maximized_ = false;
       }
 
       if (wParam == SIZE_MAXIMIZED) {
-        Active = true;
-        Minimized = false;
-        Maximized = true;
+        active_ = true;
+        minimized_ = false;
+        maximized_ = true;
         HandleResize();
       }
 
       if (wParam == SIZE_RESTORED) {
-        if (Maximized) {
-          Maximized = false;
+        if (maximized_) {
+          maximized_ = false;
           HandleResize();
-        } else if (Minimized) {
-          Active = true;
-          Minimized = false;
+        } else if (minimized_) {
+          active_ = true;
+          minimized_ = false;
           HandleResize();
         }
 
@@ -370,7 +372,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
     case WM_LBUTTONDOWN:
     case WM_RBUTTONDOWN:
     case WM_MBUTTONDOWN:
-      SetCapture(hWnd);
+      SetCapture(window_handle_);
       break;
     case WM_LBUTTONUP:
     case WM_RBUTTONUP:
@@ -381,40 +383,40 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
       break;
   }
 
-  return DefWindowProc(hWnd, uMsg, wParam, lParam);
+  return DefWindowProc(window_handle_, uMsg, wParam, lParam);
 }
 
 void CCoreWindowHandlerWin::HandleResize() {
-  const CRect old = ClientRect;
+  const CRect old = client_rect_;
 
   RECT r;
-  GetClientRect(hWnd, &r);
-  ClientRect = CRect(r.left, r.top, r.right, r.bottom);
-  XRes = ClientRect.Width();
-  YRes = ClientRect.Height();
+  GetClientRect(window_handle_, &r);
+  client_rect_ = CRect(r.left, r.top, r.right, r.bottom);
+  x_res_ = client_rect_.Width();
+  y_res_ = client_rect_.Height();
 
-  if (Device && (old.Width() != XRes || old.Height() != YRes)) {
-    Device->Resize(XRes, YRes);
+  if (device_ && (old.Width() != x_res_ || old.Height() != y_res_)) {
+    device_->Resize(x_res_, y_res_);
   }
 }
 
-HWND CCoreWindowHandlerWin::GetHandle() { return hWnd; }
+HWND CCoreWindowHandlerWin::GetHandle() { return window_handle_; }
 
 void CCoreWindowHandlerWin::FinalizeMouseCursor() {
-  POINT ap;
-  GetCursorPos(&ap);
-  ScreenToClient(hWnd, &ap);
-  CPoint mp = CPoint(ap.x, ap.y);
-  RECT ClientRect;
-  GetClientRect(hWnd, &ClientRect);
+  POINT point;
+  GetCursorPos(&point);
+  ScreenToClient(window_handle_, &point);
+  CPoint mouse_pos = CPoint(point.x, point.y);
+  RECT client_rect;
+  GetClientRect(window_handle_, &client_rect);
 
-  if (CRect(0, 0, ClientRect.right, ClientRect.bottom).Contains(mp)) {
-    SetCursor(MouseCursorsAt(CurrentMouseCursor));
+  if (CRect(0, 0, client_rect.right, client_rect.bottom).Contains(mouse_pos)) {
+    SetCursor(MouseCursorsAt(current_mouse_cursor_));
   }
 }
 
-void CCoreWindowHandlerWin::SetWindowTitle(std::string_view Title) {
-  SetWindowText(hWnd, Title.data());
+void CCoreWindowHandlerWin::SetWindowTitle(std::string_view title) {
+  SetWindowText(window_handle_, title.data());
 }
 
 }  // namespace renderer

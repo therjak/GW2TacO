@@ -7,472 +7,496 @@ import xml;
 
 namespace renderer {
 
-CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* Device)
-    : CCoreResource(Device) {
-  Dirty = true;
+CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* device)
+    : CCoreResource(device) {
+  dirty_ = true;
 }
 
 CCoreRenderStateBatch::~CCoreRenderStateBatch() = default;
 
-CCoreBlendState::CCoreBlendState(CCoreDevice* Device)
-    : CCoreRenderStateBatch(Device) {
-  AlphaToCoverage = false;
-  IndependentBlend = false;
+CCoreBlendState::CCoreBlendState(CCoreDevice* device)
+    : CCoreRenderStateBatch(device) {
+  alpha_to_coverage_ = false;
+  independent_blend_ = false;
 
-  for (auto& RenderTargetBlendState : RenderTargetBlendStates) {
-    RenderTargetBlendState.BlendEnable = false;
-    RenderTargetBlendState.SrcBlend = COREBLENDFACTOR::ONE;
-    RenderTargetBlendState.DestBlend = COREBLENDFACTOR::ZERO;
-    RenderTargetBlendState.BlendOp = COREBLENDOP::ADD;
-    RenderTargetBlendState.SrcBlendAlpha = COREBLENDFACTOR::ONE;
-    RenderTargetBlendState.DestBlendAlpha = COREBLENDFACTOR::ZERO;
-    RenderTargetBlendState.BlendOpAlpha = COREBLENDOP::ADD;
-    RenderTargetBlendState.RenderTargetWriteMask = 0x0f;
+  for (auto& render_target_blend_state : render_target_blend_states_) {
+    render_target_blend_state.blend_enable = false;
+    render_target_blend_state.src_blend = CoreBlendFactor::kOne;
+    render_target_blend_state.dest_blend = CoreBlendFactor::kZero;
+    render_target_blend_state.blend_op = CoreBlendOp::kAdd;
+    render_target_blend_state.src_blend_alpha = CoreBlendFactor::kOne;
+    render_target_blend_state.dest_blend_alpha = CoreBlendFactor::kZero;
+    render_target_blend_state.blend_op_alpha = CoreBlendOp::kAdd;
+    render_target_blend_state.render_target_write_mask = 0x0f;
   }
 }
 
 CCoreBlendState::~CCoreBlendState() = default;
 
-void CCoreBlendState::SetRenderTargetWriteMask(int32_t rt, uint8_t e) {
-  if (RenderTargetBlendStates[rt].RenderTargetWriteMask != e) Dirty = true;
-  RenderTargetBlendStates[rt].RenderTargetWriteMask = e;
+void CCoreBlendState::SetRenderTargetWriteMask(int32_t render_target,
+                                               uint8_t mask) {
+  if (render_target_blend_states_[render_target].render_target_write_mask !=
+      mask)
+    dirty_ = true;
+  render_target_blend_states_[render_target].render_target_write_mask = mask;
 }
 
-void CCoreBlendState::SetBlendOpAlpha(int32_t rt, COREBLENDOP e) {
-  if (RenderTargetBlendStates[rt].BlendOpAlpha != e) Dirty = true;
-  RenderTargetBlendStates[rt].BlendOpAlpha = e;
+void CCoreBlendState::SetBlendOpAlpha(int32_t render_target,
+                                      CoreBlendOp blend_op) {
+  if (render_target_blend_states_[render_target].blend_op_alpha != blend_op)
+    dirty_ = true;
+  render_target_blend_states_[render_target].blend_op_alpha = blend_op;
 }
 
-void CCoreBlendState::SetDestBlendAlpha(int32_t rt, COREBLENDFACTOR e) {
-  if (RenderTargetBlendStates[rt].DestBlendAlpha != e) Dirty = true;
-  RenderTargetBlendStates[rt].DestBlendAlpha = e;
+void CCoreBlendState::SetDestBlendAlpha(int32_t render_target,
+                                        CoreBlendFactor blend_factor) {
+  if (render_target_blend_states_[render_target].dest_blend_alpha !=
+      blend_factor)
+    dirty_ = true;
+  render_target_blend_states_[render_target].dest_blend_alpha = blend_factor;
 }
 
-void CCoreBlendState::SetSrcBlendAlpha(int32_t rt, COREBLENDFACTOR e) {
-  if (RenderTargetBlendStates[rt].SrcBlendAlpha != e) Dirty = true;
-  RenderTargetBlendStates[rt].SrcBlendAlpha = e;
+void CCoreBlendState::SetSrcBlendAlpha(int32_t render_target,
+                                       CoreBlendFactor blend_factor) {
+  if (render_target_blend_states_[render_target].src_blend_alpha !=
+      blend_factor)
+    dirty_ = true;
+  render_target_blend_states_[render_target].src_blend_alpha = blend_factor;
 }
 
-void CCoreBlendState::SetBlendOp(int32_t rt, COREBLENDOP e) {
-  if (RenderTargetBlendStates[rt].BlendOp != e) Dirty = true;
-  RenderTargetBlendStates[rt].BlendOp = e;
+void CCoreBlendState::SetBlendOp(int32_t render_target, CoreBlendOp blend_op) {
+  if (render_target_blend_states_[render_target].blend_op != blend_op)
+    dirty_ = true;
+  render_target_blend_states_[render_target].blend_op = blend_op;
 }
 
-void CCoreBlendState::SetDestBlend(int32_t rt, COREBLENDFACTOR e) {
-  if (RenderTargetBlendStates[rt].DestBlend != e) Dirty = true;
-  RenderTargetBlendStates[rt].DestBlend = e;
+void CCoreBlendState::SetDestBlend(int32_t render_target,
+                                   CoreBlendFactor blend_factor) {
+  if (render_target_blend_states_[render_target].dest_blend != blend_factor)
+    dirty_ = true;
+  render_target_blend_states_[render_target].dest_blend = blend_factor;
 }
 
-void CCoreBlendState::SetSrcBlend(int32_t rt, COREBLENDFACTOR e) {
-  if (RenderTargetBlendStates[rt].SrcBlend != e) Dirty = true;
-  RenderTargetBlendStates[rt].SrcBlend = e;
+void CCoreBlendState::SetSrcBlend(int32_t render_target,
+                                  CoreBlendFactor blend_factor) {
+  if (render_target_blend_states_[render_target].src_blend != blend_factor)
+    dirty_ = true;
+  render_target_blend_states_[render_target].src_blend = blend_factor;
 }
 
-void CCoreBlendState::SetBlendEnable(int32_t rt, bool e) {
-  if (RenderTargetBlendStates[rt].BlendEnable != e) Dirty = true;
-  RenderTargetBlendStates[rt].BlendEnable = e;
+void CCoreBlendState::SetBlendEnable(int32_t render_target, bool enabled) {
+  if (render_target_blend_states_[render_target].blend_enable != enabled)
+    dirty_ = true;
+  render_target_blend_states_[render_target].blend_enable = enabled;
 }
 
-void CCoreBlendState::SetIndependentBlend(bool e) {
-  if (IndependentBlend != e) Dirty = true;
-  IndependentBlend = e;
+void CCoreBlendState::SetIndependentBlend(bool enabled) {
+  if (independent_blend_ != enabled) dirty_ = true;
+  independent_blend_ = enabled;
 }
 
-void CCoreBlendState::SetAlphaToCoverage(bool e) {
-  if (AlphaToCoverage != e) Dirty = true;
-  AlphaToCoverage = e;
+void CCoreBlendState::SetAlphaToCoverage(bool enabled) {
+  if (alpha_to_coverage_ != enabled) dirty_ = true;
+  alpha_to_coverage_ = enabled;
 }
 
-bool CCoreBlendState::Import(CXMLNode* n) {
-  std::string s;
+bool CCoreBlendState::Import(CXMLNode* node) {
+  std::string value_str;
 
-  if (n->HasAttribute("AlphaToCoverage")) {
-    n->GetChild("AlphaToCoverage").GetValue(AlphaToCoverage);
+  if (node->HasAttribute("AlphaToCoverage")) {
+    node->GetChild("AlphaToCoverage").GetValue(alpha_to_coverage_);
   }
-  if (n->HasAttribute("IndependentBlend")) {
-    n->GetChild("IndependentBlend").GetValue(IndependentBlend);
+  if (node->HasAttribute("IndependentBlend")) {
+    node->GetChild("IndependentBlend").GetValue(independent_blend_);
   }
 
-  for (int32_t x = 0; x < n->GetChildCount("RenderTarget"); x++) {
-    CXMLNode c = n->GetChild("RenderTarget", x);
+  for (int32_t x = 0; x < node->GetChildCount("RenderTarget"); x++) {
+    CXMLNode child = node->GetChild("RenderTarget", x);
     int32_t id = 0;
-    c.GetAttributeAsInteger("Target", &id);
+    child.GetAttributeAsInteger("Target", &id);
 
-    if (c.GetChildCount("BlendEnable")) {
-      c.GetChild("BlendEnable")
-          .GetValue(RenderTargetBlendStates[id].BlendEnable);
+    if (child.GetChildCount("BlendEnable")) {
+      child.GetChild("BlendEnable")
+          .GetValue(render_target_blend_states_[id].blend_enable);
     }
-    if (c.GetChildCount("SrcBlend")) {
-      s = c.GetChild("SrcBlend").GetText();
-      FindEnumByName(BlendFactorNames, s, RenderTargetBlendStates[id].SrcBlend);
+    if (child.GetChildCount("SrcBlend")) {
+      value_str = child.GetChild("SrcBlend").GetText();
+      FindEnumByName(BlendFactorNames, value_str,
+                     render_target_blend_states_[id].src_blend);
     }
-    if (c.GetChildCount("DestBlend")) {
-      s = c.GetChild("DestBlend").GetText();
-      FindEnumByName(BlendFactorNames, s,
-                     RenderTargetBlendStates[id].DestBlend);
+    if (child.GetChildCount("DestBlend")) {
+      value_str = child.GetChild("DestBlend").GetText();
+      FindEnumByName(BlendFactorNames, value_str,
+                     render_target_blend_states_[id].dest_blend);
     }
-    if (c.GetChildCount("BlendOp")) {
-      s = c.GetChild("BlendOp").GetText();
-      FindEnumByName(BlendOpNames, s, RenderTargetBlendStates[id].BlendOp);
-    }
-
-    if (c.GetChildCount("SrcBlendAlpha")) {
-      s = c.GetChild("SrcBlendAlpha").GetText();
-      FindEnumByName(BlendFactorNames, s,
-                     RenderTargetBlendStates[id].SrcBlendAlpha);
-    }
-    if (c.GetChildCount("DestBlendAlpha")) {
-      s = c.GetChild("DestBlendAlpha").GetText();
-      FindEnumByName(BlendFactorNames, s,
-                     RenderTargetBlendStates[id].DestBlendAlpha);
-    }
-    if (c.GetChildCount("BlendOpAlpha")) {
-      s = c.GetChild("BlendOpAlpha").GetText();
-      FindEnumByName(BlendOpNames, s, RenderTargetBlendStates[id].BlendOpAlpha);
+    if (child.GetChildCount("BlendOp")) {
+      value_str = child.GetChild("BlendOp").GetText();
+      FindEnumByName(BlendOpNames, value_str,
+                     render_target_blend_states_[id].blend_op);
     }
 
-    if (c.GetChildCount("RenderTargetWriteMask")) {
-      c.GetChild("RenderTargetWriteMask")
-          .GetValue(RenderTargetBlendStates[id].RenderTargetWriteMask);
+    if (child.GetChildCount("SrcBlendAlpha")) {
+      value_str = child.GetChild("SrcBlendAlpha").GetText();
+      FindEnumByName(BlendFactorNames, value_str,
+                     render_target_blend_states_[id].src_blend_alpha);
+    }
+    if (child.GetChildCount("DestBlendAlpha")) {
+      value_str = child.GetChild("DestBlendAlpha").GetText();
+      FindEnumByName(BlendFactorNames, value_str,
+                     render_target_blend_states_[id].dest_blend_alpha);
+    }
+    if (child.GetChildCount("BlendOpAlpha")) {
+      value_str = child.GetChild("BlendOpAlpha").GetText();
+      FindEnumByName(BlendOpNames, value_str,
+                     render_target_blend_states_[id].blend_op_alpha);
+    }
+
+    if (child.GetChildCount("RenderTargetWriteMask")) {
+      child.GetChild("RenderTargetWriteMask")
+          .GetValue(render_target_blend_states_[id].render_target_write_mask);
     }
   }
 
-  Dirty = true;
+  dirty_ = true;
   return true;
 }
 
-void CCoreBlendState::Export(CXMLNode* n) {
-  n->AddChild("AlphaToCoverage").SetInt(AlphaToCoverage);
-  n->AddChild("IndependentBlend").SetInt(IndependentBlend);
+void CCoreBlendState::Export(CXMLNode* node) {
+  node->AddChild("AlphaToCoverage").SetInt(alpha_to_coverage_);
+  node->AddChild("IndependentBlend").SetInt(independent_blend_);
 
   for (int32_t x = 0; x < 8; x++) {
-    CXMLNode b = n->AddChild("RenderTarget");
-    b.SetAttributeFromInteger("Target", x);
+    CXMLNode blend_node = node->AddChild("RenderTarget");
+    blend_node.SetAttributeFromInteger("Target", x);
 
-    b.AddChild("BlendEnable").SetInt(RenderTargetBlendStates[x].BlendEnable);
-    b.AddChild("SrcBlend")
+    blend_node.AddChild("BlendEnable")
+        .SetInt(render_target_blend_states_[x].blend_enable);
+    blend_node.AddChild("SrcBlend")
         .SetText(FindNameByEnum(BlendFactorNames,
-                                RenderTargetBlendStates[x].SrcBlend)
+                                render_target_blend_states_[x].src_blend)
                      .data());
-    b.AddChild("DestBlend")
+    blend_node.AddChild("DestBlend")
         .SetText(FindNameByEnum(BlendFactorNames,
-                                RenderTargetBlendStates[x].DestBlend)
+                                render_target_blend_states_[x].dest_blend)
                      .data());
-    b.AddChild("BlendOp").SetText(
-        FindNameByEnum(BlendOpNames, RenderTargetBlendStates[x].BlendOp)
+    blend_node.AddChild("BlendOp").SetText(
+        FindNameByEnum(BlendOpNames, render_target_blend_states_[x].blend_op)
             .data());
 
-    b.AddChild("SrcBlendAlpha")
+    blend_node.AddChild("SrcBlendAlpha")
         .SetText(FindNameByEnum(BlendFactorNames,
-                                RenderTargetBlendStates[x].SrcBlendAlpha)
+                                render_target_blend_states_[x].src_blend_alpha)
                      .data());
-    b.AddChild("DestBlendAlpha")
+    blend_node.AddChild("DestBlendAlpha")
         .SetText(FindNameByEnum(BlendFactorNames,
-                                RenderTargetBlendStates[x].DestBlendAlpha)
+                                render_target_blend_states_[x].dest_blend_alpha)
                      .data());
-    b.AddChild("BlendOpAlpha")
+    blend_node.AddChild("BlendOpAlpha")
         .SetText(FindNameByEnum(BlendOpNames,
-                                RenderTargetBlendStates[x].BlendOpAlpha)
+                                render_target_blend_states_[x].blend_op_alpha)
                      .data());
 
-    b.AddChild("RenderTargetWriteMask")
-        .SetInt(RenderTargetBlendStates[x].RenderTargetWriteMask);
+    blend_node.AddChild("RenderTargetWriteMask")
+        .SetInt(render_target_blend_states_[x].render_target_write_mask);
   }
 }
 
-CCoreDepthStencilState::CCoreDepthStencilState(CCoreDevice* Device)
-    : CCoreRenderStateBatch(Device) {
-  DepthEnable = true;
-  ZWriteEnable = true;
-  DepthFunc = CORECOMPARISONFUNCTION::LESS;
+CCoreDepthStencilState::CCoreDepthStencilState(CCoreDevice* device)
+    : CCoreRenderStateBatch(device) {
+  depth_enable_ = true;
+  z_write_enable_ = true;
+  depth_func_ = CoreComparisonFunction::kLess;
 }
 
 CCoreDepthStencilState::~CCoreDepthStencilState() = default;
 
-void CCoreDepthStencilState::SetDepthFunc(CORECOMPARISONFUNCTION e) {
-  if (e != DepthFunc) Dirty = true;
-  DepthFunc = e;
+void CCoreDepthStencilState::SetDepthFunc(CoreComparisonFunction func) {
+  if (func != depth_func_) dirty_ = true;
+  depth_func_ = func;
 }
 
-void CCoreDepthStencilState::SetZWriteEnable(bool e) {
-  if (e != ZWriteEnable) Dirty = true;
-  ZWriteEnable = e;
+void CCoreDepthStencilState::SetZWriteEnable(bool enabled) {
+  if (enabled != z_write_enable_) dirty_ = true;
+  z_write_enable_ = enabled;
 }
 
-void CCoreDepthStencilState::SetDepthEnable(bool e) {
-  if (e != DepthEnable) Dirty = true;
-  DepthEnable = e;
+void CCoreDepthStencilState::SetDepthEnable(bool enabled) {
+  if (enabled != depth_enable_) dirty_ = true;
+  depth_enable_ = enabled;
 }
 
-bool CCoreDepthStencilState::Import(CXMLNode* n) {
-  if (n->GetChildCount("DepthEnable")) {
-    n->GetChild("DepthEnable").GetValue(DepthEnable);
+bool CCoreDepthStencilState::Import(CXMLNode* node) {
+  if (node->GetChildCount("DepthEnable")) {
+    node->GetChild("DepthEnable").GetValue(depth_enable_);
   }
-  if (n->GetChildCount("ZWriteEnable")) {
-    n->GetChild("ZWriteEnable").GetValue(ZWriteEnable);
+  if (node->GetChildCount("ZWriteEnable")) {
+    node->GetChild("ZWriteEnable").GetValue(z_write_enable_);
   }
-  if (n->GetChildCount("DepthFunc")) {
-    auto s = n->GetChild("DepthFunc").GetText();
-    FindEnumByName(ComparisonFunctionNames, s, DepthFunc);
+  if (node->GetChildCount("DepthFunc")) {
+    auto value_str = node->GetChild("DepthFunc").GetText();
+    FindEnumByName(ComparisonFunctionNames, value_str, depth_func_);
   }
 
-  Dirty = true;
+  dirty_ = true;
   return true;
 }
 
-void CCoreDepthStencilState::Export(CXMLNode* n) {
-  n->AddChild("DepthEnable").SetInt(DepthEnable);
-  n->AddChild("ZWriteEnable").SetInt(ZWriteEnable);
-  n->AddChild("DepthFunc")
-      .SetText(FindNameByEnum(ComparisonFunctionNames, DepthFunc).data());
+void CCoreDepthStencilState::Export(CXMLNode* node) {
+  node->AddChild("DepthEnable").SetInt(depth_enable_);
+  node->AddChild("ZWriteEnable").SetInt(z_write_enable_);
+  node->AddChild("DepthFunc")
+      .SetText(FindNameByEnum(ComparisonFunctionNames, depth_func_).data());
 }
 
-CCoreRasterizerState::CCoreRasterizerState(CCoreDevice* Device)
-    : CCoreRenderStateBatch(Device) {
-  FillMode = COREFILLMODE::SOLID;
-  CullMode = CORECULLMODE::CCW;
-  FrontCounterClockwise = false;
-  DepthBias = 0;
-  DepthBiasClamp = 0;
-  SlopeScaledDepthBias = 0;
-  DepthClipEnable = true;
-  ScissorEnable = false;
-  MultisampleEnable = false;
-  AntialiasedLineEnable = false;
+CCoreRasterizerState::CCoreRasterizerState(CCoreDevice* device)
+    : CCoreRenderStateBatch(device) {
+  fill_mode_ = CoreFillMode::kSolid;
+  cull_mode_ = CoreCullMode::kCcw;
+  front_counter_clockwise_ = false;
+  depth_bias_ = 0;
+  depth_bias_clamp_ = 0;
+  slope_scaled_depth_bias_ = 0;
+  depth_clip_enable_ = true;
+  scissor_enable_ = false;
+  multisample_enable_ = false;
+  antialiased_line_enable_ = false;
 }
 
 CCoreRasterizerState::~CCoreRasterizerState() = default;
 
-void CCoreRasterizerState::SetAntialiasedLineEnable(bool e) {
-  if (AntialiasedLineEnable != e) Dirty = true;
-  AntialiasedLineEnable = e;
+void CCoreRasterizerState::SetAntialiasedLineEnable(bool enabled) {
+  if (antialiased_line_enable_ != enabled) dirty_ = true;
+  antialiased_line_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetMultisampleEnable(bool e) {
-  if (MultisampleEnable != e) Dirty = true;
-  MultisampleEnable = e;
+void CCoreRasterizerState::SetMultisampleEnable(bool enabled) {
+  if (multisample_enable_ != enabled) dirty_ = true;
+  multisample_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetScissorEnable(bool e) {
-  if (ScissorEnable != e) Dirty = true;
-  ScissorEnable = e;
+void CCoreRasterizerState::SetScissorEnable(bool enabled) {
+  if (scissor_enable_ != enabled) dirty_ = true;
+  scissor_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetDepthClipEnable(bool e) {
-  if (DepthClipEnable != e) Dirty = true;
-  DepthClipEnable = e;
+void CCoreRasterizerState::SetDepthClipEnable(bool enabled) {
+  if (depth_clip_enable_ != enabled) dirty_ = true;
+  depth_clip_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetSlopeScaledDepthBias(float e) {
-  if (SlopeScaledDepthBias != e) Dirty = true;
-  SlopeScaledDepthBias = e;
+void CCoreRasterizerState::SetSlopeScaledDepthBias(float value) {
+  if (slope_scaled_depth_bias_ != value) dirty_ = true;
+  slope_scaled_depth_bias_ = value;
 }
 
-void CCoreRasterizerState::SetDepthBiasClamp(float e) {
-  if (DepthBiasClamp != e) Dirty = true;
-  DepthBiasClamp = e;
+void CCoreRasterizerState::SetDepthBiasClamp(float value) {
+  if (depth_bias_clamp_ != value) dirty_ = true;
+  depth_bias_clamp_ = value;
 }
 
-void CCoreRasterizerState::SetDepthBias(int32_t e) {
-  if (DepthBias != e) Dirty = true;
-  DepthBias = e;
+void CCoreRasterizerState::SetDepthBias(int32_t value) {
+  if (depth_bias_ != value) dirty_ = true;
+  depth_bias_ = value;
 }
 
-void CCoreRasterizerState::SetFrontCounterClockwise(bool e) {
-  if (FrontCounterClockwise != e) Dirty = true;
-  FrontCounterClockwise = e;
+void CCoreRasterizerState::SetFrontCounterClockwise(bool enabled) {
+  if (front_counter_clockwise_ != enabled) dirty_ = true;
+  front_counter_clockwise_ = enabled;
 }
 
-void CCoreRasterizerState::SetCullMode(CORECULLMODE e) {
-  if (CullMode != e) Dirty = true;
-  CullMode = e;
+void CCoreRasterizerState::SetCullMode(CoreCullMode mode) {
+  if (cull_mode_ != mode) dirty_ = true;
+  cull_mode_ = mode;
 }
 
-void CCoreRasterizerState::SetFillMode(COREFILLMODE e) {
-  if (FillMode != e) Dirty = true;
-  FillMode = e;
+void CCoreRasterizerState::SetFillMode(CoreFillMode mode) {
+  if (fill_mode_ != mode) dirty_ = true;
+  fill_mode_ = mode;
 }
 
-bool CCoreRasterizerState::Import(CXMLNode* n) {
-  if (n->GetChildCount("FillMode")) {
-    auto s = n->GetChild("FillMode").GetText();
-    FindEnumByName(FillModeNames, s, FillMode);
+bool CCoreRasterizerState::Import(CXMLNode* node) {
+  if (node->GetChildCount("FillMode")) {
+    auto value_str = node->GetChild("FillMode").GetText();
+    FindEnumByName(FillModeNames, value_str, fill_mode_);
   }
-  if (n->GetChildCount("CullMode")) {
-    auto s = n->GetChild("CullMode").GetText();
-    FindEnumByName(CullModeNames, s, CullMode);
-  }
-
-  if (n->GetChildCount("DepthBias")) {
-    n->GetChild("DepthBias").GetValue(DepthBias);
-  }
-  if (n->GetChildCount("DepthBiasClamp")) {
-    n->GetChild("DepthBiasClamp").GetValue(DepthBiasClamp);
-  }
-  if (n->GetChildCount("SlopeScaledDepthBias")) {
-    n->GetChild("SlopeScaledDepthBias").GetValue(SlopeScaledDepthBias);
+  if (node->GetChildCount("CullMode")) {
+    auto value_str = node->GetChild("CullMode").GetText();
+    FindEnumByName(CullModeNames, value_str, cull_mode_);
   }
 
-  if (n->GetChildCount("FrontCounterClockwise")) {
-    n->GetChild("FrontCounterClockwise").GetValue(FrontCounterClockwise);
+  if (node->GetChildCount("DepthBias")) {
+    node->GetChild("DepthBias").GetValue(depth_bias_);
   }
-  if (n->GetChildCount("DepthClipEnable")) {
-    n->GetChild("DepthClipEnable").GetValue(DepthClipEnable);
+  if (node->GetChildCount("DepthBiasClamp")) {
+    node->GetChild("DepthBiasClamp").GetValue(depth_bias_clamp_);
   }
-  if (n->GetChildCount("ScissorEnable")) {
-    n->GetChild("ScissorEnable").GetValue(ScissorEnable);
-  }
-  if (n->GetChildCount("MultisampleEnable")) {
-    n->GetChild("MultisampleEnable").GetValue(MultisampleEnable);
-  }
-  if (n->GetChildCount("AntialiasedLineEnable")) {
-    n->GetChild("AntialiasedLineEnable").GetValue(AntialiasedLineEnable);
+  if (node->GetChildCount("SlopeScaledDepthBias")) {
+    node->GetChild("SlopeScaledDepthBias").GetValue(slope_scaled_depth_bias_);
   }
 
-  Dirty = true;
+  if (node->GetChildCount("FrontCounterClockwise")) {
+    node->GetChild("FrontCounterClockwise").GetValue(front_counter_clockwise_);
+  }
+  if (node->GetChildCount("DepthClipEnable")) {
+    node->GetChild("DepthClipEnable").GetValue(depth_clip_enable_);
+  }
+  if (node->GetChildCount("ScissorEnable")) {
+    node->GetChild("ScissorEnable").GetValue(scissor_enable_);
+  }
+  if (node->GetChildCount("MultisampleEnable")) {
+    node->GetChild("MultisampleEnable").GetValue(multisample_enable_);
+  }
+  if (node->GetChildCount("AntialiasedLineEnable")) {
+    node->GetChild("AntialiasedLineEnable").GetValue(antialiased_line_enable_);
+  }
+
+  dirty_ = true;
   return true;
 }
 
-void CCoreRasterizerState::Export(CXMLNode* n) {
-  n->AddChild("FillMode")
-      .SetText(FindNameByEnum(FillModeNames, FillMode).data());
-  n->AddChild("CullMode")
-      .SetText(FindNameByEnum(CullModeNames, CullMode).data());
+void CCoreRasterizerState::Export(CXMLNode* node) {
+  node->AddChild("FillMode")
+      .SetText(FindNameByEnum(FillModeNames, fill_mode_).data());
+  node->AddChild("CullMode")
+      .SetText(FindNameByEnum(CullModeNames, cull_mode_).data());
 
-  n->AddChild("DepthBias").SetInt(DepthBias);
-  n->AddChild("DepthBiasClamp").SetFloat(DepthBiasClamp);
-  n->AddChild("SlopeScaledDepthBias").SetFloat(SlopeScaledDepthBias);
-  n->AddChild("FrontCounterClockwise").SetInt(FrontCounterClockwise);
-  n->AddChild("DepthClipEnable").SetInt(DepthClipEnable);
-  n->AddChild("ScissorEnable").SetInt(ScissorEnable);
-  n->AddChild("MultisampleEnable").SetInt(MultisampleEnable);
-  n->AddChild("AntialiasedLineEnable").SetInt(AntialiasedLineEnable);
+  node->AddChild("DepthBias").SetInt(depth_bias_);
+  node->AddChild("DepthBiasClamp").SetFloat(depth_bias_clamp_);
+  node->AddChild("SlopeScaledDepthBias").SetFloat(slope_scaled_depth_bias_);
+  node->AddChild("FrontCounterClockwise").SetInt(front_counter_clockwise_);
+  node->AddChild("DepthClipEnable").SetInt(depth_clip_enable_);
+  node->AddChild("ScissorEnable").SetInt(scissor_enable_);
+  node->AddChild("MultisampleEnable").SetInt(multisample_enable_);
+  node->AddChild("AntialiasedLineEnable").SetInt(antialiased_line_enable_);
 }
 
-CCoreSamplerState::CCoreSamplerState(CCoreDevice* Device)
-    : CCoreRenderStateBatch(Device) {
-  Filter = COREFILTER::MIN_MAG_MIP_LINEAR;
-  AddressU = CORETEXTUREADDRESSMODE::CLAMP;
-  AddressV = CORETEXTUREADDRESSMODE::CLAMP;
-  AddressW = CORETEXTUREADDRESSMODE::CLAMP;
-  MinLOD = std::numeric_limits<float>::lowest();
-  MaxLOD = std::numeric_limits<float>::max();
-  MipLODBias = 0;
-  MaxAnisotropy = 1;
-  ComparisonFunc = CORECOMPARISONFUNCTION::NEVER;
-  BorderColor[0] = BorderColor[1] = BorderColor[2] = BorderColor[3] = 1;
+CCoreSamplerState::CCoreSamplerState(CCoreDevice* device)
+    : CCoreRenderStateBatch(device) {
+  filter_ = CoreFilter::kMinMagMipLinear;
+  address_u_ = CoreTextureAddressMode::kClamp;
+  address_v_ = CoreTextureAddressMode::kClamp;
+  address_w_ = CoreTextureAddressMode::kClamp;
+  min_lod_ = std::numeric_limits<float>::lowest();
+  max_lod_ = std::numeric_limits<float>::max();
+  mip_lod_bias_ = 0;
+  max_anisotropy_ = 1;
+  comparison_func_ = CoreComparisonFunction::kNever;
+  border_color_[0] = border_color_[1] = border_color_[2] = border_color_[3] = 1;
 }
 
 CCoreSamplerState::~CCoreSamplerState() = default;
 
 void CCoreSamplerState::SetBorderColor(float r, float g, float b, float a) {
-  if (BorderColor[0] != r || BorderColor[1] != g || BorderColor[2] != b ||
-      BorderColor[3] != a) {
-    Dirty = true;
+  if (border_color_[0] != r || border_color_[1] != g || border_color_[2] != b ||
+      border_color_[3] != a) {
+    dirty_ = true;
   }
-  BorderColor[0] = r;
-  BorderColor[1] = g;
-  BorderColor[2] = b;
-  BorderColor[3] = a;
+  border_color_[0] = r;
+  border_color_[1] = g;
+  border_color_[2] = b;
+  border_color_[3] = a;
 }
 
-void CCoreSamplerState::SetMaxLOD(float e) {
-  if (MaxLOD != e) Dirty = true;
-  MaxLOD = e;
+void CCoreSamplerState::SetMaxLOD(float value) {
+  if (max_lod_ != value) dirty_ = true;
+  max_lod_ = value;
 }
 
-void CCoreSamplerState::SetMinLOD(float e) {
-  if (MinLOD != e) Dirty = true;
-  MinLOD = e;
+void CCoreSamplerState::SetMinLOD(float value) {
+  if (min_lod_ != value) dirty_ = true;
+  min_lod_ = value;
 }
 
-void CCoreSamplerState::SetComparisonFunc(CORECOMPARISONFUNCTION e) {
-  if (ComparisonFunc != e) Dirty = true;
-  ComparisonFunc = e;
+void CCoreSamplerState::SetComparisonFunc(CoreComparisonFunction func) {
+  if (comparison_func_ != func) dirty_ = true;
+  comparison_func_ = func;
 }
 
-void CCoreSamplerState::SetMaxAnisotropy(int32_t e) {
-  if (MaxAnisotropy != e) Dirty = true;
-  MaxAnisotropy = e;
+void CCoreSamplerState::SetMaxAnisotropy(int32_t value) {
+  if (max_anisotropy_ != value) dirty_ = true;
+  max_anisotropy_ = value;
 }
 
-void CCoreSamplerState::SetMipLODBias(float e) {
-  if (MipLODBias != e) Dirty = true;
-  MipLODBias = e;
+void CCoreSamplerState::SetMipLODBias(float value) {
+  if (mip_lod_bias_ != value) dirty_ = true;
+  mip_lod_bias_ = value;
 }
 
-void CCoreSamplerState::SetAddressW(CORETEXTUREADDRESSMODE e) {
-  if (AddressW != e) Dirty = true;
-  AddressW = e;
+void CCoreSamplerState::SetAddressW(CoreTextureAddressMode mode) {
+  if (address_w_ != mode) dirty_ = true;
+  address_w_ = mode;
 }
 
-void CCoreSamplerState::SetAddressV(CORETEXTUREADDRESSMODE e) {
-  if (AddressV != e) Dirty = true;
-  AddressV = e;
+void CCoreSamplerState::SetAddressV(CoreTextureAddressMode mode) {
+  if (address_v_ != mode) dirty_ = true;
+  address_v_ = mode;
 }
 
-void CCoreSamplerState::SetAddressU(CORETEXTUREADDRESSMODE e) {
-  if (AddressU != e) Dirty = true;
-  AddressU = e;
+void CCoreSamplerState::SetAddressU(CoreTextureAddressMode mode) {
+  if (address_u_ != mode) dirty_ = true;
+  address_u_ = mode;
 }
 
-void CCoreSamplerState::SetFilter(COREFILTER e) {
-  if (Filter != e) Dirty = true;
-  Filter = e;
+void CCoreSamplerState::SetFilter(CoreFilter filter) {
+  if (filter_ != filter) dirty_ = true;
+  filter_ = filter;
 }
 
-bool CCoreSamplerState::Import(CXMLNode* n) {
-  if (n->GetChildCount("Filter")) {
-    auto s = n->GetChild("Filter").GetText();
-    FindEnumByName(FilterNames, s, Filter);
+bool CCoreSamplerState::Import(CXMLNode* node) {
+  if (node->GetChildCount("Filter")) {
+    auto value_str = node->GetChild("Filter").GetText();
+    FindEnumByName(FilterNames, value_str, filter_);
   }
-  if (n->GetChildCount("AddressU")) {
-    auto s = n->GetChild("AddressU").GetText();
-    FindEnumByName(AddressModeNames, s, AddressU);
+  if (node->GetChildCount("AddressU")) {
+    auto value_str = node->GetChild("AddressU").GetText();
+    FindEnumByName(AddressModeNames, value_str, address_u_);
   }
-  if (n->GetChildCount("AddressV")) {
-    auto s = n->GetChild("AddressV").GetText();
-    FindEnumByName(AddressModeNames, s, AddressV);
+  if (node->GetChildCount("AddressV")) {
+    auto value_str = node->GetChild("AddressV").GetText();
+    FindEnumByName(AddressModeNames, value_str, address_v_);
   }
-  if (n->GetChildCount("AddressW")) {
-    auto s = n->GetChild("AddressW").GetText();
-    FindEnumByName(AddressModeNames, s, AddressW);
-  }
-
-  if (n->GetChildCount("ComparisonFunc")) {
-    auto s = n->GetChild("ComparisonFunc").GetText();
-    FindEnumByName(ComparisonFunctionNames, s, ComparisonFunc);
+  if (node->GetChildCount("AddressW")) {
+    auto value_str = node->GetChild("AddressW").GetText();
+    FindEnumByName(AddressModeNames, value_str, address_w_);
   }
 
-  if (n->GetChildCount("MipLODBias")) {
-    n->GetChild("MipLODBias").GetValue(MipLODBias);
-  }
-  if (n->GetChildCount("MinLOD")) {
-    n->GetChild("MinLOD").GetValue(MinLOD);
-  }
-  if (n->GetChildCount("MaxLOD")) {
-    n->GetChild("MaxLOD").GetValue(MaxLOD);
+  if (node->GetChildCount("ComparisonFunc")) {
+    auto value_str = node->GetChild("ComparisonFunc").GetText();
+    FindEnumByName(ComparisonFunctionNames, value_str, comparison_func_);
   }
 
-  if (n->GetChildCount("MaxAnisotropy")) {
-    n->GetChild("MaxAnisotropy").GetValue(MaxAnisotropy);
+  if (node->GetChildCount("MipLODBias")) {
+    node->GetChild("MipLODBias").GetValue(mip_lod_bias_);
+  }
+  if (node->GetChildCount("MinLOD")) {
+    node->GetChild("MinLOD").GetValue(min_lod_);
+  }
+  if (node->GetChildCount("MaxLOD")) {
+    node->GetChild("MaxLOD").GetValue(max_lod_);
   }
 
-  Dirty = true;
+  if (node->GetChildCount("MaxAnisotropy")) {
+    node->GetChild("MaxAnisotropy").GetValue(max_anisotropy_);
+  }
+
+  dirty_ = true;
   return true;
 }
 
-void CCoreSamplerState::Export(CXMLNode* n) {
-  n->AddChild("Filter").SetText(FindNameByEnum(FilterNames, Filter));
-  n->AddChild("AddressU").SetText(FindNameByEnum(AddressModeNames, AddressU));
-  n->AddChild("AddressV").SetText(FindNameByEnum(AddressModeNames, AddressV));
-  n->AddChild("AddressW").SetText(FindNameByEnum(AddressModeNames, AddressW));
-  n->AddChild("ComparisonFunc")
-      .SetText(FindNameByEnum(ComparisonFunctionNames, ComparisonFunc));
-  n->AddChild("MipLODBias").SetFloat(MipLODBias);
-  n->AddChild("MinLOD").SetFloat(MinLOD);
-  n->AddChild("MaxLOD").SetFloat(MaxLOD);
-  n->AddChild("MaxAnisotropy").SetInt(MaxAnisotropy);
+void CCoreSamplerState::Export(CXMLNode* node) {
+  node->AddChild("Filter").SetText(FindNameByEnum(FilterNames, filter_));
+  node->AddChild("AddressU")
+      .SetText(FindNameByEnum(AddressModeNames, address_u_));
+  node->AddChild("AddressV")
+      .SetText(FindNameByEnum(AddressModeNames, address_v_));
+  node->AddChild("AddressW")
+      .SetText(FindNameByEnum(AddressModeNames, address_w_));
+  node->AddChild("ComparisonFunc")
+      .SetText(FindNameByEnum(ComparisonFunctionNames, comparison_func_));
+  node->AddChild("MipLODBias").SetFloat(mip_lod_bias_);
+  node->AddChild("MinLOD").SetFloat(min_lod_);
+  node->AddChild("MaxLOD").SetFloat(max_lod_);
+  node->AddChild("MaxAnisotropy").SetInt(max_anisotropy_);
 }
 
-} // namespace renderer
+}  // namespace renderer

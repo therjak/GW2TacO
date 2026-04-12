@@ -10,29 +10,29 @@ namespace renderer {
 
 class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
  public:
-  explicit CCoreDX11VertexBuffer(CCoreDX11Device* Device);
+  explicit CCoreDX11VertexBuffer(CCoreDX11Device* device);
   ~CCoreDX11VertexBuffer() override;
 
-  bool Create(const uint8_t* Data, const uint32_t Size) override;
-  bool CreateDynamic(const uint32_t Size) override;
-  bool Update(const int32_t Offset, const uint8_t* Data,
-              const uint32_t Size) override;
-  bool Lock(void** Result) override;
-  bool Lock(void** Result, const uint32_t Offset, const int32_t size,
-            const int32_t Flags = 0) override;
+  bool Create(const uint8_t* data, const uint32_t size) override;
+  bool CreateDynamic(const uint32_t size) override;
+  bool Update(const int32_t offset, const uint8_t* data,
+              const uint32_t size) override;
+  bool Lock(void** result) override;
+  bool Lock(void** result, const uint32_t offset, const int32_t size,
+            const int32_t flags = 0) override;
   bool UnLock() override;
-  void* GetHandle() override { return VertexBufferHandle; }
+  void* GetHandle() override { return vertex_buffer_handle_; }
 
  private:
   virtual void Release();
-  bool Apply(const uint32_t Offset) override;
+  bool Apply(const uint32_t offset) override;
 
-  ID3D11Device* Dev;
-  ID3D11DeviceContext* DeviceContext;
-  ID3D11Buffer* VertexBufferHandle;
+  ID3D11Device* d3d_device_;
+  ID3D11DeviceContext* d3d_device_context_;
+  ID3D11Buffer* vertex_buffer_handle_;
 
-  int32_t Size;
-  bool Dynamic;
+  int32_t size_;
+  bool dynamic_;
 };
 
 }  // namespace renderer

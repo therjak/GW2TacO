@@ -14,10 +14,10 @@ class CCoreVertexFormat : public CCoreResource {
   friend class CCoreDevice;
 
  public:
-  explicit CCoreVertexFormat(CCoreDevice* Device) : CCoreResource(Device) {}
+  explicit CCoreVertexFormat(CCoreDevice* device) : CCoreResource(device) {}
 
-  virtual bool Create(const std::vector<COREVERTEXATTRIBUTE>& Attributes,
-                      CCoreVertexShader* VxShader = nullptr) = 0;
+  virtual bool Create(const std::vector<CoreVertexAttribute>& attributes,
+                      CCoreVertexShader* vertex_shader = nullptr) = 0;
   virtual int32_t GetSize() = 0;
 
  private:

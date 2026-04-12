@@ -16,177 +16,188 @@
 
 namespace renderer {
 
-CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* dev)
-    : CCoreTexture2D(dev) {
-  Dev = dev->GetDevice();
-  DeviceContext = dev->GetDeviceContext();
-  TextureHandle = nullptr;
-  RenderTarget = false;
-  View = nullptr;
-  RTView = nullptr;
-  DepthView = nullptr;
-};
+CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* device)
+    : CCoreTexture2D(device) {
+  d3d_device_ = device->GetDevice();
+  d3d_device_context_ = device->GetDeviceContext();
+  texture_handle_ = nullptr;
+  render_target_ = false;
+  view_ = nullptr;
+  rt_view_ = nullptr;
+  depth_view_ = nullptr;
+}
 
 CCoreDX11Texture2D::~CCoreDX11Texture2D() { Release(); }
 
 void CCoreDX11Texture2D::Release() {
-  if (TextureHandle) TextureHandle->Release();
-  TextureHandle = nullptr;
-  if (View) View->Release();
-  if (DepthView) DepthView->Release();
-  if (RTView) RTView->Release();
-  View = nullptr;
-  RTView = nullptr;
-  DepthView = nullptr;
+  if (texture_handle_) texture_handle_->Release();
+  texture_handle_ = nullptr;
+  if (view_) view_->Release();
+  if (depth_view_) depth_view_->Release();
+  if (rt_view_) rt_view_->Release();
+  view_ = nullptr;
+  rt_view_ = nullptr;
+  depth_view_ = nullptr;
 }
 
-bool CCoreDX11Texture2D::SetToSampler(const CORESAMPLER smp) {
-  if (smp >= CORESAMPLER::PS0 && smp <= CORESAMPLER::PS15) {
-    DeviceContext->PSSetShaderResources(smp - CORESAMPLER::PS0, 1, &View);
+bool CCoreDX11Texture2D::SetToSampler(const CoreSampler sampler) {
+  if (sampler >= CoreSampler::kPs0 && sampler <= CoreSampler::kPs15) {
+    d3d_device_context_->PSSetShaderResources(
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kPs0),
+        1, &view_);
   }
-  if (smp >= CORESAMPLER::VS0 && smp <= CORESAMPLER::VS3) {
-    DeviceContext->VSSetShaderResources(smp - CORESAMPLER::VS0, 1, &View);
+  if (sampler >= CoreSampler::kVs0 && sampler <= CoreSampler::kVs3) {
+    d3d_device_context_->VSSetShaderResources(
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kVs0),
+        1, &view_);
   }
-  if (smp >= CORESAMPLER::GS0 && smp <= CORESAMPLER::GS3) {
-    DeviceContext->GSSetShaderResources(smp - CORESAMPLER::GS0, 1, &View);
+  if (sampler >= CoreSampler::kGs0 && sampler <= CoreSampler::kGs3) {
+    d3d_device_context_->GSSetShaderResources(
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kGs0),
+        1, &view_);
   }
 
   return true;
 }
 
-bool CCoreDX11Texture2D::Create(const int32_t xres, const int32_t yres,
-                                const uint8_t* Data, const char BytesPerPixel,
-                                const COREFORMAT format,
-                                const bool rendertarget) {
-  if (xres <= 0 || yres <= 0 || format == COREFORMAT::UNKNOWN) return false;
+bool CCoreDX11Texture2D::Create(const int32_t x_res, const int32_t y_res,
+                                const uint8_t* data, const char bytes_per_pixel,
+                                const CoreFormat format,
+                                const bool render_target) {
+  if (x_res <= 0 || y_res <= 0 || format == CoreFormat::kUnknown) return false;
   Release();
 
   D3D11_TEXTURE2D_DESC tex;
   memset(&tex, 0, sizeof(D3D11_TEXTURE2D_DESC));
   tex.ArraySize = 1;
-  tex.Width = xres;
-  tex.Height = yres;
-  tex.MipLevels = rendertarget ? 0 : 1;
-  tex.MiscFlags = rendertarget ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
+  tex.Width = x_res;
+  tex.Height = y_res;
+  tex.MipLevels = render_target ? 0 : 1;
+  tex.MiscFlags = render_target ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
   tex.Format = DX11FormatsAt(format);
   tex.SampleDesc.Count = 1;
   tex.SampleDesc.Quality = 0;
   tex.BindFlags = D3D11_BIND_SHADER_RESOURCE |
-                  (rendertarget ? D3D11_BIND_RENDER_TARGET : 0);
+                  (render_target ? D3D11_BIND_RENDER_TARGET : 0);
 
-  D3D11_SUBRESOURCE_DATA data;
-  data.pSysMem = Data;
-  data.SysMemPitch = xres * BytesPerPixel;
-  data.SysMemSlicePitch = 0;
+  D3D11_SUBRESOURCE_DATA sub_data;
+  sub_data.pSysMem = data;
+  sub_data.SysMemPitch = x_res * bytes_per_pixel;
+  sub_data.SysMemSlicePitch = 0;
 
-  HRESULT res =
-      Dev->CreateTexture2D(&tex, Data ? &data : nullptr, &TextureHandle);
-  if (res != S_OK) {
-    _com_error err(res);
-    Log_Err("[core] CreateTexture2D failed ({:s})", err.ErrorMessage());
+  HRESULT result = d3d_device_->CreateTexture2D(&tex, data ? &sub_data : nullptr,
+                                                &texture_handle_);
+  if (result != S_OK) {
+    _com_error error(result);
+    Log_Err("[core] CreateTexture2D failed ({:s})", error.ErrorMessage());
     return false;
   }
 
-  res = Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
-  if (res != S_OK) {
-    _com_error err(res);
+  result =
+      d3d_device_->CreateShaderResourceView(texture_handle_, nullptr, &view_);
+  if (result != S_OK) {
+    _com_error error(result);
     Log_Err("[core] CreateShaderResourceView failed ({:s})",
-            err.ErrorMessage());
+            error.ErrorMessage());
     return false;
   }
 
-  if (rendertarget) {
-    D3D11_RENDER_TARGET_VIEW_DESC rt;
-    rt.Format = DX11FormatsAt(Format);
-    rt.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
-    rt.Texture2D.MipSlice = 0;
-    res = Dev->CreateRenderTargetView(TextureHandle, &rt, &RTView);
-    if (res != S_OK) {
-      _com_error err(res);
-      Log_Err("[core] Failed to rendertarget view ({:s})", err.ErrorMessage());
+  if (render_target) {
+    D3D11_RENDER_TARGET_VIEW_DESC rt_desc;
+    rt_desc.Format = DX11FormatsAt(format_);
+    rt_desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+    rt_desc.Texture2D.MipSlice = 0;
+    result = d3d_device_->CreateRenderTargetView(texture_handle_, &rt_desc,
+                                                 &rt_view_);
+    if (result != S_OK) {
+      _com_error error(result);
+      Log_Err("[core] Failed to rendertarget view ({:s})",
+              error.ErrorMessage());
       return false;
     }
   }
 
-  XRes = xres;
-  YRes = yres;
-  Format = format;
+  x_res_ = x_res;
+  y_res_ = y_res;
+  format_ = format;
 
   return true;
 }
 
-bool CCoreDX11Texture2D::Create(const uint8_t* Data, const int32_t Size) {
-  bool ViewCreated = false;
+bool CCoreDX11Texture2D::Create(const uint8_t* data, const int32_t size) {
+  bool view_created = false;
 
-  if (!Data || Size <= 0) return false;
+  if (!data || size <= 0) return false;
   Release();
 
-  int32_t xr = 0, yr = 0;
-  auto Img = DecompressImage(Data, Size, xr, yr);
+  int32_t x_res = 0, y_res = 0;
+  auto img = DecompressImage(data, size, x_res, y_res);
 
-  if (!Img) {
-    if (!DecompressPNG(Data, Size, Img, xr, yr)) {
+  if (!img) {
+    if (!DecompressPNG(data, size, img, x_res, y_res)) {
       if (!CreateDDSTextureFromMemory(
-              Dev, Data, Size,
-              reinterpret_cast<ID3D11Resource**>(&TextureHandle), &View)) {
+              d3d_device_, data, size,
+              reinterpret_cast<ID3D11Resource**>(&texture_handle_), &view_)) {
         return false;
       } else {
-        ViewCreated = true;
+        view_created = true;
       }
     } else {
-      if (!Img) return false;
-      ARGBtoABGR(Img.get(), xr, yr);
+      if (!img) return false;
+      ARGBtoABGR(img.get(), x_res, y_res);
     }
   }
 
-  if (!ViewCreated) {
-    Create(xr, yr, Img.get());
-    Img.reset();
+  if (!view_created) {
+    Create(x_res, y_res, img.get());
+    img.reset();
   }
 
-  if (!ViewCreated) {
-    const HRESULT res =
-        Dev->CreateShaderResourceView(TextureHandle, nullptr, &View);
-    if (res != S_OK) {
-      _com_error err(res);
+  if (!view_created) {
+    const HRESULT result =
+        d3d_device_->CreateShaderResourceView(texture_handle_, nullptr, &view_);
+    if (result != S_OK) {
+      _com_error error(result);
       Log_Err("[core] CreateShaderResourceView failed ({:s})",
-              err.ErrorMessage());
+              error.ErrorMessage());
       return false;
     }
   }
 
-  D3D11_TEXTURE2D_DESC texturedesc;
-  TextureHandle->GetDesc(&texturedesc);
+  D3D11_TEXTURE2D_DESC texture_desc;
+  texture_handle_->GetDesc(&texture_desc);
 
-  XRes = texturedesc.Width;
-  YRes = texturedesc.Height;
-  Format = GetFormat(texturedesc.Format);
-  RenderTarget = false;
+  x_res_ = texture_desc.Width;
+  y_res_ = texture_desc.Height;
+  format_ = GetFormat(texture_desc.Format);
+  render_target_ = false;
 
   return true;
 }
 
-bool CCoreDX11Texture2D::Lock(void** Result, int32_t& pitch) { return false; }
+bool CCoreDX11Texture2D::Lock(void** result, int32_t& pitch) { return false; }
 
 bool CCoreDX11Texture2D::UnLock() { return true; }
 
 void CCoreDX11Texture2D::OnDeviceLost() {
-  if (RenderTarget) Release();
+  if (render_target_) Release();
 }
 
 void CCoreDX11Texture2D::OnDeviceReset() {
-  if (RenderTarget && XRes > 0 && YRes > 0 && Format != COREFORMAT::UNKNOWN) {
-    BASEASSERT(Create(XRes, YRes, nullptr, 4, Format, RenderTarget));
+  if (render_target_ && x_res_ > 0 && y_res_ > 0 &&
+      format_ != CoreFormat::kUnknown) {
+    BASEASSERT(Create(x_res_, y_res_, nullptr, 4, format_, render_target_));
   }
 }
 
-bool CCoreDX11Texture2D::Update(const uint8_t* Data, const int32_t XRes,
-                                const int32_t YRes, const char BytesPerPixel) {
-  if (!TextureHandle) return false;
-  if (!View) return false;
+bool CCoreDX11Texture2D::Update(const uint8_t* data, const int32_t x_res,
+                                const int32_t y_res,
+                                const char bytes_per_pixel) {
+  if (!texture_handle_) return false;
+  if (!view_) return false;
 
-  DeviceContext->UpdateSubresource(TextureHandle, 0, nullptr, Data,
-                                   XRes * BytesPerPixel, 0);
+  d3d_device_context_->UpdateSubresource(texture_handle_, 0, nullptr, data,
+                                         x_res * bytes_per_pixel, 0);
 
   return true;
 }
@@ -202,17 +213,18 @@ uint16_t degammaint16(uint16_t f) {
   return static_cast<uint16_t>(degammafloat(tf) * 65535);
 }
 
-void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
-                                       bool ClearAlpha,
-                                       EXPORTIMAGEFORMAT Format, bool degamma) {
-  if (!TextureHandle) return;
+void CCoreDX11Texture2D::ExportToImage(std::string_view filename,
+                                       bool clear_alpha,
+                                       ExportImageFormat format, bool degamma) {
+  if (!texture_handle_) return;
 
-  CStreamWriterMemory Writer;
-  const HRESULT res = SaveDDSTexture(DeviceContext, TextureHandle, Writer);
-  if (res != S_OK) {
-    _com_error err(res);
-    Log_Err("[core] Failed to export texture to '{:s}' ({:x}: {:s})", Filename,
-            res, err.ErrorMessage());
+  CStreamWriterMemory writer;
+  const HRESULT result =
+      SaveDDSTexture(d3d_device_context_, texture_handle_, writer);
+  if (result != S_OK) {
+    _com_error error(result);
+    Log_Err("[core] Failed to export texture to '{:s}' ({:x}: {:s})", filename,
+            result, error.ErrorMessage());
     return;
   }
 
@@ -251,10 +263,10 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     UINT miscFlags2;
   };
 
-  const uint8_t* Data = Writer.GetData();
+  const uint8_t* data = writer.GetData();
   DDSHEAD head{};
-  memcpy(&head, Data, sizeof(DDSHEAD));
-  Data += head.dwSize + 4;
+  memcpy(&head, data, sizeof(DDSHEAD));
+  data += head.dwSize + 4;
 
   auto image = std::make_unique<uint8_t[]>(head.dwWidth * head.dwHeight * 4);
 
@@ -262,7 +274,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     case 0:
       if (head._dwFlags == 0x041) {
         // rgba
-        memcpy(image.get(), Data, head.dwWidth * head.dwHeight * 4);
+        memcpy(image.get(), data, head.dwWidth * head.dwHeight * 4);
 
         if (head.dwRBitMask == 0x00ff0000 && head.dwBBitMask == 0x000000ff) {
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
@@ -281,7 +293,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       }
       break;
     case 36: {
-      const uint16_t* inimg = reinterpret_cast<const uint16_t*>(Data);
+      const uint16_t* inimg = reinterpret_cast<const uint16_t*>(data);
       for (int32_t x = 0; x < head.dwWidth * head.dwHeight * 4; x++) {
         image[x] = (!degamma ? inimg[x] : degammaint16(inimg[x])) / 256;
       }
@@ -291,7 +303,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       auto img2 = std::make_unique<float[]>(head.dwWidth * head.dwHeight * 4);
       DirectX::PackedVector::XMConvertHalfToFloatStream(
           img2.get(), 4,
-          reinterpret_cast<const DirectX::PackedVector::HALF*>(Data), 2,
+          reinterpret_cast<const DirectX::PackedVector::HALF*>(data), 2,
           head.dwWidth * head.dwHeight * 4);
 
       if (!degamma) {
@@ -314,12 +326,12 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
     } break;
     case '01XD':  // DX10
     {
-      const DDS_HEADER_DXT10* Head =
-          reinterpret_cast<const DDS_HEADER_DXT10*>(Data);
-      Data += sizeof(DDS_HEADER_DXT10);
-      switch (Head->dxgiFormat) {
+      const DDS_HEADER_DXT10* head_dx10 =
+          reinterpret_cast<const DDS_HEADER_DXT10*>(data);
+      data += sizeof(DDS_HEADER_DXT10);
+      switch (head_dx10->dxgiFormat) {
         case DXGI_FORMAT_B8G8R8A8_UNORM:
-          memcpy(image.get(), Data, head.dwWidth * head.dwHeight * 4);
+          memcpy(image.get(), data, head.dwWidth * head.dwHeight * 4);
           for (int32_t x = 0; x < head.dwWidth * head.dwHeight; x++) {
             const int32_t p = x * 4;
             const int32_t t = image[p];
@@ -329,7 +341,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
           break;
         default:
           Log_Err("[core] Failed to export texture: unknown DXGI format ({:d})",
-                  static_cast<int>(Head->dxgiFormat));
+                  static_cast<int>(head_dx10->dxgiFormat));
           break;
       }
       break;
@@ -341,88 +353,92 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view Filename,
       break;
   }
 
-  switch (Format) {
-    case EXPORTIMAGEFORMAT::CORE_PNG:
-      ExportPNG(image.get(), head.dwWidth, head.dwHeight, ClearAlpha, Filename);
+  switch (format) {
+    case ExportImageFormat::kCorePng:
+      ExportPNG(image.get(), head.dwWidth, head.dwHeight, clear_alpha, filename);
       break;
-    case EXPORTIMAGEFORMAT::CORE_TGA:
-      ExportTga(image.get(), head.dwWidth, head.dwHeight, ClearAlpha, Filename);
+    case ExportImageFormat::kCoreTga:
+      ExportTga(image.get(), head.dwWidth, head.dwHeight, clear_alpha, filename);
       break;
-    case EXPORTIMAGEFORMAT::CORE_BMP:
-      ExportBmp(image.get(), head.dwWidth, head.dwHeight, Filename);
+    case ExportImageFormat::kCoreBmp:
+      ExportBmp(image.get(), head.dwWidth, head.dwHeight, filename);
       break;
     default:
       break;
   }
 }
 
-bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t xres,
-                                           const int32_t yres,
-                                           const int32_t MSCount) {
-  if (xres <= 0 || yres <= 0) return false;
+bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t x_res,
+                                           const int32_t y_res,
+                                           const int32_t ms_count) {
+  if (x_res <= 0 || y_res <= 0) return false;
   Release();
 
   D3D11_TEXTURE2D_DESC tex;
   memset(&tex, 0, sizeof(D3D11_TEXTURE2D_DESC));
   tex.ArraySize = 1;
-  tex.Width = xres;
-  tex.Height = yres;
+  tex.Width = x_res;
+  tex.Height = y_res;
   tex.MipLevels = 1;
   tex.Format = DXGI_FORMAT_R24G8_TYPELESS;
-  tex.SampleDesc.Count = MSCount;
-  tex.SampleDesc.Quality = MSCount > 1 ? D3D10_STANDARD_MULTISAMPLE_PATTERN : 0;
+  tex.SampleDesc.Count = ms_count;
+  tex.SampleDesc.Quality = ms_count > 1 ? D3D10_STANDARD_MULTISAMPLE_PATTERN : 0;
   tex.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
-  HRESULT res = Dev->CreateTexture2D(&tex, nullptr, &TextureHandle);
-  if (res != S_OK) {
-    _com_error err(res);
-    Log_Err("[core] CreateTexture2D failed ({:s})", err.ErrorMessage());
+  HRESULT result =
+      d3d_device_->CreateTexture2D(&tex, nullptr, &texture_handle_);
+  if (result != S_OK) {
+    _com_error error(result);
+    Log_Err("[core] CreateTexture2D failed ({:s})", error.ErrorMessage());
     return false;
   }
 
-  D3D11_DEPTH_STENCIL_VIEW_DESC deptdesc;
+  D3D11_DEPTH_STENCIL_VIEW_DESC depth_desc;
 
-  memset(&deptdesc, 0, sizeof(deptdesc));
-  deptdesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  deptdesc.ViewDimension = MSCount > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS
-                                       : D3D11_DSV_DIMENSION_TEXTURE2D;
-  deptdesc.Texture2D.MipSlice = 0;
+  memset(&depth_desc, 0, sizeof(depth_desc));
+  depth_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+  depth_desc.ViewDimension = ms_count > 1 ? D3D11_DSV_DIMENSION_TEXTURE2DMS
+                                          : D3D11_DSV_DIMENSION_TEXTURE2D;
+  depth_desc.Texture2D.MipSlice = 0;
 
   // Create the depth stencil view.
-  res = Dev->CreateDepthStencilView(TextureHandle, &deptdesc, &DepthView);
-  if (res != S_OK) {
-    _com_error err(res);
-    Log_Err("[core] CreateDepthStencilView failed ({:s})", err.ErrorMessage());
+  result = d3d_device_->CreateDepthStencilView(texture_handle_, &depth_desc,
+                                               &depth_view_);
+  if (result != S_OK) {
+    _com_error error(result);
+    Log_Err("[core] CreateDepthStencilView failed ({:s})",
+            error.ErrorMessage());
     return false;
   }
 
-  D3D11_SHADER_RESOURCE_VIEW_DESC resdesc;
-  memset(&resdesc, 0, sizeof(resdesc));
-  resdesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-  resdesc.ViewDimension = MSCount > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS
-                                      : D3D11_SRV_DIMENSION_TEXTURE2D;
-  resdesc.Texture2D.MipLevels = 1;
+  D3D11_SHADER_RESOURCE_VIEW_DESC srv_desc;
+  memset(&srv_desc, 0, sizeof(srv_desc));
+  srv_desc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+  srv_desc.ViewDimension = ms_count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS
+                                        : D3D11_SRV_DIMENSION_TEXTURE2D;
+  srv_desc.Texture2D.MipLevels = 1;
 
-  res = Dev->CreateShaderResourceView(TextureHandle, &resdesc, &View);
-  if (res != S_OK) {
-    _com_error err(res);
+  result =
+      d3d_device_->CreateShaderResourceView(texture_handle_, &srv_desc, &view_);
+  if (result != S_OK) {
+    _com_error error(result);
     Log_Err("[core] CreateShaderResourceView failed ({:s})",
-            err.ErrorMessage());
+            error.ErrorMessage());
     return false;
   }
 
-  XRes = xres;
-  YRes = yres;
-  Format = COREFORMAT::UNKNOWN;
+  x_res_ = x_res;
+  y_res_ = y_res;
+  format_ = CoreFormat::kUnknown;
 
   return true;
 }
 
-CCoreDX11Texture3D::CCoreDX11Texture3D(CCoreDX11Device* dev)
-    : CCoreTexture3D(dev){};
+CCoreDX11Texture3D::CCoreDX11Texture3D(CCoreDX11Device* device)
+    : CCoreTexture3D(device){};
 
-CCoreDX11TextureCube::CCoreDX11TextureCube(CCoreDX11Device* dev)
-    : CCoreTextureCube(dev){};
+CCoreDX11TextureCube::CCoreDX11TextureCube(CCoreDX11Device* device)
+    : CCoreTextureCube(device){};
 
 static DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt) {
   // Assumes UNORM or FLOAT; doesn't use UINT or SINT
@@ -757,61 +773,62 @@ static bool IsCompressed(_In_ DXGI_FORMAT fmt) {
   }
 }
 
-static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
-                              _In_ ID3D11DeviceContext* pContext,
-                              _In_ ID3D11Resource* pSource,
+static HRESULT CaptureTexture(ID3D11Device* d3d_device,
+                              _In_ ID3D11DeviceContext* d3d_device_context,
+                              _In_ ID3D11Resource* source,
                               _Inout_ D3D11_TEXTURE2D_DESC& desc,
-                              _Inout_ ID3D11Texture2D*& pStaging) {
-  if (!pContext || !pSource) return E_INVALIDARG;
+                              _Inout_ ID3D11Texture2D*& staging) {
+  if (!d3d_device_context || !source) return E_INVALIDARG;
 
-  D3D11_RESOURCE_DIMENSION resType = D3D11_RESOURCE_DIMENSION_UNKNOWN;
-  pSource->GetType(&resType);
+  D3D11_RESOURCE_DIMENSION resource_type = D3D11_RESOURCE_DIMENSION_UNKNOWN;
+  source->GetType(&resource_type);
 
-  if (resType != D3D11_RESOURCE_DIMENSION_TEXTURE2D) {
+  if (resource_type != D3D11_RESOURCE_DIMENSION_TEXTURE2D) {
     return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
   }
 
-  ID3D11Texture2D* pTexture = nullptr;
-  HRESULT hr = pSource->QueryInterface(__uuidof(ID3D11Texture2D),
-                                       reinterpret_cast<void**>(&pTexture));
-  if (FAILED(hr)) return hr;
+  ID3D11Texture2D* texture = nullptr;
+  HRESULT result = source->QueryInterface(__uuidof(ID3D11Texture2D),
+                                          reinterpret_cast<void**>(&texture));
+  if (FAILED(result)) return result;
 
-  pTexture->GetDesc(&desc);
+  texture->GetDesc(&desc);
 
   if (desc.SampleDesc.Count > 1) {
     // MSAA content must be resolved before being copied to a staging texture
     desc.SampleDesc.Count = 1;
     desc.SampleDesc.Quality = 0;
 
-    ID3D11Texture2D* pTemp = nullptr;
-    hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pTemp);
-    if (FAILED(hr)) {
-      if (pTexture) pTexture->Release();
-      return hr;
+    ID3D11Texture2D* temp_texture = nullptr;
+    result = d3d_device->CreateTexture2D(&desc, nullptr, &temp_texture);
+    if (FAILED(result)) {
+      if (texture) texture->Release();
+      return result;
     }
 
-    if (!pTemp) Log_Err("[Core2] Error creating temp texture");
+    if (!temp_texture) Log_Err("[Core2] Error creating temp texture");
 
     const DXGI_FORMAT fmt = EnsureNotTypeless(desc.Format);
 
     UINT support = 0;
-    hr = d3dDevice->CheckFormatSupport(fmt, &support);
-    if (FAILED(hr)) {
-      if (pTemp) pTemp->Release();
-      if (pTexture) pTexture->Release();
-      return hr;
+    result = d3d_device->CheckFormatSupport(fmt, &support);
+    if (FAILED(result)) {
+      if (temp_texture) temp_texture->Release();
+      if (texture) texture->Release();
+      return result;
     }
 
     if (!(support & D3D11_FORMAT_SUPPORT_MULTISAMPLE_RESOLVE)) {
-      if (pTemp) pTemp->Release();
-      if (pTexture) pTexture->Release();
+      if (temp_texture) temp_texture->Release();
+      if (texture) texture->Release();
       return E_FAIL;
     }
 
     for (UINT item = 0; item < desc.ArraySize; ++item) {
       for (UINT level = 0; level < desc.MipLevels; ++level) {
         const UINT index = D3D11CalcSubresource(level, item, desc.MipLevels);
-        pContext->ResolveSubresource(pTemp, index, pSource, index, fmt);
+        d3d_device_context->ResolveSubresource(temp_texture, index, source,
+                                               index, fmt);
       }
     }
 
@@ -820,23 +837,23 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     desc.Usage = D3D11_USAGE_STAGING;
 
-    hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pStaging);
-    if (FAILED(hr)) {
-      if (pTemp) pTemp->Release();
-      if (pTexture) pTexture->Release();
-      return hr;
+    result = d3d_device->CreateTexture2D(&desc, nullptr, &staging);
+    if (FAILED(result)) {
+      if (temp_texture) temp_texture->Release();
+      if (texture) texture->Release();
+      return result;
     }
 
-    if (!pStaging) Log_Err("[Core2] Error creating staging texture");
+    if (!staging) Log_Err("[Core2] Error creating staging texture");
 
-    pContext->CopyResource(pStaging, pTemp);
-    if (pTemp) pTemp->Release();
-    if (pTexture) pTexture->Release();
+    d3d_device_context->CopyResource(staging, temp_texture);
+    if (temp_texture) temp_texture->Release();
+    if (texture) texture->Release();
   } else if ((desc.Usage == D3D11_USAGE_STAGING) &&
              (desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ)) {
     // Handle case where the source is already a staging texture we can use
     // directly
-    pStaging = pTexture;
+    staging = texture;
   } else {
     // Otherwise, create a staging texture from the non-MSAA source
     desc.BindFlags = 0;
@@ -844,16 +861,16 @@ static HRESULT CaptureTexture(ID3D11Device* d3dDevice,
     desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     desc.Usage = D3D11_USAGE_STAGING;
 
-    hr = d3dDevice->CreateTexture2D(&desc, nullptr, &pStaging);
-    if (FAILED(hr)) {
-      if (pTexture) pTexture->Release();
-      return hr;
+    result = d3d_device->CreateTexture2D(&desc, nullptr, &staging);
+    if (FAILED(result)) {
+      if (texture) texture->Release();
+      return result;
     }
 
-    if (!pStaging) Log_Err("[Core2] Error creating staging texture");
+    if (!staging) Log_Err("[Core2] Error creating staging texture");
 
-    pContext->CopyResource(pStaging, pSource);
-    if (pTexture) pTexture->Release();
+    d3d_device_context->CopyResource(staging, source);
+    if (texture) texture->Release();
   }
 
   return S_OK;
@@ -866,8 +883,8 @@ constexpr uint32_t MAKEFOURCC(uint8_t ch0, uint8_t ch1, uint8_t ch2,
           (static_cast<uint32_t>(ch3) << 24));
 }
 
-HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
-                       _In_ ID3D11Resource* pSource, CStreamWriter& Writer) {
+HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* d3d_device_context,
+                       _In_ ID3D11Resource* source, CStreamWriter& writer) {
   constexpr uint32_t DDS_MAGIC = 0x20534444;  // "DDS "
 
   struct DDS_PIXELFORMAT {
@@ -1154,17 +1171,18 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
                                       0};
 
   D3D11_TEXTURE2D_DESC desc = {0};
-  ID3D11Texture2D* pStaging = nullptr;
+  ID3D11Texture2D* staging = nullptr;
 
-  ID3D11Device* d3dDevice = nullptr;
-  pContext->GetDevice(&d3dDevice);
+  ID3D11Device* d3d_device = nullptr;
+  d3d_device_context->GetDevice(&d3d_device);
 
-  HRESULT hr = CaptureTexture(d3dDevice, pContext, pSource, desc, pStaging);
-  d3dDevice->Release();
+  HRESULT result =
+      CaptureTexture(d3d_device, d3d_device_context, source, desc, staging);
+  d3d_device->Release();
 
-  if (FAILED(hr)) {
-    if (pStaging) pStaging->Release();
-    return hr;
+  if (FAILED(result)) {
+    if (staging) staging->Release();
+    return result;
   }
 
   // Setup header
@@ -1176,7 +1194,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
 
   auto header =
       reinterpret_cast<DDS_HEADER*>(&fileHeader[0] + sizeof(uint32_t));
-  size_t headerSize = sizeof(uint32_t) + sizeof(DDS_HEADER);
+  size_t header_size = sizeof(uint32_t) + sizeof(DDS_HEADER);
   memset(header, 0, sizeof(DDS_HEADER));
   header->size = sizeof(DDS_HEADER);
   header->flags = DDS_HEADER_FLAGS_TEXTURE | DDS_HEADER_FLAGS_MIPMAP;
@@ -1187,7 +1205,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
 
   // Try to use a legacy .DDS pixel format for better tools support, otherwise
   // fallback to 'DX10' header extension
-  DDS_HEADER_DXT10* extHeader = nullptr;
+  DDS_HEADER_DXT10* extension_header = nullptr;
   switch (desc.Format) {
     case DXGI_FORMAT_R8G8B8A8_UNORM:
       memcpy_s(&header->ddspf, sizeof(header->ddspf), &DDSPF_A8B8G8R8,
@@ -1320,7 +1338,7 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
     case DXGI_FORMAT_IA44:
     case DXGI_FORMAT_P8:
     case DXGI_FORMAT_A8P8: {
-      if (pStaging) pStaging->Release();
+      if (staging) staging->Release();
       return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
     }
 
@@ -1328,73 +1346,74 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* pContext,
       memcpy_s(&header->ddspf, sizeof(header->ddspf), &DDSPF_DX10,
                sizeof(DDS_PIXELFORMAT));
 
-      headerSize += sizeof(DDS_HEADER_DXT10);
-      extHeader = reinterpret_cast<DDS_HEADER_DXT10*>(
+      header_size += sizeof(DDS_HEADER_DXT10);
+      extension_header = reinterpret_cast<DDS_HEADER_DXT10*>(
           (&fileHeader[0]) + sizeof(uint32_t) + sizeof(DDS_HEADER));
-      memset(extHeader, 0, sizeof(DDS_HEADER_DXT10));
-      extHeader->dxgiFormat = desc.Format;
-      extHeader->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
-      extHeader->arraySize = 1;
+      memset(extension_header, 0, sizeof(DDS_HEADER_DXT10));
+      extension_header->dxgiFormat = desc.Format;
+      extension_header->resourceDimension = D3D11_RESOURCE_DIMENSION_TEXTURE2D;
+      extension_header->arraySize = 1;
       break;
   }
 
-  size_t rowPitch = 0, slicePitch = 0, rowCount = 0;
-  GetSurfaceInfo(desc.Width, desc.Height, desc.Format, &slicePitch, &rowPitch,
-                 &rowCount);
+  size_t row_pitch = 0, slice_pitch = 0, row_count = 0;
+  GetSurfaceInfo(desc.Width, desc.Height, desc.Format, &slice_pitch, &row_pitch,
+                 &row_count);
 
   if (IsCompressed(desc.Format)) {
     header->flags |= DDS_HEADER_FLAGS_LINEARSIZE;
-    header->pitchOrLinearSize = static_cast<uint32_t>(slicePitch);
+    header->pitchOrLinearSize = static_cast<uint32_t>(slice_pitch);
   } else {
     header->flags |= DDS_HEADER_FLAGS_PITCH;
-    header->pitchOrLinearSize = static_cast<uint32_t>(rowPitch);
+    header->pitchOrLinearSize = static_cast<uint32_t>(row_pitch);
   }
 
   // Setup pixels
-  auto pixels = std::make_unique<uint8_t[]>(slicePitch);
+  auto pixels = std::make_unique<uint8_t[]>(slice_pitch);
   if (!pixels) {
-    if (pStaging) pStaging->Release();
+    if (staging) staging->Release();
     return E_OUTOFMEMORY;
   }
 
-  D3D11_MAPPED_SUBRESOURCE mapped;
-  hr = pContext->Map(pStaging, 0, D3D11_MAP_READ, 0, &mapped);
-  if (FAILED(hr)) {
-    if (pStaging) pStaging->Release();
-    return hr;
+  D3D11_MAPPED_SUBRESOURCE mapped_resource;
+  result = d3d_device_context->Map(staging, 0, D3D11_MAP_READ, 0,
+                                   &mapped_resource);
+  if (FAILED(result)) {
+    if (staging) staging->Release();
+    return result;
   }
 
-  auto sptr = static_cast<uint8_t*>(mapped.pData);
+  auto sptr = static_cast<uint8_t*>(mapped_resource.pData);
   if (!sptr) {
-    pContext->Unmap(pStaging, 0);
-    if (pStaging) pStaging->Release();
+    d3d_device_context->Unmap(staging, 0);
+    if (staging) staging->Release();
     return E_POINTER;
   }
 
   uint8_t* dptr = pixels.get();
 
-  const size_t msize = std::min<size_t>(rowPitch, mapped.RowPitch);
-  for (size_t h = 0; h < rowCount; ++h) {
-    memcpy_s(dptr, rowPitch, sptr, msize);
-    sptr += mapped.RowPitch;
-    dptr += rowPitch;
+  const size_t msize = std::min<size_t>(row_pitch, mapped_resource.RowPitch);
+  for (size_t h = 0; h < row_count; ++h) {
+    memcpy_s(dptr, row_pitch, sptr, msize);
+    sptr += mapped_resource.RowPitch;
+    dptr += row_pitch;
   }
 
-  pContext->Unmap(pStaging, 0);
+  d3d_device_context->Unmap(staging, 0);
 
   // Write header & pixels
 
-  if (!Writer.Write(
-          uint8_view(&fileHeader[0], static_cast<DWORD>(headerSize)))) {
-    if (pStaging) pStaging->Release();
+  if (!writer.Write(
+          uint8_view(&fileHeader[0], static_cast<DWORD>(header_size)))) {
+    if (staging) staging->Release();
     return E_FAIL;
   }
-  if (!Writer.Write(uint8_view(pixels.get(), static_cast<DWORD>(slicePitch)))) {
-    if (pStaging) pStaging->Release();
+  if (!writer.Write(uint8_view(pixels.get(), static_cast<DWORD>(slice_pitch)))) {
+    if (staging) staging->Release();
     return E_FAIL;
   }
 
-  if (pStaging) pStaging->Release();
+  if (staging) staging->Release();
   return S_OK;
 }
 

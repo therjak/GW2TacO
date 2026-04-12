@@ -23,14 +23,14 @@ class CCoreResource {
 
  public:
   CCoreResource();
-  explicit CCoreResource(CCoreDevice* Device);
+  explicit CCoreResource(CCoreDevice* device);
   virtual ~CCoreResource();
 
   virtual void OnDeviceLost();
   virtual void OnDeviceReset();
 
  protected:
-  CCoreDevice* Device = nullptr;
+  CCoreDevice* device_ = nullptr;
 };
 
 }  // namespace renderer

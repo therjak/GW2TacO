@@ -17,7 +17,7 @@ constexpr std::array<DXGI_FORMAT, 6> DX11Formats = {
     DXGI_FORMAT_R16G16_FLOAT,
     DXGI_FORMAT_R16G16B16A16_FLOAT,
 };
-constexpr const DXGI_FORMAT& DX11FormatsAt(COREFORMAT f) {
+constexpr const DXGI_FORMAT& DX11FormatsAt(CoreFormat f) {
   return DX11Formats[static_cast<uint8_t>(f)];
 }
 
@@ -40,7 +40,7 @@ constexpr std::array<D3D11_COMPARISON_FUNC, 8> DX11ComparisonFunctions = {
     D3D11_COMPARISON_GREATER_EQUAL, D3D11_COMPARISON_ALWAYS,
 };
 constexpr const D3D11_COMPARISON_FUNC& DX11ComparisonFunctionsAt(
-    CORECOMPARISONFUNCTION f) {
+    CoreComparisonFunction f) {
   return DX11ComparisonFunctions[static_cast<uint16_t>(f)];
 }
 
@@ -59,7 +59,7 @@ constexpr std::array<D3D11_BLEND, 13> DX11BlendFactors = {
     D3D11_BLEND_BLEND_FACTOR,
     D3D11_BLEND_INV_BLEND_FACTOR,
 };
-constexpr const D3D11_BLEND& DX11BlendFactorsAt(COREBLENDFACTOR f) {
+constexpr const D3D11_BLEND& DX11BlendFactorsAt(CoreBlendFactor f) {
   return DX11BlendFactors[static_cast<uint16_t>(f)];
 }
 
@@ -95,6 +95,6 @@ constexpr std::array<D3D11_TEXTURE_ADDRESS_MODE, 5> DX11TextureAddressModes = {
     D3D11_TEXTURE_ADDRESS_MIRROR_ONCE,
 };
 
-COREFORMAT GetFormat(DXGI_FORMAT Format);
+CoreFormat GetFormat(DXGI_FORMAT format);
 
 }  // namespace renderer

@@ -8,13 +8,13 @@ class CCoreIndexBuffer : public CCoreResource {
   friend class CCoreDevice;
 
  public:
-  explicit CCoreIndexBuffer(CCoreDevice* Device) : CCoreResource(Device) {}
+  explicit CCoreIndexBuffer(CCoreDevice* device) : CCoreResource(device) {}
 
-  virtual bool Create(const uint32_t IndexCount,
-                      const uint32_t IndexSize = 2) = 0;
-  virtual bool Lock(void** Result, const uint32_t IndexOffset,
-                    const int32_t IndexCount) = 0;
-  virtual bool Lock(void** Result) = 0;
+  virtual bool Create(const uint32_t index_count,
+                      const uint32_t index_size = 2) = 0;
+  virtual bool Lock(void** result, const uint32_t index_offset,
+                    const int32_t index_count) = 0;
+  virtual bool Lock(void** result) = 0;
   virtual bool UnLock() = 0;
   virtual void* GetHandle() = 0;
 

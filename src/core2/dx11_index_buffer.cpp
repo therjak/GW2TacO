@@ -7,84 +7,86 @@
 
 namespace renderer {
 
-CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device* dev)
-    : CCoreIndexBuffer(dev) {
-  Dev = dev->GetDevice();
-  DeviceContext = dev->GetDeviceContext();
-  IndexBufferHandle = nullptr;
-  IndexCount = 0;
-  IndexSize = 0;
+CCoreDX11IndexBuffer::CCoreDX11IndexBuffer(CCoreDX11Device* device)
+    : CCoreIndexBuffer(device) {
+  d3d_device_ = device->GetDevice();
+  d3d_device_context_ = device->GetDeviceContext();
+  index_buffer_handle_ = nullptr;
+  index_count_ = 0;
+  index_size_ = 0;
 }
 
 CCoreDX11IndexBuffer::~CCoreDX11IndexBuffer() { Release(); }
 
 void CCoreDX11IndexBuffer::Release() {
-  if (IndexBufferHandle) IndexBufferHandle->Release();
-  IndexBufferHandle = nullptr;
+  if (index_buffer_handle_) index_buffer_handle_->Release();
+  index_buffer_handle_ = nullptr;
 }
 
 bool CCoreDX11IndexBuffer::Apply() {
-  if (!IndexBufferHandle) return false;
-  DeviceContext->IASetIndexBuffer(
-      IndexBufferHandle,
-      IndexSize == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
+  if (!index_buffer_handle_) return false;
+  d3d_device_context_->IASetIndexBuffer(
+      index_buffer_handle_,
+      index_size_ == 2 ? DXGI_FORMAT_R16_UINT : DXGI_FORMAT_R32_UINT, 0);
   return true;
 }
 
-bool CCoreDX11IndexBuffer::Create(const uint32_t idxcount,
-                                  const uint32_t idxsize) {
-  if (idxcount <= 0 || idxsize <= 0) return false;
-  if (idxsize != 2 && idxsize != 4) return false;
+bool CCoreDX11IndexBuffer::Create(const uint32_t index_count,
+                                  const uint32_t index_size) {
+  if (index_count <= 0 || index_size <= 0) return false;
+  if (index_size != 2 && index_size != 4) return false;
 
   Release();
 
-  D3D11_BUFFER_DESC bd;
-  ZeroMemory(&bd, sizeof(bd));
+  D3D11_BUFFER_DESC buffer_desc;
+  ZeroMemory(&buffer_desc, sizeof(buffer_desc));
 
-  bd.Usage = D3D11_USAGE_DYNAMIC;
-  bd.ByteWidth = idxcount * idxsize;
-  bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+  buffer_desc.Usage = D3D11_USAGE_DYNAMIC;
+  buffer_desc.ByteWidth = index_count * index_size;
+  buffer_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+  buffer_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-  const HRESULT res = Dev->CreateBuffer(&bd, nullptr, &IndexBufferHandle);
-  if (res != S_OK) {
-    _com_error err(res);
+  const HRESULT result =
+      d3d_device_->CreateBuffer(&buffer_desc, nullptr, &index_buffer_handle_);
+  if (result != S_OK) {
+    _com_error error(result);
     Log_Err("[core] CreateBuffer for indexbuffer failed ({:s})",
-            err.ErrorMessage());
+            error.ErrorMessage());
     return false;
   }
 
-  IndexCount = idxcount;
-  IndexSize = idxsize;
+  index_count_ = index_count;
+  index_size_ = index_size;
 
   return true;
 }
 
-bool CCoreDX11IndexBuffer::Lock(void** Result, const uint32_t idxoffset,
-                                const int32_t idxcount) {
-  if (!IndexBufferHandle) return false;
+bool CCoreDX11IndexBuffer::Lock(void** result_ptr, const uint32_t index_offset,
+                                const int32_t index_count) {
+  if (!index_buffer_handle_) return false;
 
-  D3D11_MAPPED_SUBRESOURCE ms;
-  const HRESULT res = DeviceContext->Map(IndexBufferHandle, NULL,
-                                         D3D11_MAP_WRITE_DISCARD, NULL, &ms);
-  if (res != S_OK) {
-    _com_error err(res);
+  D3D11_MAPPED_SUBRESOURCE mapped_resource;
+  const HRESULT result = d3d_device_context_->Map(
+      index_buffer_handle_, NULL, D3D11_MAP_WRITE_DISCARD, NULL,
+      &mapped_resource);
+  if (result != S_OK) {
+    _com_error error(result);
     Log_Err("[core] Failed to lock indexbuffer failed ({:s})",
-            err.ErrorMessage());
+            error.ErrorMessage());
     return false;
   }
 
-  *Result = ms.pData;
+  *result_ptr = mapped_resource.pData;
   return true;
 }
 
-bool CCoreDX11IndexBuffer::Lock(void** Result) {
-  return Lock(Result, 0, IndexCount);
+bool CCoreDX11IndexBuffer::Lock(void** result_ptr) {
+  return Lock(result_ptr, 0, index_count_);
 }
 
 bool CCoreDX11IndexBuffer::UnLock() {
-  if (!IndexBufferHandle) return false;
-  DeviceContext->Unmap(IndexBufferHandle, 0);
+  if (!index_buffer_handle_) return false;
+  d3d_device_context_->Unmap(index_buffer_handle_, 0);
   return true;
 }
 
