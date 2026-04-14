@@ -6,7 +6,6 @@ module;
 
 module taco.range_display;
 
-import base.constants;
 import math;
 import taco.mumble_link;
 import taco.overlay_config;

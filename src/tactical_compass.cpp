@@ -6,7 +6,6 @@ module;
 
 module taco.tactical_compass;
 
-import base.constants;
 import math;
 import taco.language;
 import taco.mumble_link;
