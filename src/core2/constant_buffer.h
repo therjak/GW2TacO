@@ -6,10 +6,10 @@
 
 namespace renderer {
 
-class CCoreConstantBuffer : public CCoreResource {
+class ConstantBuffer : public Resource {
  public:
-  explicit CCoreConstantBuffer(CCoreDevice* device);
-  ~CCoreConstantBuffer() override;
+  explicit ConstantBuffer(Device* device);
+  ~ConstantBuffer() override;
 
   void Reset();
   void AddData(const void* data, int32_t length);

@@ -1,4 +1,4 @@
-﻿module;
+module;
 #include "src/base/image_decompressor.h"
 #include "src/base/logger.h"
 #include "src/util/png_decompressor.h"

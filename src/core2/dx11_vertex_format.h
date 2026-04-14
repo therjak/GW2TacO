@@ -10,13 +10,13 @@
 
 namespace renderer {
 
-class CCoreDX11VertexFormat : public CCoreVertexFormat {
+class DX11VertexFormat : public VertexFormat {
  public:
-  explicit CCoreDX11VertexFormat(CCoreDX11Device* device);
-  ~CCoreDX11VertexFormat() override;
+  explicit DX11VertexFormat(DX11Device* device);
+  ~DX11VertexFormat() override;
 
-  bool Create(const std::vector<CoreVertexAttribute>& attributes,
-              CCoreVertexShader* vertex_shader = nullptr) override;
+  bool Create(const std::vector<VertexAttribute>& attributes,
+              VertexShader* vertex_shader = nullptr) override;
   int32_t GetSize() override;
 
  private:

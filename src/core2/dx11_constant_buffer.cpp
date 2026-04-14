@@ -8,21 +8,21 @@
 
 namespace renderer {
 
-CCoreDX11ConstantBuffer::CCoreDX11ConstantBuffer(CCoreDX11Device* device)
-    : CCoreConstantBuffer(device) {
+DX11ConstantBuffer::DX11ConstantBuffer(DX11Device* device)
+    : ConstantBuffer(device) {
   buffer_ = nullptr;
   d3d_device_ = device->GetDevice();
   d3d_device_context_ = device->GetDeviceContext();
   allocated_buffer_size_ = 0;
 }
 
-CCoreDX11ConstantBuffer::~CCoreDX11ConstantBuffer() {
+DX11ConstantBuffer::~DX11ConstantBuffer() {
   if (buffer_) buffer_->Release();
 }
 
-void* CCoreDX11ConstantBuffer::GetBufferPointer() const { return buffer_; }
+void* DX11ConstantBuffer::GetBufferPointer() const { return buffer_; }
 
-void CCoreDX11ConstantBuffer::Upload() {
+void DX11ConstantBuffer::Upload() {
   if (allocated_buffer_size_ < data_length_) {
     // allocate appropriate size buffer
     if (buffer_) buffer_->Release();

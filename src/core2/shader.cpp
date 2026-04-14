@@ -5,36 +5,36 @@ namespace renderer {
 //////////////////////////////////////////////////////////////////////////
 // base shader class
 
-CCoreShader::~CCoreShader() { binary_length_ = 0; }
+Shader::~Shader() { binary_length_ = 0; }
 
 //////////////////////////////////////////////////////////////////////////
 // base pixelshader class
 
-CCorePixelShader::~CCorePixelShader() = default;
+PixelShader::~PixelShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base geometryshader class
 
-CCoreGeometryShader::~CCoreGeometryShader() = default;
+GeometryShader::~GeometryShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base vertexshader class
 
-CCoreVertexShader::~CCoreVertexShader() = default;
+VertexShader::~VertexShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base Hullshader class
 
-CCoreHullShader::~CCoreHullShader() = default;
+HullShader::~HullShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base Domainshader class
 
-CCoreDomainShader::~CCoreDomainShader() = default;
+DomainShader::~DomainShader() = default;
 
 //////////////////////////////////////////////////////////////////////////
 // base Computeshader class
 
-CCoreComputeShader::~CCoreComputeShader() = default;
+ComputeShader::~ComputeShader() = default;
 
 } // namespace renderer

@@ -7,19 +7,18 @@
 
 namespace renderer {
 
-CCoreDX11BlendState::CCoreDX11BlendState(CCoreDX11Device* device)
-    : CCoreBlendState(device) {
+DX11BlendState::DX11BlendState(DX11Device* device) : BlendState(device) {
   device_ = device;
   d3d_device_ = device_->GetDevice();
   context_ = device_->GetDeviceContext();
   state_ = nullptr;
 }
 
-CCoreDX11BlendState::~CCoreDX11BlendState() {
+DX11BlendState::~DX11BlendState() {
   if (state_) state_->Release();
 }
 
-bool CCoreDX11BlendState::Update() {
+bool DX11BlendState::Update() {
   if (!dirty_) return true;
   if (state_) state_->Release();
   state_ = nullptr;
@@ -59,7 +58,7 @@ bool CCoreDX11BlendState::Update() {
   return true;
 }
 
-bool CCoreDX11BlendState::Apply() {
+bool DX11BlendState::Apply() {
   Update();
   if (device_->GetCurrentBlendState() != state_) {
     context_->OMSetBlendState(state_, nullptr, 0xffffffff);
@@ -68,19 +67,19 @@ bool CCoreDX11BlendState::Apply() {
   return true;
 }
 
-CCoreDX11DepthStencilState::CCoreDX11DepthStencilState(CCoreDX11Device* device)
-    : CCoreDepthStencilState(device) {
+DX11DepthStencilState::DX11DepthStencilState(DX11Device* device)
+    : DepthStencilState(device) {
   device_ = device;
   d3d_device_ = device_->GetDevice();
   context_ = device_->GetDeviceContext();
   state_ = nullptr;
 }
 
-CCoreDX11DepthStencilState::~CCoreDX11DepthStencilState() {
+DX11DepthStencilState::~DX11DepthStencilState() {
   if (state_) state_->Release();
 }
 
-bool CCoreDX11DepthStencilState::Update() {
+bool DX11DepthStencilState::Update() {
   if (!dirty_) return true;
   if (state_) state_->Release();
   state_ = nullptr;
@@ -107,7 +106,7 @@ bool CCoreDX11DepthStencilState::Update() {
   return true;
 }
 
-bool CCoreDX11DepthStencilState::Apply() {
+bool DX11DepthStencilState::Apply() {
   Update();
   if (device_->GetCurrentDepthStencilState() != state_) {
     context_->OMSetDepthStencilState(state_, 0);
@@ -116,19 +115,19 @@ bool CCoreDX11DepthStencilState::Apply() {
   return true;
 }
 
-CCoreDX11RasterizerState::CCoreDX11RasterizerState(CCoreDX11Device* device)
-    : CCoreRasterizerState(device) {
+DX11RasterizerState::DX11RasterizerState(DX11Device* device)
+    : RasterizerState(device) {
   device_ = device;
   d3d_device_ = device_->GetDevice();
   context_ = device_->GetDeviceContext();
   state_ = nullptr;
 }
 
-CCoreDX11RasterizerState::~CCoreDX11RasterizerState() {
+DX11RasterizerState::~DX11RasterizerState() {
   if (state_) state_->Release();
 }
 
-bool CCoreDX11RasterizerState::Update() {
+bool DX11RasterizerState::Update() {
   if (!dirty_) return true;
   if (state_) state_->Release();
   state_ = nullptr;
@@ -157,7 +156,7 @@ bool CCoreDX11RasterizerState::Update() {
   return true;
 }
 
-bool CCoreDX11RasterizerState::Apply() {
+bool DX11RasterizerState::Apply() {
   Update();
   if (device_->GetCurrentRasterizerState() != state_) {
     context_->RSSetState(state_);
@@ -166,19 +165,18 @@ bool CCoreDX11RasterizerState::Apply() {
   return true;
 }
 
-CCoreDX11SamplerState::CCoreDX11SamplerState(CCoreDX11Device* device)
-    : CCoreSamplerState(device) {
+DX11SamplerState::DX11SamplerState(DX11Device* device) : SamplerState(device) {
   device_ = device;
   d3d_device_ = device_->GetDevice();
   context_ = device_->GetDeviceContext();
   state_ = nullptr;
 }
 
-CCoreDX11SamplerState::~CCoreDX11SamplerState() {
+DX11SamplerState::~DX11SamplerState() {
   if (state_) state_->Release();
 }
 
-bool CCoreDX11SamplerState::Update() {
+bool DX11SamplerState::Update() {
   if (!dirty_) return true;
   if (state_) state_->Release();
   state_ = nullptr;
@@ -212,24 +210,24 @@ bool CCoreDX11SamplerState::Update() {
   return true;
 }
 
-bool CCoreDX11SamplerState::Apply(CoreSampler sampler) {
+bool DX11SamplerState::Apply(Sampler sampler) {
   Update();
 
-  if (sampler >= CoreSampler::kPs0 && sampler <= CoreSampler::kPs15) {
+  if (sampler >= Sampler::kPs0 && sampler <= Sampler::kPs15) {
     const uint32_t slot =
-        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kPs0);
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kPs0);
     context_->PSSetSamplers(slot, 1, &state_);
   }
 
-  if (sampler >= CoreSampler::kVs0 && sampler <= CoreSampler::kVs3) {
+  if (sampler >= Sampler::kVs0 && sampler <= Sampler::kVs3) {
     const uint32_t slot =
-        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kVs0);
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kVs0);
     context_->VSSetSamplers(slot, 1, &state_);
   }
 
-  if (sampler >= CoreSampler::kGs0 && sampler <= CoreSampler::kGs3) {
+  if (sampler >= Sampler::kGs0 && sampler <= Sampler::kGs3) {
     const uint32_t slot =
-        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kGs0);
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kGs0);
     context_->GSSetSamplers(slot, 1, &state_);
   }
 

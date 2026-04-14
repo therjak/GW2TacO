@@ -8,16 +8,16 @@
 
 namespace renderer {
 
-class CCoreVertexShader;
+class VertexShader;
 
-class CCoreVertexFormat : public CCoreResource {
-  friend class CCoreDevice;
+class VertexFormat : public Resource {
+  friend class Device;
 
  public:
-  explicit CCoreVertexFormat(CCoreDevice* device) : CCoreResource(device) {}
+  explicit VertexFormat(Device* device) : Resource(device) {}
 
-  virtual bool Create(const std::vector<CoreVertexAttribute>& attributes,
-                      CCoreVertexShader* vertex_shader = nullptr) = 0;
+  virtual bool Create(const std::vector<VertexAttribute>& attributes,
+                      VertexShader* vertex_shader = nullptr) = 0;
   virtual int32_t GetSize() = 0;
 
  private:

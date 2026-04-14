@@ -10,17 +10,17 @@
 
 namespace renderer {
 
-class CCoreDX11Texture2D : public CCoreTexture2D {
+class DX11Texture2D : public Texture2D {
  public:
-  explicit CCoreDX11Texture2D(CCoreDX11Device* device);
-  ~CCoreDX11Texture2D() override;
+  explicit DX11Texture2D(DX11Device* device);
+  ~DX11Texture2D() override;
 
   void OnDeviceLost() override;
   void OnDeviceReset() override;
 
   bool Create(const int32_t x_res, const int32_t y_res, const uint8_t* data,
               const char bytes_per_pixel = 4,
-              const CoreFormat format = CoreFormat::kA8R8G8B8,
+              const Format format = Format::kA8R8G8B8,
               const bool render_target = false) override;
   bool Create(const uint8_t* data, const int32_t size) override;
   bool CreateDepthBuffer(const int32_t x_res, const int32_t y_res,
@@ -44,7 +44,7 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
 
  private:
   virtual void Release();
-  bool SetToSampler(const CoreSampler sampler) override;
+  bool SetToSampler(const Sampler sampler) override;
 
   ID3D11Device* d3d_device_;
   ID3D11DeviceContext* d3d_device_context_;
@@ -56,14 +56,14 @@ class CCoreDX11Texture2D : public CCoreTexture2D {
   bool render_target_;
 };
 
-class CCoreDX11Texture3D : public CCoreTexture3D {
+class DX11Texture3D : public Texture3D {
  public:
-  explicit CCoreDX11Texture3D(CCoreDX11Device* device);
+  explicit DX11Texture3D(DX11Device* device);
 };
 
-class CCoreDX11TextureCube : public CCoreTextureCube {
+class DX11TextureCube : public TextureCube {
  public:
-  explicit CCoreDX11TextureCube(CCoreDX11Device* device);
+  explicit DX11TextureCube(DX11Device* device);
 };
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* d3d_device_context,

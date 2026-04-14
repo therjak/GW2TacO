@@ -39,7 +39,7 @@ using math::CRect;
 namespace gui {
 
 CWBApplication::CWBApplication()
-    : CCoreWindowHandlerWin(),
+    : WindowHandlerWin(),
       DrawAPI(std::make_unique<CWBDrawAPI>()),
       FrameTimes(std::make_unique<CRingBuffer<int32_t, 60>>()),
       LastFrameTime(0),
@@ -179,7 +179,7 @@ CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
 }
 
 void CWBApplication::HandleResize() {
-  CCoreWindowHandlerWin::HandleResize();
+  WindowHandlerWin::HandleResize();
 
   if (Root) {
     Root->SetPosition(CRect(0, 0, x_res_, y_res_));
@@ -369,7 +369,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       break;
   }
 
-  return CCoreWindowHandlerWin::WindowProc(uMsg, wParam, lParam);
+  return WindowHandlerWin::WindowProc(uMsg, wParam, lParam);
 }
 
 bool CWBApplication::Initialize() {
@@ -390,8 +390,8 @@ bool CWBApplication::Initialize() {
 }
 
 bool CWBApplication::Initialize(
-    const renderer::CCoreWindowParameters& WindowParams) {
-  if (!CCoreWindowHandlerWin::Initialize(WindowParams)) return false;
+    const renderer::WindowParameters& WindowParams) {
+  if (!WindowHandlerWin::Initialize(WindowParams)) return false;
   return Initialize();
 }
 
@@ -435,7 +435,7 @@ bool CWBApplication::HandleMessages() {
     }
   }
 
-  if (!CCoreWindowHandlerWin::HandleMessages()) return false;
+  if (!WindowHandlerWin::HandleMessages()) return false;
 
   // handle gui messages here
   {
@@ -480,7 +480,7 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   CleanTrash();
 
   FinalizeMouseCursor();
-  SelectMouseCursor(renderer::CoreMouseCursor::kArrow);
+  SelectMouseCursor(renderer::MouseCursor::kArrow);
 
   DrawAPI->SetUIRenderState();
   device_->Clear(true, true, ClearColor);
@@ -976,10 +976,10 @@ void CWBApplication::TakeScreenshot() {
   auto b = DrawAPI->GetDevice()->CreateBlendState();
   b->SetBlendEnable(0, true);
   b->SetIndependentBlend(true);
-  b->SetSrcBlend(0, renderer::CoreBlendFactor::kZero);
-  b->SetDestBlend(0, renderer::CoreBlendFactor::kOne);
-  b->SetSrcBlendAlpha(0, renderer::CoreBlendFactor::kOne);
-  b->SetDestBlendAlpha(0, renderer::CoreBlendFactor::kZero);
+  b->SetSrcBlend(0, renderer::BlendFactor::kZero);
+  b->SetDestBlend(0, renderer::BlendFactor::kOne);
+  b->SetSrcBlendAlpha(0, renderer::BlendFactor::kOne);
+  b->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
   DrawAPI->SetCropRect(CRect(0, 0, x_res_, y_res_));

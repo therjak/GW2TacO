@@ -737,7 +737,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   int32_t width = 1;
   int32_t height = 1;
 
-  renderer::CCoreWindowParameters p(
+  renderer::WindowParameters p(
       GetModuleHandle(nullptr), false, width, height,
       "Guild Wars 2 Tactical Overlay",
       LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));

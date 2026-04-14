@@ -9,10 +9,10 @@
 
 namespace renderer {
 
-class CCoreDX11VertexShader : public CCoreVertexShader {
+class DX11VertexShader : public VertexShader {
  public:
-  explicit CCoreDX11VertexShader(CCoreDX11Device* device);
-  ~CCoreDX11VertexShader() override;
+  explicit DX11VertexShader(DX11Device* device);
+  ~DX11VertexShader() override;
 
   bool Create(void* binary, int32_t length) override;
   bool CompileAndCreate(std::string* error) override;
@@ -28,10 +28,10 @@ class CCoreDX11VertexShader : public CCoreVertexShader {
   ID3D11VertexShader* vertex_shader_handle_;
 };
 
-class CCoreDX11PixelShader : public CCorePixelShader {
+class DX11PixelShader : public PixelShader {
  public:
-  explicit CCoreDX11PixelShader(CCoreDX11Device* device);
-  ~CCoreDX11PixelShader() override;
+  explicit DX11PixelShader(DX11Device* device);
+  ~DX11PixelShader() override;
 
   bool Create(void* binary, int32_t length) override;
   bool CompileAndCreate(std::string* error) override;
@@ -47,10 +47,10 @@ class CCoreDX11PixelShader : public CCorePixelShader {
   ID3D11PixelShader* pixel_shader_handle_;
 };
 
-class CCoreDX11GeometryShader : public CCoreGeometryShader {
+class DX11GeometryShader : public GeometryShader {
  public:
-  explicit CCoreDX11GeometryShader(CCoreDX11Device* device);
-  ~CCoreDX11GeometryShader() override;
+  explicit DX11GeometryShader(DX11Device* device);
+  ~DX11GeometryShader() override;
 
   bool Create(void* binary, int32_t length) override;
   bool CompileAndCreate(std::string* error) override;
@@ -66,10 +66,10 @@ class CCoreDX11GeometryShader : public CCoreGeometryShader {
   ID3D11GeometryShader* geometry_shader_handle_;
 };
 
-class CCoreDX11HullShader : public CCoreHullShader {
+class DX11HullShader : public HullShader {
  public:
-  explicit CCoreDX11HullShader(CCoreDX11Device* device);
-  ~CCoreDX11HullShader() override;
+  explicit DX11HullShader(DX11Device* device);
+  ~DX11HullShader() override;
 
   bool Create(void* binary, int32_t length) override;
   bool CompileAndCreate(std::string* error) override;
@@ -85,10 +85,10 @@ class CCoreDX11HullShader : public CCoreHullShader {
   ID3D11HullShader* hull_shader_handle_;
 };
 
-class CCoreDX11DomainShader : public CCoreDomainShader {
+class DX11DomainShader : public DomainShader {
  public:
-  explicit CCoreDX11DomainShader(CCoreDX11Device* device);
-  ~CCoreDX11DomainShader() override;
+  explicit DX11DomainShader(DX11Device* device);
+  ~DX11DomainShader() override;
 
   bool Create(void* binary, int32_t length) override;
   bool CompileAndCreate(std::string* error) override;
@@ -104,10 +104,10 @@ class CCoreDX11DomainShader : public CCoreDomainShader {
   ID3D11DomainShader* domain_shader_handle_;
 };
 
-class CCoreDX11ComputeShader : public CCoreComputeShader {
+class DX11ComputeShader : public ComputeShader {
  public:
-  explicit CCoreDX11ComputeShader(CCoreDX11Device* device);
-  ~CCoreDX11ComputeShader() override;
+  explicit DX11ComputeShader(DX11Device* device);
+  ~DX11ComputeShader() override;
 
   bool Create(void* binary, int32_t length) override;
   bool CompileAndCreate(std::string* error) override;

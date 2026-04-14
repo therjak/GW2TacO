@@ -12,49 +12,49 @@ import xml;
 
 namespace renderer {
 
-class CCoreSamplerState;
-class CCoreDepthStencilState;
-class CCoreBlendState;
-class CCoreRasterizerState;
+class SamplerState;
+class DepthStencilState;
+class BlendState;
+class RasterizerState;
 
-union CoreRenderStateValue {
-  CCoreSamplerState* sampler_state;
-  CCoreDepthStencilState* depth_stencil_state;
-  CCoreBlendState* blend_state;
-  CCoreRasterizerState* rasterizer_state;
-  CCoreTexture* texture;
-  CCoreIndexBuffer* index_buffer;
-  CCoreVertexFormat* vertex_format;
-  CCoreVertexShader* vertex_shader;
-  CCorePixelShader* pixel_shader;
-  CCoreGeometryShader* geometry_shader;
-  CCoreDomainShader* domain_shader;
-  CCoreComputeShader* compute_shader;
-  CCoreHullShader* hull_shader;
+union RenderStateValue {
+  SamplerState* sampler_state;
+  DepthStencilState* depth_stencil_state;
+  BlendState* blend_state;
+  RasterizerState* rasterizer_state;
+  Texture* texture;
+  IndexBuffer* index_buffer;
+  VertexFormat* vertex_format;
+  VertexShader* vertex_shader;
+  PixelShader* pixel_shader;
+  GeometryShader* geometry_shader;
+  DomainShader* domain_shader;
+  ComputeShader* compute_shader;
+  HullShader* hull_shader;
 
-  constexpr friend bool operator==(const CoreRenderStateValue& lhs,
-                                   const CoreRenderStateValue& rhs) {
+  constexpr friend bool operator==(const RenderStateValue& lhs,
+                                   const RenderStateValue& rhs) {
     return lhs.sampler_state == rhs.sampler_state;
   }
 };
 
-using CoreRenderStateId = uint32_t;
+using RenderStateId = uint32_t;
 
-struct CoreBlendDescriptor {
+struct BlendDescriptor {
   bool blend_enable = false;
-  CoreBlendFactor src_blend = CoreBlendFactor::kZero;
-  CoreBlendFactor dest_blend = CoreBlendFactor::kZero;
-  CoreBlendOp blend_op = CoreBlendOp::kAdd;
-  CoreBlendFactor src_blend_alpha = CoreBlendFactor::kZero;
-  CoreBlendFactor dest_blend_alpha = CoreBlendFactor::kZero;
-  CoreBlendOp blend_op_alpha = CoreBlendOp::kAdd;
+  BlendFactor src_blend = BlendFactor::kZero;
+  BlendFactor dest_blend = BlendFactor::kZero;
+  BlendOp blend_op = BlendOp::kAdd;
+  BlendFactor src_blend_alpha = BlendFactor::kZero;
+  BlendFactor dest_blend_alpha = BlendFactor::kZero;
+  BlendOp blend_op_alpha = BlendOp::kAdd;
   uint8_t render_target_write_mask = 0;
 };
 
-class CCoreRenderStateBatch : public CCoreResource {
+class RenderStateBatch : public Resource {
  public:
-  explicit CCoreRenderStateBatch(CCoreDevice* device);
-  ~CCoreRenderStateBatch() override;
+  explicit RenderStateBatch(Device* device);
+  ~RenderStateBatch() override;
   virtual bool Import(CXMLNode* n) = 0;
   virtual void Export(CXMLNode* n) = 0;
 
@@ -62,10 +62,10 @@ class CCoreRenderStateBatch : public CCoreResource {
   bool dirty_ = false;
 };
 
-class CCoreBlendState : public CCoreRenderStateBatch {
+class BlendState : public RenderStateBatch {
  public:
-  explicit CCoreBlendState(CCoreDevice* device);
-  ~CCoreBlendState() override;
+  explicit BlendState(Device* device);
+  ~BlendState() override;
 
   virtual bool Update() = 0;
   virtual bool Apply() = 0;
@@ -73,12 +73,12 @@ class CCoreBlendState : public CCoreRenderStateBatch {
   void SetAlphaToCoverage(bool enable);
   void SetIndependentBlend(bool enable);
   void SetBlendEnable(int32_t render_target, bool enable);
-  void SetSrcBlend(int32_t render_target, CoreBlendFactor factor);
-  void SetDestBlend(int32_t render_target, CoreBlendFactor factor);
-  void SetBlendOp(int32_t render_target, CoreBlendOp op);
-  void SetSrcBlendAlpha(int32_t render_target, CoreBlendFactor factor);
-  void SetDestBlendAlpha(int32_t render_target, CoreBlendFactor factor);
-  void SetBlendOpAlpha(int32_t render_target, CoreBlendOp op);
+  void SetSrcBlend(int32_t render_target, BlendFactor factor);
+  void SetDestBlend(int32_t render_target, BlendFactor factor);
+  void SetBlendOp(int32_t render_target, BlendOp op);
+  void SetSrcBlendAlpha(int32_t render_target, BlendFactor factor);
+  void SetDestBlendAlpha(int32_t render_target, BlendFactor factor);
+  void SetBlendOpAlpha(int32_t render_target, BlendOp op);
   void SetRenderTargetWriteMask(int32_t render_target, uint8_t mask);
 
   bool Import(CXMLNode* n) override;
@@ -88,20 +88,20 @@ class CCoreBlendState : public CCoreRenderStateBatch {
  protected:
   bool alpha_to_coverage_;
   bool independent_blend_;
-  std::array<CoreBlendDescriptor, 8> render_target_blend_states_;
+  std::array<BlendDescriptor, 8> render_target_blend_states_;
 };
 
-class CCoreDepthStencilState : public CCoreRenderStateBatch {
+class DepthStencilState : public RenderStateBatch {
  public:
-  explicit CCoreDepthStencilState(CCoreDevice* device);
-  ~CCoreDepthStencilState() override;
+  explicit DepthStencilState(Device* device);
+  ~DepthStencilState() override;
 
   virtual bool Update() = 0;
   virtual bool Apply() = 0;
 
   void SetDepthEnable(bool enable);
   void SetZWriteEnable(bool enable);
-  void SetDepthFunc(CoreComparisonFunction func);
+  void SetDepthFunc(ComparisonFunction func);
 
   bool Import(CXMLNode* n) override;
   void Export(CXMLNode* n) override;
@@ -111,19 +111,19 @@ class CCoreDepthStencilState : public CCoreRenderStateBatch {
  protected:
   bool depth_enable_;
   bool z_write_enable_;
-  CoreComparisonFunction depth_func_;
+  ComparisonFunction depth_func_;
 };
 
-class CCoreRasterizerState : public CCoreRenderStateBatch {
+class RasterizerState : public RenderStateBatch {
  public:
-  explicit CCoreRasterizerState(CCoreDevice* device);
-  ~CCoreRasterizerState() override;
+  explicit RasterizerState(Device* device);
+  ~RasterizerState() override;
 
   virtual bool Update() = 0;
   virtual bool Apply() = 0;
 
-  void SetFillMode(CoreFillMode mode);
-  void SetCullMode(CoreCullMode mode);
+  void SetFillMode(FillMode mode);
+  void SetCullMode(CullMode mode);
   void SetFrontCounterClockwise(bool enable);
   void SetDepthBias(int32_t bias);
   void SetDepthBiasClamp(float clamp);
@@ -138,8 +138,8 @@ class CCoreRasterizerState : public CCoreRenderStateBatch {
   virtual void* GetHandle() = 0;
 
  protected:
-  CoreFillMode fill_mode_;
-  CoreCullMode cull_mode_;
+  FillMode fill_mode_;
+  CullMode cull_mode_;
   bool front_counter_clockwise_;
   int32_t depth_bias_;
   float depth_bias_clamp_;
@@ -150,23 +150,23 @@ class CCoreRasterizerState : public CCoreRenderStateBatch {
   bool antialiased_line_enable_;
 };
 
-class CCoreSamplerState : public CCoreRenderStateBatch {
+class SamplerState : public RenderStateBatch {
  public:
-  explicit CCoreSamplerState(CCoreDevice* device);
-  ~CCoreSamplerState() override;
+  explicit SamplerState(Device* device);
+  ~SamplerState() override;
 
   virtual bool Update() = 0;
-  virtual bool Apply(CoreSampler sampler) = 0;
+  virtual bool Apply(Sampler sampler) = 0;
 
-  void SetFilter(CoreFilter filter);
+  void SetFilter(Filter filter);
 
-  void SetAddressU(CoreTextureAddressMode mode);
-  void SetAddressV(CoreTextureAddressMode mode);
-  void SetAddressW(CoreTextureAddressMode mode);
+  void SetAddressU(TextureAddressMode mode);
+  void SetAddressV(TextureAddressMode mode);
+  void SetAddressW(TextureAddressMode mode);
 
   void SetMipLODBias(float bias);
   void SetMaxAnisotropy(int32_t anisotropy);
-  void SetComparisonFunc(CoreComparisonFunction func);
+  void SetComparisonFunc(ComparisonFunction func);
   void SetMinLOD(float lod);
   void SetMaxLOD(float lod);
 
@@ -177,13 +177,13 @@ class CCoreSamplerState : public CCoreRenderStateBatch {
   virtual void* GetHandle() = 0;
 
  protected:
-  CoreFilter filter_;
-  CoreTextureAddressMode address_u_;
-  CoreTextureAddressMode address_v_;
-  CoreTextureAddressMode address_w_;
+  Filter filter_;
+  TextureAddressMode address_u_;
+  TextureAddressMode address_v_;
+  TextureAddressMode address_w_;
   float mip_lod_bias_;
   int32_t max_anisotropy_;
-  CoreComparisonFunction comparison_func_;
+  ComparisonFunction comparison_func_;
   std::array<float, 4> border_color_ = {0};
   float min_lod_;
   float max_lod_;

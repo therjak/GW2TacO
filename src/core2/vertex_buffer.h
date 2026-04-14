@@ -5,11 +5,11 @@
 
 namespace renderer {
 
-class CCoreVertexBuffer : public CCoreResource {
-  friend class CCoreDevice;
+class VertexBuffer : public Resource {
+  friend class Device;
 
  public:
-  explicit CCoreVertexBuffer(CCoreDevice* device) : CCoreResource(device) {}
+  explicit VertexBuffer(Device* device) : Resource(device) {}
 
   virtual bool Create(const uint8_t* data, const uint32_t size) = 0;
   virtual bool CreateDynamic(const uint32_t size) = 0;

@@ -16,21 +16,21 @@
 // implement the OnDeviceLost() and OnDeviceReset() functions
 namespace renderer {
 
-class CCoreDevice;
+class Device;
 
-class CCoreResource {
-  friend class CCoreDevice;
+class Resource {
+  friend class Device;
 
  public:
-  CCoreResource();
-  explicit CCoreResource(CCoreDevice* device);
-  virtual ~CCoreResource();
+  Resource();
+  explicit Resource(Device* device);
+  virtual ~Resource();
 
   virtual void OnDeviceLost();
   virtual void OnDeviceReset();
 
  protected:
-  CCoreDevice* device_ = nullptr;
+  Device* device_ = nullptr;
 };
 
 }  // namespace renderer

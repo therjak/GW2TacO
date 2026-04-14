@@ -29,9 +29,9 @@ typedef HRESULT(__stdcall* DCompositionCreateDeviceCallback)(
     _Outptr_ void** dcompositionDevice);
 DCompositionCreateDeviceCallback DCompositionCreateDeviceFunc = nullptr;
 
-CCoreDX11Device::CCoreDX11Device() = default;
+DX11Device::DX11Device() = default;
 
-CCoreDX11Device::~CCoreDX11Device() {
+DX11Device::~DX11Device() {
   if (swap_chain_retrace_object_) {
     CloseHandle(swap_chain_retrace_object_);
   }
@@ -73,9 +73,9 @@ CCoreDX11Device::~CCoreDX11Device() {
   if (d3d_device_) d3d_device_->Release();
 }
 
-void CCoreDX11Device::ResetPrivateResources() {}
+void DX11Device::ResetPrivateResources() {}
 
-bool CCoreDX11Device::CreateBackBuffer(int32_t x_res, int32_t y_res) {
+bool DX11Device::CreateBackBuffer(int32_t x_res, int32_t y_res) {
   if (back_buffer_view_) back_buffer_view_->Release();
   back_buffer_view_ = nullptr;
 
@@ -110,7 +110,7 @@ bool CCoreDX11Device::CreateBackBuffer(int32_t x_res, int32_t y_res) {
   return true;
 }
 
-bool CCoreDX11Device::CreateDepthBuffer(int32_t x_res, int32_t y_res) {
+bool DX11Device::CreateDepthBuffer(int32_t x_res, int32_t y_res) {
   if (depth_buffer_view_) {
     depth_buffer_view_->Release();
   }
@@ -164,12 +164,12 @@ bool CCoreDX11Device::CreateDepthBuffer(int32_t x_res, int32_t y_res) {
   return true;
 }
 
-bool CCoreDX11Device::CreateClassicSwapChain(const HWND window_handle,
-                                             const bool full_screen,
-                                             const int32_t x_res,
-                                             const int32_t y_res,
-                                             const int32_t sample_count,
-                                             const int32_t refresh_rate) {
+bool DX11Device::CreateClassicSwapChain(const HWND window_handle,
+                                        const bool full_screen,
+                                        const int32_t x_res,
+                                        const int32_t y_res,
+                                        const int32_t sample_count,
+                                        const int32_t refresh_rate) {
   Log_Nfo("[core] Creating classic swap chain");
 
   HRESULT result = S_OK;
@@ -237,10 +237,12 @@ bool CCoreDX11Device::CreateClassicSwapChain(const HWND window_handle,
   return true;
 }
 
-bool CCoreDX11Device::CreateDirectCompositionSwapchain(
-    const HWND window_handle, const bool full_screen, const int32_t x_res,
-    const int32_t y_res, const int32_t sample_count,
-    const int32_t refresh_rate) {
+bool DX11Device::CreateDirectCompositionSwapchain(const HWND window_handle,
+                                                  const bool full_screen,
+                                                  const int32_t x_res,
+                                                  const int32_t y_res,
+                                                  const int32_t sample_count,
+                                                  const int32_t refresh_rate) {
   Log_Nfo("[core] Creating DirectComposition swap chain");
 
   HRESULT result = S_OK;
@@ -419,10 +421,10 @@ bool CCoreDX11Device::CreateDirectCompositionSwapchain(
   return true;
 }
 
-bool CCoreDX11Device::InitAPI(const HWND window_handle, const bool full_screen,
-                              const int32_t x_res, const int32_t y_res,
-                              const int32_t sample_count /* =0 */,
-                              const int32_t refresh_rate /* =60 */) {
+bool DX11Device::InitAPI(const HWND window_handle, const bool full_screen,
+                         const int32_t x_res, const int32_t y_res,
+                         const int32_t sample_count /* =0 */,
+                         const int32_t refresh_rate /* =60 */) {
   auto dcomp = LoadLibrary("dcomp.dll");
 
   if (dcomp) {
@@ -444,8 +446,7 @@ bool CCoreDX11Device::InitAPI(const HWND window_handle, const bool full_screen,
   }
 }
 
-bool CCoreDX11Device::Initialize(CCoreWindowHandler* window,
-                                 const int32_t sample_count) {
+bool DX11Device::Initialize(WindowHandler* window, const int32_t sample_count) {
   window_ = window;
 
   if (!InitAPI(window_->GetHandle(), window_->GetInitParameters().full_screen_,
@@ -461,7 +462,7 @@ bool CCoreDX11Device::Initialize(CCoreWindowHandler* window,
   return true;
 }
 
-bool CCoreDX11Device::IsWindowed() {
+bool DX11Device::IsWindowed() {
   BOOL full_screen = false;
   IDXGIOutput* output = nullptr;
 
@@ -476,7 +477,7 @@ bool CCoreDX11Device::IsWindowed() {
   return full_screen;
 }
 
-void CCoreDX11Device::Resize(const int32_t x_res, const int32_t y_res) {
+void DX11Device::Resize(const int32_t x_res, const int32_t y_res) {
   if (x_res <= 0 || y_res <= 0) {
     Log_Warn(
         "[core] Trying to resize swapchain to invalid resolution: {:d} {:d}",
@@ -545,9 +546,8 @@ void CCoreDX11Device::Resize(const int32_t x_res, const int32_t y_res) {
   }
 }
 
-void CCoreDX11Device::SetFullScreenMode(const bool full_screen,
-                                        const int32_t x_res,
-                                        const int32_t y_res) {
+void DX11Device::SetFullScreenMode(const bool full_screen, const int32_t x_res,
+                                   const int32_t y_res) {
   Log_Nfo("[core] Switching fullscreen mode to {:d}", full_screen);
 
   const HRESULT result =
@@ -560,16 +560,15 @@ void CCoreDX11Device::SetFullScreenMode(const bool full_screen,
   }
 }
 
-bool CCoreDX11Device::DeviceOk() { return true; }
+bool DX11Device::DeviceOk() { return true; }
 
 //////////////////////////////////////////////////////////////////////////
 // texture functions
 
-std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
+std::unique_ptr<Texture2D> DX11Device::CreateTexture2D(
     const int32_t x_res, const int32_t y_res, const uint8_t* data,
-    const char bytes_per_pixel, const CoreFormat format,
-    const bool render_target) {
-  auto result = std::make_unique<CCoreDX11Texture2D>(this);
+    const char bytes_per_pixel, const Format format, const bool render_target) {
+  auto result = std::make_unique<DX11Texture2D>(this);
   if (!result->Create(x_res, y_res, data, bytes_per_pixel, format,
                       render_target)) {
     result.reset();
@@ -577,9 +576,9 @@ std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
   return result;
 }
 
-std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
-    const uint8_t* data, const int32_t size) {
-  auto result = std::make_unique<CCoreDX11Texture2D>(this);
+std::unique_ptr<Texture2D> DX11Device::CreateTexture2D(const uint8_t* data,
+                                                       const int32_t size) {
+  auto result = std::make_unique<DX11Texture2D>(this);
   if (!result->Create(data, size)) {
     result.reset();
   }
@@ -589,18 +588,18 @@ std::unique_ptr<CCoreTexture2D> CCoreDX11Device::CreateTexture2D(
 //////////////////////////////////////////////////////////////////////////
 // vertexbuffer functions
 
-std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBuffer(
+std::unique_ptr<VertexBuffer> DX11Device::CreateVertexBuffer(
     const uint8_t* data, const int32_t size) {
-  auto result = std::make_unique<CCoreDX11VertexBuffer>(this);
+  auto result = std::make_unique<DX11VertexBuffer>(this);
   if (!result->Create(data, size)) {
     result.reset();
   }
   return result;
 }
 
-std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBufferDynamic(
+std::unique_ptr<VertexBuffer> DX11Device::CreateVertexBufferDynamic(
     const int32_t size) {
-  auto result = std::make_unique<CCoreDX11VertexBuffer>(this);
+  auto result = std::make_unique<DX11VertexBuffer>(this);
   if (!result->CreateDynamic(size)) {
     result.reset();
   }
@@ -610,9 +609,9 @@ std::unique_ptr<CCoreVertexBuffer> CCoreDX11Device::CreateVertexBufferDynamic(
 //////////////////////////////////////////////////////////////////////////
 // indexbuffer functions
 
-std::unique_ptr<CCoreIndexBuffer> CCoreDX11Device::CreateIndexBuffer(
+std::unique_ptr<IndexBuffer> DX11Device::CreateIndexBuffer(
     const int32_t index_count, const int32_t index_size) {
-  auto result = std::make_unique<CCoreDX11IndexBuffer>(this);
+  auto result = std::make_unique<DX11IndexBuffer>(this);
   if (!result->Create(index_count, index_size)) {
     result.reset();
   }
@@ -622,10 +621,10 @@ std::unique_ptr<CCoreIndexBuffer> CCoreDX11Device::CreateIndexBuffer(
 //////////////////////////////////////////////////////////////////////////
 // vertexformat functions
 
-std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat(
-    const std::vector<CoreVertexAttribute>& attributes,
-    CCoreVertexShader* vertex_shader) {
-  auto result = std::make_unique<CCoreDX11VertexFormat>(this);
+std::unique_ptr<VertexFormat> DX11Device::CreateVertexFormat(
+    const std::vector<VertexAttribute>& attributes,
+    VertexShader* vertex_shader) {
+  auto result = std::make_unique<DX11VertexFormat>(this);
   if (!result->Create(attributes, vertex_shader)) {
     result.reset();
   }
@@ -635,7 +634,7 @@ std::unique_ptr<CCoreVertexFormat> CCoreDX11Device::CreateVertexFormat(
 //////////////////////////////////////////////////////////////////////////
 // shader functions
 
-std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
+std::unique_ptr<VertexShader> DX11Device::CreateVertexShader(
     LPCSTR code, int32_t code_size, LPCSTR entry_function,
     LPCSTR shader_version, std::string* error) {
   if (error) *error = "";
@@ -643,7 +642,7 @@ std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
     return {};
   }
 
-  auto shader = std::make_unique<CCoreDX11VertexShader>(this);
+  auto shader = std::make_unique<DX11VertexShader>(this);
   shader->SetCode(code, entry_function, shader_version);
 
   if (!shader->CompileAndCreate(error)) {
@@ -652,7 +651,7 @@ std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader(
   return shader;
 }
 
-std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
+std::unique_ptr<PixelShader> DX11Device::CreatePixelShader(
     LPCSTR code, int32_t code_size, LPCSTR entry_function,
     LPCSTR shader_version, std::string* error) {
   if (error) {
@@ -662,7 +661,7 @@ std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
     return {};
   }
 
-  auto shader = std::make_unique<CCoreDX11PixelShader>(this);
+  auto shader = std::make_unique<DX11PixelShader>(this);
   shader->SetCode(code, entry_function, shader_version);
 
   if (!shader->CompileAndCreate(error)) {
@@ -671,25 +670,25 @@ std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader(
   return shader;
 }
 
-std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShaderFromBlob(
+std::unique_ptr<VertexShader> DX11Device::CreateVertexShaderFromBlob(
     uint8_t* code, int32_t code_size) {
-  auto shader = std::make_unique<CCoreDX11VertexShader>(this);
+  auto shader = std::make_unique<DX11VertexShader>(this);
   if (!shader->CreateFromBlob(code, code_size)) {
     shader.reset();
   }
   return shader;
 }
 
-std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShaderFromBlob(
+std::unique_ptr<PixelShader> DX11Device::CreatePixelShaderFromBlob(
     uint8_t* code, int32_t code_size) {
-  auto shader = std::make_unique<CCoreDX11PixelShader>(this);
+  auto shader = std::make_unique<DX11PixelShader>(this);
   if (!shader->CreateFromBlob(code, code_size)) {
     shader.reset();
   }
   return shader;
 }
 
-std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader(
+std::unique_ptr<GeometryShader> DX11Device::CreateGeometryShader(
     LPCSTR code, int32_t code_size, LPCSTR entry_function,
     LPCSTR shader_version, std::string* error) {
   if (error) {
@@ -699,7 +698,7 @@ std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader(
     return nullptr;
   }
 
-  auto shader = std::make_unique<CCoreDX11GeometryShader>(this);
+  auto shader = std::make_unique<DX11GeometryShader>(this);
   shader->SetCode(code, entry_function, shader_version);
 
   if (!shader->CompileAndCreate(error)) {
@@ -708,7 +707,7 @@ std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader(
   return shader;
 }
 
-std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader(
+std::unique_ptr<DomainShader> DX11Device::CreateDomainShader(
     LPCSTR code, int32_t code_size, LPCSTR entry_function,
     LPCSTR shader_version, std::string* error) {
   if (error) {
@@ -718,7 +717,7 @@ std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader(
     return nullptr;
   }
 
-  auto shader = std::make_unique<CCoreDX11DomainShader>(this);
+  auto shader = std::make_unique<DX11DomainShader>(this);
   shader->SetCode(code, entry_function, shader_version);
 
   if (!shader->CompileAndCreate(error)) {
@@ -727,7 +726,28 @@ std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader(
   return shader;
 }
 
-std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader(
+std::unique_ptr<HullShader> DX11Device::CreateHullShader(LPCSTR code,
+                                                         int32_t code_size,
+                                                         LPCSTR entry_function,
+                                                         LPCSTR shader_version,
+                                                         std::string* error) {
+  if (error) {
+    *error = "";
+  }
+  if (!code || !code_size || !entry_function || !shader_version) {
+    return nullptr;
+  }
+
+  auto shader = std::make_unique<DX11HullShader>(this);
+  shader->SetCode(code, entry_function, shader_version);
+
+  if (!shader->CompileAndCreate(error)) {
+    return nullptr;
+  }
+  return shader;
+}
+
+std::unique_ptr<ComputeShader> DX11Device::CreateComputeShader(
     LPCSTR code, int32_t code_size, LPCSTR entry_function,
     LPCSTR shader_version, std::string* error) {
   if (error) {
@@ -737,7 +757,7 @@ std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader(
     return nullptr;
   }
 
-  auto shader = std::make_unique<CCoreDX11HullShader>(this);
+  auto shader = std::make_unique<DX11ComputeShader>(this);
   shader->SetCode(code, entry_function, shader_version);
 
   if (!shader->CompileAndCreate(error)) {
@@ -746,57 +766,38 @@ std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader(
   return shader;
 }
 
-std::unique_ptr<CCoreComputeShader> CCoreDX11Device::CreateComputeShader(
-    LPCSTR code, int32_t code_size, LPCSTR entry_function,
-    LPCSTR shader_version, std::string* error) {
-  if (error) {
-    *error = "";
-  }
-  if (!code || !code_size || !entry_function || !shader_version) {
-    return nullptr;
-  }
-
-  auto shader = std::make_unique<CCoreDX11ComputeShader>(this);
-  shader->SetCode(code, entry_function, shader_version);
-
-  if (!shader->CompileAndCreate(error)) {
-    return nullptr;
-  }
-  return shader;
+std::unique_ptr<VertexShader> DX11Device::CreateVertexShader() {
+  return std::make_unique<DX11VertexShader>(this);
 }
 
-std::unique_ptr<CCoreVertexShader> CCoreDX11Device::CreateVertexShader() {
-  return std::make_unique<CCoreDX11VertexShader>(this);
+std::unique_ptr<PixelShader> DX11Device::CreatePixelShader() {
+  return std::make_unique<DX11PixelShader>(this);
 }
 
-std::unique_ptr<CCorePixelShader> CCoreDX11Device::CreatePixelShader() {
-  return std::make_unique<CCoreDX11PixelShader>(this);
+std::unique_ptr<GeometryShader> DX11Device::CreateGeometryShader() {
+  return std::make_unique<DX11GeometryShader>(this);
 }
 
-std::unique_ptr<CCoreGeometryShader> CCoreDX11Device::CreateGeometryShader() {
-  return std::make_unique<CCoreDX11GeometryShader>(this);
+std::unique_ptr<HullShader> DX11Device::CreateHullShader() {
+  return std::make_unique<DX11HullShader>(this);
 }
 
-std::unique_ptr<CCoreHullShader> CCoreDX11Device::CreateHullShader() {
-  return std::make_unique<CCoreDX11HullShader>(this);
+std::unique_ptr<DomainShader> DX11Device::CreateDomainShader() {
+  return std::make_unique<DX11DomainShader>(this);
 }
 
-std::unique_ptr<CCoreDomainShader> CCoreDX11Device::CreateDomainShader() {
-  return std::make_unique<CCoreDX11DomainShader>(this);
-}
-
-std::unique_ptr<CCoreComputeShader> CCoreDX11Device::CreateComputeShader() {
-  return std::make_unique<CCoreDX11ComputeShader>(this);
+std::unique_ptr<ComputeShader> DX11Device::CreateComputeShader() {
+  return std::make_unique<DX11ComputeShader>(this);
 }
 
 //////////////////////////////////////////////////////////////////////////
 // renderstate
 
-bool CCoreDX11Device::ApplyRenderState(const CoreSampler sampler,
-                                       const CoreRenderState render_state,
-                                       const CoreRenderStateValue value) {
+bool DX11Device::ApplyRenderState(const Sampler sampler,
+                                  const RenderState render_state,
+                                  const RenderStateValue value) {
   switch (render_state) {
-    case CoreRenderState::kBlendState: {
+    case RenderState::kBlendState: {
       if (!value.blend_state) {
         d3d_device_context_->OMSetBlendState(nullptr, nullptr, 0xffffffff);
         current_blend_state_ = nullptr;
@@ -804,7 +805,7 @@ bool CCoreDX11Device::ApplyRenderState(const CoreSampler sampler,
       }
       return value.blend_state->Apply();
     } break;
-    case CoreRenderState::kRasterizerState: {
+    case RenderState::kRasterizerState: {
       if (!value.rasterizer_state) {
         d3d_device_context_->RSSetState(nullptr);
         current_rasterizer_state_ = nullptr;
@@ -812,7 +813,7 @@ bool CCoreDX11Device::ApplyRenderState(const CoreSampler sampler,
       }
       return value.rasterizer_state->Apply();
     } break;
-    case CoreRenderState::kDepthStencilState: {
+    case RenderState::kDepthStencilState: {
       if (!value.depth_stencil_state) {
         d3d_device_context_->OMSetDepthStencilState(nullptr, 0);
         current_depth_stencil_state_ = nullptr;
@@ -820,34 +821,34 @@ bool CCoreDX11Device::ApplyRenderState(const CoreSampler sampler,
       }
       return value.depth_stencil_state->Apply();
     } break;
-    case CoreRenderState::kSamplerState: {
+    case RenderState::kSamplerState: {
       if (!value.sampler_state) {
         return false;
       }
       return value.sampler_state->Apply(sampler);
     } break;
-    case CoreRenderState::kTexture: {
+    case RenderState::kTexture: {
       if (!value.texture) {
         ID3D11ShaderResourceView* null_srv[1];
         null_srv[0] = nullptr;
 
-        if (sampler >= CoreSampler::kPs0 && sampler <= CoreSampler::kPs15) {
-          d3d_device_context_->PSSetShaderResources(sampler - CoreSampler::kPs0,
-                                                    1, null_srv);
+        if (sampler >= Sampler::kPs0 && sampler <= Sampler::kPs15) {
+          d3d_device_context_->PSSetShaderResources(sampler - Sampler::kPs0, 1,
+                                                    null_srv);
         }
-        if (sampler >= CoreSampler::kVs0 && sampler <= CoreSampler::kVs3) {
-          d3d_device_context_->VSSetShaderResources(sampler - CoreSampler::kVs0,
-                                                    1, null_srv);
+        if (sampler >= Sampler::kVs0 && sampler <= Sampler::kVs3) {
+          d3d_device_context_->VSSetShaderResources(sampler - Sampler::kVs0, 1,
+                                                    null_srv);
         }
-        if (sampler >= CoreSampler::kGs0 && sampler <= CoreSampler::kGs3) {
-          d3d_device_context_->GSSetShaderResources(sampler - CoreSampler::kGs0,
-                                                    1, null_srv);
+        if (sampler >= Sampler::kGs0 && sampler <= Sampler::kGs3) {
+          d3d_device_context_->GSSetShaderResources(sampler - Sampler::kGs0, 1,
+                                                    null_srv);
         }
         return true;
       }
       return ApplyTextureToSampler(sampler, value.texture);
     } break;
-    case CoreRenderState::kVertexFormat: {
+    case RenderState::kVertexFormat: {
       if (!value.vertex_format) {
         current_vertex_format_size_ = 0;
         d3d_device_context_->IASetInputLayout(nullptr);
@@ -857,49 +858,49 @@ bool CCoreDX11Device::ApplyRenderState(const CoreSampler sampler,
       current_vertex_format_size_ = value.vertex_format->GetSize();
       return ApplyVertexFormat(value.vertex_format);
     } break;
-    case CoreRenderState::kIndexBuffer: {
+    case RenderState::kIndexBuffer: {
       if (!value.index_buffer) {
         d3d_device_context_->IASetIndexBuffer(nullptr, DXGI_FORMAT_R16_UINT, 0);
         return true;
       }
       return ApplyIndexBuffer(value.index_buffer);
     } break;
-    case CoreRenderState::kVertexShader: {
+    case RenderState::kVertexShader: {
       if (!value.vertex_shader) {
         d3d_device_context_->VSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyVertexShader(value.vertex_shader);
     } break;
-    case CoreRenderState::kGeometryShader: {
+    case RenderState::kGeometryShader: {
       if (!value.geometry_shader) {
         d3d_device_context_->GSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyGeometryShader(value.geometry_shader);
     } break;
-    case CoreRenderState::kHullShader: {
+    case RenderState::kHullShader: {
       if (!value.hull_shader) {
         d3d_device_context_->HSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyHullShader(value.hull_shader);
     } break;
-    case CoreRenderState::kDomainShader: {
+    case RenderState::kDomainShader: {
       if (!value.domain_shader) {
         d3d_device_context_->DSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyDomainShader(value.domain_shader);
     } break;
-    case CoreRenderState::kComputeShader: {
+    case RenderState::kComputeShader: {
       if (!value.compute_shader) {
         d3d_device_context_->DSSetShader(nullptr, nullptr, 0);
         return true;
       }
       return ApplyComputeShader(value.compute_shader);
     } break;
-    case CoreRenderState::kPixelShader: {
+    case RenderState::kPixelShader: {
       if (!value.pixel_shader) {
         d3d_device_context_->PSSetShader(nullptr, nullptr, 0);
         return true;
@@ -911,23 +912,23 @@ bool CCoreDX11Device::ApplyRenderState(const CoreSampler sampler,
   }
 }
 
-bool CCoreDX11Device::SetNoVertexBuffer() {
+bool DX11Device::SetNoVertexBuffer() {
   d3d_device_context_->IASetVertexBuffers(0, 1, nullptr, nullptr, nullptr);
   return true;
 }
 
-bool CCoreDX11Device::CommitRenderStates() { return true; }
+bool DX11Device::CommitRenderStates() { return true; }
 
 //////////////////////////////////////////////////////////////////////////
 // display functions
 
-bool CCoreDX11Device::BeginScene() { return true; }
+bool DX11Device::BeginScene() { return true; }
 
-bool CCoreDX11Device::EndScene() { return true; }
+bool DX11Device::EndScene() { return true; }
 
-bool CCoreDX11Device::Clear(const bool clear_pixels, const bool clear_depth,
-                            const CColor& color, const float depth,
-                            const int32_t stencil) {
+bool DX11Device::Clear(const bool clear_pixels, const bool clear_depth,
+                       const CColor& color, const float depth,
+                       const int32_t stencil) {
   const float clear_color[4] = {color.R() / 255.0f, color.G() / 255.0f,
                                 color.B() / 255.0f, color.A() / 255.0f};
 
@@ -944,7 +945,7 @@ bool CCoreDX11Device::Clear(const bool clear_pixels, const bool clear_depth,
   return true;
 }
 
-bool CCoreDX11Device::Flip(bool vsync) {
+bool DX11Device::Flip(bool vsync) {
   HRESULT result = 0;
 
   if (vsync) {
@@ -956,8 +957,7 @@ bool CCoreDX11Device::Flip(bool vsync) {
   return result == S_OK;
 }
 
-bool CCoreDX11Device::DrawIndexedTriangles(int32_t count,
-                                           int32_t vertex_count) {
+bool DX11Device::DrawIndexedTriangles(int32_t count, int32_t vertex_count) {
   d3d_device_context_->IASetPrimitiveTopology(
       D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   if (!ApplyRequestedRenderState()) {
@@ -967,7 +967,7 @@ bool CCoreDX11Device::DrawIndexedTriangles(int32_t count,
   return true;
 }
 
-bool CCoreDX11Device::DrawLines(int32_t count) {
+bool DX11Device::DrawLines(int32_t count) {
   d3d_device_context_->IASetPrimitiveTopology(
       D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
   if (!ApplyRequestedRenderState()) {
@@ -977,7 +977,7 @@ bool CCoreDX11Device::DrawLines(int32_t count) {
   return true;
 }
 
-bool CCoreDX11Device::DrawIndexedLines(int32_t count, int32_t vertex_count) {
+bool DX11Device::DrawIndexedLines(int32_t count, int32_t vertex_count) {
   d3d_device_context_->IASetPrimitiveTopology(
       D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
   if (!ApplyRequestedRenderState()) {
@@ -987,7 +987,7 @@ bool CCoreDX11Device::DrawIndexedLines(int32_t count, int32_t vertex_count) {
   return true;
 }
 
-bool CCoreDX11Device::DrawTriangles(int32_t count) {
+bool DX11Device::DrawTriangles(int32_t count) {
   d3d_device_context_->IASetPrimitiveTopology(
       D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
   if (!ApplyRequestedRenderState()) {
@@ -997,7 +997,7 @@ bool CCoreDX11Device::DrawTriangles(int32_t count) {
   return true;
 }
 
-bool CCoreDX11Device::SetViewport(CRect viewport) {
+bool DX11Device::SetViewport(CRect viewport) {
   D3D11_VIEWPORT d3d_viewport;
   memset(&d3d_viewport, 0, sizeof(D3D11_VIEWPORT));
 
@@ -1012,7 +1012,7 @@ bool CCoreDX11Device::SetViewport(CRect viewport) {
   return true;
 }
 
-void CCoreDX11Device::SetShaderConstants(const CCoreConstantBuffer* buffers) {
+void DX11Device::SetShaderConstants(const ConstantBuffer* buffers) {
   void* buffers_table[16];
 
   if (buffers) {
@@ -1029,54 +1029,53 @@ void CCoreDX11Device::SetShaderConstants(const CCoreConstantBuffer* buffers) {
       0, 1, reinterpret_cast<ID3D11Buffer**>(buffers_table));
 }
 
-std::unique_ptr<CCoreConstantBuffer> CCoreDX11Device::CreateConstantBuffer() {
-  return std::make_unique<CCoreDX11ConstantBuffer>(this);
+std::unique_ptr<ConstantBuffer> DX11Device::CreateConstantBuffer() {
+  return std::make_unique<DX11ConstantBuffer>(this);
 }
 
-std::unique_ptr<CCoreBlendState> CCoreDX11Device::CreateBlendState() {
-  return std::make_unique<CCoreDX11BlendState>(this);
+std::unique_ptr<BlendState> DX11Device::CreateBlendState() {
+  return std::make_unique<DX11BlendState>(this);
 }
 
-std::unique_ptr<CCoreDepthStencilState>
-CCoreDX11Device::CreateDepthStencilState() {
-  return std::make_unique<CCoreDX11DepthStencilState>(this);
+std::unique_ptr<DepthStencilState> DX11Device::CreateDepthStencilState() {
+  return std::make_unique<DX11DepthStencilState>(this);
 }
 
-std::unique_ptr<CCoreRasterizerState> CCoreDX11Device::CreateRasterizerState() {
-  return std::make_unique<CCoreDX11RasterizerState>(this);
+std::unique_ptr<RasterizerState> DX11Device::CreateRasterizerState() {
+  return std::make_unique<DX11RasterizerState>(this);
 }
 
-std::unique_ptr<CCoreSamplerState> CCoreDX11Device::CreateSamplerState() {
-  return std::make_unique<CCoreDX11SamplerState>(this);
+std::unique_ptr<SamplerState> DX11Device::CreateSamplerState() {
+  return std::make_unique<DX11SamplerState>(this);
 }
 
-void CCoreDX11Device::SetCurrentDepthStencilState(
+void DX11Device::SetCurrentDepthStencilState(
     ID3D11DepthStencilState* depth_stencil_state) {
   current_depth_stencil_state_ = depth_stencil_state;
 }
 
-ID3D11DepthStencilState* CCoreDX11Device::GetCurrentDepthStencilState() {
+ID3D11DepthStencilState* DX11Device::GetCurrentDepthStencilState() {
   return current_depth_stencil_state_;
 }
 
-void CCoreDX11Device::SetCurrentRasterizerState(
+void DX11Device::SetCurrentRasterizerState(
     ID3D11RasterizerState* rasterizer_state) {
   current_rasterizer_state_ = rasterizer_state;
 }
 
-ID3D11RasterizerState* CCoreDX11Device::GetCurrentRasterizerState() {
+ID3D11RasterizerState* DX11Device::GetCurrentRasterizerState() {
   return current_rasterizer_state_;
 }
 
-void CCoreDX11Device::SetCurrentBlendState(ID3D11BlendState* blend_state) {
+void DX11Device::SetCurrentBlendState(ID3D11BlendState* blend_state) {
   current_blend_state_ = blend_state;
 }
 
-ID3D11BlendState* CCoreDX11Device::GetCurrentBlendState() {
+ID3D11BlendState* DX11Device::GetCurrentBlendState() {
   return current_blend_state_;
 }
 
-bool CCoreDX11Device::SetRenderTarget(CCoreTexture2D* render_target) {
+bool DX11Device::SetRenderTarget(Texture2D* render_target) {
   if (!render_target) {
     d3d_device_context_->OMSetRenderTargets(1, &back_buffer_view_,
                                             depth_buffer_view_);
@@ -1086,7 +1085,7 @@ bool CCoreDX11Device::SetRenderTarget(CCoreTexture2D* render_target) {
   return false;
 }
 
-void CCoreDX11Device::ForceStateReset() {
+void DX11Device::ForceStateReset() {
   current_vertex_buffer_ = nullptr;
   current_render_state_.clear();
   current_blend_state_ = nullptr;
@@ -1094,7 +1093,7 @@ void CCoreDX11Device::ForceStateReset() {
   current_rasterizer_state_ = nullptr;
 }
 
-void CCoreDX11Device::TakeScreenShot(std::string_view filename) {
+void DX11Device::TakeScreenShot(std::string_view filename) {
   ID3D11Texture2D* back_buffer = nullptr;
 
   const HRESULT result = dxgi_swap_chain_->GetBuffer(
@@ -1106,10 +1105,10 @@ void CCoreDX11Device::TakeScreenShot(std::string_view filename) {
     return;
   }
 
-  auto dummy = std::make_unique<CCoreDX11Texture2D>(this);
+  auto dummy = std::make_unique<DX11Texture2D>(this);
   dummy->SetTextureHandle(back_buffer);
 
-  dummy->ExportToImage(filename, true, ExportImageFormat::kCorePng, false);
+  dummy->ExportToImage(filename, true, ExportImageFormat::kPng, false);
 
   dummy->SetTextureHandle(nullptr);
   dummy->SetView(nullptr);
@@ -1125,25 +1124,25 @@ void CCoreDX11Device::TakeScreenShot(std::string_view filename) {
 #include "C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\vsgcapture.h"
 #endif
 
-void CCoreDX11Device::InitializeDebugAPI() {
+void DX11Device::InitializeDebugAPI() {
 #ifdef ENABLE_PIX_API
   // InitVsPix();
 #endif
 }
 
-void CCoreDX11Device::CaptureCurrentFrame() {
+void DX11Device::CaptureCurrentFrame() {
 #ifdef ENABLE_PIX_API
   g_pVsgDbg->CaptureCurrentFrame();
 #endif
 }
 
-void CCoreDX11Device::BeginOcclusionQuery() {
+void DX11Device::BeginOcclusionQuery() {
   if (occlusion_query_) {
     d3d_device_context_->Begin(occlusion_query_);
   }
 }
 
-bool CCoreDX11Device::EndOcclusionQuery() {
+bool DX11Device::EndOcclusionQuery() {
   if (occlusion_query_) {
     d3d_device_context_->End(occlusion_query_);
 
@@ -1158,13 +1157,13 @@ bool CCoreDX11Device::EndOcclusionQuery() {
   return false;
 }
 
-void CCoreDX11Device::WaitRetrace() {
+void DX11Device::WaitRetrace() {
   if (swap_chain_retrace_object_) {
     WaitForSingleObjectEx(swap_chain_retrace_object_, 1000, true);
   }
 }
 
-ID3D11Texture2D* CCoreDX11Device::GetBackBuffer() {
+ID3D11Texture2D* DX11Device::GetBackBuffer() {
   ID3D11Texture2D* back_buffer = nullptr;
 
   const HRESULT result = dxgi_swap_chain_->GetBuffer(

@@ -17,17 +17,17 @@ import xml;
 
 namespace renderer {
 
-class CCoreDevice {
-  friend class CCoreResource;
+class Device {
+  friend class Resource;
 
  public:
-  CCoreDevice();
-  virtual ~CCoreDevice();
-  virtual CoreDeviceApi GetAPIType() = 0;
+  Device();
+  virtual ~Device();
+  virtual DeviceApi GetAPIType() = 0;
 
   bool ApplyRequestedRenderState();
 
-  virtual bool Initialize(CCoreWindowHandler* window,
+  virtual bool Initialize(WindowHandler* window,
                           const int32_t sample_count = 0) = 0;
 
   virtual bool DeviceOk() = 0;
@@ -36,80 +36,79 @@ class CCoreDevice {
   virtual void SetFullScreenMode(const bool full_screen, const int32_t x_res,
                                  const int32_t y_res) = 0;
 
-  virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
+  virtual std::unique_ptr<Texture2D> CreateTexture2D(
       const int32_t x_res, const int32_t y_res, const uint8_t* data,
-      const char bytes_per_pixel = 4,
-      const CoreFormat format = CoreFormat::kA8R8G8B8,
+      const char bytes_per_pixel = 4, const Format format = Format::kA8R8G8B8,
       const bool render_target = false) = 0;
-  virtual std::unique_ptr<CCoreTexture2D> CreateTexture2D(
-      const uint8_t* data, const int32_t size) = 0;
+  virtual std::unique_ptr<Texture2D> CreateTexture2D(const uint8_t* data,
+                                                     const int32_t size) = 0;
 
-  virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(
+  virtual std::unique_ptr<VertexBuffer> CreateVertexBuffer(
       const uint8_t* data, const int32_t size) = 0;
-  virtual std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(
+  virtual std::unique_ptr<VertexBuffer> CreateVertexBufferDynamic(
       const int32_t size) = 0;
 
-  virtual std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(
+  virtual std::unique_ptr<IndexBuffer> CreateIndexBuffer(
       const int32_t index_count, const int32_t index_size = 2) = 0;
 
-  virtual std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
-      const std::vector<CoreVertexAttribute>& attributes,
-      CCoreVertexShader* vs = nullptr) = 0;
+  virtual std::unique_ptr<VertexFormat> CreateVertexFormat(
+      const std::vector<VertexAttribute>& attributes,
+      VertexShader* vs = nullptr) = 0;
 
-  bool SetRenderState(CCoreRasterizerState* rasterizer_state);
-  bool SetRenderState(CCoreBlendState* blend_state);
-  bool SetRenderState(CCoreDepthStencilState* depth_stencil_state);
-  bool SetVertexShader(CCoreVertexShader* shader);
-  bool SetPixelShader(CCorePixelShader* shader);
-  bool SetGeometryShader(CCoreGeometryShader* shader);
-  bool SetHullShader(CCoreHullShader* shader);
-  bool SetDomainShader(CCoreDomainShader* shader);
-  bool SetSamplerState(CoreSampler sampler, CCoreSamplerState* sampler_state);
-  bool SetTexture(CoreSampler sampler, CCoreTexture* texture);
-  bool SetIndexBuffer(CCoreIndexBuffer* index_buffer);
-  bool SetVertexBuffer(CCoreVertexBuffer* vertex_buffer, uint32_t offset);
-  bool SetVertexFormat(CCoreVertexFormat* vertex_format);
+  bool SetRenderState(RasterizerState* rasterizer_state);
+  bool SetRenderState(BlendState* blend_state);
+  bool SetRenderState(DepthStencilState* depth_stencil_state);
+  bool SetVertexShader(VertexShader* shader);
+  bool SetPixelShader(PixelShader* shader);
+  bool SetGeometryShader(GeometryShader* shader);
+  bool SetHullShader(HullShader* shader);
+  bool SetDomainShader(DomainShader* shader);
+  bool SetSamplerState(Sampler sampler, SamplerState* sampler_state);
+  bool SetTexture(Sampler sampler, Texture* texture);
+  bool SetIndexBuffer(IndexBuffer* index_buffer);
+  bool SetVertexBuffer(VertexBuffer* vertex_buffer, uint32_t offset);
+  bool SetVertexFormat(VertexFormat* vertex_format);
   int32_t GetVertexFormatSize();
-  CCoreTexture* GetTexture(CoreSampler sampler);
+  Texture* GetTexture(Sampler sampler);
 
-  virtual bool SetRenderTarget(CCoreTexture2D* rt) = 0;
+  virtual bool SetRenderTarget(Texture2D* rt) = 0;
   virtual bool SetViewport(math::CRect viewport) = 0;
 
-  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader(
+  virtual std::unique_ptr<VertexShader> CreateVertexShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) = 0;
-  virtual std::unique_ptr<CCorePixelShader> CreatePixelShader(
+  virtual std::unique_ptr<PixelShader> CreatePixelShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) = 0;
-  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
+  virtual std::unique_ptr<VertexShader> CreateVertexShaderFromBlob(
       uint8_t* code, int32_t code_size) = 0;
-  virtual std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
+  virtual std::unique_ptr<PixelShader> CreatePixelShaderFromBlob(
       uint8_t* code, int32_t code_size) = 0;
-  virtual std::unique_ptr<CCoreGeometryShader> CreateGeometryShader(
+  virtual std::unique_ptr<GeometryShader> CreateGeometryShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) = 0;
-  virtual std::unique_ptr<CCoreDomainShader> CreateDomainShader(
+  virtual std::unique_ptr<DomainShader> CreateDomainShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) = 0;
-  virtual std::unique_ptr<CCoreHullShader> CreateHullShader(
+  virtual std::unique_ptr<HullShader> CreateHullShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) = 0;
-  virtual std::unique_ptr<CCoreComputeShader> CreateComputeShader(
+  virtual std::unique_ptr<ComputeShader> CreateComputeShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) = 0;
-  virtual std::unique_ptr<CCoreVertexShader> CreateVertexShader() = 0;
-  virtual std::unique_ptr<CCorePixelShader> CreatePixelShader() = 0;
-  virtual std::unique_ptr<CCoreGeometryShader> CreateGeometryShader() = 0;
-  virtual std::unique_ptr<CCoreDomainShader> CreateDomainShader() = 0;
-  virtual std::unique_ptr<CCoreHullShader> CreateHullShader() = 0;
-  virtual std::unique_ptr<CCoreComputeShader> CreateComputeShader() = 0;
-  virtual void SetShaderConstants(const CCoreConstantBuffer* buffers) = 0;
-  virtual std::unique_ptr<CCoreConstantBuffer> CreateConstantBuffer() = 0;
+  virtual std::unique_ptr<VertexShader> CreateVertexShader() = 0;
+  virtual std::unique_ptr<PixelShader> CreatePixelShader() = 0;
+  virtual std::unique_ptr<GeometryShader> CreateGeometryShader() = 0;
+  virtual std::unique_ptr<DomainShader> CreateDomainShader() = 0;
+  virtual std::unique_ptr<HullShader> CreateHullShader() = 0;
+  virtual std::unique_ptr<ComputeShader> CreateComputeShader() = 0;
+  virtual void SetShaderConstants(const ConstantBuffer* buffers) = 0;
+  virtual std::unique_ptr<ConstantBuffer> CreateConstantBuffer() = 0;
 
-  virtual std::unique_ptr<CCoreBlendState> CreateBlendState() = 0;
-  virtual std::unique_ptr<CCoreDepthStencilState> CreateDepthStencilState() = 0;
-  virtual std::unique_ptr<CCoreRasterizerState> CreateRasterizerState() = 0;
-  virtual std::unique_ptr<CCoreSamplerState> CreateSamplerState() = 0;
+  virtual std::unique_ptr<BlendState> CreateBlendState() = 0;
+  virtual std::unique_ptr<DepthStencilState> CreateDepthStencilState() = 0;
+  virtual std::unique_ptr<RasterizerState> CreateRasterizerState() = 0;
+  virtual std::unique_ptr<SamplerState> CreateSamplerState() = 0;
 
   virtual bool BeginScene() = 0;
   virtual bool EndScene() = 0;
@@ -144,45 +143,43 @@ class CCoreDevice {
                        const int32_t sample_count = 0,
                        const int32_t refresh_rate = 60) = 0;
 
-  bool ApplyTextureToSampler(const CoreSampler sampler, CCoreTexture* texture);
-  bool ApplyVertexShader(CCoreVertexShader* shader);
-  bool ApplyGeometryShader(CCoreGeometryShader* shader);
-  bool ApplyHullShader(CCoreHullShader* shader);
-  bool ApplyDomainShader(CCoreDomainShader* shader);
-  bool ApplyComputeShader(CCoreComputeShader* shader);
-  bool ApplyPixelShader(CCorePixelShader* shader);
-  bool ApplyVertexFormat(CCoreVertexFormat* vertex_format);
-  bool ApplyIndexBuffer(CCoreIndexBuffer* idx_buffer);
-  bool ApplyVertexBuffer(CCoreVertexBuffer* vx_buffer, uint32_t offset);
-  virtual bool ApplyRenderState(const CoreSampler sampler,
-                                const CoreRenderState render_state,
-                                const CoreRenderStateValue value) = 0;
+  bool ApplyTextureToSampler(const Sampler sampler, Texture* texture);
+  bool ApplyVertexShader(VertexShader* shader);
+  bool ApplyGeometryShader(GeometryShader* shader);
+  bool ApplyHullShader(HullShader* shader);
+  bool ApplyDomainShader(DomainShader* shader);
+  bool ApplyComputeShader(ComputeShader* shader);
+  bool ApplyPixelShader(PixelShader* shader);
+  bool ApplyVertexFormat(VertexFormat* vertex_format);
+  bool ApplyIndexBuffer(IndexBuffer* idx_buffer);
+  bool ApplyVertexBuffer(VertexBuffer* vx_buffer, uint32_t offset);
+  virtual bool ApplyRenderState(const Sampler sampler,
+                                const RenderState render_state,
+                                const RenderStateValue value) = 0;
   virtual bool SetNoVertexBuffer() = 0;
 
   virtual bool CommitRenderStates() = 0;
   bool CreateDefaultRenderStates();
 
-  CCoreWindowHandler* window_ = nullptr;
-  std::unordered_map<CoreRenderStateId, CoreRenderStateValue>
-      current_render_state_;
-  std::unordered_map<CoreRenderStateId, CoreRenderStateValue>
-      requested_render_state_;
+  WindowHandler* window_ = nullptr;
+  std::unordered_map<RenderStateId, RenderStateValue> current_render_state_;
+  std::unordered_map<RenderStateId, RenderStateValue> requested_render_state_;
 
-  CCoreVertexBuffer *current_vertex_buffer_ = nullptr,
-                    *requested_vertex_buffer_ = nullptr;
+  VertexBuffer *current_vertex_buffer_ = nullptr,
+               *requested_vertex_buffer_ = nullptr;
   uint32_t current_vertex_buffer_offset_ = 0,
            requested_vertex_buffer_offset_ = 0;
   int32_t current_vertex_format_size_ = 0;
 
-  std::unique_ptr<CCoreBlendState> default_blend_state_;
-  std::unique_ptr<CCoreDepthStencilState> default_depth_stencil_state_;
-  std::unique_ptr<CCoreRasterizerState> default_rasterizer_state_;
+  std::unique_ptr<BlendState> default_blend_state_;
+  std::unique_ptr<DepthStencilState> default_depth_stencil_state_;
+  std::unique_ptr<RasterizerState> default_rasterizer_state_;
 
  private:
-  void RemoveResource(CCoreResource* resource);
-  void AddResource(CCoreResource* resource);
+  void RemoveResource(Resource* resource);
+  void AddResource(Resource* resource);
 
-  std::vector<CCoreResource*> resources_;
+  std::vector<Resource*> resources_;
 };
 
 }  // namespace renderer

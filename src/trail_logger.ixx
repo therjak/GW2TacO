@@ -35,12 +35,12 @@ export class GW2Trail {
 
  public:
   virtual ~GW2Trail();
-  void Build(renderer::CCoreDevice* dev, int32_t mapID, const float* points,
+  void Build(renderer::Device* dev, int32_t mapID, const float* points,
              int pointCount);
   void Draw();
   void Update();
-  void SetupAndDraw(renderer::CCoreConstantBuffer* constBuffer,
-                    renderer::CCoreTexture* texture, math::CMatrix4x4& cam,
+  void SetupAndDraw(renderer::ConstantBuffer* constBuffer,
+                    renderer::Texture* texture, math::CMatrix4x4& cam,
                     math::CMatrix4x4& persp, float& one, bool scaleData,
                     int32_t fadeoutBubble, std::array<float, 8>& data,
                     float fadeAlpha, float width, float uvScale, float width2d);
@@ -51,10 +51,10 @@ export class GW2Trail {
               bool keepPoints = false);
 
   int32_t length = 0;
-  std::unique_ptr<renderer::CCoreVertexBuffer> trailMesh;
-  renderer::CCoreDevice* dev = nullptr;
-  std::unique_ptr<renderer::CCoreIndexBuffer> idxBuf;
-  renderer::CCoreTexture* texture = nullptr;
+  std::unique_ptr<renderer::VertexBuffer> trailMesh;
+  renderer::Device* dev = nullptr;
+  std::unique_ptr<renderer::IndexBuffer> idxBuf;
+  renderer::Texture* texture = nullptr;
 
   int32_t map = 0;
 
@@ -110,25 +110,25 @@ export class GW2TrailDisplay
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
   void ClearEditedTrail();
-  renderer::CCoreTexture2D* GetTexture(const std::string_view& fname,
-                                       const std::string_view& zipFile,
-                                       const std::string_view& categoryZip);
+  renderer::Texture2D* GetTexture(const std::string_view& fname,
+                                  const std::string_view& zipFile,
+                                  const std::string_view& categoryZip);
 
   float asp = 0;
   math::CMatrix4x4 cam;
   math::CMatrix4x4 persp;
   math::CRect drawrect;
 
-  std::unique_ptr<renderer::CCoreVertexShader> vxShader;
-  std::unique_ptr<renderer::CCoreVertexFormat> vertexFormat;
-  std::unique_ptr<renderer::CCorePixelShader> pxShader;
-  std::unique_ptr<renderer::CCoreConstantBuffer> constBuffer;
-  std::unique_ptr<renderer::CCoreTexture2D> trailTexture;
-  std::unique_ptr<renderer::CCoreSamplerState> trailSampler;
-  std::unique_ptr<renderer::CCoreRasterizerState> trailRasterizer1;
-  std::unique_ptr<renderer::CCoreRasterizerState> trailRasterizer2;
-  std::unique_ptr<renderer::CCoreRasterizerState> trailRasterizer3;
-  std::unique_ptr<renderer::CCoreDepthStencilState> trailDepthStencil;
+  std::unique_ptr<renderer::VertexShader> vxShader;
+  std::unique_ptr<renderer::VertexFormat> vertexFormat;
+  std::unique_ptr<renderer::PixelShader> pxShader;
+  std::unique_ptr<renderer::ConstantBuffer> constBuffer;
+  std::unique_ptr<renderer::Texture2D> trailTexture;
+  std::unique_ptr<renderer::SamplerState> trailSampler;
+  std::unique_ptr<renderer::RasterizerState> trailRasterizer1;
+  std::unique_ptr<renderer::RasterizerState> trailRasterizer2;
+  std::unique_ptr<renderer::RasterizerState> trailRasterizer3;
+  std::unique_ptr<renderer::DepthStencilState> trailDepthStencil;
 
   std::unique_ptr<GW2Trail> editedTrail;
 
@@ -137,7 +137,7 @@ export class GW2TrailDisplay
 
   std::mutex mtx;
 
-  std::unordered_map<std::string, std::unique_ptr<renderer::CCoreTexture2D>>
+  std::unordered_map<std::string, std::unique_ptr<renderer::Texture2D>>
       textureCache;
 };
 
