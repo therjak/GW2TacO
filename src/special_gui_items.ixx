@@ -3,11 +3,9 @@ module;
 #include <memory>
 #include <string_view>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
-
 export module taco.special_gui_items;
 
+import math;
 import whiteboard;
 
 export class ClickThroughButton

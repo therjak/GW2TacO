@@ -15,10 +15,11 @@ module;
 
 module taco.mumble_link;
 
-import whiteboard;
-import taco.trail_logger;
+import math;
 import taco.overlay_config;
 import taco.time;
+import taco.trail_logger;
+import whiteboard;
 
 using math::CMatrix4x4;
 using math::CRect;

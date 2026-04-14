@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include <cmath>
 
-#include "src/base/plane.h"
-#include "src/base/vector.h"
+export module math:sphere;
 
-namespace math {
+import :plane;
+import :vector;
+
+export namespace math {
 
 class CSphere {
  public:

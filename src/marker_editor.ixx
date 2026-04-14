@@ -3,14 +3,13 @@ module;
 #include <memory>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 export module taco.marker_editor;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class GW2MarkerEditor
     : public gui::CWBGuiType<"markereditor", gui::CWBItem> {

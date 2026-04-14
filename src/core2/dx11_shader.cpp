@@ -122,6 +122,11 @@ bool CCoreDX11VertexShader::CompileAndCreate(std::string* error) {
                  : "";
   }
 
+  if (error_blob) {
+    error_blob->Release();
+    error_blob = nullptr;
+  }
+
   if (success) {
     success = Create(ps_blob->GetBufferPointer(),
                      static_cast<int32_t>(ps_blob->GetBufferSize()));
@@ -207,6 +212,11 @@ bool CCoreDX11PixelShader::CompileAndCreate(std::string* error) {
     *error = error_blob
                  ? std::string(static_cast<char*>(error_blob->GetBufferPointer()))
                  : "";
+  }
+
+  if (error_blob) {
+    error_blob->Release();
+    error_blob = nullptr;
   }
 
   if (success) {
@@ -296,6 +306,11 @@ bool CCoreDX11GeometryShader::CompileAndCreate(std::string* error) {
                  : "";
   }
 
+  if (error_blob) {
+    error_blob->Release();
+    error_blob = nullptr;
+  }
+
   if (success) {
     success = Create(ps_blob->GetBufferPointer(),
                      static_cast<int32_t>(ps_blob->GetBufferSize()));
@@ -381,6 +396,11 @@ bool CCoreDX11DomainShader::CompileAndCreate(std::string* error) {
     *error = error_blob
                  ? std::string(static_cast<char*>(error_blob->GetBufferPointer()))
                  : "";
+  }
+
+  if (error_blob) {
+    error_blob->Release();
+    error_blob = nullptr;
   }
 
   if (success) {
@@ -470,6 +490,11 @@ bool CCoreDX11HullShader::CompileAndCreate(std::string* error) {
                  : "";
   }
 
+  if (error_blob) {
+    error_blob->Release();
+    error_blob = nullptr;
+  }
+
   if (success) {
     success = Create(ps_blob->GetBufferPointer(),
                      static_cast<int32_t>(ps_blob->GetBufferSize()));
@@ -554,6 +579,11 @@ bool CCoreDX11ComputeShader::CompileAndCreate(std::string* error) {
     *error = error_blob
                  ? std::string(static_cast<char*>(error_blob->GetBufferPointer()))
                  : "";
+  }
+
+  if (error_blob) {
+    error_blob->Release();
+    error_blob = nullptr;
   }
 
   if (success) {

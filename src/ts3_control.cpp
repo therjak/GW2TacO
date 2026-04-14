@@ -4,10 +4,10 @@ module;
 
 module taco.ts3_control;
 
-import whiteboard;
-import taco.ts3connection;
-import taco.overlay_config;
 import taco.language;
+import taco.overlay_config;
+import taco.ts3connection;
+import whiteboard;
 
 using math::CPoint;
 using math::CRect;

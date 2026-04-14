@@ -9,8 +9,8 @@ module;
 
 module whiteboard;
 
-import :skin;
 import :draw_api;
+import :skin;
 
 using math::CRect;
 using math::CSize;

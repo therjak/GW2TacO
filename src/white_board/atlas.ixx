@@ -5,10 +5,11 @@ module;
 #include <mutex>
 #include <unordered_map>
 
-#include "src/base/rectangle.h"
 #include "src/core2/core2.h"
 
 export module whiteboard:atlas;
+
+import math;
 
 export namespace gui {
 

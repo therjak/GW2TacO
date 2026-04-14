@@ -1,6 +1,6 @@
-#pragma once
+export module math:spec_math;
 
-namespace math {
+export namespace math {
 
 float InvSqrt(float x);
 float DeGamma(float c);

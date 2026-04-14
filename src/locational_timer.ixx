@@ -5,14 +5,11 @@ module;
 #include <string>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/sphere.h"
-#include "src/base/vector.h"
-
 export module taco.locational_timer;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class LocationalTimer {
  public:

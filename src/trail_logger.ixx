@@ -9,15 +9,15 @@ module;
 #include <vector>
 
 #include "src/base/hasher.h"
-#include "src/base/matrix.h"
 #include "src/base/stream_reader.h"
 #include "src/core2/device.h"
 #include "src/gw2_tactical.h"
 
 export module taco.trail_logger;
 
-import whiteboard;
+import math;
 import taco.mumble_link;
+import whiteboard;
 
 export void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);
 

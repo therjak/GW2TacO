@@ -2,12 +2,11 @@ module;
 #include <string_view>
 #include <variant>
 
-#include "src/base/rectangle.h"
-
 export module whiteboard:message;
 
-import :message_enum;
 import :gui_item;
+import :message_enum;
+import math;
 
 export namespace gui {
 

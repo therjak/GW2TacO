@@ -8,10 +8,11 @@
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/base/rectangle.h"
 #include "src/core2/core2_config.h"
 #include "src/core2/device.h"
 #include "src/core2/dx11_enums.h"
+
+import math;
 
 namespace renderer {
 
@@ -132,7 +133,8 @@ class CCoreDX11Device : public CCoreDevice {
   ID3D11RasterizerState* GetCurrentRasterizerState();
   void SetCurrentRasterizerState(ID3D11RasterizerState* rasterizer_state);
   ID3D11DepthStencilState* GetCurrentDepthStencilState();
-  void SetCurrentDepthStencilState(ID3D11DepthStencilState* depth_stencil_state);
+  void SetCurrentDepthStencilState(
+      ID3D11DepthStencilState* depth_stencil_state);
 
   void ForceStateReset() override;
 
@@ -172,10 +174,12 @@ class CCoreDX11Device : public CCoreDevice {
                               const int32_t x_res, const int32_t y_res,
                               const int32_t sample_count,
                               const int32_t refresh_rate);
-  bool CreateDirectCompositionSwapchain(
-      const HWND window_handle, const bool full_screen, const int32_t x_res,
-      const int32_t y_res, const int32_t sample_count,
-      const int32_t refresh_rate);
+  bool CreateDirectCompositionSwapchain(const HWND window_handle,
+                                        const bool full_screen,
+                                        const int32_t x_res,
+                                        const int32_t y_res,
+                                        const int32_t sample_count,
+                                        const int32_t refresh_rate);
 
   IDXGISwapChain1* dxgi_swap_chain_ = nullptr;
   ID3D11Device* d3d_device_ = nullptr;

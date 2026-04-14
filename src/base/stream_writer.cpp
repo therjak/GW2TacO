@@ -3,7 +3,7 @@
 #include "src/base/assert.h"
 #include "src/base/logger.h"
 
-CStreamWriter::CStreamWriter() { writerCurrentChar = 0; }
+CStreamWriter::CStreamWriter() : writerCurrentChar(0) {}
 
 CStreamWriter::~CStreamWriter() = default;
 
@@ -58,7 +58,8 @@ CStreamWriterFile::~CStreamWriterFile() {
 
 int32_t CStreamWriterFile::WriteStream(std::string_view data) {
   DWORD nWritten = 0;
-  BOOL b = WriteFile(File, data.data(), static_cast<DWORD>(data.size()), &nWritten, nullptr);
+  BOOL b = WriteFile(File, data.data(), static_cast<DWORD>(data.size()),
+                     &nWritten, nullptr);
   if (!b) return 0;
   return nWritten;
 }

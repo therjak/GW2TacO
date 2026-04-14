@@ -7,14 +7,14 @@ module;
 #include <unordered_map>
 
 #include "src/base/logger.h"
-#include "src/base/rectangle.h"
 #include "src/base/timer.h"
 #include "src/gw2_tactical.h"
 
 module taco.overlay_config;
 
-import xml;
+import math;
 import taco.gw2taco;
+import xml;
 
 using math::CPoint;
 using math::CRect;

@@ -9,13 +9,12 @@ module;
 #include <vector>
 
 #include "src/base/lock_free_queue.h"
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 
 export module taco.dungeon_progress;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class DungeonPath {
  public:

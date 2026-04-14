@@ -1,6 +1,9 @@
-#include "src/base/spec_math.h"
-
+module;
 #include <cmath>
+
+module math;
+
+import :spec_math;
 
 namespace math {
 

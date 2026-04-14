@@ -2,17 +2,16 @@ module;
 #include <string>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 module taco.marker_editor;
 
-import xml;
-import whiteboard;
+import math;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.trail_logger;
+import whiteboard;
+import xml;
 
 using math::CPoint;
 using math::CRect;

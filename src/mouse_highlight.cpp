@@ -4,8 +4,8 @@ module;
 
 module taco.mouse_highlight;
 
-import whiteboard;
 import taco.overlay_config;
+import whiteboard;
 
 using math::CPoint;
 using math::CRect;

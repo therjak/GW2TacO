@@ -2,11 +2,9 @@ module;
 #include <cassert>
 #include <memory>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
-
 export module taco.overlay_window;
 
+import math;
 import whiteboard;
 
 export class OverlayWindow

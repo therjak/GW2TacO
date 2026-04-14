@@ -7,15 +7,15 @@ module;
 #include <vector>
 
 #include "src/base/logger.h"
-#include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 
 module taco.gw2;
 
-import whiteboard;
+import math;
+import taco.language;
 import taco.mumble_link;
 import taco.overlay_config;
-import taco.language;
+import whiteboard;
 
 using math::CPoint;
 

@@ -15,25 +15,24 @@ module;
 
 module taco.gw2taco;
 
-import whiteboard;
-
-import taco.mumble_link;
+import taco.build_info;
+import taco.dungeon_progress;
 import taco.gw2;
 import taco.language;
-import taco.ts3connection;
-import taco.overlay_config;
-import taco.ts3_control;
-import taco.trail_logger;
-import taco.overlay_window;
-import taco.mouse_highlight;
-import taco.build_info;
-import taco.tp_tracker;
-import taco.raid_progress;
-import taco.dungeon_progress;
 import taco.map_timer;
 import taco.marker_editor;
+import taco.mouse_highlight;
+import taco.mumble_link;
 import taco.notepad;
+import taco.overlay_config;
+import taco.overlay_window;
+import taco.raid_progress;
 import taco.time;
+import taco.tp_tracker;
+import taco.trail_logger;
+import taco.ts3_control;
+import taco.ts3connection;
+import whiteboard;
 
 using math::CPoint;
 using math::CRect;
@@ -1485,19 +1484,22 @@ void GW2TacO::OpenAboutWindow() {
 
   w->ReapplyStyles();
 
-  auto l1 = gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 2),
-                                  "GW2 TacO - The Guild Wars 2 Tactical Overlay");
+  auto l1 =
+      gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 2),
+                            "GW2 TacO - The Guild Wars 2 Tactical Overlay");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 16),
-                             "Build " + TacOBuild + " built on " + buildDateTime);
+  l1 = gui::CWBLabel::Create(
+      w, w->GetClientRect() + CPoint(0, 16),
+      "Build " + TacOBuild + " built on " + buildDateTime);
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 32),
                              "(c) BoyC / Conspiracy");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 48), "(c) therjak");
+  l1 = gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 48),
+                             "(c) therjak");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = gui::CWBLabel::Create(w, w->GetClientRect() + CPoint(0, 64),
@@ -1553,7 +1555,8 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
 
   auto it = FindChildByID("MenuHoverBox");
   if (it) {
-    auto taco = dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
+    auto taco =
+        dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
     if (taco) {
       constexpr float kSpeed = 500.0f;
 
@@ -1588,7 +1591,8 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
                                o * 0x01010101);
       taco->SetDisplayProperty(gui::WB_STATE_ACTIVE, gui::WB_ITEM_OPACITY,
                                o * 0x01010101);
-      taco->SetDisplayProperty(gui::WB_STATE_HOVER, gui::WB_ITEM_OPACITY, o * 0x01010101);
+      taco->SetDisplayProperty(gui::WB_STATE_HOVER, gui::WB_ITEM_OPACITY,
+                               o * 0x01010101);
 
       menuHoverLastFrame = hover;
     }
@@ -1764,15 +1768,18 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
     }
     auto line2 = DICT("press_to_bind");
     auto line3 = DICT("escape_to_unbind");
-    CPoint line1p = f->GetTextPosition(
-        line1, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
-    CPoint line2p = f->GetTextPosition(
-        line2, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
-    CPoint line3p = f->GetTextPosition(
-        line3, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+    CPoint line1p = f->GetTextPosition(line1, GetClientRect(),
+                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                       gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+    CPoint line2p = f->GetTextPosition(line2, GetClientRect(),
+                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                       gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+    CPoint line3p = f->GetTextPosition(line3, GetClientRect(),
+                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                       gui::WBTEXTTRANSFORM::WBTT_NONE, true);
     f->Write(API, line1, line1p - CPoint(0, f->GetLineHeight() / 2));
     f->Write(API, line2,
              line2p - CPoint(0, f->GetLineHeight() / 2) +
@@ -1789,19 +1796,22 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
     auto line1 = DICT("enter_api") + " " +
                  DICT(APIKeyNames[static_cast<int32_t>(ApiKeyToSet)]) + " " +
                  DICT("below_and_press");
-    CPoint line1p = f->GetTextPosition(
-        line1, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+    CPoint line1p = f->GetTextPosition(line1, GetClientRect(),
+                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                       gui::WBTEXTTRANSFORM::WBTT_NONE, true);
 
     if (ApiKeyToSet == APIKeys::TS3APIKey) {
       auto line2 = DICT("ts3_help_1");
       auto line3 = DICT("ts3_help_2");
-      CPoint line2p = f->GetTextPosition(
-          line2, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
-      CPoint line3p = f->GetTextPosition(
-          line3, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+      CPoint line2p = f->GetTextPosition(line2, GetClientRect(),
+                                         gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                         gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                         gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+      CPoint line3p = f->GetTextPosition(line3, GetClientRect(),
+                                         gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                         gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                         gui::WBTEXTTRANSFORM::WBTT_NONE, true);
 
       f->Write(API, line2,
                line2p - CPoint(0, f->GetLineHeight() / 2) +
@@ -1814,12 +1824,14 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
     if (ApiKeyToSet == APIKeys::GW2APIKey) {
       auto line2 = DICT("gw2_api_help_1");
       std::string_view line3("https://account.arena.net/applications");
-      CPoint line2p = f->GetTextPosition(
-          line2, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
-      CPoint line3p = f->GetTextPosition(
-          line3, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+      CPoint line2p = f->GetTextPosition(line2, GetClientRect(),
+                                         gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                         gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                         gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+      CPoint line3p = f->GetTextPosition(line3, GetClientRect(),
+                                         gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                         gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                         gui::WBTEXTTRANSFORM::WBTT_NONE, true);
 
       f->Write(API, line2,
                line2p - CPoint(0, f->GetLineHeight() / 2) +
@@ -1846,7 +1858,8 @@ void SetMouseToolTip(std::string_view toolTip) {
 }
 
 void GW2TacO::OnPostDraw(gui::CWBDrawAPI* API) {
-  gui::CWBFont* font = GetApplication()->GetRoot()->GetFont(gui::WB_STATE_NORMAL);
+  gui::CWBFont* font =
+      GetApplication()->GetRoot()->GetFont(gui::WB_STATE_NORMAL);
 
   if (!font) return;
 
@@ -1948,7 +1961,8 @@ void GW2TacO::OpenWindow(std::string_view s) {
 }
 
 void GW2TacO::BuildChannelTree(TS3Connection::TS3Schandler& h,
-                               gui::CWBContextItem* parentitm, int32_t ParentID) {
+                               gui::CWBContextItem* parentitm,
+                               int32_t ParentID) {
   for (const auto& x : h.Channels) {
     const TS3Connection::TS3Channel& chn = x.second;
     if (chn.parentid == ParentID) {
@@ -1975,8 +1989,8 @@ void GW2TacO::RebindScriptKey(int32_t eventIndex) {
 void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   ApiKeyInputMode = true;
   ApiKeyToSet = keyType;
-  APIKeyInput =
-      gui::CWBTextBox::Create(this, GetClientRect(), gui::WB_TEXTBOX_SINGLELINE);
+  APIKeyInput = gui::CWBTextBox::Create(this, GetClientRect(),
+                                        gui::WB_TEXTBOX_SINGLELINE);
   APIKeyInput->SetID("APIkeyInput");
   APIKeyInput->ReapplyStyles();
   APIKeyInput->EnableHScrollbar(false, false);
@@ -2048,14 +2062,15 @@ void GW2TacO::CheckItemPickup() {
 }
 
 void GW2TacO::StoreIconSizes() {
-  auto taco = dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
+  auto taco =
+      dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
   if (taco) tacoIconRect = taco->GetClientRect();
 
   auto menuHover = FindChildByID("MenuHoverBox");
   if (menuHover) menuHoverRect = menuHover->GetClientRect();
 
-  auto tpButton =
-      dynamic_cast<gui::CWBButton*>(FindChildByID("TPButton", "clickthroughbutton"));
+  auto tpButton = dynamic_cast<gui::CWBButton*>(
+      FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) tpButtonRect = tpButton->GetClientRect();
 
   auto tpHighlight = FindChildByID("RedCircle");
@@ -2067,7 +2082,8 @@ void GW2TacO::StoreIconSizes() {
 void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
   if (!iconSizesStored) return;
 
-  auto taco = dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
+  auto taco =
+      dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
   if (taco) {
     taco->SetPosition(CRect(tacoIconRect.TopLeft() * scale,
                             tacoIconRect.BottomRight() * scale));
@@ -2079,8 +2095,8 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
                                  menuHoverRect.BottomRight() * scale));
   }
 
-  auto tpButton =
-      dynamic_cast<gui::CWBButton*>(FindChildByID("TPButton", "clickthroughbutton"));
+  auto tpButton = dynamic_cast<gui::CWBButton*>(
+      FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) {
     tpButton->SetPosition(CRect(tpButtonRect.TopLeft() * scale,
                                 tpButtonRect.BottomRight() * scale));

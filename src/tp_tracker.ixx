@@ -7,14 +7,13 @@ module;
 #include <string>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/util/jsonxx.h"
 
 export module taco.tp_tracker;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export struct TransactionItem {
   int32_t transactionID = 0;

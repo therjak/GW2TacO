@@ -7,11 +7,11 @@ module;
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/base/rectangle.h"
 
 export module whiteboard:skin;
 
 import :draw_api;
+import math;
 
 export namespace gui {
 

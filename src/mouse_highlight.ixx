@@ -9,8 +9,8 @@ module;
 
 export module taco.mouse_highlight;
 
-import xml;
 import whiteboard;
+import xml;
 
 export enum class MouseColor {
   red,

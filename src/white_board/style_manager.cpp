@@ -9,8 +9,8 @@ module;
 
 module whiteboard;
 
-import :style_manager;
 import :gui_item;
+import :style_manager;
 
 namespace gui {
 

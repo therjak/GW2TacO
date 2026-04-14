@@ -5,7 +5,6 @@ module;
 
 #include "src/base/color.h"
 #include "src/base/logger.h"
-#include "src/base/vector.h"
 #include "src/core2/core2.h"
 #include "src/core2/enums.h"
 
@@ -13,6 +12,7 @@ module whiteboard;
 
 import :application;
 import :draw_api;
+import math;
 
 namespace gui {
 

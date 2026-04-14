@@ -8,8 +8,8 @@ module;
 
 export module taco.marker_data;
 
-import xml;
 import taco.poi_behavior;
+import xml;
 
 export struct MarkerTypeData {
   MarkerTypeData();

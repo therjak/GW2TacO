@@ -2,13 +2,11 @@ module;
 #include <cassert>
 #include <memory>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
-
 export module taco.tactical_compass;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class GW2TacticalCompass
     : public gui::CWBGuiType<"gw2rangecircles", gui::CWBItem> {

@@ -8,9 +8,9 @@ module;
 
 module taco.marker_data;
 
-import xml;
-import taco.string_set;
 import taco.poi_behavior;
+import taco.string_set;
+import xml;
 
 MarkerTypeData::MarkerTypeData() {
   memset(&bits, 0, sizeof(bits));

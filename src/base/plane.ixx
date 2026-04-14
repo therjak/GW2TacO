@@ -1,10 +1,12 @@
-#pragma once
+module;
 
 #include <cstdint>
 
-#include "src/base/vector.h"
+export module math:plane;
 
-namespace math {
+import :vector;
+
+export namespace math {
 
 class CPlane {
  public:

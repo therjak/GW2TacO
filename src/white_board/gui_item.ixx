@@ -14,10 +14,10 @@ module;
 export module whiteboard:gui_item;
 
 import :css_item;
-import :message_enum;
-import :skin;
 import :draw_api;
 import :font;
+import :message_enum;
+import :skin;
 
 export namespace gui {
 

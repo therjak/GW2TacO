@@ -5,13 +5,13 @@ module;
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/base/vector.h"
 #include "src/core2/core2.h"
 
 export module whiteboard:draw_api;
 
 import :atlas;
 import :font;
+import math;
 
 export namespace gui {
 
