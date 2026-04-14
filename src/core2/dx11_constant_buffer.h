@@ -9,10 +9,10 @@
 
 namespace renderer {
 
-class CCoreDX11ConstantBuffer : public CCoreConstantBuffer {
+class DX11ConstantBuffer : public ConstantBuffer {
  public:
-  explicit CCoreDX11ConstantBuffer(CCoreDX11Device* device);
-  ~CCoreDX11ConstantBuffer() override;
+  explicit DX11ConstantBuffer(DX11Device* device);
+  ~DX11ConstantBuffer() override;
 
   void Upload() override;
   [[nodiscard]] void* GetBufferPointer() const override;

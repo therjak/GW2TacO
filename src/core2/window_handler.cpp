@@ -19,18 +19,15 @@ using math::CRect;
 
 namespace renderer {
 
-typedef CCoreDX11Device CCore;
-
 //////////////////////////////////////////////////////////////////////////
 // window init parameter structure
 
-CCoreWindowParameters::CCoreWindowParameters() = default;
+WindowParameters::WindowParameters() = default;
 
-CCoreWindowParameters::CCoreWindowParameters(HINSTANCE h_instance,
-                                             bool full_screen, int32_t x_res,
-                                             int32_t y_res, const TCHAR* title,
-                                             HICON icon, bool maximize,
-                                             bool noresize)
+WindowParameters::WindowParameters(HINSTANCE h_instance, bool full_screen,
+                                   int32_t x_res, int32_t y_res,
+                                   const TCHAR* title, HICON icon,
+                                   bool maximize, bool noresize)
     : h_instance_(h_instance),
       full_screen_(full_screen),
       x_res_(x_res),
@@ -40,60 +37,57 @@ CCoreWindowParameters::CCoreWindowParameters(HINSTANCE h_instance,
       maximized_(maximize),
       resize_disabled_(noresize) {}
 
-std::unique_ptr<CCoreDevice> CCoreWindowParameters::CreateDevice() const {
-  return std::make_unique<CCore>();
+std::unique_ptr<Device> WindowParameters::CreateDevice() const {
+  return std::make_unique<DX11Device>();
 }
 
 //////////////////////////////////////////////////////////////////////////
 // windowhandler baseclass
 
-CCoreWindowHandler::CCoreWindowHandler() {
-  last_rendered_frame_ = globalTimer.GetTime();
-}
+WindowHandler::WindowHandler() { last_rendered_frame_ = globalTimer.GetTime(); }
 
-CCoreWindowHandler::~CCoreWindowHandler() { Destroy(); }
+WindowHandler::~WindowHandler() { Destroy(); }
 
-void CCoreWindowHandler::Destroy() { done_ = true; }
+void WindowHandler::Destroy() { done_ = true; }
 
-int32_t CCoreWindowHandler::GetXRes() { return x_res_; }
+int32_t WindowHandler::GetXRes() { return x_res_; }
 
-int32_t CCoreWindowHandler::GetYRes() { return y_res_; }
+int32_t WindowHandler::GetYRes() { return y_res_; }
 
-CCoreWindowParameters& CCoreWindowHandler::GetInitParameters() {
+WindowParameters& WindowHandler::GetInitParameters() {
   return init_parameters_;
 }
 
-void CCoreWindowHandler::SelectMouseCursor(CoreMouseCursor m) {
+void WindowHandler::SelectMouseCursor(MouseCursor m) {
   current_mouse_cursor_ = m;
 }
 
-CPoint CCoreWindowHandler::GetMousePos() { return mouse_pos_; }
+CPoint WindowHandler::GetMousePos() { return mouse_pos_; }
 
-CPoint CCoreWindowHandler::GetLeftDownPos() { return left_down_pos_; }
+CPoint WindowHandler::GetLeftDownPos() { return left_down_pos_; }
 
-CPoint CCoreWindowHandler::GetRightDownPos() { return right_down_pos_; }
+CPoint WindowHandler::GetRightDownPos() { return right_down_pos_; }
 
-CPoint CCoreWindowHandler::GetMidDownPos() { return mid_down_pos_; }
+CPoint WindowHandler::GetMidDownPos() { return mid_down_pos_; }
 
-void CCoreWindowHandler::SetInactiveFrameLimiter(bool set) {
+void WindowHandler::SetInactiveFrameLimiter(bool set) {
   inactive_frame_limiter_ = set;
 }
 
 //////////////////////////////////////////////////////////////////////////
 // windows windowhandler
 
-CCoreWindowHandlerWin::CCoreWindowHandlerWin() : CCoreWindowHandler() {
+WindowHandlerWin::WindowHandlerWin() : WindowHandler() {
   window_placement_.length = sizeof(WINDOWPLACEMENT);
 }
 
-CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
+WindowHandlerWin::~WindowHandlerWin() {
   for (auto m : mouse_cursors_) {
     DeleteObject(m);
   }
 }
 
-bool CCoreWindowHandlerWin::Initialize(
-    const CCoreWindowParameters& window_params) {
+bool WindowHandlerWin::Initialize(const WindowParameters& window_params) {
   x_res_ = window_params.x_res_;
   y_res_ = window_params.y_res_;
   init_parameters_ = window_params;
@@ -164,16 +158,14 @@ bool CCoreWindowHandlerWin::Initialize(
   SetForegroundWindow(window_handle_);
   SetFocus(window_handle_);
 
-  MouseCursorsAt(CoreMouseCursor::kArrow) = (LoadCursor(nullptr, IDC_ARROW));
-  MouseCursorsAt(CoreMouseCursor::kCross) = (LoadCursor(nullptr, IDC_CROSS));
-  MouseCursorsAt(CoreMouseCursor::kSizeWe) = (LoadCursor(nullptr, IDC_SIZEWE));
-  MouseCursorsAt(CoreMouseCursor::kSizeNs) = (LoadCursor(nullptr, IDC_SIZENS));
-  MouseCursorsAt(CoreMouseCursor::kSizeNeSw) =
-      (LoadCursor(nullptr, IDC_SIZENESW));
-  MouseCursorsAt(CoreMouseCursor::kSizeNwSe) =
-      (LoadCursor(nullptr, IDC_SIZENWSE));
-  MouseCursorsAt(CoreMouseCursor::kText) = (LoadCursor(nullptr, IDC_IBEAM));
-  MouseCursorsAt(CoreMouseCursor::kWait) = (LoadCursor(nullptr, IDC_WAIT));
+  MouseCursorsAt(MouseCursor::kArrow) = (LoadCursor(nullptr, IDC_ARROW));
+  MouseCursorsAt(MouseCursor::kCross) = (LoadCursor(nullptr, IDC_CROSS));
+  MouseCursorsAt(MouseCursor::kSizeWe) = (LoadCursor(nullptr, IDC_SIZEWE));
+  MouseCursorsAt(MouseCursor::kSizeNs) = (LoadCursor(nullptr, IDC_SIZENS));
+  MouseCursorsAt(MouseCursor::kSizeNeSw) = (LoadCursor(nullptr, IDC_SIZENESW));
+  MouseCursorsAt(MouseCursor::kSizeNwSe) = (LoadCursor(nullptr, IDC_SIZENWSE));
+  MouseCursorsAt(MouseCursor::kText) = (LoadCursor(nullptr, IDC_IBEAM));
+  MouseCursorsAt(MouseCursor::kWait) = (LoadCursor(nullptr, IDC_WAIT));
 
   maximized_ = window_params.maximized_;
   minimized_ = false;
@@ -194,9 +186,9 @@ bool CCoreWindowHandlerWin::Initialize(
   return true;
 }
 
-bool CCoreWindowHandlerWin::HandleMessages() { return HandleOSMessages(); }
+bool WindowHandlerWin::HandleMessages() { return HandleOSMessages(); }
 
-bool CCoreWindowHandlerWin::HandleOSMessages() {
+bool WindowHandlerWin::HandleOSMessages() {
   MSG msg;
   while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE) != 0) {
     TranslateMessage(&msg);
@@ -205,7 +197,7 @@ bool CCoreWindowHandlerWin::HandleOSMessages() {
   return !done_;
 }
 
-bool CCoreWindowHandlerWin::DeviceOK() {
+bool WindowHandlerWin::DeviceOK() {
   if (!active_) {
     if (!inactive_frame_limiter_) return device_ && device_->DeviceOk();
 
@@ -221,7 +213,7 @@ bool CCoreWindowHandlerWin::DeviceOK() {
   return device_->DeviceOk();
 }
 
-void CCoreWindowHandlerWin::Destroy() {
+void WindowHandlerWin::Destroy() {
   done_ = true;
   if (window_handle_) {
     DestroyWindow(window_handle_);
@@ -229,7 +221,7 @@ void CCoreWindowHandlerWin::Destroy() {
   }
 }
 
-void CCoreWindowHandlerWin::ToggleFullScreen() {
+void WindowHandlerWin::ToggleFullScreen() {
   if (!device_) return;
   if (device_->IsWindowed()) {
     // go to fullscreen
@@ -253,33 +245,32 @@ void CCoreWindowHandlerWin::ToggleFullScreen() {
   }
 }
 
-void CCoreWindowHandlerWin::HandleAltEnter() {
+void WindowHandlerWin::HandleAltEnter() {
   switch (device_->GetAPIType()) {
-    case CoreDeviceApi::kDx9:
+    case DeviceApi::kDx9:
       ToggleFullScreen();
       break;
-    case CoreDeviceApi::kDx11:
+    case DeviceApi::kDx11:
       // handled by dxgi <3
       break;
-    case CoreDeviceApi::kOpenGl:
+    case DeviceApi::kOpenGl:
       break;
     default:
       break;
   }
 }
 
-LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
-                                                     WPARAM wParam,
-                                                     LPARAM lParam) {
-  CCoreWindowHandlerWin* wnd = nullptr;
+LRESULT CALLBACK WindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
+                                                WPARAM wParam, LPARAM lParam) {
+  WindowHandlerWin* wnd = nullptr;
 
   if (uMsg == WM_NCCREATE) {
-    wnd = static_cast<CCoreWindowHandlerWin*>(
+    wnd = static_cast<WindowHandlerWin*>(
         ((LPCREATESTRUCT)lParam)->lpCreateParams);
     SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)wnd);
     wnd->window_handle_ = hWnd;
   } else {
-    wnd = (CCoreWindowHandlerWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    wnd = (WindowHandlerWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
   }
 
   if (wnd) {
@@ -289,8 +280,7 @@ LRESULT CALLBACK CCoreWindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
   }
 }
 
-LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
-                                          LPARAM lParam) {
+LRESULT WindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   if (!window_handle_) return 0;
 
   switch (uMsg) {
@@ -389,7 +379,7 @@ LRESULT CCoreWindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam,
   return DefWindowProc(window_handle_, uMsg, wParam, lParam);
 }
 
-void CCoreWindowHandlerWin::HandleResize() {
+void WindowHandlerWin::HandleResize() {
   const CRect old = client_rect_;
 
   RECT r;
@@ -403,9 +393,9 @@ void CCoreWindowHandlerWin::HandleResize() {
   }
 }
 
-HWND CCoreWindowHandlerWin::GetHandle() { return window_handle_; }
+HWND WindowHandlerWin::GetHandle() { return window_handle_; }
 
-void CCoreWindowHandlerWin::FinalizeMouseCursor() {
+void WindowHandlerWin::FinalizeMouseCursor() {
   POINT point;
   GetCursorPos(&point);
   ScreenToClient(window_handle_, &point);
@@ -418,7 +408,7 @@ void CCoreWindowHandlerWin::FinalizeMouseCursor() {
   }
 }
 
-void CCoreWindowHandlerWin::SetWindowTitle(std::string_view title) {
+void WindowHandlerWin::SetWindowTitle(std::string_view title) {
   SetWindowText(window_handle_, title.data());
 }
 

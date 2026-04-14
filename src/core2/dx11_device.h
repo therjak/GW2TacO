@@ -16,17 +16,17 @@ import math;
 
 namespace renderer {
 
-class CCoreDX11Device : public CCoreDevice {
+class DX11Device : public Device {
  public:
-  CCoreDX11Device();
-  ~CCoreDX11Device() override;
+  DX11Device();
+  ~DX11Device() override;
   ID3D11Device* GetDevice() { return d3d_device_; }
   ID3D11DeviceContext* GetDeviceContext() { return d3d_device_context_; }
-  CoreDeviceApi GetAPIType() override { return CoreDeviceApi::kDx11; }
+  DeviceApi GetAPIType() override { return DeviceApi::kDx11; }
 
   // this initializer will change to accommodate multiple platforms at once once
   // we get to that point:
-  bool Initialize(CCoreWindowHandler* window,
+  bool Initialize(WindowHandler* window,
                   const int32_t sample_count = 0) override;
 
   bool DeviceOk() override;
@@ -40,75 +40,74 @@ class CCoreDX11Device : public CCoreDevice {
   //////////////////////////////////////////////////////////////////////////
   // texture functions
 
-  std::unique_ptr<CCoreTexture2D> CreateTexture2D(
+  std::unique_ptr<Texture2D> CreateTexture2D(
       const int32_t x_res, const int32_t y_res, const uint8_t* data,
-      const char bytes_per_pixel = 4,
-      const CoreFormat format = CoreFormat::kA8R8G8B8,
+      const char bytes_per_pixel = 4, const Format format = Format::kA8R8G8B8,
       const bool render_target = false) override;
-  std::unique_ptr<CCoreTexture2D> CreateTexture2D(const uint8_t* data,
-                                                  const int32_t size) override;
+  std::unique_ptr<Texture2D> CreateTexture2D(const uint8_t* data,
+                                             const int32_t size) override;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexbuffer functions
 
-  std::unique_ptr<CCoreVertexBuffer> CreateVertexBuffer(
-      const uint8_t* data, const int32_t size) override;
-  std::unique_ptr<CCoreVertexBuffer> CreateVertexBufferDynamic(
+  std::unique_ptr<VertexBuffer> CreateVertexBuffer(const uint8_t* data,
+                                                   const int32_t size) override;
+  std::unique_ptr<VertexBuffer> CreateVertexBufferDynamic(
       const int32_t size) override;
 
   //////////////////////////////////////////////////////////////////////////
   // indexbuffer functions
 
-  std::unique_ptr<CCoreIndexBuffer> CreateIndexBuffer(
+  std::unique_ptr<IndexBuffer> CreateIndexBuffer(
       const int32_t index_count, const int32_t index_size = 2) override;
 
   //////////////////////////////////////////////////////////////////////////
   // vertexformat functions
 
-  std::unique_ptr<CCoreVertexFormat> CreateVertexFormat(
-      const std::vector<CoreVertexAttribute>& attributes,
-      CCoreVertexShader* vs = nullptr) override;
+  std::unique_ptr<VertexFormat> CreateVertexFormat(
+      const std::vector<VertexAttribute>& attributes,
+      VertexShader* vs = nullptr) override;
 
   //////////////////////////////////////////////////////////////////////////
   // shader functions
 
-  std::unique_ptr<CCoreVertexShader> CreateVertexShader(
+  std::unique_ptr<VertexShader> CreateVertexShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) override;
-  std::unique_ptr<CCorePixelShader> CreatePixelShader(
+  std::unique_ptr<PixelShader> CreatePixelShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) override;
-  std::unique_ptr<CCoreVertexShader> CreateVertexShaderFromBlob(
+  std::unique_ptr<VertexShader> CreateVertexShaderFromBlob(
       uint8_t* code, int32_t code_size) override;
-  std::unique_ptr<CCorePixelShader> CreatePixelShaderFromBlob(
+  std::unique_ptr<PixelShader> CreatePixelShaderFromBlob(
       uint8_t* code, int32_t code_size) override;
-  std::unique_ptr<CCoreGeometryShader> CreateGeometryShader(
+  std::unique_ptr<GeometryShader> CreateGeometryShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) override;
-  std::unique_ptr<CCoreDomainShader> CreateDomainShader(
+  std::unique_ptr<DomainShader> CreateDomainShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) override;
-  std::unique_ptr<CCoreHullShader> CreateHullShader(
+  std::unique_ptr<HullShader> CreateHullShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) override;
-  std::unique_ptr<CCoreComputeShader> CreateComputeShader(
+  std::unique_ptr<ComputeShader> CreateComputeShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
       LPCSTR shader_version, std::string* error = nullptr) override;
-  std::unique_ptr<CCoreVertexShader> CreateVertexShader() override;
-  std::unique_ptr<CCorePixelShader> CreatePixelShader() override;
-  std::unique_ptr<CCoreGeometryShader> CreateGeometryShader() override;
-  std::unique_ptr<CCoreDomainShader> CreateDomainShader() override;
-  std::unique_ptr<CCoreHullShader> CreateHullShader() override;
-  std::unique_ptr<CCoreComputeShader> CreateComputeShader() override;
-  void SetShaderConstants(const CCoreConstantBuffer* buffers) override;
-  std::unique_ptr<CCoreConstantBuffer> CreateConstantBuffer() override;
+  std::unique_ptr<VertexShader> CreateVertexShader() override;
+  std::unique_ptr<PixelShader> CreatePixelShader() override;
+  std::unique_ptr<GeometryShader> CreateGeometryShader() override;
+  std::unique_ptr<DomainShader> CreateDomainShader() override;
+  std::unique_ptr<HullShader> CreateHullShader() override;
+  std::unique_ptr<ComputeShader> CreateComputeShader() override;
+  void SetShaderConstants(const ConstantBuffer* buffers) override;
+  std::unique_ptr<ConstantBuffer> CreateConstantBuffer() override;
 
-  std::unique_ptr<CCoreBlendState> CreateBlendState() override;
-  std::unique_ptr<CCoreDepthStencilState> CreateDepthStencilState() override;
-  std::unique_ptr<CCoreRasterizerState> CreateRasterizerState() override;
-  std::unique_ptr<CCoreSamplerState> CreateSamplerState() override;
+  std::unique_ptr<BlendState> CreateBlendState() override;
+  std::unique_ptr<DepthStencilState> CreateDepthStencilState() override;
+  std::unique_ptr<RasterizerState> CreateRasterizerState() override;
+  std::unique_ptr<SamplerState> CreateSamplerState() override;
 
-  bool SetRenderTarget(CCoreTexture2D* rt) override;
+  bool SetRenderTarget(Texture2D* rt) override;
 
   //////////////////////////////////////////////////////////////////////////
   // display functions
@@ -161,9 +160,8 @@ class CCoreDX11Device : public CCoreDevice {
                const int32_t x_res, const int32_t y_res,
                const int32_t sample_count = 0,
                const int32_t refresh_rate = 60) override;
-  bool ApplyRenderState(const CoreSampler sampler,
-                        const CoreRenderState render_state,
-                        const CoreRenderStateValue value) override;
+  bool ApplyRenderState(const Sampler sampler, const RenderState render_state,
+                        const RenderStateValue value) override;
   bool SetNoVertexBuffer() override;
   bool CommitRenderStates() override;
 

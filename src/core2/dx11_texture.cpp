@@ -16,8 +16,8 @@
 
 namespace renderer {
 
-CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* device)
-    : CCoreTexture2D(device) {
+DX11Texture2D::DX11Texture2D(DX11Device* device)
+    : Texture2D(device) {
   d3d_device_ = device->GetDevice();
   d3d_device_context_ = device->GetDeviceContext();
   texture_handle_ = nullptr;
@@ -27,9 +27,9 @@ CCoreDX11Texture2D::CCoreDX11Texture2D(CCoreDX11Device* device)
   depth_view_ = nullptr;
 }
 
-CCoreDX11Texture2D::~CCoreDX11Texture2D() { Release(); }
+DX11Texture2D::~DX11Texture2D() { Release(); }
 
-void CCoreDX11Texture2D::Release() {
+void DX11Texture2D::Release() {
   if (texture_handle_) texture_handle_->Release();
   texture_handle_ = nullptr;
   if (view_) view_->Release();
@@ -40,31 +40,31 @@ void CCoreDX11Texture2D::Release() {
   depth_view_ = nullptr;
 }
 
-bool CCoreDX11Texture2D::SetToSampler(const CoreSampler sampler) {
-  if (sampler >= CoreSampler::kPs0 && sampler <= CoreSampler::kPs15) {
+bool DX11Texture2D::SetToSampler(const Sampler sampler) {
+  if (sampler >= Sampler::kPs0 && sampler <= Sampler::kPs15) {
     d3d_device_context_->PSSetShaderResources(
-        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kPs0),
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kPs0),
         1, &view_);
   }
-  if (sampler >= CoreSampler::kVs0 && sampler <= CoreSampler::kVs3) {
+  if (sampler >= Sampler::kVs0 && sampler <= Sampler::kVs3) {
     d3d_device_context_->VSSetShaderResources(
-        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kVs0),
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kVs0),
         1, &view_);
   }
-  if (sampler >= CoreSampler::kGs0 && sampler <= CoreSampler::kGs3) {
+  if (sampler >= Sampler::kGs0 && sampler <= Sampler::kGs3) {
     d3d_device_context_->GSSetShaderResources(
-        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(CoreSampler::kGs0),
+        static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kGs0),
         1, &view_);
   }
 
   return true;
 }
 
-bool CCoreDX11Texture2D::Create(const int32_t x_res, const int32_t y_res,
+bool DX11Texture2D::Create(const int32_t x_res, const int32_t y_res,
                                 const uint8_t* data, const char bytes_per_pixel,
-                                const CoreFormat format,
+                                const Format format,
                                 const bool render_target) {
-  if (x_res <= 0 || y_res <= 0 || format == CoreFormat::kUnknown) return false;
+  if (x_res <= 0 || y_res <= 0 || format == Format::kUnknown) return false;
   Release();
 
   D3D11_TEXTURE2D_DESC tex;
@@ -124,7 +124,7 @@ bool CCoreDX11Texture2D::Create(const int32_t x_res, const int32_t y_res,
   return true;
 }
 
-bool CCoreDX11Texture2D::Create(const uint8_t* data, const int32_t size) {
+bool DX11Texture2D::Create(const uint8_t* data, const int32_t size) {
   bool view_created = false;
 
   if (!data || size <= 0) return false;
@@ -175,22 +175,22 @@ bool CCoreDX11Texture2D::Create(const uint8_t* data, const int32_t size) {
   return true;
 }
 
-bool CCoreDX11Texture2D::Lock(void** result, int32_t& pitch) { return false; }
+bool DX11Texture2D::Lock(void** result, int32_t& pitch) { return false; }
 
-bool CCoreDX11Texture2D::UnLock() { return true; }
+bool DX11Texture2D::UnLock() { return true; }
 
-void CCoreDX11Texture2D::OnDeviceLost() {
+void DX11Texture2D::OnDeviceLost() {
   if (render_target_) Release();
 }
 
-void CCoreDX11Texture2D::OnDeviceReset() {
+void DX11Texture2D::OnDeviceReset() {
   if (render_target_ && x_res_ > 0 && y_res_ > 0 &&
-      format_ != CoreFormat::kUnknown) {
+      format_ != Format::kUnknown) {
     BASEASSERT(Create(x_res_, y_res_, nullptr, 4, format_, render_target_));
   }
 }
 
-bool CCoreDX11Texture2D::Update(const uint8_t* data, const int32_t x_res,
+bool DX11Texture2D::Update(const uint8_t* data, const int32_t x_res,
                                 const int32_t y_res,
                                 const char bytes_per_pixel) {
   if (!texture_handle_) return false;
@@ -213,7 +213,7 @@ uint16_t degammaint16(uint16_t f) {
   return static_cast<uint16_t>(degammafloat(tf) * 65535);
 }
 
-void CCoreDX11Texture2D::ExportToImage(std::string_view filename,
+void DX11Texture2D::ExportToImage(std::string_view filename,
                                        bool clear_alpha,
                                        ExportImageFormat format, bool degamma) {
   if (!texture_handle_) return;
@@ -354,13 +354,13 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view filename,
   }
 
   switch (format) {
-    case ExportImageFormat::kCorePng:
+    case ExportImageFormat::kPng:
       ExportPNG(image.get(), head.dwWidth, head.dwHeight, clear_alpha, filename);
       break;
-    case ExportImageFormat::kCoreTga:
+    case ExportImageFormat::kTga:
       ExportTga(image.get(), head.dwWidth, head.dwHeight, clear_alpha, filename);
       break;
-    case ExportImageFormat::kCoreBmp:
+    case ExportImageFormat::kBmp:
       ExportBmp(image.get(), head.dwWidth, head.dwHeight, filename);
       break;
     default:
@@ -368,7 +368,7 @@ void CCoreDX11Texture2D::ExportToImage(std::string_view filename,
   }
 }
 
-bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t x_res,
+bool DX11Texture2D::CreateDepthBuffer(const int32_t x_res,
                                            const int32_t y_res,
                                            const int32_t ms_count) {
   if (x_res <= 0 || y_res <= 0) return false;
@@ -429,16 +429,16 @@ bool CCoreDX11Texture2D::CreateDepthBuffer(const int32_t x_res,
 
   x_res_ = x_res;
   y_res_ = y_res;
-  format_ = CoreFormat::kUnknown;
+  format_ = Format::kUnknown;
 
   return true;
 }
 
-CCoreDX11Texture3D::CCoreDX11Texture3D(CCoreDX11Device* device)
-    : CCoreTexture3D(device){};
+DX11Texture3D::DX11Texture3D(DX11Device* device)
+    : Texture3D(device){};
 
-CCoreDX11TextureCube::CCoreDX11TextureCube(CCoreDX11Device* device)
-    : CCoreTextureCube(device){};
+DX11TextureCube::DX11TextureCube(DX11Device* device)
+    : TextureCube(device){};
 
 static DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt) {
   // Assumes UNORM or FLOAT; doesn't use UINT or SINT

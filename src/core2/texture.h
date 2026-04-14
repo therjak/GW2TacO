@@ -8,33 +8,33 @@
 namespace renderer {
 
 enum class ExportImageFormat : uint8_t {
-  kCorePng = 0,
-  kCoreTga = 1,
-  kCoreBmp = 2,
+  kPng = 0,
+  kTga = 1,
+  kBmp = 2,
 };
 
-class CCoreTexture : public CCoreResource {
-  friend class CCoreDevice;
+class Texture : public Resource {
+  friend class Device;
 
  public:
-  explicit CCoreTexture(CCoreDevice* device) : CCoreResource(device) {}
+  explicit Texture(Device* device) : Resource(device) {}
   // should remove this texture from the device render state here
-  ~CCoreTexture() override = default;
+  ~Texture() override = default;
 
  private:
-  virtual bool SetToSampler(const CoreSampler sampler) = 0;
+  virtual bool SetToSampler(const Sampler sampler) = 0;
 };
 
-class CCoreTexture2D : public CCoreTexture {
+class Texture2D : public Texture {
  public:
-  explicit CCoreTexture2D(CCoreDevice* device) : CCoreTexture(device) {
+  explicit Texture2D(Device* device) : Texture(device) {
     x_res_ = y_res_ = 0;
-    format_ = CoreFormat::kUnknown;
+    format_ = Format::kUnknown;
   }
 
   virtual bool Create(const int32_t x_res, const int32_t y_res,
                       const uint8_t* data, const char bytes_per_pixel = 4,
-                      const CoreFormat format = CoreFormat::kA8R8G8B8,
+                      const Format format = Format::kA8R8G8B8,
                       const bool render_target = false) = 0;
   virtual bool Create(const uint8_t* data, int32_t const size) = 0;
   virtual bool CreateDepthBuffer(const int32_t x_res, const int32_t y_res,
@@ -53,17 +53,17 @@ class CCoreTexture2D : public CCoreTexture {
 
  protected:
   int32_t x_res_, y_res_;
-  CoreFormat format_;
+  Format format_;
 };
 
-class CCoreTexture3D : public CCoreTexture {
+class Texture3D : public Texture {
  public:
-  explicit CCoreTexture3D(CCoreDevice* device) : CCoreTexture(device) {}
+  explicit Texture3D(Device* device) : Texture(device) {}
 };
 
-class CCoreTextureCube : public CCoreTexture {
+class TextureCube : public Texture {
  public:
-  explicit CCoreTextureCube(CCoreDevice* device) : CCoreTexture(device) {}
+  explicit TextureCube(Device* device) : Texture(device) {}
 };
 
 }  // namespace renderer

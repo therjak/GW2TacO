@@ -149,18 +149,18 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
   if (!border) border = GetBorderSelectionArea(App->GetMousePos());
 
   if ((border & WB_DRAGMODE_LEFT) || (border & WB_DRAGMODE_RIGHT)) {
-    App->SelectMouseCursor(renderer::CoreMouseCursor::kSizeWe);
+    App->SelectMouseCursor(renderer::MouseCursor::kSizeWe);
   }
   if ((border & WB_DRAGMODE_TOP) || (border & WB_DRAGMODE_BOTTOM)) {
-    App->SelectMouseCursor(renderer::CoreMouseCursor::kSizeNs);
+    App->SelectMouseCursor(renderer::MouseCursor::kSizeNs);
   }
   if (((border & WB_DRAGMODE_LEFT) && (border & WB_DRAGMODE_TOP)) ||
       ((border & WB_DRAGMODE_RIGHT) && (border & WB_DRAGMODE_BOTTOM))) {
-    App->SelectMouseCursor(renderer::CoreMouseCursor::kSizeNwSe);
+    App->SelectMouseCursor(renderer::MouseCursor::kSizeNwSe);
   }
   if (((border & WB_DRAGMODE_LEFT) && (border & WB_DRAGMODE_BOTTOM)) ||
       ((border & WB_DRAGMODE_RIGHT) && (border & WB_DRAGMODE_TOP))) {
-    App->SelectMouseCursor(renderer::CoreMouseCursor::kSizeNeSw);
+    App->SelectMouseCursor(renderer::MouseCursor::kSizeNeSw);
   }
 }
 

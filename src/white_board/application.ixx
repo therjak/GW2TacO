@@ -36,13 +36,13 @@ typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
                                              const CXMLNode& node,
                                              math::CRect& Pos);
 
-class CWBApplication : public renderer::CCoreWindowHandlerWin {
+class CWBApplication : public renderer::WindowHandlerWin {
   friend class CWBItem;
 
  public:
   CWBApplication();
   ~CWBApplication() override;
-  bool Initialize(const renderer::CCoreWindowParameters& WindowParams) override;
+  bool Initialize(const renderer::WindowParameters& WindowParams) override;
 
   CWBItem* GetRoot();
   CWBItem* GetFocusItem();

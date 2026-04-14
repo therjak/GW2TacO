@@ -5,14 +5,13 @@
 
 namespace renderer {
 
-CCoreConstantBuffer::CCoreConstantBuffer(CCoreDevice* device)
-    : CCoreResource(device) {}
+ConstantBuffer::ConstantBuffer(Device* device) : Resource(device) {}
 
-CCoreConstantBuffer::~CCoreConstantBuffer() = default;
+ConstantBuffer::~ConstantBuffer() = default;
 
-void CCoreConstantBuffer::Reset() { data_length_ = 0; }
+void ConstantBuffer::Reset() { data_length_ = 0; }
 
-void CCoreConstantBuffer::AddData(const void* data_in, int32_t length) {
+void ConstantBuffer::AddData(const void* data_in, int32_t length) {
   if (data_length_ + length > buffer_length_) {
     std::unique_ptr<uint8_t[]> old_data;
     old_data.swap(data_);
@@ -29,6 +28,6 @@ void CCoreConstantBuffer::AddData(const void* data_in, int32_t length) {
   data_length_ += length;
 }
 
-void CCoreConstantBuffer::Upload() {}
+void ConstantBuffer::Upload() {}
 
 }  // namespace renderer

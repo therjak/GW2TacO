@@ -8,10 +8,10 @@
 
 namespace renderer {
 
-class CCoreDX11VertexBuffer : public CCoreVertexBuffer {
+class DX11VertexBuffer : public VertexBuffer {
  public:
-  explicit CCoreDX11VertexBuffer(CCoreDX11Device* device);
-  ~CCoreDX11VertexBuffer() override;
+  explicit DX11VertexBuffer(DX11Device* device);
+  ~DX11VertexBuffer() override;
 
   bool Create(const uint8_t* data, const uint32_t size) override;
   bool CreateDynamic(const uint32_t size) override;

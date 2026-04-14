@@ -184,7 +184,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
   return img->GetHandle() != 0;
 }
 
-bool CAtlas::InitializeTexture(renderer::CCoreDevice* Device) {
+bool CAtlas::InitializeTexture(renderer::Device* Device) {
   if (!Device) return false;
   Atlas = Device->CreateTexture2D(XRes, YRes, Image.get());
   return Atlas.operator bool();
@@ -308,7 +308,7 @@ void CAtlas::DeleteImage(const WBATLASHANDLE h) {
   return;
 }
 
-renderer::CCoreTexture2D* CAtlas::GetTexture() { return Atlas.get(); }
+renderer::Texture2D* CAtlas::GetTexture() { return Atlas.get(); }
 
 CSize CAtlas::GetSize(WBATLASHANDLE h) {
   CAtlasNode* n = GetNodeCached(h);
@@ -407,8 +407,7 @@ bool CAtlas::Reset() {
   return true;
 }
 
-bool CAtlas::Resize(renderer::CCoreDevice* Device, int32_t XSize,
-                    int32_t YSize) {
+bool CAtlas::Resize(renderer::Device* Device, int32_t XSize, int32_t YSize) {
   Root.reset();
   Image.reset();
   Atlas.reset();

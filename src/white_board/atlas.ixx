@@ -74,9 +74,9 @@ class CAtlas {
   CAtlas(int32_t XSize, int32_t YSize);
   virtual ~CAtlas();
 
-  bool InitializeTexture(renderer::CCoreDevice* Device);
+  bool InitializeTexture(renderer::Device* Device);
   bool UpdateTexture();
-  renderer::CCoreTexture2D* GetTexture();
+  renderer::Texture2D* GetTexture();
 
   WBATLASHANDLE AddImage(uint8_t* Image, int32_t XRes, int32_t YRes,
                          const math::CRect& SourceArea);
@@ -97,7 +97,7 @@ class CAtlas {
   [[nodiscard]] int32_t GetXRes() const { return XRes; }
   [[nodiscard]] int32_t GetYRes() const { return YRes; }
 
-  bool Resize(renderer::CCoreDevice* Device, int32_t XSize, int32_t YSize);
+  bool Resize(renderer::Device* Device, int32_t XSize, int32_t YSize);
 
  private:
   bool PackImage(CAtlasImage* img);
@@ -107,7 +107,7 @@ class CAtlas {
 
   int32_t XRes, YRes;
   std::unique_ptr<uint8_t[]> Image;
-  std::unique_ptr<renderer::CCoreTexture2D> Atlas;
+  std::unique_ptr<renderer::Texture2D> Atlas;
 
   bool TextureUpdateNeeded;
 

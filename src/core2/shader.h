@@ -8,14 +8,14 @@
 
 namespace renderer {
 
-class CCoreShader : public CCoreResource {
-  friend class CCoreDevice;
+class Shader : public Resource {
+  friend class Device;
 
  public:
-  explicit CCoreShader(CCoreDevice* device) : CCoreResource(device) {
+  explicit Shader(Device* device) : Resource(device) {
     binary_length_ = 0;
   };
-  ~CCoreShader() override;
+  ~Shader() override;
 
   virtual bool Create(void* binary, int32_t length) = 0;
 
@@ -55,43 +55,43 @@ class CCoreShader : public CCoreResource {
   int32_t binary_length_;
 };
 
-class CCorePixelShader : public CCoreShader {
+class PixelShader : public Shader {
  public:
-  explicit CCorePixelShader(CCoreDevice* device) : CCoreShader(device){};
-  ~CCorePixelShader() override;
+  explicit PixelShader(Device* device) : Shader(device){};
+  ~PixelShader() override;
   void* GetHandle() override = 0;
 };
 
-class CCoreGeometryShader : public CCoreShader {
+class GeometryShader : public Shader {
  public:
-  explicit CCoreGeometryShader(CCoreDevice* device) : CCoreShader(device){};
-  ~CCoreGeometryShader() override;
+  explicit GeometryShader(Device* device) : Shader(device){};
+  ~GeometryShader() override;
 };
 
-class CCoreVertexShader : public CCoreShader {
+class VertexShader : public Shader {
  public:
-  explicit CCoreVertexShader(CCoreDevice* device) : CCoreShader(device){};
-  ~CCoreVertexShader() override;
+  explicit VertexShader(Device* device) : Shader(device){};
+  ~VertexShader() override;
 };
 
-class CCoreHullShader : public CCoreShader {
+class HullShader : public Shader {
  public:
-  explicit CCoreHullShader(CCoreDevice* device) : CCoreShader(device){};
-  ~CCoreHullShader() override;
+  explicit HullShader(Device* device) : Shader(device){};
+  ~HullShader() override;
   void* GetHandle() override = 0;
 };
 
-class CCoreDomainShader : public CCoreShader {
+class DomainShader : public Shader {
  public:
-  explicit CCoreDomainShader(CCoreDevice* device) : CCoreShader(device){};
-  ~CCoreDomainShader() override;
+  explicit DomainShader(Device* device) : Shader(device){};
+  ~DomainShader() override;
   void* GetHandle() override = 0;
 };
 
-class CCoreComputeShader : public CCoreShader {
+class ComputeShader : public Shader {
  public:
-  explicit CCoreComputeShader(CCoreDevice* device) : CCoreShader(device){};
-  ~CCoreComputeShader() override;
+  explicit ComputeShader(Device* device) : Shader(device){};
+  ~ComputeShader() override;
   void* GetHandle() override = 0;
 };
 

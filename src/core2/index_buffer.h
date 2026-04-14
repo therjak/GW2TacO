@@ -4,11 +4,11 @@
 #include "src/core2/resource.h"
 
 namespace renderer {
-class CCoreIndexBuffer : public CCoreResource {
-  friend class CCoreDevice;
+class IndexBuffer : public Resource {
+  friend class Device;
 
  public:
-  explicit CCoreIndexBuffer(CCoreDevice* device) : CCoreResource(device) {}
+  explicit IndexBuffer(Device* device) : Resource(device) {}
 
   virtual bool Create(const uint32_t index_count,
                       const uint32_t index_size = 2) = 0;

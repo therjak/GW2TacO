@@ -7,33 +7,33 @@ import xml;
 
 namespace renderer {
 
-CCoreRenderStateBatch::CCoreRenderStateBatch(CCoreDevice* device)
-    : CCoreResource(device) {
+RenderStateBatch::RenderStateBatch(Device* device)
+    : Resource(device) {
   dirty_ = true;
 }
 
-CCoreRenderStateBatch::~CCoreRenderStateBatch() = default;
+RenderStateBatch::~RenderStateBatch() = default;
 
-CCoreBlendState::CCoreBlendState(CCoreDevice* device)
-    : CCoreRenderStateBatch(device) {
+BlendState::BlendState(Device* device)
+    : RenderStateBatch(device) {
   alpha_to_coverage_ = false;
   independent_blend_ = false;
 
   for (auto& render_target_blend_state : render_target_blend_states_) {
     render_target_blend_state.blend_enable = false;
-    render_target_blend_state.src_blend = CoreBlendFactor::kOne;
-    render_target_blend_state.dest_blend = CoreBlendFactor::kZero;
-    render_target_blend_state.blend_op = CoreBlendOp::kAdd;
-    render_target_blend_state.src_blend_alpha = CoreBlendFactor::kOne;
-    render_target_blend_state.dest_blend_alpha = CoreBlendFactor::kZero;
-    render_target_blend_state.blend_op_alpha = CoreBlendOp::kAdd;
+    render_target_blend_state.src_blend = BlendFactor::kOne;
+    render_target_blend_state.dest_blend = BlendFactor::kZero;
+    render_target_blend_state.blend_op = BlendOp::kAdd;
+    render_target_blend_state.src_blend_alpha = BlendFactor::kOne;
+    render_target_blend_state.dest_blend_alpha = BlendFactor::kZero;
+    render_target_blend_state.blend_op_alpha = BlendOp::kAdd;
     render_target_blend_state.render_target_write_mask = 0x0f;
   }
 }
 
-CCoreBlendState::~CCoreBlendState() = default;
+BlendState::~BlendState() = default;
 
-void CCoreBlendState::SetRenderTargetWriteMask(int32_t render_target,
+void BlendState::SetRenderTargetWriteMask(int32_t render_target,
                                                uint8_t mask) {
   if (render_target_blend_states_[render_target].render_target_write_mask !=
       mask)
@@ -41,66 +41,66 @@ void CCoreBlendState::SetRenderTargetWriteMask(int32_t render_target,
   render_target_blend_states_[render_target].render_target_write_mask = mask;
 }
 
-void CCoreBlendState::SetBlendOpAlpha(int32_t render_target,
-                                      CoreBlendOp blend_op) {
+void BlendState::SetBlendOpAlpha(int32_t render_target,
+                                      BlendOp blend_op) {
   if (render_target_blend_states_[render_target].blend_op_alpha != blend_op)
     dirty_ = true;
   render_target_blend_states_[render_target].blend_op_alpha = blend_op;
 }
 
-void CCoreBlendState::SetDestBlendAlpha(int32_t render_target,
-                                        CoreBlendFactor blend_factor) {
+void BlendState::SetDestBlendAlpha(int32_t render_target,
+                                        BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].dest_blend_alpha !=
       blend_factor)
     dirty_ = true;
   render_target_blend_states_[render_target].dest_blend_alpha = blend_factor;
 }
 
-void CCoreBlendState::SetSrcBlendAlpha(int32_t render_target,
-                                       CoreBlendFactor blend_factor) {
+void BlendState::SetSrcBlendAlpha(int32_t render_target,
+                                       BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].src_blend_alpha !=
       blend_factor)
     dirty_ = true;
   render_target_blend_states_[render_target].src_blend_alpha = blend_factor;
 }
 
-void CCoreBlendState::SetBlendOp(int32_t render_target, CoreBlendOp blend_op) {
+void BlendState::SetBlendOp(int32_t render_target, BlendOp blend_op) {
   if (render_target_blend_states_[render_target].blend_op != blend_op)
     dirty_ = true;
   render_target_blend_states_[render_target].blend_op = blend_op;
 }
 
-void CCoreBlendState::SetDestBlend(int32_t render_target,
-                                   CoreBlendFactor blend_factor) {
+void BlendState::SetDestBlend(int32_t render_target,
+                                   BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].dest_blend != blend_factor)
     dirty_ = true;
   render_target_blend_states_[render_target].dest_blend = blend_factor;
 }
 
-void CCoreBlendState::SetSrcBlend(int32_t render_target,
-                                  CoreBlendFactor blend_factor) {
+void BlendState::SetSrcBlend(int32_t render_target,
+                                  BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].src_blend != blend_factor)
     dirty_ = true;
   render_target_blend_states_[render_target].src_blend = blend_factor;
 }
 
-void CCoreBlendState::SetBlendEnable(int32_t render_target, bool enabled) {
+void BlendState::SetBlendEnable(int32_t render_target, bool enabled) {
   if (render_target_blend_states_[render_target].blend_enable != enabled)
     dirty_ = true;
   render_target_blend_states_[render_target].blend_enable = enabled;
 }
 
-void CCoreBlendState::SetIndependentBlend(bool enabled) {
+void BlendState::SetIndependentBlend(bool enabled) {
   if (independent_blend_ != enabled) dirty_ = true;
   independent_blend_ = enabled;
 }
 
-void CCoreBlendState::SetAlphaToCoverage(bool enabled) {
+void BlendState::SetAlphaToCoverage(bool enabled) {
   if (alpha_to_coverage_ != enabled) dirty_ = true;
   alpha_to_coverage_ = enabled;
 }
 
-bool CCoreBlendState::Import(CXMLNode* node) {
+bool BlendState::Import(CXMLNode* node) {
   std::string value_str;
 
   if (node->HasAttribute("AlphaToCoverage")) {
@@ -161,7 +161,7 @@ bool CCoreBlendState::Import(CXMLNode* node) {
   return true;
 }
 
-void CCoreBlendState::Export(CXMLNode* node) {
+void BlendState::Export(CXMLNode* node) {
   node->AddChild("AlphaToCoverage").SetInt(alpha_to_coverage_);
   node->AddChild("IndependentBlend").SetInt(independent_blend_);
 
@@ -201,31 +201,31 @@ void CCoreBlendState::Export(CXMLNode* node) {
   }
 }
 
-CCoreDepthStencilState::CCoreDepthStencilState(CCoreDevice* device)
-    : CCoreRenderStateBatch(device) {
+DepthStencilState::DepthStencilState(Device* device)
+    : RenderStateBatch(device) {
   depth_enable_ = true;
   z_write_enable_ = true;
-  depth_func_ = CoreComparisonFunction::kLess;
+  depth_func_ = ComparisonFunction::kLess;
 }
 
-CCoreDepthStencilState::~CCoreDepthStencilState() = default;
+DepthStencilState::~DepthStencilState() = default;
 
-void CCoreDepthStencilState::SetDepthFunc(CoreComparisonFunction func) {
+void DepthStencilState::SetDepthFunc(ComparisonFunction func) {
   if (func != depth_func_) dirty_ = true;
   depth_func_ = func;
 }
 
-void CCoreDepthStencilState::SetZWriteEnable(bool enabled) {
+void DepthStencilState::SetZWriteEnable(bool enabled) {
   if (enabled != z_write_enable_) dirty_ = true;
   z_write_enable_ = enabled;
 }
 
-void CCoreDepthStencilState::SetDepthEnable(bool enabled) {
+void DepthStencilState::SetDepthEnable(bool enabled) {
   if (enabled != depth_enable_) dirty_ = true;
   depth_enable_ = enabled;
 }
 
-bool CCoreDepthStencilState::Import(CXMLNode* node) {
+bool DepthStencilState::Import(CXMLNode* node) {
   if (node->GetChildCount("DepthEnable")) {
     node->GetChild("DepthEnable").GetValue(depth_enable_);
   }
@@ -241,17 +241,17 @@ bool CCoreDepthStencilState::Import(CXMLNode* node) {
   return true;
 }
 
-void CCoreDepthStencilState::Export(CXMLNode* node) {
+void DepthStencilState::Export(CXMLNode* node) {
   node->AddChild("DepthEnable").SetInt(depth_enable_);
   node->AddChild("ZWriteEnable").SetInt(z_write_enable_);
   node->AddChild("DepthFunc")
       .SetText(FindNameByEnum(ComparisonFunctionNames, depth_func_).data());
 }
 
-CCoreRasterizerState::CCoreRasterizerState(CCoreDevice* device)
-    : CCoreRenderStateBatch(device) {
-  fill_mode_ = CoreFillMode::kSolid;
-  cull_mode_ = CoreCullMode::kCcw;
+RasterizerState::RasterizerState(Device* device)
+    : RenderStateBatch(device) {
+  fill_mode_ = FillMode::kSolid;
+  cull_mode_ = CullMode::kCcw;
   front_counter_clockwise_ = false;
   depth_bias_ = 0;
   depth_bias_clamp_ = 0;
@@ -262,59 +262,59 @@ CCoreRasterizerState::CCoreRasterizerState(CCoreDevice* device)
   antialiased_line_enable_ = false;
 }
 
-CCoreRasterizerState::~CCoreRasterizerState() = default;
+RasterizerState::~RasterizerState() = default;
 
-void CCoreRasterizerState::SetAntialiasedLineEnable(bool enabled) {
+void RasterizerState::SetAntialiasedLineEnable(bool enabled) {
   if (antialiased_line_enable_ != enabled) dirty_ = true;
   antialiased_line_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetMultisampleEnable(bool enabled) {
+void RasterizerState::SetMultisampleEnable(bool enabled) {
   if (multisample_enable_ != enabled) dirty_ = true;
   multisample_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetScissorEnable(bool enabled) {
+void RasterizerState::SetScissorEnable(bool enabled) {
   if (scissor_enable_ != enabled) dirty_ = true;
   scissor_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetDepthClipEnable(bool enabled) {
+void RasterizerState::SetDepthClipEnable(bool enabled) {
   if (depth_clip_enable_ != enabled) dirty_ = true;
   depth_clip_enable_ = enabled;
 }
 
-void CCoreRasterizerState::SetSlopeScaledDepthBias(float value) {
+void RasterizerState::SetSlopeScaledDepthBias(float value) {
   if (slope_scaled_depth_bias_ != value) dirty_ = true;
   slope_scaled_depth_bias_ = value;
 }
 
-void CCoreRasterizerState::SetDepthBiasClamp(float value) {
+void RasterizerState::SetDepthBiasClamp(float value) {
   if (depth_bias_clamp_ != value) dirty_ = true;
   depth_bias_clamp_ = value;
 }
 
-void CCoreRasterizerState::SetDepthBias(int32_t value) {
+void RasterizerState::SetDepthBias(int32_t value) {
   if (depth_bias_ != value) dirty_ = true;
   depth_bias_ = value;
 }
 
-void CCoreRasterizerState::SetFrontCounterClockwise(bool enabled) {
+void RasterizerState::SetFrontCounterClockwise(bool enabled) {
   if (front_counter_clockwise_ != enabled) dirty_ = true;
   front_counter_clockwise_ = enabled;
 }
 
-void CCoreRasterizerState::SetCullMode(CoreCullMode mode) {
+void RasterizerState::SetCullMode(CullMode mode) {
   if (cull_mode_ != mode) dirty_ = true;
   cull_mode_ = mode;
 }
 
-void CCoreRasterizerState::SetFillMode(CoreFillMode mode) {
+void RasterizerState::SetFillMode(FillMode mode) {
   if (fill_mode_ != mode) dirty_ = true;
   fill_mode_ = mode;
 }
 
-bool CCoreRasterizerState::Import(CXMLNode* node) {
+bool RasterizerState::Import(CXMLNode* node) {
   if (node->GetChildCount("FillMode")) {
     auto value_str = node->GetChild("FillMode").GetText();
     FindEnumByName(FillModeNames, value_str, fill_mode_);
@@ -354,7 +354,7 @@ bool CCoreRasterizerState::Import(CXMLNode* node) {
   return true;
 }
 
-void CCoreRasterizerState::Export(CXMLNode* node) {
+void RasterizerState::Export(CXMLNode* node) {
   node->AddChild("FillMode")
       .SetText(FindNameByEnum(FillModeNames, fill_mode_).data());
   node->AddChild("CullMode")
@@ -370,23 +370,23 @@ void CCoreRasterizerState::Export(CXMLNode* node) {
   node->AddChild("AntialiasedLineEnable").SetInt(antialiased_line_enable_);
 }
 
-CCoreSamplerState::CCoreSamplerState(CCoreDevice* device)
-    : CCoreRenderStateBatch(device) {
-  filter_ = CoreFilter::kMinMagMipLinear;
-  address_u_ = CoreTextureAddressMode::kClamp;
-  address_v_ = CoreTextureAddressMode::kClamp;
-  address_w_ = CoreTextureAddressMode::kClamp;
+SamplerState::SamplerState(Device* device)
+    : RenderStateBatch(device) {
+  filter_ = Filter::kMinMagMipLinear;
+  address_u_ = TextureAddressMode::kClamp;
+  address_v_ = TextureAddressMode::kClamp;
+  address_w_ = TextureAddressMode::kClamp;
   min_lod_ = std::numeric_limits<float>::lowest();
   max_lod_ = std::numeric_limits<float>::max();
   mip_lod_bias_ = 0;
   max_anisotropy_ = 1;
-  comparison_func_ = CoreComparisonFunction::kNever;
+  comparison_func_ = ComparisonFunction::kNever;
   border_color_[0] = border_color_[1] = border_color_[2] = border_color_[3] = 1;
 }
 
-CCoreSamplerState::~CCoreSamplerState() = default;
+SamplerState::~SamplerState() = default;
 
-void CCoreSamplerState::SetBorderColor(float r, float g, float b, float a) {
+void SamplerState::SetBorderColor(float r, float g, float b, float a) {
   if (border_color_[0] != r || border_color_[1] != g || border_color_[2] != b ||
       border_color_[3] != a) {
     dirty_ = true;
@@ -397,52 +397,52 @@ void CCoreSamplerState::SetBorderColor(float r, float g, float b, float a) {
   border_color_[3] = a;
 }
 
-void CCoreSamplerState::SetMaxLOD(float value) {
+void SamplerState::SetMaxLOD(float value) {
   if (max_lod_ != value) dirty_ = true;
   max_lod_ = value;
 }
 
-void CCoreSamplerState::SetMinLOD(float value) {
+void SamplerState::SetMinLOD(float value) {
   if (min_lod_ != value) dirty_ = true;
   min_lod_ = value;
 }
 
-void CCoreSamplerState::SetComparisonFunc(CoreComparisonFunction func) {
+void SamplerState::SetComparisonFunc(ComparisonFunction func) {
   if (comparison_func_ != func) dirty_ = true;
   comparison_func_ = func;
 }
 
-void CCoreSamplerState::SetMaxAnisotropy(int32_t value) {
+void SamplerState::SetMaxAnisotropy(int32_t value) {
   if (max_anisotropy_ != value) dirty_ = true;
   max_anisotropy_ = value;
 }
 
-void CCoreSamplerState::SetMipLODBias(float value) {
+void SamplerState::SetMipLODBias(float value) {
   if (mip_lod_bias_ != value) dirty_ = true;
   mip_lod_bias_ = value;
 }
 
-void CCoreSamplerState::SetAddressW(CoreTextureAddressMode mode) {
+void SamplerState::SetAddressW(TextureAddressMode mode) {
   if (address_w_ != mode) dirty_ = true;
   address_w_ = mode;
 }
 
-void CCoreSamplerState::SetAddressV(CoreTextureAddressMode mode) {
+void SamplerState::SetAddressV(TextureAddressMode mode) {
   if (address_v_ != mode) dirty_ = true;
   address_v_ = mode;
 }
 
-void CCoreSamplerState::SetAddressU(CoreTextureAddressMode mode) {
+void SamplerState::SetAddressU(TextureAddressMode mode) {
   if (address_u_ != mode) dirty_ = true;
   address_u_ = mode;
 }
 
-void CCoreSamplerState::SetFilter(CoreFilter filter) {
+void SamplerState::SetFilter(Filter filter) {
   if (filter_ != filter) dirty_ = true;
   filter_ = filter;
 }
 
-bool CCoreSamplerState::Import(CXMLNode* node) {
+bool SamplerState::Import(CXMLNode* node) {
   if (node->GetChildCount("Filter")) {
     auto value_str = node->GetChild("Filter").GetText();
     FindEnumByName(FilterNames, value_str, filter_);
@@ -483,7 +483,7 @@ bool CCoreSamplerState::Import(CXMLNode* node) {
   return true;
 }
 
-void CCoreSamplerState::Export(CXMLNode* node) {
+void SamplerState::Export(CXMLNode* node) {
   node->AddChild("Filter").SetText(FindNameByEnum(FilterNames, filter_));
   node->AddChild("AddressU")
       .SetText(FindNameByEnum(AddressModeNames, address_u_));

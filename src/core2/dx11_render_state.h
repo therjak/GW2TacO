@@ -6,65 +6,65 @@
 
 namespace renderer {
 
-class CCoreDX11BlendState : public CCoreBlendState {
+class DX11BlendState : public BlendState {
  public:
-  explicit CCoreDX11BlendState(CCoreDX11Device* device);
-  ~CCoreDX11BlendState() override;
+  explicit DX11BlendState(DX11Device* device);
+  ~DX11BlendState() override;
 
   bool Update() override;
   bool Apply() override;
   void* GetHandle() override { return state_; }
 
  private:
-  CCoreDX11Device* device_;
+  DX11Device* device_;
   ID3D11Device* d3d_device_;
   ID3D11DeviceContext* context_;
   ID3D11BlendState* state_;
 };
 
-class CCoreDX11DepthStencilState : public CCoreDepthStencilState {
+class DX11DepthStencilState : public DepthStencilState {
  public:
-  explicit CCoreDX11DepthStencilState(CCoreDX11Device* device);
-  ~CCoreDX11DepthStencilState() override;
+  explicit DX11DepthStencilState(DX11Device* device);
+  ~DX11DepthStencilState() override;
 
   bool Update() override;
   bool Apply() override;
   void* GetHandle() override { return state_; }
 
  private:
-  CCoreDX11Device* device_;
+  DX11Device* device_;
   ID3D11Device* d3d_device_;
   ID3D11DeviceContext* context_;
   ID3D11DepthStencilState* state_;
 };
 
-class CCoreDX11RasterizerState : public CCoreRasterizerState {
+class DX11RasterizerState : public RasterizerState {
  public:
-  explicit CCoreDX11RasterizerState(CCoreDX11Device* device);
-  ~CCoreDX11RasterizerState() override;
+  explicit DX11RasterizerState(DX11Device* device);
+  ~DX11RasterizerState() override;
 
   bool Update() override;
   bool Apply() override;
   void* GetHandle() override { return state_; }
 
  private:
-  CCoreDX11Device* device_;
+  DX11Device* device_;
   ID3D11Device* d3d_device_;
   ID3D11DeviceContext* context_;
   ID3D11RasterizerState* state_;
 };
 
-class CCoreDX11SamplerState : public CCoreSamplerState {
+class DX11SamplerState : public SamplerState {
  public:
-  explicit CCoreDX11SamplerState(CCoreDX11Device* device);
-  ~CCoreDX11SamplerState() override;
+  explicit DX11SamplerState(DX11Device* device);
+  ~DX11SamplerState() override;
 
   bool Update() override;
-  bool Apply(CoreSampler sampler) override;
+  bool Apply(Sampler sampler) override;
   void* GetHandle() override { return state_; }
 
  private:
-  CCoreDX11Device* device_;
+  DX11Device* device_;
   ID3D11Device* d3d_device_;
   ID3D11DeviceContext* context_;
   ID3D11SamplerState* state_;

@@ -9,14 +9,14 @@ import whiteboard;
 
 export class COverlayApp : public gui::CWBApplication {
  public:
-  bool Initialize(const renderer::CCoreWindowParameters& WindowParams) override;
+  bool Initialize(const renderer::WindowParameters& WindowParams) override;
 
   COverlayApp();
   ~COverlayApp() override;
 
   void TakeScreenshot() override;
 
-  std::unique_ptr<renderer::CCoreBlendState> holePunchBlendState;
+  std::unique_ptr<renderer::BlendState> holePunchBlendState;
 
  protected:
   bool DeviceOK() override;

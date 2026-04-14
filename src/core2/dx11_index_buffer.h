@@ -8,12 +8,13 @@
 
 namespace renderer {
 
-class CCoreDX11IndexBuffer : public CCoreIndexBuffer {
+class DX11IndexBuffer : public IndexBuffer {
  public:
-  explicit CCoreDX11IndexBuffer(CCoreDX11Device* device);
-  ~CCoreDX11IndexBuffer() override;
+  explicit DX11IndexBuffer(DX11Device* device);
+  ~DX11IndexBuffer() override;
 
-  bool Create(const uint32_t index_count, const uint32_t index_size = 2) override;
+  bool Create(const uint32_t index_count,
+              const uint32_t index_size = 2) override;
   bool Lock(void** result) override;
   bool Lock(void** result, const uint32_t index_offset,
             const int32_t index_count) override;

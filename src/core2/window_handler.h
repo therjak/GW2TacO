@@ -11,9 +11,9 @@ import math;
 
 namespace renderer {
 
-class CCoreDevice;
+class Device;
 
-enum class CoreMouseCursor : uint16_t {
+enum class MouseCursor : uint16_t {
   kArrow,
   kCross,
   kSizeWe,
@@ -27,15 +27,15 @@ enum class CoreMouseCursor : uint16_t {
 //////////////////////////////////////////////////////////////////////////
 // window init parameter structure
 
-class CCoreWindowParameters {
+class WindowParameters {
  public:
-  CCoreWindowParameters();
-  CCoreWindowParameters(HINSTANCE h_instance, bool full_screen, int32_t x_res,
-                        int32_t y_res, const TCHAR* window_title,
-                        HICON icon = nullptr, bool maximized = false,
-                        bool resize_disabled = false);
+  WindowParameters();
+  WindowParameters(HINSTANCE h_instance, bool full_screen, int32_t x_res,
+                   int32_t y_res, const TCHAR* window_title,
+                   HICON icon = nullptr, bool maximized = false,
+                   bool resize_disabled = false);
 
-  [[nodiscard]] std::unique_ptr<CCoreDevice> CreateDevice() const;
+  [[nodiscard]] std::unique_ptr<Device> CreateDevice() const;
 
   HINSTANCE h_instance_ = nullptr;
   bool full_screen_ = false;
@@ -53,14 +53,14 @@ class CCoreWindowParameters {
 //////////////////////////////////////////////////////////////////////////
 // interface
 
-class CCoreWindowHandler {
+class WindowHandler {
  public:
-  CCoreWindowHandler();
-  virtual ~CCoreWindowHandler();
+  WindowHandler();
+  virtual ~WindowHandler();
 
   // this initializer will change to accommodate multiple platforms at once once
   // we get to that point:
-  virtual bool Initialize(const CCoreWindowParameters& window_params) = 0;
+  virtual bool Initialize(const WindowParameters& window_params) = 0;
 
   virtual void Destroy();
   virtual bool HandleMessages() = 0;
@@ -72,16 +72,16 @@ class CCoreWindowHandler {
 
   virtual int32_t GetXRes();
   virtual int32_t GetYRes();
-  virtual CCoreWindowParameters& GetInitParameters();
+  virtual WindowParameters& GetInitParameters();
 
-  virtual void SelectMouseCursor(CoreMouseCursor cursor);
+  virtual void SelectMouseCursor(MouseCursor cursor);
   virtual void FinalizeMouseCursor() = 0;
   math::CPoint GetMousePos();
   math::CPoint GetLeftDownPos();
   math::CPoint GetRightDownPos();
   math::CPoint GetMidDownPos();
 
-  CCoreDevice* GetDevice() { return device_.get(); }
+  Device* GetDevice() { return device_.get(); }
 
   virtual void SetWindowTitle(std::string_view title) = 0;
   virtual void SetInactiveFrameLimiter(bool set);
@@ -91,7 +91,7 @@ class CCoreWindowHandler {
   virtual void HandleAltEnter() = 0;
 
   bool done_ = false;
-  std::unique_ptr<CCoreDevice> device_;
+  std::unique_ptr<Device> device_;
   bool active_ = false;
   bool maximized_ = false;
   bool minimized_ = false;
@@ -103,9 +103,9 @@ class CCoreWindowHandler {
 
   int32_t x_res_ = 0, y_res_ = 0;
 
-  CCoreWindowParameters init_parameters_;
+  WindowParameters init_parameters_;
 
-  CoreMouseCursor current_mouse_cursor_ = CoreMouseCursor::kArrow;
+  MouseCursor current_mouse_cursor_ = MouseCursor::kArrow;
 
   math::CPoint mouse_pos_, left_down_pos_, right_down_pos_, mid_down_pos_;
 };
@@ -113,12 +113,12 @@ class CCoreWindowHandler {
 //////////////////////////////////////////////////////////////////////////
 // windows implementation
 
-class CCoreWindowHandlerWin : public CCoreWindowHandler {
+class WindowHandlerWin : public WindowHandler {
  public:
-  CCoreWindowHandlerWin();
-  ~CCoreWindowHandlerWin() override;
+  WindowHandlerWin();
+  ~WindowHandlerWin() override;
 
-  bool Initialize(const CCoreWindowParameters& window_params) override;
+  bool Initialize(const WindowParameters& window_params) override;
   void Destroy() override;
   bool HandleMessages() override;
   bool HandleOSMessages() override;
@@ -144,7 +144,7 @@ class CCoreWindowHandlerWin : public CCoreWindowHandler {
   int32_t full_screen_x_ = 0, full_screen_y_ = 0;
 
  private:
-  HCURSOR& MouseCursorsAt(CoreMouseCursor c) {
+  HCURSOR& MouseCursorsAt(MouseCursor c) {
     return mouse_cursors_[static_cast<uint16_t>(c)];
   }
 
