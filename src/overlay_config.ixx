@@ -3,10 +3,9 @@ module;
 #include <string_view>
 #include <unordered_map>
 
-#include "src/base/rectangle.h"
-
 export module taco.overlay_config;
 
+import math;
 import taco.gw2taco;
 
 export void LoadConfig();
@@ -26,7 +25,8 @@ export void SetWindowOpenState(std::string_view windowname, bool Open);
 export math::CRect GetWindowPosition(std::string_view windowname);
 export void SetWindowPosition(std::string_view windowname, math::CRect Pos);
 
-export void GetKeyBindings(std::unordered_map<int32_t, TacOKeyAction>& KeyBindings);
+export void GetKeyBindings(
+    std::unordered_map<int32_t, TacOKeyAction>& KeyBindings);
 export void DeleteKeyBinding(int32_t key);
 export void SetKeyBinding(TacOKeyAction action, int32_t key);
 

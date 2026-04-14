@@ -13,7 +13,6 @@
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
-#include "src/base/plane.h"
 #include "src/base/stream_reader.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
@@ -21,20 +20,20 @@
 #include "src/util/miniz.h"
 #include "src/util/png_decompressor.h"
 
-import xml;
-import whiteboard;
-
-import taco.mumble_link;
+import math;
 import taco.gw2;
-import taco.overlay_config;
 import taco.language;
+import taco.marker_data;
+import taco.mumble_link;
 import taco.overlay_application;
+import taco.overlay_config;
+import taco.string_set;
+import taco.tactical_category;
+import taco.time;
 import taco.trail_logger;
 import taco.wvw;
-import taco.string_set;
-import taco.time;
-import taco.marker_data;
-import taco.tactical_category;
+import whiteboard;
+import xml;
 
 using math::CMatrix4x4;
 using math::CPlane;

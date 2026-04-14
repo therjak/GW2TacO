@@ -9,9 +9,10 @@
 #include <vector>
 
 #include "src/base/logger.h"
-#include "src/base/rectangle.h"
 #include "src/base/timer.h"
 #include "src/core2/dx11_device.h"
+
+import math;
 
 using math::CPoint;
 using math::CRect;
@@ -91,7 +92,8 @@ CCoreWindowHandlerWin::~CCoreWindowHandlerWin() {
   }
 }
 
-bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& window_params) {
+bool CCoreWindowHandlerWin::Initialize(
+    const CCoreWindowParameters& window_params) {
   x_res_ = window_params.x_res_;
   y_res_ = window_params.y_res_;
   init_parameters_ = window_params;
@@ -113,7 +115,8 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& window_param
 
   if (!window_params.full_screen_) {
     dw_style_ =
-        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_OVERLAPPED | WS_MINIMIZEBOX |
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_OVERLAPPED |
+        WS_MINIMIZEBOX |
         ((WS_MAXIMIZEBOX | WS_SIZEBOX) * (!window_params.resize_disabled_)) |
         (WS_MAXIMIZE * window_params.maximized_);
     full_screen_x_ = GetSystemMetrics(SM_CXSCREEN);
@@ -129,11 +132,11 @@ bool CCoreWindowHandlerWin::Initialize(const CCoreWindowParameters& window_param
     if (window_params.override_window_style_)
       dw_style_ = window_params.override_window_style_;
     AdjustWindowRect(&window_rect, dw_style_, FALSE);
-    window_handle_ = CreateWindow(
-        "CoRE2", window_params.window_title_, dw_style_, CW_USEDEFAULT,
-        CW_USEDEFAULT, window_rect.right - window_rect.left,
-        window_rect.bottom - window_rect.top, nullptr, nullptr,
-        window_params.h_instance_, this);
+    window_handle_ = CreateWindow("CoRE2", window_params.window_title_,
+                                  dw_style_, CW_USEDEFAULT, CW_USEDEFAULT,
+                                  window_rect.right - window_rect.left,
+                                  window_rect.bottom - window_rect.top, nullptr,
+                                  nullptr, window_params.h_instance_, this);
   } else {
     dw_style_ = window_params.override_window_style_;
     AdjustWindowRect(&window_rect, dw_style_, FALSE);

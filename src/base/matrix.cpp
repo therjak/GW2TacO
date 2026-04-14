@@ -1,11 +1,15 @@
-#include "src/base/matrix.h"
+module;
 
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 
 #include "src/base/assert.h"
-#include "src/base/vector.h"
+
+module math;
+
+import :matrix;
+import :vector;
 
 namespace math {
 

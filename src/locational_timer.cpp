@@ -2,18 +2,16 @@ module;
 #include <format>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/sphere.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 module taco.locational_timer;
 
-import xml;
+import math;
+import taco.language;
 import taco.mumble_link;
 import taco.overlay_config;
-import taco.language;
 import taco.time;
+import xml;
 
 using math::CPoint;
 using math::CRect;

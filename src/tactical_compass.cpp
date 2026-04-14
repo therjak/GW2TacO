@@ -2,19 +2,17 @@ module;
 #include <algorithm>
 #include <cmath>
 
-#include "src/base/matrix.h"
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 module taco.tactical_compass;
 
-import xml;
-import whiteboard;
-import taco.overlay_config;
+import base.constants;
+import math;
 import taco.language;
 import taco.mumble_link;
-import base.constants;
+import taco.overlay_config;
+import whiteboard;
+import xml;
 
 using math::CMatrix4x4;
 using math::CPoint;

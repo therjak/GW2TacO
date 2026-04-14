@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "src/base/logger.h"
-#include "src/base/rectangle.h"
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
@@ -31,25 +30,26 @@
 
 #pragma comment(lib, "Urlmon.lib")
 
-import taco.mumble_link;
+import math;
+import taco.build_info;
 import taco.gw2;
 import taco.gw2taco;
-import taco.overlay_config;
-import taco.language;
-import taco.overlay_application;
-import taco.trail_logger;
-import taco.overlay_window;
-import taco.special_gui_items;
-import taco.mouse_highlight;
 import taco.hp_grid;
-import taco.build_info;
-import taco.wvw;
-import taco.tactical_compass;
+import taco.language;
 import taco.locational_timer;
+import taco.map_timer;
+import taco.mouse_highlight;
+import taco.mumble_link;
+import taco.overlay_application;
+import taco.overlay_config;
+import taco.overlay_window;
 import taco.pro_font;
 import taco.range_display;
-import taco.map_timer;
+import taco.special_gui_items;
+import taco.tactical_compass;
 import taco.time;
+import taco.trail_logger;
+import taco.wvw;
 import whiteboard;
 
 #pragma comment(lib, "Imm32.lib")
@@ -747,8 +747,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       WS_EX_TOOLWINDOW;  // | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
   if (dComp) {
     p.override_window_style_ex_ = WS_EX_TOPMOST | WS_EX_TRANSPARENT |
-                               WS_EX_TOOLWINDOW | WS_EX_LAYERED |
-                               WS_EX_NOREDIRECTIONBITMAP;
+                                  WS_EX_TOOLWINDOW | WS_EX_LAYERED |
+                                  WS_EX_NOREDIRECTIONBITMAP;
   }
   if (!App->Initialize(p)) {
     MessageBox(

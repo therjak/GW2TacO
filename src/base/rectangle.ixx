@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include <algorithm>
 #include <cstdint>
 
-#include "src/base/vector.h"
+export module math:rectangle;
 
-namespace math {
+import :vector;
+
+export namespace math {
 
 class CRect {
  public:

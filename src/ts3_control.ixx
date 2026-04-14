@@ -2,13 +2,11 @@ module;
 #include <cassert>
 #include <memory>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
-
 export module taco.ts3_control;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class TS3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
  public:

@@ -2,14 +2,13 @@ module;
 #include <cassert>
 #include <memory>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 export module taco.notepad;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class GW2Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
  public:

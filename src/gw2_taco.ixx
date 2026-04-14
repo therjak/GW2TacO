@@ -10,8 +10,8 @@ module;
 
 export module taco.gw2taco;
 
-import whiteboard;
 import taco.ts3connection;
+import whiteboard;
 
 export enum class TacOKeyAction : int32_t {
   NoAction = 0,

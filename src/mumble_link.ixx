@@ -4,11 +4,11 @@ module;
 #include <string>
 #include <string_view>
 
-#include "src/base/matrix.h"
-#include "src/base/rectangle.h"
 #include "src/base/ring_buffer.h"
 
 export module taco.mumble_link;
+
+import math;
 
 export struct MumbleContext {
   unsigned char serverAddress[28];  // contains sockaddr_in or sockaddr_in6

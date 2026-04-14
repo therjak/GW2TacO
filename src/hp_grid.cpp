@@ -4,15 +4,12 @@ module;
 #include <memory>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/sphere.h"
-#include "src/base/vector.h"
-
 module taco.hp_grid;
 
-import xml;
+import math;
 import taco.mumble_link;
 import taco.overlay_config;
+import xml;
 
 using math::CPoint;
 using math::CRect;

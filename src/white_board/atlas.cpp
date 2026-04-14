@@ -4,12 +4,12 @@ module;
 #include <mutex>
 
 #include "src/base/logger.h"
-#include "src/base/rectangle.h"
 #include "src/core2/core2.h"
 
 module whiteboard;
 
 import :atlas;
+import math;
 
 using math::CPoint;
 using math::CRect;

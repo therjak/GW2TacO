@@ -9,8 +9,8 @@ module whiteboard;
 
 import :application;
 import :context_menu;
-import :gui_item;
 import :font;
+import :gui_item;
 
 using math::CPoint;
 using math::CRect;

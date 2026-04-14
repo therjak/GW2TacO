@@ -7,7 +7,7 @@
 #include <string_view>
 #include <vector>
 
-#include "src/base/rectangle.h"
+import math;
 
 namespace renderer {
 

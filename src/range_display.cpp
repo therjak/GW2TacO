@@ -2,17 +2,16 @@ module;
 #include <algorithm>
 #include <cmath>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 module taco.range_display;
 
-import xml;
-import whiteboard;
+import base.constants;
+import math;
 import taco.mumble_link;
 import taco.overlay_config;
-import base.constants;
+import whiteboard;
+import xml;
 
 using math::CMatrix4x4;
 using math::CPoint;

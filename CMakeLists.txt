@@ -99,18 +99,12 @@ set(Header_Files
     "src/base/image_decompressor.h"
     "src/base/logger.h"
     "src/base/lock_free_queue.h"
-    "src/base/matrix.h"
-    "src/base/plane.h"
-    "src/base/rectangle.h"
     "src/base/ring_buffer.h"
     "src/base/socket.h"
-    "src/base/spec_math.h"
-    "src/base/sphere.h"
     "src/base/stream_reader.h"
     "src/base/stream_writer.h"
     "src/base/string_format.h"
     "src/base/timer.h"
-    "src/base/vector.h"
     "src/core2/constant_buffer.h"
     "src/core2/core2.h"
     "src/core2/core2_config.h"
@@ -375,6 +369,13 @@ target_sources(${PROJECT_NAME}
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/base/constants.ixx
+            src/base/math.ixx
+            src/base/matrix.ixx
+            src/base/plane.ixx
+            src/base/rectangle.ixx
+            src/base/spec_math.ixx
+            src/base/sphere.ixx
+            src/base/vector.ixx
             src/build_info.ixx
             src/dungeon_progress.ixx
             src/gw2_api.ixx

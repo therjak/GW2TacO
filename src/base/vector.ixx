@@ -1,8 +1,10 @@
-#pragma once
+module;
 
 #include <cstdint>
 
-namespace math {
+export module math:vector;
+
+export namespace math {
 
 class CMatrix4x4;
 

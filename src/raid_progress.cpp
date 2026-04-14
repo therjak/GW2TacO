@@ -5,18 +5,17 @@ module;
 #include <future>
 #include <unordered_set>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 
 module taco.raid_progress;
 
-import xml;
-import whiteboard;
-import taco.overlay_config;
-import taco.language;
+import math;
 import taco.gw2;
+import taco.language;
+import taco.overlay_config;
 import taco.time;
+import whiteboard;
+import xml;
 
 using math::CPoint;
 using math::CRect;

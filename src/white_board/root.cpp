@@ -5,8 +5,8 @@ module;
 module whiteboard;
 
 import :application;
-import :root;
 import :message;
+import :root;
 
 using math::CRect;
 

@@ -1,7 +1,9 @@
 module taco.overlay_window;
 
-import whiteboard;
+import math;
 import taco.overlay_config;
+import whiteboard;
+
 using math::CPoint;
 using math::CRect;
 

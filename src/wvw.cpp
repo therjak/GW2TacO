@@ -9,19 +9,18 @@ module;
 #include <unordered_map>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
 
 module taco.wvw;
 
+import math;
 import taco.gw2;
-import taco.overlay_config;
 import taco.language;
 import taco.mumble_link;
-import taco.time;
+import taco.overlay_config;
 import taco.poi_behavior;
+import taco.time;
 
 using math::CRect;
 using math::CSize;

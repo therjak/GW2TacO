@@ -4,10 +4,10 @@ module;
 #include <vector>
 
 #include "src/base/lock_free_queue.h"
-#include "src/base/vector.h"
-
 
 export module taco.wvw;
+
+import math;
 
 export class WvWObjective {
  public:

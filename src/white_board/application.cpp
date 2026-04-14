@@ -15,7 +15,6 @@ module;
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
-#include "src/base/rectangle.h"
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
@@ -25,13 +24,14 @@ module;
 
 module whiteboard;
 
-import xml;
 import :application;
 import :box;
 import :button;
 import :label;
 import :text_box;
 import :window;
+import math;
+import xml;
 
 using math::CPoint;
 using math::CRect;

@@ -18,10 +18,10 @@ module;
 
 module taco.trail_logger;
 
-import whiteboard;
-import taco.overlay_config;
 import taco.mumble_link;
+import taco.overlay_config;
 import taco.time;
+import whiteboard;
 
 #pragma comment(lib, "Comdlg32.lib")
 

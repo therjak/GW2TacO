@@ -7,8 +7,8 @@ module;
 module whiteboard;
 
 import :application;
-import :label;
 import :font;
+import :label;
 
 using math::CPoint;
 using math::CRect;

@@ -6,19 +6,18 @@ module;
 #include <unordered_map>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/vector.h"
 #include "src/gw2_tactical.h"
 #include "src/util/jsonxx.h"
 #include "src/util/png_decompressor.h"
 
 module taco.tp_tracker;
 
-import whiteboard;
+import math;
 import taco.gw2;
-import taco.overlay_config;
 import taco.language;
+import taco.overlay_config;
 import taco.time;
+import whiteboard;
 
 using math::CPoint;
 using math::CRect;

@@ -8,20 +8,20 @@ module;
 #include <vector>
 
 #include "src/base/color.h"
-#include "src/base/rectangle.h"
 #include "src/base/ring_buffer.h"
 #include "src/core2/core2.h"
 
 export module whiteboard:application;
 
-import xml;
-import :root;
-import :style_manager;
-import :gui_item;
-import :message;
 import :context_menu;
 import :draw_api;
 import :font;
+import :gui_item;
+import :message;
+import :root;
+import :style_manager;
+import math;
+import xml;
 
 export namespace gui {
 

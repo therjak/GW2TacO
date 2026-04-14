@@ -4,14 +4,11 @@ module;
 #include <memory>
 #include <vector>
 
-#include "src/base/rectangle.h"
-#include "src/base/sphere.h"
-#include "src/base/vector.h"
-
 export module taco.hp_grid;
 
-import xml;
+import math;
 import whiteboard;
+import xml;
 
 export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
  public:

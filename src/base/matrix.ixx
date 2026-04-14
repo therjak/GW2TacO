@@ -1,11 +1,13 @@
-#pragma once
+module;
 
 #include <array>
 #include <cstdint>
 
-#include "src/base/vector.h"
+export module math:matrix;
 
-namespace math {
+import :vector;
+
+export namespace math {
 
 class CMatrix4x4 {
  public:
