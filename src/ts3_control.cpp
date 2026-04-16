@@ -16,7 +16,7 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
   gui::CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
-  if (!teamSpeakConnection.authenticated) {
+  if (!teamSpeakConnection.authenticated_) {
     // If we got no ts running, just quit. Do not annoy with useless screen
     // clutter.
     return;
@@ -49,10 +49,10 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
 
   for (int32_t cnt = 0; cnt < 2; cnt++) {
     int32_t ypos = 0;
-    for (auto& x : teamSpeakConnection.handlers) {
+    for (auto& x : teamSpeakConnection.handlers_) {
       TS3Connection::TS3Schandler& handler = x.second;
-      if (handler.Connected &&
-          handler.Clients.find(handler.myclientid) != handler.Clients.end()) {
+      if (handler.connected &&
+          handler.clients.find(handler.my_client_id) != handler.clients.end()) {
         Point p = f->GetTextPosition(
             handler.name, GetClientRect() - Rect(0, ypos, 0, 0),
             LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
@@ -62,47 +62,47 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
         if (cnt) f->Write(API, handler.name, p);
         ypos += f->GetLineHeight();
 
-        int32_t mychannelid = handler.Clients[handler.myclientid].channelid;
+        int32_t mychannelid = handler.clients[handler.my_client_id].channel_id;
 
-        if (handler.Channels.find(mychannelid) != handler.Channels.end()) {
+        if (handler.channels.find(mychannelid) != handler.channels.end()) {
           int32_t participants = 0;
-          for (auto& y : handler.Clients) {
+          for (auto& y : handler.clients) {
             const TS3Connection::TS3Client& cl = y.second;
-            if (cl.channelid == mychannelid) participants++;
+            if (cl.channel_id == mychannelid) participants++;
           }
 
-          auto channelText = std::format(
-              "{:s} ({:d})", handler.Channels[mychannelid].name, participants);
+          auto channel_text = std::format(
+              "{:s} ({:d})", handler.channels[mychannelid].name, participants);
 
           Point p = f->GetTextPosition(
-              channelText, GetClientRect() - Rect(size / 2, ypos, 0, 0),
+              channel_text, GetClientRect() - Rect(size / 2, ypos, 0, 0),
               LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
                         : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
               gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
               true);
-          if (cnt) f->Write(API, channelText, p);
+          if (cnt) f->Write(API, channel_text, p);
           ypos += f->GetLineHeight();
         }
 
         std::vector<TS3Connection::TS3Client*> clients;
-        for (auto& y : handler.Clients) {
+        for (auto& y : handler.clients) {
           clients.push_back(&y.second);
         }
 
         std::sort(clients.begin(), clients.end(),
                   [](const TS3Connection::TS3Client* a,
                      const TS3Connection::TS3Client* b) {
-                    return b->lastTalkTime < a->lastTalkTime;
+                    return b->last_talk_time < a->last_talk_time;
                   });
 
         for (const auto cl : clients) {
           if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
-          if (cl->channelid == mychannelid) {
+          if (cl->channel_id == mychannelid) {
             gui::WBSKINELEMENTID id = playeroff;
-            if (cl->inputmuted) id = inputoff;
-            if (cl->outputmuted) id = outputoff;
-            if (cl->talkStatus) id = playeron;
+            if (cl->input_muted) id = inputoff;
+            if (cl->output_muted) id = outputoff;
+            if (cl->talk_status) id = playeron;
 
             App->GetSkin()->RenderElement(
                 API, id,

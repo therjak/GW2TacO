@@ -1963,11 +1963,11 @@ void GW2TacO::OpenWindow(std::string_view s) {
 void GW2TacO::BuildChannelTree(TS3Connection::TS3Schandler& h,
                                gui::CWBContextItem* parentitm,
                                int32_t ParentID) {
-  for (const auto& x : h.Channels) {
+  for (const auto& x : h.channels) {
     const TS3Connection::TS3Channel& chn = x.second;
-    if (chn.parentid == ParentID) {
+    if (chn.parent_id == ParentID) {
       auto newitm = parentitm->AddItem(chn.name, 0);
-      if (chn.id != chn.parentid) BuildChannelTree(h, newitm, chn.id);
+      if (chn.id != chn.parent_id) BuildChannelTree(h, newitm, chn.id);
     }
   }
 }

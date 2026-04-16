@@ -12,6 +12,8 @@ WSADATA wsaData;
 #include <vector>
 #pragma comment(lib, "Ws2_32.lib")
 
+#include "src/base/logger.h"
+
 CSocket::CSocket() : CStreamReader(), CStreamWriter() {
   Socket = INVALID_SOCKET;
   LastActivity = GetTickCount64();
@@ -73,7 +75,7 @@ uint32_t CSocket::Resolve(std::string_view a) {
   uint32_t addr = INADDR_NONE;
 
   // First, try to parse as an IP address directly (IPv4)
-  if (inet_pton(AF_INET, Address.c_str(), &addr) != 0) {
+  if (inet_pton(AF_INET, Address.c_str(), &addr) != 1) {
     // If not a valid IP address, try to resolve the hostname using getaddrinfo
     struct addrinfo hints = {};
     hints.ai_family = AF_INET;        // We only want IPv4 addresses
@@ -100,6 +102,7 @@ uint32_t CSocket::Resolve(std::string_view a) {
       // Optionally, log the error: WSAGetLastError() could provide more info.
     }
   }
+  Log_Warn("addr: {:x}", addr);
   return addr;
 }
 
