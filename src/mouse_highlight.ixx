@@ -68,7 +68,7 @@ export class GW2MouseHighlight
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
 
-  math::Point lastpos;
+  math::Point last_pos;
   math::Point lastchangedpos;
   int numSameFrames = 0;
 };

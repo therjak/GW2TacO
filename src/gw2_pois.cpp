@@ -737,10 +737,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   int32_t width = 1;
   int32_t height = 1;
 
-  renderer::WindowParameters p(
-      GetModuleHandle(nullptr), false, width, height,
-      "Guild Wars 2 Tactical Overlay",
-      LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
+  renderer::WindowParameters p(GetModuleHandle(nullptr), false, width, height,
+                               "Guild Wars 2 Tactical Overlay",
+                               LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
   p.override_window_style_ = WS_POPUP;
   p.override_window_style_ex_ =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
@@ -942,10 +941,10 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                 GW2ClientRect.right - GW2ClientRect.left != pos.Width() ||
                 GW2ClientRect.bottom - GW2ClientRect.top != pos.Height();
             pos = Rect(GW2ClientRect.left + p.x, GW2ClientRect.top + p.y,
-                        GW2ClientRect.left + p.x + GW2ClientRect.right -
-                            GW2ClientRect.left,
-                        GW2ClientRect.top + p.y + GW2ClientRect.bottom -
-                            GW2ClientRect.top);
+                       GW2ClientRect.left + p.x + GW2ClientRect.right -
+                           GW2ClientRect.left,
+                       GW2ClientRect.top + p.y + GW2ClientRect.bottom -
+                           GW2ClientRect.top);
 
             ::SetWindowPos(handle, nullptr, pos.x1, pos.y1, pos.Width(),
                            pos.Height(), SWP_NOREPOSITION);
