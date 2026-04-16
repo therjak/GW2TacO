@@ -142,23 +142,23 @@ bool CMumbleLink::Update() {
     FindClosestRouteMarkers(true);
   }
 
-  int32_t oldMapID = mapID;
-  mapID = -1;
+  int32_t oldmap_id = map_id;
+  map_id = -1;
 
   std::wstring ident(lm->identity, 255);
   auto id = ident.find(L"\"map_id\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"map_id\":%d", &mapID);
-    if (oldMapID != mapID) FindClosestRouteMarkers(true);
+    std::swscanf(ident.substr(id).c_str(), L"\"map_id\":%d", &map_id);
+    if (oldmap_id != map_id) FindClosestRouteMarkers(true);
   } else {
     id = ident.find(L"\"map_id\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"map_id\": %d", &mapID);
-      if (oldMapID != mapID) FindClosestRouteMarkers(true);
+      std::swscanf(ident.substr(id).c_str(), L"\"map_id\": %d", &map_id);
+      if (oldmap_id != map_id) FindClosestRouteMarkers(true);
     }
   }
 
-  GlobalDoTrailLogging(mapID, Vector3(lastData.fAvatarPosition));
+  GlobalDoTrailLogging(map_id, Vector3(lastData.fAvatarPosition));
 
   int32_t oldUISize = uiSize;
 
@@ -194,7 +194,7 @@ bool CMumbleLink::Update() {
 
   auto* ctx = reinterpret_cast<MumbleContext*>(lastData.context);
 
-  mapType = ctx->mapType;
+  map_type = ctx->map_type;
   mapInstance = ctx->shardId;
 
   if (isMapOpen != (ctx->uiState & 0x01)) {

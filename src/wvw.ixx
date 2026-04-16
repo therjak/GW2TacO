@@ -9,22 +9,22 @@ export module taco.wvw;
 
 import math;
 
-export class WvWObjective {
+export class WvwObjective {
  public:
   std::string id;
   std::string type;
-  std::string mapType;
-  int mapID = 0;
-  int objectiveID = 0;
+  std::string map_type;
+  int map_id = 0;
+  int objective_id = 0;
   math::Vector3 coord;
   std::string marker;
-  std::string chatLink;
+  std::string chat_link;
 
   std::string name;
-  std::string nameToken;
+  std::string name_token;
 };
 
-export struct WvWPOIUpdate {
+export struct WvwPoiUpdate {
   enum class Team {
     kRed,
     kGreen,
@@ -32,11 +32,11 @@ export struct WvWPOIUpdate {
     kNone,
   };
   std::string id;
-  time_t lastFlipped = 0;
+  time_t last_flipped = 0;
   Team owner;
 };
 
-export extern LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
+export extern LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;
 
-export void LoadWvWObjectives();
-export void UpdateWvWStatus();
+export void LoadWvwObjectives();
+export void UpdateWvwStatus();

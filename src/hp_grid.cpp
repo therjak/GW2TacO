@@ -22,7 +22,7 @@ void GW2HPGrid::OnDraw(gui::CWBDrawAPI* API) {
   Rect cl = GetClientRect();
 
   for (auto& grid : Grids) {
-    if (mumbleLink.mapID != grid.mapID) {
+    if (mumbleLink.map_id != grid.map_id) {
       continue;
     }
 
@@ -68,7 +68,7 @@ void GW2HPGrid::LoadGrids() {
     GridData gd;
 
     if (node.HasAttribute("mapid")) {
-      node.GetAttributeAsInteger("mapid", &gd.mapID);
+      node.GetAttributeAsInteger("mapid", &gd.map_id);
     }
 
     if (node.HasAttribute("centerx")) {

@@ -27,10 +27,10 @@ using math::Size;
 using math::Vector3;
 
 bool wvwCanBeRendered = false;
-std::vector<WvWObjective> wvwObjectives;
+std::vector<WvwObjective> WvwObjectives;
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 std::unordered_map<std::string, POI> wvwPOIs;
-std::unordered_map<int, bool> wvwMapIDs;
+std::unordered_map<int, bool> wvwmap_ids;
 
 constexpr int DayFlag = 0x001000;
 constexpr int DhmsFlag = 0x001111;
@@ -180,18 +180,18 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
   }
 }
 
-void LoadWvWObjectives() {
+void LoadWvwObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
   static std::future<void> wvwPollTask = std::async(std::launch::async, []() {
-    std::unordered_map<int, Vector3> wvwObjectiveCoords;
+    std::unordered_map<int, Vector3> WvwObjectiveCoords;
     std::unordered_map<int, Rect> wvwContinentRects;
 
-    auto wvwobjectives =
+    auto wvw_objectives_raw =
         FetchHTTPS("api.guildwars2.com", "/v2/wvw/objectives?ids=all");
 
     jsonxx::Array wvwobjs;
-    wvwobjs.parse(wvwobjectives);
+    wvwobjs.parse(wvw_objectives_raw);
     auto objs = wvwobjs.values();
 
     for (auto& x : objs) {
@@ -203,18 +203,18 @@ void LoadWvWObjectives() {
 
       auto objid = obj.get<jsonxx::String>("id");
 
-      int mapID = 0, objident = 0;
-      if (std::sscanf(objid.c_str(), "%d-%d", &mapID, &objident) != 2) continue;
+      int map_id = 0, objident = 0;
+      if (std::sscanf(objid.c_str(), "%d-%d", &map_id, &objident) != 2) continue;
 
       if (!obj.has<jsonxx::Number>("map_id")) continue;
 
-      if (obj.get<jsonxx::Number>("map_id") != mapID) continue;
+      if (obj.get<jsonxx::Number>("map_id") != map_id) continue;
 
-      wvwMapIDs[mapID] = true;
+      wvwmap_ids[map_id] = true;
 
       if (obj.has<jsonxx::Array>("coord")) {
-        if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
-          auto mapPath = std::format("/v2/maps?id={:d}", mapID);
+        if (wvwContinentRects.find(map_id) == wvwContinentRects.end()) {
+          auto mapPath = std::format("/v2/maps?id={:d}", map_id);
           auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
 
           jsonxx::Object map;
@@ -252,13 +252,13 @@ void LoadWvWObjectives() {
           }
 
           if (ok) {
-            wvwContinentRects[mapID] =
+            wvwContinentRects[map_id] =
                 Rect(continentRectValues[0], continentRectValues[1],
                       continentRectValues[2], continentRectValues[3]);
           }
         }
 
-        if (wvwContinentRects.find(mapID) == wvwContinentRects.end()) {
+        if (wvwContinentRects.find(map_id) == wvwContinentRects.end()) {
           continue;
         }
 
@@ -274,7 +274,7 @@ void LoadWvWObjectives() {
                          ? static_cast<float>(coord[2]->get<jsonxx::Number>())
                          : 0);
 
-          Rect& r = wvwContinentRects[mapID];
+          Rect& r = wvwContinentRects[map_id];
           Vector3 offset =
               Vector3((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
 
@@ -287,30 +287,30 @@ void LoadWvWObjectives() {
             v.z -= 500;
           }
 
-          wvwObjectiveCoords[objident] = Vector3(
+          WvwObjectiveCoords[objident] = Vector3(
               GameToWorldCoords((v.x - offset.x) * 24), GameToWorldCoords(-v.z),
               GameToWorldCoords((-(v.y - offset.z)) * 24));
         }
       }
 
-      if (wvwObjectiveCoords.find(objident) == wvwObjectiveCoords.end()) {
+      if (WvwObjectiveCoords.find(objident) == WvwObjectiveCoords.end()) {
         continue;
       }
 
-      WvWObjective o;
+      WvwObjective o;
       o.id = objid;
-      o.mapID = mapID;
-      o.objectiveID = objident;
-      o.coord = wvwObjectiveCoords[objident];
+      o.map_id = map_id;
+      o.objective_id = objident;
+      o.coord = WvwObjectiveCoords[objident];
 
       if (obj.has<jsonxx::String>("type"))
         o.type = obj.get<jsonxx::String>("type");
 
       if (obj.has<jsonxx::String>("name")) {
-        o.nameToken = o.name = obj.get<jsonxx::String>("name");
+        o.name_token = o.name = obj.get<jsonxx::String>("name");
       }
 
-      for (char& n : o.nameToken) {
+      for (char& n : o.name_token) {
         if (!isalnum(n)) {
           n = '_';
         } else {
@@ -320,11 +320,11 @@ void LoadWvWObjectives() {
 
       POI poi;
       poi.position = o.coord;
-      poi.mapID = o.mapID;
+      poi.map_id = o.map_id;
       poi.icon = DefaultIconHandle;
-      poi.wvwObjectiveID = wvwObjectives.size();
+      poi.Wvwobjective_id = WvwObjectives.size();
 
-      wvwObjectives.push_back(o);
+      WvwObjectives.push_back(o);
 
       CoCreateGuid(&poi.guid);
 
@@ -332,21 +332,21 @@ void LoadWvWObjectives() {
 
       if (cat) poi.SetCategory(cat);
 
-      poi.typeData.behavior = POIBehavior::WvWObjective;
+      poi.typeData.behavior = POIBehavior::WvwObjective;
 
       wvwPOIs[o.id] = poi;
     }
 
-    UpdateWvWStatus();
+    UpdateWvwStatus();
 
     wvwCanBeRendered = true;
   });
 }
 
-LockFreeQueue<std::vector<WvWPOIUpdate>> wvwPOIUpdates;
+LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;
 
-void UpdateWvWStatus() {
-  if (wvwMapIDs.find(mumbleLink.mapID) == wvwMapIDs.end()) {
+void UpdateWvwStatus() {
+  if (wvwmap_ids.find(mumbleLink.map_id) == wvwmap_ids.end()) {
     return;
   }
 
@@ -385,13 +385,13 @@ void UpdateWvWStatus() {
     }
 
     auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
-    auto wvwobjectiveids = FetchHTTPS("api.guildwars2.com", apiPath);
+    auto Wvwobjective_ids = FetchHTTPS("api.guildwars2.com", apiPath);
 
     jsonxx::Object o;
-    o.parse(wvwobjectiveids);
+    o.parse(Wvwobjective_ids);
     if (o.has<jsonxx::Array>("maps")) {
       auto m = o.get<jsonxx::Array>("maps").values();
-      std::vector<WvWPOIUpdate> updates;
+      std::vector<WvwPoiUpdate> updates;
       for (auto& x : m) {
         if (!x->is<jsonxx::Object>()) continue;
 
@@ -411,7 +411,7 @@ void UpdateWvWStatus() {
             continue;
           }
 
-          WvWPOIUpdate update = {
+          WvwPoiUpdate update = {
               .id = id,
           };
 
@@ -421,29 +421,29 @@ void UpdateWvWStatus() {
           }
 
           if (owner == "Red") {
-            update.owner = WvWPOIUpdate::Team::kRed;
+            update.owner = WvwPoiUpdate::Team::kRed;
           } else if (owner == "Green") {
-            update.owner = WvWPOIUpdate::Team::kGreen;
+            update.owner = WvwPoiUpdate::Team::kGreen;
           } else if (owner == "Blue") {
-            update.owner = WvWPOIUpdate::Team::kBlue;
+            update.owner = WvwPoiUpdate::Team::kBlue;
           } else {
-            update.owner = WvWPOIUpdate::Team::kNone;
+            update.owner = WvwPoiUpdate::Team::kNone;
           }
 
-          std::string lastFlipped;
+          std::string last_flipped;
           if (objective.has<jsonxx::String>("last_flipped")) {
-            lastFlipped = objective.get<jsonxx::String>("last_flipped");
+            last_flipped = objective.get<jsonxx::String>("last_flipped");
           }
 
           time_t flipTime = 0;
           char flags = 0;
-          parseISO8601(lastFlipped.c_str(), flipTime, flags);
-          update.lastFlipped = flipTime;
+          parseISO8601(last_flipped.c_str(), flipTime, flags);
+          update.last_flipped = flipTime;
 
           updates.push_back(update);
         }
       }
-      wvwPOIUpdates.push(updates);
+      wvw_poi_updates.push(updates);
     }
   });
 

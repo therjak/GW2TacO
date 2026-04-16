@@ -39,7 +39,7 @@ extern float minimapOpacity;
 
 std::unordered_map<int, TrailSet> trails;
 
-TrailSet& GetMapTrails() { return trails[mumbleLink.mapID]; }
+TrailSet& GetMapTrails() { return trails[mumbleLink.map_id]; }
 
 extern std::unique_ptr<gui::CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
@@ -51,10 +51,10 @@ float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
 float GetMapFade();
 
-void GlobalDoTrailLogging(int32_t mapID, Vector3 charPos) {
+void GlobalDoTrailLogging(int32_t map_id, Vector3 charPos) {
   auto* trails = dynamic_cast<GW2TrailDisplay*>(
       App->GetRoot()->FindChildByID("trail", "gw2Trails"));
-  if (trails) trails->DoTrailLogging(mapID, charPos);
+  if (trails) trails->DoTrailLogging(map_id, charPos);
 }
 
 void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
@@ -138,7 +138,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       }
 
       if (editedTrail) {
-        if (editedTrail->map == mumbleLink.mapID) {
+        if (editedTrail->map == mumbleLink.map_id) {
           data[0] = GetTime() / 1000.0f;
 
           App->GetDevice()->SetTexture(renderer::Sampler::kPs0,
@@ -352,24 +352,24 @@ void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
   }
 }
 
-void GW2TrailDisplay::DoTrailLogging(int32_t mapID, Vector3 charPos) {
+void GW2TrailDisplay::DoTrailLogging(int32_t map_id, Vector3 charPos) {
   std::lock_guard<std::mutex> lockGuard(mtx);
 
   if (!trailBeingRecorded) return;
 
   if (trailRecordPaused) return;
 
-  if (mapID != lastMap) ClearEditedTrail();
+  if (map_id != lastMap) ClearEditedTrail();
 
   if (!editedTrail) {
     editedTrail = std::make_unique<GW2Trail>();
-    editedTrail->Reset(mapID);
+    editedTrail->Reset(map_id);
   }
 
   float dist = WorldToGameCoords((lastPos - charPos).Length());
   if (dist < 30) return;
 
-  lastMap = mapID;
+  lastMap = map_id;
   editedTrail->positions.push_back(charPos);
   lastPos = charPos;
 
@@ -707,7 +707,7 @@ void GW2TrailDisplay::ImportTrail() {
         editedTrail->Import(file, true);
       }
 
-      lastMap = mumbleLink.mapID;
+      lastMap = mumbleLink.map_id;
       lastPos = mumbleLink.charPosition;
     }
   }
@@ -717,8 +717,8 @@ void GW2TrailDisplay::ImportTrail() {
   disableHooks = false;
 }
 
-void GW2Trail::Reset(int32_t _mapID /*= 0 */) {
-  map = _mapID;
+void GW2Trail::Reset(int32_t _map_id /*= 0 */) {
+  map = _map_id;
   positions.clear();
 }
 
@@ -739,10 +739,10 @@ bool GW2Trail::SaveToFile(std::string_view fname) {
 
 GW2Trail::~GW2Trail() = default;
 
-void GW2Trail::Build(renderer::Device* d, int32_t mapID,
+void GW2Trail::Build(renderer::Device* d, int32_t map_id,
                      const float* points, int pointCount) {
   dev = d;
-  map = mapID;
+  map = map_id;
 
   trailMesh.reset();
   idxBuf.reset();
@@ -878,7 +878,7 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* constBuffer,
                             float width2d) {
   if (category && !category->IsVisible()) return;
 
-  if (map != mumbleLink.mapID) return;
+  if (map != mumbleLink.map_id) return;
 
   App->GetDevice()->SetTexture(renderer::Sampler::kPs0, texture);
 

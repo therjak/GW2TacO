@@ -19,7 +19,7 @@ import math;
 import taco.mumble_link;
 import whiteboard;
 
-export void GlobalDoTrailLogging(int32_t mapID, math::Vector3 charPos);
+export void GlobalDoTrailLogging(int32_t map_id, math::Vector3 charPos);
 
 export struct GW2TrailVertex {
   math::Vector4 Pos;
@@ -35,7 +35,7 @@ export class GW2Trail {
 
  public:
   virtual ~GW2Trail();
-  void Build(renderer::Device* dev, int32_t mapID, const float* points,
+  void Build(renderer::Device* dev, int32_t map_id, const float* points,
              int pointCount);
   void Draw();
   void Update();
@@ -67,7 +67,7 @@ export class GW2Trail {
   GW2TacticalCategory* category = nullptr;
 
  private:
-  void Reset(int32_t _mapID = 0);
+  void Reset(int32_t _map_id = 0);
   bool SaveToFile(std::string_view fname);
 
   std::vector<math::Vector3> positions;
@@ -96,7 +96,7 @@ export class GW2TrailDisplay
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
-  void DoTrailLogging(int32_t mapID, math::Vector3 charPos);
+  void DoTrailLogging(int32_t map_id, math::Vector3 charPos);
 
   void StartStopTrailRecording(bool start);
   void PauseTrail(bool pause, bool newSection = false);

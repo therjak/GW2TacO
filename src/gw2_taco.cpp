@@ -815,19 +815,19 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         auto* ctxMenu = dynamic_cast<gui::CWBContextMenu*>(
             App->FindItemByGuid(menucontext.menu));
         auto itm = ctxMenu->GetItem(menucontext.item);
-        int32_t mapIdx = menucontext.item - Menu_ToggleMapTimerMap;
+        int32_t map_idx = menucontext.item - Menu_ToggleMapTimerMap;
 
         auto* timer = dynamic_cast<GW2MapTimer*>(
             App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
         if (!timer) break;
 
         bool open = true;
-        auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
+        auto str = "maptimer_mapopen_" + timer->maps[map_idx].id;
 
         if (HasConfigValue(str)) open = GetConfigValue(str);
 
-        itm->SetText(open ? (timer->maps[mapIdx].name + " [x]")
-                          : (timer->maps[mapIdx].name + " [ ]"));
+        itm->SetText(open ? (timer->maps[map_idx].name + " [x]")
+                          : (timer->maps[map_idx].name + " [ ]"));
         itm->SetHighlight(open);
         break;
       }
@@ -981,10 +981,10 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
 
         if (timer) {
           if (Message.Data() < Menu_ToggleMapTimerMap + timer->maps.size()) {
-            int32_t mapIdx = Message.Data() - Menu_ToggleMapTimerMap;
-            auto str = "maptimer_mapopen_" + timer->maps[mapIdx].id;
-            timer->maps[mapIdx].display = !timer->maps[mapIdx].display;
-            SetConfigValue(str, timer->maps[mapIdx].display);
+            int32_t map_idx = Message.Data() - Menu_ToggleMapTimerMap;
+            auto str = "maptimer_mapopen_" + timer->maps[map_idx].id;
+            timer->maps[map_idx].display = !timer->maps[map_idx].display;
+            SetConfigValue(str, timer->maps[map_idx].display);
             break;
           }
         }
@@ -1636,7 +1636,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
           "cW:{:d} cH:{:d} cR:{:f} "
           "pX::{:f} pY:{:f} "
           "mcX:{:f} mcY:{:f} mS:{:f}",
-          mumbleLink.mapID, mumbleLink.worldID, mumbleLink.mapInstance,
+          mumbleLink.map_id, mumbleLink.worldID, mumbleLink.mapInstance,
           mumbleLink.charPosition.x, mumbleLink.charPosition.y,
           mumbleLink.charPosition.z, mumbleLink.camDir.x, mumbleLink.camDir.y,
           mumbleLink.camDir.z, mumbleLink.GetFrameRate(), App->GetFrameRate(),
@@ -1656,7 +1656,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
         for (auto& poi : mPOIs) {
           auto& p = poi.second;
 
-          if (p.mapID == mumbleLink.mapID && !p.category) {
+          if (p.map_id == mumbleLink.map_id && !p.category) {
             if (!initialized) {
               minvals = maxvals = p.position;
               initialized = true;
@@ -1678,7 +1678,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
         for (auto& poi : mPOIs) {
           auto& p = poi.second;
 
-          if (p.mapID == mumbleLink.mapID && !p.category) {
+          if (p.map_id == mumbleLink.map_id && !p.category) {
             Vector3 d = p.position - center;
 
             maxdistance3d = std::max(d.Length(), maxdistance3d);
@@ -1698,7 +1698,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
             "maxdist2d: {:.2f} "
             "maxdist3d: {:.2f} "
             "playerdist: {:.2f}",
-            mumbleLink.mapID, center.x, center.y, center.z, maxdistance2d,
+            mumbleLink.map_id, center.x, center.y, center.z, maxdistance2d,
             maxdistance3d, playerdist);
       }
     }

@@ -37,7 +37,7 @@ LocationalTimer::LocationalTimer() = default;
 LocationalTimer::~LocationalTimer() = default;
 
 void LocationalTimer::Update() {
-  if (mumbleLink.mapID != MapID) {
+  if (mumbleLink.map_id != map_id) {
     IsRunning = false;
     return;
   }
@@ -59,7 +59,7 @@ void LocationalTimer::Update() {
 }
 
 void LocationalTimer::ImportData(const CXMLNode& node) {
-  if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &MapID);
+  if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &map_id);
   if (node.HasAttribute("length")) {
     node.GetAttributeAsInteger("length", &TimerLength);
   }
@@ -149,9 +149,9 @@ void TimerDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
       Point pos = f->GetTextPosition(
           s,
-          Rect(
-              static_cast<float>(GetClientRect().x1), static_cast<float>(ypos),
-              static_cast<float>(GetClientRect().x2), static_cast<float>(ypos)),
+          Rect(static_cast<float>(GetClientRect().x1), static_cast<float>(ypos),
+               static_cast<float>(GetClientRect().x2),
+               static_cast<float>(ypos)),
           gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
           gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE,
           true);

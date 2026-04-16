@@ -42,7 +42,7 @@ export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
   };
 
   struct GridData {
-    int mapID = 0;
+    int map_id = 0;
     math::CSphere bSphere;
     std::vector<GridLine> displayedPercentages;
   };

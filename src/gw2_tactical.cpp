@@ -70,7 +70,7 @@ void FindClosestRouteMarkers(bool force) {
   for (auto& r : Routes) {
     if (!force && r.activeItem != -1) continue;
 
-    if (r.MapID == mumbleLink.mapID && r.hasResetPos &&
+    if (r.map_id == mumbleLink.map_id && r.hasResetPos &&
         (r.resetPos - mumbleLink.charPosition).Length() < r.resetRad) {
       r.activeItem = 0;
     }
@@ -83,7 +83,7 @@ void FindClosestRouteMarkers(bool force) {
       const auto& fpoi = pois.find(g);
       if (fpoi != pois.end()) {
         const POI& p = fpoi->second;
-        if (!(p.mapID == mumbleLink.mapID)) continue;
+        if (!(p.map_id == mumbleLink.map_id)) continue;
 
         float dist = (p.position - mumbleLink.charPosition).Length();
         if (dist < closestdist) {
@@ -229,7 +229,7 @@ gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
 }
 
 std::unordered_map<int, POISet> POIs;
-POISet& GetMapPOIs() { return POIs[mumbleLink.mapID]; }
+POISet& GetMapPOIs() { return POIs[mumbleLink.map_id]; }
 std::unordered_map<POIActivationDataKey, POIActivationData> ActivationData;
 
 std::vector<POIRoute> Routes;
@@ -278,7 +278,7 @@ bool testfrustum(Vector3 c, Plane planes[4], int skip) {
 }
 
 Vector3 GW2TacticalDisplay::ProjectTacticalPos(Vector3 pos, float fov,
-                                                float asp) {
+                                               float asp) {
   Vector3 p = pos;
   float length = p.Length();
 
@@ -410,7 +410,7 @@ void GW2TacticalDisplay::FetchAchievements() {
 }
 
 void GW2TacticalDisplay::InsertPOI(POI& poi) {
-  // if (poi.mapID != mumbleLink.mapID) return;
+  // if (poi.map_id != mumbleLink.map_id) return;
 
   if (poi.routeMember) {
     bool discard = true;
@@ -429,7 +429,7 @@ void GW2TacticalDisplay::InsertPOI(POI& poi) {
 
   poi.cameraSpacePosition =
       Vector4(poi.position.x, poi.position.y + poi.typeData.height,
-               poi.position.z, 1.0f) *
+              poi.position.z, 1.0f) *
       cam;
 
   minimapPOIs.push_back(&poi);
@@ -453,7 +453,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     return;
   }
 
-  if (poi.typeData.behavior == POIBehavior::WvWObjective) {
+  if (poi.typeData.behavior == POIBehavior::WvwObjective) {
     time_t elapsedtime = currtime - poi.lastUpdateTime;
     if (elapsedtime < 300) {
       timeLeft = static_cast<int32_t>(300 - elapsedtime);
@@ -581,7 +581,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       std::max<float>(poi.typeData.minSize,
                       std::abs((camspacex - camspace).x) * drawrect.Width())));
 
-  if (poi.typeData.behavior == POIBehavior::WvWObjective) {
+  if (poi.typeData.behavior == POIBehavior::WvwObjective) {
     alphaMultiplier = std::max(
         0.f, std::min(1.f, std::pow(Vector2(screenpos.x, screenpos.y).Length(),
                                     2.f) +
@@ -591,7 +591,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   screenpos = screenpos * 0.5 + Vector4(0.5, 0.5, 0.5, 0.0);
 
   Point p = Point(static_cast<int>(screenpos.x * drawrect.Width()),
-                    static_cast<int>((1 - screenpos.y) * drawrect.Height()));
+                  static_cast<int>((1 - screenpos.y) * drawrect.Height()));
 
   Rect rect = Rect(p - Point(s, s), p + Point(s, s));
 
@@ -610,7 +610,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     }
   }
 
-  if (!drawCountdown || poi.typeData.behavior == POIBehavior::WvWObjective) {
+  if (!drawCountdown || poi.typeData.behavior == POIBehavior::WvwObjective) {
     CColor col = poi.typeData.color;
     if (icon != DefaultIconHandle) {
       col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
@@ -621,18 +621,18 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     API->DrawAtlasElement(icon, rect, false, false, true, true, col);
   }
 
-  if (drawWvWNames && poi.typeData.behavior == POIBehavior::WvWObjective) {
+  if (drawWvWNames && poi.typeData.behavior == POIBehavior::WvwObjective) {
     gui::CWBFont* f = App->GetDefaultFont();
-    extern std::vector<WvWObjective> wvwObjectives;
-    std::string wvwObjectiveName;
+    extern std::vector<WvwObjective> WvwObjectives;
+    std::string WvwObjectiveName;
 
-    if (poi.wvwObjectiveID < wvwObjectives.size()) {
-      wvwObjectiveName = DICT(wvwObjectives[poi.wvwObjectiveID].nameToken,
-                              wvwObjectives[poi.wvwObjectiveID].name);
+    if (poi.Wvwobjective_id < WvwObjectives.size()) {
+      WvwObjectiveName = DICT(WvwObjectives[poi.Wvwobjective_id].name_token,
+                              WvwObjectives[poi.Wvwobjective_id].name);
     }
 
-    if (!wvwObjectiveName.empty()) {
-      p = f->GetTextPosition(wvwObjectiveName, rect,
+    if (!WvwObjectiveName.empty()) {
+      p = f->GetTextPosition(WvwObjectiveName, rect,
                              gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                              gui::WBTEXTALIGNMENTY::WBTA_TOP,
                              gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
@@ -640,13 +640,13 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       /*
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
-          f->Write(API, wvwObjectiveName, p + Point(x - 1, y - 1),
+          f->Write(API, WvwObjectiveName, p + Point(x - 1, y - 1),
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
                    gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
       */
-      f->Write(API, wvwObjectiveName, p,
+      f->Write(API, WvwObjectiveName, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
                                            globalOpacity)),
@@ -658,7 +658,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     gui::CWBFont* f = GetFont(GetState());
     if (!f) return;
 
-    if (poi.typeData.behavior == POIBehavior::WvWObjective) {
+    if (poi.typeData.behavior == POIBehavior::WvwObjective) {
       f = App->GetDefaultFont();
     }
 
@@ -677,7 +677,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     if (drawDistance) offset += f->GetLineHeight();
 
     Point p;
-    if (poi.typeData.behavior == POIBehavior::WvWObjective) {
+    if (poi.typeData.behavior == POIBehavior::WvwObjective) {
       if (forbiddenIconHandle != -1) {
         CColor col(0xffffffff);
         if (icon != DefaultIconHandle) {
@@ -787,7 +787,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
 
   Vector2 startPoint = pos - Vector2(poiSize / 2.0f, poiSize / 2.0f);
   Point topLeft = Point(static_cast<int32_t>(startPoint.x),
-                          static_cast<int32_t>(startPoint.y));
+                        static_cast<int32_t>(startPoint.y));
 
   Rect displayRect(topLeft, topLeft);
   displayRect.x2 = topLeft.x + static_cast<int32_t>(poiSize);
@@ -829,7 +829,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   int showIngameMarkers = GetConfigValue("ShowInGameMarkers");
 
   FetchAchievements();
-  UpdateWvWStatus();
+  UpdateWvwStatus();
 
   TacticalIconsOnEdge = GetConfigValue("TacticalIconsOnEdge");
   drawWvWNames = GetConfigValue("DrawWvWNames") != 0;
@@ -846,40 +846,39 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   drawrect = GetClientRect();
 
   cam.SetLookAtLH(mumbleLink.camPosition,
-                  mumbleLink.camPosition + mumbleLink.camDir,
-                  Vector3(0, 1, 0));
+                  mumbleLink.camPosition + mumbleLink.camDir, Vector3(0, 1, 0));
   persp.SetPerspectiveFovLH(
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 1000.0f);
 
   asp = drawrect.Width() / static_cast<float>(drawrect.Height());
 
-  const int mumbleMapID = mumbleLink.mapID;
+  const int mumblemap_id = mumbleLink.map_id;
 
   auto& mPOIs = GetMapPOIs();
 
   for (auto& poi : mPOIs) {
-    if (poi.second.mapID != mumbleMapID) {
+    if (poi.second.map_id != mumblemap_id) {
       continue;
     }
     InsertPOI(poi.second);
   }
 
   if (wvwCanBeRendered) {
-    const auto& updates = wvwPOIUpdates.pop();
+    const auto& updates = wvw_poi_updates.pop();
     if (updates.has_value()) {
       for (auto& e : updates.value()) {
         if (wvwPOIs.find(e.id) == wvwPOIs.end()) continue;
         auto& poi = wvwPOIs[e.id];
-        poi.lastUpdateTime = e.lastFlipped;
+        poi.lastUpdateTime = e.last_flipped;
         switch (e.owner) {
-          case WvWPOIUpdate::Team::kRed:
+          case WvwPoiUpdate::Team::kRed:
             poi.typeData.color = CColor{0xffe53b3b};
             break;
-          case WvWPOIUpdate::Team::kBlue:
+          case WvwPoiUpdate::Team::kBlue:
             poi.typeData.color = CColor{0xff3aa2fa};
             break;
-          case WvWPOIUpdate::Team::kGreen:
+          case WvwPoiUpdate::Team::kGreen:
             poi.typeData.color = CColor{0xff3dca67};
             break;
           default:
@@ -889,7 +888,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
       }
     }
     for (auto& e : wvwPOIs) {
-      if (e.second.mapID != mumbleMapID) {
+      if (e.second.map_id != mumblemap_id) {
         continue;
       }
       InsertPOI(e.second);
@@ -904,7 +903,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   });
 
   for (auto& r : Routes) {
-    if (r.hasResetPos && r.MapID == mumbleLink.mapID &&
+    if (r.hasResetPos && r.map_id == mumbleLink.map_id &&
         (r.resetPos - mumbleLink.charPosition).Length() < r.resetRad) {
       r.activeItem = 0;
     }
@@ -999,7 +998,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     font->Write(
         API, infoText,
         Point(static_cast<int>((GetClientRect().Width() - width) / 2.0f),
-               static_cast<int>(GetClientRect().Height() * 0.15f)));
+              static_cast<int>(GetClientRect().Height() * 0.15f)));
   }
 }
 
@@ -1022,7 +1021,7 @@ void GW2TacticalDisplay::RemoveUserMarkersFromMap() {
 
   auto& mPOIs = GetMapPOIs();
   for (auto& poi : mPOIs) {
-    if (poi.second.mapID == mumbleLink.mapID && !poi.second.External) {
+    if (poi.second.map_id == mumbleLink.map_id && !poi.second.External) {
       mPOIs.erase(poi.first);
     }
   }
@@ -1049,7 +1048,7 @@ void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
 
 void ExportPOI(CXMLNode* n, POI& p) {
   CXMLNode* t = &n->AddChild("POI");
-  t->SetAttributeFromInteger("MapID", p.mapID);
+  t->SetAttributeFromInteger("MapID", p.map_id);
   t->SetAttributeFromFloat("xpos", p.position.x);
   t->SetAttributeFromFloat("ypos", p.position.y);
   t->SetAttributeFromFloat("zpos", p.position.z);
@@ -1216,7 +1215,7 @@ void ImportPOITypes() {
 }
 
 void ImportPOI(CXMLNode& t, POI& p, std::string_view zipFile) {
-  if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p.mapID);
+  if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p.map_id);
   if (t.HasAttribute("xpos")) t.GetAttributeAsFloat("xpos", &p.position.x);
   if (t.HasAttribute("ypos")) t.GetAttributeAsFloat("ypos", &p.position.y);
   if (t.HasAttribute("zpos")) t.GetAttributeAsFloat("zpos", &p.position.z);
@@ -1277,7 +1276,7 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
         POI p;
         ImportPOI(t, p, zipFile);
         p.External = External;
-        POIs[p.mapID][p.guid] = p;
+        POIs[p.map_id][p.guid] = p;
       } while (t.Next(t, "POI"));
     }
 
@@ -1289,7 +1288,8 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
       if (rn.HasAttribute("BackwardDirection")) {
         rn.GetAttributeAsInteger("BackwardDirection", &b);
       }
-      if (rn.HasAttribute("MapID")) rn.GetAttributeAsInteger("MapID", &r.MapID);
+      if (rn.HasAttribute("MapID"))
+        rn.GetAttributeAsInteger("MapID", &r.map_id);
       r.backwards = b;
       r.external = External;
       if (rn.HasAttribute("resetposx") && rn.HasAttribute("resetposy") &&
@@ -1308,7 +1308,7 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
           ImportPOI(t, p, zipFile);
           p.External = External;
           p.routeMember = true;
-          POIs[p.mapID][p.guid] = p;
+          POIs[p.map_id][p.guid] = p;
           r.route.push_back(p.guid);
         } while (t.Next(t, "POI"));
       }
@@ -1496,19 +1496,19 @@ void AddPOI() {
   POI poi = {
       .icon = DefaultIconHandle,
       .position = mumbleLink.charPosition,
-      .mapID = mumbleLink.mapID,
+      .map_id = mumbleLink.map_id,
   };
 
   CoCreateGuid(&poi.guid);
 
   auto cat = GetCategory(DefaultMarkerCategory);
 
-  if (poi.mapID == -1) {
+  if (poi.map_id == -1) {
     return;
   }
   auto& mPOIs = GetMapPOIs();
   for (auto& poix : mPOIs) {
-    if (poix.second.mapID != poi.mapID) {
+    if (poix.second.map_id != poi.map_id) {
       continue;
     }
     Vector3 v = poix.second.position - poi.position;
@@ -1531,14 +1531,14 @@ void DeletePOI() {
     return;
   }
   math::Vector3 poi_position = Vector3(mumbleLink.charPosition);
-  int32_t poi_mapID = mumbleLink.mapID;
+  int32_t poi_map_id = mumbleLink.map_id;
 
-  if (poi_mapID == -1) {
+  if (poi_map_id == -1) {
     return;
   }
   auto& mPOIs = GetMapPOIs();
   for (const auto& poix : mPOIs) {
-    if (poix.second.mapID != poi_mapID) {
+    if (poix.second.map_id != poi_map_id) {
       continue;
     }
     Vector3 v = poix.second.position - poi_position;
@@ -1553,7 +1553,7 @@ void DeletePOI() {
 void UpdatePOI() {
   if (!mumbleLink.IsValid()) return;
 
-  if (mumbleLink.mapID == -1) return;
+  if (mumbleLink.map_id == -1) return;
 
   bool found = false;
 
@@ -1561,7 +1561,7 @@ void UpdatePOI() {
   for (auto& poi : mPOIs) {
     auto& cpoi = poi.second;
 
-    if (cpoi.mapID != mumbleLink.mapID) continue;
+    if (cpoi.map_id != mumbleLink.map_id) continue;
 
     Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
     if (v.Length() < cpoi.typeData.triggerRange) {

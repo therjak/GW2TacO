@@ -40,8 +40,8 @@ struct POI {
   math::Vector4 cameraSpacePosition;
 
   math::Vector3 position;
-  int32_t mapID = 0;
-  size_t wvwObjectiveID = 0;
+  int32_t map_id = 0;
+  size_t Wvwobjective_id = 0;
   std::string_view Type;
 
   time_t lastUpdateTime = 0;
@@ -89,7 +89,7 @@ struct POIRoute {
   bool hasResetPos = false;
   math::Vector3 resetPos;
   float resetRad = 0;
-  int MapID = 0;
+  int map_id = 0;
 
   int32_t activeItem = -1;
 };
