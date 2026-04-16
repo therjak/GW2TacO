@@ -22,10 +22,10 @@ import whiteboard;
 export void GlobalDoTrailLogging(int32_t map_id, math::Vector3 charPos);
 
 export struct GW2TrailVertex {
-  math::Vector4 Pos;
-  math::Vector2 UV;
-  math::Vector4 CenterPos;
-  CColor Color;
+  math::Vector4 pos;
+  math::Vector2 uv;
+  math::Vector4 center_pos;
+  CColor color;
 };
 
 export class GW2TrailDisplay;
@@ -50,27 +50,27 @@ export class GW2Trail {
   bool Import(std::string_view fileName, std::string_view zipFile,
               bool keepPoints = false);
 
-  int32_t length = 0;
-  std::unique_ptr<renderer::VertexBuffer> trailMesh;
-  renderer::Device* dev = nullptr;
-  std::unique_ptr<renderer::IndexBuffer> idxBuf;
-  renderer::Texture* texture = nullptr;
+  int32_t length_ = 0;
+  std::unique_ptr<renderer::VertexBuffer> trail_mesh_;
+  renderer::Device* dev_ = nullptr;
+  std::unique_ptr<renderer::IndexBuffer> idx_buf_;
+  renderer::Texture* texture_ = nullptr;
 
-  int32_t map = 0;
+  int32_t map_ = 0;
 
-  MarkerTypeData typeData;
-  std::string Type;
-  GUID guid{};
-  bool External = false;
-  std::string zipFile;
+  MarkerTypeData type_data_;
+  std::string type_;
+  GUID guid_{};
+  bool external_ = false;
+  std::string zip_file_;
 
-  GW2TacticalCategory* category = nullptr;
+  GW2TacticalCategory* category_ = nullptr;
 
  private:
   void Reset(int32_t _map_id = 0);
   bool SaveToFile(std::string_view fname);
 
-  std::vector<math::Vector3> positions;
+  std::vector<math::Vector3> positions_;
 };
 
 export class GW2TrailDisplay
@@ -114,31 +114,31 @@ export class GW2TrailDisplay
                                   const std::string_view& zipFile,
                                   const std::string_view& categoryZip);
 
-  float asp = 0;
-  math::Matrix4x4 cam;
-  math::Matrix4x4 persp;
-  math::Rect drawrect;
+  float asp_ = 0;
+  math::Matrix4x4 cam_;
+  math::Matrix4x4 persp_;
+  math::Rect draw_rect_;
 
-  std::unique_ptr<renderer::VertexShader> vxShader;
-  std::unique_ptr<renderer::VertexFormat> vertexFormat;
-  std::unique_ptr<renderer::PixelShader> pxShader;
-  std::unique_ptr<renderer::ConstantBuffer> constBuffer;
-  std::unique_ptr<renderer::Texture2D> trailTexture;
-  std::unique_ptr<renderer::SamplerState> trailSampler;
-  std::unique_ptr<renderer::RasterizerState> trailRasterizer1;
-  std::unique_ptr<renderer::RasterizerState> trailRasterizer2;
-  std::unique_ptr<renderer::RasterizerState> trailRasterizer3;
-  std::unique_ptr<renderer::DepthStencilState> trailDepthStencil;
+  std::unique_ptr<renderer::VertexShader> vx_shader_;
+  std::unique_ptr<renderer::VertexFormat> vertex_format_;
+  std::unique_ptr<renderer::PixelShader> px_shader_;
+  std::unique_ptr<renderer::ConstantBuffer> const_buffer_;
+  std::unique_ptr<renderer::Texture2D> trail_texture_;
+  std::unique_ptr<renderer::SamplerState> trail_sampler_;
+  std::unique_ptr<renderer::RasterizerState> trail_rasterizer_1_;
+  std::unique_ptr<renderer::RasterizerState> trail_rasterizer_2_;
+  std::unique_ptr<renderer::RasterizerState> trail_rasterizer_3_;
+  std::unique_ptr<renderer::DepthStencilState> trail_depth_stencil_;
 
-  std::unique_ptr<GW2Trail> editedTrail;
+  std::unique_ptr<GW2Trail> edited_trail_;
 
-  bool trailBeingRecorded = false;
-  bool trailRecordPaused = false;
+  bool trail_being_recorded_ = false;
+  bool trail_record_paused_ = false;
 
-  std::mutex mtx;
+  std::mutex mtx_;
 
   std::unordered_map<std::string, std::unique_ptr<renderer::Texture2D>>
-      textureCache;
+      texture_cache_;
 };
 
 export typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;

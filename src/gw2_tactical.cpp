@@ -1063,11 +1063,11 @@ void ExportPOI(CXMLNode* n, POI& p) {
 
 void ExportTrail(CXMLNode* n, GW2Trail& p) {
   CXMLNode* t = &n->AddChild("Trail");
-  if (!p.Type.empty()) t->SetAttribute("type", p.Type);
+  if (!p.type_.empty()) t->SetAttribute("type", p.type_);
   t->SetAttribute(
-      "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid),
+      "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid_),
                                          sizeof(GUID))));
-  p.typeData.Write(t);
+  p.type_data_.Write(t);
 }
 
 void ExportPOIS() {
@@ -1091,7 +1091,7 @@ void ExportPOIS() {
   for (auto& x : trails) {
     for (auto& t : x.second) {
       auto& p = t.second;
-      if (!p->External) ExportTrail(n, *p);
+      if (!p->external_) ExportTrail(n, *p);
     }
   }
 
@@ -1241,22 +1241,22 @@ void ImportPOI(CXMLNode& t, POI& p, std::string_view zipFile) {
 }
 
 bool ImportTrail(CXMLNode& t, GW2Trail& p, std::string_view zipFile) {
-  p.zipFile = zipFile;
+  p.zip_file_ = zipFile;
 
-  if (t.HasAttribute("type")) p.Type = t.GetAttributeAsString("type");
+  if (t.HasAttribute("type")) p.type_ = t.GetAttributeAsString("type");
 
   if (!t.HasAttribute("GUID")) {
-    CoCreateGuid(&p.guid);
+    CoCreateGuid(&p.guid_);
   } else {
-    p.guid = LoadGUID(t);
+    p.guid_ = LoadGUID(t);
   }
 
-  auto* td = GetCategory(p.Type);
+  auto* td = GetCategory(p.type_);
   if (td) p.SetCategory(td);
 
-  p.typeData.Read(t, true);
+  p.type_data_.Read(t, true);
 
-  return p.Import(p.typeData.trailData, zipFile);
+  return p.Import(p.type_data_.trailData, zipFile);
 }
 
 void ImportPOIDocument(CXMLDocument& d, bool External,
@@ -1321,8 +1321,8 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
       do {
         auto p = std::make_unique<GW2Trail>();
         if (ImportTrail(t, *p, zipFile)) {
-          p->External = External;
-          trails[p->map][p->guid] = std::move(p);
+          p->external_ = External;
+          trails[p->map_][p->guid_] = std::move(p);
         }
       } while (t.Next(t, "Trail"));
     }

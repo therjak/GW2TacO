@@ -60,25 +60,26 @@ void GlobalDoTrailLogging(int32_t map_id, Vector3 charPos) {
 void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
   int32_t fadeoutBubble = GetConfigValue("FadeoutBubble");
 
-  drawrect = GetClientRect();
+  draw_rect_ = GetClientRect();
 
-  cam.SetLookAtLH(mumbleLink.camPosition,
-                  mumbleLink.camPosition + mumbleLink.camDir,
-                  Vector3(0, 1, 0));
-  persp.SetPerspectiveFovLH(
-      mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
-      0.01f, 150.0f);
-  asp = drawrect.Width() / static_cast<float>(drawrect.Height());
+  cam_.SetLookAtLH(mumbleLink.camPosition,
+                   mumbleLink.camPosition + mumbleLink.camDir,
+                   Vector3(0, 1, 0));
+  persp_.SetPerspectiveFovLH(
+      mumbleLink.fov,
+      draw_rect_.Width() / static_cast<float>(draw_rect_.Height()), 0.01f,
+      150.0f);
+  asp_ = draw_rect_.Width() / static_cast<float>(draw_rect_.Height());
 
-  // Matrix4x4 m = cam*persp;
+  // Matrix4x4 m = cam_*persp_;
 
   API->FlushDrawBuffer();
 
-  App->GetDevice()->SetVertexShader(vxShader.get());
-  App->GetDevice()->SetPixelShader(pxShader.get());
-  App->GetDevice()->SetVertexFormat(vertexFormat.get());
-  trailSampler->Apply(renderer::Sampler::kPs0);
-  trailDepthStencil->Apply();
+  App->GetDevice()->SetVertexShader(vx_shader_.get());
+  App->GetDevice()->SetPixelShader(px_shader_.get());
+  App->GetDevice()->SetVertexFormat(vertex_format_.get());
+  trail_sampler_->Apply(renderer::Sampler::kPs0);
+  trail_depth_stencil_->Apply();
 
   if (!HasConfigValue("ShowMinimapTrails")) {
     SetConfigValue("ShowMinimapTrails", 1);
@@ -101,65 +102,66 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
   if (!miniMaprender && showIngameTrails > 0) {
     for (int x = 0; x < 2; x++) {
       if (x == 0) {
-        trailRasterizer2->Apply();
+        trail_rasterizer_2_->Apply();
       } else {
-        trailRasterizer1->Apply();
+        trail_rasterizer_1_->Apply();
       }
 
-      std::lock_guard<std::mutex> lockGuard(mtx);
+      std::lock_guard<std::mutex> lockGuard(mtx_);
 
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.typeData.bits.inGameVisible && showIngameTrails != 2) {
+        if (!trail.type_data_.bits.inGameVisible && showIngameTrails != 2) {
           continue;
         }
 
         renderer::Texture* texture = nullptr;
-        if (!trail.texture) {
-          const auto& str = trail.typeData.texture;
+        if (!trail.texture_) {
+          const auto& str = trail.type_data_.texture;
 
           if (!str.empty()) {
-            texture = GetTexture(str, trail.zipFile,
-                                 trail.category ? trail.category->zipFile : "");
+            texture =
+                GetTexture(str, trail.zip_file_,
+                           trail.category_ ? trail.category_->zipFile : "");
           } else {
-            texture = trailTexture.get();
+            texture = trail_texture_.get();
           }
-          trail.texture = texture;
+          trail.texture_ = texture;
         } else {
-          texture = trail.texture;
+          texture = trail.texture_;
         }
 
         float width = GameToWorldCoords(20);
 
-        trail.SetupAndDraw(constBuffer.get(), texture, cam, persp, one, x == 0,
-                           fadeoutBubble, data, GetMapFade() * globalOpacity,
-                           width, width, 1.0f);
+        trail.SetupAndDraw(const_buffer_.get(), texture, cam_, persp_, one,
+                           x == 0, fadeoutBubble, data,
+                           GetMapFade() * globalOpacity, width, width, 1.0f);
       }
 
-      if (editedTrail) {
-        if (editedTrail->map == mumbleLink.map_id) {
+      if (edited_trail_) {
+        if (edited_trail_->map_ == mumbleLink.map_id) {
           data[0] = GetTime() / 1000.0f;
 
           App->GetDevice()->SetTexture(renderer::Sampler::kPs0,
-                                       trailTexture.get());
+                                       trail_texture_.get());
 
-          constBuffer->Reset();
-          const auto& cam_data = cam.data();
+          const_buffer_->Reset();
+          const auto& cam_data = cam_.data();
           const auto cam_size_x = cam_data[0].size() * sizeof(float);
-          constBuffer->AddData(cam_data[0].data(), cam_size_x);
-          constBuffer->AddData(cam_data[1].data(), cam_size_x);
-          constBuffer->AddData(cam_data[2].data(), cam_size_x);
-          constBuffer->AddData(cam_data[3].data(), cam_size_x);
-          const auto& persp_data = persp.data();
+          const_buffer_->AddData(cam_data[0].data(), cam_size_x);
+          const_buffer_->AddData(cam_data[1].data(), cam_size_x);
+          const_buffer_->AddData(cam_data[2].data(), cam_size_x);
+          const_buffer_->AddData(cam_data[3].data(), cam_size_x);
+          const auto& persp_data = persp_.data();
           const auto persp_size_x = persp_data[0].size() * sizeof(float);
-          constBuffer->AddData(persp_data[0].data(), persp_size_x);
-          constBuffer->AddData(persp_data[1].data(), persp_size_x);
-          constBuffer->AddData(persp_data[2].data(), persp_size_x);
-          constBuffer->AddData(persp_data[3].data(), persp_size_x);
-          constBuffer->AddData(&mumbleLink.charPosition, 12);
-          constBuffer->AddData(&one, 4);
-          constBuffer->AddData(data.data(), 16);
+          const_buffer_->AddData(persp_data[0].data(), persp_size_x);
+          const_buffer_->AddData(persp_data[1].data(), persp_size_x);
+          const_buffer_->AddData(persp_data[2].data(), persp_size_x);
+          const_buffer_->AddData(persp_data[3].data(), persp_size_x);
+          const_buffer_->AddData(&mumbleLink.charPosition, 12);
+          const_buffer_->AddData(&one, 4);
+          const_buffer_->AddData(data.data(), 16);
           // color
 
           data[0] = 0.2f;
@@ -173,19 +175,19 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
             data[2] *= 0.5f;
           }
 
-          constBuffer->AddData(data.data(), 16);
+          const_buffer_->AddData(data.data(), 16);
           data[0] = 1000;
           data[1] = 1200;
           data[2] = static_cast<float>(fadeoutBubble);
           data[3] = GameToWorldCoords(20);
           data[4] = GameToWorldCoords(20);
           data[5] = 1.0f;
-          constBuffer->AddData(data.data(), 32);
+          const_buffer_->AddData(data.data(), 32);
 
-          constBuffer->Upload();
-          App->GetDevice()->SetShaderConstants(constBuffer.get());
+          const_buffer_->Upload();
+          App->GetDevice()->SetShaderConstants(const_buffer_.get());
 
-          editedTrail->Draw();
+          edited_trail_->Draw();
         }
       }
     }
@@ -193,7 +195,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
 
   // draw minimap
   if (miniMaprender) {
-    trailRasterizer3->Apply();
+    trail_rasterizer_3_->Apply();
     Rect miniRect = GetMinimapRectangle();
     Rect clientRect = GetClientRect();
 
@@ -211,8 +213,8 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       camera *= Matrix4x4::Scaling(Vector3(
           clientRect.Width() / static_cast<float>(miniRect.Width()),
           clientRect.Height() / static_cast<float>(miniRect.Height()), 0));
-      camera *= Matrix4x4::Scaling(Vector3(
-          2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
+      camera *= Matrix4x4::Scaling(Vector3(2.0f / clientRect.Width(),
+                                           -2.0f / clientRect.Height(), 0.0f));
       camera *= Matrix4x4::Translation(Vector3(-1.0f, 1.0f, 0.5));
       Matrix4x4 perspective;
       perspective.SetIdentity();
@@ -222,39 +224,42 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.typeData.bits.miniMapVisible && showMinimapTrails != 2) {
+        if (!trail.type_data_.bits.miniMapVisible && showMinimapTrails != 2) {
           continue;
         }
 
-        float trailWidth = trail.typeData.miniMapSize * 0.5f;
-        if (trail.typeData.bits.scaleWithZoom) {
+        float trailWidth = trail.type_data_.miniMapSize * 0.5f;
+        if (trail.type_data_.bits.scaleWithZoom) {
           trailWidth /= mumbleLink.miniMap.mapScale;
         }
 
         renderer::Texture* texture = nullptr;
-        if (!trail.texture) {
-          const auto& str = trail.typeData.texture;
+        if (!trail.texture_) {
+          const auto& str = trail.type_data_.texture;
 
           if (!str.empty()) {
-            texture = GetTexture(str, trail.zipFile,
-                                 trail.category ? trail.category->zipFile : "");
+            texture =
+                GetTexture(str, trail.zip_file_,
+                           trail.category_ ? trail.category_->zipFile : "");
           } else {
-            texture = trailTexture.get();
+            texture = trail_texture_.get();
           }
-          trail.texture = texture;
+          trail.texture_ = texture;
         } else {
-          texture = trail.texture;
+          texture = trail.texture_;
         }
 
         float alpha =
             1.0f -
-            std::max(0.0f, std::min(1.0f, (mumbleLink.miniMap.mapScale -
-                                           trail.typeData.miniMapFadeOutLevel) /
-                                              2.0f));
+            std::max(0.0f,
+                     std::min(1.0f, (mumbleLink.miniMap.mapScale -
+                                     trail.type_data_.miniMapFadeOutLevel) /
+                                        2.0f));
 
-        trail.SetupAndDraw(constBuffer.get(), texture, camera, perspective, one,
-                           false, 0, data, mapFade * alpha * minimapOpacity,
-                           1.0f, GameToWorldCoords(20) * 0.1f, trailWidth);
+        trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
+                           one, false, 0, data,
+                           mapFade * alpha * minimapOpacity, 1.0f,
+                           GameToWorldCoords(20) * 0.1f, trailWidth);
       }
     }
 
@@ -263,8 +268,8 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       Matrix4x4 camera =
           mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
 
-      camera *= Matrix4x4::Scaling(Vector3(
-          2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
+      camera *= Matrix4x4::Scaling(Vector3(2.0f / clientRect.Width(),
+                                           -2.0f / clientRect.Height(), 0.0f));
       camera *= Matrix4x4::Translation(Vector3(-1.0f, 1.0f, 0.5));
       // camera *= Matrix4x4().Scaling( Vector3( 10, 10, 1 ) );
       Matrix4x4 perspective;
@@ -275,37 +280,39 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.typeData.bits.bigMapVisible && showBigmapTrails != 2) {
+        if (!trail.type_data_.bits.bigMapVisible && showBigmapTrails != 2) {
           continue;
         }
 
-        float trailWidth = trail.typeData.miniMapSize * 0.5f;
-        if (trail.typeData.bits.scaleWithZoom) {
+        float trailWidth = trail.type_data_.miniMapSize * 0.5f;
+        if (trail.type_data_.bits.scaleWithZoom) {
           trailWidth /= mumbleLink.miniMap.mapScale;
         }
 
         renderer::Texture* texture = nullptr;
-        if (!trail.texture) {
-          const auto& str = trail.typeData.texture;
+        if (!trail.texture_) {
+          const auto& str = trail.type_data_.texture;
 
           if (!str.empty()) {
-            texture = GetTexture(str, trail.zipFile,
-                                 trail.category ? trail.category->zipFile : "");
+            texture =
+                GetTexture(str, trail.zip_file_,
+                           trail.category_ ? trail.category_->zipFile : "");
           } else {
-            texture = trailTexture.get();
+            texture = trail_texture_.get();
           }
-          trail.texture = texture;
+          trail.texture_ = texture;
         } else {
-          texture = trail.texture;
+          texture = trail.texture_;
         }
 
         float alpha =
             1.0f -
-            std::max(0.0f, std::min(1.0f, (mumbleLink.bigMap.mapScale -
-                                           trail.typeData.miniMapFadeOutLevel) /
-                                              2.0f));
-        trail.SetupAndDraw(constBuffer.get(), texture, camera, perspective, one,
-                           false, 0, data,
+            std::max(0.0f,
+                     std::min(1.0f, (mumbleLink.bigMap.mapScale -
+                                     trail.type_data_.miniMapFadeOutLevel) /
+                                        2.0f));
+        trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
+                           one, false, 0, data,
                            (1.0f - mapFade) * alpha * minimapOpacity, 1.0f,
                            GameToWorldCoords(20) * 0.1f, trailWidth);
       }
@@ -353,30 +360,30 @@ void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
 }
 
 void GW2TrailDisplay::DoTrailLogging(int32_t map_id, Vector3 charPos) {
-  std::lock_guard<std::mutex> lockGuard(mtx);
+  std::lock_guard<std::mutex> lockGuard(mtx_);
 
-  if (!trailBeingRecorded) return;
+  if (!trail_being_recorded_) return;
 
-  if (trailRecordPaused) return;
+  if (trail_record_paused_) return;
 
   if (map_id != lastMap) ClearEditedTrail();
 
-  if (!editedTrail) {
-    editedTrail = std::make_unique<GW2Trail>();
-    editedTrail->Reset(map_id);
+  if (!edited_trail_) {
+    edited_trail_ = std::make_unique<GW2Trail>();
+    edited_trail_->Reset(map_id);
   }
 
   float dist = WorldToGameCoords((last_pos - charPos).Length());
   if (dist < 30) return;
 
   lastMap = map_id;
-  editedTrail->positions.push_back(charPos);
+  edited_trail_->positions_.push_back(charPos);
   last_pos = charPos;
 
-  editedTrail->Update();
+  edited_trail_->Update();
 }
 
-void GW2TrailDisplay::ClearEditedTrail() { editedTrail.reset(); }
+void GW2TrailDisplay::ClearEditedTrail() { edited_trail_.reset(); }
 
 mz_zip_archive* OpenZipFile(std::string_view zipFile);
 
@@ -389,10 +396,10 @@ renderer::Texture2D* GW2TrailDisplay::GetTexture(
   std::transform(s.begin(), s.end(), s.begin(),
                  [](unsigned char c) { return std::tolower(c); });
 
-  if (textureCache.find(s) != textureCache.end()) {
-    const auto& tc = textureCache[s];
+  if (texture_cache_.find(s) != texture_cache_.end()) {
+    const auto& tc = texture_cache_[s];
     if (tc) return tc.get();
-    return trailTexture.get();
+    return trail_texture_.get();
   }
 
   if (!zipFile.empty() || !categoryZip.empty()) {
@@ -422,7 +429,7 @@ renderer::Texture2D* GW2TrailDisplay::GetTexture(
                   data.get(), static_cast<int32_t>(stat.m_uncomp_size));
               if (tex) {
                 auto t = tex.get();
-                textureCache[s] = std::move(tex);
+                texture_cache_[s] = std::move(tex);
                 return t;
               } else {
                 Log_Err(
@@ -442,16 +449,16 @@ renderer::Texture2D* GW2TrailDisplay::GetTexture(
 
   CStreamReaderMemory f;
   if (!f.Open(s) && !f.Open("POIs\\" + s)) {
-    textureCache[s] = nullptr;
+    texture_cache_[s] = nullptr;
     Log_Err("[GW2TacO] Failed to open image {:s}", s);
-    return trailTexture.get();
+    return trail_texture_.get();
   }
 
   auto texture = App->GetDevice()->CreateTexture2D(
       f.GetData(), static_cast<int32_t>(f.GetLength()));
   if (!texture) Log_Err("[GW2TacO] Failed to decompress image {:s}", s);
-  textureCache[s] = std::move(texture);
-  return textureCache[s].get();
+  texture_cache_[s] = std::move(texture);
+  return texture_cache_[s].get();
 }
 
 GW2TrailDisplay::GW2TrailDisplay() : CWBGuiType() {}
@@ -460,41 +467,41 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
                                  const math::Rect& Position) {
   if (!gui::CWBItem::Initialize(Parent, Position)) return false;
 
-  constBuffer = App->GetDevice()->CreateConstantBuffer();
+  const_buffer_ = App->GetDevice()->CreateConstantBuffer();
 
   CStreamReaderMemory tex;
   if (tex.Open("Data\\trail.png")) {
-    trailTexture = App->GetDevice()->CreateTexture2D(
+    trail_texture_ = App->GetDevice()->CreateTexture2D(
         tex.GetData(), static_cast<int32_t>(tex.GetLength()));
-    if (!trailTexture) {
+    if (!trail_texture_) {
       Log_Err("[GW2TacO] Failed to decompress trail texture image!");
     }
   } else {
     Log_Err("[GW2TacO] Failed to open trail texture!");
   }
 
-  App->GetDevice()->SetShaderConstants(constBuffer.get());
-  trailSampler = App->GetDevice()->CreateSamplerState();
-  trailSampler->SetAddressU(renderer::TextureAddressMode::kWrap);
-  trailSampler->SetAddressV(renderer::TextureAddressMode::kWrap);
-  trailSampler->SetFilter(renderer::Filter::kAnisotropic);
-  trailSampler->Update();
+  App->GetDevice()->SetShaderConstants(const_buffer_.get());
+  trail_sampler_ = App->GetDevice()->CreateSamplerState();
+  trail_sampler_->SetAddressU(renderer::TextureAddressMode::kWrap);
+  trail_sampler_->SetAddressV(renderer::TextureAddressMode::kWrap);
+  trail_sampler_->SetFilter(renderer::Filter::kAnisotropic);
+  trail_sampler_->Update();
 
-  trailRasterizer1 = App->GetDevice()->CreateRasterizerState();
-  trailRasterizer1->SetCullMode(renderer::CullMode::kCcw);
-  trailRasterizer1->Update();
+  trail_rasterizer_1_ = App->GetDevice()->CreateRasterizerState();
+  trail_rasterizer_1_->SetCullMode(renderer::CullMode::kCcw);
+  trail_rasterizer_1_->Update();
 
-  trailRasterizer2 = App->GetDevice()->CreateRasterizerState();
-  trailRasterizer2->SetCullMode(renderer::CullMode::kCw);
-  trailRasterizer2->Update();
+  trail_rasterizer_2_ = App->GetDevice()->CreateRasterizerState();
+  trail_rasterizer_2_->SetCullMode(renderer::CullMode::kCw);
+  trail_rasterizer_2_->Update();
 
-  trailRasterizer3 = App->GetDevice()->CreateRasterizerState();
-  trailRasterizer3->SetCullMode(renderer::CullMode::kNone);
-  trailRasterizer3->Update();
+  trail_rasterizer_3_ = App->GetDevice()->CreateRasterizerState();
+  trail_rasterizer_3_->SetCullMode(renderer::CullMode::kNone);
+  trail_rasterizer_3_->Update();
 
-  trailDepthStencil = App->GetDevice()->CreateDepthStencilState();
-  trailDepthStencil->SetDepthEnable(false);
-  trailDepthStencil->Update();
+  trail_depth_stencil_ = App->GetDevice()->CreateDepthStencilState();
+  trail_depth_stencil_->SetDepthEnable(false);
+  trail_depth_stencil_->Update();
 
   LPCSTR code =
       "Texture2D GuiTexture:register(t0);"
@@ -542,9 +549,9 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
       "x.Color*GuiTexture.Sample(Sampler,x.UV + "
       "float2(0,data.x))*color*float4(1,1,1,a); }";
 
-  vxShader = App->GetDevice()->CreateVertexShader(
+  vx_shader_ = App->GetDevice()->CreateVertexShader(
       code, static_cast<int32_t>(strlen(code)), "vsmain", "vs_4_0");
-  pxShader = App->GetDevice()->CreatePixelShader(
+  px_shader_ = App->GetDevice()->CreatePixelShader(
       code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
 
   std::vector<renderer::VertexAttribute> Att{
@@ -554,14 +561,14 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
       renderer::VertexAttribute::kColor4,
   };
 
-  vertexFormat = App->GetDevice()->CreateVertexFormat(Att, vxShader.get());
-  if (!vertexFormat) {
+  vertex_format_ = App->GetDevice()->CreateVertexFormat(Att, vx_shader_.get());
+  if (!vertex_format_) {
     Log_Err("[GW2TacO]  Error creating Trail Vertex Format");
   }
   return true;
 }
 
-GW2TrailDisplay::~GW2TrailDisplay() { textureCache.clear(); }
+GW2TrailDisplay::~GW2TrailDisplay() { texture_cache_.clear(); }
 
 gui::CWBItem* GW2TrailDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
                                        Rect& Pos) {
@@ -574,12 +581,12 @@ bool GW2TrailDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
 }
 
 void GW2TrailDisplay::StartStopTrailRecording(bool start) {
-  trailBeingRecorded = start;
-  if (!trailBeingRecorded) ClearEditedTrail();
+  trail_being_recorded_ = start;
+  if (!trail_being_recorded_) ClearEditedTrail();
 }
 
 void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
-  trailRecordPaused = pause;
+  trail_record_paused_ = pause;
 
   auto* btn = App->GetRoot()->FindChildByID<gui::CWBButton>("pausetrail");
   if (btn) {
@@ -590,17 +597,17 @@ void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   btn = App->GetRoot()->FindChildByID<gui::CWBButton>("startnewsection");
   if (btn) btn->Hide(!pause);
 
-  if (!pause && newSection && editedTrail) {
-    editedTrail->positions.emplace_back(Vector3(0, 0, 0));
+  if (!pause && newSection && edited_trail_) {
+    edited_trail_->positions_.emplace_back(Vector3(0, 0, 0));
   }
 }
 
 void GW2TrailDisplay::DeleteLastTrailSegment() {
-  if (!editedTrail) return;
+  if (!edited_trail_) return;
 
-  if (!editedTrail->positions.empty()) editedTrail->positions.pop_back();
+  if (!edited_trail_->positions_.empty()) edited_trail_->positions_.pop_back();
 
-  editedTrail->Update();
+  edited_trail_->Update();
 }
 
 void GW2TrailDisplay::DeleteTrailSegment() {}
@@ -608,7 +615,7 @@ void GW2TrailDisplay::DeleteTrailSegment() {}
 extern bool disableHooks;
 
 void GW2TrailDisplay::ExportTrail() {
-  if (!editedTrail) return;
+  if (!edited_trail_) return;
 
   disableHooks = true;
 
@@ -646,7 +653,7 @@ void GW2TrailDisplay::ExportTrail() {
   opf.lpstrInitialDir = dir;
 
   if (GetSaveFileName(&opf)) {
-    editedTrail->SaveToFile(opf.lpstrFile);
+    edited_trail_->SaveToFile(opf.lpstrFile);
   } else {
     DWORD error = CommDlgExtendedError();
   }
@@ -702,9 +709,9 @@ void GW2TrailDisplay::ImportTrail() {
       btn = App->GetRoot()->FindChildByID<gui::CWBButton>("pausetrail");
       if (btn) btn->Push(true);
 
-      if (!editedTrail) {
-        editedTrail = std::make_unique<GW2Trail>();
-        editedTrail->Import(file, true);
+      if (!edited_trail_) {
+        edited_trail_ = std::make_unique<GW2Trail>();
+        edited_trail_->Import(file, true);
       }
 
       lastMap = mumbleLink.map_id;
@@ -718,34 +725,34 @@ void GW2TrailDisplay::ImportTrail() {
 }
 
 void GW2Trail::Reset(int32_t _map_id /*= 0 */) {
-  map = _map_id;
-  positions.clear();
+  map_ = _map_id;
+  positions_.clear();
 }
 
 bool GW2Trail::SaveToFile(std::string_view fname) {
-  if (positions.empty()) return false;
+  if (positions_.empty()) return false;
 
   CStreamWriterFile TrailLog;
   if (!TrailLog.Open(fname)) return false;
 
   TrailLog.WriteDWord(kTrailFileVersion);
 
-  TrailLog.WriteDWord(map);
-  TrailLog.Write(std::string_view(reinterpret_cast<const char*>(&positions[0]),
-                                  sizeof(Vector3) * positions.size()));
+  TrailLog.WriteDWord(map_);
+  TrailLog.Write(std::string_view(reinterpret_cast<const char*>(&positions_[0]),
+                                  sizeof(Vector3) * positions_.size()));
 
   return true;
 }
 
 GW2Trail::~GW2Trail() = default;
 
-void GW2Trail::Build(renderer::Device* d, int32_t map_id,
-                     const float* points, int pointCount) {
-  dev = d;
-  map = map_id;
+void GW2Trail::Build(renderer::Device* d, int32_t map_id, const float* points,
+                     int pointCount) {
+  dev_ = d;
+  map_ = map_id;
 
-  trailMesh.reset();
-  idxBuf.reset();
+  trail_mesh_.reset();
+  idx_buf_.reset();
 
   if (pointCount <= 1) return;
 
@@ -778,7 +785,7 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
 
     if (nextPos == Vector3(0, 0, 0)) nextPos = pos;
 
-    uvStretch += (pos - last_pos).Length() * typeData.trailScale * 2;
+    uvStretch += (pos - last_pos).Length() * type_data_.trailScale * 2;
 
     Vector3 dir = nextPos - last_pos;
     dir.y = 0;
@@ -794,14 +801,14 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
     Vector3 p2 = pos - ort * twist;
 
     const auto vertPos = size_t(cnt) * 2;
-    vertices[vertPos].Pos = Vector4(p1.x, p1.y, p1.z, 1);
-    vertices[vertPos + 1].Pos = Vector4(p2.x, p2.y, p2.z, 1);
-    vertices[vertPos].CenterPos = Vector4(pos.x, pos.y, pos.z, 1);
-    vertices[vertPos + 1].CenterPos = Vector4(pos.x, pos.y, pos.z, 1);
-    vertices[vertPos].Color = CColor{0xffffffff};
-    vertices[vertPos + 1].Color = CColor{0xffffffff};
-    vertices[vertPos].UV = Vector2(0, -uvStretch);
-    vertices[vertPos + 1].UV = Vector2(1, -uvStretch);
+    vertices[vertPos].pos = Vector4(p1.x, p1.y, p1.z, 1);
+    vertices[vertPos + 1].pos = Vector4(p2.x, p2.y, p2.z, 1);
+    vertices[vertPos].center_pos = Vector4(pos.x, pos.y, pos.z, 1);
+    vertices[vertPos + 1].center_pos = Vector4(pos.x, pos.y, pos.z, 1);
+    vertices[vertPos].color = CColor{0xffffffff};
+    vertices[vertPos + 1].color = CColor{0xffffffff};
+    vertices[vertPos].uv = Vector2(0, -uvStretch);
+    vertices[vertPos + 1].uv = Vector2(1, -uvStretch);
 
     if (x < pointCount - 1) {
       indices[icnt++] = x * 2;
@@ -830,15 +837,15 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
     vertexCount += 2;
   }
 
-  trailMesh =
-      dev->CreateVertexBuffer(reinterpret_cast<uint8_t*>(vertices.get()),
-                              vertexCount * sizeof(GW2TrailVertex));
-  length = pointCount * 2;
-  idxBuf = dev->CreateIndexBuffer((pointCount - 1) * 6, 4);
+  trail_mesh_ =
+      dev_->CreateVertexBuffer(reinterpret_cast<uint8_t*>(vertices.get()),
+                               vertexCount * sizeof(GW2TrailVertex));
+  length_ = pointCount * 2;
+  idx_buf_ = dev_->CreateIndexBuffer((pointCount - 1) * 6, 4);
 
   int32_t* idxData = nullptr;
 
-  if (idxBuf && idxBuf->Lock(reinterpret_cast<void**>(&idxData))) {
+  if (idx_buf_ && idx_buf_->Lock(reinterpret_cast<void**>(&idxData))) {
     memcpy(idxData, indices.get(),
            sizeof(int32_t) * 6 * (size_t(pointCount) - 1));
     // int cnt = 0;
@@ -851,63 +858,63 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
     //  idxData[ cnt++ ] = x * 2 + 3;
     //  idxData[ cnt++ ] = x * 2 + 1;
     //}
-    idxBuf->UnLock();
+    idx_buf_->UnLock();
   }
 }
 
 void GW2Trail::Draw() {
-  if (!trailMesh || !idxBuf) return;
+  if (!trail_mesh_ || !idx_buf_) return;
 
-  dev->SetVertexBuffer(trailMesh.get(), 0);
-  dev->SetIndexBuffer(idxBuf.get());
-  dev->DrawIndexedTriangles(length - 2, length);
+  dev_->SetVertexBuffer(trail_mesh_.get(), 0);
+  dev_->SetIndexBuffer(idx_buf_.get());
+  dev_->DrawIndexedTriangles(length_ - 2, length_);
 }
 
 void GW2Trail::Update() {
   if (!App->GetDevice()) return;
 
-  Build(App->GetDevice(), map, reinterpret_cast<float*>(&positions[0]),
-        positions.size());
+  Build(App->GetDevice(), map_, reinterpret_cast<float*>(&positions_[0]),
+        positions_.size());
 }
 
-void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* constBuffer,
-                            renderer::Texture* texture, Matrix4x4& cam,
-                            Matrix4x4& persp, float& one, bool scaleData,
+void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
+                            renderer::Texture* texture, Matrix4x4& cam_,
+                            Matrix4x4& persp_, float& one, bool scaleData,
                             int32_t fadeoutBubble, std::array<float, 8>& data,
                             float fadeAlpha, float width, float uvScale,
                             float width2d) {
-  if (category && !category->IsVisible()) return;
+  if (category_ && !category_->IsVisible()) return;
 
-  if (map != mumbleLink.map_id) return;
+  if (map_ != mumbleLink.map_id) return;
 
   App->GetDevice()->SetTexture(renderer::Sampler::kPs0, texture);
 
   data[0] = GetTime() / 1000.0f;
 
-  data[0] *= typeData.animSpeed;
+  data[0] *= type_data_.animSpeed;
 
-  constBuffer->Reset();
-  const auto& cam_data = cam.data();
+  const_buffer_->Reset();
+  const auto& cam_data = cam_.data();
   const auto cam_size_x = cam_data[0].size() * sizeof(float);
-  constBuffer->AddData(cam_data[0].data(), cam_size_x);
-  constBuffer->AddData(cam_data[1].data(), cam_size_x);
-  constBuffer->AddData(cam_data[2].data(), cam_size_x);
-  constBuffer->AddData(cam_data[3].data(), cam_size_x);
-  const auto& persp_data = persp.data();
+  const_buffer_->AddData(cam_data[0].data(), cam_size_x);
+  const_buffer_->AddData(cam_data[1].data(), cam_size_x);
+  const_buffer_->AddData(cam_data[2].data(), cam_size_x);
+  const_buffer_->AddData(cam_data[3].data(), cam_size_x);
+  const auto& persp_data = persp_.data();
   const auto persp_size_x = persp_data[0].size() * sizeof(float);
-  constBuffer->AddData(persp_data[0].data(), persp_size_x);
-  constBuffer->AddData(persp_data[1].data(), persp_size_x);
-  constBuffer->AddData(persp_data[2].data(), persp_size_x);
-  constBuffer->AddData(persp_data[3].data(), persp_size_x);
-  constBuffer->AddData(&mumbleLink.charPosition, 12);
-  constBuffer->AddData(&one, 4);
-  constBuffer->AddData(data.data(), 16);
+  const_buffer_->AddData(persp_data[0].data(), persp_size_x);
+  const_buffer_->AddData(persp_data[1].data(), persp_size_x);
+  const_buffer_->AddData(persp_data[2].data(), persp_size_x);
+  const_buffer_->AddData(persp_data[3].data(), persp_size_x);
+  const_buffer_->AddData(&mumbleLink.charPosition, 12);
+  const_buffer_->AddData(&one, 4);
+  const_buffer_->AddData(data.data(), 16);
   // color
 
-  data[0] = typeData.color.R() / 255.0f;
-  data[1] = typeData.color.G() / 255.0f;
-  data[2] = typeData.color.B() / 255.0f;
-  data[3] = typeData.alpha * fadeAlpha;
+  data[0] = type_data_.color.R() / 255.0f;
+  data[1] = type_data_.color.G() / 255.0f;
+  data[2] = type_data_.color.B() / 255.0f;
+  data[3] = type_data_.alpha * fadeAlpha;
 
   if (scaleData) {
     data[0] *= 0.5;
@@ -915,34 +922,34 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* constBuffer,
     data[2] *= 0.5;
   }
 
-  constBuffer->AddData(data.data(), 16);
+  const_buffer_->AddData(data.data(), 16);
 
-  data[0] = GameToWorldCoords(typeData.fadeNear);
-  data[1] = GameToWorldCoords(typeData.fadeFar);
+  data[0] = GameToWorldCoords(type_data_.fadeNear);
+  data[1] = GameToWorldCoords(type_data_.fadeFar);
   data[2] = static_cast<float>(fadeoutBubble);
   data[3] = width;
   data[4] = uvScale;
   data[5] = width2d;
 
-  constBuffer->AddData(data.data(), 32);
+  const_buffer_->AddData(data.data(), 32);
 
-  constBuffer->Upload();
-  App->GetDevice()->SetShaderConstants(constBuffer);
+  const_buffer_->Upload();
+  App->GetDevice()->SetShaderConstants(const_buffer_);
 
   Draw();
 }
 
 void GW2Trail::SetCategory(GW2TacticalCategory* t) {
-  category = t;
-  typeData = t->data;
-  Type = t->GetFullTypeName();
+  category_ = t;
+  type_data_ = t->data;
+  type_ = t->GetFullTypeName();
 }
 
 bool GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
   if (keepPoints) {
-    positions.clear();
+    positions_.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++) {
-      positions.emplace_back(
+      positions_.emplace_back(
           Vector3(&(reinterpret_cast<const float*>(f.GetData() + 8))[x * 3]));
     }
   }
