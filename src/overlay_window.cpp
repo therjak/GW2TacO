@@ -4,10 +4,10 @@ import math;
 import taco.overlay_config;
 import whiteboard;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
-bool OverlayWindow::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool OverlayWindow::IsMouseTransparent(const Point& ClientSpacePoint,
                                        gui::WBMESSAGE MessageType) {
   if (GetConfigValue("EditMode")) return false;
   return true;
@@ -18,7 +18,7 @@ OverlayWindow::OverlayWindow() : CWBGuiType() {}
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
 gui::CWBItem* OverlayWindow::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                     CRect& Pos) {
+                                     Rect& Pos) {
   return OverlayWindow::Create(Root, Pos);
 }
 

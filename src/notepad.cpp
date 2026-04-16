@@ -12,10 +12,10 @@ import taco.mumble_link;
 import taco.overlay_config;
 import math;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
-bool GW2Notepad::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool GW2Notepad::IsMouseTransparent(const Point& ClientSpacePoint,
                                     gui::WBMESSAGE MessageType) {
   return true;
 }
@@ -50,7 +50,7 @@ GW2Notepad::~GW2Notepad() {
 }
 
 gui::CWBItem* GW2Notepad::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                  CRect& Pos) {
+                                  Rect& Pos) {
   return GW2Notepad::Create(Root, Pos);
 }
 

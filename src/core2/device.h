@@ -72,7 +72,7 @@ class Device {
   Texture* GetTexture(Sampler sampler);
 
   virtual bool SetRenderTarget(Texture2D* rt) = 0;
-  virtual bool SetViewport(math::CRect viewport) = 0;
+  virtual bool SetViewport(math::Rect viewport) = 0;
 
   virtual std::unique_ptr<VertexShader> CreateVertexShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,

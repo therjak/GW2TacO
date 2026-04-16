@@ -22,7 +22,7 @@ import math;
 
 namespace renderer {
 
-using math::CRect;
+using math::Rect;
 
 typedef HRESULT(__stdcall* DCompositionCreateDeviceCallback)(
     _In_opt_ IDXGIDevice* dxgiDevice, _In_ REFIID iid,
@@ -221,7 +221,7 @@ bool DX11Device::CreateClassicSwapChain(const HWND window_handle,
   d3d_device_context_->OMSetRenderTargets(1, &back_buffer_view_,
                                           depth_buffer_view_);
 
-  SetViewport(CRect(0, 0, x_res, y_res));
+  SetViewport(Rect(0, 0, x_res, y_res));
 
   if (CreateDefaultRenderStates()) {
     Log_Nfo("[core] DirectX11 Device initialization successful.");
@@ -405,7 +405,7 @@ bool DX11Device::CreateDirectCompositionSwapchain(const HWND window_handle,
   d3d_device_context_->OMSetRenderTargets(1, &back_buffer_view_,
                                           depth_buffer_view_);
 
-  SetViewport(CRect(0, 0, x_res, y_res));
+  SetViewport(Rect(0, 0, x_res, y_res));
 
   if (CreateDefaultRenderStates()) {
     Log_Nfo("[core] DirectX11 Device initialization successful.");
@@ -532,7 +532,7 @@ void DX11Device::Resize(const int32_t x_res, const int32_t y_res) {
 
   d3d_device_context_->OMSetRenderTargets(1, &back_buffer_view_,
                                           depth_buffer_view_);
-  SetViewport(CRect(0, 0, x_res, y_res));
+  SetViewport(Rect(0, 0, x_res, y_res));
 
   if (swap_chain_retrace_object_) {
     CloseHandle(swap_chain_retrace_object_);
@@ -997,7 +997,7 @@ bool DX11Device::DrawTriangles(int32_t count) {
   return true;
 }
 
-bool DX11Device::SetViewport(CRect viewport) {
+bool DX11Device::SetViewport(Rect viewport) {
   D3D11_VIEWPORT d3d_viewport;
   memset(&d3d_viewport, 0, sizeof(D3D11_VIEWPORT));
 

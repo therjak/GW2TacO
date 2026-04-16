@@ -11,15 +11,15 @@ import taco.mumble_link;
 import taco.overlay_config;
 import xml;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 void GW2HPGrid::OnDraw(gui::CWBDrawAPI* API) {
   if (!GetConfigValue("HPGridVisible")) {
     return;
   }
 
-  CRect cl = GetClientRect();
+  Rect cl = GetClientRect();
 
   for (auto& grid : Grids) {
     if (mumbleLink.mapID != grid.mapID) {
@@ -32,7 +32,7 @@ void GW2HPGrid::OnDraw(gui::CWBDrawAPI* API) {
 
     for (const auto& dp : grid.displayedPercentages) {
       int pos = static_cast<int>(cl.Width() * dp.percentage / 100.0f);
-      CRect r = CRect(pos, cl.y1, pos + 1, cl.y2);
+      Rect r = Rect(pos, cl.y1, pos + 1, cl.y2);
       API->DrawRect(r, dp.color);
     }
   }
@@ -43,11 +43,11 @@ GW2HPGrid::GW2HPGrid() : CWBGuiType() { LoadGrids(); }
 GW2HPGrid::~GW2HPGrid() = default;
 
 gui::CWBItem* GW2HPGrid::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                 CRect& Pos) {
+                                 Rect& Pos) {
   return GW2HPGrid::Create(Root, Pos);
 }
 
-bool GW2HPGrid::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool GW2HPGrid::IsMouseTransparent(const Point& ClientSpacePoint,
                                    gui::WBMESSAGE MessageType) {
   return true;
 }

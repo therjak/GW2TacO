@@ -37,9 +37,9 @@ struct POI {
   MarkerTypeData typeData;
   gui::WBATLASHANDLE icon = 0;
 
-  math::CVector4 cameraSpacePosition;
+  math::Vector4 cameraSpacePosition;
 
-  math::CVector3 position;
+  math::Vector3 position;
   int32_t mapID = 0;
   size_t wvwObjectiveID = 0;
   std::string_view Type;
@@ -87,7 +87,7 @@ struct POIRoute {
   std::vector<GUID> route;
   bool external = false;
   bool hasResetPos = false;
-  math::CVector3 resetPos;
+  math::Vector3 resetPos;
   float resetRad = 0;
   int MapID = 0;
 
@@ -111,7 +111,7 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
  public:
   GW2TacticalDisplay();
   static inline GW2TacticalDisplay* Create(gui::CWBItem* Parent,
-                                           math::CRect Position) {
+                                           math::Rect Position) {
     auto p = std::make_unique<GW2TacticalDisplay>();
     p->Initialize(Parent, Position);
     GW2TacticalDisplay* r = p.get();
@@ -122,9 +122,9 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
   ~GW2TacticalDisplay() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
   void RemoveUserMarkersFromMap();
 
@@ -133,17 +133,17 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
   void InsertPOI(POI& poi);
   void DrawPOI(gui::CWBDrawAPI* API, const tm& ptm, const time_t& currtime,
                POI& poi, bool drawDistance, std::string& infoText);
-  void DrawPOIMinimap(gui::CWBDrawAPI* API, const math::CRect& miniRect,
-                      math::CVector2 pos, const tm& ptm, const time_t& currtime,
+  void DrawPOIMinimap(gui::CWBDrawAPI* API, const math::Rect& miniRect,
+                      math::Vector2 pos, const tm& ptm, const time_t& currtime,
                       const POI& poi, float alpha, float zoomLevel);
   void OnDraw(gui::CWBDrawAPI* API) override;
-  math::CVector3 ProjectTacticalPos(math::CVector3 pos, float fov, float asp);
+  math::Vector3 ProjectTacticalPos(math::Vector3 pos, float fov, float asp);
 
   bool TacticalIconsOnEdge = false;
   float asp = 0;
-  math::CMatrix4x4 cam;
-  math::CMatrix4x4 persp;
-  math::CRect drawrect;
+  math::Matrix4x4 cam;
+  math::Matrix4x4 persp;
+  math::Rect drawrect;
 
   std::vector<POI*> mapPOIs;
   std::vector<POI*> minimapPOIs;

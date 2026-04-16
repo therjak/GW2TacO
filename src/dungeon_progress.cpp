@@ -18,8 +18,8 @@ import taco.time;
 import whiteboard;
 import xml;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
   gui::CWBFont* f = GetFont(GetState());
@@ -76,15 +76,15 @@ void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
   }
 
   for (auto& d : dungeons) {
-    f->Write(API, (std::string(d.shortName) + ":"), CPoint(0, posy + 1),
+    f->Write(API, (std::string(d.shortName) + ":"), Point(0, posy + 1),
              CColor{0xffffffff});
     int32_t posx = textwidth + f->GetLineHeight() / 2;
     for (int y = 0; y < d.paths.size(); y++) {
       auto& p = d.paths[y];
 
-      CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
+      Rect r = Rect(posx, posy, posx + f->GetLineHeight() * 2,
                       posy + f->GetLineHeight() - 1);
-      CRect cr = API->GetCropRect();
+      Rect cr = API->GetCropRect();
       API->SetCropRect(ClientToScreen(r));
       posx += f->GetLineHeight() * 2 + 1;
       if (y == 0) {
@@ -109,8 +109,8 @@ void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
         }
       }
 
-      CPoint tp = f->GetTextPosition(
-          s, r + CRect(-3, 0, 0, 0), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+      Point tp = f->GetTextPosition(
+          s, r + Rect(-3, 0, 0, 0), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
           gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE);
       tp.y = posy + 1;
       f->Write(API, s, tp, CColor{0xffffffff});
@@ -189,11 +189,11 @@ DungeonProgress::DungeonProgress()
 DungeonProgress::~DungeonProgress() {}
 
 gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                       CRect& Pos) {
+                                       Rect& Pos) {
   return DungeonProgress::Create(Root, Pos);
 }
 
-bool DungeonProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool DungeonProgress::IsMouseTransparent(const Point& ClientSpacePoint,
                                          gui::WBMESSAGE MessageType) {
   return true;
 }

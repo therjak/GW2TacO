@@ -16,8 +16,8 @@ import math;
 import taco.gw2taco;
 import xml;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 // These maps must be sorted. So no unordered_map.
 std::map<std::string, int32_t> ConfigNums;
@@ -32,7 +32,7 @@ void LoadConfig() {
     SetConfigValue("InterfaceSize", 1);
     SetConfigValue("CloseWithGW2", 1);
     SetWindowOpenState("MapTimer", true);
-    SetWindowPosition("MapTimer", CRect(6, 97, 491, 813));
+    SetWindowPosition("MapTimer", Rect(6, 97, 491, 813));
     return;
   }
   ConfigNums.clear();
@@ -127,8 +127,8 @@ void SetWindowOpenState(std::string_view windowname, bool Open) {
   SetConfigValue((s + "_open"), static_cast<int>(Open));
 }
 
-CRect GetWindowPosition(std::string_view windowname) {
-  CRect r;
+Rect GetWindowPosition(std::string_view windowname) {
+  Rect r;
   std::string s(windowname);
   r.x1 = GetConfigValue((s + "_x1"));
   r.y1 = GetConfigValue((s + "_y1"));
@@ -137,7 +137,7 @@ CRect GetWindowPosition(std::string_view windowname) {
   return r;
 }
 
-void SetWindowPosition(std::string_view windowname, CRect Pos) {
+void SetWindowPosition(std::string_view windowname, Rect Pos) {
   std::string s(windowname);
   SetConfigValue((s + "_x1"), Pos.x1);
   SetConfigValue((s + "_y1"), Pos.y1);

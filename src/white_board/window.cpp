@@ -11,18 +11,18 @@ import :application;
 import :font;
 import :window;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
-uint32_t CWBWindow::GetBorderSelectionArea(const CPoint& mousepos) {
+uint32_t CWBWindow::GetBorderSelectionArea(const Point& mousepos) {
   if (App->GetMouseItem() != this) return 0;
 
-  const CRect r = GetScreenRect();
+  const Rect r = GetScreenRect();
 
-  if ((r + CRect(-BorderWidth, -BorderWidth, -BorderWidth, -BorderWidth))
+  if ((r + Rect(-BorderWidth, -BorderWidth, -BorderWidth, -BorderWidth))
           .Contains(mousepos)) {
     return 0;
   }
@@ -37,29 +37,29 @@ uint32_t CWBWindow::GetBorderSelectionArea(const CPoint& mousepos) {
   return result;
 }
 
-CRect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
+Rect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
   if (Elements.find(Element) != Elements.end()) {
     return Elements[Element].PositionDescriptor.GetPosition(
-               GetWindowRect().Size(), CSize(0, 0), CRect(0, 0, 10, 10)) +
+               GetWindowRect().Size(), Size(0, 0), Rect(0, 0, 10, 10)) +
            GetWindowRect().TopLeft();
   }
 
   switch (Element) {
     case WBWINDOWELEMENT::WB_WINELEMENT_CLOSE:
-      return CRect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopLeft() + CPoint(5, 5));
+      return Rect(GetWindowRect().TopLeft(),
+                   GetWindowRect().TopLeft() + Point(5, 5));
       break;
     case WBWINDOWELEMENT::WB_WINELEMENT_MINIMIZE:
-      return CRect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopLeft() + CPoint(5, 5));
+      return Rect(GetWindowRect().TopLeft(),
+                   GetWindowRect().TopLeft() + Point(5, 5));
       break;
     case WBWINDOWELEMENT::WB_WINELEMENT_INFO:
-      return CRect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopLeft() + CPoint(5, 5));
+      return Rect(GetWindowRect().TopLeft(),
+                   GetWindowRect().TopLeft() + Point(5, 5));
       break;
     case WBWINDOWELEMENT::WB_WINELEMENT_TITLE:
-      return CRect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopRight() + CPoint(0, 15));
+      return Rect(GetWindowRect().TopLeft(),
+                   GetWindowRect().TopRight() + Point(0, 15));
       break;
     default:
       return {};
@@ -81,14 +81,14 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
 
     CWBFont* Font = TitleProps.GetFont(App, i);
     if (Font) {
-      CRect titlepos = GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_TITLE);
+      Rect titlepos = GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_TITLE);
       titlepos = TitleProps.PositionDescriptor.GetPadding(titlepos.Size(),
-                                                          CRect(0, 0, 0, 0)) +
+                                                          Rect(0, 0, 0, 0)) +
                  titlepos.TopLeft();
-      const CRect r = API->GetCropRect();
+      const Rect r = API->GetCropRect();
       API->SetCropRect(ClientToScreen(titlepos));
 
-      const CPoint TitlePos = Font->GetTextPosition(
+      const Point TitlePos = Font->GetTextPosition(
           WindowTitle, titlepos, TitleProps.TextAlignX, TitleProps.TextAlignY,
           static_cast<WBTEXTTRANSFORM>(
               TitleProps.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM)));
@@ -103,7 +103,7 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
 
   // close button
   if (Style & WB_WINDOW_CLOSEABLE) {
-    const CRect closebuttonpos =
+    const Rect closebuttonpos =
         GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE);
 
     WBITEMSTATE buttonstate = WB_STATE_NORMAL;
@@ -175,7 +175,7 @@ CWBWindow::CWBWindow(const TCHAR* txt, uint32_t style)
 
 CWBWindow::~CWBWindow() = default;
 
-bool CWBWindow::Initialize(CWBItem* Parent, const CRect& Position) {
+bool CWBWindow::Initialize(CWBItem* Parent, const Rect& Position) {
   auto& element = Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
   auto& pdescriptor = element.PositionDescriptor;
   pdescriptor.SetMetric(WBPOSITIONTYPE::WB_MARGIN_TOP, WBMETRICTYPE::WB_PIXELS,
@@ -247,8 +247,8 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
           return true;
         }
         if ((DragMode & WB_DRAGMASK) && (Style & WB_WINDOW_RESIZABLE)) {
-          CRect r = GetSavedPosition();
-          const CPoint md = Message.GetPosition() - App->GetLeftDownPos();
+          Rect r = GetSavedPosition();
+          const Point md = Message.GetPosition() - App->GetLeftDownPos();
           if (DragMode & WB_DRAGMODE_LEFT) {
             r.x1 = std::min(r.x1 + md.x, r.x2 - MinSize.x);
           }
@@ -351,7 +351,7 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
+CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
   auto window = CWBWindow::Create(Root, Pos);
   if (node.HasAttribute("title")) window->SetTitle(node.GetAttribute("title"));
   return window;

@@ -15,7 +15,7 @@ class CWBApplication;
 class CWBMessage final {
  public:
   struct reposition {
-    math::CRect rectangle;
+    math::Rect rectangle;
     bool moved;
     bool resized;
   };
@@ -38,7 +38,7 @@ class CWBMessage final {
   CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target,
              menucontext&& mc);
   CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target,
-             const math::CRect rec, bool moved, bool resized);
+             const math::Rect rec, bool moved, bool resized);
   CWBMessage(const CWBMessage&) = default;
   CWBMessage(CWBMessage&&) = default;
   CWBMessage& operator=(const CWBMessage&) = default;
@@ -50,14 +50,14 @@ class CWBMessage final {
 
   // WBM_CONTENTOFFSETCHANGE, yes, this is x,y but really?
   // WBM_{anything mouse button related}
-  [[nodiscard]] math::CPoint GetPosition() const {
+  [[nodiscard]] math::Point GetPosition() const {
     auto& pos = std::get<std::array<int32_t, 2>>(data_);
-    return math::CPoint(pos[0], pos[1]);
+    return math::Point(pos[0], pos[1]);
   }
   [[nodiscard]] int32_t Data() const { return std::get<int32_t>(data_); }
 
   // WBM_REPOSITION
-  [[nodiscard]] math::CRect Rectangle() const {
+  [[nodiscard]] math::Rect Rectangle() const {
     return std::get<reposition>(data_).rectangle;
   };
   // WBM_REPOSITION

@@ -16,7 +16,7 @@ export namespace gui {
 class CWBButton : public CWBGuiType<"button", CWBItem> {
  public:
   CWBButton(std::string_view txt);
-  static inline CWBButton* Create(CWBItem* Parent, const math::CRect& Pos,
+  static inline CWBButton* Create(CWBItem* Parent, const math::Rect& Pos,
                                   std::string_view txt = "") {
     auto p = std::make_unique<CWBButton>(txt);
     p->Initialize(Parent, Pos);
@@ -27,15 +27,15 @@ class CWBButton : public CWBGuiType<"button", CWBItem> {
   }
   ~CWBButton() override;
 
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
 
   [[nodiscard]] std::string GetText() const;
   void SetText(std::string_view val);
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+                          math::Rect& Pos);
 
-  math::CSize GetContentSize() override;
+  math::Size GetContentSize() override;
 
   virtual void Push(bool pushed);
   virtual bool IsPushed();

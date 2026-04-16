@@ -14,7 +14,7 @@ export class GW2Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
  public:
   GW2Notepad();
   ~GW2Notepad() override;
-  static inline GW2Notepad* Create(gui::CWBItem* Parent, math::CRect Position) {
+  static inline GW2Notepad* Create(gui::CWBItem* Parent, math::Rect Position) {
     auto p = std::make_unique<GW2Notepad>();
     p->Initialize(Parent, Position);
     GW2Notepad* r = p.get();
@@ -24,9 +24,9 @@ export class GW2Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
   void StartEdit();

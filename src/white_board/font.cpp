@@ -11,9 +11,9 @@ module whiteboard;
 
 import :font;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
@@ -136,8 +136,8 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
             WBSYMBOLINPUT s;
             s.Char = c[x].id;
             s.Advance = c[x].xadvance;
-            s.Offset = CPoint(c[x].xoffset, c[x].yoffset);
-            s.UV = CRect(c[x].x, c[x].y, c[x].x + c[x].width,
+            s.Offset = Point(c[x].xoffset, c[x].yoffset);
+            s.UV = Rect(c[x].x, c[x].y, c[x].x + c[x].width,
                          c[x].y + c[x].height);
 
             if (c[x].id >= 0 && c[x].id <= 0xffff) Alphabet.push_back(s);
@@ -242,7 +242,7 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       if (!ReadInt(s, "width", width)) return false;
       if (!ReadInt(s, "height", height)) return false;
 
-      r.UV = CRect(x, y, x + width, y + height);
+      r.UV = Rect(x, y, x + width, y + height);
 
       if (enabledGlyphs.empty() ||
           std::find(enabledGlyphs.begin(), enabledGlyphs.end(), r.Char) !=
@@ -287,9 +287,9 @@ CWBFont::~CWBFont() {
   }
 }
 
-void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const CSize& Size,
-                        const CPoint& Offset, int32_t Advance,
-                        CRect contentRect) {
+void CWBFont::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const Size& Size,
+                        const Point& Offset, int32_t Advance,
+                        Rect contentRect) {
   if (Char >= AlphabetSize) return;
 
   WBSYMBOL s;
@@ -382,7 +382,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
     if (Char != ' ') {
       const WBSYMBOL& mc = Alphabet[static_cast<uint16_t>(MissingChar)];
       DrawApi->DrawRectBorder(
-          CRect(x + mc.OffsetX, y + mc.OffsetY, x + mc.OffsetX + mc.SizeX,
+          Rect(x + mc.OffsetX, y + mc.OffsetY, x + mc.OffsetX + mc.SizeX,
                 y + mc.OffsetY + mc.SizeY),
           Color);
     }
@@ -392,7 +392,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
   const WBSYMBOL& Symbol = Alphabet[static_cast<uint16_t>(Char)];
   const int32_t width = Symbol.Advance;
   if (!width) return 0;
-  // DrawApi->DrawRect(CRect(x + Symbol.OffsetX, y + Symbol.OffsetY, x +
+  // DrawApi->DrawRect(Rect(x + Symbol.OffsetX, y + Symbol.OffsetY, x +
   // Symbol.OffsetX + Symbol.SizeX, y + Symbol.OffsetY + Symbol.SizeY),
   // 0x80808080);
   DrawApi->DrawAtlasElement(Symbol.Handle, x + Symbol.OffsetX,
@@ -433,13 +433,13 @@ int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
   return xp - x;
 }
 
-int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, const CPoint& p,
+int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, const Point& p,
                            CColor Color) {
   return WriteChar(DrawApi, Char, p.x, p.y, Color);
 }
 
 int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String,
-                       const CPoint& p, CColor Color, WBTEXTTRANSFORM Transform,
+                       const Point& p, CColor Color, WBTEXTTRANSFORM Transform,
                        bool DoKerning) {
   return Write(DrawApi, String, p.x, p.y, Color, Transform, DoKerning);
 }
@@ -540,7 +540,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
         return false;
       };
 
-      CRect content = CRect(abc.UV.x2, abc.UV.y2, abc.UV.x1, abc.UV.y1);
+      Rect content = Rect(abc.UV.x2, abc.UV.y2, abc.UV.x1, abc.UV.y1);
       bool hadContent = false;
 
       for (int j = abc.UV.y1; j < abc.UV.y2; j++) {
@@ -561,7 +561,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
       if (hadContent) {
         content -= abc.UV.TopLeft();
       } else {
-        content = CRect(0, 0, abc.UV.Width(), abc.UV.Height());
+        content = Rect(0, 0, abc.UV.Width(), abc.UV.Height());
       }
 
       AddSymbol(abc.Char, h, abc.UV.Size(), abc.Offset, abc.Advance, content);
@@ -618,9 +618,9 @@ int32_t CWBFont::GetCenterHeight(int32_t y1, int32_t y2) {
   return y1 + (y2 - y1) / 2 - GetMedian();
 }
 
-CPoint CWBFont::GetCenter(std::string_view Text, CRect Rect,
+Point CWBFont::GetCenter(std::string_view Text, Rect Rect,
                           WBTEXTTRANSFORM Transform) {
-  return CPoint(GetCenterWidth(Rect.x1, Rect.x2, Text, Transform),
+  return Point(GetCenterWidth(Rect.x1, Rect.x2, Text, Transform),
                 GetCenterHeight(Rect.y1, Rect.y2));
 }
 
@@ -707,12 +707,12 @@ int32_t CWBFont::GetHeight(std::string_view String) {
   return LineHeight * lineCount;
 }
 
-CPoint CWBFont::GetTextPosition(std::string_view String, const CRect& Container,
+Point CWBFont::GetTextPosition(std::string_view String, const Rect& Container,
                                 WBTEXTALIGNMENTX XAlign,
                                 WBTEXTALIGNMENTY YAlign,
                                 WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,
                                 bool DoKerning /*= true*/) {
-  CPoint p = Container.TopLeft();
+  Point p = Container.TopLeft();
 
   const int32_t Width = GetWidth(String, false, Transform, DoKerning);
   const int32_t Height = GetLineHeight();

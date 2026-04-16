@@ -48,7 +48,7 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
   GW2MapTimer();
   ~GW2MapTimer() override;
   static inline GW2MapTimer* Create(gui::CWBItem* Parent,
-                                    math::CRect Position) {
+                                    math::Rect Position) {
     auto p = std::make_unique<GW2MapTimer>();
     p->Initialize(Parent, Position);
     GW2MapTimer* r = p.get();
@@ -58,20 +58,20 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
   std::vector<Map> maps;
   std::unordered_map<std::string, Category> categories;
 
  private:
   bool IsScrollbarVisible();
-  void OnResize(const math::CSize& s) override;
+  void OnResize(const math::Size& s) override;
   int32_t GetScrollbarStep() override;
-  CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
+  CWBItem* GetItemUnderMouse(math::Point& Point, math::Rect& CropRect,
                              gui::WBMESSAGE MessageType) override;
   void OnDraw(gui::CWBDrawAPI* API) override;
   void SetLayout(const CXMLNode& node);
-  void UpdateScrollbarData(int ypos, const math::CRect& cl);
+  void UpdateScrollbarData(int ypos, const math::Rect& cl);
 
   int32_t lastypos = -1;
 

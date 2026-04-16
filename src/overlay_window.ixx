@@ -13,7 +13,7 @@ export class OverlayWindow
   OverlayWindow();
   ~OverlayWindow() override;
   static inline OverlayWindow* Create(gui::CWBItem* Parent,
-                                      math::CRect Position) {
+                                      math::Rect Position) {
     auto p = std::make_unique<OverlayWindow>();
     p->Initialize(Parent, Position);
     OverlayWindow* r = p.get();
@@ -23,10 +23,10 @@ export class OverlayWindow
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
   bool MessageProc(const gui::CWBMessage& Message) override;
   void OnDraw(gui::CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 };

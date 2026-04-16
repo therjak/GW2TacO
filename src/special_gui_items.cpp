@@ -6,14 +6,14 @@ module taco.special_gui_items;
 
 import whiteboard;
 
-using math::CRect;
+using math::Rect;
 
 ClickThroughButton::ClickThroughButton(std::string_view txt /*=  ""  */)
     : CWBGuiType(txt) {}
 ClickThroughButton::~ClickThroughButton() = default;
 
 gui::CWBItem* ClickThroughButton::Factory(gui::CWBItem* Root,
-                                          const CXMLNode& node, CRect& Pos) {
+                                          const CXMLNode& node, Rect& Pos) {
   auto button = ClickThroughButton::Create(Root, Pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
 

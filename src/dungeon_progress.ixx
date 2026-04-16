@@ -42,7 +42,7 @@ export class DungeonProgress
  public:
   DungeonProgress();
   static inline DungeonProgress* Create(gui::CWBItem* Parent,
-                                        math::CRect Position) {
+                                        math::Rect Position) {
     auto p = std::make_unique<DungeonProgress>();
     p->Initialize(Parent, Position);
     DungeonProgress* r = p.get();
@@ -53,15 +53,15 @@ export class DungeonProgress
   ~DungeonProgress() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
 
-  math::CPoint lastpos;
+  math::Point lastpos;
 
   LockFreeQueue<std::unordered_set<std::string>> dungeon_queue;
   LockFreeQueue<std::unordered_set<int32_t>> dungeon_achievements_queue;

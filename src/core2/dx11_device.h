@@ -126,7 +126,7 @@ class DX11Device : public Device {
   //////////////////////////////////////////////////////////////////////////
   // renderstate functions
 
-  bool SetViewport(math::CRect viewport) override;
+  bool SetViewport(math::Rect viewport) override;
   ID3D11BlendState* GetCurrentBlendState();
   void SetCurrentBlendState(ID3D11BlendState* blend_state);
   ID3D11RasterizerState* GetCurrentRasterizerState();

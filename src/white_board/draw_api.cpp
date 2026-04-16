@@ -19,20 +19,20 @@ namespace gui {
 constexpr int32_t VertexBufferRectCount = 4096;
 constexpr int32_t VertexBufferVertexCount = VertexBufferRectCount * 4;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
-using math::CVector2;
-using math::CVector4;
+using math::Point;
+using math::Rect;
+using math::Size;
+using math::Vector2;
+using math::Vector4;
 
 void CWBDrawAPI::AddDisplayRect(
-    const CRect& Rect, const float u1, const float v1, const float u2,
+    const math::Rect& Rect, const float u1, const float v1, const float u2,
     const float v2,
     const CColor
         color /*, const CColor c2, const CColor c3, const CColor c4*/) {
   if (!Opacity) return;
 
-  const CRect rect = Rect + Offset;
+  const math::Rect rect = Rect + Offset;
 
   if (!CropRect.Intersects(rect)) return;
 
@@ -44,7 +44,7 @@ void CWBDrawAPI::AddDisplayRect(
   float u2f = u2;
   float v2f = v2;
 
-  const CRect Pos = CropRect.GetIntersection(rect);
+  const math::Rect Pos = CropRect.GetIntersection(rect);
 
   // need to cull UV
   if (Pos != rect) {
@@ -67,8 +67,8 @@ void CWBDrawAPI::AddDisplayRect(
   CColor Color = color;
   Color.A() = (Color.A() * Opacity) / 255;
 
-  const CVector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
-  const CVector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
+  const Vector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
+  const Vector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
 
   DisplayList.emplace_back(WBGUIVERTEX{TL.x, TL.y, u1f, v1f, Color});
   DisplayList.emplace_back(WBGUIVERTEX{BR.x, TL.y, u2f, v1f, Color});
@@ -76,18 +76,18 @@ void CWBDrawAPI::AddDisplayRect(
   DisplayList.emplace_back(WBGUIVERTEX{TL.x, BR.y, u1f, v2f, Color});
 }
 
-void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
+void CWBDrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2,
                                 const float u1, const float v1, const float u2,
                                 const float v2, const CColor a,
                                 const CColor b) {
   WBDISPLAYLINE r;
 
-  const CPoint p1 = _p1 + Offset;
-  const CPoint p2 = _p2 + Offset;
+  const Point p1 = _p1 + Offset;
+  const Point p2 = _p2 + Offset;
 
-  CRect Area = CRect(p1, p2);
+  Rect Area = Rect(p1, p2);
   Area.Normalize();
-  const CRect rArea = CropRect | Area;
+  const Rect rArea = CropRect | Area;
   if (rArea.Width() < 0 || rArea.Height() < 0) return;
   if (DrawMode != WBDRAWMODE::WBD_LINES) RenderDisplayList();
 
@@ -126,19 +126,19 @@ void CWBDrawAPI::AddDisplayLine(const CPoint& _p1, const CPoint& _p2,
   r.c1 = Lerp(a, b, t1);
   r.c2 = Lerp(a, b, t2);
 
-  DisplayList.emplace_back(WBGUIVERTEX(CVector2(r.p1.x + 0.5f, r.p1.y - 0.5f),
-                                       CVector2(r.u1, r.v1), r.c1));
-  DisplayList.emplace_back(WBGUIVERTEX(CVector2(r.p2.x + 0.5f, r.p2.y - 0.5f),
-                                       CVector2(r.u2, r.v2), r.c2));
+  DisplayList.emplace_back(WBGUIVERTEX(Vector2(r.p1.x + 0.5f, r.p1.y - 0.5f),
+                                       Vector2(r.u1, r.v1), r.c1));
+  DisplayList.emplace_back(WBGUIVERTEX(Vector2(r.p2.x + 0.5f, r.p2.y - 0.5f),
+                                       Vector2(r.u2, r.v2), r.c2));
 }
 
-void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
+void CWBDrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
                                        const float v1, const float u2,
                                        const float v2, const CColor color,
                                        float rotation) {
   if (!Opacity) return;
 
-  const CRect rect = Rect + Offset;
+  const math::Rect rect = Rect + Offset;
 
   if (!CropRect.Intersects(rect)) return;
 
@@ -150,7 +150,7 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
   float u2f = u2;
   float v2f = v2;
 
-  const CRect Pos = CropRect.GetIntersection(rect);
+  const math::Rect Pos = CropRect.GetIntersection(rect);
 
   // need to cull UV
   if (Pos != rect) {
@@ -173,14 +173,14 @@ void CWBDrawAPI::AddDisplayRectRotated(const CRect& Rect, const float u1,
   CColor Color = color;
   Color.A() = (Color.A() * Opacity) / 255;
 
-  const CVector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
-  const CVector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
+  const Vector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
+  const Vector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
 
-  const CVector2 center = (TL + BR) / 2.0f;
-  const auto a = CVector2(TL.x, TL.y).Rotated(center, rotation);
-  const auto b = CVector2(BR.x, TL.y).Rotated(center, rotation);
-  const auto c = CVector2(BR.x, BR.y).Rotated(center, rotation);
-  const auto d = CVector2(TL.x, BR.y).Rotated(center, rotation);
+  const Vector2 center = (TL + BR) / 2.0f;
+  const auto a = Vector2(TL.x, TL.y).Rotated(center, rotation);
+  const auto b = Vector2(BR.x, TL.y).Rotated(center, rotation);
+  const auto c = Vector2(BR.x, BR.y).Rotated(center, rotation);
+  const auto d = Vector2(TL.x, BR.y).Rotated(center, rotation);
 
   DisplayList.emplace_back(WBGUIVERTEX{a.x, a.y, u1f, v1f, Color});
   DisplayList.emplace_back(WBGUIVERTEX{b.x, b.y, u2f, v1f, Color});
@@ -266,16 +266,16 @@ void CWBDrawAPI::ClipTriY(int32_t y, bool KeepBottom,
   VertexCount = NewVertexCount;
 }
 
-void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
-                               const CPoint& _p3, const float u1,
-                               const float v1, const float u2, const float v2,
-                               const float u3, const float v3, const CColor a,
-                               const CColor b, const CColor c) {
-  CPoint p1 = _p1 + Offset;
-  CPoint p2 = _p2 + Offset;
-  CPoint p3 = _p3 + Offset;
+void CWBDrawAPI::AddDisplayTri(const Point& _p1, const Point& _p2,
+                               const Point& _p3, const float u1, const float v1,
+                               const float u2, const float v2, const float u3,
+                               const float v3, const CColor a, const CColor b,
+                               const CColor c) {
+  Point p1 = _p1 + Offset;
+  Point p2 = _p2 + Offset;
+  Point p3 = _p3 + Offset;
 
-  CRect Bound = CRect(p1, p1);
+  Rect Bound = Rect(p1, p1);
   Bound.x1 = std::min(std::min(p1.x, p2.x), p3.x);
   Bound.x2 = std::max(std::max(p1.x, p2.x), p3.x);
   Bound.y1 = std::min(std::min(p1.y, p2.y), p3.y);
@@ -291,16 +291,16 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
   std::array<WBGUIVERTEX, 6> Vertices;
   int32_t VertexCount = 3;
   Vertices[0].Pos =
-      CVector4(static_cast<float>(p1.x), static_cast<float>(p1.y), 0, 1);
-  Vertices[0].UV = CVector2(u1, v1);
+      Vector4(static_cast<float>(p1.x), static_cast<float>(p1.y), 0, 1);
+  Vertices[0].UV = Vector2(u1, v1);
   Vertices[0].Color = a;
   Vertices[1].Pos =
-      CVector4(static_cast<float>(p2.x), static_cast<float>(p2.y), 0, 1);
-  Vertices[1].UV = CVector2(u2, v2);
+      Vector4(static_cast<float>(p2.x), static_cast<float>(p2.y), 0, 1);
+  Vertices[1].UV = Vector2(u2, v2);
   Vertices[1].Color = b;
   Vertices[2].Pos =
-      CVector4(static_cast<float>(p3.x), static_cast<float>(p3.y), 0, 1);
-  Vertices[2].UV = CVector2(u3, v3);
+      Vector4(static_cast<float>(p3.x), static_cast<float>(p3.y), 0, 1);
+  Vertices[2].UV = Vector2(u3, v3);
   Vertices[2].Color = c;
 
   if (!CropRect.Contains(p1) || !CropRect.Contains(p2) ||
@@ -312,8 +312,8 @@ void CWBDrawAPI::AddDisplayTri(const CPoint& _p1, const CPoint& _p2,
   }
 
   for (int32_t x = 0; x < VertexCount; x++) {
-    const CVector2 p = CVector2(Vertices[x].Pos.x, Vertices[x].Pos.y);
-    Vertices[x].Pos = CVector4(p.x, p.y, 0, 1);
+    const Vector2 p = Vector2(Vertices[x].Pos.x, Vertices[x].Pos.y);
+    Vertices[x].Pos = Vector4(p.x, p.y, 0, 1);
   }
 
   for (int32_t x = 2; x < VertexCount; x++) {
@@ -646,59 +646,59 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, renderer::Device* Dev,
   return true;
 }
 
-void CWBDrawAPI::SetOffset(const CPoint& p) { Offset = p; }
+void CWBDrawAPI::SetOffset(const Point& p) { Offset = p; }
 
-void CWBDrawAPI::SetCropRect(const CRect& r) { CropRect = ParentCropRect | r; }
+void CWBDrawAPI::SetCropRect(const Rect& r) { CropRect = ParentCropRect | r; }
 
-void CWBDrawAPI::DrawRect(const CRect& r, CColor Color) {
-  const CPoint white = Atlas->GetWhitePixelUV();
+void CWBDrawAPI::DrawRect(const Rect& r, CColor Color) {
+  const Point white = Atlas->GetWhitePixelUV();
   const float u = UVTRANSLATION(white.x, Atlas->GetXRes());
   const float v = UVTRANSLATION(white.y, Atlas->GetYRes());
   AddDisplayRect(r, u, v, u, v, Color);
 }
 
-void CWBDrawAPI::DrawRectBorder(const CRect& r, CColor Color) {
-  DrawRect(CRect(r.TopLeft(), r.BottomLeft() + CPoint(1, 0)), Color);
-  DrawRect(CRect(r.TopLeft(), r.TopRight() + CPoint(0, 1)), Color);
-  DrawRect(CRect(r.TopRight() - CPoint(1, 0), r.BottomRight()), Color);
-  DrawRect(CRect(r.BottomLeft() - CPoint(0, 1), r.BottomRight()), Color);
+void CWBDrawAPI::DrawRectBorder(const Rect& r, CColor Color) {
+  DrawRect(Rect(r.TopLeft(), r.BottomLeft() + Point(1, 0)), Color);
+  DrawRect(Rect(r.TopLeft(), r.TopRight() + Point(0, 1)), Color);
+  DrawRect(Rect(r.TopRight() - Point(1, 0), r.BottomRight()), Color);
+  DrawRect(Rect(r.BottomLeft() - Point(0, 1), r.BottomRight()), Color);
 }
 
-void CWBDrawAPI::DrawRectRotated(const CRect& r, float u1, float v1, float u2,
+void CWBDrawAPI::DrawRectRotated(const Rect& r, float u1, float v1, float u2,
                                  float v2, CColor Color, float rotation) {
   AddDisplayRectRotated(r, u1, v1, u2, v2, Color, rotation);
 }
 
-void CWBDrawAPI::DrawRect(const CRect& r, float u1, float v1, float u2,
+void CWBDrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2,
                           float v2) {
   AddDisplayRect(r, u1, v1, u2, v2, CColor{0xffffffff});
 }
 
-void CWBDrawAPI::DrawRect(const CRect& r, float u1, float v1, float u2,
-                          float v2, CColor Color) {
+void CWBDrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2, float v2,
+                          CColor Color) {
   AddDisplayRect(r, u1, v1, u2, v2, Color);
 }
 
-void CWBDrawAPI::DrawLine(const CPoint& p1, const CPoint& p2, CColor Color) {
-  const CPoint white = Atlas->GetWhitePixelUV();
+void CWBDrawAPI::DrawLine(const Point& p1, const Point& p2, CColor Color) {
+  const Point white = Atlas->GetWhitePixelUV();
   AddDisplayLine(p1, p2, UVTRANSLATION(white.x, Atlas->GetXRes()),
                  UVTRANSLATION(white.y, Atlas->GetYRes()),
                  UVTRANSLATION(white.x, Atlas->GetXRes()),
                  UVTRANSLATION(white.y, Atlas->GetYRes()), Color, Color);
 }
 
-void CWBDrawAPI::DrawLine(const CPoint& p1, const CPoint& p2, CColor Color1,
+void CWBDrawAPI::DrawLine(const Point& p1, const Point& p2, CColor Color1,
                           CColor Color2) {
-  const CPoint white = Atlas->GetWhitePixelUV();
+  const Point white = Atlas->GetWhitePixelUV();
   AddDisplayLine(p1, p2, UVTRANSLATION(white.x, Atlas->GetXRes()),
                  UVTRANSLATION(white.y, Atlas->GetYRes()),
                  UVTRANSLATION(white.x, Atlas->GetXRes()),
                  UVTRANSLATION(white.y, Atlas->GetYRes()), Color1, Color2);
 }
 
-void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
-                              const CPoint& p3, CColor Color) {
-  const CPoint white = Atlas->GetWhitePixelUV();
+void CWBDrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
+                              CColor Color) {
+  const Point white = Atlas->GetWhitePixelUV();
   AddDisplayTri(p1, p2, p3, UVTRANSLATION(white.x, Atlas->GetXRes()),
                 UVTRANSLATION(white.y, Atlas->GetYRes()),
                 UVTRANSLATION(white.x, Atlas->GetXRes()),
@@ -707,9 +707,9 @@ void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
                 UVTRANSLATION(white.y, Atlas->GetYRes()), Color, Color, Color);
 }
 
-void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
-                              const CPoint& p3, CColor a, CColor b, CColor c) {
-  const CPoint white = Atlas->GetWhitePixelUV();
+void CWBDrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
+                              CColor a, CColor b, CColor c) {
+  const Point white = Atlas->GetWhitePixelUV();
   AddDisplayTri(p1, p2, p3, UVTRANSLATION(white.x, Atlas->GetXRes()),
                 UVTRANSLATION(white.y, Atlas->GetYRes()),
                 UVTRANSLATION(white.x, Atlas->GetXRes()),
@@ -718,22 +718,21 @@ void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
                 UVTRANSLATION(white.y, Atlas->GetYRes()), a, b, c);
 }
 
-void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
-                              const CPoint& p3, float u1, float v1, float u2,
-                              float v2, float u3, float v3, CColor a, CColor b,
-                              CColor c) {
+void CWBDrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
+                              float u1, float v1, float u2, float v2, float u3,
+                              float v3, CColor a, CColor b, CColor c) {
   AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, a, b, c);
 }
 
-void CWBDrawAPI::DrawTriangle(const CPoint& p1, const CPoint& p2,
-                              const CPoint& p3, float u1, float v1, float u2,
-                              float v2, float u3, float v3) {
+void CWBDrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
+                              float u1, float v1, float u2, float v2, float u3,
+                              float v3) {
   AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, CColor{0xffffffff},
                 CColor{0xffffffff}, CColor{0xffffffff});
 }
 
 void CWBDrawAPI::SetUIRenderState() {
-  Device->SetViewport(CRect(0, 0, App->GetXRes(), App->GetYRes()));
+  Device->SetViewport(Rect(0, 0, App->GetXRes(), App->GetYRes()));
   Device->SetIndexBuffer(rectIndexBuffer.get());
 
   Device->SetRenderState(GuiBlendState.get());
@@ -755,9 +754,9 @@ void CWBDrawAPI::SetUIRenderState() {
 
   ResolutionData->Reset();
 
-  CVector4 Resolution = CVector4(static_cast<float>(App->GetXRes()),
-                                 static_cast<float>(App->GetYRes()), 0, 1);
-  ResolutionData->AddData(&Resolution, sizeof(CVector4));
+  Vector4 Resolution = Vector4(static_cast<float>(App->GetXRes()),
+                               static_cast<float>(App->GetYRes()), 0, 1);
+  ResolutionData->AddData(&Resolution, sizeof(Vector4));
   ResolutionData->Upload();
   Device->SetShaderConstants(ResolutionData.get());
 }
@@ -772,16 +771,16 @@ void CWBDrawAPI::SetUISamplerState(
   GuiSampler.swap(SamplerState);
 }
 
-void CWBDrawAPI::SetRenderView(CRect r) { Device->SetViewport(r); }
+void CWBDrawAPI::SetRenderView(Rect r) { Device->SetViewport(r); }
 
-CSize CWBDrawAPI::GetAtlasElementSize(WBATLASHANDLE h) {
-  if (!Atlas) return CSize(0, 0);
+Size CWBDrawAPI::GetAtlasElementSize(WBATLASHANDLE h) {
+  if (!Atlas) return Size(0, 0);
   return Atlas->GetSize(h);
 }
 
 static int32_t defragmentReportCount = 0;
 
-bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, CRect& UV) {
+bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect& UV) {
   if (!Atlas) return false;
 
   if (!Atlas->RequestImageUse(h, UV)) {
@@ -827,44 +826,44 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
                                   CColor Color) {
   if (!Atlas) return;
 
-  const CPoint pos = CPoint(x, y) + Offset;
+  const Point pos = Point(x, y) + Offset;
 
-  if (!CropRect.Intersects(CRect(pos, pos + Atlas->GetSize(h)))) {
+  if (!CropRect.Intersects(Rect(pos, pos + Atlas->GetSize(h)))) {
     // pre-cull invisible items to spare unneeded atlas use
     return;
   }
 
-  CRect UV;
+  Rect UV;
   if (!RequestAtlasImageUse(h, UV)) return;
 
-  DrawRect(CRect(x, y, UV.Width() + x, UV.Height() + y),
+  DrawRect(Rect(x, y, UV.Width() + x, UV.Height() + y),
            UVTRANSLATION(UV.x1, Atlas->GetXRes()),
            UVTRANSLATION(UV.y1, Atlas->GetYRes()),
            UVTRANSLATION(UV.x2, Atlas->GetXRes()),
            UVTRANSLATION(UV.y2, Atlas->GetYRes()), Color);
 }
 
-void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
+void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const Rect& Position,
                                   bool TileX, bool TileY, bool StretchX,
                                   bool StretchY, CColor Color /*=0xffffffff*/) {
   if (!Atlas) return;
 
-  const CRect rect = CropRect | (Position + Offset);
+  const Rect rect = CropRect | (Position + Offset);
   if (rect.Width() <= 0 || rect.Height() <= 0) {
     // pre-cull invisible items to spare unneeded atlas use
     return;
   }
 
-  CRect UV;
+  Rect UV;
   if (!RequestAtlasImageUse(h, UV)) return;
 
-  CSize tilesize = Position.Size();
+  Size tilesize = Position.Size();
   if (TileX) tilesize.x = UV.Width();
   if (TileY) tilesize.y = UV.Height();
 
-  CVector2 uvmod = CVector2(0, 0);
+  Vector2 uvmod = Vector2(0, 0);
 
-  CRect target = CRect(CPoint(0, 0), UV.Size()) + Position.TopLeft();
+  Rect target = Rect(Point(0, 0), UV.Size()) + Position.TopLeft();
   target.x2 = target.x1 + Position.Width();
   if (!TileX && StretchX) uvmod.x = 0.5;
 
@@ -889,14 +888,14 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
     if (target.y2 > CropRect.y2 - Offset.y) target.y2 = CropRect.y2;
   }
 
-  const CRect p = CRect(CPoint(0, 0), tilesize);
+  const Rect p = Rect(Point(0, 0), tilesize);
 
-  const CRect cr = CropRect;
+  const Rect cr = CropRect;
   SetCropRect(target + Offset);
 
   for (int32_t x = target.x1; x < target.x2; x += tilesize.x) {
     for (int32_t y = target.y1; y < target.y2; y += tilesize.y) {
-      DrawRect(p + CPoint(x, y),
+      DrawRect(p + Point(x, y),
                UVTRANSLATION(UV.x1 + uvmod.x, Atlas->GetXRes()),
                UVTRANSLATION(UV.y1 + uvmod.y, Atlas->GetYRes()),
                UVTRANSLATION(UV.x2 - uvmod.x, Atlas->GetXRes()),
@@ -907,18 +906,18 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const CRect& Position,
   CropRect = cr;
 }
 
-void CWBDrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const CRect& position,
+void CWBDrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const Rect& position,
                                          CColor Color, float rotation) {
   if (!Atlas) return;
 
-  const CRect pos = position + Offset;
+  const Rect pos = position + Offset;
 
   if (!CropRect.Intersects(pos)) {
     // pre-cull invisible items to spare unneeded atlas use
     return;
   }
 
-  CRect UV;
+  Rect UV;
   if (!RequestAtlasImageUse(h, UV)) return;
 
   DrawRectRotated(pos, UVTRANSLATION(UV.x1 + 0.5f, Atlas->GetXRes()),
@@ -949,19 +948,19 @@ void CWBDrawAPI::SetPixelShader(
 
 void CWBDrawAPI::SetOpacity(uint8_t o) { Opacity = o; }
 
-void ZoomToMouseCenter(CPoint& Offset, int32_t& Zoom, int32_t NewZoom,
-                       CPoint ZoomCenter) {
+void ZoomToMouseCenter(Point& Offset, int32_t& Zoom, int32_t NewZoom,
+                       Point ZoomCenter) {
   const float dz = NewZoom / static_cast<float>(Zoom);
 
-  const CVector2 v = CVector2(static_cast<float>(ZoomCenter.x),
-                              static_cast<float>(ZoomCenter.y)) *
-                     (1 - dz);
-  Offset += CPoint(static_cast<int32_t>(v.x), static_cast<int32_t>(v.y));
+  const Vector2 v = Vector2(static_cast<float>(ZoomCenter.x),
+                            static_cast<float>(ZoomCenter.y)) *
+                    (1 - dz);
+  Offset += Point(static_cast<int32_t>(v.x), static_cast<int32_t>(v.y));
 
   Zoom = NewZoom;
 }
 
-void ZoomToMouseCenter(CPoint& Offset, float& Zoom, float NewZoom, CPoint Pos) {
+void ZoomToMouseCenter(Point& Offset, float& Zoom, float NewZoom, Point Pos) {
   const float dz = NewZoom / Zoom;
 
   Offset.x = static_cast<int32_t>(Pos.x + Offset.x - Pos.x * dz);

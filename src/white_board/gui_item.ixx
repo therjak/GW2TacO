@@ -147,7 +147,7 @@ class CWBCSSPropertyBatch {
   bool ApplyStyle(CWBItem* Owner, std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo);
 
-  math::CRect BorderSizes;
+  math::Rect BorderSizes;
   WBTEXTALIGNMENTX TextAlignX;
   WBTEXTALIGNMENTY TextAlignY;
   CWBDisplayProperties DisplayDescriptor;
@@ -163,7 +163,7 @@ class CWBItem : public IWBCSS {
 
   virtual void AddChild(std::unique_ptr<CWBItem>&& Item);
   void RemoveChild(const CWBItem* Item);
-  virtual bool Initialize(CWBItem* Parent, const math::CRect& Position);
+  virtual bool Initialize(CWBItem* Parent, const math::Rect& Position);
   // return true if this item handled the message
   virtual bool MessageProc(const CWBMessage& Message);
   bool FindItemInParentTree(const CWBItem* Item);
@@ -172,24 +172,24 @@ class CWBItem : public IWBCSS {
   [[nodiscard]] CWBApplication* GetApplication() const { return App; }
   [[nodiscard]] CWBItem* GetParent() const { return Parent; }
 
-  [[nodiscard]] virtual math::CRect GetClientRect()
+  [[nodiscard]] virtual math::Rect GetClientRect()
       const;  // returns value in client space
-  [[nodiscard]] virtual math::CRect GetWindowRect()
+  [[nodiscard]] virtual math::Rect GetWindowRect()
       const;  // returns value in client space
-  [[nodiscard]] virtual math::CRect GetScreenRect()
+  [[nodiscard]] virtual math::Rect GetScreenRect()
       const;  // returns value in screen space
 
-  [[nodiscard]] virtual math::CPoint ScreenToClient(
-      const math::CPoint& p) const;
-  [[nodiscard]] virtual math::CRect ScreenToClient(const math::CRect& p) const;
-  [[nodiscard]] virtual math::CPoint ClientToScreen(
-      const math::CPoint& p) const;
-  [[nodiscard]] virtual math::CRect ClientToScreen(const math::CRect& p) const;
+  [[nodiscard]] virtual math::Point ScreenToClient(
+      const math::Point& p) const;
+  [[nodiscard]] virtual math::Rect ScreenToClient(const math::Rect& p) const;
+  [[nodiscard]] virtual math::Point ClientToScreen(
+      const math::Point& p) const;
+  [[nodiscard]] virtual math::Rect ClientToScreen(const math::Rect& p) const;
 
-  virtual void SetPosition(const math::CRect& Pos);
+  virtual void SetPosition(const math::Rect& Pos);
   virtual void ApplyRelativePosition();
   // only to be used by the parent item when moving the item around
-  virtual void ApplyPosition(const math::CRect& Pos);
+  virtual void ApplyPosition(const math::Rect& Pos);
   virtual void SetClientPadding(int32_t left, int32_t top, int32_t right,
                                 int32_t bottom);
   // tells if the width has been specified in the style of the item
@@ -197,11 +197,11 @@ class CWBItem : public IWBCSS {
   // tells if the height has been specified in the style of the item
   [[nodiscard]] bool IsHeightSet() const;
   // tells if the width has been specified in the style of the item
-  [[nodiscard]] int32_t GetCalculatedWidth(math::CSize ParentSize) const;
+  [[nodiscard]] int32_t GetCalculatedWidth(math::Size ParentSize) const;
   // tells if the height has been specified in the style of the item
-  [[nodiscard]] int32_t GetCalculatedHeight(math::CSize ParentSize) const;
+  [[nodiscard]] int32_t GetCalculatedHeight(math::Size ParentSize) const;
 
-  [[nodiscard]] math::CRect GetPosition() const;
+  [[nodiscard]] math::Rect GetPosition() const;
 
   [[nodiscard]] uint32_t NumChildren() const;
   CWBItem* GetChild(uint32_t idx);
@@ -214,8 +214,8 @@ class CWBItem : public IWBCSS {
   virtual CWBItem* GetChildInFocus();
 
   void SavePosition();
-  [[nodiscard]] math::CRect GetSavedPosition() const;
-  void SetSavedPosition(const math::CRect& savedPos);
+  [[nodiscard]] math::Rect GetSavedPosition() const;
+  void SetSavedPosition(const math::Rect& savedPos);
 
   void Hide(bool Hide);
   bool IsHidden();
@@ -227,7 +227,7 @@ class CWBItem : public IWBCSS {
 
   virtual void MarkForDeletion();
 
-  virtual CWBContextMenu* OpenContextMenu(math::CPoint Position);
+  virtual CWBContextMenu* OpenContextMenu(math::Point Position);
 
   [[nodiscard]] const std::string& GetType() const override {
     static const std::string type = "guiitem";
@@ -288,10 +288,10 @@ class CWBItem : public IWBCSS {
   }
 
   CWBItem* FindParentByID(std::string_view value, std::string_view type = "");
-  virtual void CalculateWindowPosition(const math::CSize& s);
+  virtual void CalculateWindowPosition(const math::Size& s);
 
-  [[nodiscard]] CWBMessage BuildPositionMessage(const math::CRect& Pos) const;
-  [[nodiscard]] CWBMessage BuildPositionMessage(const math::CRect& Pos,
+  [[nodiscard]] CWBMessage BuildPositionMessage(const math::Rect& Pos) const;
+  [[nodiscard]] CWBMessage BuildPositionMessage(const math::Rect& Pos,
                                                 bool resized) const;
   void ApplyStyleDeclarations(std::string_view String);
 
@@ -306,7 +306,7 @@ class CWBItem : public IWBCSS {
   virtual CWBFont* GetFont(WBITEMSTATE State);
 
   CWBPositionDescriptor& GetPositionDescriptor();
-  math::CSize GetClientWindowSizeDifference();
+  math::Size GetClientWindowSizeDifference();
 
   virtual void SetChildInFocus(CWBItem* i);
 
@@ -334,26 +334,26 @@ class CWBItem : public IWBCSS {
   CWBItem();
 
   // returns the highlight areas of the scrollbar in client space
-  virtual bool GetHScrollbarRectangles(math::CRect& button1,
-                                       math::CRect& Scrollup,
-                                       math::CRect& Thumb,
-                                       math::CRect& Scrolldown,
-                                       math::CRect& button2);
-  virtual bool GetVScrollbarRectangles(math::CRect& button1,
-                                       math::CRect& Scrollup,
-                                       math::CRect& Thumb,
-                                       math::CRect& Scrolldown,
-                                       math::CRect& button2);
+  virtual bool GetHScrollbarRectangles(math::Rect& button1,
+                                       math::Rect& Scrollup,
+                                       math::Rect& Thumb,
+                                       math::Rect& Scrolldown,
+                                       math::Rect& button2);
+  virtual bool GetVScrollbarRectangles(math::Rect& button1,
+                                       math::Rect& Scrollup,
+                                       math::Rect& Thumb,
+                                       math::Rect& Scrolldown,
+                                       math::Rect& button2);
 
   virtual void OnDraw(CWBDrawAPI* API);
   virtual void OnPostDraw(CWBDrawAPI* API);
   virtual int32_t GetScrollbarStep();
 
-  virtual CWBItem* GetItemUnderMouse(math::CPoint& Point, math::CRect& CropRect,
+  virtual CWBItem* GetItemUnderMouse(math::Point& Point, math::Rect& CropRect,
                                      WBMESSAGE MessageType);
   virtual void SetChildAsTopmost(int32_t Index);
   virtual void SetChildAsBottommost(int32_t Index);
-  virtual bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  virtual bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                                   WBMESSAGE MessageType);
 
   CWBItem* SetCapture();
@@ -363,16 +363,16 @@ class CWBItem : public IWBCSS {
   virtual bool ScrollbarDragged();
 
   virtual void DrawBackgroundItem(
-      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, const math::CRect& Pos,
+      CWBDrawAPI* API, CWBDisplayProperties& Descriptor, const math::Rect& Pos,
       WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
   virtual void DrawBackground(CWBDrawAPI* API, WBITEMSTATE State);
   virtual void DrawBackground(CWBDrawAPI* API);
   virtual void DrawBorder(CWBDrawAPI* API);
   virtual void ApplyOpacity(CWBDrawAPI* API);
 
-  virtual void DrawBackground(CWBDrawAPI* API, const math::CRect& rect,
+  virtual void DrawBackground(CWBDrawAPI* API, const math::Rect& rect,
                               WBITEMSTATE State, CWBCSSPropertyBatch& cssProps);
-  virtual void DrawBorder(CWBDrawAPI* API, const math::CRect& rect,
+  virtual void DrawBorder(CWBDrawAPI* API, const math::Rect& rect,
                           CWBCSSPropertyBatch& cssProps);
 
   virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
@@ -390,13 +390,13 @@ class CWBItem : public IWBCSS {
                                   std::string_view name);
 
   // auto resize stuff
-  virtual math::CSize GetContentSize();
+  virtual math::Size GetContentSize();
   virtual void ContentChanged();
   virtual void ChangeContentOffsetX(int32_t OffsetX);
   virtual void ChangeContentOffsetY(int32_t OffsetY);
   bool ScrollbarsEnabled();
 
-  virtual math::CPoint GetContentOffset() { return ContentOffset; }
+  virtual math::Point GetContentOffset() { return ContentOffset; }
 
   CWBApplication* App = nullptr;
   CWBItem* ChildInFocus = nullptr;
@@ -405,8 +405,8 @@ class CWBItem : public IWBCSS {
  private:
   void UpdateScreenRect();
 
-  virtual void OnMove(const math::CPoint& p);
-  virtual void OnResize(const math::CSize& s);
+  virtual void OnMove(const math::Point& p);
+  virtual void OnResize(const math::Size& s);
   virtual void OnMouseEnter();
   virtual void OnMouseLeave();
 
@@ -427,7 +427,7 @@ class CWBItem : public IWBCSS {
                                              int32_t scrollbarsize,
                                              int32_t delta);
   virtual void DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
-                                   math::CRect& r,
+                                   math::Rect& r,
                                    WBITEMVISUALCOMPONENT Button);
   virtual void DrawHScrollbar(CWBDrawAPI* API);
   virtual void DrawVScrollbar(CWBDrawAPI* API);
@@ -443,8 +443,8 @@ class CWBItem : public IWBCSS {
   CWBItem* ChildSearcherFunct(std::string_view value,
                               std::string_view type = "");
 
-  WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, math::CRect r);
-  virtual void ChangeContentOffset(math::CPoint ContentOff);
+  WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, math::Rect r);
+  virtual void ChangeContentOffset(math::Point ContentOff);
 
   static const std::string& GetClassName() {
     static const std::string type = "guiitem";
@@ -453,16 +453,16 @@ class CWBItem : public IWBCSS {
 
   const WBGUID Guid;
 
-  math::CRect Position;    // stored in parent space
-  math::CRect ClientRect;  // stored in window space
-  math::CRect ScreenRect;  // calculated automatically, stores the position in
+  math::Rect Position;    // stored in parent space
+  math::Rect ClientRect;  // stored in window space
+  math::Rect ScreenRect;  // calculated automatically, stores the position in
                            // screen space
-  math::CRect StoredPosition;
-  math::CPoint ContentOffset;  // describes how much the content is moved
+  math::Rect StoredPosition;
+  math::Point ContentOffset;  // describes how much the content is moved
                                // relative to the item. used for easily sliding
                                // content around by scrollbars
 
-  math::CSize StoredContentSize;
+  math::Size StoredContentSize;
 
   CWBItem* Parent = nullptr;
   std::vector<std::unique_ptr<CWBItem>> Children;

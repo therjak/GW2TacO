@@ -48,7 +48,7 @@ enum class WBWINDOWELEMENT : char {
 class CWBWindow : public CWBGuiType<"window", CWBItem> {
  public:
   CWBWindow(const TCHAR* txt = "", uint32_t style = WB_WINDOW_DEFAULT);
-  static inline CWBWindow* Create(CWBItem* Parent, const math::CRect& Pos,
+  static inline CWBWindow* Create(CWBItem* Parent, const math::Rect& Pos,
                                   const TCHAR* txt = "",
                                   uint32_t style = WB_WINDOW_DEFAULT) {
     auto p = std::make_unique<CWBWindow>(txt, style);
@@ -60,7 +60,7 @@ class CWBWindow : public CWBGuiType<"window", CWBItem> {
   }
   ~CWBWindow() override;
 
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
@@ -69,10 +69,10 @@ class CWBWindow : public CWBGuiType<"window", CWBItem> {
 
   uint32_t GetDragMode();
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+                          math::Rect& Pos);
 
-  math::CRect GetElementPos(WBWINDOWELEMENT Element);
-  uint32_t GetBorderSelectionArea(const math::CPoint& mousepos);
+  math::Rect GetElementPos(WBWINDOWELEMENT Element);
+  uint32_t GetBorderSelectionArea(const math::Point& mousepos);
 
  protected:
   void OnDraw(CWBDrawAPI* API) override;
@@ -86,7 +86,7 @@ class CWBWindow : public CWBGuiType<"window", CWBItem> {
   int32_t TitleBarHeight;
   int32_t CornerSelectionSize{15};
 
-  math::CSize MinSize;
+  math::Size MinSize;
 
   std::string WindowTitle;
 

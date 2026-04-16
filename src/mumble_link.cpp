@@ -21,11 +21,11 @@ import taco.time;
 import taco.trail_logger;
 import whiteboard;
 
-using math::CMatrix4x4;
-using math::CRect;
-using math::CVector2;
-using math::CVector3;
-using math::CVector4;
+using math::Matrix4x4;
+using math::Rect;
+using math::Vector2;
+using math::Vector3;
+using math::Vector4;
 
 CMumbleLink mumbleLink("MumbleLink");
 bool frameTriggered = false;
@@ -44,12 +44,12 @@ float GetUIScale() {
 
 float GetWindowTooSmallScale();
 
-CRect GetMinimapRectangle() {
+Rect GetMinimapRectangle() {
   int w = mumbleLink.miniMap.compassWidth;
   int h = mumbleLink.miniMap.compassHeight;
 
-  CRect pos;
-  CRect size = App->GetRoot()->GetClientRect();
+  Rect pos;
+  Rect size = App->GetRoot()->GetClientRect();
   float scale = GetWindowTooSmallScale();
 
   pos.x1 = static_cast<int>(size.Width() - w * scale);
@@ -116,28 +116,28 @@ bool CMumbleLink::Update() {
 
   interpolation = inter;
 
-  charPosition = math::Lerp(CVector3(prevData.fAvatarPosition),
-                            CVector3(lastData.fAvatarPosition), inter);
-  charEye = math::Lerp(CVector3(prevData.fAvatarTop),
-                       CVector3(lastData.fAvatarTop), 1);
-  camPosition = math::Lerp(CVector3(prevData.fCameraPosition),
-                           CVector3(lastData.fCameraPosition), 1);
-  camUp = math::Lerp(CVector3(prevData.fCameraTop),
-                     CVector3(lastData.fCameraTop), 1);
-  camDir = math::Lerp(CVector3(prevData.fCameraFront),
-                      CVector3(lastData.fCameraFront), inter);
+  charPosition = math::Lerp(Vector3(prevData.fAvatarPosition),
+                            Vector3(lastData.fAvatarPosition), inter);
+  charEye = math::Lerp(Vector3(prevData.fAvatarTop),
+                       Vector3(lastData.fAvatarTop), 1);
+  camPosition = math::Lerp(Vector3(prevData.fCameraPosition),
+                           Vector3(lastData.fCameraPosition), 1);
+  camUp = math::Lerp(Vector3(prevData.fCameraTop),
+                     Vector3(lastData.fCameraTop), 1);
+  camDir = math::Lerp(Vector3(prevData.fCameraFront),
+                      Vector3(lastData.fCameraFront), inter);
 
   charPosChanged =
-      CVector3(prevData.fAvatarPosition) != CVector3(lastData.fAvatarPosition);
+      Vector3(prevData.fAvatarPosition) != Vector3(lastData.fAvatarPosition);
   charEyeChanged =
-      CVector3(prevData.fAvatarTop) != CVector3(lastData.fAvatarTop);
+      Vector3(prevData.fAvatarTop) != Vector3(lastData.fAvatarTop);
   camPosChanged =
-      CVector3(prevData.fCameraPosition) != CVector3(lastData.fCameraPosition);
+      Vector3(prevData.fCameraPosition) != Vector3(lastData.fCameraPosition);
   camDirChanged =
-      CVector3(prevData.fCameraFront) != CVector3(lastData.fCameraFront);
-  camUpChanged = CVector3(prevData.fCameraTop) != CVector3(lastData.fCameraTop);
+      Vector3(prevData.fCameraFront) != Vector3(lastData.fCameraFront);
+  camUpChanged = Vector3(prevData.fCameraTop) != Vector3(lastData.fCameraTop);
 
-  if ((CVector3(lastData.fAvatarPosition) - CVector3(prevData.fAvatarPosition))
+  if ((Vector3(lastData.fAvatarPosition) - Vector3(prevData.fAvatarPosition))
           .Length() > GameToWorldCoords(2000)) {
     FindClosestRouteMarkers(true);
   }
@@ -158,7 +158,7 @@ bool CMumbleLink::Update() {
     }
   }
 
-  GlobalDoTrailLogging(mapID, CVector3(lastData.fAvatarPosition));
+  GlobalDoTrailLogging(mapID, Vector3(lastData.fAvatarPosition));
 
   int32_t oldUISize = uiSize;
 
@@ -273,17 +273,17 @@ bool CMumbleLink::Update() {
     }
   }
 
-  CMatrix4x4 cam;
-  cam.SetLookAtLH(camPosition, camPosition + camDir, CVector3(0, 1, 0));
+  Matrix4x4 cam;
+  cam.SetLookAtLH(camPosition, camPosition + camDir, Vector3(0, 1, 0));
 
-  CMatrix4x4 cami = cam.Inverted();
+  Matrix4x4 cami = cam.Inverted();
 
   for (int x = 0; x < AVGCAMCOUNTER - 1; x++) {
     camchardist[x] = camchardist[x + 1];
   }
   camchardist[AVGCAMCOUNTER - 1] = charPosition * cam;
 
-  CVector4 avgCamCharDist(0, 0, 0, 0);
+  Vector4 avgCamCharDist(0, 0, 0, 0);
 
   for (const auto& x : camchardist) avgCamCharDist += x;
 
@@ -293,7 +293,7 @@ bool CMumbleLink::Update() {
 
   if (!GetConfigValue("SmoothCharacterPos")) {
     averagedCharPosition =
-        CVector4(charPosition.x, charPosition.y, charPosition.z, 1.0f);
+        Vector4(charPosition.x, charPosition.y, charPosition.z, 1.0f);
   }
 
   return true;
@@ -322,31 +322,31 @@ CMumbleLink::~CMumbleLink() = default;
 
 bool CMumbleLink::IsValid() { return lm != nullptr && lastGW2ProcessID != 0; }
 
-CMatrix4x4 CompassData::BuildTransformationMatrix(const CRect& miniRect,
+Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& miniRect,
                                                   bool ignoreRotation) {
-  CMatrix4x4 miniMapTrafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0,
+  Matrix4x4 miniMapTrafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0,
                           0, 0, 0, 0, 1);
 
-  CVector2 mapOffset = CVector2(WorldToGameCoords(mumbleLink.charPosition.x),
+  Vector2 mapOffset = Vector2(WorldToGameCoords(mumbleLink.charPosition.x),
                                 WorldToGameCoords(mumbleLink.charPosition.z));
 
   float rotation = ignoreRotation ? 0 : compassRotation;
 
   miniMapTrafo *=
-      CMatrix4x4::Translation(CVector3(-mapOffset.x, -mapOffset.y, 0.0));
-  miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, -1, 1));
-  miniMapTrafo *= CMatrix4x4::Rotation(CVector3(0, 0, 1), rotation);
-  miniMapTrafo *= CMatrix4x4::Scaling(CVector3(1, 1, 1) / 24.0f);
+      Matrix4x4::Translation(Vector3(-mapOffset.x, -mapOffset.y, 0.0));
+  miniMapTrafo *= Matrix4x4::Scaling(Vector3(1, -1, 1));
+  miniMapTrafo *= Matrix4x4::Rotation(Vector3(0, 0, 1), rotation);
+  miniMapTrafo *= Matrix4x4::Scaling(Vector3(1, 1, 1) / 24.0f);
 
-  CVector2 offset =
-      -((CVector2(mapCenterX, mapCenterY) - CVector2(playerX, playerY)) *
+  Vector2 offset =
+      -((Vector2(mapCenterX, mapCenterY) - Vector2(playerX, playerY)) *
         GetWindowTooSmallScale())
-           .Rotated(CVector2(0, 0), rotation);
-  miniMapTrafo *= CMatrix4x4::Translation(CVector3(offset.x, offset.y, 0.0));
+           .Rotated(Vector2(0, 0), rotation);
+  miniMapTrafo *= Matrix4x4::Translation(Vector3(offset.x, offset.y, 0.0));
   miniMapTrafo *=
-      CMatrix4x4::Scaling(CVector3(1, 1, 1) / mapScale * GetUIScale());
-  miniMapTrafo *= CMatrix4x4::Translation(
-      CVector3(static_cast<float>(miniRect.Center().x),
+      Matrix4x4::Scaling(Vector3(1, 1, 1) / mapScale * GetUIScale());
+  miniMapTrafo *= Matrix4x4::Translation(
+      Vector3(static_cast<float>(miniRect.Center().x),
                static_cast<float>(miniRect.Center().y), 0.0));
 
   return miniMapTrafo;

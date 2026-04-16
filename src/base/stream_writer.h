@@ -1,11 +1,11 @@
 #pragma once
 
-#include <windows.h>
-
+#include <cstdio>
 #include <cstdint>
 #include <memory>
 #include <string_view>
 #include <vector>
+#include <string>
 
 using uint8_view = std::basic_string_view<uint8_t>;
 
@@ -54,5 +54,5 @@ class CStreamWriterFile : public CStreamWriter {
  private:
   int32_t WriteStream(std::string_view) override;
 
-  HANDLE File;
+  FILE* File;
 };

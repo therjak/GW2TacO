@@ -27,9 +27,9 @@ export class LocationalTimer {
   void ImportData(const CXMLNode& node);
 
   int32_t MapID = 0;
-  math::CSphere EnterSphere = math::CSphere(math::CVector3(0, 0, 0), 0);
-  math::CSphere ExitSphere = math::CSphere(math::CVector3(0, 0, 0), 0);
-  math::CVector3 ResetPoint = math::CVector3(0, 0, 0);
+  math::CSphere EnterSphere = math::CSphere(math::Vector3(0, 0, 0), 0);
+  math::CSphere ExitSphere = math::CSphere(math::Vector3(0, 0, 0), 0);
+  math::Vector3 ResetPoint = math::Vector3(0, 0, 0);
   int32_t TimerLength = 0;
   int32_t StartDelay = 0;
 
@@ -44,7 +44,7 @@ export class TimerDisplay
  public:
   TimerDisplay();
   static inline TimerDisplay* Create(gui::CWBItem* Parent,
-                                     math::CRect Position) {
+                                     math::Rect Position) {
     auto p = std::make_unique<TimerDisplay>();
     p->Initialize(Parent, Position);
     TimerDisplay* r = p.get();
@@ -55,10 +55,10 @@ export class TimerDisplay
   ~TimerDisplay() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
   void OnDraw(gui::CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 };
 

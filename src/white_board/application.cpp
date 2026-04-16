@@ -33,8 +33,8 @@ import :window;
 import math;
 import xml;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 namespace gui {
 
@@ -109,18 +109,18 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
   // handle messages created by mouse events
   if (Message.IsMouseMessage()) {
     if (Message.Get() == WBM_MOUSEMOVE) {
-      mouse_pos_ = CPoint(Message.GetPosition());
+      mouse_pos_ = Point(Message.GetPosition());
       UpdateMouseItem();
     }
 
     if (Message.Get() == WBM_LEFTBUTTONDOWN) {
-      left_down_pos_ = CPoint(Message.GetPosition());
+      left_down_pos_ = Point(Message.GetPosition());
     }
     if (Message.Get() == WBM_RIGHTBUTTONDOWN) {
-      right_down_pos_ = CPoint(Message.GetPosition());
+      right_down_pos_ = Point(Message.GetPosition());
     }
     if (Message.Get() == WBM_MIDDLEBUTTONDOWN) {
-      mid_down_pos_ = CPoint(Message.GetPosition());
+      mid_down_pos_ = Point(Message.GetPosition());
     }
 
     if (MouseCaptureItem)  // mouse messages are captured by this item, send
@@ -170,11 +170,11 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
   }
 }
 
-CWBItem* CWBApplication::GetItemUnderMouse(CPoint& Point, WBMESSAGE w) {
+CWBItem* CWBApplication::GetItemUnderMouse(Point& Point, WBMESSAGE w) {
   if (!Root) {
     return nullptr;
   }
-  CRect r = Root->GetScreenRect();
+  Rect r = Root->GetScreenRect();
   return Root->GetItemUnderMouse(Point, r, w);
 }
 
@@ -182,7 +182,7 @@ void CWBApplication::HandleResize() {
   WindowHandlerWin::HandleResize();
 
   if (Root) {
-    Root->SetPosition(CRect(0, 0, x_res_, y_res_));
+    Root->SetPosition(Rect(0, 0, x_res_, y_res_));
   }
 }
 
@@ -381,7 +381,7 @@ bool CWBApplication::Initialize() {
 
   if (!DrawAPI->Initialize(this, device_.get(), Atlas.get())) return false;
 
-  Root = CWBRoot::Create(CRect(0, 0, x_res_, y_res_));
+  Root = CWBRoot::Create(Rect(0, 0, x_res_, y_res_));
   Root->SetApplication(this);
 
   setlocale(LC_NUMERIC, "C");
@@ -762,13 +762,13 @@ bool CWBApplication::LoadSkin(std::string_view XML,
       for (int32_t y = 0; y < n.GetChildCount("element"); y++) {
         CXMLNode e = n.GetChild("element", y);
 
-        CRect r2;
+        Rect r2;
         e.GetAttributeAsInteger("x1", &r2.x1);
         e.GetAttributeAsInteger("y1", &r2.y1);
         e.GetAttributeAsInteger("x2", &r2.x2);
         e.GetAttributeAsInteger("y2", &r2.y2);
 
-        CPoint b;
+        Point b;
         e.GetAttributeAsInteger("x-behavior", &b.x);
         e.GetAttributeAsInteger("y-behavior", &b.y);
 
@@ -783,7 +783,7 @@ bool CWBApplication::LoadSkin(std::string_view XML,
   for (int32_t x = 0; x < r.GetChildCount("mosaic"); x++) {
     CXMLNode m = r.GetChild("mosaic", x);
 
-    CRect r2;
+    Rect r2;
     m.GetAttributeAsInteger("overshootx1", &r2.x1);
     m.GetAttributeAsInteger("overshooty1", &r2.y1);
     m.GetAttributeAsInteger("overshootx2", &r2.x2);
@@ -889,19 +889,19 @@ bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
 }
 
 bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
-  CRect Pos(5, 5, 25, 25);
+  Rect Pos(5, 5, 25, 25);
 
   bool b = true;
   for (int i = 0; i < node.GetChildCount(); i++) {
     b &= GenerateGUIFromXMLNode(Root, node.GetChild(i), Pos);
-    Pos = CRect(Pos.BottomLeft() + CPoint(0, 2),
-                Pos.BottomLeft() + CPoint(20, 22));
+    Pos = Rect(Pos.BottomLeft() + Point(0, 2),
+                Pos.BottomLeft() + Point(20, 22));
   }
   return b;
 }
 
 bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
-                                            CRect& Pos) {
+                                            Rect& Pos) {
   CWBItem* NewItem = GenerateUIItem(Root, node, Pos);
   if (!NewItem) return false;
 
@@ -938,7 +938,7 @@ bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
 }
 
 CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                                        CRect& Pos) {
+                                        Rect& Pos) {
   if (FactoryCallbacks.find(node.GetNodeName()) != FactoryCallbacks.end()) {
     return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);
   }
@@ -982,8 +982,8 @@ void CWBApplication::TakeScreenshot() {
   b->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
   DrawAPI->GetDevice()->SetRenderState(b.get());
 
-  DrawAPI->SetCropRect(CRect(0, 0, x_res_, y_res_));
-  DrawAPI->DrawRect(CRect(0, 0, x_res_, y_res_), CColor{0xff000000});
+  DrawAPI->SetCropRect(Rect(0, 0, x_res_, y_res_));
+  DrawAPI->DrawRect(Rect(0, 0, x_res_, y_res_), CColor{0xff000000});
   DrawAPI->FlushDrawBuffer();
 
   auto fname =

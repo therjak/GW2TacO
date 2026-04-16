@@ -41,7 +41,7 @@ class CWBContextItem {
 class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
  public:
   CWBContextMenu(WBGUID Target);
-  static inline CWBContextMenu* Create(CWBItem* Parent, const math::CRect& Pos,
+  static inline CWBContextMenu* Create(CWBItem* Parent, const math::Rect& Pos,
                                        WBGUID Target) {
     auto p = std::make_unique<CWBContextMenu>(Target);
     p->Initialize(Parent, Pos);
@@ -52,7 +52,7 @@ class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
   }
   ~CWBContextMenu() override;
 
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
 
   virtual CWBContextItem* AddItem(std::string_view Text, int32_t ID,
                                   bool Highlighted = false,
@@ -68,7 +68,7 @@ class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
   virtual void ResizeToContentSize();
   void OnDraw(CWBDrawAPI* API) override;
   void SpawnSubMenu(int32_t itemidx);
-  math::CRect GetItemRect(int32_t idx);
+  math::Rect GetItemRect(int32_t idx);
   void MarkParentForDeletion();
   bool MouseInContextHierarchy();
   CWBContextMenu* GetContextRoot();

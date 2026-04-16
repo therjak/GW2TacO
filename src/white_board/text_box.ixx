@@ -44,7 +44,7 @@ class CWBTextBoxHistoryEntry {
 class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
  public:
   CWBTextBox(int32_t flags);
-  static inline CWBTextBox* Create(CWBItem* Parent, const math::CRect& Pos,
+  static inline CWBTextBox* Create(CWBItem* Parent, const math::Rect& Pos,
                                    int32_t flags = WB_TEXTBOX_SINGLELINE,
                                    std::string_view txt = "") {
     auto p = std::make_unique<CWBTextBox>(flags);
@@ -57,7 +57,7 @@ class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
   }
   ~CWBTextBox() override;
 
-  bool Initialize(CWBItem* Parent, const math::CRect& Position) override;
+  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
@@ -65,7 +65,7 @@ class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
   void SetText(std::string_view val, bool EnableUndo = false);
 
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+                          math::Rect& Pos);
 
   virtual void SetSelection(int32_t start, int32_t end);
   void SetCursorPos(int32_t pos, bool Selecting);
@@ -82,7 +82,7 @@ class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
   std::string OriginalText;  // for escape cancel
 
  private:
-  void DrawCursor(CWBDrawAPI* API, const math::CPoint& p);
+  void DrawCursor(CWBDrawAPI* API, const math::Point& p);
   void SetCursorPosXpxY(int32_t x, int32_t y, bool Selecting);
   void RemoveSelectedText();
   void Copy();
@@ -97,7 +97,7 @@ class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
   int32_t GetCursorPosMouse();
   int32_t GetLineLeadingWhiteSpaceSize();
 
-  math::CPoint GetTextStartOffset();
+  math::Point GetTextStartOffset();
 
   virtual void DoSyntaxHighlight(){};
   virtual void OnTextChange(bool nonHumanInteraction = false);

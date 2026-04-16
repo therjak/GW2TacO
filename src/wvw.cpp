@@ -22,9 +22,9 @@ import taco.overlay_config;
 import taco.poi_behavior;
 import taco.time;
 
-using math::CRect;
-using math::CSize;
-using math::CVector3;
+using math::Rect;
+using math::Size;
+using math::Vector3;
 
 bool wvwCanBeRendered = false;
 std::vector<WvWObjective> wvwObjectives;
@@ -184,8 +184,8 @@ void LoadWvWObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
   static std::future<void> wvwPollTask = std::async(std::launch::async, []() {
-    std::unordered_map<int, CVector3> wvwObjectiveCoords;
-    std::unordered_map<int, CRect> wvwContinentRects;
+    std::unordered_map<int, Vector3> wvwObjectiveCoords;
+    std::unordered_map<int, Rect> wvwContinentRects;
 
     auto wvwobjectives =
         FetchHTTPS("api.guildwars2.com", "/v2/wvw/objectives?ids=all");
@@ -253,7 +253,7 @@ void LoadWvWObjectives() {
 
           if (ok) {
             wvwContinentRects[mapID] =
-                CRect(continentRectValues[0], continentRectValues[1],
+                Rect(continentRectValues[0], continentRectValues[1],
                       continentRectValues[2], continentRectValues[3]);
           }
         }
@@ -264,7 +264,7 @@ void LoadWvWObjectives() {
 
         auto coord = obj.get<jsonxx::Array>("coord").values();
         if (coord.size() == 3) {
-          CVector3 v(coord[0]->is<jsonxx::Number>()
+          Vector3 v(coord[0]->is<jsonxx::Number>()
                          ? static_cast<float>(coord[0]->get<jsonxx::Number>())
                          : 0,
                      coord[1]->is<jsonxx::Number>()
@@ -274,9 +274,9 @@ void LoadWvWObjectives() {
                          ? static_cast<float>(coord[2]->get<jsonxx::Number>())
                          : 0);
 
-          CRect& r = wvwContinentRects[mapID];
-          CVector3 offset =
-              CVector3((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
+          Rect& r = wvwContinentRects[mapID];
+          Vector3 offset =
+              Vector3((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
 
           if (objident == 15 && abs(v.x - 11766.3) < 1 &&
               abs(v.y - 14793.5) < 1 &&
@@ -287,7 +287,7 @@ void LoadWvWObjectives() {
             v.z -= 500;
           }
 
-          wvwObjectiveCoords[objident] = CVector3(
+          wvwObjectiveCoords[objident] = Vector3(
               GameToWorldCoords((v.x - offset.x) * 24), GameToWorldCoords(-v.z),
               GameToWorldCoords((-(v.y - offset.z)) * 24));
         }

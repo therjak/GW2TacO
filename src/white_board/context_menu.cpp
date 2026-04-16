@@ -11,9 +11,9 @@ import :button;
 import :context_menu;
 import :font;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
@@ -25,25 +25,25 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
 
   DrawBackground(API, WB_STATE_NORMAL);
 
-  const CRect Client = GetClientRect();
-  const CRect padding = CSSProperties.PositionDescriptor.GetPadding(
-      Client.Size(), CRect(0, 0, 0, 0));
+  const Rect Client = GetClientRect();
+  const Rect padding = CSSProperties.PositionDescriptor.GetPadding(
+      Client.Size(), Rect(0, 0, 0, 0));
 
-  CPoint Offset = CPoint(padding.x1, padding.y1);
+  Point Offset = Point(padding.x1, padding.y1);
 
   for (int32_t x = 0; x < Items.size(); x++) {
     if (Items[x]->Separator) {
       constexpr int arbitraryValue = 200;
 
-      const CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
-          CSize(GetWindowRect().Width(), arbitraryValue), CRect(0, 0, 0, 0));
+      const Rect padding = SeparatorElements.PositionDescriptor.GetPadding(
+          Size(GetWindowRect().Width(), arbitraryValue), Rect(0, 0, 0, 0));
       Offset.y += padding.y1;
 
       const int height = SeparatorElements.PositionDescriptor.GetHeight(
-          CSize(0, 0), CSize(0, 0));
+          Size(0, 0), Size(0, 0));
 
-      const CRect separatorRect =
-          CRect(GetWindowRect().x1 + padding.x1, Offset.y,
+      const Rect separatorRect =
+          Rect(GetWindowRect().x1 + padding.x1, Offset.y,
                 GetWindowRect().x1 + padding.x2, Offset.y + height);
 
       const WBSKINELEMENTID id = SeparatorElements.DisplayDescriptor.GetSkin(
@@ -61,7 +61,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
       Offset.y += arbitraryValue - padding.y2;
     } else if (Font) {
       // draw entry
-      CRect EntryPos = GetItemRect(x);
+      Rect EntryPos = GetItemRect(x);
       EntryPos.x1 += padding.x1;
       EntryPos.x2 -= Client.Width() - padding.x2;
 
@@ -92,7 +92,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
           const int32_t wi = Font->GetWidth(">");
           Font->Write(
               API, ">",
-              CPoint(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
+              Point(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
                          (Client.x2 - padding.x2),
                      Offset.y),
               textColor);
@@ -121,7 +121,7 @@ void CWBContextMenu::ResizeToContentSize() {
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
-  CSize ContentSize = CSize(0, 0);
+  Size ContentSize = Size(0, 0);
 
   bool NeedsSubArrow = false;
   for (const auto& item : Items) {
@@ -130,15 +130,15 @@ void CWBContextMenu::ResizeToContentSize() {
     }
   }
   constexpr int arbitraryValue = 0;
-  CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
-      CSize(0, arbitraryValue), CRect(0, 0, 0, 0));
+  Rect padding = SeparatorElements.PositionDescriptor.GetPadding(
+      Size(0, arbitraryValue), Rect(0, 0, 0, 0));
   const int height =
-      SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0), CSize(0, 0));
+      SeparatorElements.PositionDescriptor.GetHeight(Size(0, 0), Size(0, 0));
   const int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
 
-  const CRect Client = GetClientRect();
+  const Rect Client = GetClientRect();
   padding = CSSProperties.PositionDescriptor.GetPadding(Client.Size(),
-                                                        CRect(0, 0, 0, 0));
+                                                        Rect(0, 0, 0, 0));
 
   ContentSize.y = padding.y1;
 
@@ -166,12 +166,12 @@ void CWBContextMenu::ResizeToContentSize() {
 
   ContentSize.y += Client.Size().y - padding.y2;
 
-  const CRect r = GetPosition();
-  const CSize Size = ContentSize + GetClientWindowSizeDifference();
-  SetPosition(CRect(r.TopLeft(), r.TopLeft() + Size));
+  const Rect r = GetPosition();
+  const Size Size = ContentSize + GetClientWindowSizeDifference();
+  SetPosition(Rect(r.TopLeft(), r.TopLeft() + Size));
 }
 
-bool CWBContextMenu::Initialize(CWBItem* Parent, const CRect& Position) {
+bool CWBContextMenu::Initialize(CWBItem* Parent, const Rect& Position) {
   if (!CWBItem::Initialize(Parent, Position)) return false;
 
   SetClientPadding(2, 0, 2, 0);
@@ -216,12 +216,12 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
     case WBM_REPOSITION:
       if (Message.GetTarget() == GetGuid()) {
         // push position inside of parent
-        CRect p = Message.Rectangle();
-        const CRect r = GetParent()->GetClientRect();
-        if (p.x1 < 0) p += CPoint(-p.x1, 0);
-        if (p.y1 < 0) p += CPoint(0, -p.y1);
-        if (p.x2 > r.x2) p -= CPoint(p.x2 - r.x2, 0);
-        if (p.y2 > r.y2) p -= CPoint(0, p.y2 - r.y2);
+        Rect p = Message.Rectangle();
+        const Rect r = GetParent()->GetClientRect();
+        if (p.x1 < 0) p += Point(-p.x1, 0);
+        if (p.y1 < 0) p += Point(0, -p.y1);
+        if (p.x2 > r.x2) p -= Point(p.x2 - r.x2, 0);
+        if (p.y2 > r.y2) p -= Point(0, p.y2 - r.y2);
         CWBMessage m(App, WBM_REPOSITION, Message.GetTarget(), p,
                      Message.Moved(), Message.Resized());
         return CWBItem::MessageProc(m);
@@ -231,7 +231,7 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       if (MouseOver()) {
         for (int32_t x = 0; x < Items.size(); x++) {
           if (!Items[x]->Separator) {
-            const CRect EntryPos = GetItemRect(x);
+            const Rect EntryPos = GetItemRect(x);
             if (EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
               SpawnSubMenu(x);
               return true;
@@ -273,7 +273,7 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       // check if any of the items are clicked on
       for (int32_t x = 0; x < Items.size(); x++) {
         if (!Items[x]->Separator) {
-          const CRect EntryPos = GetItemRect(x);
+          const Rect EntryPos = GetItemRect(x);
           if (MouseOver() &&
               EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
             App->Send(CWBMessage(App, WBM_CONTEXTMESSAGE, Target,
@@ -337,10 +337,10 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
   }
   if (Items[itemidx]->Children.size() <= 0) return;
 
-  const CRect p = GetItemRect(itemidx) + GetPosition().TopLeft();
-  const CRect w = GetPosition();
+  const Rect p = GetItemRect(itemidx) + GetPosition().TopLeft();
+  const Rect w = GetPosition();
 
-  const CRect newpos = CRect(w.x2 - 1, p.y1, w.x2 + 10, p.y1 + 10);
+  const Rect newpos = Rect(w.x2 - 1, p.y1, w.x2 + 10, p.y1 + 10);
 
   // We need to select the parent as we are restricted to draw within the parent
   // rect.
@@ -365,19 +365,19 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
   SubMenu->ResizeToContentSize();
 }
 
-CRect CWBContextMenu::GetItemRect(int32_t idx) {
-  CPoint Offset = CPoint(0, 0);
+Rect CWBContextMenu::GetItemRect(int32_t idx) {
+  Point Offset = Point(0, 0);
 
   constexpr int arbitraryValue = 0;
-  CRect padding = SeparatorElements.PositionDescriptor.GetPadding(
-      CSize(0, arbitraryValue), CRect(0, 0, 0, 0));
+  Rect padding = SeparatorElements.PositionDescriptor.GetPadding(
+      Size(0, arbitraryValue), Rect(0, 0, 0, 0));
   const int height =
-      SeparatorElements.PositionDescriptor.GetHeight(CSize(0, 0), CSize(0, 0));
+      SeparatorElements.PositionDescriptor.GetHeight(Size(0, 0), Size(0, 0));
   const int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
 
-  const CRect Client = GetClientRect();
+  const Rect Client = GetClientRect();
   padding = CSSProperties.PositionDescriptor.GetPadding(Client.Size(),
-                                                        CRect(0, 0, 0, 0));
+                                                        Rect(0, 0, 0, 0));
 
   Offset.y = padding.y1;
 
@@ -386,14 +386,14 @@ CRect CWBContextMenu::GetItemRect(int32_t idx) {
     if (Items[x]->Separator) {
       Offset.y += separatorHeight;
     } else if (Font) {
-      const CRect EntryPos(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
+      const Rect EntryPos(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
                            Offset.y + Font->GetLineHeight());
       if (x == idx) return EntryPos;
       Offset.y += Font->GetLineHeight();
     }
   }
 
-  return CRect(0, 0, 0, 0);
+  return Rect(0, 0, 0, 0);
 }
 
 void CWBContextMenu::MarkParentForDeletion() {

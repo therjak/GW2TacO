@@ -14,7 +14,7 @@ export class ClickThroughButton
   ClickThroughButton(std::string_view txt);
   ~ClickThroughButton() override;
   static inline ClickThroughButton* Create(gui::CWBItem* Parent,
-                                           const math::CRect& Pos,
+                                           const math::Rect& Pos,
                                            std::string_view txt = "") {
     auto p = std::make_unique<ClickThroughButton>(txt);
     p->Initialize(Parent, Pos);
@@ -25,5 +25,5 @@ export class ClickThroughButton
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 };

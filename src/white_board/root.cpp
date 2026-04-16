@@ -8,7 +8,7 @@ import :application;
 import :message;
 import :root;
 
-using math::CRect;
+using math::Rect;
 
 namespace gui {
 

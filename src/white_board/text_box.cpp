@@ -19,16 +19,16 @@ module whiteboard;
 import :application;
 import :text_box;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 namespace gui {
 
-void CWBTextBox::DrawCursor(CWBDrawAPI* API, const CPoint& p) {
+void CWBTextBox::DrawCursor(CWBDrawAPI* API, const Point& p) {
   const WBITEMSTATE s = GetState();
   if (!(((globalTimer.GetTime() - CursorBlinkStartTime) / 500) % 2)) {
     API->DrawRect(
-        CRect(p + CPoint(0, 1), p + CPoint(1, GetFont(s)->GetLineHeight() - 1)),
+        Rect(p + Point(0, 1), p + Point(1, GetFont(s)->GetLineHeight() - 1)),
         CColor{0xffffffff});
   }
 }
@@ -42,9 +42,9 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
-  CPoint Pos = CPoint(0, 0);
-  const CPoint Offset =
-      -CPoint(GetHScrollbarPos(), GetVScrollbarPos()) + GetTextStartOffset();
+  Point Pos = Point(0, 0);
+  const Point Offset =
+      -Point(GetHScrollbarPos(), GetVScrollbarPos()) + GetTextStartOffset();
 
   const bool Focus = InFocus() && !GetChildInFocus();  // speedup
 
@@ -83,8 +83,8 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
     // draw selection
     if (!(Flags & WB_TEXTBOX_NOSELECTION) && x >= SelectionStart &&
         x < SelectionEnd) {
-      const CRect Display =
-          CRect(Pos, CPoint(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
+      const Rect Display =
+          Rect(Pos, Point(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
           Offset;
       if (Display.Intersects(GetClientRect())) {
         API->DrawRect(Display, SelectionColor);
@@ -94,15 +94,15 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
     // draw background highlight
 
     if (GetTextBackground(x, BackgroundColor)) {
-      const CRect Display =
-          CRect(Pos, CPoint(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
+      const Rect Display =
+          Rect(Pos, Point(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
           Offset;
       if (Display.Intersects(GetClientRect())) {
         API->DrawRect(Display, BackgroundColor);
       }
     }
 
-    const CPoint CPos = Pos;
+    const Point CPos = Pos;
 
     if (Char == '\n' || Char == '\t')  // special characters
     {
@@ -116,8 +116,8 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
       }
     } else {
       // draw next character
-      const CRect Display =
-          CRect(Pos, CPoint(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
+      const Rect Display =
+          Rect(Pos, Point(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
           Offset;
       if (Display.Intersects(GetClientRect())) {
         Font->WriteChar(API, Char, Pos + Offset, Color);
@@ -146,7 +146,7 @@ CWBTextBox::CWBTextBox(int32_t flags)
 
 CWBTextBox::~CWBTextBox() = default;
 
-bool CWBTextBox::Initialize(CWBItem* Parent, const CRect& Position) {
+bool CWBTextBox::Initialize(CWBItem* Parent, const Rect& Position) {
   Selection.DisplayDescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
                                        0);
   Selection.DisplayDescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
@@ -187,7 +187,7 @@ void CWBTextBox::SetCursorPos(int32_t pos, bool Selecting) {
   // adjust scrollbars so cursor is visible
 
   // determine cursor position in pixels
-  CPoint CPos;
+  Point CPos;
   CPos.y = GetCursorY() * Font->GetLineHeight();
   CPos.x = 0;
   const int32_t Cx = GetCursorX();
@@ -211,11 +211,11 @@ void CWBTextBox::SetCursorPos(int32_t pos, bool Selecting) {
 
   if (Flags & WB_TEXTBOX_SINGLELINE) return;
 
-  const CRect VisibleRect =
-      GetClientRect() + CPoint(GetHScrollbarPos(), GetVScrollbarPos());
+  const Rect VisibleRect =
+      GetClientRect() + Point(GetHScrollbarPos(), GetVScrollbarPos());
   if (VisibleRect.Contains(CPos) &&
       VisibleRect.Contains(CPos +
-                           CPoint(CurrCharWidth, Font->GetLineHeight()))) {
+                           Point(CurrCharWidth, Font->GetLineHeight()))) {
     return;  // no need to adjust
   }
 
@@ -523,15 +523,15 @@ int32_t CWBTextBox::GetLineLeadingWhiteSpaceSize() {
   return cnt;
 }
 
-CPoint CWBTextBox::GetTextStartOffset() {
-  CPoint pos(0, 0);
+Point CWBTextBox::GetTextStartOffset() {
+  Point pos(0, 0);
   if (!(Flags & WB_TEXTBOX_SINGLELINE)) return pos;
 
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
-  const CPoint TextPos =
+  const Point TextPos =
       Font->GetTextPosition(Text, GetClientRect(), CSSProperties.TextAlignX,
                             CSSProperties.TextAlignY, TextTransform);
 
@@ -548,11 +548,11 @@ int32_t CWBTextBox::GetCursorPosMouse() {
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
   const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
-  const CPoint mp = ScreenToClient(App->GetMousePos());
-  CPoint Pos = CPoint(0, 0);
-  const CPoint Offset =
-      -CPoint(GetHScrollbarPos(), GetVScrollbarPos()) + GetTextStartOffset();
-  const CRect cr = GetClientRect();
+  const Point mp = ScreenToClient(App->GetMousePos());
+  Point Pos = Point(0, 0);
+  const Point Offset =
+      -Point(GetHScrollbarPos(), GetVScrollbarPos()) + GetTextStartOffset();
+  const Rect cr = GetClientRect();
 
   if (mp.y < Pos.y + Offset.y) return 0;
 
@@ -931,7 +931,7 @@ void CWBTextBox::OnTextChange(bool nonHumanInteraction /* = false*/) {
   App->Send(CWBMessage(App, WBM_TEXTCHANGED, GetGuid(),
                        App->GetFocusItem() == this && !nonHumanInteraction));
 
-  CPoint Size = CPoint(0, Font->GetLineHeight());
+  Point Size = Point(0, Font->GetLineHeight());
   int32_t XSize = 0;
 
   for (int32_t x = 0; x < static_cast<int32_t>(Text.size()); x++) {
@@ -1032,7 +1032,7 @@ bool CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem* CWBTextBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
+CWBItem* CWBTextBox::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
   int32_t Flags = 0;
   if (node.HasAttribute("singleline")) {
     int32_t b = 0;

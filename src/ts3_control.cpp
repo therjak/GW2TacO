@@ -9,8 +9,8 @@ import taco.overlay_config;
 import taco.ts3connection;
 import whiteboard;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
   gui::CWBFont* f = GetFont(GetState());
@@ -21,16 +21,16 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
     // clutter.
     return;
     if (HasConfigString("TS3APIKey")) {
-      f->Write(API, DICT("ts3authfail1"), CPoint(0, 0), CColor{0xffffffff});
-      f->Write(API, DICT("ts3authfail2"), CPoint(0, size), CColor{0xffffffff});
-      f->Write(API, DICT("ts3authfail3"), CPoint(0, size * 2),
+      f->Write(API, DICT("ts3authfail1"), Point(0, 0), CColor{0xffffffff});
+      f->Write(API, DICT("ts3authfail2"), Point(0, size), CColor{0xffffffff});
+      f->Write(API, DICT("ts3authfail3"), Point(0, size * 2),
                CColor{0xffffffff});
-      f->Write(API, DICT("ts3authfail4"), CPoint(0, size * 3),
+      f->Write(API, DICT("ts3authfail4"), Point(0, size * 3),
                CColor{0xfffffff});
     } else {
-      f->Write(API, DICT("ts3nokeyset1"), CPoint(0, 0), CColor{0xffffffff});
-      f->Write(API, DICT("ts3nokeyset2"), CPoint(0, size), CColor{0xffffffff});
-      f->Write(API, DICT("ts3nokeyset3"), CPoint(0, size * 2),
+      f->Write(API, DICT("ts3nokeyset1"), Point(0, 0), CColor{0xffffffff});
+      f->Write(API, DICT("ts3nokeyset2"), Point(0, size), CColor{0xffffffff});
+      f->Write(API, DICT("ts3nokeyset3"), Point(0, size * 2),
                CColor{0xffffffff});
     }
   }
@@ -42,10 +42,10 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
   gui::WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID("ts3inputmuted");
 
   bool LeftAlign = true;
-  CRect r = ClientToScreen(GetClientRect());
+  Rect r = ClientToScreen(GetClientRect());
   LeftAlign = r.x1 < App->GetXRes() / 2 && r.x2 < App->GetXRes() / 2;
 
-  CRect displayrect = GetClientRect();
+  Rect displayrect = GetClientRect();
 
   for (int32_t cnt = 0; cnt < 2; cnt++) {
     int32_t ypos = 0;
@@ -53,8 +53,8 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
       TS3Connection::TS3Schandler& handler = x.second;
       if (handler.Connected &&
           handler.Clients.find(handler.myclientid) != handler.Clients.end()) {
-        CPoint p = f->GetTextPosition(
-            handler.name, GetClientRect() - CRect(0, ypos, 0, 0),
+        Point p = f->GetTextPosition(
+            handler.name, GetClientRect() - Rect(0, ypos, 0, 0),
             LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
                       : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
             gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
@@ -74,8 +74,8 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
           auto channelText = std::format(
               "{:s} ({:d})", handler.Channels[mychannelid].name, participants);
 
-          CPoint p = f->GetTextPosition(
-              channelText, GetClientRect() - CRect(size / 2, ypos, 0, 0),
+          Point p = f->GetTextPosition(
+              channelText, GetClientRect() - Rect(size / 2, ypos, 0, 0),
               LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
                         : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
               gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
@@ -106,14 +106,14 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
 
             App->GetSkin()->RenderElement(
                 API, id,
-                LeftAlign ? CRect(size / 2, ypos, size / 2 + size - 1,
+                LeftAlign ? Rect(size / 2, ypos, size / 2 + size - 1,
                                   ypos + size - 1)
-                          : CRect(GetClientRect().Width() - size / 2 - size + 1,
+                          : Rect(GetClientRect().Width() - size / 2 - size + 1,
                                   ypos, GetClientRect().Width() - size / 2,
                                   ypos + size - 1));
 
-            CPoint p = f->GetTextPosition(
-                cl->name, GetClientRect() - CRect(2 * size, ypos, 2 * size, 0),
+            Point p = f->GetTextPosition(
+                cl->name, GetClientRect() - Rect(2 * size, ypos, 2 * size, 0),
                 LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
                           : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
                 gui::WBTEXTALIGNMENTY::WBTA_TOP,
@@ -130,7 +130,7 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
 
     if (!cnt) {
       DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
-                         CRect(0, 0, GetClientRect().Width(), ypos),
+                         Rect(0, 0, GetClientRect().Width(), ypos),
                          GetState());
     }
   }
@@ -143,11 +143,11 @@ TS3Control::TS3Control() : CWBGuiType() {}
 TS3Control::~TS3Control() = default;
 
 gui::CWBItem* TS3Control::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                  CRect& Pos) {
+                                  Rect& Pos) {
   return TS3Control::Create(Root, Pos);
 }
 
-bool TS3Control::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool TS3Control::IsMouseTransparent(const Point& ClientSpacePoint,
                                     gui::WBMESSAGE MessageType) {
   return true;
 }

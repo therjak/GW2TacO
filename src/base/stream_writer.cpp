@@ -3,6 +3,9 @@
 #include "src/base/assert.h"
 #include "src/base/logger.h"
 
+#include <cerrno>
+#include <cstring>
+
 CStreamWriter::CStreamWriter() : writerCurrentChar(0) {}
 
 CStreamWriter::~CStreamWriter() = default;
@@ -53,45 +56,30 @@ void CStreamWriterMemory::Flush() { Data.clear(); }
 CStreamWriterFile::CStreamWriterFile() : CStreamWriter() { File = nullptr; }
 
 CStreamWriterFile::~CStreamWriterFile() {
-  if (File) CloseHandle(File);
+  if (File) std::fclose(File);
 }
 
 int32_t CStreamWriterFile::WriteStream(std::string_view data) {
-  DWORD nWritten = 0;
-  BOOL b = WriteFile(File, data.data(), static_cast<DWORD>(data.size()),
-                     &nWritten, nullptr);
-  if (!b) return 0;
-  return nWritten;
+  if (!File) return 0;
+  size_t nWritten = std::fwrite(data.data(), 1, data.size(), File);
+  return static_cast<int32_t>(nWritten);
 }
 
 int32_t CStreamWriterFile::Open(std::string_view Filename) {
-  if (File) CloseHandle(File);  // close previous handle
+  if (File) std::fclose(File);  // close previous handle
 
   std::string fn(Filename);
 
-  File =
-      CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 nullptr, OPEN_ALWAYS, 0, nullptr);
-  CloseHandle(File);
-
-  File =
-      CreateFile(fn.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE,
-                 nullptr, OPEN_ALWAYS | TRUNCATE_EXISTING, 0, nullptr);
-  if (File == INVALID_HANDLE_VALUE) {
-    LPTSTR pMsgBuf = nullptr;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                  nullptr, GetLastError(),
-                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                  reinterpret_cast<LPTSTR>(&pMsgBuf), 0, nullptr);
-
-    Log_Err("[writer] Error opening file '{:s}': {:s}", Filename, pMsgBuf);
-    LocalFree(pMsgBuf);
+  File = std::fopen(fn.c_str(), "wb");
+  if (!File) {
+    Log_Err("[writer] Error opening file '{:s}': {:s}", Filename, std::strerror(errno));
     return 0;
   }
   return 1;
 }
 
 void CStreamWriterFile::Flush() {
-  SetFilePointer(File, 0, nullptr, FILE_BEGIN);
-  SetEndOfFile(File);
+  if (File) {
+    std::fflush(File);
+  }
 }

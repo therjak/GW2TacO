@@ -9,39 +9,39 @@ import :vector;
 
 export namespace math {
 
-class CRect {
+class Rect {
  public:
-  constexpr CRect() = default;
-  constexpr CRect(const int32_t a, const int32_t b, const int32_t c,
-                  const int32_t d)
+  constexpr Rect() = default;
+  constexpr Rect(const int32_t a, const int32_t b, const int32_t c,
+                 const int32_t d)
       : x1(a), y1(b), x2(c), y2(d) {}
-  constexpr CRect(const CPoint p1, const CPoint p2)
+  constexpr Rect(const Point p1, const Point p2)
       : x1(p1.x), y1(p1.y), x2(p2.x), y2(p2.y) {}
   [[nodiscard]] constexpr bool Contains(const int32_t x,
                                         const int32_t y) const {
     return x >= x1 && x < x2 && y >= y1 && y < y2;
   }
-  [[nodiscard]] constexpr bool Contains(const CPoint& p) const {
+  [[nodiscard]] constexpr bool Contains(const Point& p) const {
     return Contains(p.x, p.y);
   }
   [[nodiscard]] constexpr int32_t Width() const { return x2 - x1; }
   [[nodiscard]] constexpr int32_t Height() const { return y2 - y1; }
   [[nodiscard]] constexpr int32_t Area() const { return Width() * Height(); }
-  [[nodiscard]] constexpr bool Intersects(const CRect& r) const {
+  [[nodiscard]] constexpr bool Intersects(const Rect& r) const {
     return !(x2 <= r.x1 || x1 >= r.x2) && !(y2 <= r.y1 || y1 >= r.y2);
   }
 
-  constexpr CRect operator+(const CRect& a) const {
-    return CRect(x1 - a.x1, y1 - a.y1, x2 + a.x2, y2 + a.y2);
+  constexpr Rect operator+(const Rect& a) const {
+    return Rect(x1 - a.x1, y1 - a.y1, x2 + a.x2, y2 + a.y2);
   }
-  constexpr CRect operator-(const CRect& a) const {
-    return CRect(x1 + a.x1, y1 + a.y1, x2 - a.x2, y2 - a.y2);
+  constexpr Rect operator-(const Rect& a) const {
+    return Rect(x1 + a.x1, y1 + a.y1, x2 - a.x2, y2 - a.y2);
   }
-  constexpr CRect operator*(const int32_t a) const {
-    return CRect(x1 * a, y1 * a, x2 * a, y2 * a);
+  constexpr Rect operator*(const int32_t a) const {
+    return Rect(x1 * a, y1 * a, x2 * a, y2 * a);
   }
   // inflate by rect
-  constexpr CRect& operator+=(const CRect& a) {
+  constexpr Rect& operator+=(const Rect& a) {
     x1 -= a.x1;
     y1 -= a.y1;
     x2 += a.x2;
@@ -49,36 +49,35 @@ class CRect {
     return *this;
   }
 
-  constexpr CRect operator+(const CPoint& p) const {
-    return CRect(x1 + p.x, y1 + p.y, x2 + p.x, y2 + p.y);
+  constexpr Rect operator+(const Point& p) const {
+    return Rect(x1 + p.x, y1 + p.y, x2 + p.x, y2 + p.y);
   }
-  constexpr CRect& operator+=(const CPoint& p) {
+  constexpr Rect& operator+=(const Point& p) {
     Move(p);
     return *this;
   }
-  constexpr CRect operator-(const CPoint& p) const {
-    return CRect(x1 - p.x, y1 - p.y, x2 - p.x, y2 - p.y);
+  constexpr Rect operator-(const Point& p) const {
+    return Rect(x1 - p.x, y1 - p.y, x2 - p.x, y2 - p.y);
   }
-  constexpr CRect& operator-=(const CPoint& p) {
+  constexpr Rect& operator-=(const Point& p) {
     Move(-p);
     return *this;
   }
-  constexpr friend bool operator==(const CRect& lhs,
-                                   const CRect& rhs) = default;
+  constexpr friend bool operator==(const Rect& lhs, const Rect& rhs) = default;
 
-  constexpr CRect operator|(const CRect& r) const {
-    if (!Intersects(r)) return CRect(1, 1, -1, -1);
+  constexpr Rect operator|(const Rect& r) const {
+    if (!Intersects(r)) return Rect(1, 1, -1, -1);
     return GetIntersection(r);
   }
-  constexpr CRect& operator|=(const CRect& r) {
+  constexpr Rect& operator|=(const Rect& r) {
     *this = *this | r;
     return *this;
   }
-  constexpr CRect operator&(const CRect& r) const {
-    return CRect(x1 < r.x1 ? x1 : r.x1, y1 < r.y1 ? y1 : r.y1,
-                 x2 > r.x2 ? x2 : r.x2, y2 > r.y2 ? y2 : r.y2);
+  constexpr Rect operator&(const Rect& r) const {
+    return Rect(x1 < r.x1 ? x1 : r.x1, y1 < r.y1 ? y1 : r.y1,
+                x2 > r.x2 ? x2 : r.x2, y2 > r.y2 ? y2 : r.y2);
   }
-  constexpr CRect& operator&=(const CRect& r) {
+  constexpr Rect& operator&=(const Rect& r) {
     *this = *this & r;
     return *this;
   }
@@ -89,7 +88,7 @@ class CRect {
     x2 += x;
     y2 += y;
   }
-  constexpr void Move(const CPoint& p) { Move(p.x, p.y); }
+  constexpr void Move(const Point& p) { Move(p.x, p.y); }
   constexpr void MoveTo(int32_t x, int32_t y) {
     x2 -= (x1 - x);
     y2 -= (y1 - y);
@@ -111,23 +110,23 @@ class CRect {
     y1 = _y1 < _y2 ? _y1 : _y2;
     y2 = _y1 < _y2 ? _y2 : _y1;
   }
-  [[nodiscard]] constexpr CPoint TopLeft() const { return CPoint(x1, y1); }
-  [[nodiscard]] constexpr CPoint BottomRight() const { return CPoint(x2, y2); }
-  [[nodiscard]] constexpr CPoint TopRight() const { return CPoint(x2, y1); }
-  [[nodiscard]] constexpr CPoint BottomLeft() const { return CPoint(x1, y2); }
-  [[nodiscard]] constexpr CSize Size() const {
-    return CSize(Width(), Height());
+  [[nodiscard]] constexpr Point TopLeft() const { return Point(x1, y1); }
+  [[nodiscard]] constexpr Point BottomRight() const { return Point(x2, y2); }
+  [[nodiscard]] constexpr Point TopRight() const { return Point(x2, y1); }
+  [[nodiscard]] constexpr Point BottomLeft() const { return Point(x1, y2); }
+  [[nodiscard]] constexpr math::Size Size() const {
+    return math::Size(Width(), Height());
   }
-  [[nodiscard]] constexpr CPoint Center() const {
-    return CPoint(x1 + x2, y1 + y2) / 2;
+  [[nodiscard]] constexpr Point Center() const {
+    return Point(x1 + x2, y1 + y2) / 2;
   }
-  constexpr CRect GetCenterRect(const CSize& s) {
-    return CRect(Center().x - s.x / 2, Center().y - s.y / 2,
-                 Center().x - s.x / 2 + s.x, Center().y - s.y / 2 + s.y);
+  constexpr Rect GetCenterRect(const math::Size& s) {
+    return Rect(Center().x - s.x / 2, Center().y - s.y / 2,
+                Center().x - s.x / 2 + s.x, Center().y - s.y / 2 + s.y);
   }
-  [[nodiscard]] constexpr CRect GetIntersection(const CRect& r) const {
-    return CRect(x1 > r.x1 ? x1 : r.x1, y1 > r.y1 ? y1 : r.y1,
-                 x2 < r.x2 ? x2 : r.x2, y2 < r.y2 ? y2 : r.y2);
+  [[nodiscard]] constexpr Rect GetIntersection(const Rect& r) const {
+    return Rect(x1 > r.x1 ? x1 : r.x1, y1 > r.y1 ? y1 : r.y1,
+                x2 < r.x2 ? x2 : r.x2, y2 < r.y2 ? y2 : r.y2);
   }
 
   int32_t x1 = 0, y1 = 0, x2 = 0, y2 = 0;

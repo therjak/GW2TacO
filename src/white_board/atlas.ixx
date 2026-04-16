@@ -28,11 +28,11 @@ class CAtlasNode {
   CAtlasNode();
   virtual ~CAtlasNode();
   CAtlasNode* AddNode(int32_t width, int32_t height);
-  math::CRect& GetArea();
+  math::Rect& GetArea();
   CAtlasImage* GetImage();
 
  private:
-  math::CRect Area;
+  math::Rect Area;
   std::array<std::unique_ptr<CAtlasNode>, 2> Children;
   bool Occupied = false;
 
@@ -44,12 +44,12 @@ class CAtlasImage {
  public:
   CAtlasImage();
   CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
-              const math::CRect& Source);
+              const math::Rect& Source);
   virtual ~CAtlasImage();
 
   WBATLASHANDLE GetHandle();
   uint8_t* GetImage();
-  [[nodiscard]] math::CSize GetSize() const;
+  [[nodiscard]] math::Size GetSize() const;
   void TagRequired();
   void ClearRequired();
   bool IsRequired();
@@ -79,18 +79,18 @@ class CAtlas {
   renderer::Texture2D* GetTexture();
 
   WBATLASHANDLE AddImage(uint8_t* Image, int32_t XRes, int32_t YRes,
-                         const math::CRect& SourceArea);
+                         const math::Rect& SourceArea);
   // doesn't immediately remove image from atlas
   void DeleteImage(WBATLASHANDLE h);
 
   bool Optimize(bool DebugMode = false);
   bool Reset();
 
-  math::CSize GetSize(WBATLASHANDLE h);
+  math::Size GetSize(WBATLASHANDLE h);
   // returns false only if there was not enough room
   // in the atlas to add the requested image
-  bool RequestImageUse(WBATLASHANDLE h, math::CRect& UV);
-  math::CPoint GetWhitePixelUV();
+  bool RequestImageUse(WBATLASHANDLE h, math::Rect& UV);
+  math::Point GetWhitePixelUV();
 
   void ClearImageUsageflags();
 
@@ -120,7 +120,7 @@ class CAtlas {
 
   CAtlasImage* WhitePixel;
   // recalculated on each optimization and reset
-  math::CPoint WhitePixelPosition;
+  math::Point WhitePixelPosition;
 
   std::mutex mtx;
 };

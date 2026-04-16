@@ -27,12 +27,12 @@ import whiteboard;
 
 constexpr int32_t kTrailFileVersion = 0;
 
-using math::CMatrix4x4;
-using math::CPoint;
-using math::CRect;
-using math::CVector2;
-using math::CVector3;
-using math::CVector4;
+using math::Matrix4x4;
+using math::Point;
+using math::Rect;
+using math::Vector2;
+using math::Vector3;
+using math::Vector4;
 
 extern float globalOpacity;
 extern float minimapOpacity;
@@ -45,13 +45,13 @@ extern std::unique_ptr<gui::CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
-CVector3 lastPos = CVector3(0, 0, 0);
+Vector3 lastPos = Vector3(0, 0, 0);
 
 float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
 float GetMapFade();
 
-void GlobalDoTrailLogging(int32_t mapID, CVector3 charPos) {
+void GlobalDoTrailLogging(int32_t mapID, Vector3 charPos) {
   auto* trails = dynamic_cast<GW2TrailDisplay*>(
       App->GetRoot()->FindChildByID("trail", "gw2Trails"));
   if (trails) trails->DoTrailLogging(mapID, charPos);
@@ -64,13 +64,13 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
 
   cam.SetLookAtLH(mumbleLink.camPosition,
                   mumbleLink.camPosition + mumbleLink.camDir,
-                  CVector3(0, 1, 0));
+                  Vector3(0, 1, 0));
   persp.SetPerspectiveFovLH(
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 150.0f);
   asp = drawrect.Width() / static_cast<float>(drawrect.Height());
 
-  // CMatrix4x4 m = cam*persp;
+  // Matrix4x4 m = cam*persp;
 
   API->FlushDrawBuffer();
 
@@ -194,27 +194,27 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
   // draw minimap
   if (miniMaprender) {
     trailRasterizer3->Apply();
-    CRect miniRect = GetMinimapRectangle();
-    CRect clientRect = GetClientRect();
+    Rect miniRect = GetMinimapRectangle();
+    Rect clientRect = GetClientRect();
 
     float mapFade = GetMapFade();
 
     if (mapFade > 0 && showMinimapTrails > 0) {
-      CMatrix4x4 camera =
+      Matrix4x4 camera =
           mumbleLink.miniMap.BuildTransformationMatrix(miniRect, false);
-      // camera *= CMatrix4x4().Scaling( CVector3( 2.0f / clientRect.Width(),
+      // camera *= Matrix4x4().Scaling( Vector3( 2.0f / clientRect.Width(),
       // -2.0f / clientRect.Height(), 0.0f ) ); camera *=
-      // CMatrix4x4().Translation( CVector3( -1.0f, -1.0f, 0.5 ) );
+      // Matrix4x4().Translation( Vector3( -1.0f, -1.0f, 0.5 ) );
 
-      camera *= CMatrix4x4::Translation(-CVector3(
+      camera *= Matrix4x4::Translation(-Vector3(
           static_cast<float>(miniRect.x1), static_cast<float>(miniRect.y1), 0));
-      camera *= CMatrix4x4::Scaling(CVector3(
+      camera *= Matrix4x4::Scaling(Vector3(
           clientRect.Width() / static_cast<float>(miniRect.Width()),
           clientRect.Height() / static_cast<float>(miniRect.Height()), 0));
-      camera *= CMatrix4x4::Scaling(CVector3(
+      camera *= Matrix4x4::Scaling(Vector3(
           2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
-      camera *= CMatrix4x4::Translation(CVector3(-1.0f, 1.0f, 0.5));
-      CMatrix4x4 perspective;
+      camera *= Matrix4x4::Translation(Vector3(-1.0f, 1.0f, 0.5));
+      Matrix4x4 perspective;
       perspective.SetIdentity();
 
       API->SetRenderView(miniRect);
@@ -260,14 +260,14 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
 
     if (mumbleLink.isMapOpen && mapFade < 1.0 && showBigmapTrails > 0) {
       miniRect = GetClientRect();
-      CMatrix4x4 camera =
+      Matrix4x4 camera =
           mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
 
-      camera *= CMatrix4x4::Scaling(CVector3(
+      camera *= Matrix4x4::Scaling(Vector3(
           2.0f / clientRect.Width(), -2.0f / clientRect.Height(), 0.0f));
-      camera *= CMatrix4x4::Translation(CVector3(-1.0f, 1.0f, 0.5));
-      // camera *= CMatrix4x4().Scaling( CVector3( 10, 10, 1 ) );
-      CMatrix4x4 perspective;
+      camera *= Matrix4x4::Translation(Vector3(-1.0f, 1.0f, 0.5));
+      // camera *= Matrix4x4().Scaling( Vector3( 10, 10, 1 ) );
+      Matrix4x4 perspective;
       perspective.SetIdentity();
 
       API->SetRenderView(miniRect);
@@ -342,8 +342,8 @@ void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
     std::string_view s = "TacO is logging your trail.";
 
-    CPoint pos = f->GetTextPosition(
-        s, CRect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
+    Point pos = f->GetTextPosition(
+        s, Rect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
         gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
         gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE,
         true);
@@ -352,7 +352,7 @@ void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
   }
 }
 
-void GW2TrailDisplay::DoTrailLogging(int32_t mapID, CVector3 charPos) {
+void GW2TrailDisplay::DoTrailLogging(int32_t mapID, Vector3 charPos) {
   std::lock_guard<std::mutex> lockGuard(mtx);
 
   if (!trailBeingRecorded) return;
@@ -457,7 +457,7 @@ renderer::Texture2D* GW2TrailDisplay::GetTexture(
 GW2TrailDisplay::GW2TrailDisplay() : CWBGuiType() {}
 
 bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
-                                 const math::CRect& Position) {
+                                 const math::Rect& Position) {
   if (!gui::CWBItem::Initialize(Parent, Position)) return false;
 
   constBuffer = App->GetDevice()->CreateConstantBuffer();
@@ -564,11 +564,11 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
 GW2TrailDisplay::~GW2TrailDisplay() { textureCache.clear(); }
 
 gui::CWBItem* GW2TrailDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                       CRect& Pos) {
+                                       Rect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos);
 }
 
-bool GW2TrailDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool GW2TrailDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
                                          gui::WBMESSAGE MessageType) {
   return true;
 }
@@ -591,7 +591,7 @@ void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   if (btn) btn->Hide(!pause);
 
   if (!pause && newSection && editedTrail) {
-    editedTrail->positions.emplace_back(CVector3(0, 0, 0));
+    editedTrail->positions.emplace_back(Vector3(0, 0, 0));
   }
 }
 
@@ -732,7 +732,7 @@ bool GW2Trail::SaveToFile(std::string_view fname) {
 
   TrailLog.WriteDWord(map);
   TrailLog.Write(std::string_view(reinterpret_cast<const char*>(&positions[0]),
-                                  sizeof(CVector3) * positions.size()));
+                                  sizeof(Vector3) * positions.size()));
 
   return true;
 }
@@ -754,8 +754,8 @@ void GW2Trail::Build(renderer::Device* d, int32_t mapID,
   int vertexCount = 0;
   auto indices = std::make_unique<int32_t[]>((size_t(pointCount) - 1) * 6);
 
-  auto lastPos = CVector3(points);
-  CVector3 lastOrt = CVector3(0, 0, 0);
+  auto lastPos = Vector3(points);
+  Vector3 lastOrt = Vector3(0, 0, 0);
 
   float uvStretch = 0;
 
@@ -765,43 +765,43 @@ void GW2Trail::Build(renderer::Device* d, int32_t mapID,
   float twist = 1;
 
   for (int32_t x = 0; x < pointCount; x++) {
-    auto pos = CVector3(points + x * 3);
+    auto pos = Vector3(points + x * 3);
 
-    if (pos == CVector3(0, 0, 0)) {
+    if (pos == Vector3(0, 0, 0)) {
       if (x + 1 >= pointCount) break;
-      pos = lastPos = CVector3(points + (x + 1) * 3);
+      pos = lastPos = Vector3(points + (x + 1) * 3);
       twist = 1;
-      lastOrt = CVector3(0, 0, 0);
+      lastOrt = Vector3(0, 0, 0);
     }
 
-    CVector3 nextPos = CVector3(points + std::min(pointCount - 1, x + 1) * 3);
+    Vector3 nextPos = Vector3(points + std::min(pointCount - 1, x + 1) * 3);
 
-    if (nextPos == CVector3(0, 0, 0)) nextPos = pos;
+    if (nextPos == Vector3(0, 0, 0)) nextPos = pos;
 
     uvStretch += (pos - lastPos).Length() * typeData.trailScale * 2;
 
-    CVector3 dir = nextPos - lastPos;
+    Vector3 dir = nextPos - lastPos;
     dir.y = 0;
     float dirLen = dir.Length();
     dir /= dirLen;
-    CVector3 ort = CVector3::Cross(dir, CVector3(0, 1, 0)).Normalized();
+    Vector3 ort = Vector3::Cross(dir, Vector3(0, 1, 0)).Normalized();
 
-    if (lastOrt != CVector3(0, 0, 0) && CVector3::Dot(ort, lastOrt) < 0) {
+    if (lastOrt != Vector3(0, 0, 0) && Vector3::Dot(ort, lastOrt) < 0) {
       twist *= -1;
     }
 
-    CVector3 p1 = pos + ort * twist;
-    CVector3 p2 = pos - ort * twist;
+    Vector3 p1 = pos + ort * twist;
+    Vector3 p2 = pos - ort * twist;
 
     const auto vertPos = size_t(cnt) * 2;
-    vertices[vertPos].Pos = CVector4(p1.x, p1.y, p1.z, 1);
-    vertices[vertPos + 1].Pos = CVector4(p2.x, p2.y, p2.z, 1);
-    vertices[vertPos].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
-    vertices[vertPos + 1].CenterPos = CVector4(pos.x, pos.y, pos.z, 1);
+    vertices[vertPos].Pos = Vector4(p1.x, p1.y, p1.z, 1);
+    vertices[vertPos + 1].Pos = Vector4(p2.x, p2.y, p2.z, 1);
+    vertices[vertPos].CenterPos = Vector4(pos.x, pos.y, pos.z, 1);
+    vertices[vertPos + 1].CenterPos = Vector4(pos.x, pos.y, pos.z, 1);
     vertices[vertPos].Color = CColor{0xffffffff};
     vertices[vertPos + 1].Color = CColor{0xffffffff};
-    vertices[vertPos].UV = CVector2(0, -uvStretch);
-    vertices[vertPos + 1].UV = CVector2(1, -uvStretch);
+    vertices[vertPos].UV = Vector2(0, -uvStretch);
+    vertices[vertPos + 1].UV = Vector2(1, -uvStretch);
 
     if (x < pointCount - 1) {
       indices[icnt++] = x * 2;
@@ -871,8 +871,8 @@ void GW2Trail::Update() {
 }
 
 void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* constBuffer,
-                            renderer::Texture* texture, CMatrix4x4& cam,
-                            CMatrix4x4& persp, float& one, bool scaleData,
+                            renderer::Texture* texture, Matrix4x4& cam,
+                            Matrix4x4& persp, float& one, bool scaleData,
                             int32_t fadeoutBubble, std::array<float, 8>& data,
                             float fadeAlpha, float width, float uvScale,
                             float width2d) {
@@ -943,7 +943,7 @@ bool GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
     positions.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++) {
       positions.emplace_back(
-          CVector3(&(reinterpret_cast<const float*>(f.GetData() + 8))[x * 3]));
+          Vector3(&(reinterpret_cast<const float*>(f.GetData() + 8))[x * 3]));
     }
   }
 

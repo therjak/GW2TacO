@@ -58,7 +58,7 @@ import whiteboard;
 #pragma comment(lib, "Advapi32.lib")
 #pragma comment(lib, "Shell32.lib")
 
-using math::CRect;
+using math::Rect;
 
 std::unique_ptr<gui::CWBApplication> App;
 HWND gw2Window;
@@ -805,7 +805,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   bool FoundGW2Window = false;
 
   App->SetVSync(GetConfigValue("Vsync"));
-  CRect pos;
+  Rect pos;
 
   DWORD GW2Pid = 0;
 
@@ -941,7 +941,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             bool NeedsResize =
                 GW2ClientRect.right - GW2ClientRect.left != pos.Width() ||
                 GW2ClientRect.bottom - GW2ClientRect.top != pos.Height();
-            pos = CRect(GW2ClientRect.left + p.x, GW2ClientRect.top + p.y,
+            pos = Rect(GW2ClientRect.left + p.x, GW2ClientRect.top + p.y,
                         GW2ClientRect.left + p.x + GW2ClientRect.right -
                             GW2ClientRect.left,
                         GW2ClientRect.top + p.y + GW2ClientRect.bottom -
