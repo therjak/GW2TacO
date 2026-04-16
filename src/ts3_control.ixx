@@ -8,26 +8,26 @@ import math;
 import whiteboard;
 import xml;
 
-export class TS3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
+export class Ts3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
  public:
-  TS3Control();
-  ~TS3Control() override;
-  static inline TS3Control* Create(gui::CWBItem* Parent, math::Rect Position) {
-    auto p = std::make_unique<TS3Control>();
-    p->Initialize(Parent, Position);
-    TS3Control* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+  Ts3Control();
+  ~Ts3Control() override;
+  static inline Ts3Control* Create(gui::CWBItem* parent, math::Rect position) {
+    auto p = std::make_unique<Ts3Control>();
+    p->Initialize(parent, position);
+    Ts3Control* r = p.get();
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* API) override;
-  math::Point lastpos;
+  void OnDraw(gui::CWBDrawAPI* api) override;
+  math::Point last_pos;
 };

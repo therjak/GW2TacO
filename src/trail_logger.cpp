@@ -45,7 +45,7 @@ extern std::unique_ptr<gui::CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
-Vector3 lastPos = Vector3(0, 0, 0);
+Vector3 last_pos = Vector3(0, 0, 0);
 
 float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
@@ -366,12 +366,12 @@ void GW2TrailDisplay::DoTrailLogging(int32_t map_id, Vector3 charPos) {
     editedTrail->Reset(map_id);
   }
 
-  float dist = WorldToGameCoords((lastPos - charPos).Length());
+  float dist = WorldToGameCoords((last_pos - charPos).Length());
   if (dist < 30) return;
 
   lastMap = map_id;
   editedTrail->positions.push_back(charPos);
-  lastPos = charPos;
+  last_pos = charPos;
 
   editedTrail->Update();
 }
@@ -708,7 +708,7 @@ void GW2TrailDisplay::ImportTrail() {
       }
 
       lastMap = mumbleLink.map_id;
-      lastPos = mumbleLink.charPosition;
+      last_pos = mumbleLink.charPosition;
     }
   }
 
@@ -754,7 +754,7 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
   int vertexCount = 0;
   auto indices = std::make_unique<int32_t[]>((size_t(pointCount) - 1) * 6);
 
-  auto lastPos = Vector3(points);
+  auto last_pos = Vector3(points);
   Vector3 lastOrt = Vector3(0, 0, 0);
 
   float uvStretch = 0;
@@ -769,7 +769,7 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
 
     if (pos == Vector3(0, 0, 0)) {
       if (x + 1 >= pointCount) break;
-      pos = lastPos = Vector3(points + (x + 1) * 3);
+      pos = last_pos = Vector3(points + (x + 1) * 3);
       twist = 1;
       lastOrt = Vector3(0, 0, 0);
     }
@@ -778,9 +778,9 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
 
     if (nextPos == Vector3(0, 0, 0)) nextPos = pos;
 
-    uvStretch += (pos - lastPos).Length() * typeData.trailScale * 2;
+    uvStretch += (pos - last_pos).Length() * typeData.trailScale * 2;
 
-    Vector3 dir = nextPos - lastPos;
+    Vector3 dir = nextPos - last_pos;
     dir.y = 0;
     float dirLen = dir.Length();
     dir /= dirLen;
@@ -824,7 +824,7 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id,
     }
 
     cnt++;
-    lastPos = pos;
+    last_pos = pos;
 
     lastOrt = ort;
     vertexCount += 2;

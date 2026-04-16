@@ -34,7 +34,7 @@ export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
 
-  math::Point lastpos;
+  math::Point last_pos;
 
   struct GridLine {
     float percentage = 0;

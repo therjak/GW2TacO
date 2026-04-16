@@ -67,7 +67,7 @@ export class RaidProgress
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
 
-  math::Point lastpos;
+  math::Point last_pos;
   LockFreeQueue<std::unordered_set<std::string>> raid_queue;
   int32_t lastFetchTime = 0;
   std::vector<Raid> raids;

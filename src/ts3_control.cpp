@@ -12,7 +12,7 @@ import whiteboard;
 using math::Point;
 using math::Rect;
 
-void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
+void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
   gui::CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
@@ -138,16 +138,16 @@ void TS3Control::OnDraw(gui::CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-TS3Control::TS3Control() : CWBGuiType() {}
+Ts3Control::Ts3Control() : CWBGuiType() {}
 
-TS3Control::~TS3Control() = default;
+Ts3Control::~Ts3Control() = default;
 
-gui::CWBItem* TS3Control::Factory(gui::CWBItem* Root, CXMLNode& node,
+gui::CWBItem* Ts3Control::Factory(gui::CWBItem* Root, CXMLNode& node,
                                   Rect& Pos) {
-  return TS3Control::Create(Root, Pos);
+  return Ts3Control::Create(Root, Pos);
 }
 
-bool TS3Control::IsMouseTransparent(const Point& ClientSpacePoint,
+bool Ts3Control::IsMouseTransparent(const Point& ClientSpacePoint,
                                     gui::WBMESSAGE MessageType) {
   return true;
 }

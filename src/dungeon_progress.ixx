@@ -61,7 +61,7 @@ export class DungeonProgress
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
 
-  math::Point lastpos;
+  math::Point last_pos;
 
   LockFreeQueue<std::unordered_set<std::string>> dungeon_queue;
   LockFreeQueue<std::unordered_set<int32_t>> dungeon_achievements_queue;
