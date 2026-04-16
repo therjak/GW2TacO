@@ -52,7 +52,7 @@ export extern std::vector<std::string_view> ActionNames;
 export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
  public:
   GW2TacO();
-  static inline GW2TacO* Create(gui::CWBItem* Parent, math::CRect Position) {
+  static inline GW2TacO* Create(gui::CWBItem* Parent, math::Rect Position) {
     auto p = std::make_unique<GW2TacO>();
     p->Initialize(Parent, Position);
     auto r = p.get();
@@ -63,12 +63,12 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
   ~GW2TacO() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
   void OpenWindow(std::string_view s);
   void OnDraw(gui::CWBDrawAPI* API) override;
   void OnPostDraw(gui::CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
   // return true if this item handled the message

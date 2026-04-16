@@ -16,7 +16,7 @@ export class WvWObjective {
   std::string mapType;
   int mapID = 0;
   int objectiveID = 0;
-  math::CVector3 coord;
+  math::Vector3 coord;
   std::string marker;
   std::string chatLink;
 

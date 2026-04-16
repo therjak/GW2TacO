@@ -17,7 +17,7 @@ import taco.mumble_link;
 import taco.overlay_config;
 import whiteboard;
 
-using math::CPoint;
+using math::Point;
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 
@@ -262,28 +262,28 @@ APIKeyManager::Status APIKeyManager::DisplayStatusText(gui::CWBDrawAPI* API,
 
   switch (status) {
     case Status::Loading:
-      font->Write(API, DICT("waitingforapi"), CPoint(0, 0));
+      font->Write(API, DICT("waitingforapi"), Point(0, 0));
       break;
     case Status::KeyNotSet:
-      font->Write(API, DICT("apikeynotset1"), CPoint(0, 0),
+      font->Write(API, DICT("apikeynotset1"), Point(0, 0),
                   CColor(0xff, 0x40, 0x40, 0xff));
-      font->Write(API, DICT("apikeynotset2"), CPoint(0, font->GetLineHeight()),
+      font->Write(API, DICT("apikeynotset2"), Point(0, font->GetLineHeight()),
                   CColor(0xff, 0x40, 0x40, 0xff));
       break;
     case Status::CouldNotIdentifyAccount:
-      font->Write(API, DICT("couldntidentifyaccount1"), CPoint(0, 0),
+      font->Write(API, DICT("couldntidentifyaccount1"), Point(0, 0),
                   CColor(0xff, 0x40, 0x40, 0xff));
       font->Write(API, DICT("couldntidentifyaccount2"),
-                  CPoint(0, font->GetLineHeight()),
+                  Point(0, font->GetLineHeight()),
                   CColor(0xff, 0x40, 0x40, 0xff));
       break;
     case Status::WaitingForMumbleCharacterName:
-      font->Write(API, DICT("waitingforcharactername1"), CPoint(0, 0));
+      font->Write(API, DICT("waitingforcharactername1"), Point(0, 0));
       break;
     case Status::AllKeysInvalid:
-      font->Write(API, DICT("apierror1"), CPoint(0, 0),
+      font->Write(API, DICT("apierror1"), Point(0, 0),
                   CColor(0xff, 0x40, 0x40, 0xff));
-      font->Write(API, DICT("apierror2"), CPoint(0, font->GetLineHeight()),
+      font->Write(API, DICT("apierror2"), Point(0, font->GetLineHeight()),
                   CColor(0xff, 0x40, 0x40, 0xff));
       break;
   }

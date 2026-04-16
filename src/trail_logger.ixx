@@ -19,12 +19,12 @@ import math;
 import taco.mumble_link;
 import whiteboard;
 
-export void GlobalDoTrailLogging(int32_t mapID, math::CVector3 charPos);
+export void GlobalDoTrailLogging(int32_t mapID, math::Vector3 charPos);
 
 export struct GW2TrailVertex {
-  math::CVector4 Pos;
-  math::CVector2 UV;
-  math::CVector4 CenterPos;
+  math::Vector4 Pos;
+  math::Vector2 UV;
+  math::Vector4 CenterPos;
   CColor Color;
 };
 
@@ -40,8 +40,8 @@ export class GW2Trail {
   void Draw();
   void Update();
   void SetupAndDraw(renderer::ConstantBuffer* constBuffer,
-                    renderer::Texture* texture, math::CMatrix4x4& cam,
-                    math::CMatrix4x4& persp, float& one, bool scaleData,
+                    renderer::Texture* texture, math::Matrix4x4& cam,
+                    math::Matrix4x4& persp, float& one, bool scaleData,
                     int32_t fadeoutBubble, std::array<float, 8>& data,
                     float fadeAlpha, float width, float uvScale, float width2d);
   void SetCategory(GW2TacticalCategory* t);
@@ -70,7 +70,7 @@ export class GW2Trail {
   void Reset(int32_t _mapID = 0);
   bool SaveToFile(std::string_view fname);
 
-  std::vector<math::CVector3> positions;
+  std::vector<math::Vector3> positions;
 };
 
 export class GW2TrailDisplay
@@ -79,7 +79,7 @@ export class GW2TrailDisplay
   GW2TrailDisplay();
   ~GW2TrailDisplay() override;
   static inline GW2TrailDisplay* Create(gui::CWBItem* Parent,
-                                        math::CRect Position) {
+                                        math::Rect Position) {
     auto p = std::make_unique<GW2TrailDisplay>();
     p->Initialize(Parent, Position);
     GW2TrailDisplay* r = p.get();
@@ -88,15 +88,15 @@ export class GW2TrailDisplay
     return r;
   }
 
-  bool Initialize(gui::CWBItem* Parent, const math::CRect& Position) override;
+  bool Initialize(gui::CWBItem* Parent, const math::Rect& Position) override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
-  void DoTrailLogging(int32_t mapID, math::CVector3 charPos);
+  void DoTrailLogging(int32_t mapID, math::Vector3 charPos);
 
   void StartStopTrailRecording(bool start);
   void PauseTrail(bool pause, bool newSection = false);
@@ -115,9 +115,9 @@ export class GW2TrailDisplay
                                   const std::string_view& categoryZip);
 
   float asp = 0;
-  math::CMatrix4x4 cam;
-  math::CMatrix4x4 persp;
-  math::CRect drawrect;
+  math::Matrix4x4 cam;
+  math::Matrix4x4 persp;
+  math::Rect drawrect;
 
   std::unique_ptr<renderer::VertexShader> vxShader;
   std::unique_ptr<renderer::VertexFormat> vertexFormat;

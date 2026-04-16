@@ -22,8 +22,8 @@ export std::string GetConfigString(std::string_view value);
 export bool HasWindowData(std::string_view windowname);
 export bool IsWindowOpen(std::string_view windowname);
 export void SetWindowOpenState(std::string_view windowname, bool Open);
-export math::CRect GetWindowPosition(std::string_view windowname);
-export void SetWindowPosition(std::string_view windowname, math::CRect Pos);
+export math::Rect GetWindowPosition(std::string_view windowname);
+export void SetWindowPosition(std::string_view windowname, math::Rect Pos);
 
 export void GetKeyBindings(
     std::unordered_map<int32_t, TacOKeyAction>& KeyBindings);

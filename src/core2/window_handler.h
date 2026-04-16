@@ -76,10 +76,10 @@ class WindowHandler {
 
   virtual void SelectMouseCursor(MouseCursor cursor);
   virtual void FinalizeMouseCursor() = 0;
-  math::CPoint GetMousePos();
-  math::CPoint GetLeftDownPos();
-  math::CPoint GetRightDownPos();
-  math::CPoint GetMidDownPos();
+  math::Point GetMousePos();
+  math::Point GetLeftDownPos();
+  math::Point GetRightDownPos();
+  math::Point GetMidDownPos();
 
   Device* GetDevice() { return device_.get(); }
 
@@ -95,7 +95,7 @@ class WindowHandler {
   bool active_ = false;
   bool maximized_ = false;
   bool minimized_ = false;
-  math::CRect client_rect_;
+  math::Rect client_rect_;
 
   bool inactive_frame_limiter_ = true;
   int32_t limited_fps_ = 20;
@@ -107,7 +107,7 @@ class WindowHandler {
 
   MouseCursor current_mouse_cursor_ = MouseCursor::kArrow;
 
-  math::CPoint mouse_pos_, left_down_pos_, right_down_pos_, mid_down_pos_;
+  math::Point mouse_pos_, left_down_pos_, right_down_pos_, mid_down_pos_;
 };
 
 //////////////////////////////////////////////////////////////////////////

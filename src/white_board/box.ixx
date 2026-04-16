@@ -34,7 +34,7 @@ enum class WBBOXSIZING : uint8_t {
 class CWBBox : public CWBGuiType<"box", CWBItem> {
  public:
   CWBBox();
-  static inline CWBBox* Create(CWBItem* Parent, const math::CRect& Pos) {
+  static inline CWBBox* Create(CWBItem* Parent, const math::Rect& Pos) {
     auto p = std::make_unique<CWBBox>();
     p->Initialize(Parent, Pos);
     CWBBox* r = p.get();
@@ -44,7 +44,7 @@ class CWBBox : public CWBGuiType<"box", CWBItem> {
   }
   ~CWBBox() override;
   static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+                          math::Rect& Pos);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
   WBBOXARRANGEMENT GetArrangement();
@@ -53,7 +53,7 @@ class CWBBox : public CWBGuiType<"box", CWBItem> {
   virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           WBMESSAGE MessageType) override;
 
  protected:

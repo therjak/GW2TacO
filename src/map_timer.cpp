@@ -21,16 +21,16 @@ import taco.time;
 import whiteboard;
 import xml;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 bool GW2MapTimer::IsScrollbarVisible() {
-  CRect cr = GetClientRect();
+  Rect cr = GetClientRect();
   return IsVScrollbarEnabled() && lastypos > cr.Height();
 }
 
-void GW2MapTimer::OnResize(const CSize& s) {
+void GW2MapTimer::OnResize(const Size& s) {
   if (lastypos > 0) {
     UpdateScrollbarData(lastypos, GetClientRect());
   }
@@ -82,7 +82,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
   int32_t categoryLineWidth = GetConfigValue("MapTimerCategoryLineWidth");
   int32_t paddingLeft = showCategories ? categoryLineWidth + 4 : 0;
 
-  CRect cl = GetClientRect();
+  Rect cl = GetClientRect();
 
   time_t rawtime = 0;
   time(&rawtime);
@@ -107,8 +107,8 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
   }
 
   DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
-                     CRect(CPoint(cl.x1 + paddingLeft, cl.y1),
-                           CPoint(cl.Width(), mapCount * mapheight + 1)),
+                     Rect(Point(cl.x1 + paddingLeft, cl.y1),
+                           Point(cl.Width(), mapCount * mapheight + 1)),
                      GetState());
 
   auto TextTransform = static_cast<gui::WBTEXTTRANSFORM>(
@@ -120,7 +120,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
   int32_t scrollbarPos = GetVScrollbarPos();
   int32_t ypos = -scrollbarPos;
 
-  std::vector<CRect> highlightRects;
+  std::vector<Rect> highlightRects;
   int32_t lastCategoryStartY = 0;
   const Category* lastCategory = nullptr;
   for (const auto& map : maps) {
@@ -142,12 +142,12 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
 
       // map name
       {
-        CPoint p = f->GetCenter(
+        Point p = f->GetCenter(
             map.name,
-            CRect(cl.x1, ypos, cl.x2, ypos + mapheight - barheight + 1),
+            Rect(cl.x1, ypos, cl.x2, ypos + mapheight - barheight + 1),
             TextTransform);
         if (!compact) {
-          f->Write(API, map.name, CPoint(p.x, ypos + 2), CColor{0xffffffff},
+          f->Write(API, map.name, Point(p.x, ypos + 2), CColor{0xffffffff},
                    TextTransform);
         }
       }
@@ -159,10 +159,10 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
 
         if (&category != lastCategory) {
           if (lastCategory && lastCategory->color.A() > 0) {
-            API->DrawRect(CRect(cl.x1, lastCategoryStartY,
+            API->DrawRect(Rect(cl.x1, lastCategoryStartY,
                                 cl.x1 + categoryLineWidth, toppos),
                           lastCategory->color);
-            API->DrawRectBorder(CRect(cl.x1, lastCategoryStartY,
+            API->DrawRectBorder(Rect(cl.x1, lastCategoryStartY,
                                       cl.x1 + categoryLineWidth, toppos),
                                 CColor{0x80000000});
           }
@@ -170,7 +170,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
           lastCategory = &category;
         }
 
-        CRect r = CRect(cl.x1, toppos, cl.x1 + paddingLeft, bottompos - 1)
+        Rect r = Rect(cl.x1, toppos, cl.x1 + paddingLeft, bottompos - 1)
                       .GetIntersection(cl);
         if (ClientToScreen(r).Contains(GetApplication()->GetMousePos())) {
           mouseToolTip = category.name;
@@ -181,7 +181,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
       if (!map.chestId.empty()) {
         if (mapchests.contains(map.chestId)) {
           highlightRects.emplace_back(
-              CRect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
+              Rect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
         }
       }
 
@@ -198,12 +198,12 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
             1;
 
         if (p2 >= paddingLeft && p1 <= cl.Width()) {
-          CRect r = CRect(std::max(paddingLeft, p1), toppos,
+          Rect r = Rect(std::max(paddingLeft, p1), toppos,
                           std::min(cl.Width(), p2), bottompos);
 
           API->DrawRect(r, map.events[currevent].color);
 
-          CRect cr = API->GetCropRect();
+          Rect cr = API->GetCropRect();
           API->SetCropRect(ClientToScreen(r));
 
           auto text = map.events[currevent].name;
@@ -227,8 +227,8 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
                                : text;
           }
 
-          CPoint p = f->GetCenter(text, r, TextTransform);
-          f->Write(API, text, CPoint(p.x, r.y1 + 2), CColor{0xffffffff},
+          Point p = f->GetCenter(text, r, TextTransform);
+          f->Write(API, text, Point(p.x, r.y1 + 2), CColor{0xffffffff},
                    TextTransform);
 
           API->SetCropRect(cr);
@@ -263,10 +263,10 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
   if (showCategories) {
     if (lastCategory && lastCategory->color.A() > 0) {
       API->DrawRect(
-          CRect(cl.x1, lastCategoryStartY, cl.x1 + categoryLineWidth, ypos),
+          Rect(cl.x1, lastCategoryStartY, cl.x1 + categoryLineWidth, ypos),
           lastCategory->color);
       API->DrawRectBorder(
-          CRect(cl.x1, lastCategoryStartY, cl.x1 + categoryLineWidth, ypos),
+          Rect(cl.x1, lastCategoryStartY, cl.x1 + categoryLineWidth, ypos),
           CColor{0x80000000});
     }
   }
@@ -275,7 +275,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
     API->DrawRectBorder(r, CColor{0xffffcc00});
   }
 
-  API->DrawRect(CRect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
+  API->DrawRect(Rect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
                 CColor{0x80ffffff});
   SetMouseToolTip(mouseToolTip);
 
@@ -292,15 +292,15 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
 
 int32_t GW2MapTimer::GetScrollbarStep() { return 5; }
 
-gui::CWBItem* GW2MapTimer::GetItemUnderMouse(CPoint& Pos, CRect& CropRect,
+gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& Pos, Rect& CropRect,
                                              gui::WBMESSAGE MessageType) {
   gui::CWBItem* item =
       gui::CWBItem::GetItemUnderMouse(Pos, CropRect, MessageType);
   if (item && IsScrollbarVisible()) {
     // Only the scrollbar needs to be "visible"
 
-    CRect sr = GetScreenRect();
-    CRect b1, su, th, sd, b2;
+    Rect sr = GetScreenRect();
+    Rect b1, su, th, sd, b2;
     GetVScrollbarRectangles(b1, su, th, sd, b2);
 
     b1.Move(sr.x1, sr.y1);
@@ -431,10 +431,10 @@ void GW2MapTimer::SetLayout(const CXMLNode& node) {
   }
 }
 
-void GW2MapTimer::UpdateScrollbarData(int ypos, const CRect& cl) {
+void GW2MapTimer::UpdateScrollbarData(int ypos, const Rect& cl) {
   if (!ScrollbarsEnabled()) return;
 
-  CRect BRect = CRect(0, 0, cl.Width(), ypos + 1);
+  Rect BRect = Rect(0, 0, cl.Width(), ypos + 1);
 
   SetHScrollbarParameters(BRect.x1, BRect.x2, cl.Width());
   SetVScrollbarParameters(BRect.y1, BRect.y2, cl.Height());
@@ -466,6 +466,6 @@ GW2MapTimer::GW2MapTimer() : CWBGuiType() {
 GW2MapTimer::~GW2MapTimer() {}
 
 gui::CWBItem* GW2MapTimer::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                   CRect& Pos) {
+                                   Rect& Pos) {
   return GW2MapTimer::Create(Root, Pos);
 }

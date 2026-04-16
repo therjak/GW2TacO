@@ -13,11 +13,11 @@ import taco.trail_logger;
 import whiteboard;
 import xml;
 
-using math::CPoint;
-using math::CRect;
-using math::CVector3;
+using math::Point;
+using math::Rect;
+using math::Vector3;
 
-bool GW2MarkerEditor::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool GW2MarkerEditor::IsMouseTransparent(const Point& ClientSpacePoint,
                                          gui::WBMESSAGE MessageType) {
   return true;
 }
@@ -29,7 +29,7 @@ GW2MarkerEditor::GW2MarkerEditor() : CWBGuiType() {
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
 gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                       CRect& Pos) {
+                                       Rect& Pos) {
   return GW2MarkerEditor::Create(Root, Pos);
 }
 
@@ -49,7 +49,7 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* API) {
     if (cpoi.mapID != mumbleLink.mapID) continue;
     if (cpoi.External) continue;
 
-    CVector3 v = cpoi.position - CVector3(mumbleLink.charPosition);
+    Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
     if (v.Length() < cpoi.typeData.triggerRange) {
       if (autoHide) {
         if (Hidden) {

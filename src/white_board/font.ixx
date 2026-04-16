@@ -35,8 +35,8 @@ enum class WBTEXTTRANSFORM : uint8_t {
 
 struct WBSYMBOLINPUT {
   uint16_t Char = 0;
-  math::CRect UV;
-  math::CPoint Offset;
+  math::Rect UV;
+  math::Point Offset;
   int32_t Advance = 0;
 };
 
@@ -47,7 +47,7 @@ struct WBSYMBOL {
   int16_t Advance = 0;
   uint16_t Char = 0;
 
-  math::CRect calculatedContentRect;
+  math::Rect calculatedContentRect;
 };
 
 struct WBKERNINGDATA {
@@ -127,8 +127,8 @@ class CWBFont {
       int32_t x1, int32_t x2, std::string_view Text,
       WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetCenterHeight(int32_t y1, int32_t y2);
-  math::CPoint GetCenter(
-      std::string_view Text, math::CRect Rect,
+  math::Point GetCenter(
+      std::string_view Text, math::Rect Rect,
       WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetMedian();
 
@@ -138,10 +138,10 @@ class CWBFont {
                 int32_t y, CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
                 bool DoKerning = true);
-  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const math::CPoint& p,
+  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const math::Point& p,
                     CColor Color = CColor(0xffffffff));
   int32_t Write(CWBDrawAPI* DrawApi, std::string_view String,
-                const math::CPoint& p, CColor Color = CColor(0xffffffff),
+                const math::Point& p, CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
                 bool DoKerning = true);
   int32_t GetWidth(
@@ -155,8 +155,8 @@ class CWBFont {
   int32_t GetHeight(uint16_t Char);
   int32_t GetHeight(std::string_view String);
 
-  math::CPoint GetTextPosition(std::string_view String,
-                               const math::CRect& Container,
+  math::Point GetTextPosition(std::string_view String,
+                               const math::Rect& Container,
                                WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
                                WBTEXTTRANSFORM Transform,
                                bool DoKerning = true);
@@ -167,9 +167,9 @@ class CWBFont {
   void ConvertToUppercase();
 
  private:
-  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const math::CSize& Size,
-                 const math::CPoint& Offset, int32_t Advance,
-                 math::CRect contentRect);
+  void AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const math::Size& Size,
+                 const math::Point& Offset, int32_t Advance,
+                 math::Rect contentRect);
   void AddKerningPair(uint16_t First, uint16_t Second, int16_t Amount);
   uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
                                   WBTEXTTRANSFORM Transform);

@@ -14,7 +14,7 @@ export class GW2RangeDisplay
   GW2RangeDisplay();
   ~GW2RangeDisplay() override;
   static inline GW2RangeDisplay* Create(gui::CWBItem* Parent,
-                                        math::CRect Position) {
+                                        math::Rect Position) {
     auto p = std::make_unique<GW2RangeDisplay>();
     p->Initialize(Parent, Position);
     GW2RangeDisplay* r = p.get();
@@ -24,9 +24,9 @@ export class GW2RangeDisplay
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
  private:

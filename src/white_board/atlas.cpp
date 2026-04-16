@@ -11,9 +11,9 @@ module whiteboard;
 import :atlas;
 import math;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
@@ -23,7 +23,7 @@ CAtlasNode::CAtlasNode() = default;
 
 CAtlasNode::~CAtlasNode() = default;
 
-CRect& CAtlasNode::GetArea() { return Area; }
+Rect& CAtlasNode::GetArea() { return Area; }
 
 CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
   CAtlasNode* NewNode = nullptr;
@@ -45,11 +45,11 @@ CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
   Children[1] = std::make_unique<CAtlasNode>();
 
   if (Area.Width() - width > Area.Height() - height) {
-    Children[0]->Area = CRect(Area.x1, Area.y1, Area.x1 + width, Area.y2);
-    Children[1]->Area = CRect(Area.x1 + width, Area.y1, Area.x2, Area.y2);
+    Children[0]->Area = Rect(Area.x1, Area.y1, Area.x1 + width, Area.y2);
+    Children[1]->Area = Rect(Area.x1 + width, Area.y1, Area.x2, Area.y2);
   } else {
-    Children[0]->Area = CRect(Area.x1, Area.y1, Area.x2, Area.y1 + height);
-    Children[1]->Area = CRect(Area.x1, Area.y1 + height, Area.x2, Area.y2);
+    Children[0]->Area = Rect(Area.x1, Area.y1, Area.x2, Area.y1 + height);
+    Children[1]->Area = Rect(Area.x1, Area.y1 + height, Area.x2, Area.y2);
   }
 
   return Children[0]->AddNode(width, height);
@@ -65,7 +65,7 @@ CAtlasImage::CAtlasImage()
       Required(false) {}
 
 CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
-                         int32_t SrcYRes, const CRect& Source)
+                         int32_t SrcYRes, const Rect& Source)
     : Image(nullptr),
       XRes(Source.Width()),
       YRes(Source.Height()),
@@ -107,7 +107,7 @@ WBATLASHANDLE CAtlasImage::GetHandle() { return Handle; }
 
 uint8_t* CAtlasImage::GetImage() { return Image.get(); }
 
-CSize CAtlasImage::GetSize() const { return CSize(XRes, YRes); }
+Size CAtlasImage::GetSize() const { return Size(XRes, YRes); }
 
 void CAtlasImage::TagRequired() { Required = true; }
 
@@ -124,7 +124,7 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize)
       Root(std::make_unique<CAtlasNode>()) {
   FlushCache();
   memset(Image.get(), 0, XRes * YRes * 4);
-  Root->Area = CRect(0, 0, XRes, YRes);
+  Root->Area = Rect(0, 0, XRes, YRes);
   Root->Occupied = false;
 
   uint8_t White[4 * 4];
@@ -132,13 +132,12 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize)
 
   {
     std::lock_guard<std::mutex> lockGuard(mtx);
-    auto img =
-        std::make_unique<CAtlasImage>(&White[0], 2, 2, CRect(0, 0, 2, 2));
+    auto img = std::make_unique<CAtlasImage>(&White[0], 2, 2, Rect(0, 0, 2, 2));
     WhitePixel = img.get();
     ImageStorage[img->GetHandle()] = std::move(img);
   }
 
-  CRect r;
+  Rect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
   WhitePixelPosition = r.TopLeft();
 }
@@ -156,7 +155,7 @@ bool CAtlas::PackImage(CAtlasImage* img) {
   // Log_Dbg("Packing Image {:d}",img->GetHandle());
 
   FlushCache();
-  const CSize s = img->GetSize();
+  const Size s = img->GetSize();
 
   CAtlasNode* n = Root->AddNode(s.x, s.y);
   if (!n) {
@@ -191,7 +190,7 @@ bool CAtlas::InitializeTexture(renderer::Device* Device) {
 }
 
 WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
-                               const CRect& a) {
+                               const Rect& a) {
   if (a.Width() == 0 || a.Height() == 0) return 0;
 
   std::lock_guard<std::mutex> lockGuard(mtx);
@@ -216,8 +215,8 @@ bool CAtlas::UpdateTexture() {
 }
 
 int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
-  const CSize ra = a->GetSize();
-  const CSize rb = b->GetSize();
+  const Size ra = a->GetSize();
+  const Size rb = b->GetSize();
 
   const int32_t w = rb.x - ra.x;
   const int32_t h = rb.y - ra.y;
@@ -244,7 +243,7 @@ bool CAtlas::Optimize(bool DebugMode) {
   }
 
   Root = std::make_unique<CAtlasNode>();
-  Root->Area = CRect(0, 0, XRes, YRes);
+  Root->Area = Rect(0, 0, XRes, YRes);
   Root->Occupied = false;
 
   Dictionary.clear();
@@ -266,8 +265,8 @@ bool CAtlas::Optimize(bool DebugMode) {
       }
       std::sort(images.begin(), images.end(),
                 [](const CAtlasImage* a, const CAtlasImage* b) {
-                  const CSize ra = a->GetSize();
-                  const CSize rb = b->GetSize();
+                  const Size ra = a->GetSize();
+                  const Size rb = b->GetSize();
                   // As sort creates an ascending order and we want the largest
                   // first, return true if a > b.
                   if (ra.x != rb.x) return ra.x > rb.x;
@@ -286,9 +285,9 @@ bool CAtlas::Optimize(bool DebugMode) {
     }
   }
 
-  CRect r;
+  Rect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
-  WhitePixelPosition = r.TopLeft() + CPoint(1, 1);
+  WhitePixelPosition = r.TopLeft() + Point(1, 1);
 
   TextureUpdateNeeded = true;
   return true;
@@ -310,7 +309,7 @@ void CAtlas::DeleteImage(const WBATLASHANDLE h) {
 
 renderer::Texture2D* CAtlas::GetTexture() { return Atlas.get(); }
 
-CSize CAtlas::GetSize(WBATLASHANDLE h) {
+Size CAtlas::GetSize(WBATLASHANDLE h) {
   CAtlasNode* n = GetNodeCached(h);
   if (n) return n->GetArea().Size();
 
@@ -320,12 +319,12 @@ CSize CAtlas::GetSize(WBATLASHANDLE h) {
     if (it != ImageStorage.end()) return it->second->GetSize();
   }
 
-  return CSize(0, 0);
+  return Size(0, 0);
 }
 
-bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect& r) {
+bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect& r) {
   if (!h) {
-    r = CRect(0, 0, 0, 0);
+    r = Rect(0, 0, 0, 0);
     return true;
   }
 
@@ -344,7 +343,7 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect& r) {
     }
 
     if (!n) {
-      r = CRect(0, 0, 0, 0);
+      r = Rect(0, 0, 0, 0);
       return false;
     }
   }
@@ -358,7 +357,7 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, CRect& r) {
   return true;
 }
 
-CPoint CAtlas::GetWhitePixelUV() { return WhitePixelPosition; }
+Point CAtlas::GetWhitePixelUV() { return WhitePixelPosition; }
 
 void CAtlas::ClearImageUsageflags() {
   std::lock_guard<std::mutex> lockGuard(mtx);
@@ -390,7 +389,7 @@ CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
 
 bool CAtlas::Reset() {
   Root = std::make_unique<CAtlasNode>();
-  Root->Area = CRect(0, 0, XRes, YRes);
+  Root->Area = Rect(0, 0, XRes, YRes);
   Root->Occupied = false;
 
   Dictionary.clear();
@@ -399,9 +398,9 @@ bool CAtlas::Reset() {
 
   if (!PackImage(WhitePixel)) return false;
 
-  CRect r;
+  Rect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
-  WhitePixelPosition = r.TopLeft() + CPoint(1, 1);
+  WhitePixelPosition = r.TopLeft() + Point(1, 1);
 
   TextureUpdateNeeded = true;
   return true;
@@ -420,7 +419,7 @@ bool CAtlas::Resize(renderer::Device* Device, int32_t XSize, int32_t YSize) {
   memset(Image.get(), 0, XRes * YRes * 4);
 
   Root = std::make_unique<CAtlasNode>();
-  Root->Area = CRect(0, 0, XRes, YRes);
+  Root->Area = Rect(0, 0, XRes, YRes);
   Root->Occupied = false;
 
   Dictionary.clear();
@@ -430,9 +429,9 @@ bool CAtlas::Resize(renderer::Device* Device, int32_t XSize, int32_t YSize) {
 
   if (!PackImage(WhitePixel)) return false;
 
-  CRect r;
+  Rect r;
   RequestImageUse(WhitePixel->GetHandle(), r);
-  WhitePixelPosition = r.TopLeft() + CPoint(1, 1);
+  WhitePixelPosition = r.TopLeft() + Point(1, 1);
 
   return true;
 }

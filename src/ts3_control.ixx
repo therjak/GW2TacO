@@ -12,7 +12,7 @@ export class TS3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
  public:
   TS3Control();
   ~TS3Control() override;
-  static inline TS3Control* Create(gui::CWBItem* Parent, math::CRect Position) {
+  static inline TS3Control* Create(gui::CWBItem* Parent, math::Rect Position) {
     auto p = std::make_unique<TS3Control>();
     p->Initialize(Parent, Position);
     TS3Control* r = p.get();
@@ -22,12 +22,12 @@ export class TS3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
-  math::CPoint lastpos;
+  math::Point lastpos;
 };

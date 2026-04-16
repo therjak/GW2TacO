@@ -34,7 +34,7 @@ enum class WBMOUSECLICKREPEATMODE : uint8_t {
 
 typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
                                              const CXMLNode& node,
-                                             math::CRect& Pos);
+                                             math::Rect& Pos);
 
 class CWBApplication : public renderer::WindowHandlerWin {
   friend class CWBItem;
@@ -144,7 +144,7 @@ class CWBApplication : public renderer::WindowHandlerWin {
   bool GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc);
   bool SendMessageToItem(const CWBMessage& Message, CWBItem* Target);
   void ProcessMessage(CWBMessage& Message);
-  CWBItem* GetItemUnderMouse(math::CPoint& Point, WBMESSAGE w);
+  CWBItem* GetItemUnderMouse(math::Point& Point, WBMESSAGE w);
 
   virtual void UpdateMouseItem();
   virtual void CleanTrash();
@@ -152,11 +152,11 @@ class CWBApplication : public renderer::WindowHandlerWin {
   virtual int32_t GetKeyboardState();
   bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
   bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
-                              math::CRect& Pos);
+                              math::Rect& Pos);
   bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
                                   std::string_view TemplateID);
   CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                          math::CRect& Pos);
+                          math::Rect& Pos);
 
   std::unique_ptr<CRingBuffer<int32_t, 60>> FrameTimes;
   int32_t LastFrameTime;

@@ -17,8 +17,8 @@ import taco.time;
 import whiteboard;
 import xml;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
   bool compact = GetConfigValue("CompactRaidWindow");
@@ -67,11 +67,11 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
     if (HasConfigValue(r.configName) && !GetConfigValue(r.configName)) continue;
 
     if (!compact) {
-      f->Write(API, DICT(r.configName, r.name), CPoint(0, posy + 1),
+      f->Write(API, DICT(r.configName, r.name), Point(0, posy + 1),
                CColor{0xffffffff});
       posy += f->GetLineHeight();
     } else {
-      f->Write(API, r.shortName, CPoint(0, posy + 1), CColor{0xffffffff});
+      f->Write(API, r.shortName, Point(0, posy + 1), CColor{0xffffffff});
     }
     for (size_t y = 0; y < r.wings.size(); y++) {
       auto& w = r.wings[y];
@@ -84,7 +84,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
 
       if (!compact) {
         f->Write(API, DICT("raid_wing") + std::to_string(y + 1),
-                 CPoint(posx, posy + 1), CColor{0xffffffff});
+                 Point(posx, posy + 1), CColor{0xffffffff});
       }
 
       if (!compact) posx = f->GetLineHeight() * 3;
@@ -92,9 +92,9 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
       int cnt = 1;
 
       for (auto& e : w.events) {
-        CRect r = CRect(posx, posy, posx + f->GetLineHeight() * 2,
+        Rect r = Rect(posx, posy, posx + f->GetLineHeight() * 2,
                         posy + f->GetLineHeight() - 1);
-        CRect cr = API->GetCropRect();
+        Rect cr = API->GetCropRect();
         API->SetCropRect(ClientToScreen(r));
         posx += f->GetLineHeight() * 2 + 1;
         API->DrawRect(r, e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
@@ -104,7 +104,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
 
         if (e.type == RaidEvent::Type::Boss) cnt++;
 
-        CPoint tp = f->GetTextPosition(s, r + CRect(-3, 0, 0, 0),
+        Point tp = f->GetTextPosition(s, r + Rect(-3, 0, 0, 0),
                                        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                                        gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
                                        gui::WBTEXTTRANSFORM::WBTT_NONE);
@@ -186,11 +186,11 @@ RaidProgress::RaidProgress()
 RaidProgress::~RaidProgress() {}
 
 gui::CWBItem* RaidProgress::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                    CRect& Pos) {
+                                    Rect& Pos) {
   return RaidProgress::Create(Root, Pos);
 }
 
-bool RaidProgress::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool RaidProgress::IsMouseTransparent(const Point& ClientSpacePoint,
                                       gui::WBMESSAGE MessageType) {
   return true;
 }

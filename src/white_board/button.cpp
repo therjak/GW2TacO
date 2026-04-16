@@ -10,9 +10,9 @@ import :application;
 import :button;
 import :font;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
@@ -53,7 +53,7 @@ void CWBButton::OnDraw(CWBDrawAPI* API) {
   if (Font) {
     const CColor TextColor =
         CSSProperties.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR);
-    const CPoint TextPos =
+    const Point TextPos =
         Font->GetTextPosition(Text, GetClientRect(), CSSProperties.TextAlignX,
                               CSSProperties.TextAlignY, TextTransform);
     Font->Write(API, Text, TextPos, TextColor, TextTransform);
@@ -66,7 +66,7 @@ CWBButton::CWBButton(std::string_view Txt) : CWBGuiType(), Text(Txt) {}
 
 CWBButton::~CWBButton() = default;
 
-bool CWBButton::Initialize(CWBItem* Parent, const CRect& Position) {
+bool CWBButton::Initialize(CWBItem* Parent, const Rect& Position) {
   if (!CWBItem::Initialize(Parent, Position)) return false;
 
   CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL,
@@ -115,14 +115,14 @@ bool CWBButton::MessageProc(const CWBMessage& Message) {
   return CWBItem::MessageProc(Message);
 }
 
-CSize CWBButton::GetContentSize() {
+Size CWBButton::GetContentSize() {
   const WBITEMSTATE i = GetState();
   CWBFont* Font = GetFont(i);
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
-  if (!Font) return CSize(0, 0);
-  return CSize(Font->GetWidth(Text, false, TextTransform),
+  if (!Font) return Size(0, 0);
+  return Size(Font->GetWidth(Text, false, TextTransform),
                Font->GetLineHeight());
 }
 
@@ -137,7 +137,7 @@ std::string CWBButton::GetText() const { return Text; }
 
 bool CWBButton::IsPushed() { return Pushed; }
 
-CWBItem* CWBButton::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
+CWBItem* CWBButton::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
   auto button = CWBButton::Create(Root, Pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
   return button;

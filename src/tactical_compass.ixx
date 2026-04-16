@@ -14,7 +14,7 @@ export class GW2TacticalCompass
   GW2TacticalCompass();
   ~GW2TacticalCompass() override;
   static inline GW2TacticalCompass* Create(gui::CWBItem* Parent,
-                                           math::CRect Position) {
+                                           math::Rect Position) {
     auto p = std::make_unique<GW2TacticalCompass>();
     p->Initialize(Parent, Position);
     GW2TacticalCompass* r = p.get();
@@ -24,9 +24,9 @@ export class GW2TacticalCompass
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
  private:

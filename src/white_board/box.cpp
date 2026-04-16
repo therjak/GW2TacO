@@ -15,9 +15,9 @@ import :application;
 import :box;
 import :message;
 
-using math::CPoint;
-using math::CRect;
-using math::CSize;
+using math::Point;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
@@ -50,11 +50,11 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
 
     case WBM_MOUSEWHEEL:
       if (App->GetCtrlState() && IsVScrollbarEnabled()) {
-        const CPoint content = GetContentSize();
-        const CRect client = GetClientRect();
+        const Point content = GetContentSize();
+        const Rect client = GetClientRect();
         if (content.y < client.Height()) break;
 
-        CRect BRect = CRect(0, 0, 0, 0);
+        Rect BRect = Rect(0, 0, 0, 0);
 
         for (uint32_t x = 0; x < NumChildren(); x++) {
           if (!GetChild(x)->IsHidden()) {
@@ -104,8 +104,8 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
           break;  // do nothing here
         }
 
-        CRect r = Message.Rectangle();
-        const CRect o = i->GetPosition();
+        Rect r = Message.Rectangle();
+        const Rect o = i->GetPosition();
 
         if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
           r.x1 = o.x1;
@@ -130,7 +130,7 @@ bool CWBBox::MessageProc(const CWBMessage& Message) {
 }
 
 void CWBBox::RearrangeHorizontal() {
-  const CRect clientRect = GetClientRect();
+  const Rect clientRect = GetClientRect();
   int32_t pos = 0;
   float Excess = 0;
 
@@ -162,7 +162,7 @@ void CWBBox::RearrangeHorizontal() {
   }
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
-    CRect ChildPosition = GetChild(x)->GetPosition();
+    Rect ChildPosition = GetChild(x)->GetPosition();
 
     if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
       if (!GetChild(x)->IsWidthSet()) {
@@ -197,7 +197,7 @@ void CWBBox::RearrangeHorizontal() {
       off = (clientRect.Height() - ChildPosition.Height()) / 2;
     }
 
-    const CRect np = CRect(pos, off, pos + ChildPosition.Width(),
+    const Rect np = Rect(pos, off, pos + ChildPosition.Width(),
                            off + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
@@ -210,7 +210,7 @@ void CWBBox::RearrangeHorizontal() {
 }
 
 void CWBBox::RearrangeVertical() {
-  const CRect clientRect = GetClientRect();
+  const Rect clientRect = GetClientRect();
   int32_t pos = 0;
   float Excess = 0;
 
@@ -245,7 +245,7 @@ void CWBBox::RearrangeVertical() {
   }
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
-    CRect ChildPosition = GetChild(x)->GetPosition();
+    Rect ChildPosition = GetChild(x)->GetPosition();
 
     if (SizingX == WBBOXSIZING::WB_SIZING_FILL) {
       ChildPosition.x1 = 0;
@@ -280,7 +280,7 @@ void CWBBox::RearrangeVertical() {
       off = (clientRect.Width() - ChildPosition.Width()) / 2;
     }
 
-    const CRect np = CRect(off, pos, off + ChildPosition.Width(),
+    const Rect np = Rect(off, pos, off + ChildPosition.Width(),
                            pos + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
@@ -431,7 +431,7 @@ bool CWBBox::ApplyStyle(std::string_view prop, std::string_view value,
   return false;
 }
 
-bool CWBBox::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool CWBBox::IsMouseTransparent(const Point& ClientSpacePoint,
                                 WBMESSAGE MessageType) {
   return ClickThrough;
 }
@@ -448,7 +448,7 @@ void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
   RearrangeChildren();
 }
 
-CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
+CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
   auto box = CWBBox::Create(Root, Pos);
 
   if (node.HasAttribute("clickthrough")) {
@@ -463,7 +463,7 @@ CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, CRect& Pos) {
 void CWBBox::UpdateScrollbarData() {
   if (!ScrollbarsEnabled()) return;
 
-  CRect BRect = CRect(0, 0, 0, 0);
+  Rect BRect = Rect(0, 0, 0, 0);
 
   for (uint32_t x = 0; x < NumChildren(); x++) {
     if (!GetChild(x)->IsHidden()) BRect = BRect & GetChild(x)->GetPosition();

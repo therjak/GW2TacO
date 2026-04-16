@@ -16,7 +16,7 @@ export class GW2MarkerEditor
  public:
   GW2MarkerEditor();
   static inline GW2MarkerEditor* Create(gui::CWBItem* Parent,
-                                        math::CRect Position) {
+                                        math::Rect Position) {
     auto p = std::make_unique<GW2MarkerEditor>();
     p->Initialize(Parent, Position);
     GW2MarkerEditor* r = p.get();
@@ -27,9 +27,9 @@ export class GW2MarkerEditor
   ~GW2MarkerEditor() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
  private:

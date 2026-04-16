@@ -14,8 +14,8 @@
 
 import math;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 namespace renderer {
 
@@ -62,13 +62,13 @@ void WindowHandler::SelectMouseCursor(MouseCursor m) {
   current_mouse_cursor_ = m;
 }
 
-CPoint WindowHandler::GetMousePos() { return mouse_pos_; }
+Point WindowHandler::GetMousePos() { return mouse_pos_; }
 
-CPoint WindowHandler::GetLeftDownPos() { return left_down_pos_; }
+Point WindowHandler::GetLeftDownPos() { return left_down_pos_; }
 
-CPoint WindowHandler::GetRightDownPos() { return right_down_pos_; }
+Point WindowHandler::GetRightDownPos() { return right_down_pos_; }
 
-CPoint WindowHandler::GetMidDownPos() { return mid_down_pos_; }
+Point WindowHandler::GetMidDownPos() { return mid_down_pos_; }
 
 void WindowHandler::SetInactiveFrameLimiter(bool set) {
   inactive_frame_limiter_ = set;
@@ -173,7 +173,7 @@ bool WindowHandlerWin::Initialize(const WindowParameters& window_params) {
 
   RECT r;
   GetClientRect(window_handle_, &r);
-  client_rect_ = CRect(r.left, r.top, r.right, r.bottom);
+  client_rect_ = Rect(r.left, r.top, r.right, r.bottom);
 
   if (window_params.maximized_) {
     RECT r2;
@@ -380,11 +380,11 @@ LRESULT WindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 }
 
 void WindowHandlerWin::HandleResize() {
-  const CRect old = client_rect_;
+  const Rect old = client_rect_;
 
   RECT r;
   GetClientRect(window_handle_, &r);
-  client_rect_ = CRect(r.left, r.top, r.right, r.bottom);
+  client_rect_ = Rect(r.left, r.top, r.right, r.bottom);
   x_res_ = client_rect_.Width();
   y_res_ = client_rect_.Height();
 
@@ -399,11 +399,11 @@ void WindowHandlerWin::FinalizeMouseCursor() {
   POINT point;
   GetCursorPos(&point);
   ScreenToClient(window_handle_, &point);
-  CPoint mouse_pos = CPoint(point.x, point.y);
+  Point mouse_pos = Point(point.x, point.y);
   RECT client_rect;
   GetClientRect(window_handle_, &client_rect);
 
-  if (CRect(0, 0, client_rect.right, client_rect.bottom).Contains(mouse_pos)) {
+  if (Rect(0, 0, client_rect.right, client_rect.bottom).Contains(mouse_pos)) {
     SetCursor(MouseCursorsAt(current_mouse_cursor_));
   }
 }

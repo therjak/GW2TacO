@@ -34,7 +34,7 @@ export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
  public:
   TPTracker();
   ~TPTracker() override;
-  static inline TPTracker* Create(gui::CWBItem* Parent, math::CRect Position) {
+  static inline TPTracker* Create(gui::CWBItem* Parent, math::Rect Position) {
     auto p = std::make_unique<TPTracker>();
     p->Initialize(Parent, Position);
     TPTracker* r = p.get();
@@ -44,9 +44,9 @@ export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
  private:

@@ -13,7 +13,7 @@ import :vector;
 
 namespace math {
 
-void CMatrix4x4::SetPerspectiveFovRH(const float fovy, const float aspect,
+void Matrix4x4::SetPerspectiveFovRH(const float fovy, const float aspect,
                                      const float zn, const float zf) {
   SetIdentity();
   m[0][0] = 1.0f / (aspect * tanf(fovy / 2.0f));
@@ -24,7 +24,7 @@ void CMatrix4x4::SetPerspectiveFovRH(const float fovy, const float aspect,
   m[3][3] = 0.0f;
 }
 
-void CMatrix4x4::SetPerspectiveFovLH(const float fovy, const float aspect,
+void Matrix4x4::SetPerspectiveFovLH(const float fovy, const float aspect,
                                      const float zn, const float zf) {
   SetIdentity();
   m[0][0] = 1.0f / (aspect * tanf(fovy / 2.0f));
@@ -35,12 +35,12 @@ void CMatrix4x4::SetPerspectiveFovLH(const float fovy, const float aspect,
   m[3][3] = 0.0f;
 }
 
-void CMatrix4x4::SetLookAtRH(const CVector3& Eye, const CVector3& Target,
-                             const CVector3& Up) {
-  CVector3 Z = Target - Eye;
+void Matrix4x4::SetLookAtRH(const Vector3& Eye, const Vector3& Target,
+                             const Vector3& Up) {
+  Vector3 Z = Target - Eye;
   Z.Normalize();
-  CVector3 X = Up % Z;
-  CVector3 Y = Z % X;
+  Vector3 X = Up % Z;
+  Vector3 Y = Z % X;
   Y.Normalize();
   X.Normalize();
 
@@ -62,12 +62,12 @@ void CMatrix4x4::SetLookAtRH(const CVector3& Eye, const CVector3& Target,
   m[3][3] = 1.0f;
 }
 
-void CMatrix4x4::SetLookAtLH(const CVector3& Eye, const CVector3& Target,
-                             const CVector3& Up) {
-  CVector3 Z = Target - Eye;
+void Matrix4x4::SetLookAtLH(const Vector3& Eye, const Vector3& Target,
+                             const Vector3& Up) {
+  Vector3 Z = Target - Eye;
   Z.Normalize();
-  CVector3 X = Up % Z;
-  CVector3 Y = Z % X;
+  Vector3 X = Up % Z;
+  Vector3 Y = Z % X;
   Y.Normalize();
   X.Normalize();
 
@@ -89,9 +89,9 @@ void CMatrix4x4::SetLookAtLH(const CVector3& Eye, const CVector3& Target,
   m[3][3] = 1.0f;
 }
 
-CMatrix4x4 CMatrix4x4::Inverted() const {
-  CMatrix4x4 out;
-  CVector4 vec[3];
+Matrix4x4 Matrix4x4::Inverted() const {
+  Matrix4x4 out;
+  Vector4 vec[3];
 
   float det = Determinant();
 
@@ -102,7 +102,7 @@ CMatrix4x4 CMatrix4x4::Inverted() const {
       if (i != j) vec[j > i ? j - 1 : j] = Row(j);
     }
 
-    CVector4 v = CVector4::Cross(vec[0], vec[1], vec[2]) *
+    Vector4 v = Vector4::Cross(vec[0], vec[1], vec[2]) *
                  (powf(-1.0f, static_cast<float>(i)) / det);
 
     out.m[0][i] = v.x;
@@ -114,11 +114,11 @@ CMatrix4x4 CMatrix4x4::Inverted() const {
   return out;
 }
 
-void CMatrix4x4::Invert() { *this = Inverted(); }
+void Matrix4x4::Invert() { *this = Inverted(); }
 
-CMatrix4x4 CMatrix4x4::Rotation(const CVector3& Axis, const float Angle) {
+Matrix4x4 Matrix4x4::Rotation(const Vector3& Axis, const float Angle) {
   const float s = std::cos(Angle / 2.0f);
-  const CVector3 v = Axis * std::sin(Angle / 2.0f);
+  const Vector3 v = Axis * std::sin(Angle / 2.0f);
   const float x = v.x;
   const float y = v.y;
   const float z = v.z;

@@ -19,8 +19,8 @@ import taco.overlay_config;
 import taco.time;
 import whiteboard;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 namespace {
 std::mutex item_data_cache_mtx;
@@ -203,7 +203,7 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
                   if (DecompressPNG((uint8_t*)png.c_str(), png.size(),
                                     imageData, xres, yres)) {
                     ARGBtoABGR(imageData.get(), xres, yres);
-                    CRect area = CRect(0, 0, xres, yres);
+                    Rect area = Rect(0, 0, xres, yres);
                     itemData.icon = GetApplication()->GetAtlas()->AddImage(
                         imageData.get(), xres, yres, area);
                   }
@@ -309,14 +309,14 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
 
           if (itemData.icon) {
             API->DrawAtlasElement(itemData.icon,
-                                  CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
+                                  Rect(lh, posy, lh * 2 + 5, posy + lh + 5),
                                   false, false, true, true, CColor{0xffffffff});
           }
           auto text = itemData.name + " " + ToGold(price);
           if (buys[x].quantity > 1) {
             text = std::format("{:d} ", buys[x].quantity) + text;
           }
-          f->Write(API, text, CPoint(static_cast<int>(lh * 2.5 + 3), posy + 3),
+          f->Write(API, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
           posy += lh + 6;
@@ -332,7 +332,7 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
 
       if (writtenCount) {
         f->Write(API, DICT(onlyShowOutbid ? "outbidbuys" : "buylist"),
-                 CPoint(0, textPosy), CColor{0xffffffff});
+                 Point(0, textPosy), CColor{0xffffffff});
       } else {
         posy -= lh + 4;
       }
@@ -369,14 +369,14 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
 
           if (itemData.icon) {
             API->DrawAtlasElement(itemData.icon,
-                                  CRect(lh, posy, lh * 2 + 5, posy + lh + 5),
+                                  Rect(lh, posy, lh * 2 + 5, posy + lh + 5),
                                   false, false, true, true, CColor{0xffffffff});
           }
           auto text = itemData.name + " " + ToGold(price);
           if (sells[x].quantity > 1) {
             text = std::format("{:d} ", sells[x].quantity) + text;
           }
-          f->Write(API, text, CPoint(static_cast<int>(lh * 2.5 + 3), posy + 3),
+          f->Write(API, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
           writtenCount++;
           posy += lh + 6;
@@ -391,7 +391,7 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
 
       if (writtenCount) {
         f->Write(API, DICT(onlyShowOutbid ? "outbidsells" : "selllist"),
-                 CPoint(0, textPosy), CColor{0xffffffff});
+                 Point(0, textPosy), CColor{0xffffffff});
       }
     }
   }
@@ -419,11 +419,11 @@ TPTracker::TPTracker() : CWBGuiType() {}
 TPTracker::~TPTracker() {}
 
 gui::CWBItem* TPTracker::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                 CRect& Pos) {
+                                 Rect& Pos) {
   return TPTracker::Create(Root, Pos);
 }
 
-bool TPTracker::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool TPTracker::IsMouseTransparent(const Point& ClientSpacePoint,
                                    gui::WBMESSAGE MessageType) {
   return true;
 }

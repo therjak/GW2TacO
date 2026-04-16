@@ -13,7 +13,7 @@ import xml;
 export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
  public:
   GW2HPGrid();
-  static inline GW2HPGrid* Create(gui::CWBItem* Parent, math::CRect Position) {
+  static inline GW2HPGrid* Create(gui::CWBItem* Parent, math::Rect Position) {
     auto p = std::make_unique<GW2HPGrid>();
     p->Initialize(Parent, Position);
     GW2HPGrid* r = p.get();
@@ -24,9 +24,9 @@ export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
   ~GW2HPGrid() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::CRect& Pos);
+                               math::Rect& Pos);
 
-  bool IsMouseTransparent(const math::CPoint& ClientSpacePoint,
+  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
 
   virtual void LoadGrids();
@@ -34,7 +34,7 @@ export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
  private:
   void OnDraw(gui::CWBDrawAPI* API) override;
 
-  math::CPoint lastpos;
+  math::Point lastpos;
 
   struct GridLine {
     float percentage = 0;

@@ -43,7 +43,7 @@ export struct CompassData {
   float mapCenterX = 0;       // continentCoords
   float mapCenterY = 0;       // continentCoords
   float mapScale = 0;         // not even sure TBH :-P};
-  math::CMatrix4x4 BuildTransformationMatrix(const math::CRect& miniRect,
+  math::Matrix4x4 BuildTransformationMatrix(const math::Rect& miniRect,
                                              bool ignoreRotation);
 };
 
@@ -74,11 +74,11 @@ export class CMumbleLink {
   bool IsValid();
   float GetFrameRate();
 
-  math::CVector3 charPosition;
-  math::CVector3 charEye;
-  math::CVector3 camPosition;
-  math::CVector3 camDir;
-  math::CVector3 camUp;
+  math::Vector3 charPosition;
+  math::Vector3 charEye;
+  math::Vector3 camPosition;
+  math::Vector3 camDir;
+  math::Vector3 camUp;
   float fov = 0;
   int32_t mapID = 0;
   int32_t worldID = 0;
@@ -103,7 +103,7 @@ export class CMumbleLink {
 
   std::string charName;
 
-  math::CVector4 averagedCharPosition;
+  math::Vector4 averagedCharPosition;
 
   std::unique_ptr<CRingBuffer<int32_t, 60>> FrameTimes;
 
@@ -129,8 +129,8 @@ export class CMumbleLink {
   double interpolation = 0;
 
   LinkedMem* lm = nullptr;
-  math::CVector4 camchardist[AVGCAMCOUNTER];
+  math::Vector4 camchardist[AVGCAMCOUNTER];
 };
 
 export extern CMumbleLink mumbleLink;
-export math::CRect GetMinimapRectangle();
+export math::Rect GetMinimapRectangle();

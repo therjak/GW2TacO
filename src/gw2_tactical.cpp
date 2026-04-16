@@ -35,18 +35,18 @@ import taco.wvw;
 import whiteboard;
 import xml;
 
-using math::CMatrix4x4;
-using math::CPlane;
-using math::CPoint;
-using math::CRect;
-using math::CSize;
-using math::CVector2;
-using math::CVector3;
-using math::CVector4;
+using math::Matrix4x4;
+using math::Plane;
+using math::Point;
+using math::Rect;
+using math::Size;
+using math::Vector2;
+using math::Vector3;
+using math::Vector4;
 
 gui::WBATLASHANDLE DefaultIconHandle = -1;
 gui::WBATLASHANDLE forbiddenIconHandle = -1;
-CSize forbiddenIconSize;
+Size forbiddenIconSize;
 std::unordered_map<std::string, gui::WBATLASHANDLE> MapIcons;
 int32_t useMetricDisplay = 0;
 
@@ -182,7 +182,7 @@ gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
                 ARGBtoABGR(imageData.get(), xres, yres);
 
                 auto handle = App->GetAtlas()->AddImage(
-                    imageData.get(), xres, yres, CRect(0, 0, xres, yres));
+                    imageData.get(), xres, yres, Rect(0, 0, xres, yres));
 
                 MapIcons[s] = handle;
 
@@ -222,7 +222,7 @@ gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
   ARGBtoABGR(imageData.get(), xres, yres);
 
   auto handle = App->GetAtlas()->AddImage(imageData.get(), xres, yres,
-                                          CRect(0, 0, xres, yres));
+                                          Rect(0, 0, xres, yres));
 
   MapIcons[s] = handle;
   return handle;
@@ -252,12 +252,12 @@ uint32_t DictionaryHash(const POIActivationDataKey& i) {
   return Hash;
 }
 
-float distPointPlane(CVector3 vPoint, CPlane plane) {
+float distPointPlane(Vector3 vPoint, Plane plane) {
   return vPoint * plane.Normal + plane.D;
 }
 
-float distRayPlane(CVector3 vRayOrigin, CVector3 vnRayVector,
-                   CVector3 vnPlaneNormal, float planeD) {
+float distRayPlane(Vector3 vRayOrigin, Vector3 vnRayVector,
+                   Vector3 vnPlaneNormal, float planeD) {
   float cosAlpha = NAN;
   float deltaD = NAN;
 
@@ -269,7 +269,7 @@ float distRayPlane(CVector3 vRayOrigin, CVector3 vnRayVector,
   return (deltaD / cosAlpha);
 }
 
-bool testfrustum(CVector3 c, CPlane planes[4], int skip) {
+bool testfrustum(Vector3 c, Plane planes[4], int skip) {
   bool v = c.z > 0;
   for (int x = 0; x < 4; x++) {
     if (x != skip) v = v && (distPointPlane(c, planes[x]) < 0);
@@ -277,39 +277,39 @@ bool testfrustum(CVector3 c, CPlane planes[4], int skip) {
   return v;
 }
 
-CVector3 GW2TacticalDisplay::ProjectTacticalPos(CVector3 pos, float fov,
+Vector3 GW2TacticalDisplay::ProjectTacticalPos(Vector3 pos, float fov,
                                                 float asp) {
-  CVector3 p = pos;
+  Vector3 p = pos;
   float length = p.Length();
 
   float yfov = fov / 2.0f;
 
-  CVector3 fln, frn, fun, fdn;
-  CMatrix4x4 rotm;
+  Vector3 fln, frn, fun, fdn;
+  Matrix4x4 rotm;
 
   float xfov = std::atan(asp * std::tan(yfov));
 
-  rotm = CMatrix4x4::Rotation(CVector3(0, 1, 0), -xfov);
-  fln = CVector3(CVector3(-1, 0, 0) * rotm);
-  rotm = CMatrix4x4::Rotation(CVector3(0, 1, 0), xfov);
-  frn = CVector3(CVector3(1, 0, 0) * rotm);
-  rotm = CMatrix4x4::Rotation(CVector3(1, 0, 0), -yfov);
-  fun = CVector3(CVector3(0, 1, 0) * rotm);
-  rotm = CMatrix4x4::Rotation(CVector3(1, 0, 0), yfov);
-  fdn = CVector3(CVector3(0, -1, 0) * rotm);
+  rotm = Matrix4x4::Rotation(Vector3(0, 1, 0), -xfov);
+  fln = Vector3(Vector3(-1, 0, 0) * rotm);
+  rotm = Matrix4x4::Rotation(Vector3(0, 1, 0), xfov);
+  frn = Vector3(Vector3(1, 0, 0) * rotm);
+  rotm = Matrix4x4::Rotation(Vector3(1, 0, 0), -yfov);
+  fun = Vector3(Vector3(0, 1, 0) * rotm);
+  rotm = Matrix4x4::Rotation(Vector3(1, 0, 0), yfov);
+  fdn = Vector3(Vector3(0, -1, 0) * rotm);
 
-  CPlane fplanes[4];
-  fplanes[0] = CPlane(CVector3(0, 0, 0), fln);
-  fplanes[1] = CPlane(CVector3(0, 0, 0), frn);
-  fplanes[2] = CPlane(CVector3(0, 0, 0), fun);
-  fplanes[3] = CPlane(CVector3(0, 0, 0), fdn);
+  Plane fplanes[4];
+  fplanes[0] = Plane(Vector3(0, 0, 0), fln);
+  fplanes[1] = Plane(Vector3(0, 0, 0), frn);
+  fplanes[2] = Plane(Vector3(0, 0, 0), fun);
+  fplanes[3] = Plane(Vector3(0, 0, 0), fdn);
 
   if (!testfrustum(p, fplanes, -1)) {
-    CVector3 o = p;
-    CVector3 res[4];
+    Vector3 o = p;
+    Vector3 res[4];
     float di[4];
 
-    CVector3 vn = (p - CVector3(0, 0, 1)).Normalized();
+    Vector3 vn = (p - Vector3(0, 0, 1)).Normalized();
     di[0] = distRayPlane(p, vn, fln, 0);
     di[1] = distRayPlane(p, vn, frn, 0);
     di[2] = distRayPlane(p, vn, fun, 0);
@@ -428,7 +428,7 @@ void GW2TacticalDisplay::InsertPOI(POI& poi) {
   }
 
   poi.cameraSpacePosition =
-      CVector4(poi.position.x, poi.position.y + poi.typeData.height,
+      Vector4(poi.position.x, poi.position.y + poi.typeData.height,
                poi.position.z, 1.0f) *
       cam;
 
@@ -537,19 +537,19 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   auto camspace = poi.cameraSpacePosition;
   auto screenpos = camspace;
 
-  CVector4 camspacex = camspace + CVector4(0.5f, 0, 0, 0) * size;
+  Vector4 camspacex = camspace + Vector4(0.5f, 0, 0, 0) * size;
 
   if (TacticalIconsOnEdge) {
     screenpos /= screenpos.w;
-    CVector3 projpos =
-        ProjectTacticalPos(CVector3(screenpos), mumbleLink.fov, asp);
+    Vector3 projpos =
+        ProjectTacticalPos(Vector3(screenpos), mumbleLink.fov, asp);
     screenpos.x = projpos.x;
     screenpos.y = projpos.y;
     screenpos.z = projpos.z;
     // screenpos.Normalize();
     // screenpos *= camspace.Length();
     camspace = screenpos;
-    camspacex = camspace + CVector4(0.5f, 0, 0, 0) * size;
+    camspacex = camspace + Vector4(0.5f, 0, 0, 0) * size;
   }
 
   if (!TacticalIconsOnEdge && camspace.z <= 0) return;
@@ -583,30 +583,30 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
   if (poi.typeData.behavior == POIBehavior::WvWObjective) {
     alphaMultiplier = std::max(
-        0.f, std::min(1.f, std::pow(CVector2(screenpos.x, screenpos.y).Length(),
+        0.f, std::min(1.f, std::pow(Vector2(screenpos.x, screenpos.y).Length(),
                                     2.f) +
                                0.3f));
   }
 
-  screenpos = screenpos * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
+  screenpos = screenpos * 0.5 + Vector4(0.5, 0.5, 0.5, 0.0);
 
-  CPoint p = CPoint(static_cast<int>(screenpos.x * drawrect.Width()),
+  Point p = Point(static_cast<int>(screenpos.x * drawrect.Width()),
                     static_cast<int>((1 - screenpos.y) * drawrect.Height()));
 
-  CRect rect = CRect(p - CPoint(s, s), p + CPoint(s, s));
+  Rect rect = Rect(p - Point(s, s), p + Point(s, s));
 
   if (TacticalIconsOnEdge) {
     int32_t edge = poi.typeData.minSize;
 
-    CPoint cp = rect.Center();
-    if (cp.x < edge) rect = rect + CPoint(edge - cp.x, 0);
+    Point cp = rect.Center();
+    if (cp.x < edge) rect = rect + Point(edge - cp.x, 0);
     if (cp.x > drawrect.x2 - edge) {
-      rect = rect - CPoint(drawrect.x2 - cp.x + edge, 0);
+      rect = rect - Point(drawrect.x2 - cp.x + edge, 0);
     }
 
-    if (cp.y < edge) rect = rect + CPoint(0, edge - cp.y);
+    if (cp.y < edge) rect = rect + Point(0, edge - cp.y);
     if (cp.y > drawrect.y2 - edge) {
-      rect = rect - CPoint(0, drawrect.y2 - cp.y + edge);
+      rect = rect - Point(0, drawrect.y2 - cp.y + edge);
     }
   }
 
@@ -636,11 +636,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
                              gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                              gui::WBTEXTALIGNMENTY::WBTA_TOP,
                              gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
-          CPoint(0, f->GetLineHeight());
+          Point(0, f->GetLineHeight());
       /*
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
-          f->Write(API, wvwObjectiveName, p + CPoint(x - 1, y - 1),
+          f->Write(API, wvwObjectiveName, p + Point(x - 1, y - 1),
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
@@ -676,7 +676,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     int32_t offset = 0;
     if (drawDistance) offset += f->GetLineHeight();
 
-    CPoint p;
+    Point p;
     if (poi.typeData.behavior == POIBehavior::WvWObjective) {
       if (forbiddenIconHandle != -1) {
         CColor col(0xffffffff);
@@ -693,11 +693,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                              gui::WBTEXTALIGNMENTY::WBTA_BOTTOM,
                              gui::WBTEXTTRANSFORM::WBTT_NONE, false) +
-          CPoint(0, f->GetLineHeight() + offset);
+          Point(0, f->GetLineHeight() + offset);
       /*
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
-          f->Write(API, txt, p + CPoint(x - 1, y - 1),
+          f->Write(API, txt, p + Point(x - 1, y - 1),
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
@@ -740,7 +740,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                              gui::WBTEXTALIGNMENTY::WBTA_BOTTOM,
                              gui::WBTEXTTRANSFORM::WBTT_NONE, false) +
-          CPoint(0, f->GetLineHeight());
+          Point(0, f->GetLineHeight());
       f->Write(API, txt, p,
                CColor(255, 255, 255,
                       static_cast<uint8_t>(255 * Alpha * alphaMultiplier *
@@ -753,7 +753,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 float uiScale = 1.0f;
 
 void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
-                                        const CRect& miniRect, CVector2 pos,
+                                        const Rect& miniRect, Vector2 pos,
                                         const tm& ptm, const time_t& currtime,
                                         const POI& poi, float alpha,
                                         float zoomLevel) {
@@ -764,7 +764,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
 
   if (!poi.typeData.bits.keepOnMapEdge &&
       !miniRect.Contains(
-          CPoint(static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y)))) {
+          Point(static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y)))) {
     return;
   }
 
@@ -785,11 +785,11 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
                std::min(1.0f,
                         (zoomLevel - poi.typeData.miniMapFadeOutLevel) / 2.0f));
 
-  CVector2 startPoint = pos - CVector2(poiSize / 2.0f, poiSize / 2.0f);
-  CPoint topLeft = CPoint(static_cast<int32_t>(startPoint.x),
+  Vector2 startPoint = pos - Vector2(poiSize / 2.0f, poiSize / 2.0f);
+  Point topLeft = Point(static_cast<int32_t>(startPoint.x),
                           static_cast<int32_t>(startPoint.y));
 
-  CRect displayRect(topLeft, topLeft);
+  Rect displayRect(topLeft, topLeft);
   displayRect.x2 = topLeft.x + static_cast<int32_t>(poiSize);
   displayRect.y2 = topLeft.y + static_cast<int32_t>(poiSize);
 
@@ -847,7 +847,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   cam.SetLookAtLH(mumbleLink.camPosition,
                   mumbleLink.camPosition + mumbleLink.camDir,
-                  CVector3(0, 1, 0));
+                  Vector3(0, 1, 0));
   persp.SetPerspectiveFovLH(
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 1000.0f);
@@ -925,7 +925,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   // punch hole in minimap
 
-  CRect miniRect = GetMinimapRectangle();
+  Rect miniRect = GetMinimapRectangle();
 
   API->FlushDrawBuffer();
   API->GetDevice()->SetRenderState(
@@ -953,7 +953,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   }
 
   if (mapFade > 0 && showMinimapMarkers > 0) {
-    CMatrix4x4 miniMapTrafo =
+    Matrix4x4 miniMapTrafo =
         mumbleLink.miniMap.BuildTransformationMatrix(miniRect, false);
     for (const auto& mmp : minimapPOIs) {
       if (!mmp->typeData.bits.miniMapVisible && showMinimapMarkers != 2) {
@@ -963,19 +963,19 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
         continue;
       }
 
-      CVector3 poiPos(mmp->position * miniMapTrafo);
+      Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
         mmp->icon = GetMapIcon(App, mmp->iconFile, mmp->zipFile,
                                mmp->category ? mmp->category->zipFile : "");
       }
-      DrawPOIMinimap(API, miniRect, CVector2(poiPos.x, poiPos.y), ptm, currtime,
+      DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, mapFade, mumbleLink.miniMap.mapScale);
     }
   }
 
   if (mumbleLink.isMapOpen && mapFade < 1.0 && showBigmapMarkers > 0) {
     miniRect = GetClientRect();
-    CMatrix4x4 miniMapTrafo =
+    Matrix4x4 miniMapTrafo =
         mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
     for (const auto& mmp : minimapPOIs) {
       if (!mmp->typeData.bits.bigMapVisible && showBigmapMarkers != 2) continue;
@@ -983,12 +983,12 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
         continue;
       }
 
-      CVector3 poiPos(mmp->position * miniMapTrafo);
+      Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
         mmp->icon = GetMapIcon(App, mmp->iconFile, mmp->zipFile,
                                mmp->category ? mmp->category->zipFile : "");
       }
-      DrawPOIMinimap(API, miniRect, CVector2(poiPos.x, poiPos.y), ptm, currtime,
+      DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, 1.0f - mapFade, mumbleLink.bigMap.mapScale);
     }
   }
@@ -998,7 +998,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     int32_t width = font->GetWidth(infoText);
     font->Write(
         API, infoText,
-        CPoint(static_cast<int>((GetClientRect().Width() - width) / 2.0f),
+        Point(static_cast<int>((GetClientRect().Width() - width) / 2.0f),
                static_cast<int>(GetClientRect().Height() * 0.15f)));
   }
 }
@@ -1008,11 +1008,11 @@ GW2TacticalDisplay::GW2TacticalDisplay() : CWBGuiType() {}
 GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
 gui::CWBItem* GW2TacticalDisplay::Factory(gui::CWBItem* Root,
-                                          const CXMLNode& node, CRect& Pos) {
+                                          const CXMLNode& node, Rect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos);
 }
 
-bool GW2TacticalDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool GW2TacticalDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
                                             gui::WBMESSAGE MessageType) {
   return true;
 }
@@ -1511,7 +1511,7 @@ void AddPOI() {
     if (poix.second.mapID != poi.mapID) {
       continue;
     }
-    CVector3 v = poix.second.position - poi.position;
+    Vector3 v = poix.second.position - poi.position;
     if (v.Length() < poix.second.typeData.triggerRange &&
         cat == poix.second.category) {
       return;
@@ -1530,7 +1530,7 @@ void DeletePOI() {
   if (!mumbleLink.IsValid()) {
     return;
   }
-  math::CVector3 poi_position = CVector3(mumbleLink.charPosition);
+  math::Vector3 poi_position = Vector3(mumbleLink.charPosition);
   int32_t poi_mapID = mumbleLink.mapID;
 
   if (poi_mapID == -1) {
@@ -1541,7 +1541,7 @@ void DeletePOI() {
     if (poix.second.mapID != poi_mapID) {
       continue;
     }
-    CVector3 v = poix.second.position - poi_position;
+    Vector3 v = poix.second.position - poi_position;
     if (v.Length() < poix.second.typeData.triggerRange) {
       mPOIs.erase(poix.first);
       ExportPOIS();
@@ -1563,7 +1563,7 @@ void UpdatePOI() {
 
     if (cpoi.mapID != mumbleLink.mapID) continue;
 
-    CVector3 v = cpoi.position - CVector3(mumbleLink.charPosition);
+    Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
     if (v.Length() < cpoi.typeData.triggerRange) {
       const auto& str = cpoi.typeData.toggleCategory;
       if (!str.empty()) {

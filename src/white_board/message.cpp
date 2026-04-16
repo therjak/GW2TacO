@@ -34,7 +34,7 @@ CWBMessage::CWBMessage(CWBApplication* app, WBMESSAGE message, WBGUID target,
     : app_(app), message_(message), target_(target), data_(std::move(mc)) {}
 
 CWBMessage::CWBMessage(CWBApplication* app, WBMESSAGE message, WBGUID target,
-                       const math::CRect rec, bool moved, bool resized)
+                       const math::Rect rec, bool moved, bool resized)
     : app_(app),
       message_(message),
       target_(target),

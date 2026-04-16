@@ -12,8 +12,8 @@ module whiteboard;
 import :draw_api;
 import :skin;
 
-using math::CRect;
-using math::CSize;
+using math::Rect;
+using math::Size;
 
 namespace gui {
 
@@ -53,9 +53,9 @@ void CWBMetricValue::SetAutoSize(bool Auto) { AutoSize = Auto; }
 //////////////////////////////////////////////////////////////////////////
 // position descriptor - general
 
-CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
-                                         const CRect& Original) {
-  CRect r(0, 0, 0, 0);
+Rect CWBPositionDescriptor::GetPosition(Size ParentSize, Size ContentSize,
+                                         const Rect& Original) {
+  Rect r(0, 0, 0, 0);
 
   int32_t Width = 0;
   int32_t Height = 0;
@@ -134,9 +134,9 @@ CRect CWBPositionDescriptor::GetPosition(CSize ParentSize, CSize ContentSize,
   return r;
 }
 
-CRect CWBPositionDescriptor::GetPadding(CSize ParentSize,
-                                        const CRect& BorderSizes) {
-  CRect r(0, 0, 0, 0);
+Rect CWBPositionDescriptor::GetPadding(Size ParentSize,
+                                        const Rect& BorderSizes) {
+  Rect r(0, 0, 0, 0);
 
   r.x1 =
       static_cast<int32_t>(Positions[WBPOSITIONTYPE::WB_PADDING_LEFT].GetValue(
@@ -182,8 +182,8 @@ bool CWBPositionDescriptor::IsHeightSet() const {
   return Positions.find(WBPOSITIONTYPE::WB_HEIGHT) != Positions.end();
 }
 
-int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize,
-                                        CSize ContentSize) const {
+int32_t CWBPositionDescriptor::GetWidth(Size ParentSize,
+                                        Size ContentSize) const {
   const auto pos = Positions.find(WBPOSITIONTYPE::WB_WIDTH);
   if (pos == Positions.end()) {
     return 0;
@@ -192,8 +192,8 @@ int32_t CWBPositionDescriptor::GetWidth(CSize ParentSize,
       pos->second.GetValue(static_cast<float>(ParentSize.x), ContentSize.x));
 }
 
-int32_t CWBPositionDescriptor::GetHeight(CSize ParentSize,
-                                         CSize ContentSize) const {
+int32_t CWBPositionDescriptor::GetHeight(Size ParentSize,
+                                         Size ContentSize) const {
   const auto pos = Positions.find(WBPOSITIONTYPE::WB_HEIGHT);
   if (pos == Positions.end()) {
     return 0;
@@ -233,8 +233,8 @@ void CWBPositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
   SetAt(p) = true;
 }
 
-CRect CWBPositionDescriptorPixels::GetPosition(CSize ParentSize) {
-  CRect r(0, 0, 0, 0);
+Rect CWBPositionDescriptorPixels::GetPosition(Size ParentSize) {
+  Rect r(0, 0, 0, 0);
 
   r.x1 = SetAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
              ? PositionsAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
@@ -282,11 +282,11 @@ void CWBMosaicImage::SetStretching(int32_t Axis, bool y) {
 
 void CWBMosaicImage::SetHandle(WBATLASHANDLE handle) { Handle = handle; }
 
-void CWBMosaicImage::Render(CWBDrawAPI* API, const CRect& Pos) {
-  const CRect Croprect = API->GetCropRect();
+void CWBMosaicImage::Render(CWBDrawAPI* API, const Rect& Pos) {
+  const Rect Croprect = API->GetCropRect();
   API->SetCropRect(Pos + API->GetOffset());
 
-  const CRect displaypos = Position.GetPosition(Pos.Size()) + Pos.TopLeft();
+  const Rect displaypos = Position.GetPosition(Pos.Size()) + Pos.TopLeft();
 
   API->DrawAtlasElement(Handle, displaypos, Tiling[0], Tiling[1], Stretching[0],
                         Stretching[1], Color);
@@ -300,10 +300,10 @@ void CWBMosaic::AddImage(const CWBMosaicImage& Image) {
   Images.push_back(Image);
 }
 
-void CWBMosaic::Render(CWBDrawAPI* API, const CRect& Position) {
+void CWBMosaic::Render(CWBDrawAPI* API, const Rect& Position) {
   for (auto& image : Images) {
     image.Render(API,
-                 Position + CRect(OvershootAt(WBRECTSIDE::WB_RECTSIDE_LEFT),
+                 Position + Rect(OvershootAt(WBRECTSIDE::WB_RECTSIDE_LEFT),
                                   OvershootAt(WBRECTSIDE::WB_RECTSIDE_TOP),
                                   OvershootAt(WBRECTSIDE::WB_RECTSIDE_RIGHT),
                                   OvershootAt(WBRECTSIDE::WB_RECTSIDE_BOTTOM)));
@@ -337,7 +337,7 @@ void CWBSkinElement::SetName(std::string_view name) { Name = name; }
 
 std::string& CWBSkinElement::GetName() { return Name; }
 
-void CWBSkinElement::Render(CWBDrawAPI* API, const CRect& Pos) {
+void CWBSkinElement::Render(CWBDrawAPI* API, const Rect& Pos) {
   API->DrawAtlasElement(
       Handle, Pos,
       DefaultBehavior[0] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE,
@@ -377,12 +377,12 @@ CWBSkinElement::CWBSkinElement()
 
 WBATLASHANDLE CWBSkinElement::GetHandle() { return Handle; }
 
-CSize CWBSkinElement::GetElementSize(CWBDrawAPI* API) {
+Size CWBSkinElement::GetElementSize(CWBDrawAPI* API) {
   return API->GetAtlasElementSize(Handle);
 }
 
 void CWBSkin::RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID,
-                            const CRect& Pos) {
+                            const Rect& Pos) {
   if (ID == 0xffffffff) return;
 
   const uint32_t idx = ID & 0x7fffffff;
@@ -400,7 +400,7 @@ void CWBSkin::RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID,
 }
 
 void CWBSkin::RenderElement(CWBDrawAPI* API, std::string_view Name,
-                            const CRect& Pos) {
+                            const Rect& Pos) {
   RenderElement(API, GetElementID(Name), Pos);
 }
 
@@ -540,16 +540,16 @@ CWBSkinElement* CWBSkin::GetElement(WBSKINELEMENTID id) {
   return &SkinItems[idx];
 }
 
-CSize CWBSkin::GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID ID) {
-  if (ID == 0xffffffff) return CSize(0, 0);
+Size CWBSkin::GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID ID) {
+  if (ID == 0xffffffff) return Size(0, 0);
 
   const uint32_t idx = ID & 0x7fffffff;
 
-  if (!(ID & 0x80000000)) return CSize(0, 0);  // mosaics don't have sizes
+  if (!(ID & 0x80000000)) return Size(0, 0);  // mosaics don't have sizes
 
   if (idx < SkinItems.size()) return SkinItems[idx].GetElementSize(API);
 
-  return CSize(0, 0);
+  return Size(0, 0);
 }
 
 }  // namespace gui

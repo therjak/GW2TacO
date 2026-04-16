@@ -13,7 +13,7 @@ class CWBApplication;
 class CWBRoot : public CWBGuiType<"root", CWBItem> {
  public:
   CWBRoot();
-  static inline std::unique_ptr<CWBRoot> Create(const math::CRect& Pos) {
+  static inline std::unique_ptr<CWBRoot> Create(const math::Rect& Pos) {
     auto p = std::make_unique<CWBRoot>();
     p->Initialize(nullptr, Pos);
     return p;

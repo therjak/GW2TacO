@@ -1,6 +1,6 @@
 #include "src/base/stream_reader.h"
 
-#include <windows.h>
+#include <cstdio>
 
 #include <algorithm>
 #include <array>
@@ -112,25 +112,33 @@ int32_t CStreamReaderMemory::Open(uint8_t* data, uint32_t size) {
 }
 
 int32_t CStreamReaderMemory::Open(std::string_view Filename) {
-  HANDLE hFile = CreateFile(Filename.data(), GENERIC_READ,
-                            FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
-                            OPEN_EXISTING, NULL, nullptr);
-  if (hFile == INVALID_HANDLE_VALUE) return 0;
+  std::string filename_str(Filename);
+  FILE* file = std::fopen(filename_str.c_str(), "rb");
+  if (!file) return 0;
 
-  int32_t tDataSize = GetFileSize(hFile, nullptr);
+  std::fseek(file, 0, SEEK_END);
+  long tDataSize = std::ftell(file);
+  std::fseek(file, 0, SEEK_SET);
+
+  if (tDataSize < 0) {
+    std::fclose(file);
+    return 0;
+  }
 
   auto tData = std::vector<uint8_t>(tDataSize);
-  DWORD nRead = 0;
-  BOOL b = ReadFile(hFile, &tData[0], tDataSize, &nRead, nullptr);
+  size_t nRead = 0;
+  if (tDataSize > 0) {
+    nRead = std::fread(tData.data(), 1, tDataSize, file);
+  }
 
-  if (b && nRead == tDataSize) {
+  if (nRead == static_cast<size_t>(tDataSize)) {
     // all ok
     Data = std::move(tData);
     Offset = 0;
   }
 
-  CloseHandle(hFile);
-  return nRead == tDataSize;
+  std::fclose(file);
+  return nRead == static_cast<size_t>(tDataSize);
 }
 
 const uint8_t* CStreamReaderMemory::GetData() const { return &Data[0]; }

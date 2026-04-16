@@ -12,18 +12,18 @@ export namespace math {
 class CSphere {
  public:
   constexpr CSphere() = default;
-  constexpr CSphere(const CVector3& p, const float r)
+  constexpr CSphere(const Vector3& p, const float r)
       : Radius(r), Position(p) {}
 
-  [[nodiscard]] bool Intersect(const CPlane& p) const {
+  [[nodiscard]] bool Intersect(const Plane& p) const {
     return std::abs(p.Distance(Position)) < Radius;
   }
-  [[nodiscard]] bool Contains(const CVector3& p) const {
+  [[nodiscard]] bool Contains(const Vector3& p) const {
     return (Position - p).Length() < Radius;
   }
 
   float Radius = 0;
-  CVector3 Position = {0, 0, 0};
+  Vector3 Position = {0, 0, 0};
 };
 
 }  // namespace math

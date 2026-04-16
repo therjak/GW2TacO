@@ -12,12 +12,12 @@ import taco.overlay_config;
 import whiteboard;
 import xml;
 
-using math::CMatrix4x4;
-using math::CPoint;
-using math::CRect;
-using math::CVector2;
-using math::CVector3;
-using math::CVector4;
+using math::Matrix4x4;
+using math::Point;
+using math::Rect;
+using math::Vector2;
+using math::Vector3;
+using math::Vector4;
 using math::PI;
 
 void GW2RangeDisplay::DrawRangeCircle(gui::CWBDrawAPI* API, float range,
@@ -27,64 +27,64 @@ void GW2RangeDisplay::DrawRangeCircle(gui::CWBDrawAPI* API, float range,
   if (mumbleLink.isPvp) return;
   if (mumbleLink.isMapOpen) return;
 
-  CRect drawrect = GetClientRect();
+  Rect drawrect = GetClientRect();
 
-  CMatrix4x4 cam;
+  Matrix4x4 cam;
   cam.SetLookAtLH(mumbleLink.camPosition,
                   mumbleLink.camPosition + mumbleLink.camDir,
-                  CVector3(0, 1, 0));
-  CMatrix4x4 persp;
+                  Vector3(0, 1, 0));
+  Matrix4x4 persp;
   persp.SetPerspectiveFovLH(
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 1000.0f);
 
   int32_t resolution = 60;
 
-  CVector4 charpos = CVector4(mumbleLink.averagedCharPosition.x,
+  Vector4 charpos = Vector4(mumbleLink.averagedCharPosition.x,
                               mumbleLink.averagedCharPosition.y,
                               mumbleLink.averagedCharPosition.z, 1.0f);
   ;
   float rworld = GameToWorldCoords(range);
 
-  CVector4 camSpaceChar = charpos;
-  CVector4 camSpaceEye = charpos + CVector4(0, 3, 0, 0);
+  Vector4 camSpaceChar = charpos;
+  Vector4 camSpaceEye = charpos + Vector4(0, 3, 0, 0);
 
-  CVector4 screenSpaceChar = (camSpaceChar * cam) * persp;
+  Vector4 screenSpaceChar = (camSpaceChar * cam) * persp;
   screenSpaceChar /= screenSpaceChar.w;
-  CVector4 screenSpaceEye = (camSpaceEye * cam) * persp;
+  Vector4 screenSpaceEye = (camSpaceEye * cam) * persp;
   screenSpaceEye /= screenSpaceEye.w;
 
   auto pos =
-      (CVector3(mumbleLink.averagedCharPosition) - mumbleLink.camPosition);
+      (Vector3(mumbleLink.averagedCharPosition) - mumbleLink.camPosition);
   pos.y = 0;
   bool zoomedin = pos.Length() < 0.13;
 
-  CVector4 campos = CVector4(mumbleLink.camPosition.x, mumbleLink.camPosition.y,
+  Vector4 campos = Vector4(mumbleLink.camPosition.x, mumbleLink.camPosition.y,
                              mumbleLink.camPosition.z, 1.0f);
-  CVector2 camDir =
-      CVector2(camSpaceChar.x - campos.x, camSpaceChar.z - campos.z)
+  Vector2 camDir =
+      Vector2(camSpaceChar.x - campos.x, camSpaceChar.z - campos.z)
           .Normalized();
 
-  CVector3 toChar(charpos - campos);
+  Vector3 toChar(charpos - campos);
 
   for (int x = 0; x < resolution; x++) {
     float a1 = 1.0f;
     float a2 = 1.0f;
     float f1 = x / static_cast<float>(resolution) * PI * 2;
     float f2 = (x + 1) / static_cast<float>(resolution) * PI * 2;
-    CVector4 p1 =
-        CVector4(rworld * std::sin(f1), 0, rworld * std::cos(f1), 0.0f);
-    CVector4 p2 =
-        CVector4(rworld * std::sin(f2), 0, rworld * std::cos(f2), 0.0f);
+    Vector4 p1 =
+        Vector4(rworld * std::sin(f1), 0, rworld * std::cos(f1), 0.0f);
+    Vector4 p2 =
+        Vector4(rworld * std::sin(f2), 0, rworld * std::cos(f2), 0.0f);
 
-    CVector3 toPoint(p1 - campos);
+    Vector3 toPoint(p1 - campos);
 
     if (!zoomedin) {
       a1 = 1 -
-           std::pow(std::max(0.f, camDir * CVector2(p1.x, p1.z).Normalized()),
+           std::pow(std::max(0.f, camDir * Vector2(p1.x, p1.z).Normalized()),
                     10.0f);
       a2 = 1 -
-           std::pow(std::max(0.f, camDir * CVector2(p2.x, p2.z).Normalized()),
+           std::pow(std::max(0.f, camDir * Vector2(p2.x, p2.z).Normalized()),
                     10.0f);
     }
 
@@ -119,12 +119,12 @@ void GW2RangeDisplay::DrawRangeCircle(gui::CWBDrawAPI* API, float range,
                                     10.0f));
     }
 
-    p1 = p1 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
-    p2 = p2 * 0.5 + CVector4(0.5, 0.5, 0.5, 0.0);
+    p1 = p1 * 0.5 + Vector4(0.5, 0.5, 0.5, 0.0);
+    p2 = p2 * 0.5 + Vector4(0.5, 0.5, 0.5, 0.0);
 
-    CPoint pa = CPoint(static_cast<int>(p1.x * drawrect.Width()),
+    Point pa = Point(static_cast<int>(p1.x * drawrect.Width()),
                        static_cast<int>((1 - p1.y) * drawrect.Height()));
-    CPoint pb = CPoint(static_cast<int>(p2.x * drawrect.Width()),
+    Point pb = Point(static_cast<int>(p2.x * drawrect.Width()),
                        static_cast<int>((1 - p2.y) * drawrect.Height()));
 
     a1 = std::max(0.f, std::min(1.f, a1)) * alpha * 255.f;
@@ -158,11 +158,11 @@ GW2RangeDisplay::GW2RangeDisplay() : CWBGuiType() {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
 gui::CWBItem* GW2RangeDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                       CRect& Pos) {
+                                       Rect& Pos) {
   return GW2RangeDisplay::Create(Root, Pos);
 }
 
-bool GW2RangeDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool GW2RangeDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
                                          gui::WBMESSAGE MessageType) {
   return true;
 }

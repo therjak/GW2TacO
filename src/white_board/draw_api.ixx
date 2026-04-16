@@ -19,14 +19,14 @@ class CWBApplication;
 class CWBItem;
 
 struct WBDISPLAYLINE {
-  math::CPoint p1, p2;
+  math::Point p1, p2;
   float u1 = 0, v1 = 0, u2 = 0, v2 = 0;
   CColor c1, c2;
 };
 
 struct WBGUIVERTEX {
-  math::CVector4 Pos;
-  math::CVector2 UV;
+  math::Vector4 Pos;
+  math::Vector2 UV;
   CColor Color;
 
   WBGUIVERTEX() = default;
@@ -35,7 +35,7 @@ struct WBGUIVERTEX {
               const CColor& color)
       : Pos(x, y, 0, 1), UV(u, v), Color(color) {}
 
-  WBGUIVERTEX(const math::CVector2& pos, const math::CVector2& uv,
+  WBGUIVERTEX(const math::Vector2& pos, const math::Vector2& uv,
               const CColor& color)
       : Pos(pos.x, pos.y, 0, 1), UV(uv.x, uv.y), Color(color) {}
 };
@@ -57,48 +57,48 @@ class CWBDrawAPI {
 
   bool Initialize(CWBApplication* App, renderer::Device* Device, CAtlas* Atlas);
 
-  void DrawRect(const math::CRect& r, CColor Color);
-  void DrawRect(const math::CRect& r, float u1, float v1, float u2, float v2);
-  void DrawRect(const math::CRect& r, float u1, float v1, float u2, float v2,
+  void DrawRect(const math::Rect& r, CColor Color);
+  void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2);
+  void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2,
                 CColor Color);
-  void DrawRectBorder(const math::CRect& r, CColor Color);
-  void DrawRectRotated(const math::CRect& r, float u1, float v1, float u2,
+  void DrawRectBorder(const math::Rect& r, CColor Color);
+  void DrawRectRotated(const math::Rect& r, float u1, float v1, float u2,
                        float v2, CColor Color, float rotation);
 
-  void DrawLine(const math::CPoint& p1, const math::CPoint& p2, CColor Color);
-  void DrawLine(const math::CPoint& p1, const math::CPoint& p2, CColor Color1,
+  void DrawLine(const math::Point& p1, const math::Point& p2, CColor Color);
+  void DrawLine(const math::Point& p1, const math::Point& p2, CColor Color1,
                 CColor Color2);
 
-  void DrawTriangle(const math::CPoint& p1, const math::CPoint& p2,
-                    const math::CPoint& p3, CColor Color);
-  void DrawTriangle(const math::CPoint& p1, const math::CPoint& p2,
-                    const math::CPoint& p3, CColor a, CColor b, CColor c);
-  void DrawTriangle(const math::CPoint& p1, const math::CPoint& p2,
-                    const math::CPoint& p3, float u1, float v1, float u2,
+  void DrawTriangle(const math::Point& p1, const math::Point& p2,
+                    const math::Point& p3, CColor Color);
+  void DrawTriangle(const math::Point& p1, const math::Point& p2,
+                    const math::Point& p3, CColor a, CColor b, CColor c);
+  void DrawTriangle(const math::Point& p1, const math::Point& p2,
+                    const math::Point& p3, float u1, float v1, float u2,
                     float v2, float u3, float v3, CColor a, CColor b, CColor c);
-  void DrawTriangle(const math::CPoint& p1, const math::CPoint& p2,
-                    const math::CPoint& p3, float u1, float v1, float u2,
+  void DrawTriangle(const math::Point& p1, const math::Point& p2,
+                    const math::Point& p3, float u1, float v1, float u2,
                     float v2, float u3, float v3);
 
-  void SetOffset(const math::CPoint& p);
-  void SetCropRect(const math::CRect& r);
-  void SetParentCropRect(const math::CRect& r) { ParentCropRect = r; };
-  math::CRect& GetCropRect() { return CropRect; }
-  math::CRect& GetParentCropRect() { return ParentCropRect; }
-  math::CPoint& GetOffset() { return Offset; }
+  void SetOffset(const math::Point& p);
+  void SetCropRect(const math::Rect& r);
+  void SetParentCropRect(const math::Rect& r) { ParentCropRect = r; };
+  math::Rect& GetCropRect() { return CropRect; }
+  math::Rect& GetParentCropRect() { return ParentCropRect; }
+  math::Point& GetOffset() { return Offset; }
 
   void SetUIRenderState();
   void SetUIBlendState(std::unique_ptr<renderer::BlendState>&& BlendState);
   void SetUISamplerState(
       std::unique_ptr<renderer::SamplerState>&& SamplerState);
 
-  math::CSize GetAtlasElementSize(WBATLASHANDLE h);
+  math::Size GetAtlasElementSize(WBATLASHANDLE h);
   void DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
                         CColor Color = CColor(0xffffffff));
-  void DrawAtlasElement(WBATLASHANDLE h, const math::CRect& Position,
-                        bool TileX, bool TileY, bool StretchX, bool StretchY,
+  void DrawAtlasElement(WBATLASHANDLE h, const math::Rect& Position, bool TileX,
+                        bool TileY, bool StretchX, bool StretchY,
                         CColor Color = CColor(0xffffffff));
-  void DrawAtlasElementRotated(WBATLASHANDLE h, const math::CRect& Position,
+  void DrawAtlasElementRotated(WBATLASHANDLE h, const math::Rect& Position,
                                CColor Color, float rotation);
   void SetCropToClient(const CWBItem* i);
 
@@ -107,21 +107,21 @@ class CWBDrawAPI {
   renderer::ConstantBuffer* GetResolutionData();
 
   void SetOpacity(uint8_t o);
-  void SetRenderView(math::CRect r);
+  void SetRenderView(math::Rect r);
 
   void SetPixelShader(std::unique_ptr<renderer::PixelShader>&& shader);
 
  private:
-  void AddDisplayRect(const math::CRect& r, const float u1, const float v1,
+  void AddDisplayRect(const math::Rect& r, const float u1, const float v1,
                       const float u2, const float v3, const CColor a);
-  void AddDisplayRectRotated(const math::CRect& r, const float u1,
+  void AddDisplayRectRotated(const math::Rect& r, const float u1,
                              const float v1, const float u2, const float v3,
                              const CColor a, float rotation);
-  void AddDisplayLine(const math::CPoint& p1, const math::CPoint& p2,
+  void AddDisplayLine(const math::Point& p1, const math::Point& p2,
                       const float u1, const float v1, const float u2,
                       const float v2, const CColor a, const CColor b);
-  void AddDisplayTri(const math::CPoint& p1, const math::CPoint& p2,
-                     const math::CPoint& p3, const float u1, const float v1,
+  void AddDisplayTri(const math::Point& p1, const math::Point& p2,
+                     const math::Point& p3, const float u1, const float v1,
                      const float u2, const float v2, const float u3,
                      const float v3, const CColor a, const CColor b,
                      const CColor c);
@@ -131,16 +131,16 @@ class CWBDrawAPI {
                 std::array<WBGUIVERTEX, 6>& Vertices, int32_t& VertexCount);
   void RenderDisplayList();
 
-  bool RequestAtlasImageUse(WBATLASHANDLE h, math::CRect& r);
+  bool RequestAtlasImageUse(WBATLASHANDLE h, math::Rect& r);
 
   template <class UV, class RES>
   float UVTRANSLATION(UV uv, RES res) {
     return (uv + UVOffset) / static_cast<float>(res);
   }
 
-  math::CPoint Offset;
+  math::Point Offset;
   // screen space window rect for the currently drawn item
-  math::CRect CropRect;
+  math::Rect CropRect;
   WBDRAWMODE DrawMode;
   uint8_t Opacity;
   CWBApplication* App;
@@ -151,7 +151,7 @@ class CWBDrawAPI {
 
   float UVOffset = 0;  // texel offset to fix 0.5 texel shift in Directx9
 
-  math::CRect ParentCropRect;
+  math::Rect ParentCropRect;
 
   std::unique_ptr<renderer::IndexBuffer> rectIndexBuffer;
   std::unique_ptr<renderer::VertexBuffer> VertexBuffer;
@@ -169,9 +169,9 @@ class CWBDrawAPI {
 };
 
 // helper functions for common use cases
-void ZoomToMouseCenter(math::CPoint& Offset, int32_t& Zoom, int32_t NewZoom,
-                       math::CPoint ZoomCenter);
-void ZoomToMouseCenter(math::CPoint& Offset, float& Zoom, float NewZoom,
-                       math::CPoint Pos);
+void ZoomToMouseCenter(math::Point& Offset, int32_t& Zoom, int32_t NewZoom,
+                       math::Point ZoomCenter);
+void ZoomToMouseCenter(math::Point& Offset, float& Zoom, float NewZoom,
+                       math::Point Pos);
 
 }  // namespace gui

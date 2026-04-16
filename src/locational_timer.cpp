@@ -13,8 +13,8 @@ import taco.overlay_config;
 import taco.time;
 import xml;
 
-using math::CPoint;
-using math::CRect;
+using math::Point;
+using math::Rect;
 
 std::vector<LocationalTimer> LocationalTimers;
 
@@ -147,9 +147,9 @@ void TimerDisplay::OnDraw(gui::CWBDrawAPI* API) {
         s += std::format(" in {:d}", static_cast<int32_t>(e.Time - timepos));
       }
 
-      CPoint pos = f->GetTextPosition(
+      Point pos = f->GetTextPosition(
           s,
-          CRect(
+          Rect(
               static_cast<float>(GetClientRect().x1), static_cast<float>(ypos),
               static_cast<float>(GetClientRect().x2), static_cast<float>(ypos)),
           gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
@@ -161,7 +161,7 @@ void TimerDisplay::OnDraw(gui::CWBDrawAPI* API) {
   }
 }
 
-bool TimerDisplay::IsMouseTransparent(const CPoint& ClientSpacePoint,
+bool TimerDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
                                       gui::WBMESSAGE MessageType) {
   return true;
 }
@@ -171,6 +171,6 @@ TimerDisplay::TimerDisplay() : CWBGuiType() {}
 TimerDisplay::~TimerDisplay() = default;
 
 gui::CWBItem* TimerDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                    CRect& Pos) {
+                                    Rect& Pos) {
   return TimerDisplay::Create(Root, Pos);
 }
