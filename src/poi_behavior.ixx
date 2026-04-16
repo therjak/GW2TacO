@@ -12,5 +12,5 @@ export enum class POIBehavior : int32_t {
   OncePerInstance,
   DailyPerChar,
   OncePerInstancePerChar,
-  WvWObjective,
+  WvwObjective,
 };

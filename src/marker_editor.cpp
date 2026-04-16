@@ -40,13 +40,13 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* API) {
 
   if (!mumbleLink.IsValid()) return;
 
-  if (mumbleLink.mapID == -1) return;
+  if (mumbleLink.map_id == -1) return;
 
   auto& mPOIs = GetMapPOIs();
   for (auto& poi : mPOIs) {
     auto& cpoi = poi.second;
 
-    if (cpoi.mapID != mumbleLink.mapID) continue;
+    if (cpoi.map_id != mumbleLink.map_id) continue;
     if (cpoi.External) continue;
 
     Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);

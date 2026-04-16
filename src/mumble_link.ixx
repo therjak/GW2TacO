@@ -12,8 +12,8 @@ import math;
 
 export struct MumbleContext {
   unsigned char serverAddress[28];  // contains sockaddr_in or sockaddr_in6
-  uint32_t mapId;
-  uint32_t mapType;
+  uint32_t map_id;
+  uint32_t map_type;
   uint32_t shardId;
   uint32_t instance;
   uint32_t buildId;
@@ -80,9 +80,9 @@ export class CMumbleLink {
   math::Vector3 camDir;
   math::Vector3 camUp;
   float fov = 0;
-  int32_t mapID = 0;
+  int32_t map_id = 0;
   int32_t worldID = 0;
-  int32_t mapType = 0;
+  int32_t map_type = 0;
   int32_t mapInstance = 0;
   int32_t charIDHash = 0;
 

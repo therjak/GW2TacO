@@ -26,7 +26,7 @@ export class LocationalTimer {
   void Update();
   void ImportData(const CXMLNode& node);
 
-  int32_t MapID = 0;
+  int32_t map_id = 0;
   math::CSphere EnterSphere = math::CSphere(math::Vector3(0, 0, 0), 0);
   math::CSphere ExitSphere = math::CSphere(math::Vector3(0, 0, 0), 0);
   math::Vector3 ResetPoint = math::Vector3(0, 0, 0);
