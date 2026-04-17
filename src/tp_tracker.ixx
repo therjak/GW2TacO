@@ -16,48 +16,48 @@ import whiteboard;
 import xml;
 
 export struct TransactionItem {
-  int32_t transactionID = 0;
-  int32_t itemID = 0;
+  int32_t transaction_id = 0;
+  int32_t item_id = 0;
   int32_t price = 0;
   int32_t quantity = 0;
 };
 
 export struct GW2ItemData {
-  int32_t itemID = 0;
+  int32_t item_id = 0;
   std::string name;
   gui::WBATLASHANDLE icon = 0;
-  int32_t buyPrice = 0;
-  int32_t sellPrice = 0;
+  int32_t buy_price = 0;
+  int32_t sell_price = 0;
 };
 
 export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
  public:
   TPTracker();
   ~TPTracker() override;
-  static inline TPTracker* Create(gui::CWBItem* Parent, math::Rect Position) {
+  static inline TPTracker* Create(gui::CWBItem* parent, math::Rect position) {
     auto p = std::make_unique<TPTracker>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     TPTracker* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
   static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
 
-  int32_t lastFetchTime = 0;
+  int32_t last_fetch_time_ = 0;
 
-  std::vector<TransactionItem> buys;
-  std::vector<TransactionItem> sells;
+  std::vector<TransactionItem> buys_;
+  std::vector<TransactionItem> sells_;
 
-  std::mutex transaction_mtx;
-  std::future<void> fetchTask;
+  std::mutex transaction_mtx_;
+  std::future<void> fetch_task_;
 };
