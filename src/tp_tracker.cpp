@@ -24,25 +24,25 @@ using math::Rect;
 
 namespace {
 std::mutex item_data_cache_mtx;
-std::unordered_map<int32_t, GW2ItemData> itemDataCache;
+std::unordered_map<int32_t, GW2ItemData> item_data_cache;
 }  // namespace
 
-bool HasGW2ItemData(int32_t itemID) {
-  std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
-  return itemDataCache.find(itemID) != itemDataCache.end();
+bool HasGW2ItemData(int32_t item_id) {
+  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
+  return item_data_cache.find(item_id) != item_data_cache.end();
 }
 
-GW2ItemData GetGW2ItemData(int32_t itemID) {
-  std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
-  if (itemDataCache.find(itemID) != itemDataCache.end()) {
-    return itemDataCache[itemID];
+GW2ItemData GetGW2ItemData(int32_t item_id) {
+  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
+  if (item_data_cache.find(item_id) != item_data_cache.end()) {
+    return item_data_cache[item_id];
   }
   return {};
 }
 
 void SetGW2ItemData(GW2ItemData& data) {
-  std::lock_guard<std::mutex> lockGuard(item_data_cache_mtx);
-  itemDataCache[data.itemID] = data;
+  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
+  item_data_cache[data.item_id] = data;
 }
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);
@@ -69,7 +69,7 @@ __inline std::string ToGold(int32_t value) {
   return result;
 }
 
-void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
+void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
   gui::CWBFont* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
@@ -89,19 +89,19 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
     SetConfigValue("TPTrackerNextSellOnly", 0);
   }
 
-  int32_t onlyShowOutbid = GetConfigValue("TPTrackerOnlyShowOutbid");
-  int32_t nextSellOnly = GetConfigValue("TPTrackerNextSellOnly");
+  int32_t only_show_outbid = GetConfigValue("TPTrackerOnlyShowOutbid");
+  int32_t next_sell_only = GetConfigValue("TPTrackerNextSellOnly");
 
   GW2::APIKeyManager::Status status =
-      GW2::apiKeyManager.DisplayStatusText(API, f);
+      GW2::apiKeyManager.DisplayStatusText(api, f);
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
-    if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
-                                  std::future_status::ready) {
-      lastFetchTime = GetTime();
-      fetchTask = std::async(std::launch::async, [this, key]() {
+      (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
+    if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
+                                    std::future_status::ready) {
+      last_fetch_time_ = GetTime();
+      fetch_task_ = std::async(std::launch::async, [this, key]() {
         auto qbuys = "{\"buys\":" +
                      key->QueryAPI("/v2/commerce/transactions/current/buys");
         auto qsells = "{\"sells\":" +
@@ -115,8 +115,8 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
         std::vector<TransactionItem> incoming;
         std::vector<TransactionItem> outgoing;
 
-        std::vector<int32_t> unknownItems;
-        std::vector<int32_t> priceCheckList;
+        std::vector<int32_t> unknown_items;
+        std::vector<int32_t> price_check_list;
 
         if (json.has<jsonxx::Array>("buys")) {
           auto buyData = json.get<jsonxx::Array>("buys").values();
@@ -130,13 +130,13 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
             if (!TPTracker::ParseTransaction(item, itemData)) continue;
             incoming.push_back(itemData);
 
-            if (!HasGW2ItemData(itemData.itemID)) {
-              unknownItems.push_back(itemData.itemID);
+            if (!HasGW2ItemData(itemData.item_id)) {
+              unknown_items.push_back(itemData.item_id);
             }
 
-            if (std::find(priceCheckList.begin(), priceCheckList.end(),
-                          itemData.itemID) == priceCheckList.end()) {
-              priceCheckList.push_back(itemData.itemID);
+            if (std::find(price_check_list.begin(), price_check_list.end(),
+                          itemData.item_id) == price_check_list.end()) {
+              price_check_list.push_back(itemData.item_id);
             }
           }
         }
@@ -153,33 +153,33 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
             if (!TPTracker::ParseTransaction(item, itemData)) continue;
             outgoing.push_back(itemData);
 
-            if (!HasGW2ItemData(itemData.itemID)) {
-              unknownItems.push_back(itemData.itemID);
+            if (!HasGW2ItemData(itemData.item_id)) {
+              unknown_items.push_back(itemData.item_id);
             }
 
-            if (std::find(priceCheckList.begin(), priceCheckList.end(),
-                          itemData.itemID) == priceCheckList.end()) {
-              priceCheckList.push_back(itemData.itemID);
+            if (std::find(price_check_list.begin(), price_check_list.end(),
+                          itemData.item_id) == price_check_list.end()) {
+              price_check_list.push_back(itemData.item_id);
             }
           }
         }
 
-        std::string itemIds;
+        std::string item_ids;
 
-        if (!unknownItems.empty()) {
-          for (const auto& i : unknownItems) {
-            itemIds += std::to_string(i) + ',';
+        if (!unknown_items.empty()) {
+          for (const auto& i : unknown_items) {
+            item_ids += std::to_string(i) + ',';
           }
 
           // https://api.guildwars2.com/v2/items?ids=28445,12452
           auto items =
-              "{\"items\":" + key->QueryAPI("/v2/items?ids=" + itemIds) + "}";
+              "{\"items\":" + key->QueryAPI("/v2/items?ids=" + item_ids) + "}";
 
-          jsonxx::Object itemjson;
-          itemjson.parse(items);
+          jsonxx::Object item_json;
+          item_json.parse(items);
 
-          if (itemjson.has<jsonxx::Array>("items")) {
-            auto items = itemjson.get<jsonxx::Array>("items").values();
+          if (item_json.has<jsonxx::Array>("items")) {
+            auto items = item_json.get<jsonxx::Array>("items").values();
 
             for (auto& x : items) {
               if (!x->is<jsonxx::Object>()) continue;
@@ -191,21 +191,21 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
                   !item.has<jsonxx::Number>("id"))
                 continue;
               itemData.name = item.get<jsonxx::String>("name");
-              itemData.itemID = int32_t(item.get<jsonxx::Number>("id"));
+              itemData.item_id = int32_t(item.get<jsonxx::Number>("id"));
               if (item.has<jsonxx::String>("icon")) {
-                auto iconFile = item.get<jsonxx::String>("icon");
-                if (iconFile.find("https://render.guildwars2.com/") == 0) {
+                auto icon_file = item.get<jsonxx::String>("icon");
+                if (icon_file.find("https://render.guildwars2.com/") == 0) {
                   auto png =
-                      FetchHTTPS("render.guildwars2.com", iconFile.substr(29));
+                      FetchHTTPS("render.guildwars2.com", icon_file.substr(29));
 
-                  std::unique_ptr<uint8_t[]> imageData = nullptr;
-                  int32_t xres = 0, yres = 0;
+                  std::unique_ptr<uint8_t[]> image_data = nullptr;
+                  int32_t x_res = 0, y_res = 0;
                   if (DecompressPNG((uint8_t*)png.c_str(), png.size(),
-                                    imageData, xres, yres)) {
-                    ARGBtoABGR(imageData.get(), xres, yres);
-                    Rect area = Rect(0, 0, xres, yres);
+                                    image_data, x_res, y_res)) {
+                    ARGBtoABGR(image_data.get(), x_res, y_res);
+                    Rect area = Rect(0, 0, x_res, y_res);
                     itemData.icon = GetApplication()->GetAtlas()->AddImage(
-                        imageData.get(), xres, yres, area);
+                        image_data.get(), x_res, y_res, area);
                   }
                 }
               }
@@ -216,20 +216,20 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
         }
 
         {
-          for (const auto& i : priceCheckList) {
-            itemIds += std::to_string(i) + ',';
+          for (const auto& i : price_check_list) {
+            item_ids += std::to_string(i) + ',';
           }
 
           // https://api.guildwars2.com/v2/commerce/prices?ids=19684,19709
           auto items = "{\"items\":" +
-                       key->QueryAPI(("/v2/commerce/prices?ids=" + itemIds)) +
+                       key->QueryAPI(("/v2/commerce/prices?ids=" + item_ids)) +
                        "}";
 
-          jsonxx::Object itemjson;
-          itemjson.parse(items);
+          jsonxx::Object item_json;
+          item_json.parse(items);
 
-          if (itemjson.has<jsonxx::Array>("items")) {
-            auto items = itemjson.get<jsonxx::Array>("items").values();
+          if (item_json.has<jsonxx::Array>("items")) {
+            auto items = item_json.get<jsonxx::Array>("items").values();
 
             for (auto& x : items) {
               if (!x->is<jsonxx::Object>()) continue;
@@ -245,158 +245,158 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* API) {
               int32_t id = int32_t(item.get<jsonxx::Number>("id"));
               if (!HasGW2ItemData(id)) continue;
 
-              jsonxx::Object buys = item.get<jsonxx::Object>("buys");
-              jsonxx::Object sells = item.get<jsonxx::Object>("sells");
-              if (!buys.has<jsonxx::Number>("unit_price") ||
-                  !sells.has<jsonxx::Number>("unit_price")) {
+              jsonxx::Object buys_ = item.get<jsonxx::Object>("buys");
+              jsonxx::Object sells_ = item.get<jsonxx::Object>("sells");
+              if (!buys_.has<jsonxx::Number>("unit_price") ||
+                  !sells_.has<jsonxx::Number>("unit_price")) {
                 continue;
               }
 
               GW2ItemData itemData = GetGW2ItemData(id);
-              itemData.buyPrice =
-                  int32_t(buys.get<jsonxx::Number>("unit_price"));
-              itemData.sellPrice =
-                  int32_t(sells.get<jsonxx::Number>("unit_price"));
+              itemData.buy_price =
+                  int32_t(buys_.get<jsonxx::Number>("unit_price"));
+              itemData.sell_price =
+                  int32_t(sells_.get<jsonxx::Number>("unit_price"));
               SetGW2ItemData(itemData);
             }
           }
         }
 
         {
-          std::lock_guard<std::mutex> lockGuard(transaction_mtx);
-          buys = incoming;
-          sells = outgoing;
+          std::lock_guard<std::mutex> lock_guard(transaction_mtx_);
+          buys_ = incoming;
+          sells_ = outgoing;
         }
       });
     }
   }
 
   {
-    std::lock_guard<std::mutex> lockGuard(transaction_mtx);
+    std::lock_guard<std::mutex> lock_guard(transaction_mtx_);
 
     int32_t posy = 0;
     int32_t lh = f->GetLineHeight();
 
-    if (!buys.empty() && GetConfigValue("TPTrackerShowBuys")) {
-      std::vector<int32_t> showedAlready;
+    if (!buys_.empty() && GetConfigValue("TPTrackerShowBuys")) {
+      std::vector<int32_t> showed_already;
 
-      int32_t textPosy = posy;
-      int32_t writtenCount = 0;
+      int32_t text_pos_y = posy;
+      int32_t written_count = 0;
 
       posy += lh + 2;
 
-      for (size_t x = 0; x < buys.size(); x++) {
-        if (!HasGW2ItemData(buys[x].itemID)) continue;
+      for (size_t x = 0; x < buys_.size(); x++) {
+        if (!HasGW2ItemData(buys_[x].item_id)) continue;
 
-        const auto& itemData = GetGW2ItemData(buys[x].itemID);
-        bool outbid = buys[x].price < itemData.buyPrice;
+        const auto& itemData = GetGW2ItemData(buys_[x].item_id);
+        bool outbid = buys_[x].price < itemData.buy_price;
 
-        if (nextSellOnly &&
-            std::find(showedAlready.begin(), showedAlready.end(),
-                      itemData.itemID) != showedAlready.end()) {
+        if (next_sell_only &&
+            std::find(showed_already.begin(), showed_already.end(),
+                      itemData.item_id) != showed_already.end()) {
           continue;
         }
 
-        if (!onlyShowOutbid || outbid) {
-          int32_t price = buys[x].price;
-          if (nextSellOnly) {
-            for (size_t y = x; y < buys.size(); y++) {
-              if (buys[y].itemID == buys[x].itemID) {
-                price = std::max(buys[y].price, buys[x].price);
+        if (!only_show_outbid || outbid) {
+          int32_t price = buys_[x].price;
+          if (next_sell_only) {
+            for (size_t y = x; y < buys_.size(); y++) {
+              if (buys_[y].item_id == buys_[x].item_id) {
+                price = std::max(buys_[y].price, buys_[x].price);
               }
             }
           }
 
           if (itemData.icon) {
-            API->DrawAtlasElement(itemData.icon,
+            api->DrawAtlasElement(itemData.icon,
                                   Rect(lh, posy, lh * 2 + 5, posy + lh + 5),
                                   false, false, true, true, CColor{0xffffffff});
           }
           auto text = itemData.name + " " + ToGold(price);
-          if (buys[x].quantity > 1) {
-            text = std::format("{:d} ", buys[x].quantity) + text;
+          if (buys_[x].quantity > 1) {
+            text = std::format("{:d} ", buys_[x].quantity) + text;
           }
-          f->Write(API, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
+          f->Write(api, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
-          writtenCount++;
+          written_count++;
           posy += lh + 6;
-          if (nextSellOnly) {
-            if (std::find(showedAlready.begin(), showedAlready.end(),
-                          itemData.itemID) == showedAlready.end()) {
-              showedAlready.push_back(itemData.itemID);
+          if (next_sell_only) {
+            if (std::find(showed_already.begin(), showed_already.end(),
+                          itemData.item_id) == showed_already.end()) {
+              showed_already.push_back(itemData.item_id);
             }
           }
         }
       }
       posy += 2;
 
-      if (writtenCount) {
-        f->Write(API, DICT(onlyShowOutbid ? "outbidbuys" : "buylist"),
-                 Point(0, textPosy), CColor{0xffffffff});
+      if (written_count) {
+        f->Write(api, DICT(only_show_outbid ? "outbidbuys" : "buylist"),
+                 Point(0, text_pos_y), CColor{0xffffffff});
       } else {
         posy -= lh + 4;
       }
     }
 
-    if (!sells.empty() && GetConfigValue("TPTrackerShowSells")) {
-      std::vector<int32_t> showedAlready;
+    if (!sells_.empty() && GetConfigValue("TPTrackerShowSells")) {
+      std::vector<int32_t> showed_already;
 
-      int32_t textPosy = posy;
-      int32_t writtenCount = 0;
+      int32_t text_pos_y = posy;
+      int32_t written_count = 0;
 
       posy += lh + 2;
 
-      for (size_t x = 0; x < sells.size(); x++) {
-        if (!HasGW2ItemData(sells[x].itemID)) continue;
-        const auto& itemData = GetGW2ItemData(sells[x].itemID);
-        bool outbid = sells[x].price > itemData.sellPrice;
+      for (size_t x = 0; x < sells_.size(); x++) {
+        if (!HasGW2ItemData(sells_[x].item_id)) continue;
+        const auto& itemData = GetGW2ItemData(sells_[x].item_id);
+        bool outbid = sells_[x].price > itemData.sell_price;
 
-        if (nextSellOnly &&
-            std::find(showedAlready.begin(), showedAlready.end(),
-                      itemData.itemID) != showedAlready.end()) {
+        if (next_sell_only &&
+            std::find(showed_already.begin(), showed_already.end(),
+                      itemData.item_id) != showed_already.end()) {
           continue;
         }
 
-        if (!onlyShowOutbid || outbid) {
-          int32_t price = sells[x].price;
-          if (nextSellOnly) {
-            for (size_t y = x; y < sells.size(); y++) {
-              if (sells[y].itemID == sells[x].itemID) {
-                price = std::min(sells[y].price, sells[x].price);
+        if (!only_show_outbid || outbid) {
+          int32_t price = sells_[x].price;
+          if (next_sell_only) {
+            for (size_t y = x; y < sells_.size(); y++) {
+              if (sells_[y].item_id == sells_[x].item_id) {
+                price = std::min(sells_[y].price, sells_[x].price);
               }
             }
           }
 
           if (itemData.icon) {
-            API->DrawAtlasElement(itemData.icon,
+            api->DrawAtlasElement(itemData.icon,
                                   Rect(lh, posy, lh * 2 + 5, posy + lh + 5),
                                   false, false, true, true, CColor{0xffffffff});
           }
           auto text = itemData.name + " " + ToGold(price);
-          if (sells[x].quantity > 1) {
-            text = std::format("{:d} ", sells[x].quantity) + text;
+          if (sells_[x].quantity > 1) {
+            text = std::format("{:d} ", sells_[x].quantity) + text;
           }
-          f->Write(API, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
+          f->Write(api, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
                    !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
-          writtenCount++;
+          written_count++;
           posy += lh + 6;
-          if (nextSellOnly) {
-            if (std::find(showedAlready.begin(), showedAlready.end(),
-                          itemData.itemID) == showedAlready.end()) {
-              showedAlready.push_back(itemData.itemID);
+          if (next_sell_only) {
+            if (std::find(showed_already.begin(), showed_already.end(),
+                          itemData.item_id) == showed_already.end()) {
+              showed_already.push_back(itemData.item_id);
             }
           }
         }
       }
 
-      if (writtenCount) {
-        f->Write(API, DICT(onlyShowOutbid ? "outbidsells" : "selllist"),
-                 Point(0, textPosy), CColor{0xffffffff});
+      if (written_count) {
+        f->Write(api, DICT(only_show_outbid ? "outbidsells" : "selllist"),
+                 Point(0, text_pos_y), CColor{0xffffffff});
       }
     }
   }
 
-  DrawBorder(API);
+  DrawBorder(api);
 }
 
 bool TPTracker::ParseTransaction(jsonxx::Object& object,
@@ -407,8 +407,8 @@ bool TPTracker::ParseTransaction(jsonxx::Object& object,
       !object.has<jsonxx::Number>("quantity")) {
     return false;
   }
-  output.transactionID = int32_t(object.get<jsonxx::Number>("id"));
-  output.itemID = int32_t(object.get<jsonxx::Number>("item_id"));
+  output.transaction_id = int32_t(object.get<jsonxx::Number>("id"));
+  output.item_id = int32_t(object.get<jsonxx::Number>("item_id"));
   output.price = int32_t(object.get<jsonxx::Number>("price"));
   output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
   return true;
@@ -418,12 +418,12 @@ TPTracker::TPTracker() : CWBGuiType() {}
 
 TPTracker::~TPTracker() {}
 
-gui::CWBItem* TPTracker::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                 Rect& Pos) {
-  return TPTracker::Create(Root, Pos);
+gui::CWBItem* TPTracker::Factory(gui::CWBItem* root, CXMLNode& node,
+                                 Rect& pos) {
+  return TPTracker::Create(root, pos);
 }
 
-bool TPTracker::IsMouseTransparent(const Point& ClientSpacePoint,
-                                   gui::WBMESSAGE MessageType) {
+bool TPTracker::IsMouseTransparent(const Point& client_space_point,
+                                   gui::WBMESSAGE message_type) {
   return true;
 }
