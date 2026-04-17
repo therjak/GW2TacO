@@ -12,8 +12,6 @@ WSADATA wsaData;
 #include <vector>
 #pragma comment(lib, "Ws2_32.lib")
 
-#include "src/base/logger.h"
-
 CSocket::CSocket() : CStreamReader(), CStreamWriter() {
   Socket = INVALID_SOCKET;
   LastActivity = GetTickCount64();
@@ -102,7 +100,6 @@ uint32_t CSocket::Resolve(std::string_view a) {
       // Optionally, log the error: WSAGetLastError() could provide more info.
     }
   }
-  Log_Warn("addr: {:x}", addr);
   return addr;
 }
 
