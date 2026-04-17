@@ -12,9 +12,9 @@ ClickThroughButton::ClickThroughButton(std::string_view txt /*=  ""  */)
     : CWBGuiType(txt) {}
 ClickThroughButton::~ClickThroughButton() = default;
 
-gui::CWBItem* ClickThroughButton::Factory(gui::CWBItem* Root,
-                                          const CXMLNode& node, Rect& Pos) {
-  auto button = ClickThroughButton::Create(Root, Pos);
+gui::CWBItem* ClickThroughButton::Factory(gui::CWBItem* root,
+                                          const CXMLNode& node, Rect& pos) {
+  auto button = ClickThroughButton::Create(root, pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
 
   if (node.HasAttribute("hidden")) {

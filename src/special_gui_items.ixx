@@ -13,17 +13,17 @@ export class ClickThroughButton
  public:
   ClickThroughButton(std::string_view txt);
   ~ClickThroughButton() override;
-  static inline ClickThroughButton* Create(gui::CWBItem* Parent,
-                                           const math::Rect& Pos,
+  static inline ClickThroughButton* Create(gui::CWBItem* parent,
+                                           const math::Rect& pos,
                                            std::string_view txt = "") {
     auto p = std::make_unique<ClickThroughButton>(txt);
-    p->Initialize(Parent, Pos);
+    p->Initialize(parent, pos);
     ClickThroughButton* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 };
