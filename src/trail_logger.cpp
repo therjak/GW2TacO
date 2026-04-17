@@ -123,7 +123,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
           if (!str.empty()) {
             texture =
                 GetTexture(str, trail.zip_file_,
-                           trail.category_ ? trail.category_->zipFile : "");
+                           trail.category_ ? trail.category_->zip_file : "");
           } else {
             texture = trail_texture_.get();
           }
@@ -240,7 +240,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
           if (!str.empty()) {
             texture =
                 GetTexture(str, trail.zip_file_,
-                           trail.category_ ? trail.category_->zipFile : "");
+                           trail.category_ ? trail.category_->zip_file : "");
           } else {
             texture = trail_texture_.get();
           }
@@ -296,7 +296,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
           if (!str.empty()) {
             texture =
                 GetTexture(str, trail.zip_file_,
-                           trail.category_ ? trail.category_->zipFile : "");
+                           trail.category_ ? trail.category_->zip_file : "");
           } else {
             texture = trail_texture_.get();
           }

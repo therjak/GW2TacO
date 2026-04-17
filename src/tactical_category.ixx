@@ -20,22 +20,22 @@ export class GW2TacticalCategory {
   void CalculateVisibilityCache();
 
   std::string name;
-  std::string displayName;
+  std::string display_name;
 
-  std::string_view zipFile;
+  std::string_view zip_file;
 
   MarkerTypeData data;
-  bool KeepSaveState = false;
-  bool IsOnlySeparator = false;
-  GW2TacticalCategory* Parent = nullptr;
+  bool keep_save_state = false;
+  bool is_only_separator = false;
+  GW2TacticalCategory* parent = nullptr;
   std::vector<std::unique_ptr<GW2TacticalCategory>> children;
 
-  bool IsDisplayed = true;
-  bool cachedVisibility = true;
-  static bool visibilityCached;
+  bool is_displayed = true;
+  bool cached_visibility_ = true;
+  static bool visibility_cached_;
 
  private:
-  std::string cachedTypeName;
+  std::string cached_type_name_;
 };
 
 export extern GW2TacticalCategory CategoryRoot;

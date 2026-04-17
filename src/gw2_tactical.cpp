@@ -916,7 +916,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
       if (!mp->typeData.bits.inGameVisible && showIngameMarkers != 2) continue;
       if (!mp->icon) {
         mp->icon = GetMapIcon(App, mp->iconFile, mp->zipFile,
-                              mp->category ? mp->category->zipFile : "");
+                              mp->category ? mp->category->zip_file : "");
       }
       DrawPOI(API, ptm, currtime, *mp, drawDistance, infoText);
     }
@@ -965,7 +965,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
       Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
         mmp->icon = GetMapIcon(App, mmp->iconFile, mmp->zipFile,
-                               mmp->category ? mmp->category->zipFile : "");
+                               mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, mapFade, mumbleLink.miniMap.mapScale);
@@ -985,7 +985,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
       Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
         mmp->icon = GetMapIcon(App, mmp->iconFile, mmp->zipFile,
-                               mmp->category ? mmp->category->zipFile : "");
+                               mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, 1.0f - mapFade, mumbleLink.bigMap.mapScale);
@@ -1030,7 +1030,7 @@ void GW2TacticalDisplay::RemoveUserMarkersFromMap() {
 }
 
 bool FindSavedCategory(GW2TacticalCategory* t) {
-  if (t->KeepSaveState) return true;
+  if (t->keep_save_state) return true;
   for (const auto& c : t->children) {
     if (FindSavedCategory(c.get())) return true;
   }
@@ -1041,7 +1041,7 @@ void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
   if (!FindSavedCategory(t)) return;
   auto& nn = n->AddChild("MarkerCategory");
   nn.SetAttribute("name", t->name);
-  if (t->name != t->displayName) nn.SetAttribute("DisplayName", t->displayName);
+  if (t->name != t->display_name) nn.SetAttribute("DisplayName", t->display_name);
   t->data.Write(&nn);
   for (const auto& c : t->children) ExportSavedCategories(&nn, c.get());
 }
@@ -1168,7 +1168,7 @@ void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
         c->name = y;
         c->data = defaults;
         CategoryMap[newCatName] = c;
-        c->Parent = Root2;
+        c->parent = Root2;
         Root2 = c;
         displayName = c->name;
 
@@ -1179,23 +1179,23 @@ void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
 
     if (!c) continue;
 
-    if (c->displayName.empty()) c->displayName = displayName;
+    if (c->display_name.empty()) c->display_name = displayName;
 
     if (n.HasAttribute("DisplayName")) {
       displayName = n.GetAttribute("DisplayName");
-      c->displayName = displayName;
+      c->display_name = displayName;
       localization->ProcessStringForUsedGlyphs(displayName);
     }
 
     if (n.HasAttribute("IsSeparator")) {
       int separator = 0;
       n.GetAttributeAsInteger("IsSeparator", &separator);
-      c->IsOnlySeparator = separator;
+      c->is_only_separator = separator;
     }
 
     c->data.Read(n, KeepSaveState);
-    c->zipFile = AddStringToSet(zipFile);
-    c->KeepSaveState = KeepSaveState;
+    c->zip_file = AddStringToSet(zipFile);
+    c->keep_save_state = KeepSaveState;
 
     RecursiveImportPOIType(n, c, newCatName, c->data, KeepSaveState, zipFile);
   }
@@ -1569,10 +1569,10 @@ void UpdatePOI() {
       if (!str.empty()) {
         GW2TacticalCategory* cat = GetCategory(str);
         if (cat) {
-          cat->IsDisplayed = !cat->IsDisplayed;
+          cat->is_displayed = !cat->is_displayed;
           CategoryRoot.CalculateVisibilityCache();
           SetConfigValue(("CategoryVisible_" + cat->GetFullTypeName()),
-                         cat->IsDisplayed);
+                         cat->is_displayed);
         }
       }
 
@@ -1609,18 +1609,18 @@ void AddTypeContextMenu(gui::CWBContextItem* ctx,
   for (const auto& dta : Parent->children) {
     std::string txt;
     if (AddVisibilityMarkers) {
-      txt += "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
+      txt += "[" + std::string(dta->is_displayed ? "x" : " ") + "] ";
     }
-    if (!dta->displayName.empty()) {
-      txt += dta->displayName;
+    if (!dta->display_name.empty()) {
+      txt += dta->display_name;
     } else {
       txt += dta->name;
     }
 
-    if (dta->IsOnlySeparator) {
+    if (dta->is_only_separator) {
       ctx->AddSeparator();
-      if (!dta->displayName.empty()) {
-        txt = dta->displayName;
+      if (!dta->display_name.empty()) {
+        txt = dta->display_name;
       } else {
         txt = dta->name;
       }
@@ -1630,7 +1630,7 @@ void AddTypeContextMenu(gui::CWBContextItem* ctx,
     } else {
       auto n =
           ctx->AddItem(txt, CategoryList.size() + BaseID,
-                       AddVisibilityMarkers && dta->IsDisplayed, closeOnClick);
+                       AddVisibilityMarkers && dta->is_displayed, closeOnClick);
       CategoryList.push_back(dta.get());
       AddTypeContextMenu(n, CategoryList, dta.get(), AddVisibilityMarkers,
                          BaseID, closeOnClick);
@@ -1646,18 +1646,18 @@ void AddTypeContextMenu(gui::CWBContextMenu* ctx,
   for (const auto& dta : Parent->children) {
     std::string txt;
     if (AddVisibilityMarkers) {
-      txt += "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
+      txt += "[" + std::string(dta->is_displayed ? "x" : " ") + "] ";
     }
-    if (!dta->displayName.empty()) {
-      txt += dta->displayName;
+    if (!dta->display_name.empty()) {
+      txt += dta->display_name;
     } else {
       txt += dta->name;
     }
 
-    if (dta->IsOnlySeparator) {
+    if (dta->is_only_separator) {
       ctx->AddSeparator();
-      if (!dta->displayName.empty()) {
-        txt = dta->displayName;
+      if (!dta->display_name.empty()) {
+        txt = dta->display_name;
       } else {
         txt = dta->name;
       }
@@ -1667,7 +1667,7 @@ void AddTypeContextMenu(gui::CWBContextMenu* ctx,
     } else {
       auto n =
           ctx->AddItem(txt, CategoryList.size() + BaseID,
-                       AddVisibilityMarkers && dta->IsDisplayed, closeOnClick);
+                       AddVisibilityMarkers && dta->is_displayed, closeOnClick);
       CategoryList.push_back(dta.get());
       AddTypeContextMenu(n, CategoryList, dta.get(), AddVisibilityMarkers,
                          BaseID, closeOnClick);

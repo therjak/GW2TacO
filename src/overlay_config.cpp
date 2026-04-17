@@ -247,7 +247,7 @@ void LoadMarkerCategoryVisibilityInfo() {
     auto str = kdp.first.substr(16);
     auto cat = GetCategory(str);
     if (cat) {
-      cat->IsDisplayed = kdp.second != 0;
+      cat->is_displayed = kdp.second != 0;
     }
   }
   CategoryRoot.CalculateVisibilityCache();
