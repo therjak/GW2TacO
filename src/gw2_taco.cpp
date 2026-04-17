@@ -797,16 +797,16 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
 
           auto& dta = CategoryList[menucontext.item - Menu_MarkerFilter_Base];
 
-          if (!dta->IsOnlySeparator) {
-            auto txt = "[" + std::string(dta->IsDisplayed ? "x" : " ") + "] ";
-            if (!dta->displayName.empty()) {
-              txt += dta->displayName;
+          if (!dta->is_only_separator) {
+            auto txt = "[" + std::string(dta->is_displayed ? "x" : " ") + "] ";
+            if (!dta->display_name.empty()) {
+              txt += dta->display_name;
             } else {
               txt += dta->name;
             }
 
             itm->SetText(txt);
-            itm->SetHighlight(dta->IsDisplayed);
+            itm->SetHighlight(dta->is_displayed);
           }
         }
         break;
@@ -964,8 +964,8 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
       if (Message.Data() >= Menu_MarkerFilter_Base &&
           Message.Data() < Menu_MarkerFilter_Base + CategoryList.size()) {
         bool displayed =
-            !CategoryList[Message.Data() - Menu_MarkerFilter_Base]->IsDisplayed;
-        CategoryList[Message.Data() - Menu_MarkerFilter_Base]->IsDisplayed =
+            !CategoryList[Message.Data() - Menu_MarkerFilter_Base]->is_displayed;
+        CategoryList[Message.Data() - Menu_MarkerFilter_Base]->is_displayed =
             displayed;
         SetConfigValue(("CategoryVisible_" +
                         CategoryList[Message.Data() - Menu_MarkerFilter_Base]

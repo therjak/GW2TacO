@@ -13,47 +13,47 @@ GW2TacticalCategory CategoryRoot;
 std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
 
 std::string GW2TacticalCategory::GetFullTypeName() {
-  if (!cachedTypeName.empty()) return cachedTypeName;
+  if (!cached_type_name_.empty()) return cached_type_name_;
 
-  if (!Parent) return "";
-  if (Parent == &CategoryRoot) {
+  if (!parent) return "";
+  if (parent == &CategoryRoot) {
     std::string n = name;
     std::transform(n.begin(), n.end(), n.begin(),
                    [](unsigned char c) { return std::tolower(c); });
     return n;
   }
-  std::string pname = Parent->GetFullTypeName();
+  std::string pname = parent->GetFullTypeName();
   std::string s = pname + "." + name;
   std::transform(s.begin(), s.end(), s.begin(),
                  [](unsigned char c) { return std::tolower(c); });
 
-  cachedTypeName = s;
+  cached_type_name_ = s;
   return s;
 }
 
 bool GW2TacticalCategory::IsVisible() const {
-  if (visibilityCached) {
-    return cachedVisibility;
+  if (visibility_cached_) {
+    return cached_visibility_;
   }
-  if (!Parent) {
-    return IsDisplayed;
+  if (!parent) {
+    return is_displayed;
   }
-  return IsDisplayed && Parent->IsVisible();
+  return is_displayed && parent->IsVisible();
 }
 
 void GW2TacticalCategory::CacheVisibility() {
-  cachedVisibility = IsVisible();
+  cached_visibility_ = IsVisible();
   for (auto& c : children) {
     c->CacheVisibility();
   }
 }
 
-bool GW2TacticalCategory::visibilityCached = false;
+bool GW2TacticalCategory::visibility_cached_ = false;
 
 void GW2TacticalCategory::CalculateVisibilityCache() {
-  visibilityCached = false;
+  visibility_cached_ = false;
   CacheVisibility();
-  visibilityCached = true;
+  visibility_cached_ = true;
 }
 
 GW2TacticalCategory* GetCategory(std::string_view sv) {
