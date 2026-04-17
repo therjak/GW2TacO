@@ -13,23 +13,23 @@ export class GW2RangeDisplay
  public:
   GW2RangeDisplay();
   ~GW2RangeDisplay() override;
-  static inline GW2RangeDisplay* Create(gui::CWBItem* Parent,
-                                        math::Rect Position) {
+  static inline GW2RangeDisplay* Create(gui::CWBItem* parent,
+                                        math::Rect position) {
     auto p = std::make_unique<GW2RangeDisplay>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     GW2RangeDisplay* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* API) override;
-  void DrawRangeCircle(gui::CWBDrawAPI* API, float range, float alpha);
+  void OnDraw(gui::CWBDrawAPI* api) override;
+  void DrawRangeCircle(gui::CWBDrawAPI* api, float range, float alpha);
 };
