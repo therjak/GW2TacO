@@ -13,23 +13,23 @@ export class GW2TacticalCompass
  public:
   GW2TacticalCompass();
   ~GW2TacticalCompass() override;
-  static inline GW2TacticalCompass* Create(gui::CWBItem* Parent,
-                                           math::Rect Position) {
+  static inline GW2TacticalCompass* Create(gui::CWBItem* parent,
+                                           math::Rect position) {
     auto p = std::make_unique<GW2TacticalCompass>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     GW2TacticalCompass* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* API) override;
-  void DrawTacticalCompass(gui::CWBDrawAPI* API);
+  void OnDraw(gui::CWBDrawAPI* api) override;
+  void DrawTacticalCompass(gui::CWBDrawAPI* api);
 };
