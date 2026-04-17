@@ -627,11 +627,11 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
             if (!raids.empty()) raid->AddSeparator();
             for (int32_t x = 0; x < raids.size(); x++) {
               auto& r = raids[x];
-              raid->AddItem(((HasConfigValue(r.configName) &&
-                              !GetConfigValue(r.configName))
+              raid->AddItem(((HasConfigValue(r.config_name) &&
+                              !GetConfigValue(r.config_name))
                                  ? "[ ] "
                                  : "[x] ") +
-                                DICT(r.configName, r.name),
+                                DICT(r.config_name, r.name),
                             Menu_RaidToggles + x, false, false);
             }
           }
@@ -780,10 +780,10 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
             auto itm = ctxMenu->GetItem(menucontext.item);
             auto& r = raids[raidToggle];
             itm->SetText(
-                ((HasConfigValue(r.configName) && !GetConfigValue(r.configName))
+                ((HasConfigValue(r.config_name) && !GetConfigValue(r.config_name))
                      ? "[ ] "
                      : "[x] ") +
-                DICT(r.configName, r.name));
+                DICT(r.config_name, r.name));
           }
         }
       }
@@ -933,10 +933,10 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         if (rp) {
           auto& raids = rp->GetRaids();
           if (raidToggle < raids.size()) {
-            if (!HasConfigValue(raids[raidToggle].configName)) {
-              SetConfigValue(raids[raidToggle].configName, 0);
+            if (!HasConfigValue(raids[raidToggle].config_name)) {
+              SetConfigValue(raids[raidToggle].config_name, 0);
             } else {
-              ToggleConfigValue(raids[raidToggle].configName);
+              ToggleConfigValue(raids[raidToggle].config_name);
             }
           }
         }
