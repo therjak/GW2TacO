@@ -20,24 +20,24 @@ import xml;
 using math::Point;
 using math::Rect;
 
-void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
+void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
   bool compact = GetConfigValue("CompactRaidWindow");
 
   gui::CWBFont* f = GetFont(GetState());
   GW2::APIKeyManager::Status status =
-      GW2::apiKeyManager.DisplayStatusText(API, f);
+      GW2::apiKeyManager.DisplayStatusText(api, f);
   if (status != GW2::APIKeyManager::Status::OK) {
     return;
   }
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
-    if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+      (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
+    if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
                                   std::future_status::ready) {
-      lastFetchTime = GetTime();
-      fetchTask = std::async(std::launch::async, [this, key]() {
-        const auto& raid_data = key->QuerySet("/v2/account/raids");
+      last_fetch_time_ = GetTime();
+      fetch_task_ = std::async(std::launch::async, [this, key]() {
+        const auto& raid_data = key->QuerySet("/v2/account/raids_");
         raid_queue.push(raid_data);
       });
     }
@@ -46,7 +46,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
   const auto& new_raid_data = raid_queue.pop();
   if (new_raid_data.has_value()) {
     const auto& raid_data = new_raid_data.value();
-    for (auto& r : raids) {
+    for (auto& r : raids_) {
       for (auto& w : r.wings) {
         for (auto& e : w.events) {
           e.finished = raid_data.contains(std::string(e.name));
@@ -55,49 +55,49 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
     }
   }
 
-  int32_t posx = 0;
+  int32_t pos_x = 0;
   if (compact) {
-    for (const auto& r : raids) posx = std::max(posx, f->GetWidth(r.shortName));
+    for (const auto& r : raids_) pos_x = std::max(pos_x, f->GetWidth(r.short_name));
   }
-  posx += 3;
-  int32_t oposx = posx;
+  pos_x += 3;
+  int32_t original_pos_x = pos_x;
 
-  int32_t posy = 0;
-  for (auto& r : raids) {
-    if (HasConfigValue(r.configName) && !GetConfigValue(r.configName)) continue;
+  int32_t pos_y = 0;
+  for (auto& r : raids_) {
+    if (HasConfigValue(r.config_name) && !GetConfigValue(r.config_name)) continue;
 
     if (!compact) {
-      f->Write(API, DICT(r.configName, r.name), Point(0, posy + 1),
+      f->Write(api, DICT(r.config_name, r.name), Point(0, pos_y + 1),
                CColor{0xffffffff});
-      posy += f->GetLineHeight();
+      pos_y += f->GetLineHeight();
     } else {
-      f->Write(API, r.shortName, Point(0, posy + 1), CColor{0xffffffff});
+      f->Write(api, r.short_name, Point(0, pos_y + 1), CColor{0xffffffff});
     }
     for (size_t y = 0; y < r.wings.size(); y++) {
       auto& w = r.wings[y];
 
       if (!compact) {
-        posx = f->GetLineHeight() * 1;
+        pos_x = f->GetLineHeight() * 1;
       } else {
-        posx = oposx;
+        pos_x = original_pos_x;
       }
 
       if (!compact) {
-        f->Write(API, DICT("raid_wing") + std::to_string(y + 1),
-                 Point(posx, posy + 1), CColor{0xffffffff});
+        f->Write(api, DICT("raid_wing") + std::to_string(y + 1),
+                 Point(pos_x, pos_y + 1), CColor{0xffffffff});
       }
 
-      if (!compact) posx = f->GetLineHeight() * 3;
+      if (!compact) pos_x = f->GetLineHeight() * 3;
 
       int cnt = 1;
 
       for (auto& e : w.events) {
-        Rect r = Rect(posx, posy, posx + f->GetLineHeight() * 2,
-                        posy + f->GetLineHeight() - 1);
-        Rect cr = API->GetCropRect();
-        API->SetCropRect(ClientToScreen(r));
-        posx += f->GetLineHeight() * 2 + 1;
-        API->DrawRect(r, e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
+        Rect r = Rect(pos_x, pos_y, pos_x + f->GetLineHeight() * 2,
+                        pos_y + f->GetLineHeight() - 1);
+        Rect cr = api->GetCropRect();
+        api->SetCropRect(ClientToScreen(r));
+        pos_x += f->GetLineHeight() * 2 + 1;
+        api->DrawRect(r, e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
         auto s = e.type == RaidEvent::Type::Boss
                      ? (DICT("raid_boss") + std::to_string(cnt))
                      : DICT("raid_event");
@@ -108,22 +108,22 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* API) {
                                        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                                        gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
                                        gui::WBTEXTTRANSFORM::WBTT_NONE);
-        tp.y = posy + 1;
-        f->Write(API, s, tp, CColor{0xffffffff});
-        API->DrawRectBorder(r, CColor{0x80000000});
-        API->SetCropRect(cr);
+        tp.y = pos_y + 1;
+        f->Write(api, s, tp, CColor{0xffffffff});
+        api->DrawRectBorder(r, CColor{0x80000000});
+        api->SetCropRect(cr);
       }
 
-      posy += f->GetLineHeight();
+      pos_y += f->GetLineHeight();
     }
   }
 
-  DrawBorder(API);
+  DrawBorder(api);
 }
 
 RaidProgress::RaidProgress()
     : CWBGuiType(),
-      raids{
+      raids_{
           Raid{"Forsaken Thicket",
                "FT",
                "showraid_forsaken_thicket",
@@ -185,14 +185,14 @@ RaidProgress::RaidProgress()
 
 RaidProgress::~RaidProgress() {}
 
-gui::CWBItem* RaidProgress::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                    Rect& Pos) {
-  return RaidProgress::Create(Root, Pos);
+gui::CWBItem* RaidProgress::Factory(gui::CWBItem* root, CXMLNode& node,
+                                    Rect& pos) {
+  return RaidProgress::Create(root, pos);
 }
 
-bool RaidProgress::IsMouseTransparent(const Point& ClientSpacePoint,
-                                      gui::WBMESSAGE MessageType) {
+bool RaidProgress::IsMouseTransparent(const Point& client_space_point,
+                                      gui::WBMESSAGE message_type) {
   return true;
 }
 
-std::vector<Raid>& RaidProgress::GetRaids() { return raids; }
+std::vector<Raid>& RaidProgress::GetRaids() { return raids_; }
