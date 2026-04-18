@@ -31,4 +31,7 @@ When contributing to or modifying this repository, observe the following rules:
 - **Build System**: This is a CMake C++ project. All build dependencies, file groups, and property management must happen via `CMakeLists.txt`.
 - **C++20 Modules**: The project heavily uses C++20 modules. 
   - When adding an `import` statement, **place it below all `#include` statements**.
+  - Keep `import` statements **sorted alphabetically**.
 - **Code Style**: Strictly adhere to the Google C++ Style Guide. Consistent formatting and modern C++ practices apply. Ensure any additions follow existing naming and architectural patterns. Use C++ modules instead of headers where possible.
+- **Testing**: Use the **GoogleTest** framework for unit tests.
+
