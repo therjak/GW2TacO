@@ -4,6 +4,15 @@ set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 project(GW2TacO LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.tar.gz
+)
+# For Windows: Do not override the settings
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
 ################################################################################
@@ -84,6 +93,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Sub-projects
 ################################################################################
 add_subdirectory(src/util)
+enable_testing()
 
 set(PROJECT_NAME GW2TacO)
 
@@ -134,6 +144,66 @@ set(Header_Files
 )
 source_group("Header Files" FILES ${Header_Files})
 
+set(Base_Source_Files
+    "src/base/file_list.cpp"
+    "src/base/hasher.cpp"
+    "src/base/image_decompressor.cpp"
+    "src/base/logger.cpp"
+    "src/base/matrix.cpp"
+    "src/base/socket.cpp"
+    "src/base/spec_math.cpp"
+    "src/base/stream_reader.cpp"
+    "src/base/stream_writer.cpp"
+    "src/base/string_format.cpp"
+    "src/base/timer.cpp"
+    "src/base/vector.cpp"
+    "src/build_info.cpp"
+)
+
+set(Core2_Source_Files
+    "src/core2/constant_buffer.cpp"
+    "src/core2/device.cpp"
+    "src/core2/dss_texture_loader.cpp"
+    "src/core2/dx11_constant_buffer.cpp"
+    "src/core2/dx11_device.cpp"
+    "src/core2/dx11_enums.cpp"
+    "src/core2/dx11_index_buffer.cpp"
+    "src/core2/dx11_render_state.cpp"
+    "src/core2/dx11_shader.cpp"
+    "src/core2/dx11_texture.cpp"
+    "src/core2/dx11_vertex_buffer.cpp"
+    "src/core2/dx11_vertex_format.cpp"
+    "src/core2/render_state.cpp"
+    "src/core2/resource.cpp"
+    "src/core2/shader.cpp"
+    "src/core2/window_handler.cpp"
+)
+
+set(Util_Source_Files
+    "src/util/png_decompressor.cpp"
+    "src/util/xml_document.cpp"
+    "src/util/xml_node.cpp"
+)
+
+set(Whiteboard_Source_Files
+    "src/white_board/application.cpp"
+    "src/white_board/atlas.cpp"
+    "src/white_board/box.cpp"
+    "src/white_board/button.cpp"
+    "src/white_board/context_menu.cpp"
+    "src/white_board/css_item.cpp"
+    "src/white_board/draw_api.cpp"
+    "src/white_board/font.cpp"
+    "src/white_board/gui_item.cpp"
+    "src/white_board/label.cpp"
+    "src/white_board/message.cpp"
+    "src/white_board/root.cpp"
+    "src/white_board/skin.cpp"
+    "src/white_board/style_manager.cpp"
+    "src/white_board/text_box.cpp"
+    "src/white_board/window.cpp"
+)
+
 set(Resources
     "maptimer.xml"
     "notepad.txt"
@@ -152,40 +222,11 @@ set(Resources
 source_group("Resources" FILES ${Resources})
 
 set(Source_Files
-    "src/base/file_list.cpp"
-    "src/base/hasher.cpp"
-    "src/base/image_decompressor.cpp"
-    "src/base/logger.cpp"
-    "src/base/matrix.cpp"
-    "src/base/socket.cpp"
-    "src/base/spec_math.cpp"
-    "src/base/stream_reader.cpp"
-    "src/base/stream_writer.cpp"
-    "src/base/string_format.cpp"
-    "src/base/timer.cpp"
-    "src/base/vector.cpp"
-    "src/build_info.cpp"
-    "src/core2/constant_buffer.cpp"
-    "src/core2/device.cpp"
-    "src/core2/dss_texture_loader.cpp"
-    "src/core2/dx11_constant_buffer.cpp"
-    "src/core2/dx11_device.cpp"
-    "src/core2/dx11_enums.cpp"
-    "src/core2/dx11_index_buffer.cpp"
-    "src/core2/dx11_render_state.cpp"
-    "src/core2/dx11_shader.cpp"
-    "src/core2/dx11_texture.cpp"
-    "src/core2/dx11_vertex_buffer.cpp"
-    "src/core2/dx11_vertex_format.cpp"
-    "src/core2/render_state.cpp"
-    "src/core2/resource.cpp"
-    "src/core2/shader.cpp"
-    "src/core2/window_handler.cpp"
-    "src/dungeon_progress.cpp"
-    "src/gw2_api.cpp"
     "src/gw2_pois.cpp"
     "src/gw2_taco.cpp"
     "src/gw2_tactical.cpp"
+    "src/dungeon_progress.cpp"
+    "src/gw2_api.cpp"
     "src/hp_grid.cpp"
     "src/language.cpp"
     "src/locational_timer.cpp"
@@ -209,27 +250,9 @@ set(Source_Files
     "src/trail_logger.cpp"
     "src/ts3_connection.cpp"
     "src/ts3_control.cpp"
-    "src/util/png_decompressor.cpp"
-    "src/util/xml_document.cpp"
-    "src/util/xml_node.cpp"
-    "src/white_board/application.cpp"
-    "src/white_board/atlas.cpp"
-    "src/white_board/box.cpp"
-    "src/white_board/button.cpp"
-    "src/white_board/context_menu.cpp"
-    "src/white_board/css_item.cpp"
-    "src/white_board/draw_api.cpp"
-    "src/white_board/font.cpp"
-    "src/white_board/gui_item.cpp"
-    "src/white_board/label.cpp"
-    "src/white_board/message.cpp"
-    "src/white_board/root.cpp"
-    "src/white_board/skin.cpp"
-    "src/white_board/style_manager.cpp"
-    "src/white_board/text_box.cpp"
-    "src/white_board/window.cpp"
     "src/wvw.cpp"
 )
+source_group("Source Files" FILES ${Source_Files})
 source_group("Source Files" FILES ${Source_Files})
 
 set(Data_Files
@@ -359,12 +382,12 @@ configure_file(src/build_count.h.in src/build_count.h @ONLY)
 include_directories(${CMAKE_BINARY_DIR})
 
 ################################################################################
-# Target
+# Libraries
 ################################################################################
-add_executable(${PROJECT_NAME})
-target_sources(${PROJECT_NAME}
+add_library(taco_base STATIC)
+target_sources(taco_base
     PRIVATE
-        ${Source_Files}
+        ${Base_Source_Files}
     PRIVATE
         FILE_SET modules TYPE CXX_MODULES
         FILES
@@ -377,6 +400,75 @@ target_sources(${PROJECT_NAME}
             src/base/sphere.ixx
             src/base/vector.ixx
             src/build_info.ixx
+            src/time.ixx
+)
+target_include_directories(taco_base PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+use_props(taco_base "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+
+add_library(taco_util STATIC)
+target_sources(taco_util
+    PRIVATE
+        ${Util_Source_Files}
+    PRIVATE
+        FILE_SET modules TYPE CXX_MODULES
+        FILES
+            src/util/xml_node.ixx
+            src/util/xml_document.ixx
+            src/util/xml.ixx
+)
+target_include_directories(taco_util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(taco_util PRIVATE third_party)
+use_props(taco_util "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+
+add_library(taco_core2 STATIC)
+target_sources(taco_core2
+    PRIVATE
+        ${Core2_Source_Files}
+)
+target_include_directories(taco_core2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(taco_core2 PRIVATE taco_base taco_util)
+use_props(taco_core2 "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+
+add_library(whiteboard STATIC)
+target_sources(whiteboard
+    PRIVATE
+        ${Whiteboard_Source_Files}
+    PRIVATE
+        FILE_SET modules TYPE CXX_MODULES
+        FILES
+            src/white_board/atlas.ixx
+            src/white_board/application.ixx
+            src/white_board/box.ixx
+            src/white_board/button.ixx
+            src/white_board/context_menu.ixx
+            src/white_board/css_item.ixx
+            src/white_board/draw_api.ixx
+            src/white_board/font.ixx
+            src/white_board/gui_item.ixx
+            src/white_board/label.ixx
+            src/white_board/message_enum.ixx
+            src/white_board/message.ixx
+            src/white_board/root.ixx
+            src/white_board/skin.ixx
+            src/white_board/style_manager.ixx
+            src/white_board/text_box.ixx
+            src/white_board/white_board.ixx
+            src/white_board/window.ixx
+)
+target_include_directories(whiteboard PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(whiteboard PRIVATE taco_base taco_core2 third_party)
+use_props(whiteboard "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+
+################################################################################
+# Target
+################################################################################
+add_executable(${PROJECT_NAME})
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        ${Source_Files}
+    PRIVATE
+        FILE_SET modules TYPE CXX_MODULES
+        FILES
             src/dungeon_progress.ixx
             src/gw2_api.ixx
             src/gw2_taco.ixx
@@ -400,32 +492,10 @@ target_sources(${PROJECT_NAME}
             src/string_set.ixx
             src/tactical_category.ixx
             src/tactical_compass.ixx
-            src/time.ixx
             src/tp_tracker.ixx
             src/trail_logger.ixx
             src/ts3_connection.ixx
             src/ts3_control.ixx
-            src/util/xml_node.ixx
-            src/util/xml_document.ixx
-            src/util/xml.ixx
-            src/white_board/atlas.ixx
-            src/white_board/application.ixx
-            src/white_board/box.ixx
-            src/white_board/button.ixx
-            src/white_board/context_menu.ixx
-            src/white_board/css_item.ixx
-            src/white_board/draw_api.ixx
-            src/white_board/font.ixx
-            src/white_board/gui_item.ixx
-            src/white_board/label.ixx
-            src/white_board/message_enum.ixx
-            src/white_board/message.ixx
-            src/white_board/root.ixx
-            src/white_board/skin.ixx
-            src/white_board/style_manager.ixx
-            src/white_board/text_box.ixx
-            src/white_board/white_board.ixx
-            src/white_board/window.ixx
             src/wvw.ixx
     PUBLIC
         FILE_SET HEADERS
@@ -433,6 +503,8 @@ target_sources(${PROJECT_NAME}
         "${CMAKE_CURRENT_SOURCE_DIR}/."    
     FILES ${Header_Files}
 )
+
+add_subdirectory(tests)
 
 use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 set(ROOT_NAMESPACE GW2Overlay)
@@ -463,25 +535,26 @@ set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUN
 ################################################################################
 # Compile definitions
 ################################################################################
+set(Common_Definitions
+    "$<$<CONFIG:Debug_MultiByte>:_DEBUG>"
+    "$<$<CONFIG:Debug>:_DEBUG>"
+    "$<$<CONFIG:Release_MultiByte>:NDEBUG>"
+    "$<$<CONFIG:Release>:NDEBUG>"
+    "NOMINMAX"
+    "_CRT_SECURE_NO_WARNINGS"
+    "WIN32_LEAN_AND_MEAN"
+    "WIN32"
+    "_WINDOWS"
+)
+
+target_compile_definitions(taco_base PUBLIC ${Common_Definitions})
+target_compile_definitions(taco_util PUBLIC ${Common_Definitions})
+target_compile_definitions(taco_core2 PUBLIC ${Common_Definitions})
+target_compile_definitions(whiteboard PUBLIC ${Common_Definitions})
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE
-"$<$<CONFIG:Debug_MultiByte>:"
-    "_DEBUG"
-">"
-"$<$<CONFIG:Debug>:"
-    "_DEBUG"
-">"
-"$<$<CONFIG:Release_MultiByte>:"
-    "NDEBUG"
-">"
-"$<$<CONFIG:Release>:"
-    "NDEBUG"
-">"
-"NOMINMAX;"
-"_CRT_SECURE_NO_WARNINGS;"
-"WIN32_LEAN_AND_MEAN;"
-"WIN32;"
-"_WINDOWS"
-"MINIZ_NO_ZLIB_COMPATIBLE_NAMES"
+    ${Common_Definitions}
+    "MINIZ_NO_ZLIB_COMPATIBLE_NAMES"
 )
 
 ################################################################################
@@ -542,6 +615,10 @@ endif()
 ################################################################################
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    taco_base
+    taco_util
+    taco_core2
+    whiteboard
     third_party
 )
 

@@ -10,3 +10,4 @@ syntax: glob
 /TacOConfig.xml
 /build/*
 .cache/*
+build_taco/*
