@@ -4,9 +4,9 @@
 GW2TacO is an overlay designed for the MMORPG *Guild Wars 2*. It acts as a transparent window over the game client to provide players with tactical guidance, timers, and specialized tracking features without injecting code into or modifying the game itself. The project relies on the Guild Wars 2 "Mumble Link" API, which exposes real-time player positioning, map, and camera information directly to external applications.
 
 ## Technical Stack & Architecture
-- **Language**: C++20
+- **Language**: C++23
 - **Build System**: CMake (cross-platform configuration, though currently Windows/x64 focused)
-- **Toolchain**: Designed for MSVC, utilizing the latest C++20 Module capabilities (`.ixx` files).
+- **Toolchain**: Designed for MSVC, utilizing the latest C++23 Module capabilities (`.ixx` files).
 - **Graphics/Rendering (`src/core2`)**: Direct3D 11 backend to handle 3D overlays, markers, and trails effectively within the 3D space aligned with the game's camera.
 - **Custom UI Toolkit (`src/white_board`)**: A bespoke user interface library featuring CSS-like properties (`UI.css`), styling managers, window systems, buttons, text boxes, and more.
 
@@ -29,7 +29,7 @@ GW2TacO is an overlay designed for the MMORPG *Guild Wars 2*. It acts as a trans
 When contributing to or modifying this repository, observe the following rules:
 
 - **Build System**: This is a CMake C++ project. All build dependencies, file groups, and property management must happen via `CMakeLists.txt`.
-- **C++20 Modules**: The project heavily uses C++20 modules. 
+- **C++23 Modules**: The project heavily uses C++23 modules. 
   - When adding an `import` statement, **place it below all `#include` statements**.
   - Keep `import` statements **sorted alphabetically**.
 - **Code Style**: Strictly adhere to the Google C++ Style Guide. Consistent formatting and modern C++ practices apply. Ensure any additions follow existing naming and architectural patterns. Use C++ modules instead of headers where possible.

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 project(GW2TacO LANGUAGES C CXX)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "$<$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>:MultiThreaded>$<$<NOT:$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>>:MultiThreaded$<$<CONFIG:Debug,Debug_MultiByte>:Debug>DLL>")
 if(MSVC)
     add_compile_options(/utf-8 /MP /W3)
