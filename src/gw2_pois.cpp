@@ -165,15 +165,15 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
     auto* pkbdllhook = (KBDLLHOOKSTRUCT*)lParam;
     HKL dwhkl = nullptr;
     BYTE dbKbdState[256];
-    TCHAR szCharBuf[32] = {};
+    wchar_t szCharBuf[32] = {};
     static KBDLLHOOKSTRUCT lastState = {0};
 
     GetKeyboardState(dbKbdState);
     dwhkl = GetKeyboardLayout(
         GetWindowThreadProcessId(GetForegroundWindow(), nullptr));
 
-    if (ToAsciiEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
-                  reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) == -1) {
+    if (ToUnicodeEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
+                    szCharBuf, 32, 0, dwhkl) == -1) {
       // PostMessage( (HWND)App->GetHandle(), WM_DEADCHAR, pkbdllhook->vkCode, 1
       // | ( pkbdllhook->scanCode << 16 ) + ( pkbdllhook->flags << 24 ) );
 
@@ -181,10 +181,10 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
       lastState = *pkbdllhook;
       // You might also need to hang onto the dbKbdState array... I'm thinking
       // not. Clear out the buffer to return to the previous state - wait for
-      // ToAsciiEx to return a value other than -1 by passing the same key
+      // ToUnicodeEx to return a value other than -1 by passing the same key
       // again. It should happen after 1 call.
-      while (ToAsciiEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
-                       reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl) < 0) {
+      while (ToUnicodeEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
+                         szCharBuf, 32, 0, dwhkl) < 0) {
         ;
       }
     } else {
@@ -195,8 +195,8 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
         // Safest to just clear this.
         memset(dbKbdState, 0, 256);
         // Put the old vkCode back into the locale's buffer.
-        ToAsciiEx(lastState.vkCode, lastState.scanCode, dbKbdState,
-                  reinterpret_cast<LPWORD>(szCharBuf), 0, dwhkl);
+        ToUnicodeEx(lastState.vkCode, lastState.scanCode, dbKbdState,
+                    szCharBuf, 32, 0, dwhkl);
         // Set vkCode to 0, we can use this as a flag as a vkCode of 0 is
         // invalid.
         lastState.vkCode = 0;
@@ -645,8 +645,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     SetCurrentDirectory(s.c_str());
 
     auto TacoWindow = FindWindow("CoRE2", "Guild Wars 2 Tactical Overlay");
-    Log_Nfo("[GW2TacO] TacO window id: {:d}",
-            reinterpret_cast<int>(TacoWindow));
+    Log_Nfo("[GW2TacO] TacO window id: {:p}",
+            static_cast<void*>(TacoWindow));
     if (TacoWindow) {
       COPYDATASTRUCT MyCDS = {};
       MyCDS.dwData = 0;
