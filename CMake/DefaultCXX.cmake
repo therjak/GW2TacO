@@ -7,7 +7,7 @@ if(MSVC)
     create_property_reader("DEFAULT_CXX_DEBUG_INFORMATION_FORMAT")
     create_property_reader("DEFAULT_CXX_RUNTIME_LIBRARY")
 
-    set_target_properties("${PROPS_TARGET}" PROPERTIES MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    set_target_properties("${PROPS_TARGET}" PROPERTIES MSVC_RUNTIME_LIBRARY "$<$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>:MultiThreaded>$<$<NOT:$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>>:MultiThreaded$<$<CONFIG:Debug,Debug_MultiByte>:Debug>DLL>")
     set_config_specific_property("DEFAULT_CXX_EXCEPTION_HANDLING" "/EHsc")
     set_config_specific_property("DEFAULT_CXX_DEBUG_INFORMATION_FORMAT" "/Zi")
     set_config_specific_property("DEFAULT_CXX_RUNTIME_LIBRARY" "/MD")

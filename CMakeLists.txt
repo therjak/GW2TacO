@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
 project(GW2TacO LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "$<$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>:MultiThreaded>$<$<NOT:$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>>:MultiThreaded$<$<CONFIG:Debug,Debug_MultiByte>:Debug>DLL>")
+if(MSVC)
+    add_compile_options(/utf-8 /MP /W3)
+endif()
 
 include(FetchContent)
 FetchContent_Declare(
@@ -10,7 +14,7 @@ FetchContent_Declare(
   URL https://github.com/google/googletest/archive/refs/tags/v1.17.0.tar.gz
 )
 # For Windows: Do not override the settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+set(gtest_force_shared_crt OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 ################################################################################
@@ -157,7 +161,6 @@ set(Base_Source_Files
     "src/base/string_format.cpp"
     "src/base/timer.cpp"
     "src/base/vector.cpp"
-    "src/build_info.cpp"
 )
 
 set(Core2_Source_Files
@@ -222,6 +225,7 @@ set(Resources
 source_group("Resources" FILES ${Resources})
 
 set(Source_Files
+    "src/build_info.cpp"
     "src/gw2_pois.cpp"
     "src/gw2_taco.cpp"
     "src/gw2_tactical.cpp"
@@ -399,7 +403,6 @@ target_sources(taco_base
             src/base/spec_math.ixx
             src/base/sphere.ixx
             src/base/vector.ixx
-            src/build_info.ixx
             src/base/time.ixx
 )
 target_include_directories(taco_base PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -469,6 +472,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
         FILE_SET modules TYPE CXX_MODULES
         FILES
+            src/build_info.ixx
             src/dungeon_progress.ixx
             src/gw2_api.ixx
             src/gw2_taco.ixx
@@ -517,20 +521,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 INTERPROCEDURAL_OPTIMIZATION_RELEASE_MULTIBYTE "TRUE"
 INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
 )
-################################################################################
-# MSVC runtime library
-################################################################################
-get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
-string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
-$<$<CONFIG:Release_MultiByte>:
-    MultiThreaded
->
-$<$<CONFIG:Release>:
-    MultiThreaded
->
-$<$<NOT:$<OR:$<CONFIG:Release_MultiByte>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
-)
-set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
 
 ################################################################################
 # Compile definitions
@@ -578,9 +568,6 @@ if(MSVC)
                 /Oi;
                 /Gy
             >
-            /MP;
-            /W3;
-            /utf-8;
             /Y-
         )
         target_link_options(${PROJECT_NAME} PRIVATE

@@ -56,20 +56,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
     INTERPROCEDURAL_OPTIMIZATION_RELEASE_MULTIBYTE "TRUE"
     INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
 )
-################################################################################
-# MSVC runtime library
-################################################################################
-get_property(MSVC_RUNTIME_LIBRARY_DEFAULT TARGET ${PROJECT_NAME} PROPERTY MSVC_RUNTIME_LIBRARY)
-string(CONCAT "MSVC_RUNTIME_LIBRARY_STR"
-    $<$<CONFIG:Release_MultiByte>:
-        MultiThreaded
-    >
-    $<$<CONFIG:Release>:
-        MultiThreaded
-    >
-    $<$<NOT:$<OR:$<CONFIG:Release_MultiByte>,$<CONFIG:Release>>>:${MSVC_RUNTIME_LIBRARY_DEFAULT}>
-)
-set_target_properties(${PROJECT_NAME} PROPERTIES MSVC_RUNTIME_LIBRARY ${MSVC_RUNTIME_LIBRARY_STR})
 
 ################################################################################
 # Compile definitions
@@ -118,9 +104,6 @@ if(MSVC)
             /Oi;
             /Gy
         >
-        /MP;
-        /W3;
-        /utf-8;
         /Y-
         )
     target_link_options(${PROJECT_NAME} PRIVATE
