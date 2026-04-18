@@ -16,7 +16,7 @@ import math;
 import taco.gw2;
 import taco.language;
 import taco.overlay_config;
-import taco.time;
+import time;
 import whiteboard;
 
 using math::Point;

@@ -27,11 +27,11 @@ import taco.notepad;
 import taco.overlay_config;
 import taco.overlay_window;
 import taco.raid_progress;
-import taco.time;
 import taco.tp_tracker;
 import taco.trail_logger;
 import taco.ts3_control;
 import taco.ts3connection;
+import time;
 import whiteboard;
 
 using math::Point;
@@ -779,11 +779,11 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
                 App->FindItemByGuid(menucontext.menu));
             auto itm = ctxMenu->GetItem(menucontext.item);
             auto& r = raids[raidToggle];
-            itm->SetText(
-                ((HasConfigValue(r.config_name) && !GetConfigValue(r.config_name))
-                     ? "[ ] "
-                     : "[x] ") +
-                DICT(r.config_name, r.name));
+            itm->SetText(((HasConfigValue(r.config_name) &&
+                           !GetConfigValue(r.config_name))
+                              ? "[ ] "
+                              : "[x] ") +
+                         DICT(r.config_name, r.name));
           }
         }
       }
@@ -963,8 +963,8 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
 
       if (Message.Data() >= Menu_MarkerFilter_Base &&
           Message.Data() < Menu_MarkerFilter_Base + CategoryList.size()) {
-        bool displayed =
-            !CategoryList[Message.Data() - Menu_MarkerFilter_Base]->is_displayed;
+        bool displayed = !CategoryList[Message.Data() - Menu_MarkerFilter_Base]
+                              ->is_displayed;
         CategoryList[Message.Data() - Menu_MarkerFilter_Base]->is_displayed =
             displayed;
         SetConfigValue(("CategoryVisible_" +

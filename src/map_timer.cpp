@@ -17,7 +17,7 @@ import math;
 import taco.gw2;
 import taco.gw2taco;
 import taco.overlay_config;
-import taco.time;
+import time;
 import whiteboard;
 import xml;
 
@@ -108,7 +108,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
 
   DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
                      Rect(Point(cl.x1 + paddingLeft, cl.y1),
-                           Point(cl.Width(), mapCount * mapheight + 1)),
+                          Point(cl.Width(), mapCount * mapheight + 1)),
                      GetState());
 
   auto TextTransform = static_cast<gui::WBTEXTTRANSFORM>(
@@ -160,10 +160,10 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
         if (&category != lastCategory) {
           if (lastCategory && lastCategory->color.A() > 0) {
             API->DrawRect(Rect(cl.x1, lastCategoryStartY,
-                                cl.x1 + categoryLineWidth, toppos),
+                               cl.x1 + categoryLineWidth, toppos),
                           lastCategory->color);
             API->DrawRectBorder(Rect(cl.x1, lastCategoryStartY,
-                                      cl.x1 + categoryLineWidth, toppos),
+                                     cl.x1 + categoryLineWidth, toppos),
                                 CColor{0x80000000});
           }
           lastCategoryStartY = toppos;
@@ -171,7 +171,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
         }
 
         Rect r = Rect(cl.x1, toppos, cl.x1 + paddingLeft, bottompos - 1)
-                      .GetIntersection(cl);
+                     .GetIntersection(cl);
         if (ClientToScreen(r).Contains(GetApplication()->GetMousePos())) {
           mouseToolTip = category.name;
         }
@@ -199,7 +199,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
 
         if (p2 >= paddingLeft && p1 <= cl.Width()) {
           Rect r = Rect(std::max(paddingLeft, p1), toppos,
-                          std::min(cl.Width(), p2), bottompos);
+                        std::min(cl.Width(), p2), bottompos);
 
           API->DrawRect(r, map.events[currevent].color);
 

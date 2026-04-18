@@ -14,7 +14,7 @@ module;
 module taco.ts3connection;
 
 import taco.overlay_config;
-import taco.time;
+import time;
 
 TS3Connection teamSpeakConnection;
 

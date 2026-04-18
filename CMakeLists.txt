@@ -400,7 +400,7 @@ target_sources(taco_base
             src/base/sphere.ixx
             src/base/vector.ixx
             src/build_info.ixx
-            src/time.ixx
+            src/base/time.ixx
 )
 target_include_directories(taco_base PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 use_props(taco_base "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")

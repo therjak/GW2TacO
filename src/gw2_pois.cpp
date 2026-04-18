@@ -47,9 +47,9 @@ import taco.pro_font;
 import taco.range_display;
 import taco.special_gui_items;
 import taco.tactical_compass;
-import taco.time;
 import taco.trail_logger;
 import taco.wvw;
+import time;
 import whiteboard;
 
 #pragma comment(lib, "Imm32.lib")
