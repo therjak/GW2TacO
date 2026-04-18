@@ -29,9 +29,9 @@ import taco.overlay_application;
 import taco.overlay_config;
 import taco.string_set;
 import taco.tactical_category;
-import taco.time;
 import taco.trail_logger;
 import taco.wvw;
+import time;
 import whiteboard;
 import xml;
 
@@ -1041,7 +1041,8 @@ void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
   if (!FindSavedCategory(t)) return;
   auto& nn = n->AddChild("MarkerCategory");
   nn.SetAttribute("name", t->name);
-  if (t->name != t->display_name) nn.SetAttribute("DisplayName", t->display_name);
+  if (t->name != t->display_name)
+    nn.SetAttribute("DisplayName", t->display_name);
   t->data.Write(&nn);
   for (const auto& c : t->children) ExportSavedCategories(&nn, c.get());
 }
@@ -1064,9 +1065,9 @@ void ExportPOI(CXMLNode* n, POI& p) {
 void ExportTrail(CXMLNode* n, GW2Trail& p) {
   CXMLNode* t = &n->AddChild("Trail");
   if (!p.type_.empty()) t->SetAttribute("type", p.type_);
-  t->SetAttribute(
-      "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid_),
-                                         sizeof(GUID))));
+  t->SetAttribute("GUID",
+                  B64Encode(std::string_view(
+                      reinterpret_cast<const char*>(&p.guid_), sizeof(GUID))));
   p.type_data_.Write(t);
 }
 

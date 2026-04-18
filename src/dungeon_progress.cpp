@@ -14,7 +14,7 @@ import math;
 import taco.gw2;
 import taco.language;
 import taco.overlay_config;
-import taco.time;
+import time;
 import whiteboard;
 import xml;
 
@@ -83,7 +83,7 @@ void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
       auto& p = d.paths[y];
 
       Rect r = Rect(posx, posy, posx + f->GetLineHeight() * 2,
-                      posy + f->GetLineHeight() - 1);
+                    posy + f->GetLineHeight() - 1);
       Rect cr = API->GetCropRect();
       API->SetCropRect(ClientToScreen(r));
       posx += f->GetLineHeight() * 2 + 1;

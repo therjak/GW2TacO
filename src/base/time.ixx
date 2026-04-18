@@ -2,7 +2,7 @@ module;
 
 #include <chrono>
 
-export module taco.time;
+export module time;
 
 auto taco_start_time = std::chrono::system_clock::now();
 

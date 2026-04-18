@@ -20,7 +20,7 @@ import taco.language;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.poi_behavior;
-import taco.time;
+import time;
 
 using math::Rect;
 using math::Size;
@@ -204,7 +204,8 @@ void LoadWvwObjectives() {
       auto objid = obj.get<jsonxx::String>("id");
 
       int map_id = 0, objident = 0;
-      if (std::sscanf(objid.c_str(), "%d-%d", &map_id, &objident) != 2) continue;
+      if (std::sscanf(objid.c_str(), "%d-%d", &map_id, &objident) != 2)
+        continue;
 
       if (!obj.has<jsonxx::Number>("map_id")) continue;
 
@@ -254,7 +255,7 @@ void LoadWvwObjectives() {
           if (ok) {
             wvwContinentRects[map_id] =
                 Rect(continentRectValues[0], continentRectValues[1],
-                      continentRectValues[2], continentRectValues[3]);
+                     continentRectValues[2], continentRectValues[3]);
           }
         }
 
@@ -265,14 +266,14 @@ void LoadWvwObjectives() {
         auto coord = obj.get<jsonxx::Array>("coord").values();
         if (coord.size() == 3) {
           Vector3 v(coord[0]->is<jsonxx::Number>()
-                         ? static_cast<float>(coord[0]->get<jsonxx::Number>())
-                         : 0,
-                     coord[1]->is<jsonxx::Number>()
-                         ? static_cast<float>(coord[1]->get<jsonxx::Number>())
-                         : 0,
-                     coord[2]->is<jsonxx::Number>()
-                         ? static_cast<float>(coord[2]->get<jsonxx::Number>())
-                         : 0);
+                        ? static_cast<float>(coord[0]->get<jsonxx::Number>())
+                        : 0,
+                    coord[1]->is<jsonxx::Number>()
+                        ? static_cast<float>(coord[1]->get<jsonxx::Number>())
+                        : 0,
+                    coord[2]->is<jsonxx::Number>()
+                        ? static_cast<float>(coord[2]->get<jsonxx::Number>())
+                        : 0);
 
           Rect& r = wvwContinentRects[map_id];
           Vector3 offset =

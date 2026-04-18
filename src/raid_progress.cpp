@@ -13,7 +13,7 @@ import math;
 import taco.gw2;
 import taco.language;
 import taco.overlay_config;
-import taco.time;
+import time;
 import whiteboard;
 import xml;
 
@@ -34,7 +34,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
   if (key && key->Valid() &&
       (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
     if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
-                                  std::future_status::ready) {
+                                    std::future_status::ready) {
       last_fetch_time_ = GetTime();
       fetch_task_ = std::async(std::launch::async, [this, key]() {
         const auto& raid_data = key->QuerySet("/v2/account/raids_");
@@ -57,14 +57,16 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
 
   int32_t pos_x = 0;
   if (compact) {
-    for (const auto& r : raids_) pos_x = std::max(pos_x, f->GetWidth(r.short_name));
+    for (const auto& r : raids_)
+      pos_x = std::max(pos_x, f->GetWidth(r.short_name));
   }
   pos_x += 3;
   int32_t original_pos_x = pos_x;
 
   int32_t pos_y = 0;
   for (auto& r : raids_) {
-    if (HasConfigValue(r.config_name) && !GetConfigValue(r.config_name)) continue;
+    if (HasConfigValue(r.config_name) && !GetConfigValue(r.config_name))
+      continue;
 
     if (!compact) {
       f->Write(api, DICT(r.config_name, r.name), Point(0, pos_y + 1),
@@ -93,7 +95,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
 
       for (auto& e : w.events) {
         Rect r = Rect(pos_x, pos_y, pos_x + f->GetLineHeight() * 2,
-                        pos_y + f->GetLineHeight() - 1);
+                      pos_y + f->GetLineHeight() - 1);
         Rect cr = api->GetCropRect();
         api->SetCropRect(ClientToScreen(r));
         pos_x += f->GetLineHeight() * 2 + 1;
@@ -105,9 +107,9 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
         if (e.type == RaidEvent::Type::Boss) cnt++;
 
         Point tp = f->GetTextPosition(s, r + Rect(-3, 0, 0, 0),
-                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                       gui::WBTEXTTRANSFORM::WBTT_NONE);
+                                      gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
+                                      gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
+                                      gui::WBTEXTTRANSFORM::WBTT_NONE);
         tp.y = pos_y + 1;
         f->Write(api, s, tp, CColor{0xffffffff});
         api->DrawRectBorder(r, CColor{0x80000000});

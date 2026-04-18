@@ -17,8 +17,8 @@ module taco.mumble_link;
 
 import math;
 import taco.overlay_config;
-import taco.time;
 import taco.trail_logger;
+import time;
 import whiteboard;
 
 using math::Matrix4x4;
@@ -118,19 +118,18 @@ bool CMumbleLink::Update() {
 
   charPosition = math::Lerp(Vector3(prevData.fAvatarPosition),
                             Vector3(lastData.fAvatarPosition), inter);
-  charEye = math::Lerp(Vector3(prevData.fAvatarTop),
-                       Vector3(lastData.fAvatarTop), 1);
+  charEye =
+      math::Lerp(Vector3(prevData.fAvatarTop), Vector3(lastData.fAvatarTop), 1);
   camPosition = math::Lerp(Vector3(prevData.fCameraPosition),
                            Vector3(lastData.fCameraPosition), 1);
-  camUp = math::Lerp(Vector3(prevData.fCameraTop),
-                     Vector3(lastData.fCameraTop), 1);
+  camUp =
+      math::Lerp(Vector3(prevData.fCameraTop), Vector3(lastData.fCameraTop), 1);
   camDir = math::Lerp(Vector3(prevData.fCameraFront),
                       Vector3(lastData.fCameraFront), inter);
 
   charPosChanged =
       Vector3(prevData.fAvatarPosition) != Vector3(lastData.fAvatarPosition);
-  charEyeChanged =
-      Vector3(prevData.fAvatarTop) != Vector3(lastData.fAvatarTop);
+  charEyeChanged = Vector3(prevData.fAvatarTop) != Vector3(lastData.fAvatarTop);
   camPosChanged =
       Vector3(prevData.fCameraPosition) != Vector3(lastData.fCameraPosition);
   camDirChanged =
@@ -323,12 +322,12 @@ CMumbleLink::~CMumbleLink() = default;
 bool CMumbleLink::IsValid() { return lm != nullptr && lastGW2ProcessID != 0; }
 
 Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& miniRect,
-                                                  bool ignoreRotation) {
-  Matrix4x4 miniMapTrafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0,
-                          0, 0, 0, 0, 1);
+                                                 bool ignoreRotation) {
+  Matrix4x4 miniMapTrafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0, 0,
+                         0, 0, 0, 1);
 
   Vector2 mapOffset = Vector2(WorldToGameCoords(mumbleLink.charPosition.x),
-                                WorldToGameCoords(mumbleLink.charPosition.z));
+                              WorldToGameCoords(mumbleLink.charPosition.z));
 
   float rotation = ignoreRotation ? 0 : compassRotation;
 
@@ -347,7 +346,7 @@ Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& miniRect,
       Matrix4x4::Scaling(Vector3(1, 1, 1) / mapScale * GetUIScale());
   miniMapTrafo *= Matrix4x4::Translation(
       Vector3(static_cast<float>(miniRect.Center().x),
-               static_cast<float>(miniRect.Center().y), 0.0));
+              static_cast<float>(miniRect.Center().y), 0.0));
 
   return miniMapTrafo;
 }

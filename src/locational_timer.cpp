@@ -10,7 +10,7 @@ import math;
 import taco.language;
 import taco.mumble_link;
 import taco.overlay_config;
-import taco.time;
+import time;
 import xml;
 
 using math::Point;
