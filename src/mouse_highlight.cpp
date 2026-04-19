@@ -21,18 +21,18 @@ void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* api) {
   Point cp(pos.x, pos.y);
 
   if ((GetKeyState(VK_RBUTTON) & 0x100) != 0) {
-    cp = last_pos;
+    cp = last_pos_;
   } else {
     cp = ScreenToClient(cp);
   }
 
-  last_pos = cp;
+  last_pos_ = cp;
 
-  if (cp == last_changed_pos) {
-    num_same_frames++;
+  if (cp == last_changed_pos_) {
+    num_same_frames_++;
   } else {
-    num_same_frames = 0;
-    last_changed_pos = cp;
+    num_same_frames_ = 0;
+    last_changed_pos_ = cp;
   }
 
   Rect cl = GetClientRect();
