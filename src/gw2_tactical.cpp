@@ -428,15 +428,15 @@ void GW2TacticalDisplay::InsertPOI(POI& poi) {
   }
 
   poi.cameraSpacePosition =
-      Vector4(poi.position.x, poi.position.y + poi.typeData.height,
+      Vector4(poi.position.x, poi.position.y + poi.type_data_.height_,
               poi.position.z, 1.0f) *
       cam;
 
   minimapPOIs.push_back(&poi);
 
-  if (poi.typeData.fadeFar >= 0 && poi.typeData.fadeNear >= 0) {
+  if (poi.type_data_.fade_far_ >= 0 && poi.type_data_.fade_near_ >= 0) {
     float dist = WorldToGameCoords(poi.cameraSpacePosition.Length());
-    if (dist > poi.typeData.fadeFar) return;
+    if (dist > poi.type_data_.fade_far_) return;
   }
 
   mapPOIs.push_back(&poi);
@@ -453,7 +453,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     return;
   }
 
-  if (poi.typeData.behavior == POIBehavior::WvwObjective) {
+  if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
     time_t elapsedtime = currtime - poi.lastUpdateTime;
     if (elapsedtime < 300) {
       timeLeft = static_cast<int32_t>(300 - elapsedtime);
@@ -461,11 +461,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     }
   }
 
-  if (poi.typeData.behavior == POIBehavior::ReappearAfterTimer) {
+  if (poi.type_data_.behavior_ == POIBehavior::ReappearAfterTimer) {
     time_t elapsedtime = currtime - poi.lastUpdateTime;
-    if (elapsedtime < poi.typeData.resetLength) {
-      if (poi.typeData.bits.hasCountdown) {
-        timeLeft = static_cast<int32_t>(poi.typeData.resetLength - elapsedtime);
+    if (elapsedtime < poi.type_data_.reset_length_) {
+      if (poi.type_data_.bits_.has_countdown_) {
+        timeLeft = static_cast<int32_t>(poi.type_data_.reset_length_ - elapsedtime);
         drawCountdown = true;
       } else {
         return;
@@ -475,8 +475,8 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     float dist = (poi.position - mumbleLink.charPosition).Length();
 
     if (!drawCountdown &&
-        (poi.typeData.bits.autoTrigger || poi.typeData.bits.hasCountdown) &&
-        (dist <= poi.typeData.triggerRange)) {
+        (poi.type_data_.bits_.auto_trigger_ || poi.type_data_.bits_.has_countdown_) &&
+        (dist <= poi.type_data_.trigger_range_)) {
       // auto trigger
       POIActivationData d;
       time(&d.lastUpdateTime);
@@ -484,13 +484,13 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       d.poiguid = poi.guid;
 
       int data = 0;
-      if (poi.typeData.behavior == POIBehavior::OncePerInstance) {
+      if (poi.type_data_.behavior_ == POIBehavior::OncePerInstance) {
         data = mumbleLink.mapInstance;
       }
-      if (poi.typeData.behavior == POIBehavior::DailyPerChar) {
+      if (poi.type_data_.behavior_ == POIBehavior::DailyPerChar) {
         data = mumbleLink.charIDHash;
       }
-      if (poi.typeData.behavior == POIBehavior::OncePerInstancePerChar) {
+      if (poi.type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
         data = mumbleLink.charIDHash ^ mumbleLink.mapInstance;
       }
 
@@ -498,15 +498,15 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     }
   }
 
-  if (!poi.typeData.info.empty()) {
+  if (!poi.type_data_.info_.empty()) {
     if ((poi.position - mumbleLink.charPosition).Length() <=
-        poi.typeData.infoRange) {
-      infoText += std::string(poi.typeData.info) + "\n";
+        poi.type_data_.info_range_) {
+      infoText += std::string(poi.type_data_.info_) + "\n";
     }
   }
 
   if (poi.routeMember && ((poi.position - mumbleLink.charPosition).Length() <=
-                          poi.typeData.triggerRange)) {
+                          poi.type_data_.trigger_range_)) {
     for (auto& r : Routes) {
       if (r.activeItem < 0) {
         continue;
@@ -531,8 +531,8 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   float mapFade = GetMapFade();
 
   gui::WBATLASHANDLE icon = poi.icon;
-  float size = poi.typeData.size;
-  float Alpha = poi.typeData.alpha;
+  float size = poi.type_data_.size_;
+  float Alpha = poi.type_data_.alpha_;
 
   auto camspace = poi.cameraSpacePosition;
   auto screenpos = camspace;
@@ -555,13 +555,13 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   if (!TacticalIconsOnEdge && camspace.z <= 0) return;
 
   float dist = WorldToGameCoords(camspace.Length());
-  if (poi.typeData.fadeNear >= 0 && poi.typeData.fadeFar >= 0) {
+  if (poi.type_data_.fade_near_ >= 0 && poi.type_data_.fade_far_ >= 0) {
     float fadeAlpha = 1;
 
-    if (dist > poi.typeData.fadeFar) return;
-    if (dist > poi.typeData.fadeNear) {
-      fadeAlpha = 1 - (dist - poi.typeData.fadeNear) /
-                          (poi.typeData.fadeFar - poi.typeData.fadeNear);
+    if (dist > poi.type_data_.fade_far_) return;
+    if (dist > poi.type_data_.fade_near_) {
+      fadeAlpha = 1 - (dist - poi.type_data_.fade_near_) /
+                          (poi.type_data_.fade_far_ - poi.type_data_.fade_near_);
     }
 
     Alpha *= fadeAlpha;
@@ -577,11 +577,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   camspacex /= camspacex.w;
 
   int s = static_cast<int>(std::min<float>(
-      poi.typeData.maxSize,
-      std::max<float>(poi.typeData.minSize,
+      poi.type_data_.max_size_,
+      std::max<float>(poi.type_data_.min_size_,
                       std::abs((camspacex - camspace).x) * drawrect.Width())));
 
-  if (poi.typeData.behavior == POIBehavior::WvwObjective) {
+  if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
     alphaMultiplier = std::max(
         0.f, std::min(1.f, std::pow(Vector2(screenpos.x, screenpos.y).Length(),
                                     2.f) +
@@ -596,7 +596,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   Rect rect = Rect(p - Point(s, s), p + Point(s, s));
 
   if (TacticalIconsOnEdge) {
-    int32_t edge = poi.typeData.minSize;
+    int32_t edge = poi.type_data_.min_size_;
 
     Point cp = rect.Center();
     if (cp.x < edge) rect = rect + Point(edge - cp.x, 0);
@@ -610,8 +610,8 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     }
   }
 
-  if (!drawCountdown || poi.typeData.behavior == POIBehavior::WvwObjective) {
-    CColor col = poi.typeData.color;
+  if (!drawCountdown || poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
+    CColor col = poi.type_data_.color_;
     if (icon != DefaultIconHandle) {
       col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
                                      mapFade * globalOpacity);
@@ -621,7 +621,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     API->DrawAtlasElement(icon, rect, false, false, true, true, col);
   }
 
-  if (drawWvWNames && poi.typeData.behavior == POIBehavior::WvwObjective) {
+  if (drawWvWNames && poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
     gui::CWBFont* f = App->GetDefaultFont();
     extern std::vector<WvwObjective> WvwObjectives;
     std::string WvwObjectiveName;
@@ -658,7 +658,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     gui::CWBFont* f = GetFont(GetState());
     if (!f) return;
 
-    if (poi.typeData.behavior == POIBehavior::WvwObjective) {
+    if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
       f = App->GetDefaultFont();
     }
 
@@ -677,7 +677,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     if (drawDistance) offset += f->GetLineHeight();
 
     Point p;
-    if (poi.typeData.behavior == POIBehavior::WvwObjective) {
+    if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
       if (forbiddenIconHandle != -1) {
         CColor col(0xffffffff);
         if (icon != DefaultIconHandle) {
@@ -762,28 +762,28 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
     return;
   }
 
-  if (!poi.typeData.bits.keepOnMapEdge &&
+  if (!poi.type_data_.bits_.keep_on_map_edge_ &&
       !miniRect.Contains(
           Point(static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y)))) {
     return;
   }
 
-  if (poi.typeData.bits.keepOnMapEdge) {
+  if (poi.type_data_.bits_.keep_on_map_edge_) {
     pos.x = std::min(static_cast<float>(miniRect.x2),
                      std::max(static_cast<float>(miniRect.x1), pos.x));
     pos.y = std::min(static_cast<float>(miniRect.y2),
                      std::max(static_cast<float>(miniRect.y1), pos.y));
   }
 
-  auto poiSize = static_cast<float>(poi.typeData.miniMapSize);
-  if (poi.typeData.bits.scaleWithZoom) poiSize /= zoomLevel;
+  auto poiSize = static_cast<float>(poi.type_data_.mini_map_size_);
+  if (poi.type_data_.bits_.scale_with_zoom_) poiSize /= zoomLevel;
   poiSize *= uiScale;
 
   alpha *=
       1.0f -
       std::max(0.0f,
                std::min(1.0f,
-                        (zoomLevel - poi.typeData.miniMapFadeOutLevel) / 2.0f));
+                        (zoomLevel - poi.type_data_.mini_map_fade_out_level_) / 2.0f));
 
   Vector2 startPoint = pos - Vector2(poiSize / 2.0f, poiSize / 2.0f);
   Point topLeft = Point(static_cast<int32_t>(startPoint.x),
@@ -793,9 +793,9 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
   displayRect.x2 = topLeft.x + static_cast<int32_t>(poiSize);
   displayRect.y2 = topLeft.y + static_cast<int32_t>(poiSize);
 
-  CColor col = poi.typeData.color;
+  CColor col = poi.type_data_.color_;
   col.A() = static_cast<uint8_t>(col.A() * alpha * minimapOpacity *
-                                 poi.typeData.alpha);
+                                 poi.type_data_.alpha_);
 
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
 }
@@ -873,16 +873,16 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
         poi.lastUpdateTime = e.last_flipped;
         switch (e.owner) {
           case WvwPoiUpdate::Team::kRed:
-            poi.typeData.color = CColor{0xffe53b3b};
+            poi.type_data_.color_ = CColor{0xffe53b3b};
             break;
           case WvwPoiUpdate::Team::kBlue:
-            poi.typeData.color = CColor{0xff3aa2fa};
+            poi.type_data_.color_ = CColor{0xff3aa2fa};
             break;
           case WvwPoiUpdate::Team::kGreen:
-            poi.typeData.color = CColor{0xff3dca67};
+            poi.type_data_.color_ = CColor{0xff3dca67};
             break;
           default:
-            poi.typeData.color = CColor{0xffffffff};
+            poi.type_data_.color_ = CColor{0xffffffff};
             break;
         }
       }
@@ -913,9 +913,9 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   if (showIngameMarkers > 0) {
     for (const auto& mp : mapPOIs) {
-      if (!mp->typeData.bits.inGameVisible && showIngameMarkers != 2) continue;
+      if (!mp->type_data_.bits_.in_game_visible_ && showIngameMarkers != 2) continue;
       if (!mp->icon) {
-        mp->icon = GetMapIcon(App, mp->iconFile, mp->zipFile,
+        mp->icon = GetMapIcon(App, mp->icon_file_, mp->zip_file_,
                               mp->category ? mp->category->zip_file : "");
       }
       DrawPOI(API, ptm, currtime, *mp, drawDistance, infoText);
@@ -955,7 +955,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     Matrix4x4 miniMapTrafo =
         mumbleLink.miniMap.BuildTransformationMatrix(miniRect, false);
     for (const auto& mmp : minimapPOIs) {
-      if (!mmp->typeData.bits.miniMapVisible && showMinimapMarkers != 2) {
+      if (!mmp->type_data_.bits_.mini_map_visible_ && showMinimapMarkers != 2) {
         continue;
       }
       if (!mmp->IsVisible(ptm, currtime, achievements)) {
@@ -964,7 +964,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
       Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
-        mmp->icon = GetMapIcon(App, mmp->iconFile, mmp->zipFile,
+        mmp->icon = GetMapIcon(App, mmp->icon_file_, mmp->zip_file_,
                                mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
@@ -977,14 +977,14 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     Matrix4x4 miniMapTrafo =
         mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
     for (const auto& mmp : minimapPOIs) {
-      if (!mmp->typeData.bits.bigMapVisible && showBigmapMarkers != 2) continue;
+      if (!mmp->type_data_.bits_.big_map_visible_ && showBigmapMarkers != 2) continue;
       if (!mmp->IsVisible(ptm, currtime, achievements)) {
         continue;
       }
 
       Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
-        mmp->icon = GetMapIcon(App, mmp->iconFile, mmp->zipFile,
+        mmp->icon = GetMapIcon(App, mmp->icon_file_, mmp->zip_file_,
                                mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
@@ -1059,7 +1059,7 @@ void ExportPOI(CXMLNode* n, POI& p) {
   t->SetAttribute(
       "GUID", B64Encode(std::string_view(reinterpret_cast<const char*>(&p.guid),
                                          sizeof(GUID))));
-  p.typeData.Write(t);
+  p.type_data_.Write(t);
 }
 
 void ExportTrail(CXMLNode* n, GW2Trail& p) {
@@ -1231,14 +1231,14 @@ void ImportPOI(CXMLNode& t, POI& p, std::string_view zipFile) {
     p.guid = LoadGUID(t);
   }
 
-  p.zipFile = AddStringToSet(zipFile);
+  p.zip_file_ = AddStringToSet(zipFile);
 
   auto* td = GetCategory(p.Type);
   if (td) p.SetCategory(td);
 
-  p.typeData.Read(t, true);
+  p.type_data_.Read(t, true);
 
-  p.iconFile = p.typeData.iconFile;
+  p.icon_file_ = p.type_data_.icon_file_;
 }
 
 bool ImportTrail(CXMLNode& t, GW2Trail& p, std::string_view zipFile) {
@@ -1257,7 +1257,7 @@ bool ImportTrail(CXMLNode& t, GW2Trail& p, std::string_view zipFile) {
 
   p.type_data_.Read(t, true);
 
-  return p.Import(p.type_data_.trailData, zipFile);
+  return p.Import(p.type_data_.trail_data_, zipFile);
 }
 
 void ImportPOIDocument(CXMLDocument& d, bool External,
@@ -1469,7 +1469,7 @@ void ExportPOIActivationData() {
       const auto& fpoi = mPOIs.second.find(dat.poiguid);
       if (fpoi != mPOIs.second.end()) {
         auto& poi = fpoi->second;
-        if (poi.typeData.behavior == POIBehavior::AlwaysVisible) {
+        if (poi.type_data_.behavior_ == POIBehavior::AlwaysVisible) {
           continue;
         }
       }
@@ -1513,7 +1513,7 @@ void AddPOI() {
       continue;
     }
     Vector3 v = poix.second.position - poi.position;
-    if (v.Length() < poix.second.typeData.triggerRange &&
+    if (v.Length() < poix.second.type_data_.trigger_range_ &&
         cat == poix.second.category) {
       return;
     }
@@ -1543,7 +1543,7 @@ void DeletePOI() {
       continue;
     }
     Vector3 v = poix.second.position - poi_position;
-    if (v.Length() < poix.second.typeData.triggerRange) {
+    if (v.Length() < poix.second.type_data_.trigger_range_) {
       mPOIs.erase(poix.first);
       ExportPOIS();
       return;
@@ -1565,8 +1565,8 @@ void UpdatePOI() {
     if (cpoi.map_id != mumbleLink.map_id) continue;
 
     Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
-    if (v.Length() < cpoi.typeData.triggerRange) {
-      const auto& str = cpoi.typeData.toggleCategory;
+    if (v.Length() < cpoi.type_data_.trigger_range_) {
+      const auto& str = cpoi.type_data_.toggle_category_;
       if (!str.empty()) {
         GW2TacticalCategory* cat = GetCategory(str);
         if (cat) {
@@ -1577,20 +1577,20 @@ void UpdatePOI() {
         }
       }
 
-      if (!found && cpoi.typeData.behavior != POIBehavior::AlwaysVisible) {
+      if (!found && cpoi.type_data_.behavior_ != POIBehavior::AlwaysVisible) {
         POIActivationData d;
         time(&d.lastUpdateTime);
         cpoi.lastUpdateTime = d.lastUpdateTime;
         d.poiguid = cpoi.guid;
 
         d.uniqueData = 0;
-        if (cpoi.typeData.behavior == POIBehavior::OncePerInstance) {
+        if (cpoi.type_data_.behavior_ == POIBehavior::OncePerInstance) {
           d.uniqueData = mumbleLink.mapInstance;
         }
-        if (cpoi.typeData.behavior == POIBehavior::DailyPerChar) {
+        if (cpoi.type_data_.behavior_ == POIBehavior::DailyPerChar) {
           d.uniqueData = mumbleLink.charIDHash;
         }
-        if (cpoi.typeData.behavior == POIBehavior::OncePerInstancePerChar) {
+        if (cpoi.type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
           d.uniqueData = mumbleLink.charIDHash ^ mumbleLink.mapInstance;
         }
 
@@ -1700,10 +1700,10 @@ float GameToWorldCoords(float game) { return game * 0.0254f; }
 
 void POI::SetCategory(GW2TacticalCategory* t) {
   category = t;
-  typeData = t->data;
+  type_data_ = t->data;
   Type = AddStringToSet(t->GetFullTypeName());
   icon = 0;
-  iconFile = typeData.iconFile;
+  icon_file_ = type_data_.icon_file_;
 }
 
 bool POI::IsVisible(
@@ -1711,7 +1711,7 @@ bool POI::IsVisible(
     const std::unordered_map<int32_t, Achievement>& achievements) const {
   if (category && !category->IsVisible()) return false;
 
-  if (typeData.behavior == POIBehavior::ReappearOnDailyReset) {
+  if (type_data_.behavior_ == POIBehavior::ReappearOnDailyReset) {
     struct tm lasttime {};
     gmtime_s(&lasttime, &lastUpdateTime);
     if (lasttime.tm_mday == ptm.tm_mday && lasttime.tm_mon == ptm.tm_mon &&
@@ -1720,25 +1720,25 @@ bool POI::IsVisible(
     }
   }
 
-  if (typeData.behavior == POIBehavior::ReappearAfterTimer) {
+  if (type_data_.behavior_ == POIBehavior::ReappearAfterTimer) {
     time_t elapsedtime = currtime - lastUpdateTime;
-    if (elapsedtime < typeData.resetLength) {
-      if (!typeData.bits.hasCountdown) return false;
+    if (elapsedtime < type_data_.reset_length_) {
+      if (!type_data_.bits_.has_countdown_) return false;
     }
   }
 
-  if (typeData.behavior == POIBehavior::OnlyVisibleBeforeActivation) {
+  if (type_data_.behavior_ == POIBehavior::OnlyVisibleBeforeActivation) {
     if (lastUpdateTime != static_cast<time_t>(0)) return false;
   }
 
-  if (typeData.behavior == POIBehavior::OncePerInstance) {
+  if (type_data_.behavior_ == POIBehavior::OncePerInstance) {
     if (ActivationData.find(POIActivationDataKey(
             guid, mumbleLink.mapInstance)) != ActivationData.end()) {
       return false;
     }
   }
 
-  if (typeData.behavior == POIBehavior::OncePerInstancePerChar) {
+  if (type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
     if (ActivationData.find(POIActivationDataKey(
             guid, mumbleLink.mapInstance ^ mumbleLink.charIDHash)) !=
         ActivationData.end()) {
@@ -1746,7 +1746,7 @@ bool POI::IsVisible(
     }
   }
 
-  if (typeData.behavior == POIBehavior::DailyPerChar) {
+  if (type_data_.behavior_ == POIBehavior::DailyPerChar) {
     if (ActivationData.find(POIActivationDataKey(
             guid, mumbleLink.charIDHash)) != ActivationData.end()) {
       struct tm lasttime {};
@@ -1763,22 +1763,22 @@ bool POI::IsVisible(
   }
 
   if (routeMember && ((position - mumbleLink.charPosition).Length() <=
-                      typeData.triggerRange)) {
+                      type_data_.trigger_range_)) {
     for (const auto& r : Routes) {
       if (r.activeItem < 0) return false;
     }
   }
 
-  if (typeData.achievementId != -1) {
-    const auto& achievement = achievements.find(typeData.achievementId);
+  if (type_data_.achievement_id_ != -1) {
+    const auto& achievement = achievements.find(type_data_.achievement_id_);
     if (achievement != achievements.end()) {
       const bool done = !achievement->second.done;
-      if (typeData.achievementBit == -1) {
+      if (type_data_.achievement_bit_ == -1) {
         return !done;
       }
       const auto& bits = achievement->second.bits;
       const bool hasBit = std::find(bits.begin(), bits.end(),
-                                    typeData.achievementBit) != bits.end();
+                                    type_data_.achievement_bit_) != bits.end();
       return !done && !hasBit;
     }
   }

@@ -111,13 +111,13 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.type_data_.bits.inGameVisible && showIngameTrails != 2) {
+        if (!trail.type_data_.bits_.in_game_visible_ && showIngameTrails != 2) {
           continue;
         }
 
         renderer::Texture* texture = nullptr;
         if (!trail.texture_) {
-          const auto& str = trail.type_data_.texture;
+          const auto& str = trail.type_data_.texture_;
 
           if (!str.empty()) {
             texture =
@@ -223,18 +223,18 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.type_data_.bits.miniMapVisible && showMinimapTrails != 2) {
+        if (!trail.type_data_.bits_.mini_map_visible_ && showMinimapTrails != 2) {
           continue;
         }
 
-        float trailWidth = trail.type_data_.miniMapSize * 0.5f;
-        if (trail.type_data_.bits.scaleWithZoom) {
+        float trailWidth = trail.type_data_.mini_map_size_ * 0.5f;
+        if (trail.type_data_.bits_.scale_with_zoom_) {
           trailWidth /= mumbleLink.miniMap.mapScale;
         }
 
         renderer::Texture* texture = nullptr;
         if (!trail.texture_) {
-          const auto& str = trail.type_data_.texture;
+          const auto& str = trail.type_data_.texture_;
 
           if (!str.empty()) {
             texture =
@@ -252,7 +252,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
             1.0f -
             std::max(0.0f,
                      std::min(1.0f, (mumbleLink.miniMap.mapScale -
-                                     trail.type_data_.miniMapFadeOutLevel) /
+                                     trail.type_data_.mini_map_fade_out_level_) /
                                         2.0f));
 
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
@@ -279,18 +279,18 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.type_data_.bits.bigMapVisible && showBigmapTrails != 2) {
+        if (!trail.type_data_.bits_.big_map_visible_ && showBigmapTrails != 2) {
           continue;
         }
 
-        float trailWidth = trail.type_data_.miniMapSize * 0.5f;
-        if (trail.type_data_.bits.scaleWithZoom) {
+        float trailWidth = trail.type_data_.mini_map_size_ * 0.5f;
+        if (trail.type_data_.bits_.scale_with_zoom_) {
           trailWidth /= mumbleLink.miniMap.mapScale;
         }
 
         renderer::Texture* texture = nullptr;
         if (!trail.texture_) {
-          const auto& str = trail.type_data_.texture;
+          const auto& str = trail.type_data_.texture_;
 
           if (!str.empty()) {
             texture =
@@ -308,7 +308,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
             1.0f -
             std::max(0.0f,
                      std::min(1.0f, (mumbleLink.bigMap.mapScale -
-                                     trail.type_data_.miniMapFadeOutLevel) /
+                                     trail.type_data_.mini_map_fade_out_level_) /
                                         2.0f));
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
                            one, false, 0, data,
@@ -784,7 +784,7 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id, const float* points,
 
     if (nextPos == Vector3(0, 0, 0)) nextPos = pos;
 
-    uvStretch += (pos - last_pos).Length() * type_data_.trailScale * 2;
+    uvStretch += (pos - last_pos).Length() * type_data_.trail_scale_ * 2;
 
     Vector3 dir = nextPos - last_pos;
     dir.y = 0;
@@ -890,7 +890,7 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
 
   data[0] = GetTime() / 1000.0f;
 
-  data[0] *= type_data_.animSpeed;
+  data[0] *= type_data_.anim_speed_;
 
   const_buffer_->Reset();
   const auto& cam_data = cam_.data();
@@ -910,10 +910,10 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
   const_buffer_->AddData(data.data(), 16);
   // color
 
-  data[0] = type_data_.color.R() / 255.0f;
-  data[1] = type_data_.color.G() / 255.0f;
-  data[2] = type_data_.color.B() / 255.0f;
-  data[3] = type_data_.alpha * fadeAlpha;
+  data[0] = type_data_.color_.R() / 255.0f;
+  data[1] = type_data_.color_.G() / 255.0f;
+  data[2] = type_data_.color_.B() / 255.0f;
+  data[3] = type_data_.alpha_ * fadeAlpha;
 
   if (scaleData) {
     data[0] *= 0.5;
@@ -923,8 +923,8 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
 
   const_buffer_->AddData(data.data(), 16);
 
-  data[0] = GameToWorldCoords(type_data_.fadeNear);
-  data[1] = GameToWorldCoords(type_data_.fadeFar);
+  data[0] = GameToWorldCoords(type_data_.fade_near_);
+  data[1] = GameToWorldCoords(type_data_.fade_far_);
   data[2] = static_cast<float>(fadeoutBubble);
   data[3] = width;
   data[4] = uvScale;

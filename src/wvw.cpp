@@ -333,7 +333,7 @@ void LoadWvwObjectives() {
 
       if (cat) poi.SetCategory(cat);
 
-      poi.typeData.behavior = POIBehavior::WvwObjective;
+      poi.type_data_.behavior_ = POIBehavior::WvwObjective;
 
       wvwPOIs[o.id] = poi;
     }

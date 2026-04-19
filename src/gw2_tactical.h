@@ -34,7 +34,7 @@ struct POI {
       const tm& ptm, const time_t& currtime,
       const std::unordered_map<int32_t, Achievement>& achievements) const;
 
-  MarkerTypeData typeData;
+  MarkerTypeData type_data_;
   gui::WBATLASHANDLE icon = 0;
 
   math::Vector4 cameraSpacePosition;
@@ -48,8 +48,8 @@ struct POI {
   bool External = false;
   bool routeMember = false;
 
-  std::string_view zipFile;
-  std::string_view iconFile;
+  std::string_view zip_file_;
+  std::string_view icon_file_;
 
   GUID guid{};
 
