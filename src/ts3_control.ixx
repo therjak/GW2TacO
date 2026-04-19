@@ -29,5 +29,4 @@ export class Ts3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
 
  private:
   void OnDraw(gui::CWBDrawAPI* api) override;
-  math::Point last_pos;
 };

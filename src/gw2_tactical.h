@@ -41,7 +41,7 @@ struct POI {
 
   math::Vector3 position;
   int32_t map_id = 0;
-  size_t Wvwobjective_id = 0;
+  size_t wvw_objective_id = 0;
   std::string_view Type;
 
   time_t lastUpdateTime = 0;

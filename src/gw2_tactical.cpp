@@ -465,7 +465,8 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     time_t elapsedtime = currtime - poi.lastUpdateTime;
     if (elapsedtime < poi.type_data_.reset_length_) {
       if (poi.type_data_.bits_.has_countdown_) {
-        timeLeft = static_cast<int32_t>(poi.type_data_.reset_length_ - elapsedtime);
+        timeLeft =
+            static_cast<int32_t>(poi.type_data_.reset_length_ - elapsedtime);
         drawCountdown = true;
       } else {
         return;
@@ -475,7 +476,8 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     float dist = (poi.position - mumbleLink.charPosition).Length();
 
     if (!drawCountdown &&
-        (poi.type_data_.bits_.auto_trigger_ || poi.type_data_.bits_.has_countdown_) &&
+        (poi.type_data_.bits_.auto_trigger_ ||
+         poi.type_data_.bits_.has_countdown_) &&
         (dist <= poi.type_data_.trigger_range_)) {
       // auto trigger
       POIActivationData d;
@@ -560,8 +562,9 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
     if (dist > poi.type_data_.fade_far_) return;
     if (dist > poi.type_data_.fade_near_) {
-      fadeAlpha = 1 - (dist - poi.type_data_.fade_near_) /
-                          (poi.type_data_.fade_far_ - poi.type_data_.fade_near_);
+      fadeAlpha =
+          1 - (dist - poi.type_data_.fade_near_) /
+                  (poi.type_data_.fade_far_ - poi.type_data_.fade_near_);
     }
 
     Alpha *= fadeAlpha;
@@ -623,16 +626,16 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
   if (drawWvWNames && poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
     gui::CWBFont* f = App->GetDefaultFont();
-    extern std::vector<WvwObjective> WvwObjectives;
-    std::string WvwObjectiveName;
+    std::string wvw_objective_name;
 
-    if (poi.Wvwobjective_id < WvwObjectives.size()) {
-      WvwObjectiveName = DICT(WvwObjectives[poi.Wvwobjective_id].name_token,
-                              WvwObjectives[poi.Wvwobjective_id].name);
+    if (poi.wvw_objective_id < wvw_objectives.size()) {
+      wvw_objective_name =
+          DICT(wvw_objectives[poi.wvw_objective_id].name_token_,
+               wvw_objectives[poi.wvw_objective_id].name_);
     }
 
-    if (!WvwObjectiveName.empty()) {
-      p = f->GetTextPosition(WvwObjectiveName, rect,
+    if (!wvw_objective_name.empty()) {
+      p = f->GetTextPosition(wvw_objective_name, rect,
                              gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                              gui::WBTEXTALIGNMENTY::WBTA_TOP,
                              gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
@@ -640,13 +643,13 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       /*
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
-          f->Write(API, WvwObjectiveName, p + Point(x - 1, y - 1),
+          f->Write(API, wvw_objective_name, p + Point(x - 1, y - 1),
                    CColor(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * globalOpacity *
                                   mapFade / 2.0f)),
                    gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
       */
-      f->Write(API, WvwObjectiveName, p,
+      f->Write(API, wvw_objective_name, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
                                            globalOpacity)),
@@ -781,9 +784,9 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
 
   alpha *=
       1.0f -
-      std::max(0.0f,
-               std::min(1.0f,
-                        (zoomLevel - poi.type_data_.mini_map_fade_out_level_) / 2.0f));
+      std::max(0.0f, std::min(1.0f, (zoomLevel -
+                                     poi.type_data_.mini_map_fade_out_level_) /
+                                        2.0f));
 
   Vector2 startPoint = pos - Vector2(poiSize / 2.0f, poiSize / 2.0f);
   Point topLeft = Point(static_cast<int32_t>(startPoint.x),
@@ -868,10 +871,10 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     const auto& updates = wvw_poi_updates.pop();
     if (updates.has_value()) {
       for (auto& e : updates.value()) {
-        if (wvwPOIs.find(e.id) == wvwPOIs.end()) continue;
-        auto& poi = wvwPOIs[e.id];
-        poi.lastUpdateTime = e.last_flipped;
-        switch (e.owner) {
+        if (wvwPOIs.find(e.id_) == wvwPOIs.end()) continue;
+        auto& poi = wvwPOIs[e.id_];
+        poi.lastUpdateTime = e.last_flipped_;
+        switch (e.owner_) {
           case WvwPoiUpdate::Team::kRed:
             poi.type_data_.color_ = CColor{0xffe53b3b};
             break;
@@ -913,7 +916,8 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   if (showIngameMarkers > 0) {
     for (const auto& mp : mapPOIs) {
-      if (!mp->type_data_.bits_.in_game_visible_ && showIngameMarkers != 2) continue;
+      if (!mp->type_data_.bits_.in_game_visible_ && showIngameMarkers != 2)
+        continue;
       if (!mp->icon) {
         mp->icon = GetMapIcon(App, mp->icon_file_, mp->zip_file_,
                               mp->category ? mp->category->zip_file : "");
@@ -977,7 +981,8 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     Matrix4x4 miniMapTrafo =
         mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
     for (const auto& mmp : minimapPOIs) {
-      if (!mmp->type_data_.bits_.big_map_visible_ && showBigmapMarkers != 2) continue;
+      if (!mmp->type_data_.bits_.big_map_visible_ && showBigmapMarkers != 2)
+        continue;
       if (!mmp->IsVisible(ptm, currtime, achievements)) {
         continue;
       }
