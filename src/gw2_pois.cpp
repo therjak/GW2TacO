@@ -722,7 +722,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   localization = std::make_unique<Localization>();
   localization->Import();
 
-  Log_Nfo("[GW2TacO] build ID: {:s}", ("GW2 TacO " + TacOBuild));
+  Log_Nfo("[GW2TacO] build ID: {:s}", ("GW2 TacO " + taco_build_));
 
   bool hasDComp = false;
   HMODULE dComp = LoadLibraryA("dcomp.dll");

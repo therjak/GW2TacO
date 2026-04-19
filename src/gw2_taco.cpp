@@ -1492,7 +1492,7 @@ void GW2TacO::OpenAboutWindow() {
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = gui::CWBLabel::Create(
       w, w->GetClientRect() + Point(0, 16),
-      "Build " + TacOBuild + " built on " + buildDateTime);
+      "Build " + taco_build_ + " built on " + build_date_time_);
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
   l1 = gui::CWBLabel::Create(w, w->GetClientRect() + Point(0, 32),

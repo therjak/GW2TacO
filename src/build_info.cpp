@@ -9,9 +9,9 @@ const std::string taco_version(TACO_VERSION);
 }
 
 #ifdef NDEBUG 
-const std::string TacOBuild = taco_version;
+const std::string taco_build_ = taco_version;
 #else
-const std::string TacOBuild = taco_version + ":d";
+const std::string taco_build_ = taco_version + ":d";
 #endif
 
-const std::string buildDateTime(__DATE__ " " __TIME__);
+const std::string build_date_time_(__DATE__ " " __TIME__);
