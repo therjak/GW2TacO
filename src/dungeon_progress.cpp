@@ -21,49 +21,49 @@ import xml;
 using math::Point;
 using math::Rect;
 
-void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
+void DungeonProgress::OnDraw(gui::CWBDrawAPI* api) {
   gui::CWBFont* f = GetFont(GetState());
 
   GW2::APIKeyManager::Status status =
-      GW2::apiKeyManager.DisplayStatusText(API, f);
+      GW2::apiKeyManager.DisplayStatusText(api, f);
   if (status != GW2::APIKeyManager::Status::OK) {
     return;
   }
   GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
-      (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
-    if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+      (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
+    if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
                                   std::future_status::ready) {
-      lastFetchTime = GetTime();
-      fetchTask = std::async(std::launch::async, [this, key]() {
+      last_fetch_time_ = GetTime();
+      fetch_task_ = std::async(std::launch::async, [this, key]() {
         const auto& dungeon_data = key->QuerySet("/v2/account/dungeons");
-        dungeon_queue.push(dungeon_data);
+        dungeon_queue_.push(dungeon_data);
         const auto& dungeon_frequenter_status = key->QueryAchievementBits(2963);
-        dungeon_achievements_queue.push(dungeon_frequenter_status);
+        dungeon_achievements_queue_.push(dungeon_frequenter_status);
       });
     }
   }
 
-  const auto& new_dungeon_data = dungeon_queue.pop();
+  const auto& new_dungeon_data = dungeon_queue_.pop();
   if (new_dungeon_data.has_value()) {
     const auto& dungeon_data = new_dungeon_data.value();
-    for (auto& d : dungeons) {
-      for (auto& p : d.paths) {
-        p.finished = dungeon_data.contains(std::string(p.name));
+    for (auto& d : dungeons_) {
+      for (auto& p : d.paths_) {
+        p.finished_ = dungeon_data.contains(std::string(p.name_));
       }
     }
   }
 
-  const auto& new_dungeon_achievements = dungeon_achievements_queue.pop();
+  const auto& new_dungeon_achievements = dungeon_achievements_queue_.pop();
   if (new_dungeon_achievements.has_value()) {
     const auto& dungeon_frequenter_status = new_dungeon_achievements.value();
-    for (auto& d : dungeons) {
-      for (auto& p : d.paths) {
-        if (p.id < 0) {
+    for (auto& d : dungeons_) {
+      for (auto& p : d.paths_) {
+        if (p.id_ < 0) {
           continue;
         }
-        p.frequenter = dungeon_frequenter_status.contains(p.id);
+        p.frequenter_ = dungeon_frequenter_status.contains(p.id_);
       }
     }
   }
@@ -71,31 +71,31 @@ void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
   int32_t posy = 1;
   int32_t textwidth = 0;
 
-  for (const auto& d : dungeons) {
-    textwidth = std::max(textwidth, f->GetWidth(d.shortName, false));
+  for (const auto& d : dungeons_) {
+    textwidth = std::max(textwidth, f->GetWidth(d.short_name_, false));
   }
 
-  for (auto& d : dungeons) {
-    f->Write(API, (std::string(d.shortName) + ":"), Point(0, posy + 1),
+  for (auto& d : dungeons_) {
+    f->Write(api, (std::string(d.short_name_) + ":"), Point(0, posy + 1),
              CColor{0xffffffff});
     int32_t posx = textwidth + f->GetLineHeight() / 2;
-    for (int y = 0; y < d.paths.size(); y++) {
-      auto& p = d.paths[y];
+    for (int y = 0; y < d.paths_.size(); y++) {
+      auto& p = d.paths_[y];
 
       Rect r = Rect(posx, posy, posx + f->GetLineHeight() * 2,
                     posy + f->GetLineHeight() - 1);
-      Rect cr = API->GetCropRect();
-      API->SetCropRect(ClientToScreen(r));
+      Rect cr = api->GetCropRect();
+      api->SetCropRect(ClientToScreen(r));
       posx += f->GetLineHeight() * 2 + 1;
       if (y == 0) {
         posx += f->GetLineHeight() / 2;
       }
       {
-        API->DrawRect(r, p.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
+        api->DrawRect(r, p.finished_ ? CColor{0x8033cc11} : CColor{0x80cc3322});
       }
       std::string s = y == 0 ? "S" : std::format("P{:d}", y);
 
-      if (d.shortName == "TA") {
+      if (d.short_name_ == "TA") {
         switch (y) {
           case 1:
             s = "Up";
@@ -111,19 +111,19 @@ void DungeonProgress::OnDraw(gui::CWBDrawAPI* API) {
 
       Point tp = f->GetTextPosition(
           s, r + Rect(-3, 0, 0, 0), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE);
+          gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE);
       tp.y = posy + 1;
-      f->Write(API, s, tp, CColor{0xffffffff});
+      f->Write(api, s, tp, CColor{0xffffffff});
       {
-        API->DrawRectBorder(
-            r, p.frequenter ? CColor{0xffffcc00} : CColor{0x80000000});
+        api->DrawRectBorder(
+            r, p.frequenter_ ? CColor{0xffffcc00} : CColor{0x80000000});
       }
-      API->SetCropRect(cr);
+      api->SetCropRect(cr);
     }
     posy += f->GetLineHeight();
   }
 
-  DrawBorder(API);
+  DrawBorder(api);
 }
 
 namespace {
@@ -134,7 +134,7 @@ constexpr int32_t ignore = -1;  // does not count for dungeon frequenter
 
 DungeonProgress::DungeonProgress()
     : CWBGuiType(),
-      dungeons{
+      dungeons_{
           Dungeon{"ascalonian_catacombs",
                   "AC",
                   {{"ac_story", st, 4},
@@ -188,12 +188,12 @@ DungeonProgress::DungeonProgress()
 
 DungeonProgress::~DungeonProgress() {}
 
-gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                       Rect& Pos) {
-  return DungeonProgress::Create(Root, Pos);
+gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* root, CXMLNode& node,
+                                       Rect& pos) {
+  return DungeonProgress::Create(root, pos);
 }
 
-bool DungeonProgress::IsMouseTransparent(const Point& ClientSpacePoint,
-                                         gui::WBMESSAGE MessageType) {
+bool DungeonProgress::IsMouseTransparent(const Point& client_space_point,
+                                         gui::WBMESSAGE message_type) {
   return true;
 }
