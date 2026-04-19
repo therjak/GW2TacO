@@ -15,12 +15,12 @@ import math;
 using math::Point;
 using math::Rect;
 
-bool GW2Notepad::IsMouseTransparent(const Point& ClientSpacePoint,
-                                    gui::WBMESSAGE MessageType) {
+bool Notepad::IsMouseTransparent(const Point& client_space_point,
+                                 gui::WBMESSAGE message_type) {
   return true;
 }
 
-GW2Notepad::GW2Notepad() : CWBGuiType() {
+Notepad::Notepad() : CWBGuiType() {
   App->GenerateGUITemplate(this, "gw2pois", "notepad");
 
   SetID("notepad");
@@ -38,7 +38,7 @@ GW2Notepad::GW2Notepad() : CWBGuiType() {
   tb->SetCursorPos(0, false);
 }
 
-GW2Notepad::~GW2Notepad() {
+Notepad::~Notepad() {
   auto* tb =
       dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
@@ -49,38 +49,38 @@ GW2Notepad::~GW2Notepad() {
   nptext.Write(tb->GetText());
 }
 
-gui::CWBItem* GW2Notepad::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                  Rect& Pos) {
-  return GW2Notepad::Create(Root, Pos);
+gui::CWBItem* Notepad::Factory(gui::CWBItem* root, CXMLNode& node,
+                               Rect& pos) {
+  return Notepad::Create(root, pos);
 }
 
-void GW2Notepad::StartEdit() {
+void Notepad::StartEdit() {
   auto* tb =
       dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
-  canSetFocus = true;
+  can_set_focus_ = true;
   tb->SetFocus();
   tb->SetCursorPos(tb->GetText().size(), false);
 }
 
-void GW2Notepad::OnDraw(gui::CWBDrawAPI* API) {}
+void Notepad::OnDraw(gui::CWBDrawAPI* api) {}
 
-bool GW2Notepad::MessageProc(const gui::CWBMessage& Message) {
-  switch (Message.Get()) {
+bool Notepad::MessageProc(const gui::CWBMessage& message) {
+  switch (message.Get()) {
     case gui::WBM_FOCUSGAINED: {
       gui::CWBItem* tb = FindChildByID("notepad", "textbox");
-      if (tb->GetGuid() == Message.GetTarget()) {
+      if (tb->GetGuid() == message.GetTarget()) {
         tb->SetForcedMouseTransparency(false);
       }
     } break;
     case gui::WBM_FOCUSLOST: {
       gui::CWBItem* tb = FindChildByID("notepad", "textbox");
-      if (tb->GetGuid() == Message.GetTarget()) {
+      if (tb->GetGuid() == message.GetTarget()) {
         tb->SetForcedMouseTransparency(true);
       }
     } break;
   }
 
-  return CWBItem::MessageProc(Message);
+  return CWBItem::MessageProc(message);
 }
