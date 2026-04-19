@@ -22,7 +22,7 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
   struct Event {
     std::string name;
     std::string waypoint;
-    std::string worldBossId;
+    std::string world_boss_id;
     int length = 0;
     int start = 0;
     CColor color;
@@ -30,10 +30,10 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
 
   struct Map {
     std::string name;
-    std::string chestId;
+    std::string chest_id;
     std::string category;
-    int Length = 0;
-    int Start = 0;
+    int length = 0;
+    int start = 0;
     std::string id;
     bool display = true;
     std::vector<Event> events;
@@ -48,40 +48,40 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
  public:
   GW2MapTimer();
   ~GW2MapTimer() override;
-  static inline GW2MapTimer* Create(gui::CWBItem* Parent, math::Rect Position) {
+  static inline GW2MapTimer* Create(gui::CWBItem* parent, math::Rect position) {
     auto p = std::make_unique<GW2MapTimer>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     GW2MapTimer* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 
-  std::vector<Map> maps;
-  std::unordered_map<std::string, Category> categories;
+  std::vector<Map> maps_;
+  std::unordered_map<std::string, Category> categories_;
 
  private:
   bool IsScrollbarVisible();
   void OnResize(const math::Size& s) override;
   int32_t GetScrollbarStep() override;
-  CWBItem* GetItemUnderMouse(math::Point& Point, math::Rect& CropRect,
-                             gui::WBMESSAGE MessageType) override;
-  void OnDraw(gui::CWBDrawAPI* API) override;
+  CWBItem* GetItemUnderMouse(math::Point& point, math::Rect& crop_rect,
+                             gui::WBMESSAGE message_type) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
   void SetLayout(const CXMLNode& node);
   void UpdateScrollbarData(int ypos, const math::Rect& cl);
 
-  int32_t lastypos = -1;
+  int32_t last_ypos_ = -1;
 
-  LockFreeQueue<std::unordered_set<std::string>> boss_queue;
-  LockFreeQueue<std::unordered_set<std::string>> mapchest_queue;
+  LockFreeQueue<std::unordered_set<std::string>> boss_queue_;
+  LockFreeQueue<std::unordered_set<std::string>> mapchest_queue_;
 
-  int32_t lastFetchTime = 0;
+  int32_t last_fetch_time_ = 0;
 
-  std::unordered_set<std::string> world_bosses;
-  std::unordered_set<std::string> mapchests;
+  std::unordered_set<std::string> world_bosses_;
+  std::unordered_set<std::string> mapchests_;
 
-  std::future<void> fetchTask;
+  std::future<void> fetch_task_;
 };

@@ -558,14 +558,14 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
           if (timer) {
             auto itm = ctx->AddItem(DICT("configmaptimer"), 0);
 
-            for (size_t x = 0; x < timer->maps.size(); x++) {
+            for (size_t x = 0; x < timer->maps_.size(); x++) {
               bool open = true;
-              auto str = "maptimer_mapopen_" + timer->maps[x].id;
+              auto str = "maptimer_mapopen_" + timer->maps_[x].id;
 
               if (HasConfigValue(str)) open = GetConfigValue(str);
 
-              itm->AddItem(open ? (timer->maps[x].name + " [x]")
-                                : (timer->maps[x].name + " [ ]"),
+              itm->AddItem(open ? (timer->maps_[x].name + " [x]")
+                                : (timer->maps_[x].name + " [ ]"),
                            Menu_ToggleMapTimerMap + x, open, false);
             }
           }
@@ -822,12 +822,12 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         if (!timer) break;
 
         bool open = true;
-        auto str = "maptimer_mapopen_" + timer->maps[map_idx].id;
+        auto str = "maptimer_mapopen_" + timer->maps_[map_idx].id;
 
         if (HasConfigValue(str)) open = GetConfigValue(str);
 
-        itm->SetText(open ? (timer->maps[map_idx].name + " [x]")
-                          : (timer->maps[map_idx].name + " [ ]"));
+        itm->SetText(open ? (timer->maps_[map_idx].name + " [x]")
+                          : (timer->maps_[map_idx].name + " [ ]"));
         itm->SetHighlight(open);
         break;
       }
@@ -980,11 +980,11 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
             App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
         if (timer) {
-          if (Message.Data() < Menu_ToggleMapTimerMap + timer->maps.size()) {
+          if (Message.Data() < Menu_ToggleMapTimerMap + timer->maps_.size()) {
             int32_t map_idx = Message.Data() - Menu_ToggleMapTimerMap;
-            auto str = "maptimer_mapopen_" + timer->maps[map_idx].id;
-            timer->maps[map_idx].display = !timer->maps[map_idx].display;
-            SetConfigValue(str, timer->maps[map_idx].display);
+            auto str = "maptimer_mapopen_" + timer->maps_[map_idx].id;
+            timer->maps_[map_idx].display = !timer->maps_[map_idx].display;
+            SetConfigValue(str, timer->maps_[map_idx].display);
             break;
           }
         }
