@@ -28,60 +28,60 @@ using math::Size;
 
 bool GW2MapTimer::IsScrollbarVisible() {
   Rect cr = GetClientRect();
-  return IsVScrollbarEnabled() && lastypos > cr.Height();
+  return IsVScrollbarEnabled() && last_ypos_ > cr.Height();
 }
 
 void GW2MapTimer::OnResize(const Size& s) {
-  if (lastypos > 0) {
-    UpdateScrollbarData(lastypos, GetClientRect());
+  if (last_ypos_ > 0) {
+    UpdateScrollbarData(last_ypos_, GetClientRect());
   }
 }
 
-void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
+void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
   if (!GetConfigValue("MapTimerVisible")) {
     return;
   }
 
-  std::string mouseToolTip;
+  std::string mouse_tool_tip;
 
   if (GW2::apiKeyManager.GetStatus() == GW2::APIKeyManager::Status::OK) {
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
 
     if (key && key->Valid() &&
-        (GetTime() - lastFetchTime > 150000 || !lastFetchTime)) {
-      if (!fetchTask.valid() || fetchTask.wait_for(std::chrono::seconds(0)) ==
+        (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
+      if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
                                     std::future_status::ready) {
-        lastFetchTime = GetTime();
-        fetchTask = std::async(std::launch::async, [this, key]() {
+        last_fetch_time_ = GetTime();
+        fetch_task_ = std::async(std::launch::async, [this, key]() {
           const auto& bosses = key->QuerySet("/v2/account/worldbosses");
-          boss_queue.push(bosses);
+          boss_queue_.push(bosses);
           const auto& chests = key->QuerySet("/v2/account/mapchests");
-          mapchest_queue.push(chests);
+          mapchest_queue_.push(chests);
         });
       }
     }
   }
 
-  const auto& new_boss_data = boss_queue.pop();
+  const auto& new_boss_data = boss_queue_.pop();
   if (new_boss_data.has_value()) {
     auto boss_data = new_boss_data.value();
-    std::swap(world_bosses, boss_data);
+    std::swap(world_bosses_, boss_data);
   }
-  const auto& new_mapchest_data = mapchest_queue.pop();
+  const auto& new_mapchest_data = mapchest_queue_.pop();
   if (new_mapchest_data.has_value()) {
     auto mapchest_data = new_mapchest_data.value();
-    std::swap(mapchests, mapchest_data);
+    std::swap(mapchests_, mapchest_data);
   }
 
   bool compact = GetConfigValue("MapTimerCompact");
-  bool showCategories = GetConfigValue("MapTimerCategories");
+  bool show_categories = GetConfigValue("MapTimerCategories");
 
-  int32_t timeWindow = 120;
-  int32_t mapheight = 40;
-  int32_t barheight = 20;
+  int32_t time_window = 120;
+  int32_t map_height = 40;
+  int32_t bar_height = 20;
 
-  int32_t categoryLineWidth = GetConfigValue("MapTimerCategoryLineWidth");
-  int32_t paddingLeft = showCategories ? categoryLineWidth + 4 : 0;
+  int32_t category_line_width = GetConfigValue("MapTimerCategoryLineWidth");
+  int32_t padding_left = show_categories ? category_line_width + 4 : 0;
 
   Rect cl = GetClientRect();
 
@@ -93,163 +93,163 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
   gui::WBITEMSTATE i = GetState();
   gui::CWBFont* f = GetFont(i);
 
-  barheight = f->GetLineHeight();
-  mapheight = barheight + f->GetLineHeight();
+  bar_height = f->GetLineHeight();
+  map_height = bar_height + f->GetLineHeight();
 
   if (compact) {
-    mapheight = barheight;
+    map_height = bar_height;
   }
 
-  int32_t mapCount = 0;
-  for (const auto& m : maps) {
+  int32_t map_count = 0;
+  for (const auto& m : maps_) {
     if (m.display) {
-      mapCount++;
+      map_count++;
     }
   }
 
-  DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
-                     Rect(Point(cl.x1 + paddingLeft, cl.y1),
-                          Point(cl.Width(), mapCount * mapheight + 1)),
+  DrawBackgroundItem(api, CSSProperties.DisplayDescriptor,
+                     Rect(Point(cl.x1 + padding_left, cl.y1),
+                          Point(cl.Width(), map_count * map_height + 1)),
                      GetState());
 
-  auto TextTransform = static_cast<gui::WBTEXTTRANSFORM>(
+  auto text_transform = static_cast<gui::WBTEXTTRANSFORM>(
       CSSProperties.DisplayDescriptor.GetValue(i, gui::WB_ITEM_TEXTTRANSFORM));
 
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
-  int32_t lefttime = minutes - timeWindow / 2;
+  int32_t left_time = minutes - time_window / 2;
 
-  int32_t scrollbarPos = GetVScrollbarPos();
-  int32_t ypos = -scrollbarPos;
+  int32_t scrollbar_pos = GetVScrollbarPos();
+  int32_t ypos = -scrollbar_pos;
 
-  std::vector<Rect> highlightRects;
-  int32_t lastCategoryStartY = 0;
-  const Category* lastCategory = nullptr;
-  for (const auto& map : maps) {
+  std::vector<Rect> highlight_rects;
+  int32_t last_category_start_y = 0;
+  const Category* last_category = nullptr;
+  for (const auto& map : maps_) {
     if (!map.display) {
       continue;
     }
 
-    int32_t currtime = -48 * 60 + map.Length + map.Start - lefttime;
+    int32_t currtime = -48 * 60 + map.length + map.start - left_time;
     int32_t currevent = 0;
 
-    bool shouldDraw = true;
-    if ((ypos > cl.y2) || (ypos < cl.y1 - mapheight)) {
-      shouldDraw = false;
+    bool should_draw = true;
+    if ((ypos > cl.y2) || (ypos < cl.y1 - map_height)) {
+      should_draw = false;
     }
 
-    if (shouldDraw) {
-      int32_t toppos = ypos + mapheight - barheight;
-      int32_t bottompos = ypos + mapheight + 1;
+    if (should_draw) {
+      int32_t top_pos = ypos + map_height - bar_height;
+      int32_t bottom_pos = ypos + map_height + 1;
 
       // map name
       {
         Point p = f->GetCenter(
             map.name,
-            Rect(cl.x1, ypos, cl.x2, ypos + mapheight - barheight + 1),
-            TextTransform);
+            Rect(cl.x1, ypos, cl.x2, ypos + map_height - bar_height + 1),
+            text_transform);
         if (!compact) {
-          f->Write(API, map.name, Point(p.x, ypos + 2), CColor{0xffffffff},
-                   TextTransform);
+          f->Write(api, map.name, Point(p.x, ypos + 2), CColor{0xffffffff},
+                   text_transform);
         }
       }
 
       // map category
-      if (showCategories && !map.category.empty() &&
-          categories.find(map.category) != categories.end()) {
-        const Category& category = categories[map.category];
+      if (show_categories && !map.category.empty() &&
+          categories_.find(map.category) != categories_.end()) {
+        const Category& category = categories_[map.category];
 
-        if (&category != lastCategory) {
-          if (lastCategory && lastCategory->color.A() > 0) {
-            API->DrawRect(Rect(cl.x1, lastCategoryStartY,
-                               cl.x1 + categoryLineWidth, toppos),
-                          lastCategory->color);
-            API->DrawRectBorder(Rect(cl.x1, lastCategoryStartY,
-                                     cl.x1 + categoryLineWidth, toppos),
+        if (&category != last_category) {
+          if (last_category && last_category->color.A() > 0) {
+            api->DrawRect(Rect(cl.x1, last_category_start_y,
+                               cl.x1 + category_line_width, top_pos),
+                          last_category->color);
+            api->DrawRectBorder(Rect(cl.x1, last_category_start_y,
+                                     cl.x1 + category_line_width, top_pos),
                                 CColor{0x80000000});
           }
-          lastCategoryStartY = toppos;
-          lastCategory = &category;
+          last_category_start_y = top_pos;
+          last_category = &category;
         }
 
-        Rect r = Rect(cl.x1, toppos, cl.x1 + paddingLeft, bottompos - 1)
+        Rect r = Rect(cl.x1, top_pos, cl.x1 + padding_left, bottom_pos - 1)
                      .GetIntersection(cl);
         if (ClientToScreen(r).Contains(GetApplication()->GetMousePos())) {
-          mouseToolTip = category.name;
+          mouse_tool_tip = category.name;
         }
       }
 
       // highlight rect
-      if (!map.chestId.empty()) {
-        if (mapchests.contains(map.chestId)) {
-          highlightRects.emplace_back(
-              Rect(cl.x1 + paddingLeft, toppos, cl.x2, bottompos));
+      if (!map.chest_id.empty()) {
+        if (mapchests_.contains(map.chest_id)) {
+          highlight_rects.emplace_back(
+              Rect(cl.x1 + padding_left, top_pos, cl.x2, bottom_pos));
         }
       }
 
       // map events
       while (currtime < 72 * 60) {
         int32_t p1 =
-            paddingLeft + static_cast<int32_t>((cl.Width() - paddingLeft) *
-                                               currtime / timeWindow);
+            padding_left + static_cast<int32_t>((cl.Width() - padding_left) *
+                                               currtime / time_window);
         int32_t p2 =
-            paddingLeft +
-            static_cast<int32_t>((cl.Width() - paddingLeft) *
+            padding_left +
+            static_cast<int32_t>((cl.Width() - padding_left) *
                                  (currtime + map.events[currevent].length) /
-                                 timeWindow) +
+                                 time_window) +
             1;
 
-        if (p2 >= paddingLeft && p1 <= cl.Width()) {
-          Rect r = Rect(std::max(paddingLeft, p1), toppos,
-                        std::min(cl.Width(), p2), bottompos);
+        if (p2 >= padding_left && p1 <= cl.Width()) {
+          Rect r = Rect(std::max(padding_left, p1), top_pos,
+                        std::min(cl.Width(), p2), bottom_pos);
 
-          API->DrawRect(r, map.events[currevent].color);
+          api->DrawRect(r, map.events[currevent].color);
 
-          Rect cr = API->GetCropRect();
-          API->SetCropRect(ClientToScreen(r));
+          Rect cr = api->GetCropRect();
+          api->SetCropRect(ClientToScreen(r));
 
           auto text = map.events[currevent].name;
 
           {
-            int32_t timeleft = currtime * 60 - ptm.tm_sec - timeWindow * 30 +
+            int32_t time_left = currtime * 60 - ptm.tm_sec - time_window * 30 +
                                map.events[currevent].length * 60;
-            if (timeleft >= 0 &&
-                timeleft <= map.events[currevent].length * 60) {
+            if (time_left >= 0 &&
+                time_left <= map.events[currevent].length * 60) {
               text = !text.empty() ? std::format("{:s} {:d}:{:02d}", text,
-                                                 timeleft / 60, timeleft % 60)
-                                   : std::format("{:d}:{:02d}", timeleft / 60,
-                                                 timeleft % 60);
+                                                 time_left / 60, time_left % 60)
+                                   : std::format("{:d}:{:02d}", time_left / 60,
+                                                 time_left % 60);
             }
           }
 
           if (ClientToScreen(r.GetIntersection(cl))
                   .Contains(GetApplication()->GetMousePos())) {
-            mouseToolTip = !map.events[currevent].name.empty()
+            mouse_tool_tip = !map.events[currevent].name.empty()
                                ? std::format("{:s} - {:s}", map.name, text)
                                : text;
           }
 
-          Point p = f->GetCenter(text, r, TextTransform);
-          f->Write(API, text, Point(p.x, r.y1 + 2), CColor{0xffffffff},
-                   TextTransform);
+          Point p = f->GetCenter(text, r, text_transform);
+          f->Write(api, text, Point(p.x, r.y1 + 2), CColor{0xffffffff},
+                   text_transform);
 
-          API->SetCropRect(cr);
+          api->SetCropRect(cr);
 
-          bool isHighlighted = false;
+          bool is_highlighted = false;
 
-          const auto& bossId = map.events[currevent].worldBossId;
-          if (!map.events[currevent].worldBossId.empty()) {
-            if (world_bosses.contains(bossId)) {
-              isHighlighted = true;
+          const auto& boss_id = map.events[currevent].world_boss_id;
+          if (!map.events[currevent].world_boss_id.empty()) {
+            if (world_bosses_.contains(boss_id)) {
+              is_highlighted = true;
             }
-            if (mapchests.contains(bossId)) {
-              isHighlighted = true;
+            if (mapchests_.contains(boss_id)) {
+              is_highlighted = true;
             }
           }
 
-          if (!isHighlighted) {
-            API->DrawRectBorder(r, CColor{0x80000000});
+          if (!is_highlighted) {
+            api->DrawRectBorder(r, CColor{0x80000000});
           } else {
-            highlightRects.push_back(r);
+            highlight_rects.push_back(r);
           }
         }
 
@@ -258,32 +258,32 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
       }
     }
 
-    ypos += mapheight;
+    ypos += map_height;
   }
 
-  if (showCategories) {
-    if (lastCategory && lastCategory->color.A() > 0) {
-      API->DrawRect(
-          Rect(cl.x1, lastCategoryStartY, cl.x1 + categoryLineWidth, ypos),
-          lastCategory->color);
-      API->DrawRectBorder(
-          Rect(cl.x1, lastCategoryStartY, cl.x1 + categoryLineWidth, ypos),
+  if (show_categories) {
+    if (last_category && last_category->color.A() > 0) {
+      api->DrawRect(
+          Rect(cl.x1, last_category_start_y, cl.x1 + category_line_width, ypos),
+          last_category->color);
+      api->DrawRectBorder(
+          Rect(cl.x1, last_category_start_y, cl.x1 + category_line_width, ypos),
           CColor{0x80000000});
     }
   }
 
-  for (const auto& r : highlightRects) {
-    API->DrawRectBorder(r, CColor{0xffffcc00});
+  for (const auto& r : highlight_rects) {
+    api->DrawRectBorder(r, CColor{0xffffcc00});
   }
 
-  API->DrawRect(Rect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
+  api->DrawRect(Rect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
                 CColor{0x80ffffff});
-  SetMouseToolTip(mouseToolTip);
+  SetMouseToolTip(mouse_tool_tip);
 
   // update scrollbar
-  ypos += scrollbarPos;
-  if (lastypos == -1 || ypos != lastypos) UpdateScrollbarData(ypos, cl);
-  lastypos = ypos;
+  ypos += scrollbar_pos;
+  if (last_ypos_ == -1 || ypos != last_ypos_) UpdateScrollbarData(ypos, cl);
+  last_ypos_ = ypos;
 
   // set mouse transparency
   // if there is overflow, this gui item needs to be able to receive mouse
@@ -293,10 +293,10 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* API) {
 
 int32_t GW2MapTimer::GetScrollbarStep() { return 5; }
 
-gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& Pos, Rect& CropRect,
-                                             gui::WBMESSAGE MessageType) {
+gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& point, Rect& crop_rect,
+                                             gui::WBMESSAGE message_type) {
   gui::CWBItem* item =
-      gui::CWBItem::GetItemUnderMouse(Pos, CropRect, MessageType);
+      gui::CWBItem::GetItemUnderMouse(point, crop_rect, message_type);
   if (item && IsScrollbarVisible()) {
     // Only the scrollbar needs to be "visible"
 
@@ -305,8 +305,8 @@ gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& Pos, Rect& CropRect,
     GetVScrollbarRectangles(b1, su, th, sd, b2);
 
     b1.Move(sr.x1, sr.y1);
-    return (Pos.x >= b1.x1 && Pos.x <= b1.x2) &&
-                   (Pos.y >= sr.y1 && Pos.y <= sr.y2)
+    return (point.x >= b1.x1 && point.x <= b1.x2) &&
+                   (point.y >= sr.y1 && point.y <= sr.y2)
                ? this
                : nullptr;
   }
@@ -314,98 +314,98 @@ gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& Pos, Rect& CropRect,
 }
 
 void GW2MapTimer::SetLayout(const CXMLNode& node) {
-  std::unordered_map<std::string, std::vector<Map>> _categoryMapsDict;
-  std::vector<std::string> _categories;
+  std::unordered_map<std::string, std::vector<Map>> category_maps_dict;
+  std::vector<std::string> categories_list;
 
   // categories
-  const CXMLNode& categoriesNode = node.GetChild("Categories");
-  if (categoriesNode.IsValid()) {
-    for (int x = 0; x < categoriesNode.GetChildCount("Category"); ++x) {
-      const CXMLNode& categoryNode = categoriesNode.GetChild("Category", x);
+  const CXMLNode& categories_node = node.GetChild("Categories");
+  if (categories_node.IsValid()) {
+    for (int x = 0; x < categories_node.GetChildCount("Category"); ++x) {
+      const CXMLNode& category_node = categories_node.GetChild("Category", x);
 
       Category category;
-      if (categoryNode.HasAttribute("id")) {
-        category.id = categoryNode.GetAttributeAsString("id");
+      if (category_node.HasAttribute("id")) {
+        category.id = category_node.GetAttributeAsString("id");
       }
 
-      if (categoryNode.HasAttribute("Name")) {
-        category.name = categoryNode.GetAttributeAsString("Name");
+      if (category_node.HasAttribute("Name")) {
+        category.name = category_node.GetAttributeAsString("Name");
       }
 
-      if (categoryNode.HasAttribute("Color")) {
-        auto s = categoryNode.GetAttributeAsString("Color");
+      if (category_node.HasAttribute("Color")) {
+        auto s = category_node.GetAttributeAsString("Color");
         uint32_t c = 0;
         std::sscanf(s.c_str(), "%x", &c);
         category.color = CColor(c);
       }
 
-      categories[category.id] = category;
+      categories_[category.id] = category;
     }
   }
 
   // maps
-  const CXMLNode& mapsNode = node.GetChild("Maps");
-  if (mapsNode.IsValid()) {
-    for (int x = 0; x < mapsNode.GetChildCount("Map"); x++) {
-      const CXMLNode& mapNode = mapsNode.GetChild("Map", x);
+  const CXMLNode& maps_node = node.GetChild("Maps");
+  if (maps_node.IsValid()) {
+    for (int x = 0; x < maps_node.GetChildCount("Map"); x++) {
+      const CXMLNode& map_node = maps_node.GetChild("Map", x);
 
       Map map;
-      if (mapNode.HasAttribute("Name")) {
-        map.name = mapNode.GetAttributeAsString("Name");
+      if (map_node.HasAttribute("Name")) {
+        map.name = map_node.GetAttributeAsString("Name");
       }
 
-      if (mapNode.HasAttribute("ChestAPIID")) {
-        map.chestId = mapNode.GetAttributeAsString("ChestAPIID");
+      if (map_node.HasAttribute("ChestAPIID")) {
+        map.chest_id = map_node.GetAttributeAsString("ChestAPIID");
       }
 
-      if (mapNode.HasAttribute("Category")) {
-        map.category = mapNode.GetAttributeAsString("Category");
+      if (map_node.HasAttribute("Category")) {
+        map.category = map_node.GetAttributeAsString("Category");
       }
 
-      if (mapNode.HasAttribute("id")) {
-        map.id = mapNode.GetAttributeAsString("id");
+      if (map_node.HasAttribute("id")) {
+        map.id = map_node.GetAttributeAsString("id");
         auto str = "maptimer_mapopen_" + map.id;
         if (HasConfigValue(str)) {
           map.display = GetConfigValue(str);
         }
       }
 
-      if (mapNode.HasAttribute("Length")) {
-        mapNode.GetAttributeAsInteger("Length", &map.Length);
+      if (map_node.HasAttribute("Length")) {
+        map_node.GetAttributeAsInteger("Length", &map.length);
       }
 
-      if (mapNode.HasAttribute("Start")) {
-        mapNode.GetAttributeAsInteger("Start", &map.Start);
+      if (map_node.HasAttribute("Start")) {
+        map_node.GetAttributeAsInteger("Start", &map.start);
       }
 
       int start = 0;
 
       // events
-      for (int y = 0; y < mapNode.GetChildCount("Event"); y++) {
-        const CXMLNode& eventNode = mapNode.GetChild("Event", y);
+      for (int y = 0; y < map_node.GetChildCount("Event"); y++) {
+        const CXMLNode& event_node = map_node.GetChild("Event", y);
         Event event;
         event.length = 0;
         event.start = start;
 
-        if (eventNode.HasAttribute("Name")) {
-          event.name = eventNode.GetAttributeAsString("Name");
+        if (event_node.HasAttribute("Name")) {
+          event.name = event_node.GetAttributeAsString("Name");
         }
 
-        if (eventNode.HasAttribute("WorldBossAPIID")) {
-          event.worldBossId = eventNode.GetAttributeAsString("WorldBossAPIID");
+        if (event_node.HasAttribute("WorldBossAPIID")) {
+          event.world_boss_id = event_node.GetAttributeAsString("WorldBossAPIID");
         }
 
-        if (eventNode.HasAttribute("WayPoint")) {
-          event.waypoint = eventNode.GetAttributeAsString("WayPoint");
+        if (event_node.HasAttribute("WayPoint")) {
+          event.waypoint = event_node.GetAttributeAsString("WayPoint");
         }
 
-        if (eventNode.HasAttribute("Length")) {
-          eventNode.GetAttributeAsInteger("Length", &event.length);
+        if (event_node.HasAttribute("Length")) {
+          event_node.GetAttributeAsInteger("Length", &event.length);
           start += event.length;
         }
 
-        if (eventNode.HasAttribute("Color")) {
-          auto s = eventNode.GetAttributeAsString("Color");
+        if (event_node.HasAttribute("Color")) {
+          auto s = event_node.GetAttributeAsString("Color");
           uint32_t c = 0;
           std::sscanf(s.c_str(), "%x", &c);
           event.color = CColor(c);
@@ -415,18 +415,18 @@ void GW2MapTimer::SetLayout(const CXMLNode& node) {
       }
 
       const auto& cat = !map.category.empty() ? map.category : "";
-      if (_categoryMapsDict.find(cat) == _categoryMapsDict.end()) {
-        _categoryMapsDict.insert(std::make_pair(cat, std::vector<Map>()));
-        _categories.emplace_back(cat);
+      if (category_maps_dict.find(cat) == category_maps_dict.end()) {
+        category_maps_dict.insert(std::make_pair(cat, std::vector<Map>()));
+        categories_list.emplace_back(cat);
       }
-      _categoryMapsDict[cat].push_back(map);
+      category_maps_dict[cat].push_back(map);
     }
 
     // categorized maps (group maps by category)
-    for (const auto& cat : _categories) {
-      std::vector<Map> ms = _categoryMapsDict[cat];
+    for (const auto& cat : categories_list) {
+      std::vector<Map> ms = category_maps_dict[cat];
       for (const auto& m : ms) {
-        maps.emplace_back(m);
+        maps_.emplace_back(m);
       }
     }
   }
@@ -435,16 +435,16 @@ void GW2MapTimer::SetLayout(const CXMLNode& node) {
 void GW2MapTimer::UpdateScrollbarData(int ypos, const Rect& cl) {
   if (!ScrollbarsEnabled()) return;
 
-  Rect BRect = Rect(0, 0, cl.Width(), ypos + 1);
+  Rect b_rect = Rect(0, 0, cl.Width(), ypos + 1);
 
-  SetHScrollbarParameters(BRect.x1, BRect.x2, cl.Width());
-  SetVScrollbarParameters(BRect.y1, BRect.y2, cl.Height());
+  SetHScrollbarParameters(b_rect.x1, b_rect.x2, cl.Width());
+  SetVScrollbarParameters(b_rect.y1, b_rect.y2, cl.Height());
 
-  if (cl.Width() >= BRect.Width() && GetHScrollbarPos() != BRect.x1) {
-    SetHScrollbarPos(BRect.x1, true);
+  if (cl.Width() >= b_rect.Width() && GetHScrollbarPos() != b_rect.x1) {
+    SetHScrollbarPos(b_rect.x1, true);
   }
-  if (cl.Height() >= BRect.Height() && GetVScrollbarPos() != BRect.y1) {
-    SetVScrollbarPos(BRect.y1, true);
+  if (cl.Height() >= b_rect.Height() && GetVScrollbarPos() != b_rect.y1) {
+    SetVScrollbarPos(b_rect.y1, true);
   }
 }
 
@@ -466,7 +466,7 @@ GW2MapTimer::GW2MapTimer() : CWBGuiType() {
 
 GW2MapTimer::~GW2MapTimer() {}
 
-gui::CWBItem* GW2MapTimer::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                   Rect& Pos) {
-  return GW2MapTimer::Create(Root, Pos);
+gui::CWBItem* GW2MapTimer::Factory(gui::CWBItem* root, const CXMLNode& node,
+                                   Rect& pos) {
+  return GW2MapTimer::Create(root, pos);
 }
