@@ -68,7 +68,7 @@ bool disableHooks = false;
 
 bool InitGUI(gui::CWBApplication* App) {
   CreateUniFontOutlined(App, "UniFontOutlined");
-  CreateUniFontOutlined(App, "ProFontOutlined");
+  CreateProFontOutlined(App, "ProFontOutlined");
   CreateUniFont(App, "UniFont");
   CreateProFont(App, "ProFont");
 
@@ -195,8 +195,8 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
         // Safest to just clear this.
         memset(dbKbdState, 0, 256);
         // Put the old vkCode back into the locale's buffer.
-        ToUnicodeEx(lastState.vkCode, lastState.scanCode, dbKbdState,
-                    szCharBuf, 32, 0, dwhkl);
+        ToUnicodeEx(lastState.vkCode, lastState.scanCode, dbKbdState, szCharBuf,
+                    32, 0, dwhkl);
         // Set vkCode to 0, we can use this as a flag as a vkCode of 0 is
         // invalid.
         lastState.vkCode = 0;
@@ -645,8 +645,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     SetCurrentDirectory(s.c_str());
 
     auto TacoWindow = FindWindow("CoRE2", "Guild Wars 2 Tactical Overlay");
-    Log_Nfo("[GW2TacO] TacO window id: {:p}",
-            static_cast<void*>(TacoWindow));
+    Log_Nfo("[GW2TacO] TacO window id: {:p}", static_cast<void*>(TacoWindow));
     if (TacoWindow) {
       COPYDATASTRUCT MyCDS = {};
       MyCDS.dwData = 0;
