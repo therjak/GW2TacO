@@ -12,7 +12,7 @@ import whiteboard;
 using math::Point;
 using math::Rect;
 
-void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* API) {
+void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* api) {
   if (!GetConfigValue("MouseHighlightVisible")) return;
 
   POINT pos;
@@ -28,36 +28,36 @@ void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* API) {
 
   last_pos = cp;
 
-  if (cp == lastchangedpos) {
-    numSameFrames++;
+  if (cp == last_changed_pos) {
+    num_same_frames++;
   } else {
-    numSameFrames = 0;
-    lastchangedpos = cp;
+    num_same_frames = 0;
+    last_changed_pos = cp;
   }
 
   Rect cl = GetClientRect();
 
-  int Color = GetConfigValue("MouseHighlightColor");
+  int color = GetConfigValue("MouseHighlightColor");
 
   if (GetConfigValue("MouseHighlightOutline")) {
-    API->DrawRect(Rect(cp.x - 1, cl.y1, cp.x + 2, cl.y2), CColor{0xff000000});
-    API->DrawRect(Rect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), CColor{0xff000000});
+    api->DrawRect(Rect(cp.x - 1, cl.y1, cp.x + 2, cl.y2), CColor{0xff000000});
+    api->DrawRect(Rect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), CColor{0xff000000});
   }
 
-  API->DrawRect(Rect(cp.x, cl.y1, cp.x + 1, cl.y2), CGAPalette[Color]);
-  API->DrawRect(Rect(cl.x1, cp.y, cl.x2, cp.y + 1), CGAPalette[Color]);
+  api->DrawRect(Rect(cp.x, cl.y1, cp.x + 1, cl.y2), CGAPalette[color]);
+  api->DrawRect(Rect(cl.x1, cp.y, cl.x2, cp.y + 1), CGAPalette[color]);
 }
 
 GW2MouseHighlight::GW2MouseHighlight() : CWBGuiType() {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
-gui::CWBItem* GW2MouseHighlight::Factory(gui::CWBItem* Root,
-                                         const CXMLNode& node, Rect& Pos) {
-  return GW2MouseHighlight::Create(Root, Pos);
+gui::CWBItem* GW2MouseHighlight::Factory(gui::CWBItem* root,
+                                         const CXMLNode& node, Rect& pos) {
+  return GW2MouseHighlight::Create(root, pos);
 }
 
-bool GW2MouseHighlight::IsMouseTransparent(const Point& ClientSpacePoint,
-                                           gui::WBMESSAGE MessageType) {
+bool GW2MouseHighlight::IsMouseTransparent(const Point& client_space_point,
+                                           gui::WBMESSAGE message_type) {
   return true;
 }
