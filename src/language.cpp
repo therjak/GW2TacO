@@ -95,18 +95,18 @@ void Localization::ImportLanguage(CXMLDocument& d) {
 
   int langIdx = -1;
 
-  for (int x = 0; x < languages.size(); x++) {
-    if (languages[x].name == language) langIdx = x;
+  for (int x = 0; x < languages_.size(); x++) {
+    if (languages_[x].name_ == language) langIdx = x;
   }
 
   if (langIdx < 0) {
     Language lang;
-    lang.name = language;
-    langIdx = languages.size();
-    languages.push_back(lang);
+    lang.name_ = language;
+    langIdx = languages_.size();
+    languages_.push_back(lang);
   }
 
-  auto& lang = languages[langIdx].dict;
+  auto& lang = languages_[langIdx].dict_;
 
   int tokenCount = root.GetChildCount("token");
 
@@ -129,7 +129,7 @@ void Localization::ImportLanguage(CXMLDocument& d) {
 }
 
 Localization::Localization() {
-  for (int x = 0; x <= 0x460; x++) usedGlyphs.push_back(x);
+  for (int x = 0; x <= 0x460; x++) used_glyphs_.push_back(x);
 }
 
 void Localization::SetActiveLanguage(std::string_view language) {
@@ -137,22 +137,22 @@ void Localization::SetActiveLanguage(std::string_view language) {
   std::transform(lang.begin(), lang.end(), lang.begin(),
                  [](unsigned char c) { return std::tolower(c); });
 
-  for (size_t x = 0; x < languages.size(); x++) {
-    if (languages[x].name == lang) {
-      activeLanguageIdx = x;
+  for (size_t x = 0; x < languages_.size(); x++) {
+    if (languages_[x].name_ == lang) {
+      active_language_idx_ = x;
       SetConfigString("language", lang);
       Log_Nfo("[GW2TacO] Setting TacO language to {:s}", language);
       return;
     }
   }
 
-  activeLanguageIdx = 0;
+  active_language_idx_ = 0;
 }
 
 std::vector<std::string> Localization::GetLanguages() {
   std::vector<std::string> langs;
 
-  for (const auto& l : languages) langs.push_back(l.name);
+  for (const auto& l : languages_) langs.push_back(l.name_);
 
   for (auto& l : langs) l[0] = std::toupper(l[0]);
 
@@ -191,14 +191,14 @@ std::string Localization::Localize(std::string_view token,
 
   std::string rawToken;
   if (!fallback.empty()) {
-    rawToken = fallback;
+    rawToken = std::string(fallback);
   } else {
     rawToken = "[" + tokenString + "]";
   }
 
-  if (activeLanguageIdx >= languages.size()) return rawToken;
+  if (active_language_idx_ >= languages_.size()) return rawToken;
 
-  auto& lang = languages[activeLanguageIdx].dict;
+  auto& lang = languages_[active_language_idx_].dict_;
 
   if (lang.find(tokenString) == lang.end()) {
     static std::vector<std::string> dumpedStrings;
@@ -208,7 +208,7 @@ std::string Localization::Localize(std::string_view token,
       Log_Warn(
           "[GW2TacO] Translation for token '{:s}' is not available in the {:s} "
           "language.",
-          tokenString, languages[activeLanguageIdx].name);
+          tokenString, languages_[active_language_idx_].name_);
       dumpedStrings.push_back(tokenString);
     }
 
@@ -218,15 +218,15 @@ std::string Localization::Localize(std::string_view token,
   return lang[tokenString];
 }
 
-int Localization::GetActiveLanguageIndex() { return activeLanguageIdx; }
+int Localization::GetActiveLanguageIndex() { return (int)active_language_idx_; }
 
-std::vector<int>& Localization::GetUsedGlyphs() { return usedGlyphs; }
+std::vector<int>& Localization::GetUsedGlyphs() { return used_glyphs_; }
 
 void Localization::ProcessStringForUsedGlyphs(std::string_view string) {
   DecodeUtf8(string, [&](uint32_t Char) -> bool {
-    if (std::find(usedGlyphs.begin(), usedGlyphs.end(), Char) ==
-        usedGlyphs.end()) {
-      usedGlyphs.push_back(Char);
+    if (std::find(used_glyphs_.begin(), used_glyphs_.end(), Char) ==
+        used_glyphs_.end()) {
+      used_glyphs_.push_back(Char);
     }
     return true;
   });

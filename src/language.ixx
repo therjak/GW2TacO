@@ -11,8 +11,8 @@ import xml;
 
 export class Language {
  public:
-  std::string name;
-  std::unordered_map<std::string, std::string> dict;
+  std::string name_;
+  std::unordered_map<std::string, std::string> dict_;
 };
 
 export class Localization {
@@ -34,10 +34,10 @@ export class Localization {
   void ImportFile(std::string_view file);
   void ImportLanguage(CXMLDocument& d);
 
-  size_t activeLanguageIdx = 0;
-  std::vector<Language> languages;
+  size_t active_language_idx_ = 0;
+  std::vector<Language> languages_;
 
-  std::vector<int> usedGlyphs;
+  std::vector<int> used_glyphs_;
 };
 
 export extern std::unique_ptr<Localization> localization;
