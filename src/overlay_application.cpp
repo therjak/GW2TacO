@@ -6,41 +6,41 @@ module taco.overlay_application;
 
 import whiteboard;
 
-COverlayApp::COverlayApp() = default;
+OverlayApplication::OverlayApplication() = default;
 
-bool COverlayApp::Initialize(const renderer::WindowParameters& WindowParams) {
-  if (!CWBApplication::Initialize(WindowParams)) return false;
+bool OverlayApplication::Initialize(const renderer::WindowParameters& window_params) {
+  if (!CWBApplication::Initialize(window_params)) return false;
 
-  auto GuiBlendState = device_->CreateBlendState();
-  if (!GuiBlendState) {
+  auto gui_blend_state = device_->CreateBlendState();
+  if (!gui_blend_state) {
     Log_Err("[gui] Error creating UI Blend State");
     return false;
   }
 
-  GuiBlendState->SetBlendEnable(0, true);
-  GuiBlendState->SetSrcBlend(0, renderer::BlendFactor::kSrcAlpha);
-  GuiBlendState->SetDestBlend(0, renderer::BlendFactor::kInvSrcAlpha);
-  GuiBlendState->SetSrcBlendAlpha(0, renderer::BlendFactor::kOne);
-  GuiBlendState->SetDestBlendAlpha(0, renderer::BlendFactor::kInvSrcAlpha);
+  gui_blend_state->SetBlendEnable(0, true);
+  gui_blend_state->SetSrcBlend(0, renderer::BlendFactor::kSrcAlpha);
+  gui_blend_state->SetDestBlend(0, renderer::BlendFactor::kInvSrcAlpha);
+  gui_blend_state->SetSrcBlendAlpha(0, renderer::BlendFactor::kOne);
+  gui_blend_state->SetDestBlendAlpha(0, renderer::BlendFactor::kInvSrcAlpha);
 
-  DrawAPI->SetUIBlendState(std::move(GuiBlendState));
+  DrawAPI->SetUIBlendState(std::move(gui_blend_state));
 
-  holePunchBlendState = DrawAPI->GetDevice()->CreateBlendState();
-  holePunchBlendState->SetBlendEnable(0, true);
-  holePunchBlendState->SetIndependentBlend(true);
-  holePunchBlendState->SetSrcBlend(0, renderer::BlendFactor::kZero);
-  holePunchBlendState->SetDestBlend(0, renderer::BlendFactor::kZero);
-  holePunchBlendState->SetSrcBlendAlpha(0, renderer::BlendFactor::kZero);
-  holePunchBlendState->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state = DrawAPI->GetDevice()->CreateBlendState();
+  hole_punch_blend_state->SetBlendEnable(0, true);
+  hole_punch_blend_state->SetIndependentBlend(true);
+  hole_punch_blend_state->SetSrcBlend(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state->SetDestBlend(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state->SetSrcBlendAlpha(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
 
   return true;
 }
 
-COverlayApp::~COverlayApp() = default;
+OverlayApplication::~OverlayApplication() = default;
 
-void COverlayApp::TakeScreenshot() {}
+void OverlayApplication::TakeScreenshot() {}
 
-bool COverlayApp::DeviceOK() {
+bool OverlayApplication::DeviceOk() {
   if (!device_) return false;
   return device_->DeviceOk();
 }

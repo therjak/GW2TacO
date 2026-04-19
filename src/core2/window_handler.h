@@ -65,7 +65,7 @@ class WindowHandler {
   virtual void Destroy();
   virtual bool HandleMessages() = 0;
   virtual bool HandleOSMessages() = 0;
-  virtual bool DeviceOK() = 0;
+  virtual bool DeviceOk() = 0;
   virtual void ToggleFullScreen() = 0;
 
   virtual HWND GetHandle() = 0;
@@ -122,7 +122,7 @@ class WindowHandlerWin : public WindowHandler {
   void Destroy() override;
   bool HandleMessages() override;
   bool HandleOSMessages() override;
-  bool DeviceOK() override;
+  bool DeviceOk() override;
   void ToggleFullScreen() override;
 
   HWND GetHandle() override;

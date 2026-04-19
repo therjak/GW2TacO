@@ -731,7 +731,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     FreeLibrary(dComp);
   }
 
-  App = std::make_unique<COverlayApp>();
+  App = std::make_unique<OverlayApplication>();
 
   int32_t width = 1;
   int32_t height = 1;
@@ -869,7 +869,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
     }
 
-    if (App->DeviceOK()) {
+    if (App->DeviceOk()) {
       extern bool frameTriggered;
 
       auto currTime = globalTimer.GetTime();
