@@ -50,7 +50,7 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* api) {
     if (cpoi.External) continue;
 
     Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
-    if (v.Length() < cpoi.typeData.triggerRange) {
+    if (v.Length() < cpoi.type_data_.trigger_range_) {
       if (auto_hide) {
         if (hidden_) {
           for (uint32_t z = 0; z < NumChildren(); z++) GetChild(z)->Hide(false);
