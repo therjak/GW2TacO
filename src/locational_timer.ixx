@@ -14,10 +14,10 @@ import xml;
 export class LocationalTimer {
  public:
   struct TimerEvent {
-    std::string Text;
-    int32_t Time = 0;
-    int32_t CountdownLength = 0;
-    int32_t OnScreenLength = 0;
+    std::string text;
+    int32_t time = 0;
+    int32_t countdown_length = 0;
+    int32_t on_screen_length = 0;
   };
 
   LocationalTimer();
@@ -26,40 +26,40 @@ export class LocationalTimer {
   void Update();
   void ImportData(const CXMLNode& node);
 
-  int32_t map_id = 0;
-  math::CSphere EnterSphere = math::CSphere(math::Vector3(0, 0, 0), 0);
-  math::CSphere ExitSphere = math::CSphere(math::Vector3(0, 0, 0), 0);
-  math::Vector3 ResetPoint = math::Vector3(0, 0, 0);
-  int32_t TimerLength = 0;
-  int32_t StartDelay = 0;
+  int32_t map_id_ = 0;
+  math::CSphere enter_sphere_ = math::CSphere(math::Vector3(0, 0, 0), 0);
+  math::CSphere exit_sphere_ = math::CSphere(math::Vector3(0, 0, 0), 0);
+  math::Vector3 reset_point_ = math::Vector3(0, 0, 0);
+  int32_t timer_length_ = 0;
+  int32_t start_delay_ = 0;
 
-  std::vector<TimerEvent> Events;
+  std::vector<TimerEvent> events_;
 
-  bool IsRunning = false;
-  int32_t StartTime = 0;
+  bool is_running_ = false;
+  int32_t start_time_ = 0;
 };
 
 export class TimerDisplay
     : public gui::CWBGuiType<"TimerDisplay", gui::CWBItem> {
  public:
   TimerDisplay();
-  static inline TimerDisplay* Create(gui::CWBItem* Parent,
-                                     math::Rect Position) {
+  static inline TimerDisplay* Create(gui::CWBItem* parent,
+                                     math::Rect position) {
     auto p = std::make_unique<TimerDisplay>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     TimerDisplay* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
   ~TimerDisplay() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 
-  void OnDraw(gui::CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 };
 
 export extern std::vector<LocationalTimer> LocationalTimers;
