@@ -2826,47 +2826,47 @@ bool LoadBMFontBinaryPNG(gui::CWBFontDescription* fd, uint8_t* Binary,
   return res;
 }
 
-bool CreateProFont(gui::CWBApplication* App, std::string_view FontName) {
+bool CreateProFont(gui::CWBApplication* app, std::string_view font_name) {
   auto fd = std::make_unique<gui::CWBFontDescription>();
   if (!LoadBMFontBinaryMonochrome(fd.get(), raw_profont_bin,
                                   raw_profont_bin_size, raw_profontgifsmall,
                                   raw_profontgifsmall_size)) {
     return NULL;
   }
-  bool f = App->InitFont(FontName, fd.get());
+  bool f = app->InitFont(font_name, fd.get());
   return f;
 }
 
-bool CreateUniFont(gui::CWBApplication* App, std::string_view FontName) {
+bool CreateUniFont(gui::CWBApplication* app, std::string_view font_name) {
   auto fd = std::make_unique<gui::CWBFontDescription>();
   if (!LoadBMFontBinaryMonochrome(fd.get(), raw_uni_fnt, raw_uni_fnt_size,
                                   raw_uni_png, raw_uni_png_size)) {
     return NULL;
   }
-  bool f = App->InitFont(FontName, fd.get());
+  bool f = app->InitFont(font_name, fd.get());
   return f;
 }
 
-bool CreateUniFontOutlined(gui::CWBApplication* App,
-                           std::string_view FontName) {
+bool CreateUniFontOutlined(gui::CWBApplication* app,
+                           std::string_view font_name) {
   auto fd = std::make_unique<gui::CWBFontDescription>();
   if (!LoadBMFontBinaryPNG(
           fd.get(), raw_unifont_outline_fnt, raw_unifont_outline_fnt_size,
           raw_unifont_outline_png, raw_unifont_outline_png_size)) {
     return NULL;
   }
-  bool f = App->InitFont(FontName, fd.get());
+  bool f = app->InitFont(font_name, fd.get());
   return f;
 }
 
-bool CreateProFontOutlined(gui::CWBApplication* App,
-                           std::string_view FontName) {
+bool CreateProFontOutlined(gui::CWBApplication* app,
+                           std::string_view font_name) {
   auto fd = std::make_unique<gui::CWBFontDescription>();
   if (!LoadBMFontBinaryPNG(
           fd.get(), raw_profont_outlined_fnt, raw_profont_outlined_fnt_size,
           raw_profont_outlined_png, raw_profont_outlined_png_size)) {
     return NULL;
   }
-  bool f = App->InitFont(FontName, fd.get());
+  bool f = app->InitFont(font_name, fd.get());
   return f;
 }
