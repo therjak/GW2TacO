@@ -16,26 +16,26 @@ import xml;
 using math::Point;
 using math::Rect;
 
-void GW2HPGrid::OnDraw(gui::CWBDrawAPI* API) {
+void GW2HPGrid::OnDraw(gui::CWBDrawAPI* api) {
   if (!GetConfigValue("HPGridVisible")) {
     return;
   }
 
   Rect cl = GetClientRect();
 
-  for (auto& grid : Grids) {
+  for (auto& grid : grids_) {
     if (mumbleLink.map_id != grid.map_id) {
       continue;
     }
 
-    if (!grid.bSphere.Contains(mumbleLink.charPosition)) {
+    if (!grid.b_sphere.Contains(mumbleLink.charPosition)) {
       continue;
     }
 
-    for (const auto& dp : grid.displayedPercentages) {
+    for (const auto& dp : grid.displayed_percentages) {
       int pos = static_cast<int>(cl.Width() * dp.percentage / 100.0f);
       Rect r = Rect(pos, cl.y1, pos + 1, cl.y2);
-      API->DrawRect(r, dp.color);
+      api->DrawRect(r, dp.color);
     }
   }
 }
@@ -44,13 +44,13 @@ GW2HPGrid::GW2HPGrid() : CWBGuiType() { LoadGrids(); }
 
 GW2HPGrid::~GW2HPGrid() = default;
 
-gui::CWBItem* GW2HPGrid::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                 Rect& Pos) {
-  return GW2HPGrid::Create(Root, Pos);
+gui::CWBItem* GW2HPGrid::Factory(gui::CWBItem* root, const CXMLNode& node,
+                                 Rect& pos) {
+  return GW2HPGrid::Create(root, pos);
 }
 
-bool GW2HPGrid::IsMouseTransparent(const Point& ClientSpacePoint,
-                                   gui::WBMESSAGE MessageType) {
+bool GW2HPGrid::IsMouseTransparent(const Point& client_space_point,
+                                   gui::WBMESSAGE message_type) {
   return true;
 }
 
@@ -74,16 +74,16 @@ void GW2HPGrid::LoadGrids() {
     }
 
     if (node.HasAttribute("centerx")) {
-      node.GetAttributeAsFloat("centerx", &gd.bSphere.Position.x);
+      node.GetAttributeAsFloat("centerx", &gd.b_sphere.Position.x);
     }
     if (node.HasAttribute("centery")) {
-      node.GetAttributeAsFloat("centery", &gd.bSphere.Position.y);
+      node.GetAttributeAsFloat("centery", &gd.b_sphere.Position.y);
     }
     if (node.HasAttribute("centerz")) {
-      node.GetAttributeAsFloat("centerz", &gd.bSphere.Position.z);
+      node.GetAttributeAsFloat("centerz", &gd.b_sphere.Position.z);
     }
     if (node.HasAttribute("radius")) {
-      node.GetAttributeAsFloat("radius", &gd.bSphere.Radius);
+      node.GetAttributeAsFloat("radius", &gd.b_sphere.Radius);
     }
 
     for (int32_t y = 0; y < node.GetChildCount("percentage"); y++) {
@@ -98,9 +98,9 @@ void GW2HPGrid::LoadGrids() {
         std::sscanf(colhex.c_str(), "%x", &val);
         line.color = CColor(val);
       }
-      gd.displayedPercentages.emplace_back(std::move(line));
+      gd.displayed_percentages.emplace_back(std::move(line));
     }
 
-    Grids.emplace_back(std::move(gd));
+    grids_.emplace_back(std::move(gd));
   }
 }
