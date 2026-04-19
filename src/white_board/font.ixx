@@ -2,6 +2,7 @@ module;
 #include <tchar.h>
 
 #include <cstdint>
+#include <memory>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -127,9 +128,8 @@ class CWBFont {
       int32_t x1, int32_t x2, std::string_view Text,
       WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetCenterHeight(int32_t y1, int32_t y2);
-  math::Point GetCenter(
-      std::string_view Text, math::Rect Rect,
-      WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
+  math::Point GetCenter(std::string_view Text, math::Rect Rect,
+                        WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetMedian();
 
   int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
@@ -156,10 +156,9 @@ class CWBFont {
   int32_t GetHeight(std::string_view String);
 
   math::Point GetTextPosition(std::string_view String,
-                               const math::Rect& Container,
-                               WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
-                               WBTEXTTRANSFORM Transform,
-                               bool DoKerning = true);
+                              const math::Rect& Container,
+                              WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
+                              WBTEXTTRANSFORM Transform, bool DoKerning = true);
 
   char ApplyTextTransform(const char* Text, const char* CurrPos,
                           WBTEXTTRANSFORM Transform);

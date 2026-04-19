@@ -5,6 +5,8 @@ module;
 #include <string_view>
 #include <vector>
 
+#include "src/core2/window_handler.h"
+
 module whiteboard;
 
 import :application;
@@ -47,19 +49,19 @@ Rect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
   switch (Element) {
     case WBWINDOWELEMENT::WB_WINELEMENT_CLOSE:
       return Rect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopLeft() + Point(5, 5));
+                  GetWindowRect().TopLeft() + Point(5, 5));
       break;
     case WBWINDOWELEMENT::WB_WINELEMENT_MINIMIZE:
       return Rect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopLeft() + Point(5, 5));
+                  GetWindowRect().TopLeft() + Point(5, 5));
       break;
     case WBWINDOWELEMENT::WB_WINELEMENT_INFO:
       return Rect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopLeft() + Point(5, 5));
+                  GetWindowRect().TopLeft() + Point(5, 5));
       break;
     case WBWINDOWELEMENT::WB_WINELEMENT_TITLE:
       return Rect(GetWindowRect().TopLeft(),
-                   GetWindowRect().TopRight() + Point(0, 15));
+                  GetWindowRect().TopRight() + Point(0, 15));
       break;
     default:
       return {};

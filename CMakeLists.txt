@@ -392,7 +392,7 @@ add_library(taco_base STATIC)
 target_sources(taco_base
     PRIVATE
         ${Base_Source_Files}
-    PRIVATE
+    PUBLIC
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/base/constants.ixx
@@ -412,7 +412,7 @@ add_library(taco_util STATIC)
 target_sources(taco_util
     PRIVATE
         ${Util_Source_Files}
-    PRIVATE
+    PUBLIC
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/util/xml_node.ixx
@@ -436,7 +436,7 @@ add_library(whiteboard STATIC)
 target_sources(whiteboard
     PRIVATE
         ${Whiteboard_Source_Files}
-    PRIVATE
+    PUBLIC
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/white_board/atlas.ixx

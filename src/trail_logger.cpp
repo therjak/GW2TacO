@@ -11,8 +11,11 @@ module;
 #include <vector>
 
 #include "src/base/logger.h"
+#include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
+#include "src/core2/constant_buffer.h"
 #include "src/core2/enums.h"
+#include "src/core2/texture.h"
 #include "src/gw2_tactical.h"
 #include "src/util/miniz.h"
 
@@ -46,10 +49,6 @@ CStreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
 Vector3 last_pos = Vector3(0, 0, 0);
-
-float WorldToGameCoords(float world);
-float GameToWorldCoords(float game);
-float GetMapFade();
 
 void GlobalDoTrailLogging(int32_t map_id, Vector3 charPos) {
   auto* trails = dynamic_cast<GW2TrailDisplay*>(

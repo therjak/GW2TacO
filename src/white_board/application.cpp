@@ -13,12 +13,15 @@ module;
 #include <utility>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
+#include "src/base/ring_buffer.h"
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
+#include "src/core2/enums.h"
 #include "src/core2/window_handler.h"
 #include "src/util/png_decompressor.h"
 
@@ -27,6 +30,7 @@ module whiteboard;
 import :application;
 import :box;
 import :button;
+import :gui_item;
 import :label;
 import :text_box;
 import :window;
@@ -509,13 +513,12 @@ void CWBApplication::Display(CWBDrawAPI* API) {
   LastFrameTime = frametime;
 }
 
-CWBItem* CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR* type) {
-  if (Items.find(Guid) == Items.end()) return nullptr;
-  CWBItem* i = Items[Guid];
-
-  if (type) return i->InstanceOf(type) ? i : nullptr;
-
-  return i;
+CWBItem* CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR* type) const {
+  if (auto it = Items.find(Guid); it != Items.end()) {
+    CWBItem* i = it->second;
+    return (!type || i->InstanceOf(type)) ? i : nullptr;
+  }
+  return nullptr;
 }
 
 void CWBApplication::Send(const CWBMessage& Message) {
@@ -894,8 +897,8 @@ bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
   bool b = true;
   for (int i = 0; i < node.GetChildCount(); i++) {
     b &= GenerateGUIFromXMLNode(Root, node.GetChild(i), Pos);
-    Pos = Rect(Pos.BottomLeft() + Point(0, 2),
-                Pos.BottomLeft() + Point(20, 22));
+    Pos =
+        Rect(Pos.BottomLeft() + Point(0, 2), Pos.BottomLeft() + Point(20, 22));
   }
   return b;
 }

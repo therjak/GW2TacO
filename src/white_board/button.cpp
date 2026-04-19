@@ -4,6 +4,8 @@ module;
 #include <string>
 #include <string_view>
 
+#include "src/base/color.h"
+
 module whiteboard;
 
 import :application;
@@ -123,7 +125,7 @@ Size CWBButton::GetContentSize() {
 
   if (!Font) return Size(0, 0);
   return Size(Font->GetWidth(Text, false, TextTransform),
-               Font->GetLineHeight());
+              Font->GetLineHeight());
 }
 
 void CWBButton::Push(bool pushed) { Pushed = pushed; }

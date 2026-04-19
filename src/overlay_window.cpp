@@ -1,3 +1,7 @@
+module;
+
+#include "src/base/color.h"
+
 module taco.overlay_window;
 
 import math;

@@ -2,6 +2,8 @@ module;
 #include <algorithm>
 #include <format>
 
+#include "src/base/color.h"
+
 module taco.ts3_control;
 
 import taco.language;
@@ -106,11 +108,11 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
 
             App->GetSkin()->RenderElement(
                 API, id,
-                LeftAlign ? Rect(size / 2, ypos, size / 2 + size - 1,
-                                  ypos + size - 1)
-                          : Rect(GetClientRect().Width() - size / 2 - size + 1,
-                                  ypos, GetClientRect().Width() - size / 2,
-                                  ypos + size - 1));
+                LeftAlign
+                    ? Rect(size / 2, ypos, size / 2 + size - 1, ypos + size - 1)
+                    : Rect(GetClientRect().Width() - size / 2 - size + 1, ypos,
+                           GetClientRect().Width() - size / 2,
+                           ypos + size - 1));
 
             Point p = f->GetTextPosition(
                 cl->name, GetClientRect() - Rect(2 * size, ypos, 2 * size, 0),
@@ -130,8 +132,7 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
 
     if (!cnt) {
       DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
-                         Rect(0, 0, GetClientRect().Width(), ypos),
-                         GetState());
+                         Rect(0, 0, GetClientRect().Width(), ypos), GetState());
     }
   }
 

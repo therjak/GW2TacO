@@ -9,6 +9,7 @@ module;
 #include <string_view>
 
 #include "src/base/logger.h"
+#include "src/base/ring_buffer.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
 #include "src/gw2_tactical.h"

@@ -7,6 +7,7 @@ export module taco.special_gui_items;
 
 import math;
 import whiteboard;
+import xml;
 
 export class ClickThroughButton
     : public gui::CWBGuiType<"clickthroughbutton", gui::CWBButton> {

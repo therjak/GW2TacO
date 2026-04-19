@@ -176,3 +176,4 @@ void OpenTypeContextMenu(gui::CWBContextItem* ctx,
 float WorldToGameCoords(float world);
 float GameToWorldCoords(float game);
 void FindClosestRouteMarkers(bool force);
+float GetMapFade();

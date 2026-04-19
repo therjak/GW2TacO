@@ -5,6 +5,7 @@ module;
 #include <string_view>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/base/string_format.h"
 
 module whiteboard;
@@ -54,7 +55,7 @@ void CWBMetricValue::SetAutoSize(bool Auto) { AutoSize = Auto; }
 // position descriptor - general
 
 Rect CWBPositionDescriptor::GetPosition(Size ParentSize, Size ContentSize,
-                                         const Rect& Original) {
+                                        const Rect& Original) {
   Rect r(0, 0, 0, 0);
 
   int32_t Width = 0;
@@ -135,7 +136,7 @@ Rect CWBPositionDescriptor::GetPosition(Size ParentSize, Size ContentSize,
 }
 
 Rect CWBPositionDescriptor::GetPadding(Size ParentSize,
-                                        const Rect& BorderSizes) {
+                                       const Rect& BorderSizes) {
   Rect r(0, 0, 0, 0);
 
   r.x1 =
@@ -304,9 +305,9 @@ void CWBMosaic::Render(CWBDrawAPI* API, const Rect& Position) {
   for (auto& image : Images) {
     image.Render(API,
                  Position + Rect(OvershootAt(WBRECTSIDE::WB_RECTSIDE_LEFT),
-                                  OvershootAt(WBRECTSIDE::WB_RECTSIDE_TOP),
-                                  OvershootAt(WBRECTSIDE::WB_RECTSIDE_RIGHT),
-                                  OvershootAt(WBRECTSIDE::WB_RECTSIDE_BOTTOM)));
+                                 OvershootAt(WBRECTSIDE::WB_RECTSIDE_TOP),
+                                 OvershootAt(WBRECTSIDE::WB_RECTSIDE_RIGHT),
+                                 OvershootAt(WBRECTSIDE::WB_RECTSIDE_BOTTOM)));
   }
 }
 

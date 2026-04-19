@@ -82,5 +82,5 @@ class APIKeyManager {
   std::vector<std::unique_ptr<APIKey>> keys;
 };
 
-export extern APIKeyManager apiKeyManager;
+extern APIKeyManager apiKeyManager;
 }  // namespace GW2

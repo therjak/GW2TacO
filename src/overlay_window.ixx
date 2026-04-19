@@ -6,6 +6,7 @@ export module taco.overlay_window;
 
 import math;
 import whiteboard;
+import xml;
 
 export class OverlayWindow
     : public gui::CWBGuiType<"OverlayWindow", gui::CWBWindow> {

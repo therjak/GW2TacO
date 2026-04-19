@@ -3,9 +3,11 @@ module;
 #include <future>
 #include <mutex>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/base/logger.h"
 #include "src/util/jsonxx.h"
 

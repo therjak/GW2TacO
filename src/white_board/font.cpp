@@ -1,9 +1,12 @@
 module;
 
+#include <tchar.h>
+
 #include <algorithm>
 #include <cctype>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/base/logger.h"
 #include "src/base/stream_reader.h"
 
@@ -137,8 +140,8 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
             s.Char = c[x].id;
             s.Advance = c[x].xadvance;
             s.Offset = Point(c[x].xoffset, c[x].yoffset);
-            s.UV = Rect(c[x].x, c[x].y, c[x].x + c[x].width,
-                         c[x].y + c[x].height);
+            s.UV =
+                Rect(c[x].x, c[x].y, c[x].x + c[x].width, c[x].y + c[x].height);
 
             if (c[x].id >= 0 && c[x].id <= 0xffff) Alphabet.push_back(s);
           }
@@ -383,7 +386,7 @@ int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
       const WBSYMBOL& mc = Alphabet[static_cast<uint16_t>(MissingChar)];
       DrawApi->DrawRectBorder(
           Rect(x + mc.OffsetX, y + mc.OffsetY, x + mc.OffsetX + mc.SizeX,
-                y + mc.OffsetY + mc.SizeY),
+               y + mc.OffsetY + mc.SizeY),
           Color);
     }
     return width;
@@ -619,9 +622,9 @@ int32_t CWBFont::GetCenterHeight(int32_t y1, int32_t y2) {
 }
 
 Point CWBFont::GetCenter(std::string_view Text, Rect Rect,
-                          WBTEXTTRANSFORM Transform) {
+                         WBTEXTTRANSFORM Transform) {
   return Point(GetCenterWidth(Rect.x1, Rect.x2, Text, Transform),
-                GetCenterHeight(Rect.y1, Rect.y2));
+               GetCenterHeight(Rect.y1, Rect.y2));
 }
 
 int32_t CWBFont::GetMedian() { return Offset_X_Char + Height_X_Char / 2; }
@@ -708,10 +711,9 @@ int32_t CWBFont::GetHeight(std::string_view String) {
 }
 
 Point CWBFont::GetTextPosition(std::string_view String, const Rect& Container,
-                                WBTEXTALIGNMENTX XAlign,
-                                WBTEXTALIGNMENTY YAlign,
-                                WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,
-                                bool DoKerning /*= true*/) {
+                               WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
+                               WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,
+                               bool DoKerning /*= true*/) {
   Point p = Container.TopLeft();
 
   const int32_t Width = GetWidth(String, false, Transform, DoKerning);

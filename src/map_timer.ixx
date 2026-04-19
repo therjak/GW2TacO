@@ -8,6 +8,7 @@ module;
 #include <unordered_set>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/base/lock_free_queue.h"
 
 export module taco.map_timer;
@@ -47,8 +48,7 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
  public:
   GW2MapTimer();
   ~GW2MapTimer() override;
-  static inline GW2MapTimer* Create(gui::CWBItem* Parent,
-                                    math::Rect Position) {
+  static inline GW2MapTimer* Create(gui::CWBItem* Parent, math::Rect Position) {
     auto p = std::make_unique<GW2MapTimer>();
     p->Initialize(Parent, Position);
     GW2MapTimer* r = p.get();
