@@ -7,17 +7,17 @@ export module taco.overlay_application;
 
 import whiteboard;
 
-export class COverlayApp : public gui::CWBApplication {
+export class OverlayApplication : public gui::CWBApplication {
  public:
-  bool Initialize(const renderer::WindowParameters& WindowParams) override;
+  OverlayApplication();
+  ~OverlayApplication() override;
 
-  COverlayApp();
-  ~COverlayApp() override;
+  bool Initialize(const renderer::WindowParameters& window_params) override;
 
   void TakeScreenshot() override;
 
-  std::unique_ptr<renderer::BlendState> holePunchBlendState;
+  std::unique_ptr<renderer::BlendState> hole_punch_blend_state;
 
  protected:
-  bool DeviceOK() override;
+  bool DeviceOk() override;
 };

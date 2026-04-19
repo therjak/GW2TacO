@@ -928,7 +928,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   API->FlushDrawBuffer();
   API->GetDevice()->SetRenderState(
-      (dynamic_cast<COverlayApp*>(App))->holePunchBlendState.get());
+      (dynamic_cast<OverlayApplication*>(App))->hole_punch_blend_state.get());
 
   API->DrawRect(miniRect, CColor(0, 0, 0, 0));
 

@@ -197,7 +197,7 @@ bool WindowHandlerWin::HandleOSMessages() {
   return !done_;
 }
 
-bool WindowHandlerWin::DeviceOK() {
+bool WindowHandlerWin::DeviceOk() {
   if (!active_) {
     if (!inactive_frame_limiter_) return device_ && device_->DeviceOk();
 
