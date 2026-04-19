@@ -104,6 +104,7 @@ extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
 extern gui::WBATLASHANDLE DefaultIconHandle;
+extern std::string default_marker_category;
 
 POISet& GetMapPOIs();
 

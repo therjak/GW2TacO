@@ -17,8 +17,8 @@ using math::Point;
 using math::Rect;
 using math::Vector3;
 
-bool GW2MarkerEditor::IsMouseTransparent(const Point& ClientSpacePoint,
-                                         gui::WBMESSAGE MessageType) {
+bool GW2MarkerEditor::IsMouseTransparent(const Point& client_space_point,
+                                         gui::WBMESSAGE message_type) {
   return true;
 }
 
@@ -28,13 +28,13 @@ GW2MarkerEditor::GW2MarkerEditor() : CWBGuiType() {
 
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
-gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                       Rect& Pos) {
-  return GW2MarkerEditor::Create(Root, Pos);
+gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* root, CXMLNode& node,
+                                       Rect& pos) {
+  return GW2MarkerEditor::Create(root, pos);
 }
 
-void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* API) {
-  bool autoHide = GetConfigValue("AutoHideMarkerEditor");
+void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* api) {
+  bool auto_hide = GetConfigValue("AutoHideMarkerEditor");
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
 
@@ -42,8 +42,8 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* API) {
 
   if (mumbleLink.map_id == -1) return;
 
-  auto& mPOIs = GetMapPOIs();
-  for (auto& poi : mPOIs) {
+  auto& m_pois = GetMapPOIs();
+  for (auto& poi : m_pois) {
     auto& cpoi = poi.second;
 
     if (cpoi.map_id != mumbleLink.map_id) continue;
@@ -51,63 +51,63 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* API) {
 
     Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
     if (v.Length() < cpoi.typeData.triggerRange) {
-      if (autoHide) {
-        if (Hidden) {
+      if (auto_hide) {
+        if (hidden_) {
           for (uint32_t z = 0; z < NumChildren(); z++) GetChild(z)->Hide(false);
         }
-        Hidden = false;
+        hidden_ = false;
       }
 
-      if (CurrentPOI != cpoi.guid) {
+      if (current_poi_ != cpoi.guid) {
         auto* type =
             dynamic_cast<gui::CWBLabel*>(FindChildByID("markertype", "label"));
         if (type) {
-          std::string typeName;
-          if (cpoi.category) typeName = cpoi.category->GetFullTypeName();
+          std::string type_name;
+          if (cpoi.category) type_name = cpoi.category->GetFullTypeName();
 
-          type->SetText("Type: " + typeName);
-          if (typeName.empty()) type->SetText("Type: undefined");
+          type->SetText("Type: " + type_name);
+          if (type_name.empty()) type->SetText("Type: undefined");
         }
       }
 
-      CurrentPOI = cpoi.guid;
+      current_poi_ = cpoi.guid;
       return;
     }
   }
 
-  if (autoHide) {
-    if (!Hidden) {
+  if (auto_hide) {
+    if (!hidden_) {
       for (uint32_t x = 0; x < NumChildren(); x++) GetChild(x)->Hide(true);
     }
 
-    Hidden = true;
+    hidden_ = true;
   } else {
-    if (Hidden) {
+    if (hidden_) {
       for (uint32_t x = 0; x < NumChildren(); x++) GetChild(x)->Hide(false);
     }
 
-    Hidden = false;
+    hidden_ = false;
   }
 }
 
-bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& Message) {
-  switch (Message.Get()) {
+bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
+  switch (message.Get()) {
     case gui::WBM_COMMAND: {
-      if (Hidden) break;
+      if (hidden_) break;
 
       auto* b = dynamic_cast<gui::CWBButton*>(
-          App->FindItemByGuid(Message.GetTarget(), "button"));
+          App->FindItemByGuid(message.GetTarget(), "button"));
       if (!b) break;
       if (b->GetID() == "changemarkertype") {
         auto ctx = b->OpenContextMenu(App->GetMousePos());
-        OpenTypeContextMenu(ctx, CategoryList, false, 0, true);
-        ChangeDefault = false;
+        OpenTypeContextMenu(ctx, category_list_, false, 0, true);
+        change_default_ = false;
       }
 
       if (b->GetID() == "changedefaultmarkertype") {
         auto ctx = b->OpenContextMenu(App->GetMousePos());
-        OpenTypeContextMenu(ctx, CategoryList, false, 0, true);
-        ChangeDefault = true;
+        OpenTypeContextMenu(ctx, category_list_, false, 0, true);
+        change_default_ = true;
       }
 
       if (b->GetID() == "starttrail") {
@@ -151,26 +151,25 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& Message) {
     } break;
 
     case gui::WBM_CONTEXTMESSAGE:
-      if (Message.Data() >= 0 && Message.Data() < CategoryList.size()) {
-        if (!ChangeDefault) {
-          auto& mPOIs = GetMapPOIs();
-          mPOIs[CurrentPOI].SetCategory(CategoryList[Message.Data()]);
+      if (message.Data() >= 0 && message.Data() < category_list_.size()) {
+        if (!change_default_) {
+          auto& m_pois = GetMapPOIs();
+          m_pois[current_poi_].SetCategory(category_list_[message.Data()]);
           ExportPOIS();
           auto* type = dynamic_cast<gui::CWBLabel*>(
               FindChildByID("markertype", "label"));
           if (type) {
             type->SetText("Marker Type: " +
-                          CategoryList[Message.Data()]->GetFullTypeName());
+                          category_list_[message.Data()]->GetFullTypeName());
           }
         } else {
-          extern std::string DefaultMarkerCategory;
-          DefaultMarkerCategory =
-              CategoryList[Message.Data()]->GetFullTypeName();
+          default_marker_category =
+              category_list_[message.Data()]->GetFullTypeName();
           auto* type = dynamic_cast<gui::CWBLabel*>(
               FindChildByID("defaultmarkertype", "label"));
           if (type) {
             type->SetText("Default Marker Type: " +
-                          CategoryList[Message.Data()]->GetFullTypeName());
+                          category_list_[message.Data()]->GetFullTypeName());
           }
         }
       }
@@ -181,5 +180,5 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& Message) {
       break;
   }
 
-  return gui::CWBItem::MessageProc(Message);
+  return gui::CWBItem::MessageProc(message);
 }
