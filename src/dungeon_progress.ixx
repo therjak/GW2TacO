@@ -20,55 +20,55 @@ export class DungeonPath {
  public:
   DungeonPath(const std::string_view& name, const std::string_view& type,
               int32_t id)
-      : name(name), type(type), id(id) {}
-  DungeonPath(const DungeonPath& p) : name(p.name), type(p.type), id(p.id) {}
+      : name_(name), type_(type), id_(id) {}
+  DungeonPath(const DungeonPath& p) : name_(p.name_), type_(p.type_), id_(p.id_) {}
 
-  const std::string_view name;
-  const std::string_view type;
-  const int32_t id;
-  std::atomic<bool> finished = false;
-  std::atomic<bool> frequenter = false;
+  const std::string_view name_;
+  const std::string_view type_;
+  const int32_t id_;
+  std::atomic<bool> finished_ = false;
+  std::atomic<bool> frequenter_ = false;
 };
 
 export class Dungeon {
  public:
-  const std::string_view name;
-  const std::string_view shortName;
-  std::vector<DungeonPath> paths;
+  const std::string_view name_;
+  const std::string_view short_name_;
+  std::vector<DungeonPath> paths_;
 };
 
 export class DungeonProgress
     : public gui::CWBGuiType<"dungeonprogress", gui::CWBItem> {
  public:
   DungeonProgress();
-  static inline DungeonProgress* Create(gui::CWBItem* Parent,
-                                        math::Rect Position) {
+  static inline DungeonProgress* Create(gui::CWBItem* parent,
+                                        math::Rect position) {
     auto p = std::make_unique<DungeonProgress>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     DungeonProgress* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
   ~DungeonProgress() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
 
-  math::Point last_pos;
+  math::Point last_pos_;
 
-  LockFreeQueue<std::unordered_set<std::string>> dungeon_queue;
-  LockFreeQueue<std::unordered_set<int32_t>> dungeon_achievements_queue;
+  LockFreeQueue<std::unordered_set<std::string>> dungeon_queue_;
+  LockFreeQueue<std::unordered_set<int32_t>> dungeon_achievements_queue_;
 
-  std::atomic<bool> being_fetched = false;
-  int32_t lastFetchTime = 0;
+  std::atomic<bool> being_fetched_ = false;
+  int32_t last_fetch_time_ = 0;
 
-  std::vector<Dungeon> dungeons;
-  std::future<void> fetchTask;
+  std::vector<Dungeon> dungeons_;
+  std::future<void> fetch_task_;
 };
