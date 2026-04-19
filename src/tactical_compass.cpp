@@ -14,30 +14,28 @@ import whiteboard;
 import xml;
 
 using math::Matrix4x4;
+using math::PI;
 using math::Point;
 using math::Rect;
 using math::Vector2;
 using math::Vector3;
 using math::Vector4;
-using math::PI;
-
-float GetMapFade();
 
 void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
   Rect draw_rect = GetClientRect();
 
   Matrix4x4 cam;
   cam.SetLookAtLH(mumbleLink.camPosition,
-                  mumbleLink.camPosition + mumbleLink.camDir,
-                  Vector3(0, 1, 0));
+                  mumbleLink.camPosition + mumbleLink.camDir, Vector3(0, 1, 0));
   Matrix4x4 persp;
   persp.SetPerspectiveFovLH(
-      mumbleLink.fov, draw_rect.Width() / static_cast<float>(draw_rect.Height()),
-      0.01f, 1000.0f);
+      mumbleLink.fov,
+      draw_rect.Width() / static_cast<float>(draw_rect.Height()), 0.01f,
+      1000.0f);
 
   Vector4 char_pos = Vector4(mumbleLink.averagedCharPosition.x,
-                              mumbleLink.averagedCharPosition.y,
-                              mumbleLink.averagedCharPosition.z, 1.0f);
+                             mumbleLink.averagedCharPosition.y,
+                             mumbleLink.averagedCharPosition.z, 1.0f);
   ;
   float r_world = GameToWorldCoords(40);
 
@@ -55,7 +53,7 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
   bool zoomed_in = pos.Length() < 0.13;
 
   Vector4 cam_pos = Vector4(mumbleLink.camPosition.x, mumbleLink.camPosition.y,
-                             mumbleLink.camPosition.z, 1.0f);
+                            mumbleLink.camPosition.z, 1.0f);
   Vector2 cam_dir =
       Vector2(cam_space_char.x - cam_pos.x, cam_space_char.z - cam_pos.z)
           .Normalized();
@@ -87,15 +85,16 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
     p1 /= p1.w;
 
     if (a1 < 1) {
-      a1 = 1 - (1 - a1) * (1 - powf((p1.y - screen_space_char.y) /
-                                        (screen_space_eye.y - screen_space_char.y),
-                                    10.0f));
+      a1 = 1 -
+           (1 - a1) * (1 - powf((p1.y - screen_space_char.y) /
+                                    (screen_space_eye.y - screen_space_char.y),
+                                10.0f));
     }
 
     p1 = p1 * 0.5 + Vector4(0.5, 0.5, 0.5, 0.0);
 
     Point pa = Point(static_cast<int>(p1.x * draw_rect.Width()),
-                       static_cast<int>((1 - p1.y) * draw_rect.Height()));
+                     static_cast<int>((1 - p1.y) * draw_rect.Height()));
 
     a1 = std::max(0.f, std::min(1.f, a1)) * 255.f;
 

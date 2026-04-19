@@ -2,6 +2,8 @@ module;
 
 #include <windows.h>
 
+#include "src/base/color.h"
+
 module taco.mouse_highlight;
 
 import taco.overlay_config;

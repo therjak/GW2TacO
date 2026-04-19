@@ -54,7 +54,7 @@ class CWBApplication : public renderer::WindowHandlerWin {
 
   void RegisterItem(CWBItem* Item);
   void UnRegisterItem(CWBItem* Item);
-  CWBItem* FindItemByGuid(WBGUID Guid, const TCHAR* type = nullptr);
+  CWBItem* FindItemByGuid(WBGUID Guid, const TCHAR* type = nullptr) const;
 
   template <typename... Args>
   CWBItem* FindItemByGuids(WBGUID Guid, Args... args) const {
@@ -155,8 +155,7 @@ class CWBApplication : public renderer::WindowHandlerWin {
                               math::Rect& Pos);
   bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
                                   std::string_view TemplateID);
-  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                          math::Rect& Pos);
+  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
 
   std::unique_ptr<CRingBuffer<int32_t, 60>> FrameTimes;
   int32_t LastFrameTime;

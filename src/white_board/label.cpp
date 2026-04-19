@@ -4,6 +4,8 @@ module;
 #include <string>
 #include <string_view>
 
+#include "src/base/color.h"
+
 module whiteboard;
 
 import :application;
@@ -65,7 +67,7 @@ Size CWBLabel::GetContentSize() {
 
   if (!Font) return Size(0, 0);
   return Size(Font->GetWidth(Text, false, TextTransform),
-               Font->GetLineHeight());
+              Font->GetLineHeight());
 }
 
 }  // namespace gui

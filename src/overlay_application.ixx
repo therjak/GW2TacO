@@ -2,6 +2,7 @@ module;
 #include <memory>
 
 #include "src/core2/render_state.h"
+#include "src/core2/window_handler.h"
 
 export module taco.overlay_application;
 

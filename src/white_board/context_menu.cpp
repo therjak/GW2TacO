@@ -3,6 +3,9 @@ module;
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <vector>
+
+#include "src/base/color.h"
 
 module whiteboard;
 
@@ -44,7 +47,7 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
 
       const Rect separatorRect =
           Rect(GetWindowRect().x1 + padding.x1, Offset.y,
-                GetWindowRect().x1 + padding.x2, Offset.y + height);
+               GetWindowRect().x1 + padding.x2, Offset.y + height);
 
       const WBSKINELEMENTID id = SeparatorElements.DisplayDescriptor.GetSkin(
           WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
@@ -93,8 +96,8 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
           Font->Write(
               API, ">",
               Point(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
-                         (Client.x2 - padding.x2),
-                     Offset.y),
+                        (Client.x2 - padding.x2),
+                    Offset.y),
               textColor);
         }
       }
@@ -387,7 +390,7 @@ Rect CWBContextMenu::GetItemRect(int32_t idx) {
       Offset.y += separatorHeight;
     } else if (Font) {
       const Rect EntryPos(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
-                           Offset.y + Font->GetLineHeight());
+                          Offset.y + Font->GetLineHeight());
       if (x == idx) return EntryPos;
       Offset.y += Font->GetLineHeight();
     }

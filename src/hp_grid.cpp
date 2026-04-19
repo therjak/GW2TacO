@@ -4,6 +4,8 @@ module;
 #include <memory>
 #include <vector>
 
+#include "src/base/color.h"
+
 module taco.hp_grid;
 
 import math;

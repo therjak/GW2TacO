@@ -9,6 +9,7 @@ module;
 #include <unordered_set>
 #include <vector>
 
+#include "src/base/color.h"
 #include "src/gw2_tactical.h"
 
 module taco.map_timer;

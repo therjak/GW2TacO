@@ -2,6 +2,7 @@ module;
 #include <algorithm>
 #include <mutex>
 
+#include "src/base/color.h"
 #include "src/base/logger.h"
 #include "src/base/string_format.h"
 
@@ -494,13 +495,13 @@ void CWBItem::DrawBorder(CWBDrawAPI* API, const Rect& r,
         color);
   }
   if (cssProps.BorderSizes.x2 > 0) {
-    API->DrawRect(Rect(r.TopRight() - Point(cssProps.BorderSizes.x2, 0),
-                        r.BottomRight()),
-                  color);
+    API->DrawRect(
+        Rect(r.TopRight() - Point(cssProps.BorderSizes.x2, 0), r.BottomRight()),
+        color);
   }
   if (cssProps.BorderSizes.y2 > 0) {
     API->DrawRect(Rect(r.BottomLeft() - Point(0, cssProps.BorderSizes.y2),
-                        r.BottomRight()),
+                       r.BottomRight()),
                   color);
   }
 
@@ -915,8 +916,8 @@ void CWBItem::MarkForDeletion() { this->Parent->RemoveChild(this); }
 
 CWBContextMenu* CWBItem::OpenContextMenu(Point pos) {
   if (!App) return nullptr;
-  auto ctx = CWBContextMenu::Create(
-      App->GetRoot(), Rect(pos, pos + Point(10, 10)), GetGuid());
+  auto ctx = CWBContextMenu::Create(App->GetRoot(),
+                                    Rect(pos, pos + Point(10, 10)), GetGuid());
   App->ApplyStyle(ctx);
   return ctx;
 }
@@ -1073,9 +1074,8 @@ bool CWBItem::GetHScrollbarRectangles(Rect& button1, Rect& Scrollup,
   if (!HScrollbar.Enabled || !HScrollbar.Visible) return false;
 
   Rect r = Rect(GetClientRect().BottomLeft(),
-                  GetClientRect().BottomRight() + Point(0, Scrollbar_Size));
-  button1 =
-      Rect(r.TopLeft(), r.BottomLeft() + Point(Scrollbar_ButtonSize, 0));
+                GetClientRect().BottomRight() + Point(0, Scrollbar_Size));
+  button1 = Rect(r.TopLeft(), r.BottomLeft() + Point(Scrollbar_ButtonSize, 0));
   button2 =
       Rect(r.TopRight() - Point(Scrollbar_ButtonSize, 0), r.BottomRight());
 
@@ -1171,7 +1171,7 @@ bool CWBItem::GetVScrollbarRectangles(Rect& button1, Rect& Scrollup,
   if (!VScrollbar.Enabled || !VScrollbar.Visible) return false;
 
   Rect r = Rect(GetClientRect().TopRight(),
-                  GetClientRect().BottomRight() + Point(Scrollbar_Size, 0));
+                GetClientRect().BottomRight() + Point(Scrollbar_Size, 0));
   button1 = Rect(r.TopLeft(), r.TopRight() + Point(0, Scrollbar_ButtonSize));
   button2 =
       Rect(r.BottomLeft() - Point(0, Scrollbar_ButtonSize), r.BottomRight());
@@ -2326,7 +2326,7 @@ void CWBItem::ContentChanged() {
 
   CWBMessage m(App, WBM_REPOSITION, Guid,
                Rect(GetPosition().TopLeft(),
-                     GetPosition().TopLeft() + StoredContentSize),
+                    GetPosition().TopLeft() + StoredContentSize),
                true, true);
   App->Send(m);
 }
