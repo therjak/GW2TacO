@@ -1325,13 +1325,14 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
           }
           case TacOKeyAction::EditNotepad: {
             auto* d =
-                dynamic_cast<GW2Notepad*>(FindChildByID("notepad", "notepad"));
+                dynamic_cast<Notepad*>(FindChildByID("notepad", "notepad"));
             if (d) {
               d->StartEdit();
               return true;
             }
             return true;
           }
+
           case TacOKeyAction::StartTrailRec: {
             auto* startTrail = dynamic_cast<gui::CWBButton*>(
                 App->GetRoot()->FindChildByID("starttrail", "button"));
@@ -1930,7 +1931,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
     auto w = OverlayWindow::Create(this, pos);
     w->SetID(s);
     SetWindowOpenState(s, true);
-    auto mt = GW2Notepad::Create(w, w->GetClientRect());
+    auto mt = Notepad::Create(w, w->GetClientRect());
     w->ReapplyStyles();
   }
 
