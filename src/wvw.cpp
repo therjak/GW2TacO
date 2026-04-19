@@ -27,7 +27,7 @@ using math::Size;
 using math::Vector3;
 
 bool wvwCanBeRendered = false;
-std::vector<WvwObjective> WvwObjectives;
+std::vector<WvwObjective> wvw_objectives;
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 std::unordered_map<std::string, POI> wvwPOIs;
 std::unordered_map<int, bool> wvwmap_ids;
@@ -184,8 +184,8 @@ void LoadWvwObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
   static std::future<void> wvwPollTask = std::async(std::launch::async, []() {
-    std::unordered_map<int, Vector3> WvwObjectiveCoords;
-    std::unordered_map<int, Rect> wvwContinentRects;
+    std::unordered_map<int, Vector3> wvw_objective_coords;
+    std::unordered_map<int, Rect> wvw_continent_rects;
 
     auto wvw_objectives_raw =
         FetchHTTPS("api.guildwars2.com", "/v2/wvw/objectives?ids=all");
@@ -214,7 +214,7 @@ void LoadWvwObjectives() {
       wvwmap_ids[map_id] = true;
 
       if (obj.has<jsonxx::Array>("coord")) {
-        if (wvwContinentRects.find(map_id) == wvwContinentRects.end()) {
+        if (wvw_continent_rects.find(map_id) == wvw_continent_rects.end()) {
           auto mapPath = std::format("/v2/maps?id={:d}", map_id);
           auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
 
@@ -253,13 +253,13 @@ void LoadWvwObjectives() {
           }
 
           if (ok) {
-            wvwContinentRects[map_id] =
+            wvw_continent_rects[map_id] =
                 Rect(continentRectValues[0], continentRectValues[1],
                      continentRectValues[2], continentRectValues[3]);
           }
         }
 
-        if (wvwContinentRects.find(map_id) == wvwContinentRects.end()) {
+        if (wvw_continent_rects.find(map_id) == wvw_continent_rects.end()) {
           continue;
         }
 
@@ -275,7 +275,7 @@ void LoadWvwObjectives() {
                         ? static_cast<float>(coord[2]->get<jsonxx::Number>())
                         : 0);
 
-          Rect& r = wvwContinentRects[map_id];
+          Rect& r = wvw_continent_rects[map_id];
           Vector3 offset =
               Vector3((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
 
@@ -288,30 +288,30 @@ void LoadWvwObjectives() {
             v.z -= 500;
           }
 
-          WvwObjectiveCoords[objident] = Vector3(
+          wvw_objective_coords[objident] = Vector3(
               GameToWorldCoords((v.x - offset.x) * 24), GameToWorldCoords(-v.z),
               GameToWorldCoords((-(v.y - offset.z)) * 24));
         }
       }
 
-      if (WvwObjectiveCoords.find(objident) == WvwObjectiveCoords.end()) {
+      if (wvw_objective_coords.find(objident) == wvw_objective_coords.end()) {
         continue;
       }
 
       WvwObjective o;
-      o.id = objid;
-      o.map_id = map_id;
-      o.objective_id = objident;
-      o.coord = WvwObjectiveCoords[objident];
+      o.id_ = objid;
+      o.map_id_ = map_id;
+      o.objective_id_ = objident;
+      o.coord_ = wvw_objective_coords[objident];
 
       if (obj.has<jsonxx::String>("type"))
-        o.type = obj.get<jsonxx::String>("type");
+        o.type_ = obj.get<jsonxx::String>("type");
 
       if (obj.has<jsonxx::String>("name")) {
-        o.name_token = o.name = obj.get<jsonxx::String>("name");
+        o.name_token_ = o.name_ = obj.get<jsonxx::String>("name");
       }
 
-      for (char& n : o.name_token) {
+      for (char& n : o.name_token_) {
         if (!isalnum(n)) {
           n = '_';
         } else {
@@ -320,22 +320,22 @@ void LoadWvwObjectives() {
       }
 
       POI poi;
-      poi.position = o.coord;
-      poi.map_id = o.map_id;
+      poi.position = o.coord_;
+      poi.map_id = o.map_id_;
       poi.icon = DefaultIconHandle;
-      poi.Wvwobjective_id = WvwObjectives.size();
+      poi.wvw_objective_id = wvw_objectives.size();
 
-      WvwObjectives.push_back(o);
+      wvw_objectives.push_back(o);
 
       CoCreateGuid(&poi.guid);
 
-      auto cat = GetCategory("Tactical.WvW." + o.type);
+      auto cat = GetCategory("Tactical.WvW." + o.type_);
 
       if (cat) poi.SetCategory(cat);
 
       poi.type_data_.behavior_ = POIBehavior::WvwObjective;
 
-      wvwPOIs[o.id] = poi;
+      wvwPOIs[o.id_] = poi;
     }
 
     UpdateWvwStatus();
@@ -386,10 +386,10 @@ void UpdateWvwStatus() {
     }
 
     auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
-    auto Wvwobjective_ids = FetchHTTPS("api.guildwars2.com", apiPath);
+    auto wvw_objective_ids = FetchHTTPS("api.guildwars2.com", apiPath);
 
     jsonxx::Object o;
-    o.parse(Wvwobjective_ids);
+    o.parse(wvw_objective_ids);
     if (o.has<jsonxx::Array>("maps")) {
       auto m = o.get<jsonxx::Array>("maps").values();
       std::vector<WvwPoiUpdate> updates;
@@ -413,7 +413,7 @@ void UpdateWvwStatus() {
           }
 
           WvwPoiUpdate update = {
-              .id = id,
+              .id_ = id,
           };
 
           std::string owner;
@@ -422,24 +422,24 @@ void UpdateWvwStatus() {
           }
 
           if (owner == "Red") {
-            update.owner = WvwPoiUpdate::Team::kRed;
+            update.owner_ = WvwPoiUpdate::Team::kRed;
           } else if (owner == "Green") {
-            update.owner = WvwPoiUpdate::Team::kGreen;
+            update.owner_ = WvwPoiUpdate::Team::kGreen;
           } else if (owner == "Blue") {
-            update.owner = WvwPoiUpdate::Team::kBlue;
+            update.owner_ = WvwPoiUpdate::Team::kBlue;
           } else {
-            update.owner = WvwPoiUpdate::Team::kNone;
+            update.owner_ = WvwPoiUpdate::Team::kNone;
           }
 
-          std::string last_flipped;
+          std::string last_flipped_str;
           if (objective.has<jsonxx::String>("last_flipped")) {
-            last_flipped = objective.get<jsonxx::String>("last_flipped");
+            last_flipped_str = objective.get<jsonxx::String>("last_flipped");
           }
 
           time_t flipTime = 0;
           char flags = 0;
-          parseISO8601(last_flipped.c_str(), flipTime, flags);
-          update.last_flipped = flipTime;
+          parseISO8601(last_flipped_str.c_str(), flipTime, flags);
+          update.last_flipped_ = flipTime;
 
           updates.push_back(update);
         }
