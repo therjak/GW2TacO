@@ -49,27 +49,27 @@ export class GW2MouseHighlight
     : public gui::CWBGuiType<"mousehighlight", gui::CWBItem> {
  public:
   GW2MouseHighlight();
-  static inline GW2MouseHighlight* Create(gui::CWBItem* Parent,
-                                          math::Rect Position) {
+  static inline GW2MouseHighlight* Create(gui::CWBItem* parent,
+                                          math::Rect position) {
     auto p = std::make_unique<GW2MouseHighlight>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     GW2MouseHighlight* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
   ~GW2MouseHighlight() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* API) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
 
   math::Point last_pos;
-  math::Point lastchangedpos;
-  int numSameFrames = 0;
+  math::Point last_changed_pos;
+  int num_same_frames = 0;
 };
