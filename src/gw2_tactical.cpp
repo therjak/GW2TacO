@@ -1488,7 +1488,7 @@ void ExportPOIActivationData() {
   d.SaveToFile("activationdata.xml");
 }
 
-std::string DefaultMarkerCategory = "";
+std::string default_marker_category = "";
 
 void AddPOI() {
   if (!mumbleLink.IsValid()) {
@@ -1502,7 +1502,7 @@ void AddPOI() {
 
   CoCreateGuid(&poi.guid);
 
-  auto cat = GetCategory(DefaultMarkerCategory);
+  auto cat = GetCategory(default_marker_category);
 
   if (poi.map_id == -1) {
     return;

@@ -13,8 +13,8 @@ import xml;
 
 export struct MarkerTypeData {
   MarkerTypeData();
-  void Read(const CXMLNode& n, bool StoreSaveState);
-  void Write(CXMLNode* n);
+  void Read(const CXMLNode& node, bool store_save_state);
+  void Write(CXMLNode* node);
 
   struct {
     bool needsExportToUserData : 1;

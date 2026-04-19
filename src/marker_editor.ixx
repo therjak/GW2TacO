@@ -15,30 +15,30 @@ export class GW2MarkerEditor
     : public gui::CWBGuiType<"markereditor", gui::CWBItem> {
  public:
   GW2MarkerEditor();
-  static inline GW2MarkerEditor* Create(gui::CWBItem* Parent,
-                                        math::Rect Position) {
+  static inline GW2MarkerEditor* Create(gui::CWBItem* parent,
+                                        math::Rect position) {
     auto p = std::make_unique<GW2MarkerEditor>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     GW2MarkerEditor* r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
   ~GW2MarkerEditor() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, CXMLNode& node,
+                               math::Rect& pos);
 
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
  private:
-  bool MessageProc(const gui::CWBMessage& Message) override;
-  void OnDraw(gui::CWBDrawAPI* API) override;
+  bool MessageProc(const gui::CWBMessage& message) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
 
-  bool Hidden = false;
-  GUID CurrentPOI{};
+  bool hidden_ = false;
+  GUID current_poi_{};
 
-  std::vector<GW2TacticalCategory*> CategoryList;
-  bool ChangeDefault = false;
+  std::vector<GW2TacticalCategory*> category_list_;
+  bool change_default_ = false;
 };
