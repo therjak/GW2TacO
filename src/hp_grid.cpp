@@ -28,7 +28,7 @@ void GW2HPGrid::OnDraw(gui::CWBDrawAPI* api) {
       continue;
     }
 
-    if (!grid.b_sphere.Contains(mumbleLink.charPosition)) {
+    if (!grid.b_sphere.Contains(mumbleLink.char_position)) {
       continue;
     }
 

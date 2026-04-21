@@ -71,7 +71,7 @@ void FindClosestRouteMarkers(bool force) {
     if (!force && r.activeItem != -1) continue;
 
     if (r.map_id == mumbleLink.map_id && r.hasResetPos &&
-        (r.resetPos - mumbleLink.charPosition).Length() < r.resetRad) {
+        (r.resetPos - mumbleLink.char_position).Length() < r.resetRad) {
       r.activeItem = 0;
     }
 
@@ -85,7 +85,7 @@ void FindClosestRouteMarkers(bool force) {
         const POI& p = fpoi->second;
         if (!(p.map_id == mumbleLink.map_id)) continue;
 
-        float dist = (p.position - mumbleLink.charPosition).Length();
+        float dist = (p.position - mumbleLink.char_position).Length();
         if (dist < closestdist) {
           closestdist = dist;
           closest = y;
@@ -341,12 +341,12 @@ Vector3 GW2TacticalDisplay::ProjectTacticalPos(Vector3 pos, float fov,
 float GetMapFade() {
   constexpr int32_t kMapFadeLength = 250;
 
-  int lastMapTime = globalTimer.GetTime() - mumbleLink.lastMapChangeTime;
-  if (mumbleLink.isMapOpen && lastMapTime > kMapFadeLength) return 0.0f;
+  int lastMapTime = globalTimer.GetTime() - mumbleLink.last_map_change_time;
+  if (mumbleLink.is_map_open && lastMapTime > kMapFadeLength) return 0.0f;
 
   float mapFade = 1.0f;
 
-  if (mumbleLink.isMapOpen) {
+  if (mumbleLink.is_map_open) {
     lastMapTime = kMapFadeLength - lastMapTime;
     mapFade = std::min(1.0f, lastMapTime / static_cast<float>(kMapFadeLength));
   }
@@ -473,7 +473,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
       }
     }
 
-    float dist = (poi.position - mumbleLink.charPosition).Length();
+    float dist = (poi.position - mumbleLink.char_position).Length();
 
     if (!drawCountdown &&
         (poi.type_data_.bits_.auto_trigger_ ||
@@ -487,13 +487,13 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
       int data = 0;
       if (poi.type_data_.behavior_ == POIBehavior::OncePerInstance) {
-        data = mumbleLink.mapInstance;
+        data = mumbleLink.map_instance;
       }
       if (poi.type_data_.behavior_ == POIBehavior::DailyPerChar) {
-        data = mumbleLink.charIDHash;
+        data = mumbleLink.char_id_hash;
       }
       if (poi.type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
-        data = mumbleLink.charIDHash ^ mumbleLink.mapInstance;
+        data = mumbleLink.char_id_hash ^ mumbleLink.map_instance;
       }
 
       ActivationData[POIActivationDataKey(poi.guid, data)] = d;
@@ -501,13 +501,13 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   }
 
   if (!poi.type_data_.info_.empty()) {
-    if ((poi.position - mumbleLink.charPosition).Length() <=
+    if ((poi.position - mumbleLink.char_position).Length() <=
         poi.type_data_.info_range_) {
       infoText += std::string(poi.type_data_.info_) + "\n";
     }
   }
 
-  if (poi.routeMember && ((poi.position - mumbleLink.charPosition).Length() <=
+  if (poi.routeMember && ((poi.position - mumbleLink.char_position).Length() <=
                           poi.type_data_.trigger_range_)) {
     for (auto& r : Routes) {
       if (r.activeItem < 0) {
@@ -729,7 +729,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
     if (Alpha * alphaMultiplier > 0) {
       float charDist =
-          WorldToGameCoords((poi.position - mumbleLink.charPosition).Length());
+          WorldToGameCoords((poi.position - mumbleLink.char_position).Length());
 
       std::string txt;
 
@@ -848,8 +848,8 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   drawrect = GetClientRect();
 
-  cam.SetLookAtLH(mumbleLink.camPosition,
-                  mumbleLink.camPosition + mumbleLink.camDir, Vector3(0, 1, 0));
+  cam.SetLookAtLH(mumbleLink.cam_position,
+                  mumbleLink.cam_position + mumbleLink.cam_dir, Vector3(0, 1, 0));
   persp.SetPerspectiveFovLH(
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 1000.0f);
@@ -907,7 +907,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   for (auto& r : Routes) {
     if (r.hasResetPos && r.map_id == mumbleLink.map_id &&
-        (r.resetPos - mumbleLink.charPosition).Length() < r.resetRad) {
+        (r.resetPos - mumbleLink.char_position).Length() < r.resetRad) {
       r.activeItem = 0;
     }
   }
@@ -957,7 +957,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   if (mapFade > 0 && showMinimapMarkers > 0) {
     Matrix4x4 miniMapTrafo =
-        mumbleLink.miniMap.BuildTransformationMatrix(miniRect, false);
+        mumbleLink.mini_map.BuildTransformationMatrix(miniRect, false);
     for (const auto& mmp : minimapPOIs) {
       if (!mmp->type_data_.bits_.mini_map_visible_ && showMinimapMarkers != 2) {
         continue;
@@ -972,14 +972,14 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
                                mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
-                     *mmp, mapFade, mumbleLink.miniMap.mapScale);
+                     *mmp, mapFade, mumbleLink.mini_map.map_scale);
     }
   }
 
-  if (mumbleLink.isMapOpen && mapFade < 1.0 && showBigmapMarkers > 0) {
+  if (mumbleLink.is_map_open && mapFade < 1.0 && showBigmapMarkers > 0) {
     miniRect = GetClientRect();
     Matrix4x4 miniMapTrafo =
-        mumbleLink.bigMap.BuildTransformationMatrix(miniRect, true);
+        mumbleLink.big_map.BuildTransformationMatrix(miniRect, true);
     for (const auto& mmp : minimapPOIs) {
       if (!mmp->type_data_.bits_.big_map_visible_ && showBigmapMarkers != 2)
         continue;
@@ -993,7 +993,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
                                mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
-                     *mmp, 1.0f - mapFade, mumbleLink.bigMap.mapScale);
+                     *mmp, 1.0f - mapFade, mumbleLink.big_map.map_scale);
     }
   }
 
@@ -1501,7 +1501,7 @@ void AddPOI() {
   }
   POI poi = {
       .icon = DefaultIconHandle,
-      .position = mumbleLink.charPosition,
+      .position = mumbleLink.char_position,
       .map_id = mumbleLink.map_id,
   };
 
@@ -1536,7 +1536,7 @@ void DeletePOI() {
   if (!mumbleLink.IsValid()) {
     return;
   }
-  math::Vector3 poi_position = Vector3(mumbleLink.charPosition);
+  math::Vector3 poi_position = Vector3(mumbleLink.char_position);
   int32_t poi_map_id = mumbleLink.map_id;
 
   if (poi_map_id == -1) {
@@ -1569,7 +1569,7 @@ void UpdatePOI() {
 
     if (cpoi.map_id != mumbleLink.map_id) continue;
 
-    Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
+    Vector3 v = cpoi.position - Vector3(mumbleLink.char_position);
     if (v.Length() < cpoi.type_data_.trigger_range_) {
       const auto& str = cpoi.type_data_.toggle_category_;
       if (!str.empty()) {
@@ -1590,13 +1590,13 @@ void UpdatePOI() {
 
         d.uniqueData = 0;
         if (cpoi.type_data_.behavior_ == POIBehavior::OncePerInstance) {
-          d.uniqueData = mumbleLink.mapInstance;
+          d.uniqueData = mumbleLink.map_instance;
         }
         if (cpoi.type_data_.behavior_ == POIBehavior::DailyPerChar) {
-          d.uniqueData = mumbleLink.charIDHash;
+          d.uniqueData = mumbleLink.char_id_hash;
         }
         if (cpoi.type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
-          d.uniqueData = mumbleLink.charIDHash ^ mumbleLink.mapInstance;
+          d.uniqueData = mumbleLink.char_id_hash ^ mumbleLink.map_instance;
         }
 
         ActivationData[POIActivationDataKey(cpoi.guid, d.uniqueData)] = d;
@@ -1738,14 +1738,14 @@ bool POI::IsVisible(
 
   if (type_data_.behavior_ == POIBehavior::OncePerInstance) {
     if (ActivationData.find(POIActivationDataKey(
-            guid, mumbleLink.mapInstance)) != ActivationData.end()) {
+            guid, mumbleLink.map_instance)) != ActivationData.end()) {
       return false;
     }
   }
 
   if (type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
     if (ActivationData.find(POIActivationDataKey(
-            guid, mumbleLink.mapInstance ^ mumbleLink.charIDHash)) !=
+            guid, mumbleLink.map_instance ^ mumbleLink.char_id_hash)) !=
         ActivationData.end()) {
       return false;
     }
@@ -1753,11 +1753,11 @@ bool POI::IsVisible(
 
   if (type_data_.behavior_ == POIBehavior::DailyPerChar) {
     if (ActivationData.find(POIActivationDataKey(
-            guid, mumbleLink.charIDHash)) != ActivationData.end()) {
+            guid, mumbleLink.char_id_hash)) != ActivationData.end()) {
       struct tm lasttime {};
       gmtime_s(
           &lasttime,
-          &ActivationData[POIActivationDataKey(guid, mumbleLink.charIDHash)]
+          &ActivationData[POIActivationDataKey(guid, mumbleLink.char_id_hash)]
                .lastUpdateTime);
 
       if (lasttime.tm_mday == ptm.tm_mday && lasttime.tm_mon == ptm.tm_mon &&
@@ -1767,7 +1767,7 @@ bool POI::IsVisible(
     }
   }
 
-  if (routeMember && ((position - mumbleLink.charPosition).Length() <=
+  if (routeMember && ((position - mumbleLink.char_position).Length() <=
                       type_data_.trigger_range_)) {
     for (const auto& r : Routes) {
       if (r.activeItem < 0) return false;

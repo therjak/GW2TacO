@@ -440,7 +440,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
 
         ctx->AddSeparator();
 
-        if (mumbleLink.isPvp) {
+        if (mumbleLink.is_pvp) {
           ctx->AddItem(DICT("rangecirclesnotavailable"), 0);
         } else {
           ctx->AddItem(
@@ -1637,17 +1637,17 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
           "cW:{:d} cH:{:d} cR:{:f} "
           "pX::{:f} pY:{:f} "
           "mcX:{:f} mcY:{:f} mS:{:f}",
-          mumbleLink.map_id, mumbleLink.worldID, mumbleLink.mapInstance,
-          mumbleLink.charPosition.x, mumbleLink.charPosition.y,
-          mumbleLink.charPosition.z, mumbleLink.camDir.x, mumbleLink.camDir.y,
-          mumbleLink.camDir.z, mumbleLink.GetFrameRate(), App->GetFrameRate(),
-          static_cast<int>(mumbleLink.isMapOpen),
-          static_cast<int>(mumbleLink.isMinimapTopRight),
-          static_cast<int>(mumbleLink.isMinimapRotating),
-          (mumbleLink.miniMap.compassWidth), (mumbleLink.miniMap.compassHeight),
-          mumbleLink.miniMap.compassRotation, mumbleLink.miniMap.playerX,
-          mumbleLink.miniMap.playerY, mumbleLink.miniMap.mapCenterX,
-          mumbleLink.miniMap.mapCenterY, mumbleLink.miniMap.mapScale);
+          mumbleLink.map_id, mumbleLink.world_id, mumbleLink.map_instance,
+          mumbleLink.char_position.x, mumbleLink.char_position.y,
+          mumbleLink.char_position.z, mumbleLink.cam_dir.x, mumbleLink.cam_dir.y,
+          mumbleLink.cam_dir.z, mumbleLink.GetFrameRate(), App->GetFrameRate(),
+          static_cast<int>(mumbleLink.is_map_open),
+          static_cast<int>(mumbleLink.is_minimap_top_right),
+          static_cast<int>(mumbleLink.is_minimap_rotating),
+          (mumbleLink.mini_map.compass_width), (mumbleLink.mini_map.compass_height),
+          mumbleLink.mini_map.compass_rotation, mumbleLink.mini_map.player_x,
+          mumbleLink.mini_map.player_y, mumbleLink.mini_map.map_center_x,
+          mumbleLink.mini_map.map_center_y, mumbleLink.mini_map.map_scale);
 
       if (GetConfigValue("CircleCalc_enabled")) {
         Vector3 minvals;
@@ -1689,7 +1689,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
         }
 
         float playerdist =
-            /*WorldToGameCoords*/ ((center - mumbleLink.charPosition).Length());
+            /*WorldToGameCoords*/ ((center - mumbleLink.char_position).Length());
         maxdistance2d = /*WorldToGameCoords*/ (maxdistance2d);
         maxdistance3d = /*WorldToGameCoords*/ (maxdistance3d);
 

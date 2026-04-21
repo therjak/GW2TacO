@@ -43,7 +43,7 @@ void LocationalTimer::Update() {
   }
 
   if (!is_running_) {
-    if (enter_sphere_.Contains(mumbleLink.charPosition)) {
+    if (enter_sphere_.Contains(mumbleLink.char_position)) {
       is_running_ = true;
       start_time_ = GetTime();
     }
@@ -51,8 +51,8 @@ void LocationalTimer::Update() {
 
   if (is_running_) {
     if ((GetTime() - start_time_) / 1000.0f > timer_length_) is_running_ = false;
-    if (!exit_sphere_.Contains(mumbleLink.charPosition)) is_running_ = false;
-    if ((reset_point_ - mumbleLink.charPosition).Length() < 0.1) {
+    if (!exit_sphere_.Contains(mumbleLink.char_position)) is_running_ = false;
+    if ((reset_point_ - mumbleLink.char_position).Length() < 0.1) {
       is_running_ = false;
     }
   }
