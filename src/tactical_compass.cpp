@@ -25,17 +25,17 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
   Rect draw_rect = GetClientRect();
 
   Matrix4x4 cam;
-  cam.SetLookAtLH(mumbleLink.camPosition,
-                  mumbleLink.camPosition + mumbleLink.camDir, Vector3(0, 1, 0));
+  cam.SetLookAtLH(mumbleLink.cam_position,
+                  mumbleLink.cam_position + mumbleLink.cam_dir, Vector3(0, 1, 0));
   Matrix4x4 persp;
   persp.SetPerspectiveFovLH(
       mumbleLink.fov,
       draw_rect.Width() / static_cast<float>(draw_rect.Height()), 0.01f,
       1000.0f);
 
-  Vector4 char_pos = Vector4(mumbleLink.averagedCharPosition.x,
-                             mumbleLink.averagedCharPosition.y,
-                             mumbleLink.averagedCharPosition.z, 1.0f);
+  Vector4 char_pos = Vector4(mumbleLink.averaged_char_position.x,
+                             mumbleLink.averaged_char_position.y,
+                             mumbleLink.averaged_char_position.z, 1.0f);
   ;
   float r_world = GameToWorldCoords(40);
 
@@ -48,12 +48,12 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
   screen_space_eye /= screen_space_eye.w;
 
   auto pos =
-      (Vector3(mumbleLink.averagedCharPosition) - mumbleLink.camPosition);
+      (Vector3(mumbleLink.averaged_char_position) - mumbleLink.cam_position);
   pos.y = 0;
   bool zoomed_in = pos.Length() < 0.13;
 
-  Vector4 cam_pos = Vector4(mumbleLink.camPosition.x, mumbleLink.camPosition.y,
-                            mumbleLink.camPosition.z, 1.0f);
+  Vector4 cam_pos = Vector4(mumbleLink.cam_position.x, mumbleLink.cam_position.y,
+                            mumbleLink.cam_position.z, 1.0f);
   Vector2 cam_dir =
       Vector2(cam_space_char.x - cam_pos.x, cam_space_char.z - cam_pos.z)
           .Normalized();

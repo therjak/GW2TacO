@@ -49,7 +49,7 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* api) {
     if (cpoi.map_id != mumbleLink.map_id) continue;
     if (cpoi.External) continue;
 
-    Vector3 v = cpoi.position - Vector3(mumbleLink.charPosition);
+    Vector3 v = cpoi.position - Vector3(mumbleLink.char_position);
     if (v.Length() < cpoi.type_data_.trigger_range_) {
       if (auto_hide) {
         if (hidden_) {

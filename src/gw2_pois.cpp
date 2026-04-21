@@ -231,7 +231,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks || mumbleLink.textboxHasFocus) {
+  if (disableHooks || mumbleLink.textbox_has_focus) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
   }
 
@@ -671,7 +671,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     auto sub = cmdLine.substr(mumblePos);
     auto cmds = SplitByWhitespace(sub);
     if (cmds.size() > 1) {
-      mumbleLink.mumblePath = cmds[1];
+      mumbleLink.mumble_path = cmds[1];
     }
   }
 
@@ -850,20 +850,20 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
     }
 
-    bool shortTick = (GetTime() - mumbleLink.LastFrameTime) < 333;
+    bool shortTick = (GetTime() - mumbleLink.last_frame_time) < 333;
 
     if (!hideOnLoadingScreens) {
       shortTick = true;
     }
 
     if (!FoundGW2Window) {
-      // if (mumbleLink.mumblePath != "MumbleLink")
+      // if (mumbleLink.mumble_path != "MumbleLink")
       {
         if (!mumbleLink.IsValid() && GetTime() > 60000) {
           Log_Err(
               "[GW2TacO] Closing TacO because GW2 with mumble link '{:s}' was "
               "not found in under a minute",
-              mumbleLink.mumblePath);
+              mumbleLink.mumble_path);
           App->SetDone(true);
         }
       }
@@ -879,7 +879,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         lastSlowEventTime = globalTimer.GetTime();
         gw2WindowCount = 0;
         gw2WindowFromPid = nullptr;
-        EnumWindows(gw2WindowFromPIDFunction, mumbleLink.lastGW2ProcessID);
+        EnumWindows(gw2WindowFromPIDFunction, mumbleLink.last_gw2_process_id);
         gw2Window = gw2WindowFromPid;
 
         if (!gw2Window) {

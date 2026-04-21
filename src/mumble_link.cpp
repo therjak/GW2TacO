@@ -36,9 +36,9 @@ void ChangeUIScale(int size);
 
 float GetUIScale() {
   float scale = 1.0;
-  if (mumbleLink.uiSize == 0) scale = 0.9f;
-  if (mumbleLink.uiSize == 2) scale = 1.111f;
-  if (mumbleLink.uiSize == 3) scale = 1.224f;
+  if (mumbleLink.ui_size == 0) scale = 0.9f;
+  if (mumbleLink.ui_size == 2) scale = 1.111f;
+  if (mumbleLink.ui_size == 3) scale = 1.224f;
 
   return scale;
 }
@@ -46,8 +46,8 @@ float GetUIScale() {
 float GetWindowTooSmallScale();
 
 Rect GetMinimapRectangle() {
-  int w = mumbleLink.miniMap.compassWidth;
-  int h = mumbleLink.miniMap.compassHeight;
+  int w = mumbleLink.mini_map.compass_width;
+  int h = mumbleLink.mini_map.compass_height;
 
   Rect pos;
   Rect size = App->GetRoot()->GetClientRect();
@@ -56,14 +56,14 @@ Rect GetMinimapRectangle() {
   pos.x1 = static_cast<int>(size.Width() - w * scale);
   pos.x2 = size.Width();
 
-  if (mumbleLink.isMinimapTopRight) {
+  if (mumbleLink.is_minimap_top_right) {
     pos.y1 = 1;
     pos.y2 = static_cast<int>(h * scale + 1);
   } else {
     int delta = 37;
-    if (mumbleLink.uiSize == 0) delta = 33;
-    if (mumbleLink.uiSize == 2) delta = 41;
-    if (mumbleLink.uiSize == 3) delta = 45;
+    if (mumbleLink.ui_size == 0) delta = 33;
+    if (mumbleLink.ui_size == 2) delta = 41;
+    if (mumbleLink.ui_size == 3) delta = 45;
 
     pos.y1 = static_cast<int>(size.Height() - h * scale - delta * scale);
     pos.y2 = static_cast<int>(size.Height() - delta * scale);
@@ -73,71 +73,74 @@ Rect GetMinimapRectangle() {
 }
 
 bool CMumbleLink::Update() {
-  bool justConnected = false;
+  bool just_connected = false;
 
-  if (!lm) {
-    HANDLE hMapObject =
+  if (!lm_) {
+    HANDLE h_map_object =
         CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0,
-                           sizeof(LinkedMem), mumblePath.c_str());
+                           sizeof(LinkedMem), mumble_path.c_str());
 
-    if (hMapObject == nullptr) {
+    if (h_map_object == nullptr) {
       return false;
     }
 
-    lm = static_cast<LinkedMem*>(MapViewOfFile(hMapObject, FILE_MAP_ALL_ACCESS,
-                                               0, 0, sizeof(LinkedMem)));
-    if (lm == nullptr) {
-      CloseHandle(hMapObject);
-      hMapObject = nullptr;
+    lm_ = static_cast<LinkedMem*>(MapViewOfFile(
+        h_map_object, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(LinkedMem)));
+    if (lm_ == nullptr) {
+      CloseHandle(h_map_object);
+      h_map_object = nullptr;
       return false;
     }
-    justConnected = true;
+    just_connected = true;
   }
 
-  if (!lm) {
+  if (!lm_) {
     return false;
   }
 
-  if (tick == lm->uiTick) {
+  if (tick_ == lm_->ui_tick) {
     return false;
   } else {
-    memcpy(&prevData, &lastData, sizeof(LinkedMem));
-    memcpy(&lastData, lm, sizeof(LinkedMem));
+    memcpy(&prev_data_, &last_data_, sizeof(LinkedMem));
+    memcpy(&last_data_, lm_, sizeof(LinkedMem));
 
-    tick = lm->uiTick;
+    tick_ = lm_->ui_tick;
 
     globalTimer.Update();
     int32_t frametime = GetTime();
-    FrameTimes->Add(frametime - LastFrameTime);
-    LastFrameTime = frametime;
+    frame_times->Add(frametime - last_frame_time);
+    last_frame_time = frametime;
     frameTriggered = true;
   }
 
-  float inter = 1.0;  // +( measurement - lastTickTime ) / lastTickLength;
+  float inter = 1.0;  // +( measurement - last_tick_time ) / last_tick_length;
 
-  interpolation = inter;
+  interpolation_ = inter;
 
-  charPosition = math::Lerp(Vector3(prevData.fAvatarPosition),
-                            Vector3(lastData.fAvatarPosition), inter);
-  charEye =
-      math::Lerp(Vector3(prevData.fAvatarTop), Vector3(lastData.fAvatarTop), 1);
-  camPosition = math::Lerp(Vector3(prevData.fCameraPosition),
-                           Vector3(lastData.fCameraPosition), 1);
-  camUp =
-      math::Lerp(Vector3(prevData.fCameraTop), Vector3(lastData.fCameraTop), 1);
-  camDir = math::Lerp(Vector3(prevData.fCameraFront),
-                      Vector3(lastData.fCameraFront), inter);
+  char_position = math::Lerp(Vector3(prev_data_.f_avatar_position),
+                              Vector3(last_data_.f_avatar_position), inter);
+  char_eye = math::Lerp(Vector3(prev_data_.f_avatar_top),
+                        Vector3(last_data_.f_avatar_top), 1);
+  cam_position = math::Lerp(Vector3(prev_data_.f_camera_position),
+                             Vector3(last_data_.f_camera_position), 1);
+  cam_up = math::Lerp(Vector3(prev_data_.f_camera_top),
+                      Vector3(last_data_.f_camera_top), 1);
+  cam_dir = math::Lerp(Vector3(prev_data_.f_camera_front),
+                       Vector3(last_data_.f_camera_front), inter);
 
-  charPosChanged =
-      Vector3(prevData.fAvatarPosition) != Vector3(lastData.fAvatarPosition);
-  charEyeChanged = Vector3(prevData.fAvatarTop) != Vector3(lastData.fAvatarTop);
-  camPosChanged =
-      Vector3(prevData.fCameraPosition) != Vector3(lastData.fCameraPosition);
-  camDirChanged =
-      Vector3(prevData.fCameraFront) != Vector3(lastData.fCameraFront);
-  camUpChanged = Vector3(prevData.fCameraTop) != Vector3(lastData.fCameraTop);
+  char_pos_changed = Vector3(prev_data_.f_avatar_position) !=
+                     Vector3(last_data_.f_avatar_position);
+  char_eye_changed = Vector3(prev_data_.f_avatar_top) !=
+                     Vector3(last_data_.f_avatar_top);
+  cam_pos_changed = Vector3(prev_data_.f_camera_position) !=
+                    Vector3(last_data_.f_camera_position);
+  cam_dir_changed = Vector3(prev_data_.f_camera_front) !=
+                    Vector3(last_data_.f_camera_front);
+  cam_up_changed = Vector3(prev_data_.f_camera_top) !=
+                   Vector3(last_data_.f_camera_top);
 
-  if ((Vector3(lastData.fAvatarPosition) - Vector3(prevData.fAvatarPosition))
+  if ((Vector3(last_data_.f_avatar_position) -
+       Vector3(prev_data_.f_avatar_position))
           .Length() > GameToWorldCoords(2000)) {
     FindClosestRouteMarkers(true);
   }
@@ -145,7 +148,7 @@ bool CMumbleLink::Update() {
   int32_t oldmap_id = map_id;
   map_id = -1;
 
-  std::wstring ident(lm->identity, 255);
+  std::wstring ident(lm_->identity, 255);
   auto id = ident.find(L"\"map_id\":");
   if (id != ident.npos) {
     std::swscanf(ident.substr(id).c_str(), L"\"map_id\":%d", &map_id);
@@ -158,106 +161,106 @@ bool CMumbleLink::Update() {
     }
   }
 
-  GlobalDoTrailLogging(map_id, Vector3(lastData.fAvatarPosition));
+  GlobalDoTrailLogging(map_id, Vector3(last_data_.f_avatar_position));
 
-  int32_t oldUISize = uiSize;
+  int32_t old_ui_size = ui_size;
 
   id = ident.find(L"\"uisz\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"uisz\":%d", &uiSize);
-    if (oldUISize != uiSize) {
-      ChangeUIScale(uiSize);
+    std::swscanf(ident.substr(id).c_str(), L"\"uisz\":%d", &ui_size);
+    if (old_ui_size != ui_size) {
+      ChangeUIScale(ui_size);
     }
   } else {
     id = ident.find(L"\"uisz\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"uisz\": %d", &uiSize);
-      if (oldUISize != uiSize) {
-        ChangeUIScale(uiSize);
+      std::swscanf(ident.substr(id).c_str(), L"\"uisz\": %d", &ui_size);
+      if (old_ui_size != ui_size) {
+        ChangeUIScale(ui_size);
       }
     }
   }
 
-  if (justConnected) {
-    ChangeUIScale(uiSize);
+  if (just_connected) {
+    ChangeUIScale(ui_size);
   }
 
   id = ident.find(L"\"world_id\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"world_id\":%d", &worldID);
+    std::swscanf(ident.substr(id).c_str(), L"\"world_id\":%d", &world_id);
   } else {
     id = ident.find(L"\"world_id\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"world_id\": %d", &worldID);
+      std::swscanf(ident.substr(id).c_str(), L"\"world_id\": %d", &world_id);
     }
   }
 
-  auto* ctx = reinterpret_cast<MumbleContext*>(lastData.context);
+  auto* ctx = reinterpret_cast<MumbleContext*>(last_data_.context);
 
   map_type = ctx->map_type;
-  mapInstance = ctx->shardId;
+  map_instance = ctx->shard_id;
 
-  if (isMapOpen != (ctx->uiState & 0x01)) {
-    lastMapChangeTime = globalTimer.GetTime();
+  if (is_map_open != (ctx->ui_state & 0x01)) {
+    last_map_change_time = globalTimer.GetTime();
   }
 
-  isMapOpen = (ctx->uiState & 0x01);
-  isMinimapTopRight = (ctx->uiState & (0x01 << 1)) != 0;
-  isMinimapRotating = (ctx->uiState & (0x01 << 2)) != 0;
+  is_map_open = (ctx->ui_state & 0x01);
+  is_minimap_top_right = (ctx->ui_state & (0x01 << 1)) != 0;
+  is_minimap_rotating = (ctx->ui_state & (0x01 << 2)) != 0;
 
-  gameHasFocus = (ctx->uiState & (0x01 << 3)) != 0;
-  isPvp = (ctx->uiState & (0x01 << 4)) != 0;
-  textboxHasFocus = (ctx->uiState & (0x01 << 5)) != 0;
-  isInCombat = (ctx->uiState & (0x01 << 6)) != 0;
+  game_has_focus = (ctx->ui_state & (0x01 << 3)) != 0;
+  is_pvp = (ctx->ui_state & (0x01 << 4)) != 0;
+  textbox_has_focus = (ctx->ui_state & (0x01 << 5)) != 0;
+  is_in_combat = (ctx->ui_state & (0x01 << 6)) != 0;
 
   float scale = GetUIScale();
 
-  if (!isMapOpen) {
-    miniMap.compassWidth = static_cast<int>(ctx->compassWidth * scale);
-    miniMap.compassHeight = static_cast<int>(ctx->compassHeight * scale);
-    miniMap.compassRotation = ctx->compassRotation;
-    miniMap.playerX = ctx->playerX;
-    miniMap.playerY = ctx->playerY;
-    miniMap.mapCenterX = ctx->mapCenterX;
-    miniMap.mapCenterY = ctx->mapCenterY;
-    miniMap.mapScale = ctx->mapScale;
+  if (!is_map_open) {
+    mini_map.compass_width = static_cast<int>(ctx->compass_width * scale);
+    mini_map.compass_height = static_cast<int>(ctx->compass_height * scale);
+    mini_map.compass_rotation = ctx->compass_rotation;
+    mini_map.player_x = ctx->player_x;
+    mini_map.player_y = ctx->player_y;
+    mini_map.map_center_x = ctx->map_center_x;
+    mini_map.map_center_y = ctx->map_center_y;
+    mini_map.map_scale = ctx->map_scale;
   } else {
-    bigMap.compassWidth = static_cast<int>(ctx->compassWidth * scale);
-    bigMap.compassHeight = static_cast<int>(ctx->compassHeight * scale);
-    bigMap.compassRotation = ctx->compassRotation;
-    bigMap.playerX = ctx->playerX;
-    bigMap.playerY = ctx->playerY;
-    bigMap.mapCenterX = ctx->mapCenterX;
-    bigMap.mapCenterY = ctx->mapCenterY;
-    bigMap.mapScale = ctx->mapScale;
+    big_map.compass_width = static_cast<int>(ctx->compass_width * scale);
+    big_map.compass_height = static_cast<int>(ctx->compass_height * scale);
+    big_map.compass_rotation = ctx->compass_rotation;
+    big_map.player_x = ctx->player_x;
+    big_map.player_y = ctx->player_y;
+    big_map.map_center_x = ctx->map_center_x;
+    big_map.map_center_y = ctx->map_center_y;
+    big_map.map_scale = ctx->map_scale;
   }
 
-  lastGW2ProcessID = ctx->processId;
+  last_gw2_process_id = ctx->process_id;
 
   id = ident.find(L"\"name\":");
   if (id != ident.npos) {
     int end = ident.substr(id + 8).find(L'\"');
     if (end != ident.npos) {
-      charName = wstring2string(ident.substr(id + 8, end));
-      charIDHash = CalculateHash(charName);
+      char_name = wstring2string(ident.substr(id + 8, end));
+      char_id_hash = CalculateHash(char_name);
     } else {
-      charName = "";
-      charIDHash = 0;
+      char_name = "";
+      char_id_hash = 0;
     }
   } else {
     id = ident.find(L"\"name\": ");
     if (id >= 0) {
       int end = ident.substr(id + 9).find(L'\"');
       if (end != ident.npos) {
-        charName = wstring2string(ident.substr(id + 9, end));
-        charIDHash = CalculateHash(charName);
+        char_name = wstring2string(ident.substr(id + 9, end));
+        char_id_hash = CalculateHash(char_name);
       } else {
-        charName = "";
-        charIDHash = 0;
+        char_name = "";
+        char_id_hash = 0;
       }
     } else {
-      charName = "";
-      charIDHash = 0;
+      char_name = "";
+      char_id_hash = 0;
     }
   }
 
@@ -274,80 +277,84 @@ bool CMumbleLink::Update() {
   }
 
   Matrix4x4 cam;
-  cam.SetLookAtLH(camPosition, camPosition + camDir, Vector3(0, 1, 0));
+  cam.SetLookAtLH(cam_position, cam_position + cam_dir, Vector3(0, 1, 0));
 
   Matrix4x4 cami = cam.Inverted();
 
-  for (int x = 0; x < AVGCAMCOUNTER - 1; x++) {
-    camchardist[x] = camchardist[x + 1];
+  for (int x = 0; x < kAvgCamCounter - 1; x++) {
+    cam_char_dist_[x] = cam_char_dist_[x + 1];
   }
-  camchardist[AVGCAMCOUNTER - 1] = charPosition * cam;
+  cam_char_dist_[kAvgCamCounter - 1] = char_position * cam;
 
-  Vector4 avgCamCharDist(0, 0, 0, 0);
+  Vector4 avg_cam_char_dist(0, 0, 0, 0);
 
-  for (const auto& x : camchardist) avgCamCharDist += x;
+  for (const auto& x : cam_char_dist_) avg_cam_char_dist += x;
 
-  avgCamCharDist /= static_cast<float>(AVGCAMCOUNTER);
-  averagedCharPosition = avgCamCharDist * cami;
-  averagedCharPosition /= averagedCharPosition.w;
+  avg_cam_char_dist /= static_cast<float>(kAvgCamCounter);
+  averaged_char_position = avg_cam_char_dist * cami;
+  averaged_char_position /= averaged_char_position.w;
 
   if (!GetConfigValue("SmoothCharacterPos")) {
-    averagedCharPosition =
-        Vector4(charPosition.x, charPosition.y, charPosition.z, 1.0f);
+    averaged_char_position =
+        Vector4(char_position.x, char_position.y, char_position.z, 1.0f);
   }
 
   return true;
 }
 
 float CMumbleLink::GetFrameRate() {
-  int32_t FrameTimeAcc = 0;
-  int32_t FrameCount = 0;
+  int32_t frame_time_acc = 0;
+  int32_t frame_count = 0;
   for (int32_t x = 0; x < 60; x++) {
-    if (FrameTimes->NumItems() < x) break;
-    FrameTimeAcc += (*FrameTimes)[FrameTimes->NumItems() - 1 - x];
-    FrameCount++;
+    if (frame_times->NumItems() < x) break;
+    frame_time_acc += (*frame_times)[frame_times->NumItems() - 1 - x];
+    frame_count++;
   }
 
-  if (!FrameCount) return 0;
-  if (!FrameTimeAcc) return 9999;
-  return 1000.0f / (FrameTimeAcc / static_cast<float>(FrameCount));
+  if (!frame_count) return 0;
+  if (!frame_time_acc) return 9999;
+  return 1000.0f / (frame_time_acc / static_cast<float>(frame_count));
 }
 
-CMumbleLink::CMumbleLink(std::string_view mumblePath)
-    : FrameTimes(std::make_unique<CRingBuffer<int32_t, 60>>()),
-      LastFrameTime(GetTime()),
-      mumblePath(mumblePath) {}
+CMumbleLink::CMumbleLink(std::string_view mumble_path)
+    : frame_times(std::make_unique<CRingBuffer<int32_t, 60>>()),
+      last_frame_time(GetTime()),
+      mumble_path(mumble_path) {}
 
 CMumbleLink::~CMumbleLink() = default;
 
-bool CMumbleLink::IsValid() { return lm != nullptr && lastGW2ProcessID != 0; }
+bool CMumbleLink::IsValid() {
+  return lm_ != nullptr && last_gw2_process_id != 0;
+}
 
-Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& miniRect,
-                                                 bool ignoreRotation) {
-  Matrix4x4 miniMapTrafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0, 0,
-                         0, 0, 0, 1);
+Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& mini_rect,
+                                                 bool ignore_rotation) {
+  Matrix4x4 mini_map_trafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f,
+                           0, 0, 0, 0, 0, 1);
 
-  Vector2 mapOffset = Vector2(WorldToGameCoords(mumbleLink.charPosition.x),
-                              WorldToGameCoords(mumbleLink.charPosition.z));
+  Vector2 map_offset =
+      Vector2(WorldToGameCoords(mumbleLink.char_position.x),
+              WorldToGameCoords(mumbleLink.char_position.z));
 
-  float rotation = ignoreRotation ? 0 : compassRotation;
+  float rotation = ignore_rotation ? 0 : compass_rotation;
 
-  miniMapTrafo *=
-      Matrix4x4::Translation(Vector3(-mapOffset.x, -mapOffset.y, 0.0));
-  miniMapTrafo *= Matrix4x4::Scaling(Vector3(1, -1, 1));
-  miniMapTrafo *= Matrix4x4::Rotation(Vector3(0, 0, 1), rotation);
-  miniMapTrafo *= Matrix4x4::Scaling(Vector3(1, 1, 1) / 24.0f);
+  mini_map_trafo *=
+      Matrix4x4::Translation(Vector3(-map_offset.x, -map_offset.y, 0.0));
+  mini_map_trafo *= Matrix4x4::Scaling(Vector3(1, -1, 1));
+  mini_map_trafo *= Matrix4x4::Rotation(Vector3(0, 0, 1), rotation);
+  mini_map_trafo *= Matrix4x4::Scaling(Vector3(1, 1, 1) / 24.0f);
 
   Vector2 offset =
-      -((Vector2(mapCenterX, mapCenterY) - Vector2(playerX, playerY)) *
+      -((Vector2(map_center_x, map_center_y) - Vector2(player_x, player_y)) *
         GetWindowTooSmallScale())
            .Rotated(Vector2(0, 0), rotation);
-  miniMapTrafo *= Matrix4x4::Translation(Vector3(offset.x, offset.y, 0.0));
-  miniMapTrafo *=
-      Matrix4x4::Scaling(Vector3(1, 1, 1) / mapScale * GetUIScale());
-  miniMapTrafo *= Matrix4x4::Translation(
-      Vector3(static_cast<float>(miniRect.Center().x),
-              static_cast<float>(miniRect.Center().y), 0.0));
+  mini_map_trafo *=
+      Matrix4x4::Translation(Vector3(offset.x, offset.y, 0.0));
+  mini_map_trafo *=
+      Matrix4x4::Scaling(Vector3(1, 1, 1) / map_scale * GetUIScale());
+  mini_map_trafo *= Matrix4x4::Translation(
+      Vector3(static_cast<float>(mini_rect.Center().x),
+              static_cast<float>(mini_rect.Center().y), 0.0));
 
-  return miniMapTrafo;
+  return mini_map_trafo;
 }

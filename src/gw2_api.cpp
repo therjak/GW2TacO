@@ -196,7 +196,7 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
   if (!mumbleLink.IsValid()) {
     return nullptr;
   }
-  if (mumbleLink.charName.empty()) {
+  if (mumbleLink.char_name.empty()) {
     return nullptr;
   }
   if (keys.empty()) {
@@ -217,7 +217,7 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
     }
 
     auto& cn = key->key_data.char_names;
-    if (std::find(cn.begin(), cn.end(), mumbleLink.charName) != cn.end()) {
+    if (std::find(cn.begin(), cn.end(), mumbleLink.char_name) != cn.end()) {
       return key.get();
     }
   }
@@ -245,7 +245,7 @@ APIKeyManager::Status APIKeyManager::GetStatus() {
         return Status::Loading;
       }
     }
-    if (mumbleLink.charName.empty()) {
+    if (mumbleLink.char_name.empty()) {
       return Status::WaitingForMumbleCharacterName;
     }
     return Status::CouldNotIdentifyAccount;
