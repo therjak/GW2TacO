@@ -52,43 +52,43 @@ export extern std::vector<std::string_view> ActionNames;
 export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
  public:
   GW2TacO();
-  static inline GW2TacO* Create(gui::CWBItem* Parent, math::Rect Position) {
+  static inline GW2TacO* Create(gui::CWBItem* parent, math::Rect position) {
     auto p = std::make_unique<GW2TacO>();
-    p->Initialize(Parent, Position);
+    p->Initialize(parent, position);
     auto r = p.get();
-    assert(Parent);
-    Parent->AddChild(std::move(p));
+    assert(parent);
+    parent->AddChild(std::move(p));
     return r;
   }
   ~GW2TacO() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               math::Rect& pos);
 
   void OpenWindow(std::string_view s);
-  void OnDraw(gui::CWBDrawAPI* API) override;
-  void OnPostDraw(gui::CWBDrawAPI* API) override;
-  bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnPostDraw(gui::CWBDrawAPI* api) override;
+  bool IsMouseTransparent(const math::Point& client_space_point,
+                          gui::WBMESSAGE message_type) override;
 
   // return true if this item handled the message
-  bool MessageProc(const gui::CWBMessage& Message) override;
+  bool MessageProc(const gui::CWBMessage& message) override;
 
   void SetInfoLine(std::string_view string);
-  void SetMouseToolTip(std::string_view toolTip);
+  void SetMouseToolTip(std::string_view tool_tip);
 
   void InitScriptEngines();
   void TickScriptEngine();
   void TriggerScriptEngineAction(GUID& guid);
-  void TriggerScriptEngineKeyEvent(std::string_view eventID);
+  void TriggerScriptEngineKeyEvent(std::string_view event_id);
 
  private:
   void OpenAboutWindow();
   void BuildChannelTree(TS3Connection::TS3Schandler& h,
-                        gui::CWBContextItem* parentitm, int32_t ParentID);
-  void RebindAction(TacOKeyAction Action);
-  void RebindScriptKey(int32_t evendIDX);
-  void ApiKeyInputAction(APIKeys keyType, int32_t idx);
+                        gui::CWBContextItem* parent_itm, int32_t parent_id);
+  void RebindAction(TacOKeyAction action);
+  void RebindScriptKey(int32_t event_idx);
+  void ApiKeyInputAction(APIKeys key_type, int32_t idx);
   void TurnOnTPLight();
   void TurnOffTPLight();
 
@@ -97,33 +97,33 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
   void AdjustMenuForWindowTooSmallScale(float scale);
   std::string GetKeybindString(TacOKeyAction action);
 
-  std::string lastInfoLine;
-  bool RebindMode = false;
-  bool ScriptRebindMode = false;
-  TacOKeyAction ActionToRebind = TacOKeyAction::NoAction;
-  int32_t ScriptActionToRebind = 0;
+  std::string last_info_line_;
+  bool rebind_mode_ = false;
+  bool script_rebind_mode_ = false;
+  TacOKeyAction action_to_rebind_ = TacOKeyAction::NoAction;
+  int32_t script_action_to_rebind_ = 0;
 
-  bool ApiKeyInputMode = false;
-  APIKeys ApiKeyToSet = APIKeys::None;
-  int32_t ApiKeyIndex = 0;
+  bool api_key_input_mode_ = false;
+  APIKeys api_key_to_set_ = APIKeys::None;
+  int32_t api_key_index_ = 0;
 
-  std::unordered_map<int32_t, TacOKeyAction> KeyBindings;
-  std::unordered_map<int32_t, std::string> ScriptKeyBindings;
+  std::unordered_map<int32_t, TacOKeyAction> key_bindings_;
+  std::unordered_map<int32_t, std::string> script_key_bindings_;
 
-  std::vector<GW2TacticalCategory*> CategoryList;
+  std::vector<GW2TacticalCategory*> category_list_;
 
-  gui::CWBTextBox* APIKeyInput = nullptr;
+  gui::CWBTextBox* api_key_input_ = nullptr;
 
-  bool menuHoverLastFrame = false;
-  int32_t lastMenuHoverTransitionTime = 0;
+  bool menu_hover_last_frame_ = false;
+  int32_t last_menu_hover_transition_time_ = 0;
 
-  std::string lastItemPickup;
-  int32_t lastPickupFetchTime = 0;
-  bool showPickupHighlight = false;
-  float lastScaleValue = 1.0f;
+  std::string last_item_pickup_;
+  int32_t last_pickup_fetch_time_ = 0;
+  bool show_pickup_highlight_ = false;
+  float last_scale_value_ = 1.0f;
 
-  std::string mouseToolTip;
-  std::future<void> pickupFetchTask;
+  std::string mouse_tool_tip_;
+  std::future<void> pickup_fetch_task_;
 };
 
 export extern std::string_view UIFileNames[];

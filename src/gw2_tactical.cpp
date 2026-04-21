@@ -1608,7 +1608,7 @@ void UpdatePOI() {
 }
 
 void AddTypeContextMenu(gui::CWBContextItem* ctx,
-                        std::vector<GW2TacticalCategory*>& CategoryList,
+                        std::vector<GW2TacticalCategory*>& category_list_,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
                         bool closeOnClick) {
@@ -1630,22 +1630,22 @@ void AddTypeContextMenu(gui::CWBContextItem* ctx,
       } else {
         txt = dta->name;
       }
-      ctx->AddItem(txt, CategoryList.size() + BaseID, false, closeOnClick);
-      CategoryList.push_back(dta.get());
+      ctx->AddItem(txt, category_list_.size() + BaseID, false, closeOnClick);
+      category_list_.push_back(dta.get());
       ctx->AddSeparator();
     } else {
       auto n =
-          ctx->AddItem(txt, CategoryList.size() + BaseID,
+          ctx->AddItem(txt, category_list_.size() + BaseID,
                        AddVisibilityMarkers && dta->is_displayed, closeOnClick);
-      CategoryList.push_back(dta.get());
-      AddTypeContextMenu(n, CategoryList, dta.get(), AddVisibilityMarkers,
+      category_list_.push_back(dta.get());
+      AddTypeContextMenu(n, category_list_, dta.get(), AddVisibilityMarkers,
                          BaseID, closeOnClick);
     }
   }
 }
 
 void AddTypeContextMenu(gui::CWBContextMenu* ctx,
-                        std::vector<GW2TacticalCategory*>& CategoryList,
+                        std::vector<GW2TacticalCategory*>& category_list_,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
                         bool closeOnClick) {
@@ -1667,35 +1667,35 @@ void AddTypeContextMenu(gui::CWBContextMenu* ctx,
       } else {
         txt = dta->name;
       }
-      ctx->AddItem(txt, CategoryList.size() + BaseID, false, closeOnClick);
-      CategoryList.push_back(dta.get());
+      ctx->AddItem(txt, category_list_.size() + BaseID, false, closeOnClick);
+      category_list_.push_back(dta.get());
       ctx->AddSeparator();
     } else {
       auto n =
-          ctx->AddItem(txt, CategoryList.size() + BaseID,
+          ctx->AddItem(txt, category_list_.size() + BaseID,
                        AddVisibilityMarkers && dta->is_displayed, closeOnClick);
-      CategoryList.push_back(dta.get());
-      AddTypeContextMenu(n, CategoryList, dta.get(), AddVisibilityMarkers,
+      category_list_.push_back(dta.get());
+      AddTypeContextMenu(n, category_list_, dta.get(), AddVisibilityMarkers,
                          BaseID, closeOnClick);
     }
   }
 }
 
 void OpenTypeContextMenu(gui::CWBContextItem* ctx,
-                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {
-  CategoryList.clear();
-  AddTypeContextMenu(ctx, CategoryList, &CategoryRoot, AddVisibilityMarkers,
+  category_list_.clear();
+  AddTypeContextMenu(ctx, category_list_, &CategoryRoot, AddVisibilityMarkers,
                      BaseID, closeOnClick);
 }
 
 void OpenTypeContextMenu(gui::CWBContextMenu* ctx,
-                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {
-  CategoryList.clear();
-  AddTypeContextMenu(ctx, CategoryList, &CategoryRoot, AddVisibilityMarkers,
+  category_list_.clear();
+  AddTypeContextMenu(ctx, category_list_, &CategoryRoot, AddVisibilityMarkers,
                      BaseID, closeOnClick);
 }
 
