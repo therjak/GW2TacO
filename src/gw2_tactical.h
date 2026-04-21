@@ -166,11 +166,11 @@ void ExportPOIS();
 void ImportPOIActivationData();
 
 void OpenTypeContextMenu(gui::CWBContextMenu* ctx,
-                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers = false, int32_t BaseID = 0,
                          bool closeOnClick = false);
 void OpenTypeContextMenu(gui::CWBContextItem* ctx,
-                         std::vector<GW2TacticalCategory*>& CategoryList,
+                         std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers = false, int32_t BaseID = 0,
                          bool closeOnClick = false);
 
