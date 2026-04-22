@@ -32,6 +32,24 @@ bool HasGW2ItemData(int32_t item_id) {
   return item_data_cache.find(item_id) != item_data_cache.end();
 }
 
+namespace {
+
+bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
+  if (!object.has<jsonxx::Number>("id") ||
+      !object.has<jsonxx::Number>("item_id") ||
+      !object.has<jsonxx::Number>("price") ||
+      !object.has<jsonxx::Number>("quantity")) {
+    return false;
+  }
+  output.transaction_id = int32_t(object.get<jsonxx::Number>("id"));
+  output.item_id = int32_t(object.get<jsonxx::Number>("item_id"));
+  output.price = int32_t(object.get<jsonxx::Number>("price"));
+  output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
+  return true;
+}
+
+}  // namespace
+
 GW2ItemData GetGW2ItemData(int32_t item_id) {
   std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
   if (item_data_cache.find(item_id) != item_data_cache.end()) {
@@ -127,7 +145,7 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
             jsonxx::Object& item = x->get<jsonxx::Object>();
 
             TransactionItem itemData;
-            if (!TPTracker::ParseTransaction(item, itemData)) continue;
+            if (!ParseTransaction(item, itemData)) continue;
             incoming.push_back(itemData);
 
             if (!HasGW2ItemData(itemData.item_id)) {
@@ -150,7 +168,7 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
             jsonxx::Object& item = x->get<jsonxx::Object>();
 
             TransactionItem itemData;
-            if (!TPTracker::ParseTransaction(item, itemData)) continue;
+            if (!ParseTransaction(item, itemData)) continue;
             outgoing.push_back(itemData);
 
             if (!HasGW2ItemData(itemData.item_id)) {
@@ -397,21 +415,6 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
   }
 
   DrawBorder(api);
-}
-
-bool TPTracker::ParseTransaction(jsonxx::Object& object,
-                                 TransactionItem& output) {
-  if (!object.has<jsonxx::Number>("id") ||
-      !object.has<jsonxx::Number>("item_id") ||
-      !object.has<jsonxx::Number>("price") ||
-      !object.has<jsonxx::Number>("quantity")) {
-    return false;
-  }
-  output.transaction_id = int32_t(object.get<jsonxx::Number>("id"));
-  output.item_id = int32_t(object.get<jsonxx::Number>("item_id"));
-  output.price = int32_t(object.get<jsonxx::Number>("price"));
-  output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
-  return true;
 }
 
 TPTracker::TPTracker() : CWBGuiType() {}

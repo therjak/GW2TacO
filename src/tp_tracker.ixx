@@ -7,8 +7,6 @@ module;
 #include <string>
 #include <vector>
 
-#include "src/util/jsonxx.h"
-
 export module taco.tp_tracker;
 
 import math;
@@ -51,7 +49,6 @@ export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
 
  private:
   void OnDraw(gui::CWBDrawAPI* api) override;
-  static bool ParseTransaction(jsonxx::Object& object, TransactionItem& output);
 
   int32_t last_fetch_time_ = 0;
 
