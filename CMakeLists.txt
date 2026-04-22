@@ -82,6 +82,8 @@ endfunction()
 # Common utils
 ################################################################################
 include(CMake/Utils.cmake)
+include(CMake/CommonDefinitions.cmake)
+
 
 ################################################################################
 # Additional Global Settings(add specific info there)
@@ -105,20 +107,6 @@ set(PROJECT_NAME GW2TacO)
 # Source groups
 ################################################################################
 set(Header_Files
-    "src/base/assert.h"
-    "src/base/color.h"
-    "src/base/enum_helpers.h"
-    "src/base/file_list.h"
-    "src/base/hasher.h"
-    "src/base/image_decompressor.h"
-    "src/base/logger.h"
-    "src/base/lock_free_queue.h"
-    "src/base/ring_buffer.h"
-    "src/base/socket.h"
-    "src/base/stream_reader.h"
-    "src/base/stream_writer.h"
-    "src/base/string_format.h"
-    "src/base/timer.h"
     "src/core2/constant_buffer.h"
     "src/core2/core2.h"
     "src/core2/core2_config.h"
@@ -388,26 +376,6 @@ include_directories(${CMAKE_BINARY_DIR})
 ################################################################################
 # Libraries
 ################################################################################
-add_library(taco_base STATIC)
-target_sources(taco_base
-    PRIVATE
-        ${Base_Source_Files}
-    PUBLIC
-        FILE_SET modules TYPE CXX_MODULES
-        FILES
-            src/base/constants.ixx
-            src/base/math.ixx
-            src/base/matrix.ixx
-            src/base/plane.ixx
-            src/base/rectangle.ixx
-            src/base/spec_math.ixx
-            src/base/sphere.ixx
-            src/base/vector.ixx
-            src/base/time.ixx
-)
-target_include_directories(taco_base PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-use_props(taco_base "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
-
 add_library(taco_util STATIC)
 target_sources(taco_util
     PRIVATE
@@ -508,7 +476,7 @@ target_sources(${PROJECT_NAME}
     FILES ${Header_Files}
 )
 
-add_subdirectory(tests)
+add_subdirectory(src/base)
 
 use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 set(ROOT_NAMESPACE GW2Overlay)
@@ -525,19 +493,6 @@ INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
 ################################################################################
 # Compile definitions
 ################################################################################
-set(Common_Definitions
-    "$<$<CONFIG:Debug_MultiByte>:_DEBUG>"
-    "$<$<CONFIG:Debug>:_DEBUG>"
-    "$<$<CONFIG:Release_MultiByte>:NDEBUG>"
-    "$<$<CONFIG:Release>:NDEBUG>"
-    "NOMINMAX"
-    "_CRT_SECURE_NO_WARNINGS"
-    "WIN32_LEAN_AND_MEAN"
-    "WIN32"
-    "_WINDOWS"
-)
-
-target_compile_definitions(taco_base PUBLIC ${Common_Definitions})
 target_compile_definitions(taco_util PUBLIC ${Common_Definitions})
 target_compile_definitions(taco_core2 PUBLIC ${Common_Definitions})
 target_compile_definitions(whiteboard PUBLIC ${Common_Definitions})
