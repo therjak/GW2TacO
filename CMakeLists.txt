@@ -212,9 +212,8 @@ set(Resources
 )
 source_group("Resources" FILES ${Resources})
 
-set(Source_Files
+set(Taco_Source_Files
     "src/build_info.cpp"
-    "src/gw2_pois.cpp"
     "src/gw2_taco.cpp"
     "src/gw2_tactical.cpp"
     "src/dungeon_progress.cpp"
@@ -244,7 +243,11 @@ set(Source_Files
     "src/ts3_control.cpp"
     "src/wvw.cpp"
 )
-source_group("Source Files" FILES ${Source_Files})
+source_group("Source Files" FILES ${Taco_Source_Files})
+
+set(Source_Files
+    "src/gw2_pois.cpp"
+)
 source_group("Source Files" FILES ${Source_Files})
 
 set(Data_Files
@@ -343,6 +346,7 @@ source_group("Poi Files\\Data" FILES ${Poi_Data_Files})
 set(ALL_FILES
     ${Header_Files}
     ${Resources}
+    ${Taco_Source_Files}
     ${Source_Files}
     ${Data_Files}
     ${Poi_Files}
@@ -431,13 +435,13 @@ target_link_libraries(whiteboard PRIVATE taco_base taco_core2 third_party)
 use_props(whiteboard "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 
 ################################################################################
-# Target
+# Taco Library
 ################################################################################
-add_executable(${PROJECT_NAME})
-target_sources(${PROJECT_NAME}
+add_library(taco STATIC)
+target_sources(taco
     PRIVATE
-        ${Source_Files}
-    PRIVATE
+        ${Taco_Source_Files}
+    PUBLIC
         FILE_SET modules TYPE CXX_MODULES
         FILES
             src/build_info.ixx
@@ -471,9 +475,27 @@ target_sources(${PROJECT_NAME}
             src/wvw.ixx
     PUBLIC
         FILE_SET HEADERS
-    BASE_DIRS
-        "${CMAKE_CURRENT_SOURCE_DIR}/."    
-    FILES ${Header_Files}
+        BASE_DIRS
+            "${CMAKE_CURRENT_SOURCE_DIR}/.."
+        FILES ${Header_Files}
+)
+target_include_directories(taco PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(taco PUBLIC
+    taco_base
+    taco_util
+    taco_core2
+    whiteboard
+    third_party
+)
+use_props(taco "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+
+################################################################################
+# Target
+################################################################################
+add_executable(${PROJECT_NAME})
+target_sources(${PROJECT_NAME}
+    PRIVATE
+        ${Source_Files}
 )
 
 add_subdirectory(src/base)
@@ -496,6 +518,10 @@ INTERPROCEDURAL_OPTIMIZATION_RELEASE           "TRUE"
 target_compile_definitions(taco_util PUBLIC ${Common_Definitions})
 target_compile_definitions(taco_core2 PUBLIC ${Common_Definitions})
 target_compile_definitions(whiteboard PUBLIC ${Common_Definitions})
+target_compile_definitions(taco PUBLIC
+    ${Common_Definitions}
+    "MINIZ_NO_ZLIB_COMPATIBLE_NAMES"
+)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
     ${Common_Definitions}
@@ -506,6 +532,25 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 # Compile and link options
 ################################################################################
 if(MSVC)
+        target_compile_options(taco PRIVATE
+            $<$<CONFIG:Debug_MultiByte>:
+                /Od
+            >
+            $<$<CONFIG:Debug>:
+                /Od
+            >
+            $<$<CONFIG:Release_MultiByte>:
+                /O2;
+                /Oi;
+                /Gy
+            >
+            $<$<CONFIG:Release>:
+                /O2;
+                /Oi;
+                /Gy
+            >
+            /Y-
+        )
         target_compile_options(${PROJECT_NAME} PRIVATE
             $<$<CONFIG:Debug_MultiByte>:
                 /Od
@@ -557,11 +602,7 @@ endif()
 ################################################################################
 # Link with other targets.
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    taco_base
-    taco_util
-    taco_core2
-    whiteboard
-    third_party
+    taco
 )
 
 
