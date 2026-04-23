@@ -1,49 +1,43 @@
 add_library(taco_base STATIC)
-source_group("Header Files" FILES
-    assert.h
-    color.h
-    enum_helpers.h
-    file_list.h
-    hasher.h
-    image_decompressor.h
-    lock_free_queue.h
-    logger.h
-    ring_buffer.h
-    socket.h
-    stream_reader.h
-    stream_writer.h
-    string_format.h
-    timer.h
-)
 
 target_sources(taco_base
     PRIVATE
-        assert.h
-        color.h
-        enum_helpers.h
         file_list.cpp
-        file_list.h
         hasher.cpp
-        hasher.h
         image_decompressor.cpp
-        image_decompressor.h
-        lock_free_queue.h
         logger.cpp
-        logger.h
         matrix.cpp
-        ring_buffer.h
         socket.cpp
-        socket.h
         spec_math.cpp
         stream_reader.cpp
-        stream_reader.h
         stream_writer.cpp
-        stream_writer.h
         string_format.cpp
-        string_format.h
         timer.cpp
-        timer.h
         vector.cpp
+)
+
+target_sources(taco_base
+    PUBLIC
+        FILE_SET HEADERS
+        BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../.."
+        FILES
+            assert.h
+            color.h
+            enum_helpers.h
+            file_list.h
+            hasher.h
+            image_decompressor.h
+            lock_free_queue.h
+            logger.h
+            ring_buffer.h
+            socket.h
+            stream_reader.h
+            stream_writer.h
+            string_format.h
+            timer.h
+)
+
+target_sources(taco_base
     PUBLIC
         FILE_SET modules TYPE CXX_MODULES
         FILES
