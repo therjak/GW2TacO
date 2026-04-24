@@ -354,6 +354,43 @@ float GetMapFade() {
   return mapFade;
 }
 
+std::unordered_map<int32_t, Achievement> ParseAchievements(
+    const std::string& achievements_data) {
+  std::unordered_map<int32_t, Achievement> result;
+
+  jsonxx::Object json;
+  json.parse(achievements_data);
+
+  if (!json.has<jsonxx::Array>("achievements")) return result;
+
+  auto achi_data = json.get<jsonxx::Array>("achievements").values();
+
+  for (auto& x : achi_data) {
+    if (!x->is<jsonxx::Object>()) continue;
+    auto& data = x->get<jsonxx::Object>();
+
+    if (!data.has<jsonxx::Boolean>("done")) continue;
+    bool done = data.get<jsonxx::Boolean>("done");
+
+    if (!data.has<jsonxx::Number>("id")) continue;
+    int32_t achi_id = int32_t(data.get<jsonxx::Number>("id"));
+    result[achi_id].done = done;
+
+    if (!done && data.has<jsonxx::Array>("bits")) {
+      auto& bit_array = result[achi_id].bits;
+      auto bits = data.get<jsonxx::Array>("bits").values();
+      for (auto& bit : bits) {
+        if (!bit->is<jsonxx::Number>()) continue;
+        bit_array.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
+      }
+    } else if (done) {
+      result[achi_id].bits.clear();
+    }
+  }
+
+  return result;
+}
+
 void GW2TacticalDisplay::FetchAchievements() {
   if (GW2::apiKeyManager.GetStatus() != GW2::APIKeyManager::Status::OK) return;
 
@@ -370,40 +407,9 @@ void GW2TacticalDisplay::FetchAchievements() {
       auto achievements_data =
           "{\"achievements\":" + key->QueryAPI("/v2/account/achievements") +
           "}";
-      jsonxx::Object json;
-      json.parse(achievements_data);
-
-      if (json.has<jsonxx::Array>("achievements")) {
-        auto achiData = json.get<jsonxx::Array>("achievements").values();
-
-        std::unordered_map<int32_t, Achievement> incoming;
-
-        for (auto& x : achiData) {
-          if (!x->is<jsonxx::Object>()) continue;
-          auto& data = x->get<jsonxx::Object>();
-
-          if (!data.has<jsonxx::Boolean>("done")) continue;
-
-          bool done = data.get<jsonxx::Boolean>("done");
-
-          if (!data.has<jsonxx::Number>("id")) continue;
-
-          int32_t achiId = int32_t(data.get<jsonxx::Number>("id"));
-          incoming[achiId].done = done;
-
-          if (!done && data.has<jsonxx::Array>("bits")) {
-            auto& bitArray = incoming[achiId].bits;
-            auto bits = data.get<jsonxx::Array>("bits").values();
-            for (auto& bit : bits) {
-              if (!bit->is<jsonxx::Number>()) continue;
-              bitArray.push_back(
-                  static_cast<int32_t>(bit->get<jsonxx::Number>()));
-            }
-          } else if (done) {
-            incoming[achiId].bits.clear();
-          }
-        }
-        achievements_queue.push(incoming);
+      auto incoming = ParseAchievements(achievements_data);
+      if (!incoming.empty()) {
+        achievements_queue.push(std::move(incoming));
       }
     });
   }
