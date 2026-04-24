@@ -38,13 +38,15 @@ bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
   if (!object.has<jsonxx::Number>("id") ||
       !object.has<jsonxx::Number>("item_id") ||
       !object.has<jsonxx::Number>("price") ||
-      !object.has<jsonxx::Number>("quantity")) {
+      !object.has<jsonxx::Number>("quantity") ||
+      !object.has<jsonxx::String>("created")) {
     return false;
   }
   output.transaction_id = int32_t(object.get<jsonxx::Number>("id"));
   output.item_id = int32_t(object.get<jsonxx::Number>("item_id"));
   output.price = int32_t(object.get<jsonxx::Number>("price"));
   output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
+  output.created = object.get<jsonxx::String>("created");
   return true;
 }
 

@@ -18,6 +18,7 @@ export struct TransactionItem {
   int32_t item_id = 0;
   int32_t price = 0;
   int32_t quantity = 0;
+  std::string created;
 };
 
 export struct GW2ItemData {
