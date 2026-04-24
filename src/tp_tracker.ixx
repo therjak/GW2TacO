@@ -27,6 +27,7 @@ export struct GW2ItemData {
   gui::WBATLASHANDLE icon = 0;
   int32_t buy_price = 0;
   int32_t sell_price = 0;
+  std::string icon_file;
 };
 
 export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
