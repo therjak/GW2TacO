@@ -50,6 +50,30 @@ bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
   return true;
 }
 
+std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
+                                                  const std::string& root_key) {
+  std::vector<TransactionItem> result;
+  jsonxx::Object json;
+  json.parse(json_data);
+
+  if (json.has<jsonxx::Array>(root_key)) {
+    auto data = json.get<jsonxx::Array>(root_key).values();
+
+    for (auto& x : data) {
+      if (!x->is<jsonxx::Object>()) continue;
+
+      jsonxx::Object& item = x->get<jsonxx::Object>();
+
+      TransactionItem itemData;
+      if (ParseTransaction(item, itemData)) {
+        result.push_back(itemData);
+      }
+    }
+  }
+
+  return result;
+}
+
 }  // namespace
 
 GW2ItemData GetGW2ItemData(int32_t item_id) {
@@ -127,29 +151,16 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
         auto qsells = "{\"sells\":" +
                       key->QueryAPI("/v2/commerce/transactions/current/sells");
 
-        jsonxx::Object json;
-        jsonxx::Object json2;
-        json.parse(qbuys);
-        json2.parse(qsells);
-
-        std::vector<TransactionItem> incoming;
-        std::vector<TransactionItem> outgoing;
+        std::vector<TransactionItem> incoming =
+            ParseTransactionList(qbuys, "buys");
+        std::vector<TransactionItem> outgoing =
+            ParseTransactionList(qsells, "sells");
 
         std::vector<int32_t> unknown_items;
         std::vector<int32_t> price_check_list;
 
-        if (json.has<jsonxx::Array>("buys")) {
-          auto buyData = json.get<jsonxx::Array>("buys").values();
-
-          for (auto& x : buyData) {
-            if (!x->is<jsonxx::Object>()) continue;
-
-            jsonxx::Object& item = x->get<jsonxx::Object>();
-
-            TransactionItem itemData;
-            if (!ParseTransaction(item, itemData)) continue;
-            incoming.push_back(itemData);
-
+        auto process_items = [&](const std::vector<TransactionItem>& items) {
+          for (const auto& itemData : items) {
             if (!HasGW2ItemData(itemData.item_id)) {
               unknown_items.push_back(itemData.item_id);
             }
@@ -159,30 +170,10 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
               price_check_list.push_back(itemData.item_id);
             }
           }
-        }
+        };
 
-        if (json2.has<jsonxx::Array>("sells")) {
-          auto buyData = json2.get<jsonxx::Array>("sells").values();
-
-          for (auto& x : buyData) {
-            if (!x->is<jsonxx::Object>()) continue;
-
-            jsonxx::Object& item = x->get<jsonxx::Object>();
-
-            TransactionItem itemData;
-            if (!ParseTransaction(item, itemData)) continue;
-            outgoing.push_back(itemData);
-
-            if (!HasGW2ItemData(itemData.item_id)) {
-              unknown_items.push_back(itemData.item_id);
-            }
-
-            if (std::find(price_check_list.begin(), price_check_list.end(),
-                          itemData.item_id) == price_check_list.end()) {
-              price_check_list.push_back(itemData.item_id);
-            }
-          }
-        }
+        process_items(incoming);
+        process_items(outgoing);
 
         std::string item_ids;
 
