@@ -25,14 +25,24 @@ using math::Rect;
 namespace {
 std::mutex item_data_cache_mtx;
 std::unordered_map<int32_t, GW2ItemData> item_data_cache;
-}  // namespace
 
 bool HasGW2ItemData(int32_t item_id) {
   std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
   return item_data_cache.find(item_id) != item_data_cache.end();
 }
 
-namespace {
+GW2ItemData GetGW2ItemData(int32_t item_id) {
+  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
+  if (item_data_cache.find(item_id) != item_data_cache.end()) {
+    return item_data_cache[item_id];
+  }
+  return {};
+}
+
+void SetGW2ItemData(GW2ItemData& data) {
+  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
+  item_data_cache[data.item_id] = data;
+}
 
 bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
   if (!object.has<jsonxx::Number>("id") ||
@@ -64,9 +74,9 @@ std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
 
       jsonxx::Object& item = x->get<jsonxx::Object>();
 
-      TransactionItem itemData;
-      if (ParseTransaction(item, itemData)) {
-        result.push_back(itemData);
+      TransactionItem item_data;
+      if (ParseTransaction(item, item_data)) {
+        result.push_back(item_data);
       }
     }
   }
@@ -74,20 +84,38 @@ std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
   return result;
 }
 
-}  // namespace
+std::vector<GW2ItemData> ParseGW2Items(const std::string& items_json) {
+  std::vector<GW2ItemData> result;
+  jsonxx::Object item_json;
+  item_json.parse(items_json);
 
-GW2ItemData GetGW2ItemData(int32_t item_id) {
-  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
-  if (item_data_cache.find(item_id) != item_data_cache.end()) {
-    return item_data_cache[item_id];
+  if (item_json.has<jsonxx::Array>("items")) {
+    auto items = item_json.get<jsonxx::Array>("items").values();
+
+    for (auto& x : items) {
+      if (!x->is<jsonxx::Object>()) continue;
+
+      jsonxx::Object& item = x->get<jsonxx::Object>();
+
+      GW2ItemData item_data;
+      if (!item.has<jsonxx::String>("name") ||
+          !item.has<jsonxx::Number>("id")) {
+        continue;
+      }
+      item_data.name = item.get<jsonxx::String>("name");
+      item_data.item_id = int32_t(item.get<jsonxx::Number>("id"));
+      if (item.has<jsonxx::String>("icon")) {
+        item_data.icon_file = item.get<jsonxx::String>("icon");
+      }
+
+      result.push_back(item_data);
+    }
   }
-  return {};
+
+  return result;
 }
 
-void SetGW2ItemData(GW2ItemData& data) {
-  std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
-  item_data_cache[data.item_id] = data;
-}
+}  // namespace
 
 std::string FetchHTTPS(std::string_view url, std::string_view path);
 
@@ -160,14 +188,14 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
         std::vector<int32_t> price_check_list;
 
         auto process_items = [&](const std::vector<TransactionItem>& items) {
-          for (const auto& itemData : items) {
-            if (!HasGW2ItemData(itemData.item_id)) {
-              unknown_items.push_back(itemData.item_id);
+          for (const auto& item_data : items) {
+            if (!HasGW2ItemData(item_data.item_id)) {
+              unknown_items.push_back(item_data.item_id);
             }
 
             if (std::find(price_check_list.begin(), price_check_list.end(),
-                          itemData.item_id) == price_check_list.end()) {
-              price_check_list.push_back(itemData.item_id);
+                          item_data.item_id) == price_check_list.end()) {
+              price_check_list.push_back(item_data.item_id);
             }
           }
         };
@@ -186,43 +214,28 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
           auto items =
               "{\"items\":" + key->QueryAPI("/v2/items?ids=" + item_ids) + "}";
 
-          jsonxx::Object item_json;
-          item_json.parse(items);
+          std::vector<GW2ItemData> parsed_items = ParseGW2Items(items);
 
-          if (item_json.has<jsonxx::Array>("items")) {
-            auto items = item_json.get<jsonxx::Array>("items").values();
+          for (auto& item_data : parsed_items) {
+            if (!item_data.icon_file.empty()) {
+              if (item_data.icon_file.find("https://render.guildwars2.com/") ==
+                  0) {
+                auto png = FetchHTTPS("render.guildwars2.com",
+                                      item_data.icon_file.substr(29));
 
-            for (auto& x : items) {
-              if (!x->is<jsonxx::Object>()) continue;
-
-              jsonxx::Object& item = x->get<jsonxx::Object>();
-
-              GW2ItemData itemData;
-              if (!item.has<jsonxx::String>("name") ||
-                  !item.has<jsonxx::Number>("id"))
-                continue;
-              itemData.name = item.get<jsonxx::String>("name");
-              itemData.item_id = int32_t(item.get<jsonxx::Number>("id"));
-              if (item.has<jsonxx::String>("icon")) {
-                auto icon_file = item.get<jsonxx::String>("icon");
-                if (icon_file.find("https://render.guildwars2.com/") == 0) {
-                  auto png =
-                      FetchHTTPS("render.guildwars2.com", icon_file.substr(29));
-
-                  std::unique_ptr<uint8_t[]> image_data = nullptr;
-                  int32_t x_res = 0, y_res = 0;
-                  if (DecompressPNG((uint8_t*)png.c_str(), png.size(),
-                                    image_data, x_res, y_res)) {
-                    ARGBtoABGR(image_data.get(), x_res, y_res);
-                    Rect area = Rect(0, 0, x_res, y_res);
-                    itemData.icon = GetApplication()->GetAtlas()->AddImage(
-                        image_data.get(), x_res, y_res, area);
-                  }
+                std::unique_ptr<uint8_t[]> image_data = nullptr;
+                int32_t x_res = 0, y_res = 0;
+                if (DecompressPNG((uint8_t*)png.c_str(), png.size(), image_data,
+                                  x_res, y_res)) {
+                  ARGBtoABGR(image_data.get(), x_res, y_res);
+                  Rect area = Rect(0, 0, x_res, y_res);
+                  item_data.icon = GetApplication()->GetAtlas()->AddImage(
+                      image_data.get(), x_res, y_res, area);
                 }
               }
-
-              SetGW2ItemData(itemData);
             }
+
+            SetGW2ItemData(item_data);
           }
         }
 
