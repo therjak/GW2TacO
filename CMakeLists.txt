@@ -623,6 +623,22 @@ install(
 )
 
 ################################################################################
+# Tests
+################################################################################
+
+add_executable(gw2_tactical_test src/gw2_tactical_test.cpp)
+target_sources(gw2_tactical_test PRIVATE ${Source_Files})
+target_link_libraries(gw2_tactical_test PRIVATE gtest_main taco)
+use_props(gw2_tactical_test "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
+target_compile_definitions(gw2_tactical_test PRIVATE
+    ${Common_Definitions}
+    "MINIZ_NO_ZLIB_COMPATIBLE_NAMES"
+)
+
+include(GoogleTest)
+gtest_discover_tests(gw2_tactical_test)
+
+################################################################################
 # CPACK
 ################################################################################
 
