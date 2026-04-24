@@ -408,9 +408,7 @@ void GW2TacticalDisplay::FetchAchievements() {
           "{\"achievements\":" + key->QueryAPI("/v2/account/achievements") +
           "}";
       auto incoming = ParseAchievements(achievements_data);
-      if (!incoming.empty()) {
-        achievements_queue.push(std::move(incoming));
-      }
+      achievements_queue.push(std::move(incoming));
     });
   }
 }
@@ -855,7 +853,8 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   drawrect = GetClientRect();
 
   cam.SetLookAtLH(mumbleLink.cam_position,
-                  mumbleLink.cam_position + mumbleLink.cam_dir, Vector3(0, 1, 0));
+                  mumbleLink.cam_position + mumbleLink.cam_dir,
+                  Vector3(0, 1, 0));
   persp.SetPerspectiveFovLH(
       mumbleLink.fov, drawrect.Width() / static_cast<float>(drawrect.Height()),
       0.01f, 1000.0f);
