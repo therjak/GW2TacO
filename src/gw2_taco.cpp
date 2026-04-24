@@ -11,7 +11,6 @@ module;
 #include "src/base/logger.h"
 #include "src/build_count.h"
 #include "src/gw2_tactical.h"
-#include "src/util/jsonxx.h"
 
 module taco.gw2taco;
 
@@ -281,7 +280,8 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         if (GetConfigValue("TacticalLayerVisible")) {
           auto flt =
               ctx->AddItem(DICT("filtermarkers"), Menu_ToggleTacticalsOnEdge);
-          OpenTypeContextMenu(flt, category_list_, true, Menu_MarkerFilter_Base);
+          OpenTypeContextMenu(flt, category_list_, true,
+                              Menu_MarkerFilter_Base);
           auto options = ctx->AddItem(DICT("tacticalsettings"), 0);
 
           options->AddItem(
@@ -963,8 +963,9 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
 
       if (Message.Data() >= Menu_MarkerFilter_Base &&
           Message.Data() < Menu_MarkerFilter_Base + category_list_.size()) {
-        bool displayed = !category_list_[Message.Data() - Menu_MarkerFilter_Base]
-                              ->is_displayed;
+        bool displayed =
+            !category_list_[Message.Data() - Menu_MarkerFilter_Base]
+                 ->is_displayed;
         category_list_[Message.Data() - Menu_MarkerFilter_Base]->is_displayed =
             displayed;
         SetConfigValue(("CategoryVisible_" +
@@ -1419,7 +1420,8 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         }
       }
 
-      if (script_key_bindings_.find(Message.Key()) != script_key_bindings_.end()) {
+      if (script_key_bindings_.find(Message.Key()) !=
+          script_key_bindings_.end()) {
         TriggerScriptEngineKeyEvent(script_key_bindings_[Message.Key()]);
       }
 
@@ -1563,8 +1565,8 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
 
       int32_t currTime = GetTime();
       float delta = std::max(
-          0.f,
-          std::min(1.f, (currTime - last_menu_hover_transition_time_) / kSpeed));
+          0.f, std::min(1.f, (currTime - last_menu_hover_transition_time_) /
+                                 kSpeed));
 
       bool hover =
           ClientToScreen(it->GetClientRect()).Contains(App->GetMousePos());
@@ -1639,12 +1641,13 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
           "mcX:{:f} mcY:{:f} mS:{:f}",
           mumbleLink.map_id, mumbleLink.world_id, mumbleLink.map_instance,
           mumbleLink.char_position.x, mumbleLink.char_position.y,
-          mumbleLink.char_position.z, mumbleLink.cam_dir.x, mumbleLink.cam_dir.y,
-          mumbleLink.cam_dir.z, mumbleLink.GetFrameRate(), App->GetFrameRate(),
-          static_cast<int>(mumbleLink.is_map_open),
+          mumbleLink.char_position.z, mumbleLink.cam_dir.x,
+          mumbleLink.cam_dir.y, mumbleLink.cam_dir.z, mumbleLink.GetFrameRate(),
+          App->GetFrameRate(), static_cast<int>(mumbleLink.is_map_open),
           static_cast<int>(mumbleLink.is_minimap_top_right),
           static_cast<int>(mumbleLink.is_minimap_rotating),
-          (mumbleLink.mini_map.compass_width), (mumbleLink.mini_map.compass_height),
+          (mumbleLink.mini_map.compass_width),
+          (mumbleLink.mini_map.compass_height),
           mumbleLink.mini_map.compass_rotation, mumbleLink.mini_map.player_x,
           mumbleLink.mini_map.player_y, mumbleLink.mini_map.map_center_x,
           mumbleLink.mini_map.map_center_y, mumbleLink.mini_map.map_scale);
@@ -1689,7 +1692,8 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
         }
 
         float playerdist =
-            /*WorldToGameCoords*/ ((center - mumbleLink.char_position).Length());
+            /*WorldToGameCoords*/ (
+                (center - mumbleLink.char_position).Length());
         maxdistance2d = /*WorldToGameCoords*/ (maxdistance2d);
         maxdistance3d = /*WorldToGameCoords*/ (maxdistance3d);
 
@@ -1752,12 +1756,12 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
 
       if (key == -1) {
         line1 = DICT("action") + " '" +
-                DICT(ActionNames[static_cast<int32_t>(action_to_rebind_)]) + "' " +
-                DICT("currently_not_bound");
+                DICT(ActionNames[static_cast<int32_t>(action_to_rebind_)]) +
+                "' " + DICT("currently_not_bound");
       } else {
         line1 = DICT("action") + " '" +
-                DICT(ActionNames[static_cast<int32_t>(action_to_rebind_)]) + "' " +
-                DICT("currently_bound") + std::format(" '{:c}'", key);
+                DICT(ActionNames[static_cast<int32_t>(action_to_rebind_)]) +
+                "' " + DICT("currently_bound") + std::format(" '{:c}'", key);
       }
     } else {
       if (script_action_to_rebind_ <
@@ -1795,8 +1799,8 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
     gui::CWBFont* f = GetFont(GetState());
 
     auto line1 = DICT("enter_api") + " " +
-                 DICT(APIKeyNames[static_cast<int32_t>(api_key_to_set_)]) + " " +
-                 DICT("below_and_press");
+                 DICT(APIKeyNames[static_cast<int32_t>(api_key_to_set_)]) +
+                 " " + DICT("below_and_press");
     Point line1p = f->GetTextPosition(line1, GetClientRect(),
                                       gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
                                       gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
@@ -1991,7 +1995,7 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   api_key_input_mode_ = true;
   api_key_to_set_ = keyType;
   api_key_input_ = gui::CWBTextBox::Create(this, GetClientRect(),
-                                        gui::WB_TEXTBOX_SINGLELINE);
+                                           gui::WB_TEXTBOX_SINGLELINE);
   api_key_input_->SetID("APIkeyInput");
   api_key_input_->ReapplyStyles();
   api_key_input_->EnableHScrollbar(false, false);
@@ -2042,8 +2046,9 @@ void GW2TacO::TurnOffTPLight() {
 void GW2TacO::CheckItemPickup() {
   if (GetTime() - last_pickup_fetch_time_ < 1000 * 60) return;
 
-  if (pickup_fetch_task_.valid() && pickup_fetch_task_.wait_for(std::chrono::seconds(
-                                     0)) != std::future_status::ready)
+  if (pickup_fetch_task_.valid() &&
+      pickup_fetch_task_.wait_for(std::chrono::seconds(0)) !=
+          std::future_status::ready)
     return;
 
   last_pickup_fetch_time_ = GetTime();
