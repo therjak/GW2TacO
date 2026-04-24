@@ -25,7 +25,6 @@
 #include "src/core2/window_handler.h"
 #include "src/gw2_tactical.h"
 #include "src/resource.h"
-#include "src/util/jsonxx.h"
 #include "src/util/miniz.h"
 
 #pragma comment(lib, "Urlmon.lib")
