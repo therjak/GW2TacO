@@ -21,6 +21,18 @@ export struct TransactionItem {
   std::string created;
 };
 
+export struct CommercePriceListing {
+  int32_t quantity = 0;
+  int32_t unit_price = 0;
+};
+
+export struct CommercePrice {
+  int32_t id = 0;
+  bool whitelisted = false;
+  CommercePriceListing buys;
+  CommercePriceListing sells;
+};
+
 export struct GW2ItemData {
   int32_t item_id = 0;
   std::string name;
