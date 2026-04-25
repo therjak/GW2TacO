@@ -84,6 +84,55 @@ std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
   return result;
 }
 
+std::vector<CommercePrice> ParseCommercePrices(const std::string& items_json) {
+  std::vector<CommercePrice> result;
+  jsonxx::Object item_json;
+  item_json.parse(items_json);
+
+  if (item_json.has<jsonxx::Array>("items")) {
+    auto items = item_json.get<jsonxx::Array>("items").values();
+
+    for (auto& x : items) {
+      if (!x->is<jsonxx::Object>()) continue;
+
+      jsonxx::Object& item = x->get<jsonxx::Object>();
+
+      if (!item.has<jsonxx::Number>("id") ||
+          !item.has<jsonxx::Object>("buys") ||
+          !item.has<jsonxx::Object>("sells")) {
+        continue;
+      }
+
+      CommercePrice price;
+      price.id = int32_t(item.get<jsonxx::Number>("id"));
+      if (item.has<jsonxx::Boolean>("whitelisted")) {
+        price.whitelisted = item.get<jsonxx::Boolean>("whitelisted");
+      }
+
+      jsonxx::Object buys_ = item.get<jsonxx::Object>("buys");
+      jsonxx::Object sells_ = item.get<jsonxx::Object>("sells");
+
+      if (buys_.has<jsonxx::Number>("quantity")) {
+        price.buys.quantity = int32_t(buys_.get<jsonxx::Number>("quantity"));
+      }
+      if (buys_.has<jsonxx::Number>("unit_price")) {
+        price.buys.unit_price = int32_t(buys_.get<jsonxx::Number>("unit_price"));
+      }
+
+      if (sells_.has<jsonxx::Number>("quantity")) {
+        price.sells.quantity = int32_t(sells_.get<jsonxx::Number>("quantity"));
+      }
+      if (sells_.has<jsonxx::Number>("unit_price")) {
+        price.sells.unit_price = int32_t(sells_.get<jsonxx::Number>("unit_price"));
+      }
+
+      result.push_back(price);
+    }
+  }
+
+  return result;
+}
+
 std::vector<GW2ItemData> ParseGW2Items(const std::string& items_json) {
   std::vector<GW2ItemData> result;
   jsonxx::Object item_json;
@@ -249,40 +298,15 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
                        key->QueryAPI(("/v2/commerce/prices?ids=" + item_ids)) +
                        "}";
 
-          jsonxx::Object item_json;
-          item_json.parse(items);
+          std::vector<CommercePrice> prices = ParseCommercePrices(items);
+          for (const auto& price : prices) {
+            if (!HasGW2ItemData(price.id)) continue;
+            if (price.buys.unit_price == 0 && price.sells.unit_price == 0) continue;
 
-          if (item_json.has<jsonxx::Array>("items")) {
-            auto items = item_json.get<jsonxx::Array>("items").values();
-
-            for (auto& x : items) {
-              if (!x->is<jsonxx::Object>()) continue;
-
-              jsonxx::Object& item = x->get<jsonxx::Object>();
-
-              if (!item.has<jsonxx::Number>("id") ||
-                  !item.has<jsonxx::Object>("buys") ||
-                  !item.has<jsonxx::Object>("sells")) {
-                continue;
-              }
-
-              int32_t id = int32_t(item.get<jsonxx::Number>("id"));
-              if (!HasGW2ItemData(id)) continue;
-
-              jsonxx::Object buys_ = item.get<jsonxx::Object>("buys");
-              jsonxx::Object sells_ = item.get<jsonxx::Object>("sells");
-              if (!buys_.has<jsonxx::Number>("unit_price") ||
-                  !sells_.has<jsonxx::Number>("unit_price")) {
-                continue;
-              }
-
-              GW2ItemData itemData = GetGW2ItemData(id);
-              itemData.buy_price =
-                  int32_t(buys_.get<jsonxx::Number>("unit_price"));
-              itemData.sell_price =
-                  int32_t(sells_.get<jsonxx::Number>("unit_price"));
-              SetGW2ItemData(itemData);
-            }
+            GW2ItemData itemData = GetGW2ItemData(price.id);
+            itemData.buy_price = price.buys.unit_price;
+            itemData.sell_price = price.sells.unit_price;
+            SetGW2ItemData(itemData);
           }
         }
 
