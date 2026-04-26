@@ -142,5 +142,5 @@ export class GW2TrailDisplay
 };
 
 export typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;
-export extern std::unordered_map<int, TrailSet> trails;
+export std::unordered_map<int, TrailSet> trails;
 export TrailSet& GetMapTrails();

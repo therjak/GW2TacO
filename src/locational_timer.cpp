@@ -16,8 +16,6 @@ import xml;
 using math::Point;
 using math::Rect;
 
-std::vector<LocationalTimer> LocationalTimers;
-
 void ImportLocationalTimers() {
   CXMLDocument d;
   if (!d.LoadFromFile("locationaltimers.xml")) return;
@@ -50,7 +48,8 @@ void LocationalTimer::Update() {
   }
 
   if (is_running_) {
-    if ((GetTime() - start_time_) / 1000.0f > timer_length_) is_running_ = false;
+    if ((GetTime() - start_time_) / 1000.0f > timer_length_)
+      is_running_ = false;
     if (!exit_sphere_.Contains(mumbleLink.char_position)) is_running_ = false;
     if ((reset_point_ - mumbleLink.char_position).Length() < 0.1) {
       is_running_ = false;

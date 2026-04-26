@@ -132,5 +132,5 @@ export class CMumbleLink {
   math::Vector4 cam_char_dist_[kAvgCamCounter];
 };
 
-export extern CMumbleLink mumbleLink;
+export CMumbleLink mumbleLink("MumbleLink");
 export math::Rect GetMinimapRectangle();

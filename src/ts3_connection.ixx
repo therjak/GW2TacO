@@ -73,4 +73,4 @@ export class TS3Connection {
   int32_t last_ping_time_ = 0;
 };
 
-export extern TS3Connection teamSpeakConnection;
+export TS3Connection teamSpeakConnection;

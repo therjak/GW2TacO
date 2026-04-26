@@ -1,11 +1,11 @@
 module;
 #include <algorithm>
+#include <cctype>
 #include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
-#include <cctype>
 
 #include "src/base/file_list.h"
 #include "src/base/logger.h"
@@ -68,8 +68,6 @@ void DecodeUtf8(std::string_view Input, const UTF8CHARCALLBACK& callback) {
     ++it;
   }
 }
-
-std::unique_ptr<Localization> localization;
 
 void Localization::ImportFile(std::string_view s) {
   CXMLDocument d;

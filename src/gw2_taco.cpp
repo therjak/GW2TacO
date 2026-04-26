@@ -14,6 +14,7 @@ module;
 
 module taco.gw2taco;
 
+import taco.app;
 import taco.build_info;
 import taco.dungeon_progress;
 import taco.gw2;
@@ -36,13 +37,6 @@ import whiteboard;
 using math::Point;
 using math::Rect;
 using math::Vector3;
-
-std::string_view UIFileNames[] = {
-    "UI_small.css",
-    "UI_normal.css",
-    "UI_large.css",
-    "UI_larger.css",
-};
 
 std::vector<std::string_view> ActionNames = {
     "no_action",                //"No Action",
@@ -237,7 +231,6 @@ void ChangeUIScale(int size) {
     return;
   }
 
-  extern std::unique_ptr<gui::CWBApplication> App;
   if (!App) return;
 
   if (App->LoadCSSFromFile(UIFileNames[size], true)) {
@@ -1525,8 +1518,6 @@ void GW2TacO::OpenAboutWindow() {
 }
 
 float GetWindowTooSmallScale() {
-  extern std::unique_ptr<gui::CWBApplication> App;
-
   if (!App || !App->GetRoot()) return 1.0f;
 
   Rect rect = App->GetRoot()->GetClientRect();
@@ -1851,8 +1842,6 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
 }
 
 void SetMouseToolTip(std::string_view toolTip) {
-  extern std::unique_ptr<gui::CWBApplication> App;
-
   if (!App) return;
 
   auto* tacoRoot = dynamic_cast<GW2TacO*>(

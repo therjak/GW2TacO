@@ -17,6 +17,7 @@ module;
 module taco.mumble_link;
 
 import math;
+import taco.app;
 import taco.overlay_config;
 import taco.trail_logger;
 import time;
@@ -28,9 +29,7 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-CMumbleLink mumbleLink("MumbleLink");
 bool frameTriggered = false;
-extern std::unique_ptr<gui::CWBApplication> App;
 
 void ChangeUIScale(int size);
 
@@ -118,11 +117,11 @@ bool CMumbleLink::Update() {
   interpolation_ = inter;
 
   char_position = math::Lerp(Vector3(prev_data_.f_avatar_position),
-                              Vector3(last_data_.f_avatar_position), inter);
+                             Vector3(last_data_.f_avatar_position), inter);
   char_eye = math::Lerp(Vector3(prev_data_.f_avatar_top),
                         Vector3(last_data_.f_avatar_top), 1);
   cam_position = math::Lerp(Vector3(prev_data_.f_camera_position),
-                             Vector3(last_data_.f_camera_position), 1);
+                            Vector3(last_data_.f_camera_position), 1);
   cam_up = math::Lerp(Vector3(prev_data_.f_camera_top),
                       Vector3(last_data_.f_camera_top), 1);
   cam_dir = math::Lerp(Vector3(prev_data_.f_camera_front),
@@ -130,14 +129,14 @@ bool CMumbleLink::Update() {
 
   char_pos_changed = Vector3(prev_data_.f_avatar_position) !=
                      Vector3(last_data_.f_avatar_position);
-  char_eye_changed = Vector3(prev_data_.f_avatar_top) !=
-                     Vector3(last_data_.f_avatar_top);
+  char_eye_changed =
+      Vector3(prev_data_.f_avatar_top) != Vector3(last_data_.f_avatar_top);
   cam_pos_changed = Vector3(prev_data_.f_camera_position) !=
                     Vector3(last_data_.f_camera_position);
-  cam_dir_changed = Vector3(prev_data_.f_camera_front) !=
-                    Vector3(last_data_.f_camera_front);
-  cam_up_changed = Vector3(prev_data_.f_camera_top) !=
-                   Vector3(last_data_.f_camera_top);
+  cam_dir_changed =
+      Vector3(prev_data_.f_camera_front) != Vector3(last_data_.f_camera_front);
+  cam_up_changed =
+      Vector3(prev_data_.f_camera_top) != Vector3(last_data_.f_camera_top);
 
   if ((Vector3(last_data_.f_avatar_position) -
        Vector3(prev_data_.f_avatar_position))
@@ -329,12 +328,11 @@ bool CMumbleLink::IsValid() {
 
 Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& mini_rect,
                                                  bool ignore_rotation) {
-  Matrix4x4 mini_map_trafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f,
-                           0, 0, 0, 0, 0, 1);
+  Matrix4x4 mini_map_trafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0,
+                           0, 0, 0, 0, 1);
 
-  Vector2 map_offset =
-      Vector2(WorldToGameCoords(mumbleLink.char_position.x),
-              WorldToGameCoords(mumbleLink.char_position.z));
+  Vector2 map_offset = Vector2(WorldToGameCoords(mumbleLink.char_position.x),
+                               WorldToGameCoords(mumbleLink.char_position.z));
 
   float rotation = ignore_rotation ? 0 : compass_rotation;
 
@@ -348,8 +346,7 @@ Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& mini_rect,
       -((Vector2(map_center_x, map_center_y) - Vector2(player_x, player_y)) *
         GetWindowTooSmallScale())
            .Rotated(Vector2(0, 0), rotation);
-  mini_map_trafo *=
-      Matrix4x4::Translation(Vector3(offset.x, offset.y, 0.0));
+  mini_map_trafo *= Matrix4x4::Translation(Vector3(offset.x, offset.y, 0.0));
   mini_map_trafo *=
       Matrix4x4::Scaling(Vector3(1, 1, 1) / map_scale * GetUIScale());
   mini_map_trafo *= Matrix4x4::Translation(

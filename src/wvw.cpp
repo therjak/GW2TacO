@@ -26,9 +26,6 @@ using math::Rect;
 using math::Size;
 using math::Vector3;
 
-bool wvw_can_be_rendered = false;
-std::vector<WvwObjective> wvw_objectives;
-std::unordered_map<std::string, POI> wvw_pois;
 std::unordered_map<int, bool> wvw_map_ids;
 
 // API constants
@@ -351,8 +348,6 @@ void LoadWvwObjectives() {
     wvw_can_be_rendered = true;
   });
 }
-
-LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;
 
 void UpdateWvwStatus() {
   if (wvw_map_ids.find(mumbleLink.map_id) == wvw_map_ids.end()) return;

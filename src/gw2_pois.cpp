@@ -30,6 +30,7 @@
 #pragma comment(lib, "Urlmon.lib")
 
 import math;
+import taco.app;
 import taco.build_info;
 import taco.gw2;
 import taco.gw2taco;
@@ -59,7 +60,6 @@ import whiteboard;
 
 using math::Rect;
 
-std::unique_ptr<gui::CWBApplication> App;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 

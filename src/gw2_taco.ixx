@@ -47,8 +47,6 @@ export enum class APIKeys {
   GW2APIKey,
 };
 
-export extern std::vector<std::string_view> ActionNames;
-
 export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
  public:
   GW2TacO();
@@ -126,6 +124,11 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
   std::future<void> pickup_fetch_task_;
 };
 
-export extern std::string_view UIFileNames[];
+export constexpr std::string_view UIFileNames[] = {
+    "UI_small.css",
+    "UI_normal.css",
+    "UI_large.css",
+    "UI_larger.css",
+};
 
 export void SetMouseToolTip(std::string_view toolTip);

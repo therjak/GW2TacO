@@ -21,6 +21,7 @@ module;
 
 module taco.trail_logger;
 
+import taco.app;
 import taco.mumble_link;
 import taco.overlay_config;
 import time;
@@ -40,11 +41,8 @@ using math::Vector4;
 extern float globalOpacity;
 extern float minimapOpacity;
 
-std::unordered_map<int, TrailSet> trails;
-
 TrailSet& GetMapTrails() { return trails[mumbleLink.map_id]; }
 
-extern std::unique_ptr<gui::CWBApplication> App;
 CStreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
@@ -223,7 +221,8 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
       auto& mapTrails = GetMapTrails();
       for (auto& y : mapTrails) {
         auto& trail = *y.second;
-        if (!trail.type_data_.bits_.mini_map_visible_ && showMinimapTrails != 2) {
+        if (!trail.type_data_.bits_.mini_map_visible_ &&
+            showMinimapTrails != 2) {
           continue;
         }
 
@@ -250,10 +249,11 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
 
         float alpha =
             1.0f -
-            std::max(0.0f,
-                     std::min(1.0f, (mumbleLink.mini_map.map_scale -
-                                     trail.type_data_.mini_map_fade_out_level_) /
-                                        2.0f));
+            std::max(
+                0.0f,
+                std::min(1.0f, (mumbleLink.mini_map.map_scale -
+                                trail.type_data_.mini_map_fade_out_level_) /
+                                   2.0f));
 
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
                            one, false, 0, data,
@@ -306,10 +306,11 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
 
         float alpha =
             1.0f -
-            std::max(0.0f,
-                     std::min(1.0f, (mumbleLink.big_map.map_scale -
-                                     trail.type_data_.mini_map_fade_out_level_) /
-                                        2.0f));
+            std::max(
+                0.0f,
+                std::min(1.0f, (mumbleLink.big_map.map_scale -
+                                trail.type_data_.mini_map_fade_out_level_) /
+                                   2.0f));
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
                            one, false, 0, data,
                            (1.0f - mapFade) * alpha * minimapOpacity, 1.0f,

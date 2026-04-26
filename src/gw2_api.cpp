@@ -43,8 +43,6 @@ std::string FetchAPIData(std::string_view path, std::string_view apiKey) {
 
 namespace GW2 {
 
-APIKeyManager apiKeyManager;
-
 APIKey::APIKey(std::string_view key) : apiKey(key) {}
 
 APIKey::~APIKey() {}

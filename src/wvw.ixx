@@ -52,12 +52,12 @@ export struct WvwPoiUpdate {
   Team owner_;
 };
 
-export extern LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;
-export extern std::vector<WvwObjective> wvw_objectives;
+export LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;
+export std::vector<WvwObjective> wvw_objectives;
 
 export void LoadWvwObjectives();
 export void UpdateWvwStatus();
 export std::vector<WvwObjectiveData> ParseWvwObjectives(
     const std::string& json_data);
-export extern bool wvw_can_be_rendered;
-export extern std::unordered_map<std::string, POI> wvw_pois;
+export bool wvw_can_be_rendered = false;
+export std::unordered_map<std::string, POI> wvw_pois;

@@ -444,6 +444,7 @@ target_sources(taco
     PUBLIC
         FILE_SET modules TYPE CXX_MODULES
         FILES
+            src/app.ixx
             src/build_info.ixx
             src/dungeon_progress.ixx
             src/gw2_api.ixx
