@@ -807,9 +807,6 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
 }
 
-extern std::unordered_map<std::string, POI> wvwPOIs;
-extern bool wvwCanBeRendered;
-
 void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   int opac = GetConfigValue("OpacityIngame");
   if (opac == 0) globalOpacity = 1.0f;
@@ -872,12 +869,12 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     InsertPOI(poi.second);
   }
 
-  if (wvwCanBeRendered) {
+  if (wvw_can_be_rendered) {
     const auto& updates = wvw_poi_updates.pop();
     if (updates.has_value()) {
       for (auto& e : updates.value()) {
-        if (wvwPOIs.find(e.id_) == wvwPOIs.end()) continue;
-        auto& poi = wvwPOIs[e.id_];
+        if (wvw_pois.find(e.id_) == wvw_pois.end()) continue;
+        auto& poi = wvw_pois[e.id_];
         poi.lastUpdateTime = e.last_flipped_;
         switch (e.owner_) {
           case WvwPoiUpdate::Team::kRed:
@@ -895,7 +892,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
         }
       }
     }
-    for (auto& e : wvwPOIs) {
+    for (auto& e : wvw_pois) {
       if (e.second.map_id != mumblemap_id) {
         continue;
       }

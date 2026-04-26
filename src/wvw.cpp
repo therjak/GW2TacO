@@ -26,37 +26,36 @@ using math::Rect;
 using math::Size;
 using math::Vector3;
 
-bool wvwCanBeRendered = false;
+bool wvw_can_be_rendered = false;
 std::vector<WvwObjective> wvw_objectives;
+std::unordered_map<std::string, POI> wvw_pois;
+std::unordered_map<int, bool> wvw_map_ids;
+
+// API constants
+constexpr int kDayFlag = 0x001000;
+constexpr int kDhmsFlag = 0x001111;
+constexpr int kHourFlag = 0x000100;
+constexpr int kHmsFlag = 0x000111;
+constexpr int kMinFlag = 0x000010;
+constexpr int kMsFlag = 0x000011;
+constexpr int kSecFlag = 0x000001;
+
 std::string FetchHTTPS(std::string_view url, std::string_view path);
-std::unordered_map<std::string, POI> wvwPOIs;
-std::unordered_map<int, bool> wvwmap_ids;
 
-constexpr int DayFlag = 0x001000;
-constexpr int DhmsFlag = 0x001111;
-constexpr int HourFlag = 0x000100;
-constexpr int HmsFlag = 0x000111;
-constexpr int MinFlag = 0x000010;
-constexpr int MsFlag = 0x000011;
-constexpr int SecFlag = 0x000001;
-
-void parseISO8601(const char* text, time_t& isotime, char& flag) {
-  const char* c = nullptr;
+void ParseISO8601(const char* text, time_t& iso_time, char& flag) {
+  const char* c = text;
   int num = 0;
-
-  struct tm tmstruct {};
-
+  struct tm tm_struct {};
   int year = 0;
   int month = 0;
   int seconds = 0;
   int minutes = 0;
   int hours = 0;
   int days = 0;
+  /* flag which date component we've seen */
+  int date_flags = 0;
 
-  int dateflags = 0; /* flag which date component we've seen */
-
-  c = text;
-  isotime = 0;
+  iso_time = 0;
 
   if (*c++ == 'P') {
     /* duration */
@@ -70,46 +69,42 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
 
       switch (*c++) {
         case 'D':
-          if (dateflags & DhmsFlag) {
+          if (date_flags & kDhmsFlag) {
             /* day, hour, min or sec already set */
             return;
-          } else {
-            dateflags |= DayFlag;
-            days = num;
           }
+          date_flags |= kDayFlag;
+          days = num;
           break;
         case 'H':
-          if (dateflags & HmsFlag) {
+          if (date_flags & kHmsFlag) {
             /* hour, min or sec already set */
             return;
-          } else {
-            dateflags |= DayFlag;
-            hours = num;
           }
+          date_flags |= kDayFlag;
+          hours = num;
           break;
         case 'M':
-          if (dateflags & MsFlag) {
+          if (date_flags & kMsFlag) {
             /* min or sec already set */
             return;
-          } else {
-            dateflags |= MinFlag;
-            minutes = num;
           }
+          date_flags |= kMinFlag;
+          minutes = num;
           break;
         case 'S':
-          if (dateflags & SecFlag) {
+          if (date_flags & kSecFlag) {
             /* sec already set */
             return;
-          } else {
-            dateflags |= SecFlag;
-            seconds = num;
           }
+          date_flags |= kSecFlag;
+          seconds = num;
           break;
         default:
           return;
       }
     }
-    isotime = seconds + 60 * minutes + 3600 * hours + 86400 * days;
+    iso_time = seconds + 60 * minutes + 3600 * hours + 86400 * days;
   } else {
     /* point in time, must be one of
     CCYYMMDD
@@ -126,55 +121,48 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
     because otherwise the separting '-' will be interpreted
     by sscanf as signs of a 1 digit integer .... :-(  */
 
-    if (sscanf_s(text, "%4u-%2u-%2u", &year, &month, &days) == 3) {
+    if (std::sscanf(text, "%4u-%2u-%2u", &year, &month, &days) == 3) {
       c += 10;
-    } else if (sscanf_s(text, "%4u%2u%2u", &year, &month, &days) == 3) {
+    } else if (std::sscanf(text, "%4u%2u%2u", &year, &month, &days) == 3) {
       c += 8;
     } else {
       return;
     }
 
-    tmstruct.tm_year = year - 1900;
-    tmstruct.tm_mon = month - 1;
-    tmstruct.tm_mday = days;
+    tm_struct.tm_year = year - 1900;
+    tm_struct.tm_mon = month - 1;
+    tm_struct.tm_mday = days;
 
     if (*c == '\0') {
-      tmstruct.tm_hour = 0;
-      tmstruct.tm_sec = 0;
-      tmstruct.tm_min = 0;
-      isotime = _mkgmtime(&tmstruct);
+      tm_struct.tm_hour = 0;
+      tm_struct.tm_sec = 0;
+      tm_struct.tm_min = 0;
+      iso_time = _mkgmtime(&tm_struct);
     } else if (*c == 'T') {
-      /* time of day part */
       c++;
-      if (sscanf_s(c, "%2d%2d", &hours, &minutes) == 2) {
+      if (std::sscanf(c, "%2d%2d", &hours, &minutes) == 2) {
         c += 4;
-      } else if (sscanf_s(c, "%2d:%2d", &hours, &minutes) == 2) {
+      } else if (std::sscanf(c, "%2d:%2d", &hours, &minutes) == 2) {
         c += 5;
       } else {
         return;
       }
 
-      if (*c == ':') {
-        c++;
-      }
+      if (*c == ':') c++;
 
       if (*c != '\0') {
-        if (sscanf_s(c, "%2d", &seconds) == 1) {
+        if (std::sscanf(c, "%2d", &seconds) == 1) {
           c += 2;
         } else {
           return;
         }
-        if (*c != '\0' && *c != 'Z') { /* something left? */
-          return;
-        }
+        if (*c != '\0' && *c != 'Z') return;
       }
-      tmstruct.tm_hour = hours;
-      tmstruct.tm_min = minutes;
-      tmstruct.tm_sec = seconds;
-      isotime = _mkgmtime(&tmstruct);
-    }
-
-    else {
+      tm_struct.tm_hour = hours;
+      tm_struct.tm_min = minutes;
+      tm_struct.tm_sec = seconds;
+      iso_time = _mkgmtime(&tm_struct);
+    } else {
       return;
     }
   }
@@ -182,23 +170,31 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
 
 std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
   std::vector<WvwObjectiveData> result;
-  jsonxx::Array wvwobjs;
-  wvwobjs.parse(json_data);
-  for (auto& x : wvwobjs.values()) {
+  jsonxx::Array wvw_objs;
+  wvw_objs.parse(json_data);
+  for (auto& x : wvw_objs.values()) {
     if (!x->is<jsonxx::Object>()) continue;
     auto obj = x->get<jsonxx::Object>();
-    
+
     WvwObjectiveData data;
     if (obj.has<jsonxx::String>("id")) data.id = obj.get<jsonxx::String>("id");
-    if (obj.has<jsonxx::String>("name")) data.name = obj.get<jsonxx::String>("name");
-    if (obj.has<jsonxx::String>("type")) data.type = obj.get<jsonxx::String>("type");
-    if (obj.has<jsonxx::Number>("sector_id")) data.sector_id = static_cast<int>(obj.get<jsonxx::Number>("sector_id"));
-    if (obj.has<jsonxx::Number>("map_id")) data.map_id = static_cast<int>(obj.get<jsonxx::Number>("map_id"));
-    if (obj.has<jsonxx::String>("map_type")) data.map_type = obj.get<jsonxx::String>("map_type");
-    if (obj.has<jsonxx::String>("marker")) data.marker = obj.get<jsonxx::String>("marker");
-    if (obj.has<jsonxx::String>("chat_link")) data.chat_link = obj.get<jsonxx::String>("chat_link");
-    if (obj.has<jsonxx::Number>("upgrade_id")) data.upgrade_id = static_cast<int>(obj.get<jsonxx::Number>("upgrade_id"));
-    
+    if (obj.has<jsonxx::String>("name"))
+      data.name = obj.get<jsonxx::String>("name");
+    if (obj.has<jsonxx::String>("type"))
+      data.type = obj.get<jsonxx::String>("type");
+    if (obj.has<jsonxx::Number>("sector_id"))
+      data.sector_id = static_cast<int>(obj.get<jsonxx::Number>("sector_id"));
+    if (obj.has<jsonxx::Number>("map_id"))
+      data.map_id = static_cast<int>(obj.get<jsonxx::Number>("map_id"));
+    if (obj.has<jsonxx::String>("map_type"))
+      data.map_type = obj.get<jsonxx::String>("map_type");
+    if (obj.has<jsonxx::String>("marker"))
+      data.marker = obj.get<jsonxx::String>("marker");
+    if (obj.has<jsonxx::String>("chat_link"))
+      data.chat_link = obj.get<jsonxx::String>("chat_link");
+    if (obj.has<jsonxx::Number>("upgrade_id"))
+      data.upgrade_id = static_cast<int>(obj.get<jsonxx::Number>("upgrade_id"));
+
     if (obj.has<jsonxx::Array>("coord")) {
       for (auto& v : obj.get<jsonxx::Array>("coord").values()) {
         if (v->is<jsonxx::Number>()) {
@@ -209,7 +205,8 @@ std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
     if (obj.has<jsonxx::Array>("label_coord")) {
       for (auto& v : obj.get<jsonxx::Array>("label_coord").values()) {
         if (v->is<jsonxx::Number>()) {
-          data.label_coord.push_back(static_cast<float>(v->get<jsonxx::Number>()));
+          data.label_coord.push_back(
+              static_cast<float>(v->get<jsonxx::Number>()));
         }
       }
     }
@@ -221,7 +218,7 @@ std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
 void LoadWvwObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
-  static std::future<void> wvwPollTask = std::async(std::launch::async, []() {
+  static std::future<void> wvw_poll_task = std::async(std::launch::async, []() {
     std::unordered_map<int, Vector3> wvw_objective_coords;
     std::unordered_map<int, Rect> wvw_continent_rects;
 
@@ -233,61 +230,56 @@ void LoadWvwObjectives() {
     for (auto& api_obj : objs) {
       if (api_obj.id.empty()) continue;
 
-      auto objid = api_obj.id;
-
-      int map_id = 0, objident = 0;
-      if (std::sscanf(objid.c_str(), "%d-%d", &map_id, &objident) != 2)
+      int map_id = 0, obj_ident = 0;
+      if (std::sscanf(api_obj.id.c_str(), "%d-%d", &map_id, &obj_ident) != 2)
         continue;
 
-      if (api_obj.map_id == 0) continue;
+      if (api_obj.map_id == 0 || api_obj.map_id != map_id) continue;
 
-      if (api_obj.map_id != map_id) continue;
-
-      wvwmap_ids[map_id] = true;
+      wvw_map_ids[map_id] = true;
 
       if (!api_obj.coord.empty()) {
         if (wvw_continent_rects.find(map_id) == wvw_continent_rects.end()) {
-          auto mapPath = std::format("/v2/maps?id={:d}", map_id);
-          auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
+          auto map_path = std::format("/v2/maps?id={:d}", map_id);
+          auto wvw_map_data = FetchHTTPS("api.guildwars2.com", map_path);
 
           jsonxx::Object map;
-          map.parse(wvwMapData);
+          map.parse(wvw_map_data);
           if (!map.has<jsonxx::Array>("continent_rect")) continue;
 
-          auto continentRectArray =
+          auto continent_rect_array =
               map.get<jsonxx::Array>("continent_rect").values();
-          if (continentRectArray.size() != 2) continue;
+          if (continent_rect_array.size() != 2) continue;
 
-          int continentRectCnt = 0;
-          int continentRectValues[4];
+          int rect_cnt = 0;
+          int rect_values[4];
           bool ok = true;
 
           for (int x = 0; x < 2; x++) {
-            if (!continentRectArray[x]->is<jsonxx::Array>()) {
+            if (!continent_rect_array[x]->is<jsonxx::Array>()) {
               ok = false;
               break;
             }
-            auto continentRectCoords =
-                continentRectArray[x]->get<jsonxx::Array>().values();
-            if (continentRectCoords.size() != 2) {
+            auto continent_rect_coords =
+                continent_rect_array[x]->get<jsonxx::Array>().values();
+            if (continent_rect_coords.size() != 2) {
               ok = false;
               break;
             }
 
             for (int y = 0; y < 2; y++) {
-              if (!continentRectCoords[y]->is<jsonxx::Number>()) {
+              if (!continent_rect_coords[y]->is<jsonxx::Number>()) {
                 ok = false;
                 break;
               }
-              continentRectValues[continentRectCnt++] = static_cast<int>(
-                  continentRectCoords[y]->get<jsonxx::Number>());
+              rect_values[rect_cnt++] = static_cast<int>(
+                  continent_rect_coords[y]->get<jsonxx::Number>());
             }
           }
 
           if (ok) {
-            wvw_continent_rects[map_id] =
-                Rect(continentRectValues[0], continentRectValues[1],
-                     continentRectValues[2], continentRectValues[3]);
+            wvw_continent_rects[map_id] = Rect(rect_values[0], rect_values[1],
+                                               rect_values[2], rect_values[3]);
           }
         }
 
@@ -295,51 +287,49 @@ void LoadWvwObjectives() {
           continue;
         }
 
-        auto coord = api_obj.coord;
+        const auto& coord = api_obj.coord;
         if (coord.size() == 3) {
           Vector3 v(coord[0], coord[1], coord[2]);
+          const Rect& r = wvw_continent_rects[map_id];
+          Vector3 offset((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
 
-          Rect& r = wvw_continent_rects[map_id];
-          Vector3 offset =
-              Vector3((r.x1 + r.x2) / 2.0f, 0, (r.y1 + r.y2) / 2.0f);
-
-          if (objident == 15 && abs(v.x - 11766.3) < 1 &&
-              abs(v.y - 14793.5) < 1 &&
-              abs(v.z - (-2133.39)) < 1)  // Langor fix-hack
-          {
-            v.x = 11462.5;
-            v.y = 15600 - 2650 / 24;
-            v.z -= 500;
+          // Langor fix-hack
+          if (obj_ident == 15 && std::abs(v.x - 11766.3f) < 1.0f &&
+              std::abs(v.y - 14793.5f) < 1.0f &&
+              std::abs(v.z - (-2133.39f)) < 1.0f) {
+            v.x = 11462.5f;
+            v.y = 15600.0f - 2650.0f / 24.0f;
+            v.z -= 500.0f;
           }
 
-          wvw_objective_coords[objident] = Vector3(
-              GameToWorldCoords((v.x - offset.x) * 24), GameToWorldCoords(-v.z),
-              GameToWorldCoords((-(v.y - offset.z)) * 24));
+          wvw_objective_coords[obj_ident] =
+              Vector3(GameToWorldCoords((v.x - offset.x) * 24.0f),
+                      GameToWorldCoords(-v.z),
+                      GameToWorldCoords((-(v.y - offset.z)) * 24.0f));
         }
       }
 
-      if (wvw_objective_coords.find(objident) == wvw_objective_coords.end()) {
+      if (wvw_objective_coords.find(obj_ident) == wvw_objective_coords.end()) {
         continue;
       }
 
       WvwObjective o;
-      o.id_ = objid;
+      o.id_ = api_obj.id;
       o.map_id_ = map_id;
-      o.objective_id_ = objident;
-      o.coord_ = wvw_objective_coords[objident];
+      o.objective_id_ = obj_ident;
+      o.coord_ = wvw_objective_coords[obj_ident];
 
-      if (!api_obj.type.empty())
-        o.type_ = api_obj.type;
+      if (!api_obj.type.empty()) o.type_ = api_obj.type;
 
       if (!api_obj.name.empty()) {
         o.name_token_ = o.name_ = api_obj.name;
       }
 
       for (char& n : o.name_token_) {
-        if (!isalnum(n)) {
+        if (!std::isalnum(static_cast<unsigned char>(n))) {
           n = '_';
         } else {
-          n = tolower(n);
+          n = static_cast<char>(std::tolower(static_cast<unsigned char>(n)));
         }
       }
 
@@ -347,39 +337,31 @@ void LoadWvwObjectives() {
       poi.position = o.coord_;
       poi.map_id = o.map_id_;
       poi.icon = DefaultIconHandle;
-      poi.wvw_objective_id = wvw_objectives.size();
+      poi.wvw_objective_id = static_cast<int>(wvw_objectives.size());
 
       wvw_objectives.push_back(o);
-
       CoCreateGuid(&poi.guid);
 
       auto cat = GetCategory("Tactical.WvW." + o.type_);
-
       if (cat) poi.SetCategory(cat);
-
       poi.type_data_.behavior_ = POIBehavior::WvwObjective;
-
-      wvwPOIs[o.id_] = poi;
+      wvw_pois[o.id_] = poi;
     }
-
     UpdateWvwStatus();
-
-    wvwCanBeRendered = true;
+    wvw_can_be_rendered = true;
   });
 }
 
 LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;
 
 void UpdateWvwStatus() {
-  if (wvwmap_ids.find(mumbleLink.map_id) == wvwmap_ids.end()) {
-    return;
-  }
+  if (wvw_map_ids.find(mumbleLink.map_id) == wvw_map_ids.end()) return;
 
-  static std::future<void> wvwUpdateTask;
-  static std::chrono::steady_clock::time_point lastUpdateTime;
+  static std::future<void> wvw_update_task;
+  static std::chrono::steady_clock::time_point last_update_time;
 
-  if (wvwUpdateTask.valid()) {
-    if (wvwUpdateTask.wait_for(std::chrono::seconds(0)) !=
+  if (wvw_update_task.valid()) {
+    if (wvw_update_task.wait_for(std::chrono::seconds(0)) !=
         std::future_status::ready) {
       return;
     }
@@ -387,30 +369,19 @@ void UpdateWvwStatus() {
 
   auto now = std::chrono::steady_clock::now();
   if (std::chrono::duration_cast<std::chrono::milliseconds>(now -
-                                                            lastUpdateTime)
+                                                            last_update_time)
           .count() < 5000) {
     return;
   }
 
-  wvwUpdateTask = std::async(std::launch::async, []() {
+  wvw_update_task = std::async(std::launch::async, []() {
     GW2::APIKeyManager::Status status = GW2::apiKeyManager.GetStatus();
-    if (status != GW2::APIKeyManager::Status::OK) {
-      return;
-    }
+    if (status != GW2::APIKeyManager::Status::OK) return;
     GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
-    if (!key) {
-      return;
-    }
+    if (!key || !key->Valid() || !key->HasCaps("account")) return;
 
-    if (!key->Valid()) {
-      return;
-    }
-    if (!key->HasCaps("account")) {
-      return;
-    }
-
-    auto apiPath = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
-    auto wvw_objective_ids = FetchHTTPS("api.guildwars2.com", apiPath);
+    auto api_path = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
+    auto wvw_objective_ids = FetchHTTPS("api.guildwars2.com", api_path);
 
     jsonxx::Object o;
     o.parse(wvw_objective_ids);
@@ -419,9 +390,7 @@ void UpdateWvwStatus() {
       std::vector<WvwPoiUpdate> updates;
       for (auto& x : m) {
         if (!x->is<jsonxx::Object>()) continue;
-
         auto map = x->get<jsonxx::Object>();
-
         if (!map.has<jsonxx::Array>("objectives")) continue;
 
         auto objs = map.get<jsonxx::Array>("objectives").values();
@@ -436,35 +405,28 @@ void UpdateWvwStatus() {
             continue;
           }
 
-          WvwPoiUpdate update = {
-              .id_ = id,
-          };
-
+          WvwPoiUpdate update{.id_ = id};
           std::string owner;
-          if (objective.has<jsonxx::String>("owner")) {
+          if (objective.has<jsonxx::String>("owner"))
             owner = objective.get<jsonxx::String>("owner");
-          }
 
-          if (owner == "Red") {
+          if (owner == "Red")
             update.owner_ = WvwPoiUpdate::Team::kRed;
-          } else if (owner == "Green") {
+          else if (owner == "Green")
             update.owner_ = WvwPoiUpdate::Team::kGreen;
-          } else if (owner == "Blue") {
+          else if (owner == "Blue")
             update.owner_ = WvwPoiUpdate::Team::kBlue;
-          } else {
+          else
             update.owner_ = WvwPoiUpdate::Team::kNone;
-          }
 
           std::string last_flipped_str;
-          if (objective.has<jsonxx::String>("last_flipped")) {
+          if (objective.has<jsonxx::String>("last_flipped"))
             last_flipped_str = objective.get<jsonxx::String>("last_flipped");
-          }
 
-          time_t flipTime = 0;
+          time_t flip_time = 0;
           char flags = 0;
-          parseISO8601(last_flipped_str.c_str(), flipTime, flags);
-          update.last_flipped_ = flipTime;
-
+          ParseISO8601(last_flipped_str.c_str(), flip_time, flags);
+          update.last_flipped_ = flip_time;
           updates.push_back(update);
         }
       }
@@ -472,5 +434,5 @@ void UpdateWvwStatus() {
     }
   });
 
-  lastUpdateTime = now;
+  last_update_time = now;
 }
