@@ -1,9 +1,11 @@
 module;
 #include <ctime>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "src/base/lock_free_queue.h"
+#include "src/gw2_tactical.h"
 
 export module taco.wvw;
 
@@ -55,4 +57,7 @@ export extern std::vector<WvwObjective> wvw_objectives;
 
 export void LoadWvwObjectives();
 export void UpdateWvwStatus();
-export std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data);
+export std::vector<WvwObjectiveData> ParseWvwObjectives(
+    const std::string& json_data);
+export extern bool wvw_can_be_rendered;
+export extern std::unordered_map<std::string, POI> wvw_pois;
