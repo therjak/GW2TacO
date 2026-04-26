@@ -9,6 +9,20 @@ export module taco.wvw;
 
 import math;
 
+export struct WvwObjectiveData {
+  std::string id;
+  std::string name;
+  std::string type;
+  int sector_id = 0;
+  int map_id = 0;
+  std::string map_type;
+  std::vector<float> coord;
+  std::vector<float> label_coord;
+  std::string marker;
+  std::string chat_link;
+  int upgrade_id = 0;
+};
+
 export class WvwObjective {
  public:
   std::string id_;
@@ -41,3 +55,4 @@ export extern std::vector<WvwObjective> wvw_objectives;
 
 export void LoadWvwObjectives();
 export void UpdateWvwStatus();
+export std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data);

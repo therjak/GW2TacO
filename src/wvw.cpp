@@ -180,6 +180,44 @@ void parseISO8601(const char* text, time_t& isotime, char& flag) {
   }
 }
 
+std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
+  std::vector<WvwObjectiveData> result;
+  jsonxx::Array wvwobjs;
+  wvwobjs.parse(json_data);
+  for (auto& x : wvwobjs.values()) {
+    if (!x->is<jsonxx::Object>()) continue;
+    auto obj = x->get<jsonxx::Object>();
+    
+    WvwObjectiveData data;
+    if (obj.has<jsonxx::String>("id")) data.id = obj.get<jsonxx::String>("id");
+    if (obj.has<jsonxx::String>("name")) data.name = obj.get<jsonxx::String>("name");
+    if (obj.has<jsonxx::String>("type")) data.type = obj.get<jsonxx::String>("type");
+    if (obj.has<jsonxx::Number>("sector_id")) data.sector_id = static_cast<int>(obj.get<jsonxx::Number>("sector_id"));
+    if (obj.has<jsonxx::Number>("map_id")) data.map_id = static_cast<int>(obj.get<jsonxx::Number>("map_id"));
+    if (obj.has<jsonxx::String>("map_type")) data.map_type = obj.get<jsonxx::String>("map_type");
+    if (obj.has<jsonxx::String>("marker")) data.marker = obj.get<jsonxx::String>("marker");
+    if (obj.has<jsonxx::String>("chat_link")) data.chat_link = obj.get<jsonxx::String>("chat_link");
+    if (obj.has<jsonxx::Number>("upgrade_id")) data.upgrade_id = static_cast<int>(obj.get<jsonxx::Number>("upgrade_id"));
+    
+    if (obj.has<jsonxx::Array>("coord")) {
+      for (auto& v : obj.get<jsonxx::Array>("coord").values()) {
+        if (v->is<jsonxx::Number>()) {
+          data.coord.push_back(static_cast<float>(v->get<jsonxx::Number>()));
+        }
+      }
+    }
+    if (obj.has<jsonxx::Array>("label_coord")) {
+      for (auto& v : obj.get<jsonxx::Array>("label_coord").values()) {
+        if (v->is<jsonxx::Number>()) {
+          data.label_coord.push_back(static_cast<float>(v->get<jsonxx::Number>()));
+        }
+      }
+    }
+    result.push_back(data);
+  }
+  return result;
+}
+
 void LoadWvwObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
@@ -190,30 +228,24 @@ void LoadWvwObjectives() {
     auto wvw_objectives_raw =
         FetchHTTPS("api.guildwars2.com", "/v2/wvw/objectives?ids=all");
 
-    jsonxx::Array wvwobjs;
-    wvwobjs.parse(wvw_objectives_raw);
-    auto objs = wvwobjs.values();
+    auto objs = ParseWvwObjectives(wvw_objectives_raw);
 
-    for (auto& x : objs) {
-      if (!x->is<jsonxx::Object>()) continue;
+    for (auto& api_obj : objs) {
+      if (api_obj.id.empty()) continue;
 
-      auto obj = x->get<jsonxx::Object>();
-
-      if (!obj.has<jsonxx::String>("id")) continue;
-
-      auto objid = obj.get<jsonxx::String>("id");
+      auto objid = api_obj.id;
 
       int map_id = 0, objident = 0;
       if (std::sscanf(objid.c_str(), "%d-%d", &map_id, &objident) != 2)
         continue;
 
-      if (!obj.has<jsonxx::Number>("map_id")) continue;
+      if (api_obj.map_id == 0) continue;
 
-      if (obj.get<jsonxx::Number>("map_id") != map_id) continue;
+      if (api_obj.map_id != map_id) continue;
 
       wvwmap_ids[map_id] = true;
 
-      if (obj.has<jsonxx::Array>("coord")) {
+      if (!api_obj.coord.empty()) {
         if (wvw_continent_rects.find(map_id) == wvw_continent_rects.end()) {
           auto mapPath = std::format("/v2/maps?id={:d}", map_id);
           auto wvwMapData = FetchHTTPS("api.guildwars2.com", mapPath);
@@ -263,17 +295,9 @@ void LoadWvwObjectives() {
           continue;
         }
 
-        auto coord = obj.get<jsonxx::Array>("coord").values();
+        auto coord = api_obj.coord;
         if (coord.size() == 3) {
-          Vector3 v(coord[0]->is<jsonxx::Number>()
-                        ? static_cast<float>(coord[0]->get<jsonxx::Number>())
-                        : 0,
-                    coord[1]->is<jsonxx::Number>()
-                        ? static_cast<float>(coord[1]->get<jsonxx::Number>())
-                        : 0,
-                    coord[2]->is<jsonxx::Number>()
-                        ? static_cast<float>(coord[2]->get<jsonxx::Number>())
-                        : 0);
+          Vector3 v(coord[0], coord[1], coord[2]);
 
           Rect& r = wvw_continent_rects[map_id];
           Vector3 offset =
@@ -304,11 +328,11 @@ void LoadWvwObjectives() {
       o.objective_id_ = objident;
       o.coord_ = wvw_objective_coords[objident];
 
-      if (obj.has<jsonxx::String>("type"))
-        o.type_ = obj.get<jsonxx::String>("type");
+      if (!api_obj.type.empty())
+        o.type_ = api_obj.type;
 
-      if (obj.has<jsonxx::String>("name")) {
-        o.name_token_ = o.name_ = obj.get<jsonxx::String>("name");
+      if (!api_obj.name.empty()) {
+        o.name_token_ = o.name_ = api_obj.name;
       }
 
       for (char& n : o.name_token_) {
