@@ -40,7 +40,7 @@ export class Localization {
   std::vector<int> used_glyphs_;
 };
 
-export extern std::unique_ptr<Localization> localization;
+export std::unique_ptr<Localization> localization;
 
 export template <class... Args>
 std::string DICT(const std::string_view token, Args&&... args) {

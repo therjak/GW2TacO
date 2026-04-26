@@ -16,8 +16,6 @@ module taco.ts3connection;
 import taco.overlay_config;
 import time;
 
-TS3Connection teamSpeakConnection;
-
 TS3Connection::TS3Connection() { InitWinsock(); }
 
 TS3Connection::~TS3Connection() { DeinitWinsock(); }

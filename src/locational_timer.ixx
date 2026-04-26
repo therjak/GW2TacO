@@ -62,5 +62,5 @@ export class TimerDisplay
                           gui::WBMESSAGE message_type) override;
 };
 
-export extern std::vector<LocationalTimer> LocationalTimers;
+export std::vector<LocationalTimer> LocationalTimers;
 export void ImportLocationalTimers();

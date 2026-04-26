@@ -9,9 +9,6 @@ module;
 
 module taco.tactical_category;
 
-GW2TacticalCategory CategoryRoot;
-std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
-
 std::string GW2TacticalCategory::GetFullTypeName() {
   if (!cached_type_name_.empty()) return cached_type_name_;
 
