@@ -1,5 +1,6 @@
 module;
 #include <ctime>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -10,6 +11,22 @@ module;
 export module taco.wvw;
 
 import math;
+
+export struct WvwMapData {
+  int id = 0;
+  std::string name;
+  int min_level = 0;
+  int max_level = 0;
+  int default_floor = 0;
+  std::string type;
+  std::vector<int> floors;
+  int region_id = 0;
+  std::string region_name;
+  int continent_id = 0;
+  std::string continent_name;
+  std::optional<math::Rect> map_rect;
+  std::optional<math::Rect> continent_rect;
+};
 
 export struct WvwObjectiveData {
   std::string id;
@@ -59,5 +76,6 @@ export void LoadWvwObjectives();
 export void UpdateWvwStatus();
 export std::vector<WvwObjectiveData> ParseWvwObjectives(
     const std::string& json_data);
+export WvwMapData ParseWvwMapData(const std::string& json_data);
 export bool wvw_can_be_rendered = false;
 export std::unordered_map<std::string, POI> wvw_pois;

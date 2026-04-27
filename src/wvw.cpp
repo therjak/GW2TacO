@@ -212,6 +212,68 @@ std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
   return result;
 }
 
+WvwMapData ParseWvwMapData(const std::string& json_data) {
+  WvwMapData data;
+  jsonxx::Object map;
+  if (!map.parse(json_data)) return data;
+
+  if (map.has<jsonxx::Number>("id"))
+    data.id = static_cast<int>(map.get<jsonxx::Number>("id"));
+  if (map.has<jsonxx::String>("name"))
+    data.name = map.get<jsonxx::String>("name");
+  if (map.has<jsonxx::Number>("min_level"))
+    data.min_level = static_cast<int>(map.get<jsonxx::Number>("min_level"));
+  if (map.has<jsonxx::Number>("max_level"))
+    data.max_level = static_cast<int>(map.get<jsonxx::Number>("max_level"));
+  if (map.has<jsonxx::Number>("default_floor"))
+    data.default_floor = static_cast<int>(map.get<jsonxx::Number>("default_floor"));
+  if (map.has<jsonxx::String>("type"))
+    data.type = map.get<jsonxx::String>("type");
+
+  if (map.has<jsonxx::Array>("floors")) {
+    for (auto& v : map.get<jsonxx::Array>("floors").values()) {
+      if (v->is<jsonxx::Number>())
+        data.floors.push_back(static_cast<int>(v->get<jsonxx::Number>()));
+    }
+  }
+
+  if (map.has<jsonxx::Number>("region_id"))
+    data.region_id = static_cast<int>(map.get<jsonxx::Number>("region_id"));
+  if (map.has<jsonxx::String>("region_name"))
+    data.region_name = map.get<jsonxx::String>("region_name");
+  if (map.has<jsonxx::Number>("continent_id"))
+    data.continent_id = static_cast<int>(map.get<jsonxx::Number>("continent_id"));
+  if (map.has<jsonxx::String>("continent_name"))
+    data.continent_name = map.get<jsonxx::String>("continent_name");
+
+  auto parse_rect = [](const jsonxx::Array& arr) -> std::optional<math::Rect> {
+    if (arr.values().size() != 2) return std::nullopt;
+    int rect_values[4];
+    int rect_cnt = 0;
+    for (int x = 0; x < 2; x++) {
+      if (!arr.values()[x]->is<jsonxx::Array>()) return std::nullopt;
+      auto coords = arr.values()[x]->get<jsonxx::Array>().values();
+      if (coords.size() != 2) return std::nullopt;
+      for (int y = 0; y < 2; y++) {
+        if (!coords[y]->is<jsonxx::Number>()) return std::nullopt;
+        rect_values[rect_cnt++] =
+            static_cast<int>(coords[y]->get<jsonxx::Number>());
+      }
+    }
+    return math::Rect(rect_values[0], rect_values[1], rect_values[2],
+                      rect_values[3]);
+  };
+
+  if (map.has<jsonxx::Array>("map_rect")) {
+    data.map_rect = parse_rect(map.get<jsonxx::Array>("map_rect"));
+  }
+  if (map.has<jsonxx::Array>("continent_rect")) {
+    data.continent_rect = parse_rect(map.get<jsonxx::Array>("continent_rect"));
+  }
+
+  return data;
+}
+
 void LoadWvwObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
@@ -239,44 +301,10 @@ void LoadWvwObjectives() {
         if (wvw_continent_rects.find(map_id) == wvw_continent_rects.end()) {
           auto map_path = std::format("/v2/maps?id={:d}", map_id);
           auto wvw_map_data = FetchHTTPS("api.guildwars2.com", map_path);
+          auto map_data = ParseWvwMapData(wvw_map_data);
 
-          jsonxx::Object map;
-          map.parse(wvw_map_data);
-          if (!map.has<jsonxx::Array>("continent_rect")) continue;
-
-          auto continent_rect_array =
-              map.get<jsonxx::Array>("continent_rect").values();
-          if (continent_rect_array.size() != 2) continue;
-
-          int rect_cnt = 0;
-          int rect_values[4];
-          bool ok = true;
-
-          for (int x = 0; x < 2; x++) {
-            if (!continent_rect_array[x]->is<jsonxx::Array>()) {
-              ok = false;
-              break;
-            }
-            auto continent_rect_coords =
-                continent_rect_array[x]->get<jsonxx::Array>().values();
-            if (continent_rect_coords.size() != 2) {
-              ok = false;
-              break;
-            }
-
-            for (int y = 0; y < 2; y++) {
-              if (!continent_rect_coords[y]->is<jsonxx::Number>()) {
-                ok = false;
-                break;
-              }
-              rect_values[rect_cnt++] = static_cast<int>(
-                  continent_rect_coords[y]->get<jsonxx::Number>());
-            }
-          }
-
-          if (ok) {
-            wvw_continent_rects[map_id] = Rect(rect_values[0], rect_values[1],
-                                               rect_values[2], rect_values[3]);
+          if (map_data.continent_rect) {
+            wvw_continent_rects[map_id] = *map_data.continent_rect;
           }
         }
 
