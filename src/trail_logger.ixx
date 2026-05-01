@@ -144,3 +144,6 @@ export class GW2TrailDisplay
 export typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;
 export std::unordered_map<int, TrailSet> trails;
 export TrailSet& GetMapTrails();
+export bool disableHooks = false;
+export float globalOpacity = 1.0f;
+export float minimapOpacity = 1.0f;

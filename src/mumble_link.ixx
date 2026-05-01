@@ -134,3 +134,4 @@ export class CMumbleLink {
 
 export CMumbleLink mumbleLink("MumbleLink");
 export math::Rect GetMinimapRectangle();
+export bool frameTriggered = false;
