@@ -38,9 +38,6 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-extern float globalOpacity;
-extern float minimapOpacity;
-
 TrailSet& GetMapTrails() { return trails[mumbleLink.map_id]; }
 
 CStreamWriterFile* TrailLog = nullptr;
@@ -611,8 +608,6 @@ void GW2TrailDisplay::DeleteLastTrailSegment() {
 }
 
 void GW2TrailDisplay::DeleteTrailSegment() {}
-
-extern bool disableHooks;
 
 void GW2TrailDisplay::ExportTrail() {
   if (!edited_trail_) return;

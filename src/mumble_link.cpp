@@ -29,8 +29,6 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-bool frameTriggered = false;
-
 void ChangeUIScale(int size);
 
 float GetUIScale() {

@@ -63,8 +63,6 @@ using math::Rect;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 
-bool disableHooks = false;
-
 bool InitGUI(gui::CWBApplication* App) {
   CreateUniFontOutlined(App, "UniFontOutlined");
   CreateProFontOutlined(App, "ProFontOutlined");
@@ -869,8 +867,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
 
     if (App->DeviceOk()) {
-      extern bool frameTriggered;
-
       auto currTime = globalTimer.GetTime();
 
       if (currTime - lastSlowEventTime > 1000) {

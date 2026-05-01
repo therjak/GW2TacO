@@ -52,9 +52,6 @@ int32_t useMetricDisplay = 0;
 
 float GetUIScale();
 
-float globalOpacity = 1.0f;
-float minimapOpacity = 1.0f;
-
 namespace std {
 std::size_t hash<POIActivationDataKey>::operator()(
     const POIActivationDataKey& adk) const {
