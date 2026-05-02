@@ -579,22 +579,6 @@ void ImportMarkerPack(gui::CWBApplication* App, std::string_view zipFile);
 void FlushZipDict();
 
 uint32_t lastSlowEventTime = 0;
-int gw2WindowCount = 0;
-
-BOOL __stdcall gw2WindowCountFunc(HWND hwnd, LPARAM lParam) {
-  TCHAR name[400];
-  memset(name, 0, 400);
-  GetWindowText(hwnd, name, 199);
-  if (!strcmp(name, "Guild Wars 2")) {
-    memset(name, 0, 400);
-    GetClassName(hwnd, name, 199);
-    if (!strcmp(name, "ArenaNet_Dx_Window_Class") ||
-        !strcmp(name, "ArenaNet_Gr_Window_Class")) {
-      gw2WindowCount++;
-    }
-  }
-  return true;
-}
 
 BOOL __stdcall gw2WindowFromPIDFunction(HWND hWnd, LPARAM a2) {
   DWORD dwProcessId = 0;  // [esp+4h] [ebp-198h]
@@ -870,7 +854,6 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       if (currTime - lastSlowEventTime > 1000) {
         hideOnLoadingScreens = GetConfigValue("HideOnLoadingScreens");
         lastSlowEventTime = globalTimer.GetTime();
-        gw2WindowCount = 0;
         gw2WindowFromPid = nullptr;
         EnumWindows(gw2WindowFromPIDFunction, mumbleLink.last_gw2_process_id);
         gw2Window = gw2WindowFromPid;
