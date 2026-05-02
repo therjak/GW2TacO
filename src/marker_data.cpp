@@ -113,7 +113,8 @@ void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
     n.GetAttributeAsInteger("hasCountdown", &val);
     bits_.has_countdown_ = val != 0;
   }
-  if (_triggerRangeSaved) n.GetAttributeAsFloat("triggerRange", &trigger_range_);
+  if (_triggerRangeSaved)
+    n.GetAttributeAsFloat("triggerRange", &trigger_range_);
   if (_minSizeSaved) {
     int32_t val = 0;
     n.GetAttributeAsInteger("minSize", &val);
@@ -130,7 +131,8 @@ void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
     std::sscanf(colorStr.c_str(), "%x", &colHex);
     color_ = CColor(colHex);
   }
-  if (_trailDataSaved) trail_data_ = AddStringToSet(n.GetAttribute("trailData"));
+  if (_trailDataSaved)
+    trail_data_ = AddStringToSet(n.GetAttribute("trailData"));
   if (_animSpeedSaved) n.GetAttributeAsFloat("animSpeed", &anim_speed_);
   if (_textureSaved) texture_ = AddStringToSet(n.GetAttribute("texture"));
   if (_trailScaleSaved) n.GetAttributeAsFloat("trailScale", &trail_scale_);
@@ -213,9 +215,11 @@ void MarkerTypeData::Write(CXMLNode* n) {
     n->SetAttribute("color", std::format("{:x}", color_.argb()));
   }
   if (bits_.trail_data_saved_) n->SetAttribute("trailData", trail_data_);
-  if (bits_.anim_speed_saved_) n->SetAttributeFromFloat("animSpeed", anim_speed_);
+  if (bits_.anim_speed_saved_)
+    n->SetAttributeFromFloat("animSpeed", anim_speed_);
   if (bits_.texture_saved_) n->SetAttribute("texture", texture_);
-  if (bits_.trail_scale_saved_) n->SetAttributeFromFloat("trailScale", trail_scale_);
+  if (bits_.trail_scale_saved_)
+    n->SetAttributeFromFloat("trailScale", trail_scale_);
   if (bits_.toggle_category_saved_) {
     n->SetAttribute("toggleCategory", toggle_category_);
   }
@@ -247,5 +251,6 @@ void MarkerTypeData::Write(CXMLNode* n) {
     n->SetAttributeFromInteger("keepOnMapEdge", bits_.keep_on_map_edge_);
   }
   if (bits_.info_saved_) n->SetAttribute("info", info_);
-  if (bits_.info_range_saved_) n->SetAttributeFromFloat("infoRange", info_range_);
+  if (bits_.info_range_saved_)
+    n->SetAttributeFromFloat("infoRange", info_range_);
 }

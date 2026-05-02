@@ -5,6 +5,7 @@ module;
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "src/base/logger.h"
@@ -198,7 +199,7 @@ void CWBBox::RearrangeHorizontal() {
     }
 
     const Rect np = Rect(pos, off, pos + ChildPosition.Width(),
-                           off + ChildPosition.Height());
+                         off + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
       const CWBMessage m = GetChild(x)->BuildPositionMessage(np);
@@ -281,7 +282,7 @@ void CWBBox::RearrangeVertical() {
     }
 
     const Rect np = Rect(off, pos, off + ChildPosition.Width(),
-                           pos + ChildPosition.Height());
+                         pos + ChildPosition.Height());
 
     if (GetChild(x)->GetPosition() != np) {
       const CWBMessage m = GetChild(x)->BuildPositionMessage(np);

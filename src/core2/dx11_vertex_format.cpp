@@ -3,14 +3,14 @@
 #include <comdef.h>
 #include <d3d11.h>
 
+#include <memory>
 #include <vector>
 
 #include "src/base/logger.h"
 
 namespace renderer {
 
-DX11VertexFormat::DX11VertexFormat(DX11Device* device)
-    : VertexFormat(device) {
+DX11VertexFormat::DX11VertexFormat(DX11Device* device) : VertexFormat(device) {
   d3d_device_ = device->GetDevice();
   d3d_device_context_ = device->GetDeviceContext();
   vertex_format_handle_ = nullptr;
@@ -30,8 +30,8 @@ bool DX11VertexFormat::Apply() {
   return true;
 }
 
-bool DX11VertexFormat::Create(
-    const std::vector<VertexAttribute>& attributes, VertexShader* vertex_shader) {
+bool DX11VertexFormat::Create(const std::vector<VertexAttribute>& attributes,
+                              VertexShader* vertex_shader) {
   if (!vertex_shader) return false;
   if (!attributes.size()) return false;
   Release();

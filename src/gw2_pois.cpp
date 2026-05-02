@@ -182,7 +182,6 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
       // again. It should happen after 1 call.
       while (ToUnicodeEx(pkbdllhook->vkCode, pkbdllhook->scanCode, dbKbdState,
                          szCharBuf, 32, 0, dwhkl) < 0) {
-        ;
       }
     } else {
       // Do something with szCharBuf here since this will overwrite it...
@@ -435,7 +434,6 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
     }
 
     data.Write(std::string_view(pszOutBuffer.get(), dwSize));
-
   } while (dwSize > 0);
 
   if (hRequest) {
@@ -1066,10 +1064,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   SaveConfig();
 
   while (keyboardHookActive) {
-    ;
   }
   while (mouseHookActive) {
-    ;
   }
 
   trails.clear();

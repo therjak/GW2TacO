@@ -6,6 +6,7 @@ module;
 #include <clocale>
 #include <cstdio>
 #include <format>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
@@ -127,9 +128,9 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
       mid_down_pos_ = Point(Message.GetPosition());
     }
 
-    if (MouseCaptureItem)  // mouse messages are captured by this item, send
-                           // them directly there
-    {
+    if (MouseCaptureItem) {
+      // mouse messages are captured by this item, send
+      // them directly there
       MouseCaptureItem->MessageProc(Message);
       return;
     }
@@ -152,13 +153,11 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
 
   // handle messages aimed at the item in focus
 
-  // top to bottom version:
-  // CWBItem *fi=GetRoot();
-  // while (fi)
-  //{
-  //	if (fi->MessageProc(Message)) return;
-  //	fi=fi->ChildInFocus;
-  //}
+  // top to bottom version : CWBItem* fi = GetRoot();
+  // while (fi) {
+  //   if (fi->MessageProc(Message)) return;
+  //   fi = fi->ChildInFocus;
+  // }
 
   // bottom to top version:
   std::vector<CWBItem*> MessagePath;
@@ -336,9 +335,9 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Alt = true;
       }
 
-      Send(CWBMessage(
-          this, WBM_KEYDOWN, 0,
-          CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
+      Send(CWBMessage(this, WBM_KEYDOWN, 0,
+                      CWBMessage::keyboard{static_cast<int32_t>(wParam),
+                                           GetKeyboardState()}));
       break;
     case WM_SYSKEYUP:
     case WM_KEYUP:
@@ -359,15 +358,15 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
           break;
       }
 
-      Send(CWBMessage(
-          this, WBM_KEYUP, 0,
-          CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
+      Send(CWBMessage(this, WBM_KEYUP, 0,
+                      CWBMessage::keyboard{static_cast<int32_t>(wParam),
+                                           GetKeyboardState()}));
       break;
     case WM_SYSCHAR:
     case WM_CHAR:
-      Send(CWBMessage(
-          this, WBM_CHAR, 0,
-          CWBMessage::keyboard{int32_t(wParam), GetKeyboardState()}));
+      Send(CWBMessage(this, WBM_CHAR, 0,
+                      CWBMessage::keyboard{static_cast<int32_t>(wParam),
+                                           GetKeyboardState()}));
       break;
     default:
       break;

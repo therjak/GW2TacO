@@ -1,5 +1,6 @@
 module;
 
+#include <string>
 #include <string_view>
 
 export module taco.string_set;

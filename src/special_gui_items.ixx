@@ -2,6 +2,7 @@ module;
 #include <cassert>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 export module taco.special_gui_items;
 

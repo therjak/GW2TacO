@@ -147,7 +147,6 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
             App->GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->ImportTrail();
       }
-
     } break;
 
     case gui::WBM_CONTEXTMESSAGE:

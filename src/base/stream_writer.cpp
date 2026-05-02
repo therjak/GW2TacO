@@ -1,10 +1,12 @@
 #include "src/base/stream_writer.h"
 
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+#include <string>
+
 #include "src/base/assert.h"
 #include "src/base/logger.h"
-
-#include <cerrno>
-#include <cstring>
 
 CStreamWriter::CStreamWriter() : writerCurrentChar(0) {}
 
@@ -72,7 +74,8 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
 
   File = std::fopen(fn.c_str(), "wb");
   if (!File) {
-    Log_Err("[writer] Error opening file '{:s}': {:s}", Filename, std::strerror(errno));
+    Log_Err("[writer] Error opening file '{:s}': {:s}", Filename,
+            std::strerror(errno));
     return 0;
   }
   return 1;

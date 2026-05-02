@@ -1,7 +1,10 @@
 module;
 
 #include <algorithm>
+#include <memory>
 #include <mutex>
+#include <utility>
+#include <vector>
 
 #include "src/base/logger.h"
 #include "src/core2/core2.h"

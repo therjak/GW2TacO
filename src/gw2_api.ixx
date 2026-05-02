@@ -15,7 +15,6 @@ export module taco.gw2;
 import whiteboard;
 
 export namespace GW2 {
-
 struct KeyData {
   std::unordered_set<std::string> caps;
   std::string key_name;

@@ -6,9 +6,11 @@
 #include <format>
 #include <future>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "src/base/file_list.h"
@@ -24,6 +26,7 @@ import math;
 import taco.gw2;
 import taco.language;
 import taco.marker_data;
+import taco.marker_editor;
 import taco.mumble_link;
 import taco.overlay_application;
 import taco.overlay_config;
@@ -1491,8 +1494,6 @@ void ExportPOIActivationData() {
 
   d.SaveToFile("activationdata.xml");
 }
-
-std::string default_marker_category = "";
 
 void AddPOI() {
   if (!mumbleLink.IsValid()) {

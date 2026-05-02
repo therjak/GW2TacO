@@ -5,6 +5,8 @@
 #include <dcomp.h>
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "src/base/logger.h"
@@ -388,8 +390,8 @@ bool DX11Device::CreateDirectCompositionSwapchain(const HWND window_handle,
   }
 
   IDXGISwapChain2* swap_chain2 = nullptr;
-  if (SUCCEEDED(dxgi_swap_chain_->QueryInterface(__uuidof(IDXGISwapChain2),
-                                                 (void**)&swap_chain2))) {
+  if (SUCCEEDED(dxgi_swap_chain_->QueryInterface(
+          __uuidof(IDXGISwapChain2), reinterpret_cast<void**>(&swap_chain2)))) {
     swap_chain_retrace_object_ = swap_chain2->GetFrameLatencyWaitableObject();
     swap_chain2->Release();
   }
@@ -538,8 +540,9 @@ void DX11Device::Resize(const int32_t x_res, const int32_t y_res) {
     CloseHandle(swap_chain_retrace_object_);
 
     IDXGISwapChain2* swap_chain2 = nullptr;
-    if (SUCCEEDED(dxgi_swap_chain_->QueryInterface(__uuidof(IDXGISwapChain2),
-                                                   (void**)&swap_chain2))) {
+    if (SUCCEEDED(dxgi_swap_chain_->QueryInterface(
+            __uuidof(IDXGISwapChain2),
+            reinterpret_cast<void**>(&swap_chain2)))) {
       swap_chain_retrace_object_ = swap_chain2->GetFrameLatencyWaitableObject();
       swap_chain2->Release();
     }

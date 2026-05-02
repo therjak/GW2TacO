@@ -5,6 +5,7 @@ module;
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 export module whiteboard:box;
@@ -43,8 +44,7 @@ class CWBBox : public CWBGuiType<"box", CWBItem> {
     return r;
   }
   ~CWBBox() override;
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::Rect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
   WBBOXARRANGEMENT GetArrangement();

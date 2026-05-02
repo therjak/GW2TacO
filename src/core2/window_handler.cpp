@@ -270,7 +270,8 @@ LRESULT CALLBACK WindowHandlerWin::WndProcProxy(HWND hWnd, UINT uMsg,
     SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)wnd);
     wnd->window_handle_ = hWnd;
   } else {
-    wnd = (WindowHandlerWin*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+    wnd = reinterpret_cast<WindowHandlerWin*>(
+        GetWindowLongPtr(hWnd, GWLP_USERDATA));
   }
 
   if (wnd) {
@@ -328,13 +329,11 @@ LRESULT WindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
           minimized_ = false;
           HandleResize();
         }
-
         // If we're neither maximized nor minimized, the window size
         // is changing by the user dragging the window edges.  In this
         // case, we don't reset the device yet -- we wait until the
         // user stops dragging, and a WM_EXITSIZEMOVE message comes.
       }
-
     } break;
     case WM_SYSKEYDOWN: {
       Log_Err("[wndproc] WM_SYSKEYDOWN {:d} {:d}", wParam, lParam);

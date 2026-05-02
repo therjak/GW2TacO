@@ -17,7 +17,7 @@ class CColor {
   constexpr CColor() = default;
   constexpr CColor(const uint8_t _r, const uint8_t _g, const uint8_t _b,
                    const uint8_t _a)
-      : b(_b), g(_g), r(_r), a(_a){};
+      : b(_b), g(_g), r(_r), a(_a) {}
   // uint32 order is ARGB
   constexpr explicit CColor(uint32_t argb)
       : b(static_cast<uint8_t>(argb >> 0)),

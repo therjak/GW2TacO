@@ -1,10 +1,12 @@
 #pragma once
 #include <cstdint>
+#include <cstdio>
 #include <ctime>
 #include <format>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 enum class LOGVERBOSITY : uint16_t {

@@ -1,6 +1,7 @@
 module;
 #include <algorithm>
 #include <cmath>
+#include <string>
 
 #include "src/gw2_tactical.h"
 
@@ -26,7 +27,8 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
 
   Matrix4x4 cam;
   cam.SetLookAtLH(mumbleLink.cam_position,
-                  mumbleLink.cam_position + mumbleLink.cam_dir, Vector3(0, 1, 0));
+                  mumbleLink.cam_position + mumbleLink.cam_dir,
+                  Vector3(0, 1, 0));
   Matrix4x4 persp;
   persp.SetPerspectiveFovLH(
       mumbleLink.fov,
@@ -36,7 +38,7 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
   Vector4 char_pos = Vector4(mumbleLink.averaged_char_position.x,
                              mumbleLink.averaged_char_position.y,
                              mumbleLink.averaged_char_position.z, 1.0f);
-  ;
+
   float r_world = GameToWorldCoords(40);
 
   Vector4 cam_space_char = char_pos;
@@ -52,8 +54,9 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::CWBDrawAPI* api) {
   pos.y = 0;
   bool zoomed_in = pos.Length() < 0.13;
 
-  Vector4 cam_pos = Vector4(mumbleLink.cam_position.x, mumbleLink.cam_position.y,
-                            mumbleLink.cam_position.z, 1.0f);
+  Vector4 cam_pos =
+      Vector4(mumbleLink.cam_position.x, mumbleLink.cam_position.y,
+              mumbleLink.cam_position.z, 1.0f);
   Vector2 cam_dir =
       Vector2(cam_space_char.x - cam_pos.x, cam_space_char.z - cam_pos.z)
           .Normalized();

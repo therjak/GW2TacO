@@ -5,10 +5,12 @@
 #include <debugapi.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <ctime>
 #include <format>
 #include <string>
 #include <string_view>
+#include <utility>
 
 CLogger Logger;
 

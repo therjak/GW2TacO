@@ -7,6 +7,7 @@ module;
 #include <string>
 #include <string_view>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "src/base/lock_free_queue.h"

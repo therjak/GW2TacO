@@ -9,6 +9,7 @@ WSADATA wsaData;
 #include <ws2tcpip.h>  // This is where getaddrinfo is declared
 
 #include <memory>
+#include <string>
 #include <vector>
 #pragma comment(lib, "Ws2_32.lib")
 

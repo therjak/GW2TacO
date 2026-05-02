@@ -7,6 +7,8 @@ module;
 #include <format>
 #include <future>
 #include <mutex>
+#include <string>
+#include <vector>
 
 #include "src/base/logger.h"
 #include "src/build_count.h"

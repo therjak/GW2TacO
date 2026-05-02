@@ -2,6 +2,7 @@ module;
 
 #include <array>
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "src/base/color.h"

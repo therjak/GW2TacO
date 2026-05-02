@@ -1,5 +1,6 @@
 module;
 #include <algorithm>
+#include <cstdio>
 #include <ctime>
 #include <format>
 #include <future>
@@ -7,6 +8,7 @@ module;
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "src/base/color.h"
@@ -49,8 +51,8 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
 
     if (key && key->Valid() &&
         (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
-      if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
-                                    std::future_status::ready) {
+      if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(
+                                      0)) == std::future_status::ready) {
         last_fetch_time_ = GetTime();
         fetch_task_ = std::async(std::launch::async, [this, key]() {
           const auto& bosses = key->QuerySet("/v2/account/worldbosses");
@@ -190,7 +192,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
       while (currtime < 72 * 60) {
         int32_t p1 =
             padding_left + static_cast<int32_t>((cl.Width() - padding_left) *
-                                               currtime / time_window);
+                                                currtime / time_window);
         int32_t p2 =
             padding_left +
             static_cast<int32_t>((cl.Width() - padding_left) *
@@ -211,7 +213,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
 
           {
             int32_t time_left = currtime * 60 - ptm.tm_sec - time_window * 30 +
-                               map.events[currevent].length * 60;
+                                map.events[currevent].length * 60;
             if (time_left >= 0 &&
                 time_left <= map.events[currevent].length * 60) {
               text = !text.empty() ? std::format("{:s} {:d}:{:02d}", text,
@@ -224,8 +226,8 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
           if (ClientToScreen(r.GetIntersection(cl))
                   .Contains(GetApplication()->GetMousePos())) {
             mouse_tool_tip = !map.events[currevent].name.empty()
-                               ? std::format("{:s} - {:s}", map.name, text)
-                               : text;
+                                 ? std::format("{:s} - {:s}", map.name, text)
+                                 : text;
           }
 
           Point p = f->GetCenter(text, r, text_transform);
@@ -392,7 +394,8 @@ void GW2MapTimer::SetLayout(const CXMLNode& node) {
         }
 
         if (event_node.HasAttribute("WorldBossAPIID")) {
-          event.world_boss_id = event_node.GetAttributeAsString("WorldBossAPIID");
+          event.world_boss_id =
+              event_node.GetAttributeAsString("WorldBossAPIID");
         }
 
         if (event_node.HasAttribute("WayPoint")) {

@@ -1,4 +1,7 @@
 module;
+
+#include <utility>
+
 #include "src/base/logger.h"
 #include "src/core2/core2.h"
 
@@ -8,7 +11,8 @@ import whiteboard;
 
 OverlayApplication::OverlayApplication() = default;
 
-bool OverlayApplication::Initialize(const renderer::WindowParameters& window_params) {
+bool OverlayApplication::Initialize(
+    const renderer::WindowParameters& window_params) {
   if (!CWBApplication::Initialize(window_params)) return false;
 
   auto gui_blend_state = device_->CreateBlendState();

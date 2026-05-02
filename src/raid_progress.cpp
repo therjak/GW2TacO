@@ -3,7 +3,9 @@ module;
 #include <cctype>
 #include <format>
 #include <future>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
 #include "src/gw2_tactical.h"
 

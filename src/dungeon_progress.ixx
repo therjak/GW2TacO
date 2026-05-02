@@ -2,10 +2,12 @@ module;
 #include <atomic>
 #include <cassert>
 #include <future>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "src/base/lock_free_queue.h"
@@ -21,7 +23,8 @@ export class DungeonPath {
   DungeonPath(const std::string_view& name, const std::string_view& type,
               int32_t id)
       : name_(name), type_(type), id_(id) {}
-  DungeonPath(const DungeonPath& p) : name_(p.name_), type_(p.type_), id_(p.id_) {}
+  DungeonPath(const DungeonPath& p)
+      : name_(p.name_), type_(p.type_), id_(p.id_) {}
 
   const std::string_view name_;
   const std::string_view type_;

@@ -2,10 +2,12 @@ module;
 #include <atomic>
 #include <cassert>
 #include <future>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "src/base/color.h"

@@ -1,6 +1,7 @@
 module;
 #include <algorithm>
 #include <future>
+#include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_set>

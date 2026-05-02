@@ -1,9 +1,11 @@
 module;
 
 #include <atomic>
+#include <cstdio>
 #include <ctime>
 #include <format>
 #include <future>
+#include <string>
 #include <string_view>
 #include <thread>
 #include <unordered_map>
@@ -226,7 +228,8 @@ WvwMapData ParseWvwMapData(const std::string& json_data) {
   if (map.has<jsonxx::Number>("max_level"))
     data.max_level = static_cast<int>(map.get<jsonxx::Number>("max_level"));
   if (map.has<jsonxx::Number>("default_floor"))
-    data.default_floor = static_cast<int>(map.get<jsonxx::Number>("default_floor"));
+    data.default_floor =
+        static_cast<int>(map.get<jsonxx::Number>("default_floor"));
   if (map.has<jsonxx::String>("type"))
     data.type = map.get<jsonxx::String>("type");
 
@@ -242,7 +245,8 @@ WvwMapData ParseWvwMapData(const std::string& json_data) {
   if (map.has<jsonxx::String>("region_name"))
     data.region_name = map.get<jsonxx::String>("region_name");
   if (map.has<jsonxx::Number>("continent_id"))
-    data.continent_id = static_cast<int>(map.get<jsonxx::Number>("continent_id"));
+    data.continent_id =
+        static_cast<int>(map.get<jsonxx::Number>("continent_id"));
   if (map.has<jsonxx::String>("continent_name"))
     data.continent_name = map.get<jsonxx::String>("continent_name");
 
