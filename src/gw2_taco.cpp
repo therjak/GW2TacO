@@ -1710,28 +1710,6 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
     ypos += font->GetLineHeight();
   }
 
-  extern int gw2WindowCount;
-  if (gw2WindowCount > 1) {
-    auto font = App->GetFont("UniFontOutlined");
-    if (!font) return;
-
-    auto infoline = DICT("multiclientwarning");
-    Point spos2 = font->GetTextPosition(
-        infoline, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_UPPERCASE);
-
-    /*
-        for (int x = 0; x < 3; x++)
-          for (int y = 0; y < 3; y++)
-            font->Write(API, infoline, Point(spos2.x + x - 1, ypos + y - 1),
-                        CColor{0xff000000}, WBTEXTTRANSFORM::WBTT_UPPERCASE,
-       true);
-    */
-    font->Write(API, infoline, Point(spos2.x, ypos), CColor{0xffff4040},
-                gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
-    ypos += font->GetLineHeight();
-  }
-
   if (rebind_mode_) {
     API->DrawRect(GetClientRect(), CColor{0x60000000});
     gui::CWBFont* f = GetFont(GetState());
