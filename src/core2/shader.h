@@ -12,9 +12,7 @@ class Shader : public Resource {
   friend class Device;
 
  public:
-  explicit Shader(Device* device) : Resource(device) {
-    binary_length_ = 0;
-  };
+  explicit Shader(Device* device) : Resource(device) { binary_length_ = 0; }
   ~Shader() override;
 
   virtual bool Create(void* binary, int32_t length) = 0;
@@ -57,40 +55,40 @@ class Shader : public Resource {
 
 class PixelShader : public Shader {
  public:
-  explicit PixelShader(Device* device) : Shader(device){};
+  explicit PixelShader(Device* device) : Shader(device) {}
   ~PixelShader() override;
   void* GetHandle() override = 0;
 };
 
 class GeometryShader : public Shader {
  public:
-  explicit GeometryShader(Device* device) : Shader(device){};
+  explicit GeometryShader(Device* device) : Shader(device) {}
   ~GeometryShader() override;
 };
 
 class VertexShader : public Shader {
  public:
-  explicit VertexShader(Device* device) : Shader(device){};
+  explicit VertexShader(Device* device) : Shader(device) {}
   ~VertexShader() override;
 };
 
 class HullShader : public Shader {
  public:
-  explicit HullShader(Device* device) : Shader(device){};
+  explicit HullShader(Device* device) : Shader(device) {}
   ~HullShader() override;
   void* GetHandle() override = 0;
 };
 
 class DomainShader : public Shader {
  public:
-  explicit DomainShader(Device* device) : Shader(device){};
+  explicit DomainShader(Device* device) : Shader(device) {}
   ~DomainShader() override;
   void* GetHandle() override = 0;
 };
 
 class ComputeShader : public Shader {
  public:
-  explicit ComputeShader(Device* device) : Shader(device){};
+  explicit ComputeShader(Device* device) : Shader(device) {}
   ~ComputeShader() override;
   void* GetHandle() override = 0;
 };

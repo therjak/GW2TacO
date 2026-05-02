@@ -1,6 +1,11 @@
 module;
 #include <algorithm>
+#include <cstdio>
+#include <memory>
 #include <mutex>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "src/base/color.h"
 #include "src/base/logger.h"
@@ -361,12 +366,11 @@ bool CWBItem::MessageProc(const CWBMessage& Message) {
       break;
 
       // case WBM_FOCUSLOST:
-      //	if (Message.GetTarget() == Guid)
-      //	{
-      //		if (Parent) Parent->ChildInFocus = NULL;
-      //		return true;
-      //	}
-      //	return false;
+      //   if (Message.GetTarget() == Guid) {
+      //     if (Parent) Parent->ChildInFocus = NULL;
+      //     return true;
+      //   }
+      //   return false;
 
     case WBM_HIDE:
       if (Message.GetTarget() == Guid) {

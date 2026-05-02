@@ -8,6 +8,9 @@ module;
 #include <cstring>
 #include <memory>
 #include <regex>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "src/base/color.h"
 #include "src/base/logger.h"
@@ -104,8 +107,8 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
 
     const Point CPos = Pos;
 
-    if (Char == '\n' || Char == '\t')  // special characters
-    {
+    // special characters
+    if (Char == '\n' || Char == '\t') {
       // line feed
       if (Char == '\n' && !(Flags & WB_TEXTBOX_SINGLELINE)) {
         Pos.x = 0;
@@ -574,11 +577,11 @@ int32_t CWBTextBox::GetCursorPosMouse() {
 
       if ((Pos.y + Offset.y <= mp.y &&
            mp.y < Pos.y + Font->GetLineHeight() + Offset.y) ||
-          Flags & WB_TEXTBOX_SINGLELINE)  // we're in the correct line
-      {
+          Flags & WB_TEXTBOX_SINGLELINE) {
+        // we're in the correct line
         if (mp.x < Pos.x + Offset.x) return x;  // for line starts
-        if (Pos.x + Offset.x <= mp.x &&
-            mp.x < Pos.x + Width + Offset.x) {  // we're in the correct column
+        if (Pos.x + Offset.x <= mp.x && mp.x < Pos.x + Width + Offset.x) {
+          // we're in the correct column
           return x;
         }
       }

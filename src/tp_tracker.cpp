@@ -2,7 +2,9 @@ module;
 #include <algorithm>
 #include <format>
 #include <future>
+#include <memory>
 #include <mutex>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -116,14 +118,16 @@ std::vector<CommercePrice> ParseCommercePrices(const std::string& items_json) {
         price.buys.quantity = int32_t(buys_.get<jsonxx::Number>("quantity"));
       }
       if (buys_.has<jsonxx::Number>("unit_price")) {
-        price.buys.unit_price = int32_t(buys_.get<jsonxx::Number>("unit_price"));
+        price.buys.unit_price =
+            int32_t(buys_.get<jsonxx::Number>("unit_price"));
       }
 
       if (sells_.has<jsonxx::Number>("quantity")) {
         price.sells.quantity = int32_t(sells_.get<jsonxx::Number>("quantity"));
       }
       if (sells_.has<jsonxx::Number>("unit_price")) {
-        price.sells.unit_price = int32_t(sells_.get<jsonxx::Number>("unit_price"));
+        price.sells.unit_price =
+            int32_t(sells_.get<jsonxx::Number>("unit_price"));
       }
 
       result.push_back(price);
@@ -301,7 +305,8 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
           std::vector<CommercePrice> prices = ParseCommercePrices(items);
           for (const auto& price : prices) {
             if (!HasGW2ItemData(price.id)) continue;
-            if (price.buys.unit_price == 0 && price.sells.unit_price == 0) continue;
+            if (price.buys.unit_price == 0 && price.sells.unit_price == 0)
+              continue;
 
             GW2ItemData itemData = GetGW2ItemData(price.id);
             itemData.buy_price = price.buys.unit_price;

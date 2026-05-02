@@ -51,9 +51,8 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
                        reinterpret_cast<LPVOID*>(&gpPicture));
 
   if (res != S_OK) {
-    if (res != 0x800A01E1)  // this is given when a png is loaded through
-                            // oleloadpicture
-    {
+    if (res != 0x800A01E1) {
+      // this is given when a png is loaded through oleloadpicture
       _com_error err(res);
       Log_Err("[base] OleLoadPicture failed ({:s})", err.ErrorMessage());
     }

@@ -1,6 +1,7 @@
 module;
 #include <cassert>
 #include <memory>
+#include <utility>
 
 #include "src/gw2_tactical.h"
 

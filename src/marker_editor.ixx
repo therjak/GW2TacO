@@ -1,6 +1,8 @@
 module;
 #include <cassert>
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "src/gw2_tactical.h"
@@ -42,3 +44,5 @@ export class GW2MarkerEditor
   std::vector<GW2TacticalCategory*> category_list_;
   bool change_default_ = false;
 };
+
+export std::string default_marker_category = "";

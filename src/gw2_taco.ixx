@@ -1,9 +1,11 @@
 module;
 #include <cassert>
 #include <future>
+#include <memory>
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "src/gw2_tactical.h"

@@ -4,6 +4,7 @@ module;
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 export module whiteboard:button;
 
@@ -32,8 +33,7 @@ class CWBButton : public CWBGuiType<"button", CWBItem> {
   [[nodiscard]] std::string GetText() const;
   void SetText(std::string_view val);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::Rect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
 
   math::Size GetContentSize() override;
 

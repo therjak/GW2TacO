@@ -1,3 +1,5 @@
+#include "src/core2/dx11_enums.h"
+
 #include "src/core2/core2_config.h"
 #include "src/core2/enums.h"
 

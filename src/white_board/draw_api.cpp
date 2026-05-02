@@ -1,6 +1,8 @@
 module;
 
+#include <algorithm>
 #include <array>
+#include <memory>
 #include <vector>
 
 #include "src/base/color.h"
@@ -440,8 +442,8 @@ bool CWBDrawAPI::Initialize(CWBApplication* Application, renderer::Device* Dev,
       "Texture2D GuiTexture:register(t0);"
       "SamplerState Sampler:register(s0);"
       "cbuffer resdata : register(b0)"
-      "{							   "
-      "		float4 resolution;	   "
+      "{"
+      "    float4 resolution;"
       "}"
       "struct VSIN { float4 Position : POSITIONT; float2 UV : TEXCOORD0; "
       "float4 Color : COLOR0; };"

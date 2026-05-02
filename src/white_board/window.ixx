@@ -8,6 +8,7 @@ module;
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 export module whiteboard:window;
@@ -68,8 +69,7 @@ class CWBWindow : public CWBGuiType<"window", CWBItem> {
   void SetTitle(std::string_view val) { WindowTitle = val; }
 
   uint32_t GetDragMode();
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          math::Rect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
 
   math::Rect GetElementPos(WBWINDOWELEMENT Element);
   uint32_t GetBorderSelectionArea(const math::Point& mousepos);

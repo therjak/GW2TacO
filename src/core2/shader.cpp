@@ -37,4 +37,4 @@ DomainShader::~DomainShader() = default;
 
 ComputeShader::~ComputeShader() = default;
 
-} // namespace renderer
+}  // namespace renderer

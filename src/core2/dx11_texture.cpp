@@ -6,6 +6,7 @@
 #include <d3d11.h>
 
 #include <algorithm>
+#include <memory>
 #include <string_view>
 
 #include "src/base/assert.h"
@@ -16,8 +17,7 @@
 
 namespace renderer {
 
-DX11Texture2D::DX11Texture2D(DX11Device* device)
-    : Texture2D(device) {
+DX11Texture2D::DX11Texture2D(DX11Device* device) : Texture2D(device) {
   d3d_device_ = device->GetDevice();
   d3d_device_context_ = device->GetDeviceContext();
   texture_handle_ = nullptr;
@@ -61,9 +61,8 @@ bool DX11Texture2D::SetToSampler(const Sampler sampler) {
 }
 
 bool DX11Texture2D::Create(const int32_t x_res, const int32_t y_res,
-                                const uint8_t* data, const char bytes_per_pixel,
-                                const Format format,
-                                const bool render_target) {
+                           const uint8_t* data, const char bytes_per_pixel,
+                           const Format format, const bool render_target) {
   if (x_res <= 0 || y_res <= 0 || format == Format::kUnknown) return false;
   Release();
 
@@ -85,8 +84,8 @@ bool DX11Texture2D::Create(const int32_t x_res, const int32_t y_res,
   sub_data.SysMemPitch = x_res * bytes_per_pixel;
   sub_data.SysMemSlicePitch = 0;
 
-  HRESULT result = d3d_device_->CreateTexture2D(&tex, data ? &sub_data : nullptr,
-                                                &texture_handle_);
+  HRESULT result = d3d_device_->CreateTexture2D(
+      &tex, data ? &sub_data : nullptr, &texture_handle_);
   if (result != S_OK) {
     _com_error error(result);
     Log_Err("[core] CreateTexture2D failed ({:s})", error.ErrorMessage());
@@ -191,8 +190,7 @@ void DX11Texture2D::OnDeviceReset() {
 }
 
 bool DX11Texture2D::Update(const uint8_t* data, const int32_t x_res,
-                                const int32_t y_res,
-                                const char bytes_per_pixel) {
+                           const int32_t y_res, const char bytes_per_pixel) {
   if (!texture_handle_) return false;
   if (!view_) return false;
 
@@ -213,9 +211,8 @@ uint16_t degammaint16(uint16_t f) {
   return static_cast<uint16_t>(degammafloat(tf) * 65535);
 }
 
-void DX11Texture2D::ExportToImage(std::string_view filename,
-                                       bool clear_alpha,
-                                       ExportImageFormat format, bool degamma) {
+void DX11Texture2D::ExportToImage(std::string_view filename, bool clear_alpha,
+                                  ExportImageFormat format, bool degamma) {
   if (!texture_handle_) return;
 
   CStreamWriterMemory writer;
@@ -355,10 +352,12 @@ void DX11Texture2D::ExportToImage(std::string_view filename,
 
   switch (format) {
     case ExportImageFormat::kPng:
-      ExportPNG(image.get(), head.dwWidth, head.dwHeight, clear_alpha, filename);
+      ExportPNG(image.get(), head.dwWidth, head.dwHeight, clear_alpha,
+                filename);
       break;
     case ExportImageFormat::kTga:
-      ExportTga(image.get(), head.dwWidth, head.dwHeight, clear_alpha, filename);
+      ExportTga(image.get(), head.dwWidth, head.dwHeight, clear_alpha,
+                filename);
       break;
     case ExportImageFormat::kBmp:
       ExportBmp(image.get(), head.dwWidth, head.dwHeight, filename);
@@ -368,9 +367,8 @@ void DX11Texture2D::ExportToImage(std::string_view filename,
   }
 }
 
-bool DX11Texture2D::CreateDepthBuffer(const int32_t x_res,
-                                           const int32_t y_res,
-                                           const int32_t ms_count) {
+bool DX11Texture2D::CreateDepthBuffer(const int32_t x_res, const int32_t y_res,
+                                      const int32_t ms_count) {
   if (x_res <= 0 || y_res <= 0) return false;
   Release();
 
@@ -382,7 +380,8 @@ bool DX11Texture2D::CreateDepthBuffer(const int32_t x_res,
   tex.MipLevels = 1;
   tex.Format = DXGI_FORMAT_R24G8_TYPELESS;
   tex.SampleDesc.Count = ms_count;
-  tex.SampleDesc.Quality = ms_count > 1 ? D3D10_STANDARD_MULTISAMPLE_PATTERN : 0;
+  tex.SampleDesc.Quality =
+      ms_count > 1 ? D3D10_STANDARD_MULTISAMPLE_PATTERN : 0;
   tex.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
   HRESULT result =
@@ -434,11 +433,9 @@ bool DX11Texture2D::CreateDepthBuffer(const int32_t x_res,
   return true;
 }
 
-DX11Texture3D::DX11Texture3D(DX11Device* device)
-    : Texture3D(device){};
+DX11Texture3D::DX11Texture3D(DX11Device* device) : Texture3D(device) {}
 
-DX11TextureCube::DX11TextureCube(DX11Device* device)
-    : TextureCube(device){};
+DX11TextureCube::DX11TextureCube(DX11Device* device) : TextureCube(device) {}
 
 static DXGI_FORMAT EnsureNotTypeless(DXGI_FORMAT fmt) {
   // Assumes UNORM or FLOAT; doesn't use UINT or SINT
@@ -1376,8 +1373,8 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* d3d_device_context,
   }
 
   D3D11_MAPPED_SUBRESOURCE mapped_resource;
-  result = d3d_device_context->Map(staging, 0, D3D11_MAP_READ, 0,
-                                   &mapped_resource);
+  result =
+      d3d_device_context->Map(staging, 0, D3D11_MAP_READ, 0, &mapped_resource);
   if (FAILED(result)) {
     if (staging) staging->Release();
     return result;
@@ -1408,7 +1405,8 @@ HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* d3d_device_context,
     if (staging) staging->Release();
     return E_FAIL;
   }
-  if (!writer.Write(uint8_view(pixels.get(), static_cast<DWORD>(slice_pitch)))) {
+  if (!writer.Write(
+          uint8_view(pixels.get(), static_cast<DWORD>(slice_pitch)))) {
     if (staging) staging->Release();
     return E_FAIL;
   }

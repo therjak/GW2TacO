@@ -8,6 +8,7 @@ module;
 #include <mutex>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "src/base/logger.h"
@@ -504,9 +505,9 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
       "Texture2D GuiTexture:register(t0);"
       "SamplerState Sampler:register(s0);"
       "cbuffer resdata : register(b0)"
-      "{							   "
-      "		float4x4 camera;	   "
-      "		float4x4 persp;   "
+      "{"
+      "		float4x4 camera;"
+      "		float4x4 persp;"
       "   float4   charpos;"
       "   float4   data;"
       "   float4   color;"

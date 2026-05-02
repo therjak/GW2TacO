@@ -2,6 +2,8 @@
 
 #include <windows.h>
 
+#include <cstdio>
+#include <string>
 #include <utility>
 
 bool exists(std::string_view fname) {

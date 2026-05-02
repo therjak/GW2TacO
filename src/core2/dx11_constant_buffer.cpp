@@ -39,7 +39,8 @@ void DX11ConstantBuffer::Upload() {
     if (d3d_device_->CreateBuffer(&buffer_desc, nullptr, &buffer_) != S_OK) {
       buffer_ = nullptr;
       allocated_buffer_size_ = 0;
-      Log_Err("[core] Error creating constant buffer of size {:d}", data_length_);
+      Log_Err("[core] Error creating constant buffer of size {:d}",
+              data_length_);
     } else {
       allocated_buffer_size_ = data_length_;
     }

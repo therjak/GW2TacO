@@ -5,6 +5,7 @@ module;
 #include <memory>
 #include <mutex>
 #include <string>
+#include <utility>
 #include <vector>
 
 export module taco.tp_tracker;

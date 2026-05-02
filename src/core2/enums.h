@@ -97,10 +97,8 @@ enum class BlendOp : uint8_t {
 };
 using Blendo = EnumNamePair<BlendOp>;
 constexpr std::array BlendOpNames = {
-    Blendo{BlendOp::kAdd, ("Add")},
-    Blendo{BlendOp::kSub, ("Sub")},
-    Blendo{BlendOp::kRevSub, ("RevSub")},
-    Blendo{BlendOp::kMin, ("Min")},
+    Blendo{BlendOp::kAdd, ("Add")}, Blendo{BlendOp::kSub, ("Sub")},
+    Blendo{BlendOp::kRevSub, ("RevSub")}, Blendo{BlendOp::kMin, ("Min")},
     Blendo{BlendOp::kMax, ("Max")}};
 
 enum class CullMode : uint8_t {
@@ -119,10 +117,9 @@ enum class FillMode : uint8_t {
   kPoints = 2,
 };
 using Fillmod = EnumNamePair<FillMode>;
-constexpr std::array FillModeNames = {
-    Fillmod{FillMode::kSolid, ("Solid")},
-    Fillmod{FillMode::kEdges, ("Edges")},
-    Fillmod{FillMode::kPoints, ("Points")}};
+constexpr std::array FillModeNames = {Fillmod{FillMode::kSolid, ("Solid")},
+                                      Fillmod{FillMode::kEdges, ("Edges")},
+                                      Fillmod{FillMode::kPoints, ("Points")}};
 
 enum class TextureAddressMode : uint8_t {
   kWrap = 0,
@@ -233,43 +230,39 @@ enum class Filter : uint16_t {
   kComparisonAnisotropic = 17,
 };
 constexpr std::array FilterNames = {
-    EnumNamePair<Filter>{Filter::kMinMagMipPoint,
-                             ("Min_Mag_Mip_Point")},
+    EnumNamePair<Filter>{Filter::kMinMagMipPoint, ("Min_Mag_Mip_Point")},
     EnumNamePair<Filter>{Filter::kMinMagPointMipLinear,
-                             ("Min_Mag_Point_Mip_Linear")},
+                         ("Min_Mag_Point_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kMinPointMagLinearMipPoint,
-                             ("Min_Point_Mag_Linear_Mip_Point")},
+                         ("Min_Point_Mag_Linear_Mip_Point")},
     EnumNamePair<Filter>{Filter::kMinPointMagMipLinear,
-                             ("Min_Point_Mag_Mip_Linear")},
+                         ("Min_Point_Mag_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kMinLinearMagMipPoint,
-                             ("Min_Linear_Mag_Mip_Point")},
+                         ("Min_Linear_Mag_Mip_Point")},
     EnumNamePair<Filter>{Filter::kMinLinearMagPointMipLinear,
-                             ("Min_Linear_Mag_Point_Mip_Linear")},
+                         ("Min_Linear_Mag_Point_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kMinMagLinearMipPoint,
-                             ("Min_Mag_Linear_Mip_Point")},
-    EnumNamePair<Filter>{Filter::kMinMagMipLinear,
-                             ("Min_Mag_Mip_Linear")},
+                         ("Min_Mag_Linear_Mip_Point")},
+    EnumNamePair<Filter>{Filter::kMinMagMipLinear, ("Min_Mag_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kAnisotropic, ("Anisotropic")},
     EnumNamePair<Filter>{Filter::kComparisonMinMagMipPoint,
-                             ("Comparison_Min_Mag_Mip_Point")},
+                         ("Comparison_Min_Mag_Mip_Point")},
     EnumNamePair<Filter>{Filter::kComparisonMinMagPointMipLinear,
-                             ("Comparison_Min_Mag_Point_Mip_Linear")},
-    EnumNamePair<Filter>{
-        Filter::kComparisonMinPointMagLinearMipPoint,
-        ("Comparison_Min_Point_Mag_Linear_Mip_Point")},
+                         ("Comparison_Min_Mag_Point_Mip_Linear")},
+    EnumNamePair<Filter>{Filter::kComparisonMinPointMagLinearMipPoint,
+                         ("Comparison_Min_Point_Mag_Linear_Mip_Point")},
     EnumNamePair<Filter>{Filter::kComparisonMinPointMagMipLinear,
-                             ("Comparison_Min_Point_Mag_Mip_Linear")},
+                         ("Comparison_Min_Point_Mag_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kComparisonMinLinearMagMipPoint,
-                             ("Comparison_Min_Linear_Mag_Mip_Point")},
-    EnumNamePair<Filter>{
-        Filter::kComparisonMinLinearMagPointMipLinear,
-        ("Comparison_Min_Linear_Mag_Point_Mip_Linear")},
+                         ("Comparison_Min_Linear_Mag_Mip_Point")},
+    EnumNamePair<Filter>{Filter::kComparisonMinLinearMagPointMipLinear,
+                         ("Comparison_Min_Linear_Mag_Point_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kComparisonMinMagLinearMipPoint,
-                             ("Comparison_Min_Mag_Linear_Mip_Point")},
+                         ("Comparison_Min_Mag_Linear_Mip_Point")},
     EnumNamePair<Filter>{Filter::kComparisonMinMagMipLinear,
-                             ("Comparison_Min_Mag_Mip_Linear")},
+                         ("Comparison_Min_Mag_Mip_Linear")},
     EnumNamePair<Filter>{Filter::kComparisonAnisotropic,
-                             ("Comparison_Anisotropic")}};
+                         ("Comparison_Anisotropic")}};
 
 constexpr int32_t kLockReadonly = 0x00000010L;
 constexpr int32_t kLockDiscard = 0x00002000L;

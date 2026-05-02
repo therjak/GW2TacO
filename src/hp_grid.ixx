@@ -2,6 +2,7 @@ module;
 
 #include <cassert>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "src/base/color.h"

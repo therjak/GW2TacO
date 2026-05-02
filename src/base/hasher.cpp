@@ -1,6 +1,7 @@
 #include "src/base/hasher.h"
 
 #include <format>
+#include <string>
 
 namespace std {
 std::size_t hash<GUID>::operator()(const GUID& guid) const {

@@ -18,22 +18,8 @@ void CTimer::Update() {
   int32_t CurrentTime = timeGetTime();
   double ElapsedTime = CurrentTime - LastUpdateTime;
 
-  if (!Paused) {
-    TimeExtension += ElapsedTime * (1 - SpeedModifier);
-  } else {
-    TimeExtension += ElapsedTime;
-  }
-
-  Time = static_cast<int32_t>((CurrentTime - StartTime) - TimeExtension);
+  Time = static_cast<int32_t>((CurrentTime - StartTime));
   LastUpdateTime = CurrentTime;
 }
 
-void CTimer::SetSpeed(float Speed) { SpeedModifier = std::max(0.f, Speed); }
-
-void CTimer::Pause(bool Pause) { Paused = Pause; }
-
-unsigned long CTimer::GetTime() { return Time; }
-
-bool CTimer::isPaused() { return Paused; }
-
-void CTimer::SkipTime(unsigned long Time) { StartTime -= Time; }
+int32_t CTimer::GetTime() { return Time; }

@@ -3,6 +3,7 @@ module;
 #include <cassert>
 #include <memory>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "src/base/color.h"

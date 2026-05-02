@@ -1,6 +1,7 @@
 module;
 #include <algorithm>
 #include <format>
+#include <vector>
 
 #include "src/base/color.h"
 

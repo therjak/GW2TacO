@@ -1,10 +1,12 @@
 #include "src/base/stream_reader.h"
 
-#include <cstdio>
-
 #include <algorithm>
 #include <array>
+#include <cstdio>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "src/base/assert.h"
 
@@ -76,7 +78,6 @@ std::string CStreamReaderMemory::ReadLine() {
     s[0] = ReadByte();
 
     if (s[0] != '\n' && s[0] != '\r') result += s[0];
-
   } while (s[0] && s[0] != '\n');
 
   return result;
@@ -117,7 +118,7 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
   if (!file) return 0;
 
   std::fseek(file, 0, SEEK_END);
-  long tDataSize = std::ftell(file);
+  auto tDataSize = std::ftell(file);
   std::fseek(file, 0, SEEK_SET);
 
   if (tDataSize < 0) {

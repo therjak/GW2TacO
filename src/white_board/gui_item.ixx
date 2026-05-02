@@ -7,6 +7,7 @@ module;
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "src/base/color.h"
@@ -179,11 +180,9 @@ class CWBItem : public IWBCSS {
   [[nodiscard]] virtual math::Rect GetScreenRect()
       const;  // returns value in screen space
 
-  [[nodiscard]] virtual math::Point ScreenToClient(
-      const math::Point& p) const;
+  [[nodiscard]] virtual math::Point ScreenToClient(const math::Point& p) const;
   [[nodiscard]] virtual math::Rect ScreenToClient(const math::Rect& p) const;
-  [[nodiscard]] virtual math::Point ClientToScreen(
-      const math::Point& p) const;
+  [[nodiscard]] virtual math::Point ClientToScreen(const math::Point& p) const;
   [[nodiscard]] virtual math::Rect ClientToScreen(const math::Rect& p) const;
 
   virtual void SetPosition(const math::Rect& Pos);
@@ -335,13 +334,11 @@ class CWBItem : public IWBCSS {
 
   // returns the highlight areas of the scrollbar in client space
   virtual bool GetHScrollbarRectangles(math::Rect& button1,
-                                       math::Rect& Scrollup,
-                                       math::Rect& Thumb,
+                                       math::Rect& Scrollup, math::Rect& Thumb,
                                        math::Rect& Scrolldown,
                                        math::Rect& button2);
   virtual bool GetVScrollbarRectangles(math::Rect& button1,
-                                       math::Rect& Scrollup,
-                                       math::Rect& Thumb,
+                                       math::Rect& Scrollup, math::Rect& Thumb,
                                        math::Rect& Scrolldown,
                                        math::Rect& button2);
 
@@ -427,8 +424,7 @@ class CWBItem : public IWBCSS {
                                              int32_t scrollbarsize,
                                              int32_t delta);
   virtual void DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
-                                   math::Rect& r,
-                                   WBITEMVISUALCOMPONENT Button);
+                                   math::Rect& r, WBITEMVISUALCOMPONENT Button);
   virtual void DrawHScrollbar(CWBDrawAPI* API);
   virtual void DrawVScrollbar(CWBDrawAPI* API);
   virtual void HandleHScrollbarClick(WBSCROLLDRAGMODE m);
@@ -456,11 +452,11 @@ class CWBItem : public IWBCSS {
   math::Rect Position;    // stored in parent space
   math::Rect ClientRect;  // stored in window space
   math::Rect ScreenRect;  // calculated automatically, stores the position in
-                           // screen space
+                          // screen space
   math::Rect StoredPosition;
   math::Point ContentOffset;  // describes how much the content is moved
-                               // relative to the item. used for easily sliding
-                               // content around by scrollbars
+                              // relative to the item. used for easily sliding
+                              // content around by scrollbars
 
   math::Size StoredContentSize;
 

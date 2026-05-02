@@ -1,5 +1,6 @@
 module;
 #include <string>
+
 #include "src/build_count.h"
 
 module taco.build_info;
@@ -8,7 +9,7 @@ namespace {
 const std::string taco_version(TACO_VERSION);
 }
 
-#ifdef NDEBUG 
+#ifdef NDEBUG
 const std::string taco_build_ = taco_version;
 #else
 const std::string taco_build_ = taco_version + ":d";

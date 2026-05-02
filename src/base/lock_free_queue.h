@@ -9,7 +9,7 @@ struct Node {
   T data;
   std::atomic<Node<T>*> next;
 
-  Node(const T& val) : data(val), next(nullptr) {}
+  explicit Node(const T& val) : data(val), next(nullptr) {}
 };
 
 // Simple SPSC Lock-Free Queue

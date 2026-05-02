@@ -19,8 +19,8 @@ void DecodeUtf8(std::string_view Input, const UTF8CHARCALLBACK& callback) {
   auto it = Input.begin();
   while (it != Input.end()) {
     int Char = *it;
-    if ((Char & 0x80))  // decode utf-8
-    {
+    if ((Char & 0x80)) {
+      // decode utf-8
       if ((Char & 0xe0) == 0xc0) {
         Char = Char & ((1 << 5) - 1);
         for (int z = 0; z < 1; z++) {
@@ -163,7 +163,7 @@ std::string str_tolower(std::string s) {
   return s;
 }
 
-const std::string taco_lang_en = str_tolower("TacO_Language_en.xml");
+constexpr char taco_lang_en[] = "taco_language_en.xml";
 
 void Localization::Import() {
   ImportFile("TacO_Language_en.xml");

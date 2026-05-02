@@ -4,6 +4,9 @@ module;
 
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
+#include <memory>
+#include <string>
 #include <vector>
 
 #include "src/base/color.h"
@@ -276,7 +279,6 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       KerningData.push_back(d);
       continue;
     }
-
   } while (s.size() > 0);
 
   return true;
@@ -318,8 +320,8 @@ uint32_t ReadUTF8Char(char const*& Text) {
   uint32_t Char = *Text;
   Text++;
 
-  if ((Char & 0x80))  // decode utf-8
-  {
+  if ((Char & 0x80)) {
+    // decode utf-8
     if ((Char & 0xe0) == 0xc0) {
       Char = Char & ((1 << 5) - 1);
       for (int z = 0; z < 1; z++) {
@@ -369,9 +371,8 @@ uint32_t ReadUTF8Char(char const*& Text) {
 int32_t CWBFont::WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
                            CColor Color) {
   if (Char >= AlphabetSize ||
-      Alphabet[static_cast<uint16_t>(Char)].Char !=
-          Char)  // missing character replaced by a simple rectangle
-  {
+      Alphabet[static_cast<uint16_t>(Char)].Char != Char) {
+    // missing character replaced by a simple rectangle
     if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar) {
       Log_Warn(
           "[font] Used character {:d} and fallback character {:d} also missing "
@@ -448,8 +449,8 @@ int32_t CWBFont::Write(CWBDrawAPI* DrawApi, std::string_view String,
 }
 
 int32_t CWBFont::GetWidth(uint16_t Char, bool Advance) {
-  if (Char >= AlphabetSize || Alphabet[Char].Char != Char)  // missing character
-  {
+  if (Char >= AlphabetSize || Alphabet[Char].Char != Char) {
+    // missing character
     if (Alphabet[static_cast<uint16_t>(MissingChar)].Char != MissingChar) {
       return 0;
     }
@@ -541,7 +542,7 @@ bool CWBFont::Initialize(CWBFontDescription* Description, TCHAR mc) {
       if (!h) {
         Log_Err("[gui] Atlas Error while creating font!");
         return false;
-      };
+      }
 
       Rect content = Rect(abc.UV.x2, abc.UV.y2, abc.UV.x1, abc.UV.y1);
       bool hadContent = false;
