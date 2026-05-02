@@ -381,6 +381,121 @@ void LoadWvwObjectives() {
   });
 }
 
+WvwMatch ParseWvwMatch(const std::string& json_data) {
+  WvwMatch result;
+  jsonxx::Object o;
+  if (!o.parse(json_data)) return result;
+
+  if (o.has<jsonxx::String>("id")) result.id = o.get<jsonxx::String>("id");
+  if (o.has<jsonxx::String>("start_time")) result.start_time = o.get<jsonxx::String>("start_time");
+  if (o.has<jsonxx::String>("end_time")) result.end_time = o.get<jsonxx::String>("end_time");
+
+  auto parse_string_int_map = [](const jsonxx::Object& obj) {
+    std::unordered_map<std::string, int> res;
+    for (const auto& kv : obj.kv_map()) {
+      if (kv.second->is<jsonxx::Number>()) {
+        res[kv.first] = static_cast<int>(kv.second->get<jsonxx::Number>());
+      }
+    }
+    return res;
+  };
+
+  if (o.has<jsonxx::Object>("scores")) result.scores = parse_string_int_map(o.get<jsonxx::Object>("scores"));
+  if (o.has<jsonxx::Object>("worlds")) result.worlds = parse_string_int_map(o.get<jsonxx::Object>("worlds"));
+  if (o.has<jsonxx::Object>("deaths")) result.deaths = parse_string_int_map(o.get<jsonxx::Object>("deaths"));
+  if (o.has<jsonxx::Object>("kills")) result.kills = parse_string_int_map(o.get<jsonxx::Object>("kills"));
+  if (o.has<jsonxx::Object>("victory_points")) result.victory_points = parse_string_int_map(o.get<jsonxx::Object>("victory_points"));
+
+  if (o.has<jsonxx::Object>("all_worlds")) {
+    auto aw = o.get<jsonxx::Object>("all_worlds");
+    for (const auto& kv : aw.kv_map()) {
+      if (kv.second->is<jsonxx::Array>()) {
+        std::vector<int> worlds;
+        for (auto& v : kv.second->get<jsonxx::Array>().values()) {
+          if (v->is<jsonxx::Number>()) worlds.push_back(static_cast<int>(v->get<jsonxx::Number>()));
+        }
+        result.all_worlds[kv.first] = worlds;
+      }
+    }
+  }
+
+  if (o.has<jsonxx::Array>("maps")) {
+    for (auto& m : o.get<jsonxx::Array>("maps").values()) {
+      if (!m->is<jsonxx::Object>()) continue;
+      auto map_obj = m->get<jsonxx::Object>();
+      WvwMatchMap map_data;
+      if (map_obj.has<jsonxx::Number>("id")) map_data.id = static_cast<int>(map_obj.get<jsonxx::Number>("id"));
+      if (map_obj.has<jsonxx::String>("type")) map_data.type = map_obj.get<jsonxx::String>("type");
+      if (map_obj.has<jsonxx::Object>("scores")) map_data.scores = parse_string_int_map(map_obj.get<jsonxx::Object>("scores"));
+      if (map_obj.has<jsonxx::Object>("deaths")) map_data.deaths = parse_string_int_map(map_obj.get<jsonxx::Object>("deaths"));
+      if (map_obj.has<jsonxx::Object>("kills")) map_data.kills = parse_string_int_map(map_obj.get<jsonxx::Object>("kills"));
+      
+      if (map_obj.has<jsonxx::Array>("bonuses")) {
+        for (auto& b : map_obj.get<jsonxx::Array>("bonuses").values()) {
+          if (!b->is<jsonxx::Object>()) continue;
+          auto bonus_obj = b->get<jsonxx::Object>();
+          WvwMatchBonus bonus;
+          if (bonus_obj.has<jsonxx::String>("type")) bonus.type = bonus_obj.get<jsonxx::String>("type");
+          if (bonus_obj.has<jsonxx::String>("owner")) bonus.owner = bonus_obj.get<jsonxx::String>("owner");
+          map_data.bonuses.push_back(bonus);
+        }
+      }
+
+      if (map_obj.has<jsonxx::Array>("objectives")) {
+        for (auto& obj : map_obj.get<jsonxx::Array>("objectives").values()) {
+          if (!obj->is<jsonxx::Object>()) continue;
+          auto objective = obj->get<jsonxx::Object>();
+          WvwMatchObjective obj_data;
+          
+          if (objective.has<jsonxx::String>("id")) obj_data.id = objective.get<jsonxx::String>("id");
+          if (objective.has<jsonxx::String>("type")) obj_data.type = objective.get<jsonxx::String>("type");
+          if (objective.has<jsonxx::String>("owner")) obj_data.owner = objective.get<jsonxx::String>("owner");
+          if (objective.has<jsonxx::String>("last_flipped")) obj_data.last_flipped = objective.get<jsonxx::String>("last_flipped");
+          if (objective.has<jsonxx::String>("claimed_by")) obj_data.claimed_by = objective.get<jsonxx::String>("claimed_by");
+          if (objective.has<jsonxx::String>("claimed_at")) obj_data.claimed_at = objective.get<jsonxx::String>("claimed_at");
+          if (objective.has<jsonxx::Number>("points_tick")) obj_data.points_tick = static_cast<int>(objective.get<jsonxx::Number>("points_tick"));
+          if (objective.has<jsonxx::Number>("points_capture")) obj_data.points_capture = static_cast<int>(objective.get<jsonxx::Number>("points_capture"));
+          if (objective.has<jsonxx::Number>("yaks_delivered")) obj_data.yaks_delivered = static_cast<int>(objective.get<jsonxx::Number>("yaks_delivered"));
+          
+          if (objective.has<jsonxx::Array>("guild_upgrades")) {
+            for (auto& gu : objective.get<jsonxx::Array>("guild_upgrades").values()) {
+              if (gu->is<jsonxx::Number>()) obj_data.guild_upgrades.push_back(static_cast<int>(gu->get<jsonxx::Number>()));
+            }
+          }
+          
+          map_data.objectives.push_back(obj_data);
+        }
+      }
+      result.maps.push_back(map_data);
+    }
+  }
+
+  if (o.has<jsonxx::Array>("skirmishes")) {
+    for (auto& s : o.get<jsonxx::Array>("skirmishes").values()) {
+      if (!s->is<jsonxx::Object>()) continue;
+      auto skirmish_obj = s->get<jsonxx::Object>();
+      WvwMatchSkirmish skirmish;
+      
+      if (skirmish_obj.has<jsonxx::Number>("id")) skirmish.id = static_cast<int>(skirmish_obj.get<jsonxx::Number>("id"));
+      if (skirmish_obj.has<jsonxx::Object>("scores")) skirmish.scores = parse_string_int_map(skirmish_obj.get<jsonxx::Object>("scores"));
+      
+      if (skirmish_obj.has<jsonxx::Array>("map_scores")) {
+        for (auto& ms : skirmish_obj.get<jsonxx::Array>("map_scores").values()) {
+          if (!ms->is<jsonxx::Object>()) continue;
+          auto map_score_obj = ms->get<jsonxx::Object>();
+          WvwMatchSkirmishMap map_score;
+          if (map_score_obj.has<jsonxx::String>("type")) map_score.type = map_score_obj.get<jsonxx::String>("type");
+          if (map_score_obj.has<jsonxx::Object>("scores")) map_score.scores = parse_string_int_map(map_score_obj.get<jsonxx::Object>("scores"));
+          skirmish.map_scores.push_back(map_score);
+        }
+      }
+      result.skirmishes.push_back(skirmish);
+    }
+  }
+
+  return result;
+}
+
 void UpdateWvwStatus() {
   if (wvw_map_ids.find(mumbleLink.map_id) == wvw_map_ids.end()) return;
 
@@ -410,49 +525,26 @@ void UpdateWvwStatus() {
     auto api_path = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
     auto wvw_objective_ids = FetchHTTPS("api.guildwars2.com", api_path);
 
-    jsonxx::Object o;
-    o.parse(wvw_objective_ids);
-    if (o.has<jsonxx::Array>("maps")) {
-      auto m = o.get<jsonxx::Array>("maps").values();
+    WvwMatch match = ParseWvwMatch(wvw_objective_ids);
+    if (!match.maps.empty()) {
       std::vector<WvwPoiUpdate> updates;
-      for (auto& x : m) {
-        if (!x->is<jsonxx::Object>()) continue;
-        auto map = x->get<jsonxx::Object>();
-        if (!map.has<jsonxx::Array>("objectives")) continue;
+      for (const auto& map : match.maps) {
+        for (const auto& objective : map.objectives) {
+          if (objective.id.empty()) continue;
 
-        auto objs = map.get<jsonxx::Array>("objectives").values();
-        for (auto& obj : objs) {
-          if (!obj->is<jsonxx::Object>()) continue;
-          auto objective = obj->get<jsonxx::Object>();
-
-          std::string id;
-          if (objective.has<jsonxx::String>("id")) {
-            id = objective.get<jsonxx::String>("id");
-          } else {
-            continue;
-          }
-
-          WvwPoiUpdate update{.id_ = id};
-          std::string owner;
-          if (objective.has<jsonxx::String>("owner"))
-            owner = objective.get<jsonxx::String>("owner");
-
-          if (owner == "Red")
+          WvwPoiUpdate update{.id_ = objective.id};
+          if (objective.owner == "Red")
             update.owner_ = WvwPoiUpdate::Team::kRed;
-          else if (owner == "Green")
+          else if (objective.owner == "Green")
             update.owner_ = WvwPoiUpdate::Team::kGreen;
-          else if (owner == "Blue")
+          else if (objective.owner == "Blue")
             update.owner_ = WvwPoiUpdate::Team::kBlue;
           else
             update.owner_ = WvwPoiUpdate::Team::kNone;
 
-          std::string last_flipped_str;
-          if (objective.has<jsonxx::String>("last_flipped"))
-            last_flipped_str = objective.get<jsonxx::String>("last_flipped");
-
           time_t flip_time = 0;
           char flags = 0;
-          ParseISO8601(last_flipped_str.c_str(), flip_time, flags);
+          ParseISO8601(objective.last_flipped.c_str(), flip_time, flags);
           update.last_flipped_ = flip_time;
           updates.push_back(update);
         }

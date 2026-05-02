@@ -57,6 +57,59 @@ export class WvwObjective {
   std::string name_token_;
 };
 
+export struct WvwMatchObjective {
+  std::string id;
+  std::string type;
+  std::string owner;
+  std::string last_flipped;
+  std::string claimed_by;
+  std::string claimed_at;
+  int points_tick = 0;
+  int points_capture = 0;
+  std::vector<int> guild_upgrades;
+  int yaks_delivered = 0;
+};
+
+export struct WvwMatchBonus {
+  std::string type;
+  std::string owner;
+};
+
+export struct WvwMatchMap {
+  int id = 0;
+  std::string type;
+  std::unordered_map<std::string, int> scores;
+  std::vector<WvwMatchBonus> bonuses;
+  std::unordered_map<std::string, int> deaths;
+  std::unordered_map<std::string, int> kills;
+  std::vector<WvwMatchObjective> objectives;
+};
+
+export struct WvwMatchSkirmishMap {
+  std::string type;
+  std::unordered_map<std::string, int> scores;
+};
+
+export struct WvwMatchSkirmish {
+  int id = 0;
+  std::unordered_map<std::string, int> scores;
+  std::vector<WvwMatchSkirmishMap> map_scores;
+};
+
+export struct WvwMatch {
+  std::string id;
+  std::string start_time;
+  std::string end_time;
+  std::unordered_map<std::string, int> scores;
+  std::unordered_map<std::string, int> worlds;
+  std::unordered_map<std::string, std::vector<int>> all_worlds;
+  std::unordered_map<std::string, int> deaths;
+  std::unordered_map<std::string, int> kills;
+  std::unordered_map<std::string, int> victory_points;
+  std::vector<WvwMatchMap> maps;
+  std::vector<WvwMatchSkirmish> skirmishes;
+};
+
 export struct WvwPoiUpdate {
   enum class Team {
     kRed,
@@ -77,5 +130,6 @@ export void UpdateWvwStatus();
 export std::vector<WvwObjectiveData> ParseWvwObjectives(
     const std::string& json_data);
 export WvwMapData ParseWvwMapData(const std::string& json_data);
+export WvwMatch ParseWvwMatch(const std::string& json_data);
 export bool wvw_can_be_rendered = false;
 export std::unordered_map<std::string, POI> wvw_pois;
