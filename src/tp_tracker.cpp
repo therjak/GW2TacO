@@ -9,7 +9,6 @@ module;
 #include <vector>
 
 #include "src/gw2_tactical.h"
-#include "src/util/jsonxx.h"
 #include "src/util/png_decompressor.h"
 
 module taco.tp_tracker;
@@ -18,6 +17,7 @@ import math;
 import taco.gw2;
 import taco.language;
 import taco.overlay_config;
+import taco.web;
 import time;
 import whiteboard;
 
@@ -44,128 +44,6 @@ GW2ItemData GetGW2ItemData(int32_t item_id) {
 void SetGW2ItemData(GW2ItemData& data) {
   std::lock_guard<std::mutex> lock_guard(item_data_cache_mtx);
   item_data_cache[data.item_id] = data;
-}
-
-bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
-  if (!object.has<jsonxx::Number>("id") ||
-      !object.has<jsonxx::Number>("item_id") ||
-      !object.has<jsonxx::Number>("price") ||
-      !object.has<jsonxx::Number>("quantity") ||
-      !object.has<jsonxx::String>("created")) {
-    return false;
-  }
-  output.transaction_id = int32_t(object.get<jsonxx::Number>("id"));
-  output.item_id = int32_t(object.get<jsonxx::Number>("item_id"));
-  output.price = int32_t(object.get<jsonxx::Number>("price"));
-  output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
-  output.created = object.get<jsonxx::String>("created");
-  return true;
-}
-
-std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
-                                                  const std::string& root_key) {
-  std::vector<TransactionItem> result;
-  jsonxx::Object json;
-  json.parse(json_data);
-
-  if (json.has<jsonxx::Array>(root_key)) {
-    auto data = json.get<jsonxx::Array>(root_key).values();
-
-    for (auto& x : data) {
-      if (!x->is<jsonxx::Object>()) continue;
-
-      jsonxx::Object& item = x->get<jsonxx::Object>();
-
-      TransactionItem item_data;
-      if (ParseTransaction(item, item_data)) {
-        result.push_back(item_data);
-      }
-    }
-  }
-
-  return result;
-}
-
-std::vector<CommercePrice> ParseCommercePrices(const std::string& items_json) {
-  std::vector<CommercePrice> result;
-  jsonxx::Object item_json;
-  item_json.parse(items_json);
-
-  if (item_json.has<jsonxx::Array>("items")) {
-    auto items = item_json.get<jsonxx::Array>("items").values();
-
-    for (auto& x : items) {
-      if (!x->is<jsonxx::Object>()) continue;
-
-      jsonxx::Object& item = x->get<jsonxx::Object>();
-
-      if (!item.has<jsonxx::Number>("id") ||
-          !item.has<jsonxx::Object>("buys") ||
-          !item.has<jsonxx::Object>("sells")) {
-        continue;
-      }
-
-      CommercePrice price;
-      price.id = int32_t(item.get<jsonxx::Number>("id"));
-      if (item.has<jsonxx::Boolean>("whitelisted")) {
-        price.whitelisted = item.get<jsonxx::Boolean>("whitelisted");
-      }
-
-      jsonxx::Object buys_ = item.get<jsonxx::Object>("buys");
-      jsonxx::Object sells_ = item.get<jsonxx::Object>("sells");
-
-      if (buys_.has<jsonxx::Number>("quantity")) {
-        price.buys.quantity = int32_t(buys_.get<jsonxx::Number>("quantity"));
-      }
-      if (buys_.has<jsonxx::Number>("unit_price")) {
-        price.buys.unit_price =
-            int32_t(buys_.get<jsonxx::Number>("unit_price"));
-      }
-
-      if (sells_.has<jsonxx::Number>("quantity")) {
-        price.sells.quantity = int32_t(sells_.get<jsonxx::Number>("quantity"));
-      }
-      if (sells_.has<jsonxx::Number>("unit_price")) {
-        price.sells.unit_price =
-            int32_t(sells_.get<jsonxx::Number>("unit_price"));
-      }
-
-      result.push_back(price);
-    }
-  }
-
-  return result;
-}
-
-std::vector<GW2ItemData> ParseGW2Items(const std::string& items_json) {
-  std::vector<GW2ItemData> result;
-  jsonxx::Object item_json;
-  item_json.parse(items_json);
-
-  if (item_json.has<jsonxx::Array>("items")) {
-    auto items = item_json.get<jsonxx::Array>("items").values();
-
-    for (auto& x : items) {
-      if (!x->is<jsonxx::Object>()) continue;
-
-      jsonxx::Object& item = x->get<jsonxx::Object>();
-
-      GW2ItemData item_data;
-      if (!item.has<jsonxx::String>("name") ||
-          !item.has<jsonxx::Number>("id")) {
-        continue;
-      }
-      item_data.name = item.get<jsonxx::String>("name");
-      item_data.item_id = int32_t(item.get<jsonxx::Number>("id"));
-      if (item.has<jsonxx::String>("icon")) {
-        item_data.icon_file = item.get<jsonxx::String>("icon");
-      }
-
-      result.push_back(item_data);
-    }
-  }
-
-  return result;
 }
 
 }  // namespace

@@ -3,11 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "src/gw2_tactical.h"
-
-// Forward declaration of the internal function to be tested.
-std::unordered_map<int32_t, Achievement> ParseAchievements(
-    const std::string& achievements_data);
+import taco.web;
 
 TEST(ParseAchievementsTest, ParsesAchievementsCorrectly) {
   const std::string json_data = R"({

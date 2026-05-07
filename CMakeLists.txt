@@ -241,6 +241,7 @@ set(Taco_Source_Files
     "src/trail_logger.cpp"
     "src/ts3_connection.cpp"
     "src/ts3_control.cpp"
+    "src/web.cpp"
     "src/wvw.cpp"
 )
 source_group("Source Files" FILES ${Taco_Source_Files})
@@ -473,6 +474,7 @@ target_sources(taco
             src/trail_logger.ixx
             src/ts3_connection.ixx
             src/ts3_control.ixx
+            src/web.ixx
             src/wvw.ixx
     PUBLIC
         FILE_SET HEADERS
@@ -627,7 +629,7 @@ install(
 # Tests
 ################################################################################
 
-add_executable(gw2_tactical_test src/gw2_tactical_test.cpp)
+add_executable(gw2_tactical_test src/web_test.cpp)
 target_sources(gw2_tactical_test PRIVATE ${Source_Files})
 target_link_libraries(gw2_tactical_test PRIVATE gtest_main taco)
 use_props(gw2_tactical_test "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")

@@ -20,13 +20,9 @@ import math;
 import taco.marker_data;
 import taco.poi_behavior;
 import taco.tactical_category;
+import taco.web;
 import whiteboard;
 import xml;
-
-struct Achievement {
-  bool done = false;
-  std::vector<int32_t> bits;
-};
 
 struct POI {
   void SetCategory(GW2TacticalCategory* t);
