@@ -12,7 +12,6 @@ module;
 #include <vector>
 
 #include "src/gw2_tactical.h"
-#include "src/util/jsonxx.h"
 
 module taco.wvw;
 
@@ -22,6 +21,7 @@ import taco.language;
 import taco.mumble_link;
 import taco.overlay_config;
 import taco.poi_behavior;
+import taco.web;
 import time;
 
 using math::Rect;
@@ -167,117 +167,6 @@ void ParseISO8601(const char* text, time_t& iso_time, char& flag) {
   }
 }
 
-std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
-  std::vector<WvwObjectiveData> result;
-  jsonxx::Array wvw_objs;
-  wvw_objs.parse(json_data);
-  for (auto& x : wvw_objs.values()) {
-    if (!x->is<jsonxx::Object>()) continue;
-    auto obj = x->get<jsonxx::Object>();
-
-    WvwObjectiveData data;
-    if (obj.has<jsonxx::String>("id")) data.id = obj.get<jsonxx::String>("id");
-    if (obj.has<jsonxx::String>("name"))
-      data.name = obj.get<jsonxx::String>("name");
-    if (obj.has<jsonxx::String>("type"))
-      data.type = obj.get<jsonxx::String>("type");
-    if (obj.has<jsonxx::Number>("sector_id"))
-      data.sector_id = static_cast<int>(obj.get<jsonxx::Number>("sector_id"));
-    if (obj.has<jsonxx::Number>("map_id"))
-      data.map_id = static_cast<int>(obj.get<jsonxx::Number>("map_id"));
-    if (obj.has<jsonxx::String>("map_type"))
-      data.map_type = obj.get<jsonxx::String>("map_type");
-    if (obj.has<jsonxx::String>("marker"))
-      data.marker = obj.get<jsonxx::String>("marker");
-    if (obj.has<jsonxx::String>("chat_link"))
-      data.chat_link = obj.get<jsonxx::String>("chat_link");
-    if (obj.has<jsonxx::Number>("upgrade_id"))
-      data.upgrade_id = static_cast<int>(obj.get<jsonxx::Number>("upgrade_id"));
-
-    if (obj.has<jsonxx::Array>("coord")) {
-      for (auto& v : obj.get<jsonxx::Array>("coord").values()) {
-        if (v->is<jsonxx::Number>()) {
-          data.coord.push_back(static_cast<float>(v->get<jsonxx::Number>()));
-        }
-      }
-    }
-    if (obj.has<jsonxx::Array>("label_coord")) {
-      for (auto& v : obj.get<jsonxx::Array>("label_coord").values()) {
-        if (v->is<jsonxx::Number>()) {
-          data.label_coord.push_back(
-              static_cast<float>(v->get<jsonxx::Number>()));
-        }
-      }
-    }
-    result.push_back(data);
-  }
-  return result;
-}
-
-WvwMapData ParseWvwMapData(const std::string& json_data) {
-  WvwMapData data;
-  jsonxx::Object map;
-  if (!map.parse(json_data)) return data;
-
-  if (map.has<jsonxx::Number>("id"))
-    data.id = static_cast<int>(map.get<jsonxx::Number>("id"));
-  if (map.has<jsonxx::String>("name"))
-    data.name = map.get<jsonxx::String>("name");
-  if (map.has<jsonxx::Number>("min_level"))
-    data.min_level = static_cast<int>(map.get<jsonxx::Number>("min_level"));
-  if (map.has<jsonxx::Number>("max_level"))
-    data.max_level = static_cast<int>(map.get<jsonxx::Number>("max_level"));
-  if (map.has<jsonxx::Number>("default_floor"))
-    data.default_floor =
-        static_cast<int>(map.get<jsonxx::Number>("default_floor"));
-  if (map.has<jsonxx::String>("type"))
-    data.type = map.get<jsonxx::String>("type");
-
-  if (map.has<jsonxx::Array>("floors")) {
-    for (auto& v : map.get<jsonxx::Array>("floors").values()) {
-      if (v->is<jsonxx::Number>())
-        data.floors.push_back(static_cast<int>(v->get<jsonxx::Number>()));
-    }
-  }
-
-  if (map.has<jsonxx::Number>("region_id"))
-    data.region_id = static_cast<int>(map.get<jsonxx::Number>("region_id"));
-  if (map.has<jsonxx::String>("region_name"))
-    data.region_name = map.get<jsonxx::String>("region_name");
-  if (map.has<jsonxx::Number>("continent_id"))
-    data.continent_id =
-        static_cast<int>(map.get<jsonxx::Number>("continent_id"));
-  if (map.has<jsonxx::String>("continent_name"))
-    data.continent_name = map.get<jsonxx::String>("continent_name");
-
-  auto parse_rect = [](const jsonxx::Array& arr) -> std::optional<math::Rect> {
-    if (arr.values().size() != 2) return std::nullopt;
-    int rect_values[4];
-    int rect_cnt = 0;
-    for (int x = 0; x < 2; x++) {
-      if (!arr.values()[x]->is<jsonxx::Array>()) return std::nullopt;
-      auto coords = arr.values()[x]->get<jsonxx::Array>().values();
-      if (coords.size() != 2) return std::nullopt;
-      for (int y = 0; y < 2; y++) {
-        if (!coords[y]->is<jsonxx::Number>()) return std::nullopt;
-        rect_values[rect_cnt++] =
-            static_cast<int>(coords[y]->get<jsonxx::Number>());
-      }
-    }
-    return math::Rect(rect_values[0], rect_values[1], rect_values[2],
-                      rect_values[3]);
-  };
-
-  if (map.has<jsonxx::Array>("map_rect")) {
-    data.map_rect = parse_rect(map.get<jsonxx::Array>("map_rect"));
-  }
-  if (map.has<jsonxx::Array>("continent_rect")) {
-    data.continent_rect = parse_rect(map.get<jsonxx::Array>("continent_rect"));
-  }
-
-  return data;
-}
-
 void LoadWvwObjectives() {
   // https://api.guildwars2.com/v2/wvw/objectives
 
@@ -379,121 +268,6 @@ void LoadWvwObjectives() {
     UpdateWvwStatus();
     wvw_can_be_rendered = true;
   });
-}
-
-WvwMatch ParseWvwMatch(const std::string& json_data) {
-  WvwMatch result;
-  jsonxx::Object o;
-  if (!o.parse(json_data)) return result;
-
-  if (o.has<jsonxx::String>("id")) result.id = o.get<jsonxx::String>("id");
-  if (o.has<jsonxx::String>("start_time")) result.start_time = o.get<jsonxx::String>("start_time");
-  if (o.has<jsonxx::String>("end_time")) result.end_time = o.get<jsonxx::String>("end_time");
-
-  auto parse_string_int_map = [](const jsonxx::Object& obj) {
-    std::unordered_map<std::string, int> res;
-    for (const auto& kv : obj.kv_map()) {
-      if (kv.second->is<jsonxx::Number>()) {
-        res[kv.first] = static_cast<int>(kv.second->get<jsonxx::Number>());
-      }
-    }
-    return res;
-  };
-
-  if (o.has<jsonxx::Object>("scores")) result.scores = parse_string_int_map(o.get<jsonxx::Object>("scores"));
-  if (o.has<jsonxx::Object>("worlds")) result.worlds = parse_string_int_map(o.get<jsonxx::Object>("worlds"));
-  if (o.has<jsonxx::Object>("deaths")) result.deaths = parse_string_int_map(o.get<jsonxx::Object>("deaths"));
-  if (o.has<jsonxx::Object>("kills")) result.kills = parse_string_int_map(o.get<jsonxx::Object>("kills"));
-  if (o.has<jsonxx::Object>("victory_points")) result.victory_points = parse_string_int_map(o.get<jsonxx::Object>("victory_points"));
-
-  if (o.has<jsonxx::Object>("all_worlds")) {
-    auto aw = o.get<jsonxx::Object>("all_worlds");
-    for (const auto& kv : aw.kv_map()) {
-      if (kv.second->is<jsonxx::Array>()) {
-        std::vector<int> worlds;
-        for (auto& v : kv.second->get<jsonxx::Array>().values()) {
-          if (v->is<jsonxx::Number>()) worlds.push_back(static_cast<int>(v->get<jsonxx::Number>()));
-        }
-        result.all_worlds[kv.first] = worlds;
-      }
-    }
-  }
-
-  if (o.has<jsonxx::Array>("maps")) {
-    for (auto& m : o.get<jsonxx::Array>("maps").values()) {
-      if (!m->is<jsonxx::Object>()) continue;
-      auto map_obj = m->get<jsonxx::Object>();
-      WvwMatchMap map_data;
-      if (map_obj.has<jsonxx::Number>("id")) map_data.id = static_cast<int>(map_obj.get<jsonxx::Number>("id"));
-      if (map_obj.has<jsonxx::String>("type")) map_data.type = map_obj.get<jsonxx::String>("type");
-      if (map_obj.has<jsonxx::Object>("scores")) map_data.scores = parse_string_int_map(map_obj.get<jsonxx::Object>("scores"));
-      if (map_obj.has<jsonxx::Object>("deaths")) map_data.deaths = parse_string_int_map(map_obj.get<jsonxx::Object>("deaths"));
-      if (map_obj.has<jsonxx::Object>("kills")) map_data.kills = parse_string_int_map(map_obj.get<jsonxx::Object>("kills"));
-      
-      if (map_obj.has<jsonxx::Array>("bonuses")) {
-        for (auto& b : map_obj.get<jsonxx::Array>("bonuses").values()) {
-          if (!b->is<jsonxx::Object>()) continue;
-          auto bonus_obj = b->get<jsonxx::Object>();
-          WvwMatchBonus bonus;
-          if (bonus_obj.has<jsonxx::String>("type")) bonus.type = bonus_obj.get<jsonxx::String>("type");
-          if (bonus_obj.has<jsonxx::String>("owner")) bonus.owner = bonus_obj.get<jsonxx::String>("owner");
-          map_data.bonuses.push_back(bonus);
-        }
-      }
-
-      if (map_obj.has<jsonxx::Array>("objectives")) {
-        for (auto& obj : map_obj.get<jsonxx::Array>("objectives").values()) {
-          if (!obj->is<jsonxx::Object>()) continue;
-          auto objective = obj->get<jsonxx::Object>();
-          WvwMatchObjective obj_data;
-          
-          if (objective.has<jsonxx::String>("id")) obj_data.id = objective.get<jsonxx::String>("id");
-          if (objective.has<jsonxx::String>("type")) obj_data.type = objective.get<jsonxx::String>("type");
-          if (objective.has<jsonxx::String>("owner")) obj_data.owner = objective.get<jsonxx::String>("owner");
-          if (objective.has<jsonxx::String>("last_flipped")) obj_data.last_flipped = objective.get<jsonxx::String>("last_flipped");
-          if (objective.has<jsonxx::String>("claimed_by")) obj_data.claimed_by = objective.get<jsonxx::String>("claimed_by");
-          if (objective.has<jsonxx::String>("claimed_at")) obj_data.claimed_at = objective.get<jsonxx::String>("claimed_at");
-          if (objective.has<jsonxx::Number>("points_tick")) obj_data.points_tick = static_cast<int>(objective.get<jsonxx::Number>("points_tick"));
-          if (objective.has<jsonxx::Number>("points_capture")) obj_data.points_capture = static_cast<int>(objective.get<jsonxx::Number>("points_capture"));
-          if (objective.has<jsonxx::Number>("yaks_delivered")) obj_data.yaks_delivered = static_cast<int>(objective.get<jsonxx::Number>("yaks_delivered"));
-          
-          if (objective.has<jsonxx::Array>("guild_upgrades")) {
-            for (auto& gu : objective.get<jsonxx::Array>("guild_upgrades").values()) {
-              if (gu->is<jsonxx::Number>()) obj_data.guild_upgrades.push_back(static_cast<int>(gu->get<jsonxx::Number>()));
-            }
-          }
-          
-          map_data.objectives.push_back(obj_data);
-        }
-      }
-      result.maps.push_back(map_data);
-    }
-  }
-
-  if (o.has<jsonxx::Array>("skirmishes")) {
-    for (auto& s : o.get<jsonxx::Array>("skirmishes").values()) {
-      if (!s->is<jsonxx::Object>()) continue;
-      auto skirmish_obj = s->get<jsonxx::Object>();
-      WvwMatchSkirmish skirmish;
-      
-      if (skirmish_obj.has<jsonxx::Number>("id")) skirmish.id = static_cast<int>(skirmish_obj.get<jsonxx::Number>("id"));
-      if (skirmish_obj.has<jsonxx::Object>("scores")) skirmish.scores = parse_string_int_map(skirmish_obj.get<jsonxx::Object>("scores"));
-      
-      if (skirmish_obj.has<jsonxx::Array>("map_scores")) {
-        for (auto& ms : skirmish_obj.get<jsonxx::Array>("map_scores").values()) {
-          if (!ms->is<jsonxx::Object>()) continue;
-          auto map_score_obj = ms->get<jsonxx::Object>();
-          WvwMatchSkirmishMap map_score;
-          if (map_score_obj.has<jsonxx::String>("type")) map_score.type = map_score_obj.get<jsonxx::String>("type");
-          if (map_score_obj.has<jsonxx::Object>("scores")) map_score.scores = parse_string_int_map(map_score_obj.get<jsonxx::Object>("scores"));
-          skirmish.map_scores.push_back(map_score);
-        }
-      }
-      result.skirmishes.push_back(skirmish);
-    }
-  }
-
-  return result;
 }
 
 void UpdateWvwStatus() {

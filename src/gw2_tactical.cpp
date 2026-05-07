@@ -18,7 +18,6 @@
 #include "src/base/stream_reader.h"
 #include "src/base/string_format.h"
 #include "src/base/timer.h"
-#include "src/util/jsonxx.h"
 #include "src/util/miniz.h"
 #include "src/util/png_decompressor.h"
 
@@ -33,6 +32,7 @@ import taco.overlay_config;
 import taco.string_set;
 import taco.tactical_category;
 import taco.trail_logger;
+import taco.web;
 import taco.wvw;
 import time;
 import whiteboard;
@@ -352,43 +352,6 @@ float GetMapFade() {
   }
 
   return mapFade;
-}
-
-std::unordered_map<int32_t, Achievement> ParseAchievements(
-    const std::string& achievements_data) {
-  std::unordered_map<int32_t, Achievement> result;
-
-  jsonxx::Object json;
-  json.parse(achievements_data);
-
-  if (!json.has<jsonxx::Array>("achievements")) return result;
-
-  auto achi_data = json.get<jsonxx::Array>("achievements").values();
-
-  for (auto& x : achi_data) {
-    if (!x->is<jsonxx::Object>()) continue;
-    auto& data = x->get<jsonxx::Object>();
-
-    if (!data.has<jsonxx::Boolean>("done")) continue;
-    bool done = data.get<jsonxx::Boolean>("done");
-
-    if (!data.has<jsonxx::Number>("id")) continue;
-    int32_t achi_id = int32_t(data.get<jsonxx::Number>("id"));
-    result[achi_id].done = done;
-
-    if (!done && data.has<jsonxx::Array>("bits")) {
-      auto& bit_array = result[achi_id].bits;
-      auto bits = data.get<jsonxx::Array>("bits").values();
-      for (auto& bit : bits) {
-        if (!bit->is<jsonxx::Number>()) continue;
-        bit_array.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
-      }
-    } else if (done) {
-      result[achi_id].bits.clear();
-    }
-  }
-
-  return result;
 }
 
 void GW2TacticalDisplay::FetchAchievements() {

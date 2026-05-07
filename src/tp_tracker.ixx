@@ -11,37 +11,9 @@ module;
 export module taco.tp_tracker;
 
 import math;
+import taco.web;
 import whiteboard;
 import xml;
-
-export struct TransactionItem {
-  int32_t transaction_id = 0;
-  int32_t item_id = 0;
-  int32_t price = 0;
-  int32_t quantity = 0;
-  std::string created;
-};
-
-export struct CommercePriceListing {
-  int32_t quantity = 0;
-  int32_t unit_price = 0;
-};
-
-export struct CommercePrice {
-  int32_t id = 0;
-  bool whitelisted = false;
-  CommercePriceListing buys;
-  CommercePriceListing sells;
-};
-
-export struct GW2ItemData {
-  int32_t item_id = 0;
-  std::string name;
-  gui::WBATLASHANDLE icon = 0;
-  int32_t buy_price = 0;
-  int32_t sell_price = 0;
-  std::string icon_file;
-};
 
 export class TPTracker : public gui::CWBGuiType<"tptracker", gui::CWBItem> {
  public:
