@@ -4,6 +4,7 @@ module;
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 export module taco.web;
@@ -160,3 +161,46 @@ export struct Achievement {
 // https://wiki.guildwars2.com/wiki/API:2/account/achievements
 export std::unordered_map<int32_t, Achievement> ParseAchievements(
     const std::string& achievements_data);
+
+export struct TokenInfo {
+  std::string id;
+  std::optional<std::string> name;
+  std::optional<std::vector<std::string>> permissions;
+};
+
+// https://api.guildwars2.com/v2/tokeninfo
+// https://wiki.guildwars2.com/wiki/API:2/tokeninfo
+export TokenInfo ParseTokenInfo(const std::string& json_data);
+
+export struct AccountInfo {
+  std::string id;
+  std::optional<std::string> name;
+  std::optional<int32_t> age;
+  std::optional<int32_t> world;
+  std::optional<std::vector<std::string>> guilds;
+  std::optional<std::vector<std::string>> guild_leader;
+  std::optional<std::string> created;
+  std::optional<std::vector<std::string>> access;
+  std::optional<bool> commander;
+  std::optional<int32_t> fractal_level;
+  std::optional<int32_t> daily_ap;
+  std::optional<int32_t> monthly_ap;
+  std::optional<int32_t> wvw_rank;
+  std::optional<std::string> last_modified;
+};
+
+// https://api.guildwars2.com/v2/account
+// https://wiki.guildwars2.com/wiki/API:2/account
+export AccountInfo ParseAccountInfo(const std::string& json_data);
+
+// https://api.guildwars2.com/v2/account/dungeons
+// https://api.guildwars2.com/v2/account/mapchests
+// https://api.guildwars2.com/v2/account/raids
+// https://api.guildwars2.com/v2/account/worldbosses
+// https://api.guildwars2.com/v2/characters
+// https://wiki.guildwars2.com/wiki/API:2/account/dungeons
+// https://wiki.guildwars2.com/wiki/API:2/account/mapchests
+// https://wiki.guildwars2.com/wiki/API:2/account/raids
+// https://wiki.guildwars2.com/wiki/API:2/account/worldbosses
+// https://wiki.guildwars2.com/wiki/API:2/characters
+export std::unordered_set<std::string> ParseArray(const std::string& json_data);

@@ -19,7 +19,7 @@ struct KeyData {
   std::unordered_set<std::string> caps;
   std::string key_name;
   std::string account_name;
-  std::vector<std::string> char_names;
+  std::unordered_set<std::string> char_names;
   int world_id = 0;
   bool valid = true;
 };
