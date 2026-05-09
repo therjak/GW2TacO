@@ -39,7 +39,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
                                     std::future_status::ready) {
       last_fetch_time_ = GetTime();
       fetch_task_ = std::async(std::launch::async, [this, key]() {
-        const auto& raid_data = key->QuerySet("/v2/account/raids_");
+        const auto& raid_data = key->QuerySet("/v2/account/raids");
         raid_queue.push(raid_data);
       });
     }

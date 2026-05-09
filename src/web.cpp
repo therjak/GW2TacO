@@ -3,6 +3,7 @@ module;
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "src/util/jsonxx.h"
@@ -435,5 +436,93 @@ std::unordered_map<int32_t, Achievement> ParseAchievements(
     }
   }
 
+  return result;
+}
+
+TokenInfo ParseTokenInfo(const std::string& json_data) {
+  TokenInfo result;
+  jsonxx::Object json;
+  if (!json.parse(json_data)) return result;
+
+  if (json.has<jsonxx::String>("id")) {
+    result.id = json.get<jsonxx::String>("id");
+  }
+  if (json.has<jsonxx::String>("name")) {
+    result.name = json.get<jsonxx::String>("name");
+  }
+  if (json.has<jsonxx::Array>("permissions")) {
+    std::vector<std::string> perms;
+    auto& values = json.get<jsonxx::Array>("permissions").values();
+    for (auto v : values) {
+      if (v->is<jsonxx::String>()) {
+        perms.push_back(v->get<jsonxx::String>());
+      }
+    }
+    result.permissions = std::move(perms);
+  }
+  return result;
+}
+
+AccountInfo ParseAccountInfo(const std::string& json_data) {
+  AccountInfo result;
+  jsonxx::Object json;
+  if (!json.parse(json_data)) return result;
+
+  if (json.has<jsonxx::String>("id"))
+    result.id = json.get<jsonxx::String>("id");
+  if (json.has<jsonxx::String>("name"))
+    result.name = json.get<jsonxx::String>("name");
+  if (json.has<jsonxx::Number>("age"))
+    result.age = static_cast<int32_t>(json.get<jsonxx::Number>("age"));
+  if (json.has<jsonxx::Number>("world"))
+    result.world = static_cast<int32_t>(json.get<jsonxx::Number>("world"));
+
+  auto parse_string_array =
+      [](const jsonxx::Object& obj,
+         const std::string& key) -> std::optional<std::vector<std::string>> {
+    if (!obj.has<jsonxx::Array>(key)) return std::nullopt;
+    std::vector<std::string> res;
+    for (auto v : obj.get<jsonxx::Array>(key).values()) {
+      if (v->is<jsonxx::String>()) res.push_back(v->get<jsonxx::String>());
+    }
+    return res;
+  };
+
+  result.guilds = parse_string_array(json, "guilds");
+  result.guild_leader = parse_string_array(json, "guild_leader");
+  if (json.has<jsonxx::String>("created"))
+    result.created = json.get<jsonxx::String>("created");
+  result.access = parse_string_array(json, "access");
+
+  if (json.has<jsonxx::Boolean>("commander"))
+    result.commander = json.get<jsonxx::Boolean>("commander");
+  if (json.has<jsonxx::Number>("fractal_level"))
+    result.fractal_level =
+        static_cast<int32_t>(json.get<jsonxx::Number>("fractal_level"));
+  if (json.has<jsonxx::Number>("daily_ap"))
+    result.daily_ap =
+        static_cast<int32_t>(json.get<jsonxx::Number>("daily_ap"));
+  if (json.has<jsonxx::Number>("monthly_ap"))
+    result.monthly_ap =
+        static_cast<int32_t>(json.get<jsonxx::Number>("monthly_ap"));
+  if (json.has<jsonxx::Number>("wvw_rank"))
+    result.wvw_rank =
+        static_cast<int32_t>(json.get<jsonxx::Number>("wvw_rank"));
+  if (json.has<jsonxx::String>("last_modified"))
+    result.last_modified = json.get<jsonxx::String>("last_modified");
+
+  return result;
+}
+
+std::unordered_set<std::string> ParseArray(const std::string& json_data) {
+  jsonxx::Array arr;
+  std::unordered_set<std::string> result;
+  if (!arr.parse(json_data)) return result;
+
+  for (auto v : arr.values()) {
+    if (v->is<jsonxx::String>()) {
+      result.emplace(v->get<jsonxx::String>());
+    }
+  }
   return result;
 }
