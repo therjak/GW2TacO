@@ -94,9 +94,17 @@ export struct WvwMatch {
   std::vector<WvwMatchSkirmish> skirmishes;
 };
 
+// https://api.guildwars2.com/v2/wvw/objectives
+// https://wiki.guildwars2.com/wiki/API:2/wvw/objectives
 export std::vector<WvwObjectiveData> ParseWvwObjectives(
     const std::string& json_data);
+
+// https://api.guildwars2.com/v2/maps
+// https://wiki.guildwars2.com/wiki/API:2/maps
 export WvwMapData ParseWvwMapData(const std::string& json_data);
+
+// https://api.guildwars2.com/v2/wvw/matches
+// https://wiki.guildwars2.com/wiki/API:2/wvw/matches
 export WvwMatch ParseWvwMatch(const std::string& json_data);
 
 export struct TransactionItem {
@@ -128,10 +136,19 @@ export struct GW2ItemData {
   std::string icon_file;
 };
 
+// https://api.guildwars2.com/v2/commerce/transactions/current/buys
+// https://api.guildwars2.com/v2/commerce/transactions/current/sells
+// https://wiki.guildwars2.com/wiki/API:2/commerce/transactions
 export std::vector<TransactionItem> ParseTransactionList(
     const std::string& json_data, const std::string& root_key);
+
+// https://api.guildwars2.com/v2/commerce/prices
+// https://wiki.guildwars2.com/wiki/API:2/commerce/prices
 export std::vector<CommercePrice> ParseCommercePrices(
     const std::string& items_json);
+
+// https://api.guildwars2.com/v2/items
+// https://wiki.guildwars2.com/wiki/API:2/items
 export std::vector<GW2ItemData> ParseGW2Items(const std::string& items_json);
 
 export struct Achievement {
@@ -139,5 +156,7 @@ export struct Achievement {
   std::vector<int32_t> bits;
 };
 
+// https://api.guildwars2.com/v2/account/achievements
+// https://wiki.guildwars2.com/wiki/API:2/account/achievements
 export std::unordered_map<int32_t, Achievement> ParseAchievements(
     const std::string& achievements_data);
