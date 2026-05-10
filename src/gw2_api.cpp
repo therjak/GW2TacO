@@ -10,7 +10,6 @@ module;
 
 #include "src/base/color.h"
 #include "src/base/logger.h"
-#include "src/util/jsonxx.h"
 
 module taco.gw2;
 
@@ -153,22 +152,10 @@ std::unordered_set<std::string> APIKey::QuerySet(std::string_view path) const {
 
 std::unordered_set<int32_t> APIKey::QueryAchievementBits(int id) const {
   const auto q = QueryAPI("/v2/account/achievements?ids=" + std::to_string(id));
-  jsonxx::Array json;
-  json.parse(q);
   std::unordered_set<int32_t> ret;
-  const auto& data = json.values();
-  if (!data.empty() && data[0]->is<jsonxx::Object>()) {
-    jsonxx::Object obj = data[0]->get<jsonxx::Object>();
-    if (obj.has<jsonxx::Array>("bits")) {
-      auto bits = obj.get<jsonxx::Array>("bits").values();
-      if (bits.size() > 0) {
-        for (auto& bit : bits) {
-          if (bit->is<jsonxx::Number>()) {
-            ret.emplace(static_cast<int32_t>(bit->get<jsonxx::Number>()));
-          }
-        }
-      }
-    }
+  auto achievement = ParseAccountAchievement(q);
+  for (int32_t bit : achievement.bits) {
+    ret.emplace(bit);
   }
   return ret;
 }

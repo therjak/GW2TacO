@@ -439,6 +439,48 @@ std::unordered_map<int32_t, Achievement> ParseAchievements(
   return result;
 }
 
+AccountAchievement ParseAccountAchievement(const std::string& json_data) {
+  AccountAchievement result;
+  jsonxx::Object obj;
+
+  jsonxx::Array arr;
+  if (arr.parse(json_data) && !arr.values().empty() &&
+      arr.values()[0]->is<jsonxx::Object>()) {
+    obj = arr.values()[0]->get<jsonxx::Object>();
+  } else if (!obj.parse(json_data)) {
+    return result;
+  }
+
+  if (obj.has<jsonxx::Number>("id")) {
+    result.id = static_cast<int32_t>(obj.get<jsonxx::Number>("id"));
+  }
+  if (obj.has<jsonxx::Number>("current")) {
+    result.current = static_cast<int32_t>(obj.get<jsonxx::Number>("current"));
+  }
+  if (obj.has<jsonxx::Number>("max")) {
+    result.max = static_cast<int32_t>(obj.get<jsonxx::Number>("max"));
+  }
+  if (obj.has<jsonxx::Boolean>("done")) {
+    result.done = obj.get<jsonxx::Boolean>("done");
+  }
+  if (obj.has<jsonxx::Number>("repeated")) {
+    result.repeated = static_cast<int32_t>(obj.get<jsonxx::Number>("repeated"));
+  }
+  if (obj.has<jsonxx::Boolean>("unlocked")) {
+    result.unlocked = obj.get<jsonxx::Boolean>("unlocked");
+  }
+  if (obj.has<jsonxx::Array>("bits")) {
+    auto bits = obj.get<jsonxx::Array>("bits").values();
+    for (auto& bit : bits) {
+      if (bit->is<jsonxx::Number>()) {
+        result.bits.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
+      }
+    }
+  }
+
+  return result;
+}
+
 TokenInfo ParseTokenInfo(const std::string& json_data) {
   TokenInfo result;
   jsonxx::Object json;
