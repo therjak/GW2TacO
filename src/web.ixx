@@ -162,6 +162,20 @@ export struct Achievement {
 export std::unordered_map<int32_t, Achievement> ParseAchievements(
     const std::string& achievements_data);
 
+export struct AccountAchievement {
+  int32_t id = 0;
+  std::optional<int32_t> current;
+  std::optional<int32_t> max;
+  bool done = false;
+  std::vector<int32_t> bits;
+  std::optional<int32_t> repeated;
+  std::optional<bool> unlocked;
+};
+
+// https://api.guildwars2.com/v2/account/achievements?ids=12345
+// https://wiki.guildwars2.com/wiki/API:2/account/achievements
+export AccountAchievement ParseAccountAchievement(const std::string& json_data);
+
 export struct TokenInfo {
   std::string id;
   std::optional<std::string> name;
