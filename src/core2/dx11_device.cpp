@@ -451,12 +451,12 @@ bool DX11Device::InitAPI(const HWND window_handle, const bool full_screen,
 bool DX11Device::Initialize(WindowHandler* window, const int32_t sample_count) {
   window_ = window;
 
-  if (!InitAPI(window_->GetHandle(), window_->GetInitParameters().full_screen_,
+  if (!InitAPI(window_->GetHandle(), window_->GetInitParameters()->full_screen_,
                window_->GetXRes(), window_->GetYRes(), sample_count, 60)) {
     return false;
   }
 
-  ::ShowWindow(window_->GetHandle(), window_->GetInitParameters().maximized_
+  ::ShowWindow(window_->GetHandle(), window_->GetInitParameters()->maximized_
                                          ? SW_SHOWMAXIMIZED
                                          : SW_SHOWNORMAL);
   SetForegroundWindow(window_->GetHandle());
@@ -1000,7 +1000,7 @@ bool DX11Device::DrawTriangles(int32_t count) {
   return true;
 }
 
-bool DX11Device::SetViewport(Rect viewport) {
+bool DX11Device::SetViewport(const math::Rect& viewport) {
   D3D11_VIEWPORT d3d_viewport;
   memset(&d3d_viewport, 0, sizeof(D3D11_VIEWPORT));
 

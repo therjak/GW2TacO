@@ -14,7 +14,7 @@ import xml;
 export struct MarkerTypeData {
   MarkerTypeData();
   void Read(const CXMLNode& node, bool store_save_state);
-  void Write(CXMLNode* node);
+  void Write(CXMLNode* node) const;
 
   struct {
     bool needs_export_to_user_data_ : 1;

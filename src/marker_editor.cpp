@@ -28,8 +28,8 @@ GW2MarkerEditor::GW2MarkerEditor() : CWBGuiType() {
 
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
-gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* root, CXMLNode& node,
-                                       Rect& pos) {
+gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* root, const CXMLNode& node,
+                                       const Rect& pos) {
   return GW2MarkerEditor::Create(root, pos);
 }
 
@@ -42,9 +42,9 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* api) {
 
   if (mumbleLink.map_id == -1) return;
 
-  auto& m_pois = GetMapPOIs();
+  const auto& m_pois = GetMapPOIs();
   for (auto& poi : m_pois) {
-    auto& cpoi = poi.second;
+    const auto& cpoi = poi.second;
 
     if (cpoi.map_id != mumbleLink.map_id) continue;
     if (cpoi.External) continue;

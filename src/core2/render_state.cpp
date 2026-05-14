@@ -104,10 +104,10 @@ bool BlendState::Import(CXMLNode* node) {
   std::string value_str;
 
   if (node->HasAttribute("AlphaToCoverage")) {
-    node->GetChild("AlphaToCoverage").GetValue(alpha_to_coverage_);
+    node->GetChild("AlphaToCoverage").GetValue(&alpha_to_coverage_);
   }
   if (node->HasAttribute("IndependentBlend")) {
-    node->GetChild("IndependentBlend").GetValue(independent_blend_);
+    node->GetChild("IndependentBlend").GetValue(&independent_blend_);
   }
 
   for (int32_t x = 0; x < node->GetChildCount("RenderTarget"); x++) {
@@ -117,7 +117,7 @@ bool BlendState::Import(CXMLNode* node) {
 
     if (child.GetChildCount("BlendEnable")) {
       child.GetChild("BlendEnable")
-          .GetValue(render_target_blend_states_[id].blend_enable);
+          .GetValue(&render_target_blend_states_[id].blend_enable);
     }
     if (child.GetChildCount("SrcBlend")) {
       value_str = child.GetChild("SrcBlend").GetText();
@@ -153,7 +153,7 @@ bool BlendState::Import(CXMLNode* node) {
 
     if (child.GetChildCount("RenderTargetWriteMask")) {
       child.GetChild("RenderTargetWriteMask")
-          .GetValue(render_target_blend_states_[id].render_target_write_mask);
+          .GetValue(&render_target_blend_states_[id].render_target_write_mask);
     }
   }
 
@@ -227,10 +227,10 @@ void DepthStencilState::SetDepthEnable(bool enabled) {
 
 bool DepthStencilState::Import(CXMLNode* node) {
   if (node->GetChildCount("DepthEnable")) {
-    node->GetChild("DepthEnable").GetValue(depth_enable_);
+    node->GetChild("DepthEnable").GetValue(&depth_enable_);
   }
   if (node->GetChildCount("ZWriteEnable")) {
-    node->GetChild("ZWriteEnable").GetValue(z_write_enable_);
+    node->GetChild("ZWriteEnable").GetValue(&z_write_enable_);
   }
   if (node->GetChildCount("DepthFunc")) {
     auto value_str = node->GetChild("DepthFunc").GetText();
@@ -325,29 +325,29 @@ bool RasterizerState::Import(CXMLNode* node) {
   }
 
   if (node->GetChildCount("DepthBias")) {
-    node->GetChild("DepthBias").GetValue(depth_bias_);
+    node->GetChild("DepthBias").GetValue(&depth_bias_);
   }
   if (node->GetChildCount("DepthBiasClamp")) {
-    node->GetChild("DepthBiasClamp").GetValue(depth_bias_clamp_);
+    node->GetChild("DepthBiasClamp").GetValue(&depth_bias_clamp_);
   }
   if (node->GetChildCount("SlopeScaledDepthBias")) {
-    node->GetChild("SlopeScaledDepthBias").GetValue(slope_scaled_depth_bias_);
+    node->GetChild("SlopeScaledDepthBias").GetValue(&slope_scaled_depth_bias_);
   }
 
   if (node->GetChildCount("FrontCounterClockwise")) {
-    node->GetChild("FrontCounterClockwise").GetValue(front_counter_clockwise_);
+    node->GetChild("FrontCounterClockwise").GetValue(&front_counter_clockwise_);
   }
   if (node->GetChildCount("DepthClipEnable")) {
-    node->GetChild("DepthClipEnable").GetValue(depth_clip_enable_);
+    node->GetChild("DepthClipEnable").GetValue(&depth_clip_enable_);
   }
   if (node->GetChildCount("ScissorEnable")) {
-    node->GetChild("ScissorEnable").GetValue(scissor_enable_);
+    node->GetChild("ScissorEnable").GetValue(&scissor_enable_);
   }
   if (node->GetChildCount("MultisampleEnable")) {
-    node->GetChild("MultisampleEnable").GetValue(multisample_enable_);
+    node->GetChild("MultisampleEnable").GetValue(&multisample_enable_);
   }
   if (node->GetChildCount("AntialiasedLineEnable")) {
-    node->GetChild("AntialiasedLineEnable").GetValue(antialiased_line_enable_);
+    node->GetChild("AntialiasedLineEnable").GetValue(&antialiased_line_enable_);
   }
 
   dirty_ = true;
@@ -466,17 +466,17 @@ bool SamplerState::Import(CXMLNode* node) {
   }
 
   if (node->GetChildCount("MipLODBias")) {
-    node->GetChild("MipLODBias").GetValue(mip_lod_bias_);
+    node->GetChild("MipLODBias").GetValue(&mip_lod_bias_);
   }
   if (node->GetChildCount("MinLOD")) {
-    node->GetChild("MinLOD").GetValue(min_lod_);
+    node->GetChild("MinLOD").GetValue(&min_lod_);
   }
   if (node->GetChildCount("MaxLOD")) {
-    node->GetChild("MaxLOD").GetValue(max_lod_);
+    node->GetChild("MaxLOD").GetValue(&max_lod_);
   }
 
   if (node->GetChildCount("MaxAnisotropy")) {
-    node->GetChild("MaxAnisotropy").GetValue(max_anisotropy_);
+    node->GetChild("MaxAnisotropy").GetValue(&max_anisotropy_);
   }
 
   dirty_ = true;

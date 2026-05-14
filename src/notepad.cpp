@@ -49,8 +49,8 @@ Notepad::~Notepad() {
   nptext.Write(tb->GetText());
 }
 
-gui::CWBItem* Notepad::Factory(gui::CWBItem* root, CXMLNode& node,
-                               Rect& pos) {
+gui::CWBItem* Notepad::Factory(gui::CWBItem* root, const CXMLNode& node,
+                               const Rect& pos) {
   return Notepad::Create(root, pos);
 }
 

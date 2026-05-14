@@ -84,23 +84,23 @@ class CWBFontDescription {
   CWBFontDescription();
   ~CWBFontDescription();
 
-  bool LoadBMFontBinary(
-      uint8_t* Binary, int32_t BinarySize, const uint8_t* Image, int32_t XRes,
-      int32_t YRes,
-      std::vector<int>& enabledGlyphs);  // 32 bit raw image data
+  // 32 bit raw image data
+  bool LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
+                        const uint8_t* Image, int32_t XRes, int32_t YRes,
+                        std::vector<int>* enabledGlyphs);
   bool LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
                         const uint8_t* Image, int32_t XRes, int32_t YRes) {
     std::vector<int> eg;
-    return LoadBMFontBinary(Binary, BinarySize, Image, XRes, YRes, eg);
+    return LoadBMFontBinary(Binary, BinarySize, Image, XRes, YRes, &eg);
   }
-  bool LoadBMFontText(
-      uint8_t* Binary, int32_t BinarySize, const uint8_t* Image, int32_t XRes,
-      int32_t YRes,
-      std::vector<int>& enabledGlyphs);  // 32 bit raw image data
+  // 32 bit raw image data
+  bool LoadBMFontText(uint8_t* Binary, int32_t BinarySize, const uint8_t* Image,
+                      int32_t XRes, int32_t YRes,
+                      std::vector<int>* enabledGlyphs);
   bool LoadBMFontText(uint8_t* Binary, int32_t BinarySize, const uint8_t* Image,
                       int32_t XRes, int32_t YRes) {
     std::vector<int> eg;
-    return LoadBMFontText(Binary, BinarySize, Image, XRes, YRes, eg);
+    return LoadBMFontText(Binary, BinarySize, Image, XRes, YRes, &eg);
   }
 
  private:

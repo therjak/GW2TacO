@@ -178,7 +178,7 @@ gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
               int32_t xres = 0, yres = 0;
               if (DecompressPNG(data.get(),
                                 static_cast<int32_t>(stat.m_uncomp_size),
-                                imageData, xres, yres)) {
+                                &imageData, &xres, &yres)) {
                 ARGBtoABGR(imageData.get(), xres, yres);
 
                 auto handle = App->GetAtlas()->AddImage(
@@ -214,7 +214,7 @@ gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
   std::unique_ptr<uint8_t[]> imageData;
   int32_t xres = 0, yres = 0;
   if (!DecompressPNG(f.GetData(), static_cast<int32_t>(f.GetLength()),
-                     imageData, xres, yres)) {
+                     &imageData, &xres, &yres)) {
     Log_Err("[GWTacO] Failed to decompress png {:s}", s);
     return DefaultIconHandle;
   }
@@ -376,15 +376,15 @@ void GW2TacticalDisplay::FetchAchievements() {
   }
 }
 
-void GW2TacticalDisplay::InsertPOI(POI& poi) {
+void GW2TacticalDisplay::InsertPOI(POI* poi) {
   // if (poi.map_id != mumbleLink.map_id) return;
 
-  if (poi.routeMember) {
+  if (poi->routeMember) {
     bool discard = true;
 
     for (const auto& r : Routes) {
       if (r.activeItem >= 0) {
-        if (r.route[r.activeItem] == poi.guid) {
+        if (r.route[r.activeItem] == poi->guid) {
           discard = false;
           break;
         }
@@ -394,94 +394,95 @@ void GW2TacticalDisplay::InsertPOI(POI& poi) {
     if (discard) return;
   }
 
-  poi.cameraSpacePosition =
-      Vector4(poi.position.x, poi.position.y + poi.type_data_.height_,
-              poi.position.z, 1.0f) *
+  poi->cameraSpacePosition =
+      Vector4(poi->position.x, poi->position.y + poi->type_data_.height_,
+              poi->position.z, 1.0f) *
       cam;
 
-  minimapPOIs.push_back(&poi);
+  minimapPOIs.push_back(poi);
 
-  if (poi.type_data_.fade_far_ >= 0 && poi.type_data_.fade_near_ >= 0) {
-    float dist = WorldToGameCoords(poi.cameraSpacePosition.Length());
-    if (dist > poi.type_data_.fade_far_) return;
+  if (poi->type_data_.fade_far_ >= 0 && poi->type_data_.fade_near_ >= 0) {
+    float dist = WorldToGameCoords(poi->cameraSpacePosition.Length());
+    if (dist > poi->type_data_.fade_far_) return;
   }
 
-  mapPOIs.push_back(&poi);
+  mapPOIs.push_back(poi);
 }
 
 void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
-                                 const time_t& currtime, POI& poi,
-                                 bool drawDistance, std::string& infoText) {
+                                 const time_t& currtime, POI* poi,
+                                 bool drawDistance, std::string* info_text) {
   bool drawCountdown = false;
   int32_t timeLeft = 0;
   float alphaMultiplier = 1;
 
-  if (!poi.IsVisible(ptm, currtime, achievements)) {
+  if (!poi->IsVisible(ptm, currtime, achievements)) {
     return;
   }
 
-  if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
-    time_t elapsedtime = currtime - poi.lastUpdateTime;
+  if (poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
+    time_t elapsedtime = currtime - poi->lastUpdateTime;
     if (elapsedtime < 300) {
       timeLeft = static_cast<int32_t>(300 - elapsedtime);
       drawCountdown = true;
     }
   }
 
-  if (poi.type_data_.behavior_ == POIBehavior::ReappearAfterTimer) {
-    time_t elapsedtime = currtime - poi.lastUpdateTime;
-    if (elapsedtime < poi.type_data_.reset_length_) {
-      if (poi.type_data_.bits_.has_countdown_) {
+  if (poi->type_data_.behavior_ == POIBehavior::ReappearAfterTimer) {
+    time_t elapsedtime = currtime - poi->lastUpdateTime;
+    if (elapsedtime < poi->type_data_.reset_length_) {
+      if (poi->type_data_.bits_.has_countdown_) {
         timeLeft =
-            static_cast<int32_t>(poi.type_data_.reset_length_ - elapsedtime);
+            static_cast<int32_t>(poi->type_data_.reset_length_ - elapsedtime);
         drawCountdown = true;
       } else {
         return;
       }
     }
 
-    float dist = (poi.position - mumbleLink.char_position).Length();
+    float dist = (poi->position - mumbleLink.char_position).Length();
 
     if (!drawCountdown &&
-        (poi.type_data_.bits_.auto_trigger_ ||
-         poi.type_data_.bits_.has_countdown_) &&
-        (dist <= poi.type_data_.trigger_range_)) {
+        (poi->type_data_.bits_.auto_trigger_ ||
+         poi->type_data_.bits_.has_countdown_) &&
+        (dist <= poi->type_data_.trigger_range_)) {
       // auto trigger
       POIActivationData d;
       time(&d.lastUpdateTime);
-      poi.lastUpdateTime = d.lastUpdateTime;
-      d.poiguid = poi.guid;
+      poi->lastUpdateTime = d.lastUpdateTime;
+      d.poiguid = poi->guid;
 
       int data = 0;
-      if (poi.type_data_.behavior_ == POIBehavior::OncePerInstance) {
+      if (poi->type_data_.behavior_ == POIBehavior::OncePerInstance) {
         data = mumbleLink.map_instance;
       }
-      if (poi.type_data_.behavior_ == POIBehavior::DailyPerChar) {
+      if (poi->type_data_.behavior_ == POIBehavior::DailyPerChar) {
         data = mumbleLink.char_id_hash;
       }
-      if (poi.type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
+      if (poi->type_data_.behavior_ == POIBehavior::OncePerInstancePerChar) {
         data = mumbleLink.char_id_hash ^ mumbleLink.map_instance;
       }
 
-      ActivationData[POIActivationDataKey(poi.guid, data)] = d;
+      ActivationData[POIActivationDataKey(poi->guid, data)] = d;
     }
   }
 
-  if (!poi.type_data_.info_.empty()) {
-    if ((poi.position - mumbleLink.char_position).Length() <=
-        poi.type_data_.info_range_) {
-      infoText += std::string(poi.type_data_.info_) + "\n";
+  if (!poi->type_data_.info_.empty()) {
+    if ((poi->position - mumbleLink.char_position).Length() <=
+        poi->type_data_.info_range_) {
+      *info_text += std::string(poi->type_data_.info_) + "\n";
     }
   }
 
-  if (poi.routeMember && ((poi.position - mumbleLink.char_position).Length() <=
-                          poi.type_data_.trigger_range_)) {
+  if (poi->routeMember &&
+      ((poi->position - mumbleLink.char_position).Length() <=
+       poi->type_data_.trigger_range_)) {
     for (auto& r : Routes) {
       if (r.activeItem < 0) {
         continue;
       }
 
-      if (r.route[r.activeItem] == poi.guid) {
+      if (r.route[r.activeItem] == poi->guid) {
         // progress route
 
         if (r.backwards) {
@@ -499,11 +500,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
   float mapFade = GetMapFade();
 
-  gui::WBATLASHANDLE icon = poi.icon;
-  float size = poi.type_data_.size_;
-  float Alpha = poi.type_data_.alpha_;
+  gui::WBATLASHANDLE icon = poi->icon;
+  float size = poi->type_data_.size_;
+  float Alpha = poi->type_data_.alpha_;
 
-  auto camspace = poi.cameraSpacePosition;
+  auto camspace = poi->cameraSpacePosition;
   auto screenpos = camspace;
 
   Vector4 camspacex = camspace + Vector4(0.5f, 0, 0, 0) * size;
@@ -524,14 +525,14 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   if (!TacticalIconsOnEdge && camspace.z <= 0) return;
 
   float dist = WorldToGameCoords(camspace.Length());
-  if (poi.type_data_.fade_near_ >= 0 && poi.type_data_.fade_far_ >= 0) {
+  if (poi->type_data_.fade_near_ >= 0 && poi->type_data_.fade_far_ >= 0) {
     float fadeAlpha = 1;
 
-    if (dist > poi.type_data_.fade_far_) return;
-    if (dist > poi.type_data_.fade_near_) {
+    if (dist > poi->type_data_.fade_far_) return;
+    if (dist > poi->type_data_.fade_near_) {
       fadeAlpha =
-          1 - (dist - poi.type_data_.fade_near_) /
-                  (poi.type_data_.fade_far_ - poi.type_data_.fade_near_);
+          1 - (dist - poi->type_data_.fade_near_) /
+                  (poi->type_data_.fade_far_ - poi->type_data_.fade_near_);
     }
 
     Alpha *= fadeAlpha;
@@ -547,11 +548,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   camspacex /= camspacex.w;
 
   int s = static_cast<int>(std::min<float>(
-      poi.type_data_.max_size_,
-      std::max<float>(poi.type_data_.min_size_,
+      poi->type_data_.max_size_,
+      std::max<float>(poi->type_data_.min_size_,
                       std::abs((camspacex - camspace).x) * drawrect.Width())));
 
-  if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
+  if (poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
     alphaMultiplier = std::max(
         0.f, std::min(1.f, std::pow(Vector2(screenpos.x, screenpos.y).Length(),
                                     2.f) +
@@ -566,7 +567,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   Rect rect = Rect(p - Point(s, s), p + Point(s, s));
 
   if (TacticalIconsOnEdge) {
-    int32_t edge = poi.type_data_.min_size_;
+    int32_t edge = poi->type_data_.min_size_;
 
     Point cp = rect.Center();
     if (cp.x < edge) rect = rect + Point(edge - cp.x, 0);
@@ -580,8 +581,9 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     }
   }
 
-  if (!drawCountdown || poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
-    CColor col = poi.type_data_.color_;
+  if (!drawCountdown ||
+      poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
+    CColor col = poi->type_data_.color_;
     if (icon != DefaultIconHandle) {
       col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
                                      mapFade * globalOpacity);
@@ -591,14 +593,14 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     API->DrawAtlasElement(icon, rect, false, false, true, true, col);
   }
 
-  if (drawWvWNames && poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
+  if (drawWvWNames && poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
     gui::CWBFont* f = App->GetDefaultFont();
     std::string wvw_objective_name;
 
-    if (poi.wvw_objective_id < wvw_objectives.size()) {
+    if (poi->wvw_objective_id < wvw_objectives.size()) {
       wvw_objective_name =
-          DICT(wvw_objectives[poi.wvw_objective_id].name_token_,
-               wvw_objectives[poi.wvw_objective_id].name_);
+          DICT(wvw_objectives[poi->wvw_objective_id].name_token_,
+               wvw_objectives[poi->wvw_objective_id].name_);
     }
 
     if (!wvw_objective_name.empty()) {
@@ -628,7 +630,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     gui::CWBFont* f = GetFont(GetState());
     if (!f) return;
 
-    if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
+    if (poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
       f = App->GetDefaultFont();
     }
 
@@ -647,7 +649,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     if (drawDistance) offset += f->GetLineHeight();
 
     Point p;
-    if (poi.type_data_.behavior_ == POIBehavior::WvwObjective) {
+    if (poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
       if (forbiddenIconHandle != -1) {
         CColor col(0xffffffff);
         if (icon != DefaultIconHandle) {
@@ -695,8 +697,8 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
     if (!f) return;
 
     if (Alpha * alphaMultiplier > 0) {
-      float charDist =
-          WorldToGameCoords((poi.position - mumbleLink.char_position).Length());
+      float charDist = WorldToGameCoords(
+          (poi->position - mumbleLink.char_position).Length());
 
       std::string txt;
 
@@ -829,7 +831,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
     if (poi.second.map_id != mumblemap_id) {
       continue;
     }
-    InsertPOI(poi.second);
+    InsertPOI(&poi.second);
   }
 
   if (wvw_can_be_rendered) {
@@ -859,7 +861,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
       if (e.second.map_id != mumblemap_id) {
         continue;
       }
-      InsertPOI(e.second);
+      InsertPOI(&e.second);
     }
   }
 
@@ -887,7 +889,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
         mp->icon = GetMapIcon(App, mp->icon_file_, mp->zip_file_,
                               mp->category ? mp->category->zip_file : "");
       }
-      DrawPOI(API, ptm, currtime, *mp, drawDistance, infoText);
+      DrawPOI(API, ptm, currtime, mp, drawDistance, &infoText);
     }
   }
 
@@ -977,7 +979,8 @@ GW2TacticalDisplay::GW2TacticalDisplay() : CWBGuiType() {}
 GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
 gui::CWBItem* GW2TacticalDisplay::Factory(gui::CWBItem* Root,
-                                          const CXMLNode& node, Rect& Pos) {
+                                          const CXMLNode& node,
+                                          const Rect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos);
 }
 
@@ -1017,7 +1020,7 @@ void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
   for (const auto& c : t->children) ExportSavedCategories(&nn, c.get());
 }
 
-void ExportPOI(CXMLNode* n, POI& p) {
+void ExportPOI(CXMLNode* n, const POI& p) {
   CXMLNode* t = &n->AddChild("POI");
   t->SetAttributeFromInteger("MapID", p.map_id);
   t->SetAttributeFromFloat("xpos", p.position.x);
@@ -1032,7 +1035,7 @@ void ExportPOI(CXMLNode* n, POI& p) {
   p.type_data_.Write(t);
 }
 
-void ExportTrail(CXMLNode* n, GW2Trail& p) {
+void ExportTrail(CXMLNode* n, const GW2Trail& p) {
   CXMLNode* t = &n->AddChild("Trail");
   if (!p.type_.empty()) t->SetAttribute("type", p.type_);
   t->SetAttribute("GUID",
@@ -1052,7 +1055,7 @@ void ExportPOIS() {
 
   CXMLNode* n = &overlayData.AddChild("POIs");
 
-  auto& mPOIs = GetMapPOIs();
+  const auto& mPOIs = GetMapPOIs();
   for (auto& poi : mPOIs) {
     if (!poi.second.External && !poi.second.routeMember) {
       ExportPOI(n, poi.second);
@@ -1085,7 +1088,7 @@ void ExportPOIS() {
   d.SaveToFile("poidata.xml");
 }
 
-GUID LoadGUID(CXMLNode& n) {
+GUID LoadGUID(const CXMLNode& n) {
   auto guidb64 = n.GetAttributeAsString("GUID");
 
   auto data = B64Decode(guidb64);
@@ -1103,7 +1106,7 @@ GUID LoadGUID(CXMLNode& n) {
 
 void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
                             std::string_view currentCategory,
-                            MarkerTypeData& defaults, bool KeepSaveState,
+                            const MarkerTypeData& defaults, bool KeepSaveState,
                             std::string_view zipFile) {
   for (int32_t x = 0; x < root.GetChildCount("MarkerCategory"); x++) {
     const auto& n = root.GetChild("MarkerCategory", x);
@@ -1185,52 +1188,52 @@ void ImportPOITypes() {
   RecursiveImportPOIType(root, &CategoryRoot, "", defaults, false, "");
 }
 
-void ImportPOI(CXMLNode& t, POI& p, std::string_view zipFile) {
-  if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p.map_id);
-  if (t.HasAttribute("xpos")) t.GetAttributeAsFloat("xpos", &p.position.x);
-  if (t.HasAttribute("ypos")) t.GetAttributeAsFloat("ypos", &p.position.y);
-  if (t.HasAttribute("zpos")) t.GetAttributeAsFloat("zpos", &p.position.z);
-  if (t.HasAttribute("icon")) t.GetAttributeAsInteger("icon", &p.icon);
+void ImportPOI(const CXMLNode& t, POI* p, std::string_view zipFile) {
+  if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p->map_id);
+  if (t.HasAttribute("xpos")) t.GetAttributeAsFloat("xpos", &p->position.x);
+  if (t.HasAttribute("ypos")) t.GetAttributeAsFloat("ypos", &p->position.y);
+  if (t.HasAttribute("zpos")) t.GetAttributeAsFloat("zpos", &p->position.z);
+  if (t.HasAttribute("icon")) t.GetAttributeAsInteger("icon", &p->icon);
   if (t.HasAttribute("type")) {
-    p.Type = AddStringToSet(t.GetAttributeAsString("type"));
+    p->Type = AddStringToSet(t.GetAttributeAsString("type"));
   }
 
   if (!t.HasAttribute("GUID")) {
-    CoCreateGuid(&p.guid);
+    CoCreateGuid(&p->guid);
   } else {
-    p.guid = LoadGUID(t);
+    p->guid = LoadGUID(t);
   }
 
-  p.zip_file_ = AddStringToSet(zipFile);
+  p->zip_file_ = AddStringToSet(zipFile);
 
-  auto* td = GetCategory(p.Type);
-  if (td) p.SetCategory(td);
+  auto* td = GetCategory(p->Type);
+  if (td) p->SetCategory(td);
 
-  p.type_data_.Read(t, true);
+  p->type_data_.Read(t, true);
 
-  p.icon_file_ = p.type_data_.icon_file_;
+  p->icon_file_ = p->type_data_.icon_file_;
 }
 
-bool ImportTrail(CXMLNode& t, GW2Trail& p, std::string_view zipFile) {
-  p.zip_file_ = zipFile;
+bool ImportTrail(const CXMLNode& t, GW2Trail* p, std::string_view zipFile) {
+  p->zip_file_ = zipFile;
 
-  if (t.HasAttribute("type")) p.type_ = t.GetAttributeAsString("type");
+  if (t.HasAttribute("type")) p->type_ = t.GetAttributeAsString("type");
 
   if (!t.HasAttribute("GUID")) {
-    CoCreateGuid(&p.guid_);
+    CoCreateGuid(&p->guid_);
   } else {
-    p.guid_ = LoadGUID(t);
+    p->guid_ = LoadGUID(t);
   }
 
-  auto* td = GetCategory(p.type_);
-  if (td) p.SetCategory(td);
+  auto* td = GetCategory(p->type_);
+  if (td) p->SetCategory(td);
 
-  p.type_data_.Read(t, true);
+  p->type_data_.Read(t, true);
 
-  return p.Import(p.type_data_.trail_data_, zipFile);
+  return p->Import(p->type_data_.trail_data_, zipFile);
 }
 
-void ImportPOIDocument(CXMLDocument& d, bool External,
+void ImportPOIDocument(const CXMLDocument& d, bool External,
                        std::string_view zipFile) {
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
   CXMLNode root = d.GetDocumentNode().GetChild("OverlayData");
@@ -1245,10 +1248,10 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
       CXMLNode t = n.GetChild("POI", 0);
       do {
         POI p;
-        ImportPOI(t, p, zipFile);
+        ImportPOI(t, &p, zipFile);
         p.External = External;
         POIs[p.map_id][p.guid] = p;
-      } while (t.Next(t, "POI"));
+      } while (t.Next(&t, "POI"));
     }
 
     for (int32_t x = 0; x < n.GetChildCount("Route"); x++) {
@@ -1276,12 +1279,12 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
         CXMLNode t = rn.GetChild("POI", 0);
         do {
           POI p;
-          ImportPOI(t, p, zipFile);
+          ImportPOI(t, &p, zipFile);
           p.External = External;
           p.routeMember = true;
           POIs[p.map_id][p.guid] = p;
           r.route.push_back(p.guid);
-        } while (t.Next(t, "POI"));
+        } while (t.Next(&t, "POI"));
       }
 
       Routes.push_back(r);
@@ -1291,11 +1294,11 @@ void ImportPOIDocument(CXMLDocument& d, bool External,
       CXMLNode t = n.GetChild("Trail", 0);
       do {
         auto p = std::make_unique<GW2Trail>();
-        if (ImportTrail(t, *p, zipFile)) {
+        if (ImportTrail(t, p.get(), zipFile)) {
           p->external_ = External;
           trails[p->map_][p->guid_] = std::move(p);
         }
-      } while (t.Next(t, "Trail"));
+      } while (t.Next(&t, "Trail"));
     }
   }
 }

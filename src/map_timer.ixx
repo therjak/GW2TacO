@@ -60,7 +60,7 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               math::Rect& pos);
+                               const math::Rect& pos);
 
   std::vector<Map> maps_;
   std::unordered_map<std::string, Category> categories_;
@@ -69,7 +69,8 @@ export class GW2MapTimer : public gui::CWBGuiType<"maptimer", gui::CWBItem> {
   bool IsScrollbarVisible();
   void OnResize(const math::Size& s) override;
   int32_t GetScrollbarStep() override;
-  CWBItem* GetItemUnderMouse(math::Point& point, math::Rect& crop_rect,
+  CWBItem* GetItemUnderMouse(const math::Point& point,
+                             const math::Rect& crop_rect,
                              gui::WBMESSAGE message_type) override;
   void OnDraw(gui::CWBDrawAPI* api) override;
   void SetLayout(const CXMLNode& node);

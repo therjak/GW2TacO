@@ -89,7 +89,7 @@ class CAtlas {
   math::Size GetSize(WBATLASHANDLE h);
   // returns false only if there was not enough room
   // in the atlas to add the requested image
-  bool RequestImageUse(WBATLASHANDLE h, math::Rect& UV);
+  bool RequestImageUse(WBATLASHANDLE h, math::Rect* UV);
   math::Point GetWhitePixelUV();
 
   void ClearImageUsageflags();

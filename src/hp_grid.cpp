@@ -46,7 +46,7 @@ GW2HPGrid::GW2HPGrid() : CWBGuiType() { LoadGrids(); }
 GW2HPGrid::~GW2HPGrid() = default;
 
 gui::CWBItem* GW2HPGrid::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                 Rect& pos) {
+                                 const Rect& pos) {
   return GW2HPGrid::Create(root, pos);
 }
 

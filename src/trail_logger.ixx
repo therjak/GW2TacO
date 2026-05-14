@@ -42,12 +42,12 @@ export class GW2Trail {
   void Update();
   void SetupAndDraw(renderer::ConstantBuffer* constBuffer,
                     renderer::Texture* texture, math::Matrix4x4& cam,
-                    math::Matrix4x4& persp, float& one, bool scaleData,
-                    int32_t fadeoutBubble, std::array<float, 8>& data,
+                    const math::Matrix4x4& persp, float one, bool scaleData,
+                    int32_t fadeoutBubble, std::array<float, 8>* data,
                     float fadeAlpha, float width, float uvScale, float width2d);
   void SetCategory(GW2TacticalCategory* t);
 
-  bool Import(CStreamReaderMemory& file, bool keepPoints = false);
+  bool Import(const CStreamReaderMemory& file, bool keepPoints = false);
   bool Import(std::string_view fileName, std::string_view zipFile,
               bool keepPoints = false);
 
@@ -92,7 +92,7 @@ export class GW2TrailDisplay
   bool Initialize(gui::CWBItem* Parent, const math::Rect& Position) override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+                               const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;

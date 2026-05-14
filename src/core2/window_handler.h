@@ -72,7 +72,7 @@ class WindowHandler {
 
   virtual int32_t GetXRes();
   virtual int32_t GetYRes();
-  virtual WindowParameters& GetInitParameters();
+  virtual WindowParameters* GetInitParameters();
 
   virtual void SelectMouseCursor(MouseCursor cursor);
   virtual void FinalizeMouseCursor() = 0;

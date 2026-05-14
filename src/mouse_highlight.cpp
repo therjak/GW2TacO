@@ -53,7 +53,8 @@ GW2MouseHighlight::GW2MouseHighlight() : CWBGuiType() {}
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
 gui::CWBItem* GW2MouseHighlight::Factory(gui::CWBItem* root,
-                                         const CXMLNode& node, Rect& pos) {
+                                         const CXMLNode& node,
+                                         const Rect& pos) {
   return GW2MouseHighlight::Create(root, pos);
 }
 

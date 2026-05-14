@@ -280,7 +280,7 @@ WvwMatch ParseWvwMatch(const std::string& json_data) {
   return result;
 }
 
-bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
+bool ParseTransaction(const jsonxx::Object& object, TransactionItem* output) {
   if (!object.has<jsonxx::Number>("id") ||
       !object.has<jsonxx::Number>("item_id") ||
       !object.has<jsonxx::Number>("price") ||
@@ -288,11 +288,11 @@ bool ParseTransaction(jsonxx::Object& object, TransactionItem& output) {
       !object.has<jsonxx::String>("created")) {
     return false;
   }
-  output.transaction_id = int32_t(object.get<jsonxx::Number>("id"));
-  output.item_id = int32_t(object.get<jsonxx::Number>("item_id"));
-  output.price = int32_t(object.get<jsonxx::Number>("price"));
-  output.quantity = int32_t(object.get<jsonxx::Number>("quantity"));
-  output.created = object.get<jsonxx::String>("created");
+  output->transaction_id = int32_t(object.get<jsonxx::Number>("id"));
+  output->item_id = int32_t(object.get<jsonxx::Number>("item_id"));
+  output->price = int32_t(object.get<jsonxx::Number>("price"));
+  output->quantity = int32_t(object.get<jsonxx::Number>("quantity"));
+  output->created = object.get<jsonxx::String>("created");
   return true;
 }
 
@@ -308,10 +308,10 @@ std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
     for (auto& x : data) {
       if (!x->is<jsonxx::Object>()) continue;
 
-      jsonxx::Object& item = x->get<jsonxx::Object>();
+      const jsonxx::Object& item = x->get<jsonxx::Object>();
 
       TransactionItem item_data;
-      if (ParseTransaction(item, item_data)) {
+      if (ParseTransaction(item, &item_data)) {
         result.push_back(item_data);
       }
     }
@@ -331,7 +331,7 @@ std::vector<CommercePrice> ParseCommercePrices(const std::string& items_json) {
     for (auto& x : items) {
       if (!x->is<jsonxx::Object>()) continue;
 
-      jsonxx::Object& item = x->get<jsonxx::Object>();
+      const jsonxx::Object& item = x->get<jsonxx::Object>();
 
       if (!item.has<jsonxx::Number>("id") ||
           !item.has<jsonxx::Object>("buys") ||
@@ -382,7 +382,7 @@ std::vector<GW2ItemData> ParseGW2Items(const std::string& items_json) {
     for (auto& x : items) {
       if (!x->is<jsonxx::Object>()) continue;
 
-      jsonxx::Object& item = x->get<jsonxx::Object>();
+      const jsonxx::Object& item = x->get<jsonxx::Object>();
 
       GW2ItemData item_data;
       if (!item.has<jsonxx::String>("name") ||

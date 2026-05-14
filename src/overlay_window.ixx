@@ -25,7 +25,7 @@ export class OverlayWindow
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               math::Rect& pos);
+                               const math::Rect& pos);
 
   bool MessageProc(const gui::CWBMessage& message) override;
   void OnDraw(gui::CWBDrawAPI* api) override;

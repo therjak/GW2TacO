@@ -48,7 +48,8 @@ bool CWBLabel::Initialize(CWBItem* Parent, const Rect& Position) {
   return true;
 }
 
-CWBItem* CWBLabel::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
+CWBItem* CWBLabel::Factory(CWBItem* Root, const CXMLNode& node,
+                           const Rect& Pos) {
   auto label = CWBLabel::Create(Root, Pos);
   if (node.HasAttribute("text")) label->SetText(node.GetAttribute("text"));
   return label;

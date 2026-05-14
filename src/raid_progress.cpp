@@ -189,8 +189,8 @@ RaidProgress::RaidProgress()
 
 RaidProgress::~RaidProgress() {}
 
-gui::CWBItem* RaidProgress::Factory(gui::CWBItem* root, CXMLNode& node,
-                                    Rect& pos) {
+gui::CWBItem* RaidProgress::Factory(gui::CWBItem* root, const CXMLNode& node,
+                                    const Rect& pos) {
   return RaidProgress::Create(root, pos);
 }
 

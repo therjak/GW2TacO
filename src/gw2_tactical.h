@@ -119,7 +119,7 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
   ~GW2TacticalDisplay() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               math::Rect& Pos);
+                               const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
@@ -127,9 +127,9 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
 
  private:
   void FetchAchievements();
-  void InsertPOI(POI& poi);
+  void InsertPOI(POI* poi);
   void DrawPOI(gui::CWBDrawAPI* API, const tm& ptm, const time_t& currtime,
-               POI& poi, bool drawDistance, std::string& infoText);
+               POI* poi, bool drawDistance, std::string* info_text);
   void DrawPOIMinimap(gui::CWBDrawAPI* API, const math::Rect& miniRect,
                       math::Vector2 pos, const tm& ptm, const time_t& currtime,
                       const POI& poi, float alpha, float zoomLevel);

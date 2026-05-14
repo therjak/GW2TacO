@@ -13,10 +13,10 @@ constexpr int32_t kHiMetricInch = 2540;
 
 std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
                                            int32_t ImageDataSize,
-                                           int32_t& XSize, int32_t& YSize) {
+                                           int32_t* XSize, int32_t* YSize) {
   if (!ImageData || !ImageDataSize) return nullptr;
 
-  XSize = YSize = 0;
+  *XSize = *YSize = 0;
   LPPICTURE gpPicture = nullptr;
 
   LPVOID pvData = nullptr;
@@ -75,29 +75,29 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
   HDC hdc = GetDC(nullptr);
   HDC mdc = CreateCompatibleDC(hdc);
 
-  XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), kHiMetricInch);
-  YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), kHiMetricInch);
+  *XSize = MulDiv(hmWidth, GetDeviceCaps(mdc, LOGPIXELSX), kHiMetricInch);
+  *YSize = MulDiv(hmHeight, GetDeviceCaps(mdc, LOGPIXELSY), kHiMetricInch);
 
-  auto Image = std::make_unique<uint8_t[]>(XSize * YSize * 4);
-  memset(Image.get(), 0, XSize * YSize * 4);
+  auto Image = std::make_unique<uint8_t[]>((*XSize) * (*YSize) * 4);
+  memset(Image.get(), 0, (*XSize) * (*YSize) * 4);
 
-  HBITMAP bm = CreateCompatibleBitmap(hdc, XSize, YSize);
+  HBITMAP bm = CreateCompatibleBitmap(hdc, *XSize, *YSize);
   BITMAPINFO bmi;
   bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
-  bmi.bmiHeader.biWidth = XSize;
-  bmi.bmiHeader.biHeight = YSize;
+  bmi.bmiHeader.biWidth = *XSize;
+  bmi.bmiHeader.biHeight = *YSize;
   bmi.bmiHeader.biPlanes = 1;
   bmi.bmiHeader.biBitCount = 32;
   bmi.bmiHeader.biCompression = BI_RGB;
 
   HGDIOBJ oldbm = SelectObject(mdc, bm);
-  RECT r = {0, 0, XSize, YSize};
+  RECT r = {0, 0, *XSize, *YSize};
 
   FillRect(mdc, &r, static_cast<HBRUSH>(GetStockObject(BLACK_BRUSH)));
 
   SetBkMode(mdc, TRANSPARENT);
 
-  res = gpPicture->Render(mdc, 0, YSize - 1, XSize, -YSize, 0, hmHeight,
+  res = gpPicture->Render(mdc, 0, *YSize - 1, *XSize, -*YSize, 0, hmHeight,
                           hmWidth, -hmHeight, &r);
 
   if (res != S_OK) {
@@ -105,7 +105,7 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
     Log_Err("[base] gpPicture->Render failed ({:s})", err.ErrorMessage());
     Image.reset();
   } else {
-    GetDIBits(mdc, bm, 0, YSize, Image.get(), &bmi, DIB_RGB_COLORS);
+    GetDIBits(mdc, bm, 0, *YSize, Image.get(), &bmi, DIB_RGB_COLORS);
   }
 
   SelectObject(mdc, oldbm);
@@ -115,7 +115,7 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
 
   gpPicture->Release();
 
-  for (int32_t x = 0; x < XSize * YSize; x++) Image[x * 4 + 3] = 255;
+  for (int32_t x = 0; x < (*XSize) * (*YSize); x++) Image[x * 4 + 3] = 255;
 
   return Image;
 }

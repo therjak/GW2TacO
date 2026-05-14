@@ -54,8 +54,8 @@ int32_t WindowHandler::GetXRes() { return x_res_; }
 
 int32_t WindowHandler::GetYRes() { return y_res_; }
 
-WindowParameters& WindowHandler::GetInitParameters() {
-  return init_parameters_;
+WindowParameters* WindowHandler::GetInitParameters() {
+  return &init_parameters_;
 }
 
 void WindowHandler::SelectMouseCursor(MouseCursor m) {

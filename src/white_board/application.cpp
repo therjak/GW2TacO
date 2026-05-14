@@ -173,7 +173,7 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
   }
 }
 
-CWBItem* CWBApplication::GetItemUnderMouse(Point& Point, WBMESSAGE w) {
+CWBItem* CWBApplication::GetItemUnderMouse(const Point& Point, WBMESSAGE w) {
   if (!Root) {
     return nullptr;
   }
@@ -756,8 +756,8 @@ bool CWBApplication::LoadSkin(std::string_view XML,
 
     std::unique_ptr<uint8_t[]> Image;
     int32_t XRes = 0, YRes = 0;
-    if (DecompressPNG((unsigned char*)data.c_str(), data.size(), Image, XRes,
-                      YRes)) {
+    if (DecompressPNG((unsigned char*)data.c_str(), data.size(), &Image, &XRes,
+                      &YRes)) {
       ARGBtoABGR(Image.get(), XRes, YRes);
       ClearZeroAlpha(Image.get(), XRes, YRes);
 
@@ -811,16 +811,16 @@ bool CWBApplication::LoadSkin(std::string_view XML,
 
     int32_t XRes = 0, YRes = 0;
     std::unique_ptr<uint8_t[]> Image;
-    if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), Image,
-                      XRes, YRes)) {
+    if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), &Image,
+                      &XRes, &YRes)) {
       ARGBtoABGR(Image.get(), XRes, YRes);
       auto fd = std::make_unique<CWBFontDescription>();
       if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
-                               Image.get(), XRes, YRes, enabledGlyphs)) {
+                               Image.get(), XRes, YRes, &enabledGlyphs)) {
         InitFont(Name, fd.get());
       } else if (fd->LoadBMFontText((unsigned char*)databin.c_str(),
                                     databin.size(), Image.get(), XRes, YRes,
-                                    enabledGlyphs)) {
+                                    &enabledGlyphs)) {
         InitFont(Name, fd.get());
       }
 
@@ -895,7 +895,7 @@ bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
 
   bool b = true;
   for (int i = 0; i < node.GetChildCount(); i++) {
-    b &= GenerateGUIFromXMLNode(Root, node.GetChild(i), Pos);
+    b &= GenerateGUIFromXMLNode(Root, node.GetChild(i), &Pos);
     Pos =
         Rect(Pos.BottomLeft() + Point(0, 2), Pos.BottomLeft() + Point(20, 22));
   }
@@ -903,28 +903,28 @@ bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
 }
 
 bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
-                                            Rect& Pos) {
-  CWBItem* NewItem = GenerateUIItem(Root, node, Pos);
+                                            Rect* Pos) {
+  CWBItem* NewItem = GenerateUIItem(Root, node, *Pos);
   if (!NewItem) return false;
 
   if (node.HasAttribute("pos")) {
     const auto& pos = node.GetAttribute("pos");
     if (std::count(pos.begin(), pos.end(), ',') == 3) {
-      std::sscanf(node.GetAttribute("pos").c_str(), "%d,%d,%d,%d", &Pos.x1,
-                  &Pos.y1, &Pos.x2, &Pos.y2);
+      std::sscanf(node.GetAttribute("pos").c_str(), "%d,%d,%d,%d", &Pos->x1,
+                  &Pos->y1, &Pos->x2, &Pos->y2);
     } else {
       uint32_t x = 0, y = 0;
       std::sscanf(node.GetAttribute("pos").c_str(), "%d,%d", &x, &y);
-      Pos.MoveTo(x, y);
+      Pos->MoveTo(x, y);
     }
-    NewItem->SetPosition(Pos);
+    NewItem->SetPosition(*Pos);
   }
 
   if (node.HasAttribute("size")) {
     uint32_t x = 0, y = 0;
     std::sscanf(node.GetAttribute("size").c_str(), "%d,%d", &x, &y);
-    Pos.SetSize(x, y);
-    NewItem->SetPosition(Pos);
+    Pos->SetSize(x, y);
+    NewItem->SetPosition(*Pos);
   }
 
   if (node.HasAttribute("id")) NewItem->SetID(node.GetAttribute("id"));
@@ -940,7 +940,7 @@ bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
 }
 
 CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                                        Rect& Pos) {
+                                        const Rect& Pos) {
   if (FactoryCallbacks.find(node.GetNodeName()) != FactoryCallbacks.end()) {
     return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);
   }

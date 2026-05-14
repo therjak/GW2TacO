@@ -17,7 +17,7 @@ export class CXMLNode {
  public:
   CXMLNode();
   CXMLNode(const CXMLNode& Original);
-  CXMLNode(rapidxml::xml_node<char>*, CXMLDocument*, int32_t);
+  CXMLNode(rapidxml::xml_node<char>*, const CXMLDocument*, int32_t);
   virtual ~CXMLNode();
 
   CXMLNode& operator=(const CXMLNode& Original);
@@ -28,7 +28,7 @@ export class CXMLNode {
   CXMLNode GetChild(const char*) const;
   CXMLNode GetChild(const char*, int32_t) const;
 
-  bool Next(CXMLNode& out, const char*);
+  bool Next(CXMLNode* out, const char*);
 
   int32_t IsValid() const;
 
@@ -36,10 +36,10 @@ export class CXMLNode {
 
   void GetText(char*, int32_t) const;
   std::string GetText() const;
-  bool GetValue(int32_t& Int) const;
-  bool GetValue(uint8_t& Int) const;
-  bool GetValue(bool& Int) const;
-  bool GetValue(float& Float) const;
+  bool GetValue(int32_t* value) const;
+  bool GetValue(uint8_t* value) const;
+  bool GetValue(bool* value) const;
+  bool GetValue(float* value) const;
 
   bool GetAttribute(std::string_view szAttribute, char* szBuffer,
                     int32_t nBufferSize) const;
@@ -69,5 +69,5 @@ export class CXMLNode {
 
   int32_t nLevel;
   rapidxml::xml_node<char>* pNode;
-  CXMLDocument* pDoc;
+  const CXMLDocument* pDoc;
 };

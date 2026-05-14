@@ -67,7 +67,8 @@ class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
   [[nodiscard]] std::string GetText() const { return Text; }
   void SetText(std::string_view val, bool EnableUndo = false);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          const math::Rect& Pos);
 
   virtual void SetSelection(int32_t start, int32_t end);
   void SetCursorPos(int32_t pos, bool Selecting);
@@ -106,8 +107,8 @@ class CWBTextBox : public CWBGuiType<"textbox", CWBItem> {
   CWBTextBoxHistoryEntry* CreateNewHistoryEntry(bool Remove, int Start,
                                                 int Length);
 
-  virtual CColor GetTextColor(int32_t Index, CColor& DefaultColor);
-  virtual bool GetTextBackground(int32_t Index, CColor& Result) {
+  virtual CColor GetTextColor(int32_t Index, const CColor& DefaultColor);
+  virtual bool GetTextBackground(int32_t Index, CColor* Result) {
     return false;
   }
   virtual bool ColoredText() { return false; }

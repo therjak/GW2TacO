@@ -22,8 +22,8 @@ export class Ts3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, CXMLNode& node,
-                               math::Rect& pos);
+  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
+                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;

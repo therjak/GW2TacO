@@ -118,7 +118,8 @@ GW2TacticalCompass::GW2TacticalCompass() : CWBGuiType() {}
 GW2TacticalCompass::~GW2TacticalCompass() = default;
 
 gui::CWBItem* GW2TacticalCompass::Factory(gui::CWBItem* root,
-                                          const CXMLNode& node, Rect& pos) {
+                                          const CXMLNode& node,
+                                          const Rect& pos) {
   return GW2TacticalCompass::Create(root, pos);
 }
 

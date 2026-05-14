@@ -4,8 +4,8 @@
 #include <string_view>
 
 bool DecompressPNG(const uint8_t* IData, int32_t IDataSize,
-                   std::unique_ptr<uint8_t[]>& Image, int32_t& XRes,
-                   int32_t& YRes);
+                   std::unique_ptr<uint8_t[]>* Image, int32_t* XRes,
+                   int32_t* YRes);
 void ARGBtoABGR(uint8_t* Image, int32_t XRes, int32_t YRes);
 void ClearZeroAlpha(uint8_t* Image, int32_t XRes, int32_t YRes);
 

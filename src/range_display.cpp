@@ -162,7 +162,7 @@ GW2RangeDisplay::GW2RangeDisplay() : CWBGuiType() {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
 gui::CWBItem* GW2RangeDisplay::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                       Rect& pos) {
+                                       const Rect& pos) {
   return GW2RangeDisplay::Create(root, pos);
 }
 

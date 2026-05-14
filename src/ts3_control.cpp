@@ -144,8 +144,8 @@ Ts3Control::Ts3Control() : CWBGuiType() {}
 
 Ts3Control::~Ts3Control() = default;
 
-gui::CWBItem* Ts3Control::Factory(gui::CWBItem* Root, CXMLNode& node,
-                                  Rect& Pos) {
+gui::CWBItem* Ts3Control::Factory(gui::CWBItem* Root, const CXMLNode& node,
+                                  const Rect& Pos) {
   return Ts3Control::Create(Root, Pos);
 }
 

@@ -27,5 +27,5 @@ export class ClickThroughButton
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               math::Rect& pos);
+                               const math::Rect& pos);
 };
