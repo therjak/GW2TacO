@@ -25,7 +25,7 @@ export class GW2TacticalCompass
   }
 
   static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               math::Rect& pos);
+                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;

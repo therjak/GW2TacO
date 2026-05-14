@@ -156,8 +156,8 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
 
                 std::unique_ptr<uint8_t[]> image_data = nullptr;
                 int32_t x_res = 0, y_res = 0;
-                if (DecompressPNG((uint8_t*)png.c_str(), png.size(), image_data,
-                                  x_res, y_res)) {
+                if (DecompressPNG((uint8_t*)png.c_str(), png.size(), &image_data,
+                                  &x_res, &y_res)) {
                   ARGBtoABGR(image_data.get(), x_res, y_res);
                   Rect area = Rect(0, 0, x_res, y_res);
                   item_data.icon = GetApplication()->GetAtlas()->AddImage(
@@ -334,8 +334,8 @@ TPTracker::TPTracker() : CWBGuiType() {}
 
 TPTracker::~TPTracker() {}
 
-gui::CWBItem* TPTracker::Factory(gui::CWBItem* root, CXMLNode& node,
-                                 Rect& pos) {
+gui::CWBItem* TPTracker::Factory(gui::CWBItem* root, const CXMLNode& node,
+                                 const Rect& pos) {
   return TPTracker::Create(root, pos);
 }
 

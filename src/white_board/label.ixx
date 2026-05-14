@@ -33,7 +33,8 @@ class CWBLabel : public CWBGuiType<"label", CWBItem> {
   [[nodiscard]] std::string GetText() const { return Text; }
   void SetText(std::string_view val);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           WBMESSAGE MessageType) override {

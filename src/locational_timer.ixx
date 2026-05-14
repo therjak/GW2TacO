@@ -56,7 +56,7 @@ export class TimerDisplay
   ~TimerDisplay() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               math::Rect& pos);
+                               const math::Rect& pos);
 
   void OnDraw(gui::CWBDrawAPI* api) override;
   bool IsMouseTransparent(const math::Point& client_space_point,

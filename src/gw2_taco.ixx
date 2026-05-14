@@ -63,7 +63,7 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
   ~GW2TacO() override;
 
   static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               math::Rect& pos);
+                               const math::Rect& pos);
 
   void OpenWindow(std::string_view s);
   void OnDraw(gui::CWBDrawAPI* api) override;

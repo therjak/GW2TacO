@@ -210,7 +210,7 @@ GW2TacO::GW2TacO() : CWBGuiType() {
 GW2TacO::~GW2TacO() {}
 
 gui::CWBItem* GW2TacO::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               Rect& Pos) {
+                               const Rect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();
 
@@ -1649,7 +1649,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
         Vector3 minvals;
         Vector3 maxvals;
         bool initialized = false;
-        auto& mPOIs = GetMapPOIs();
+        const auto& mPOIs = GetMapPOIs();
         for (auto& poi : mPOIs) {
           auto& p = poi.second;
 

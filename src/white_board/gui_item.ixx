@@ -245,10 +245,10 @@ class CWBItem : public IWBCSS {
                                        int32_t ViewSize);
   virtual void SetVScrollbarParameters(int32_t MinScroll, int32_t MaxScroll,
                                        int32_t ViewSize);
-  virtual void GetHScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
-                                       int32_t& ViewSize);
-  virtual void GetVScrollbarParameters(int32_t& MinScroll, int32_t& MaxScroll,
-                                       int32_t& ViewSize);
+  virtual void GetHScrollbarParameters(int32_t* MinScroll, int32_t* MaxScroll,
+                                       int32_t* ViewSize);
+  virtual void GetVScrollbarParameters(int32_t* MinScroll, int32_t* MaxScroll,
+                                       int32_t* ViewSize);
   virtual void SetHScrollbarPos(int32_t ScrollPos, bool Clamp = false);
   virtual void SetVScrollbarPos(int32_t ScrollPos, bool Clamp = false);
   virtual int32_t GetHScrollbarPos() { return HScrollbar.ScrollPos; };
@@ -333,20 +333,21 @@ class CWBItem : public IWBCSS {
   CWBItem();
 
   // returns the highlight areas of the scrollbar in client space
-  virtual bool GetHScrollbarRectangles(math::Rect& button1,
-                                       math::Rect& Scrollup, math::Rect& Thumb,
-                                       math::Rect& Scrolldown,
-                                       math::Rect& button2);
-  virtual bool GetVScrollbarRectangles(math::Rect& button1,
-                                       math::Rect& Scrollup, math::Rect& Thumb,
-                                       math::Rect& Scrolldown,
-                                       math::Rect& button2);
+  virtual bool GetHScrollbarRectangles(math::Rect* button1,
+                                       math::Rect* Scrollup, math::Rect* Thumb,
+                                       math::Rect* Scrolldown,
+                                       math::Rect* button2);
+  virtual bool GetVScrollbarRectangles(math::Rect* button1,
+                                       math::Rect* Scrollup, math::Rect* Thumb,
+                                       math::Rect* Scrolldown,
+                                       math::Rect* button2);
 
   virtual void OnDraw(CWBDrawAPI* API);
   virtual void OnPostDraw(CWBDrawAPI* API);
   virtual int32_t GetScrollbarStep();
 
-  virtual CWBItem* GetItemUnderMouse(math::Point& Point, math::Rect& CropRect,
+  virtual CWBItem* GetItemUnderMouse(const math::Point& Point,
+                                     const math::Rect& CropRect,
                                      WBMESSAGE MessageType);
   virtual void SetChildAsTopmost(int32_t Index);
   virtual void SetChildAsBottommost(int32_t Index);
@@ -374,7 +375,7 @@ class CWBItem : public IWBCSS {
 
   virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
       std::string_view String);
-  virtual bool ParseRGBA(std::string_view description, CColor& output);
+  virtual bool ParseRGBA(std::string_view description, CColor* output);
 
   static void PositionApplicator(CWBPositionDescriptor& pos,
                                  WBPOSITIONTYPE Type, std::string_view Value);
@@ -414,13 +415,14 @@ class CWBItem : public IWBCSS {
   [[nodiscard]] virtual bool Focusable() const;
 
   virtual void AdjustClientAreaToFitScrollbars();
-  virtual void ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t& r,
+  virtual void ScrollbarHelperFunct(CWBScrollbarParams& s, int32_t* r,
                                     bool ScrollbarNeeded);
-  virtual void ScrollbardisplayHelperFunct(CWBScrollbarParams& s, int32_t& a1,
-                                           int32_t& a2, int32_t& thumbsize,
-                                           int32_t& thumbpos);
-  virtual bool ScrollbarRequired(CWBScrollbarParams& s);
-  virtual int32_t CalculateScrollbarMovement(CWBScrollbarParams& s,
+  virtual void ScrollbardisplayHelperFunct(const CWBScrollbarParams& s,
+                                           int32_t* a1, int32_t* a2,
+                                           int32_t* thumbsize,
+                                           int32_t* thumbpos);
+  virtual bool ScrollbarRequired(const CWBScrollbarParams& s);
+  virtual int32_t CalculateScrollbarMovement(const CWBScrollbarParams& s,
                                              int32_t scrollbarsize,
                                              int32_t delta);
   virtual void DrawScrollbarButton(CWBDrawAPI* API, CWBScrollbarParams& s,
@@ -431,9 +433,9 @@ class CWBItem : public IWBCSS {
   virtual void HandleVScrollbarClick(WBSCROLLDRAGMODE m);
   virtual bool AllowMouseHighlightWhileCaptureItem() { return false; }
 
-  bool ScanPXValue(std::string_view Value, int32_t& Result,
+  bool ScanPXValue(std::string_view Value, int32_t* Result,
                    std::string_view PropName);
-  bool ScanSkinValue(std::string_view Value, WBSKINELEMENTID& Result,
+  bool ScanSkinValue(std::string_view Value, WBSKINELEMENTID* Result,
                      std::string_view PropName);
 
   CWBItem* ChildSearcherFunct(std::string_view value,

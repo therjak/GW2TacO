@@ -295,7 +295,8 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
 
 int32_t GW2MapTimer::GetScrollbarStep() { return 5; }
 
-gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& point, Rect& crop_rect,
+gui::CWBItem* GW2MapTimer::GetItemUnderMouse(const Point& point,
+                                             const Rect& crop_rect,
                                              gui::WBMESSAGE message_type) {
   gui::CWBItem* item =
       gui::CWBItem::GetItemUnderMouse(point, crop_rect, message_type);
@@ -304,7 +305,7 @@ gui::CWBItem* GW2MapTimer::GetItemUnderMouse(Point& point, Rect& crop_rect,
 
     Rect sr = GetScreenRect();
     Rect b1, su, th, sd, b2;
-    GetVScrollbarRectangles(b1, su, th, sd, b2);
+    GetVScrollbarRectangles(&b1, &su, &th, &sd, &b2);
 
     b1.Move(sr.x1, sr.y1);
     return (point.x >= b1.x1 && point.x <= b1.x2) &&
@@ -470,6 +471,6 @@ GW2MapTimer::GW2MapTimer() : CWBGuiType() {
 GW2MapTimer::~GW2MapTimer() {}
 
 gui::CWBItem* GW2MapTimer::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                   Rect& pos) {
+                                   const Rect& pos) {
   return GW2MapTimer::Create(root, pos);
 }

@@ -68,8 +68,8 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
 
   for (int32_t x = 0; x < static_cast<int32_t>(Text.size()); x++) {
     if (ColoredText()) {
-      Color = GetTextColor(
-          x, Color);  // color coding, to be implemented in child classes
+      // color coding, to be implemented in child classes
+      Color = GetTextColor(x, Color);
     }
 
     const auto Char = Flags & WB_TEXTBOX_PASSWORD
@@ -96,7 +96,7 @@ void CWBTextBox::OnDraw(CWBDrawAPI* API) {
 
     // draw background highlight
 
-    if (GetTextBackground(x, BackgroundColor)) {
+    if (GetTextBackground(x, &BackgroundColor)) {
       const Rect Display =
           Rect(Pos, Point(Pos.x + Width, Pos.y + Font->GetLineHeight())) +
           Offset;
@@ -625,9 +625,9 @@ bool CWBTextBox::MessageProc(const CWBMessage& Message) {
     case WBM_REPOSITION: {
       const bool b = CWBItem::MessageProc(Message);
       int32_t mi = 0, ma = 0, vi = 0;
-      GetHScrollbarParameters(mi, ma, vi);
+      GetHScrollbarParameters(&mi, &ma, &vi);
       SetHScrollbarParameters(mi, ma, GetClientRect().Width());
-      GetVScrollbarParameters(mi, ma, vi);
+      GetVScrollbarParameters(&mi, &ma, &vi);
       SetVScrollbarParameters(mi, ma, GetClientRect().Height());
       SetCursorPos(CursorPos, false);
       return b;
@@ -1006,7 +1006,7 @@ void CWBTextBox::SetSelection(int32_t start, int32_t end) {
       std::min(static_cast<int32_t>(Text.size()), std::max(start, end));
 }
 
-CColor CWBTextBox::GetTextColor(int32_t Index, CColor& DefaultColor) {
+CColor CWBTextBox::GetTextColor(int32_t Index, const CColor& DefaultColor) {
   return DefaultColor;
 }
 
@@ -1035,7 +1035,8 @@ bool CWBTextBox::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem* CWBTextBox::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
+CWBItem* CWBTextBox::Factory(CWBItem* Root, const CXMLNode& node,
+                             const Rect& Pos) {
   int32_t Flags = 0;
   if (node.HasAttribute("singleline")) {
     int32_t b = 0;

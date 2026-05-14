@@ -782,10 +782,10 @@ Size CWBDrawAPI::GetAtlasElementSize(WBATLASHANDLE h) {
 
 static int32_t defragmentReportCount = 0;
 
-bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect& UV) {
+bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect* r) {
   if (!Atlas) return false;
 
-  if (!Atlas->RequestImageUse(h, UV)) {
+  if (!Atlas->RequestImageUse(h, r)) {
     Log_Dbg("Request Atlas Image Failed for {:d}", h);
     // atlas is full, attempt to fix
 
@@ -796,7 +796,7 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect& UV) {
     Atlas->Optimize();
 
     // Try adding the image again
-    if (!Atlas->RequestImageUse(h, UV)) {
+    if (!Atlas->RequestImageUse(h, r)) {
       // atlas is really, really, really full. fail.
 
       if (defragmentReportCount == 100) {
@@ -814,7 +814,7 @@ bool CWBDrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect& UV) {
       defragmentReportCount++;
 
       Atlas->Reset();
-      if (!Atlas->RequestImageUse(h, UV)) {
+      if (!Atlas->RequestImageUse(h, r)) {
         Log_Err("[gui] Image {:d} does not fit the atlas.", h);
         return false;
       }
@@ -836,7 +836,7 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
   }
 
   Rect UV;
-  if (!RequestAtlasImageUse(h, UV)) return;
+  if (!RequestAtlasImageUse(h, &UV)) return;
 
   DrawRect(Rect(x, y, UV.Width() + x, UV.Height() + y),
            UVTRANSLATION(UV.x1, Atlas->GetXRes()),
@@ -857,7 +857,7 @@ void CWBDrawAPI::DrawAtlasElement(WBATLASHANDLE h, const Rect& Position,
   }
 
   Rect UV;
-  if (!RequestAtlasImageUse(h, UV)) return;
+  if (!RequestAtlasImageUse(h, &UV)) return;
 
   Size tilesize = Position.Size();
   if (TileX) tilesize.x = UV.Width();
@@ -920,7 +920,7 @@ void CWBDrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const Rect& position,
   }
 
   Rect UV;
-  if (!RequestAtlasImageUse(h, UV)) return;
+  if (!RequestAtlasImageUse(h, &UV)) return;
 
   DrawRectRotated(pos, UVTRANSLATION(UV.x1 + 0.5f, Atlas->GetXRes()),
                   UVTRANSLATION(UV.y1 + 0.5f, Atlas->GetYRes()),

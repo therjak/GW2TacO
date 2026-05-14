@@ -187,7 +187,7 @@ void MarkerTypeData::Read(const CXMLNode& n, bool StoreSaveState) {
   if (_infoRangeSaved) n.GetAttributeAsFloat("infoRange", &info_range_);
 }
 
-void MarkerTypeData::Write(CXMLNode* n) {
+void MarkerTypeData::Write(CXMLNode* n) const {
   if (bits_.icon_file_saved_) n->SetAttribute("iconFile", icon_file_);
   if (bits_.size_saved_) n->SetAttributeFromFloat("iconSize", size_);
   if (bits_.alpha_saved_) n->SetAttributeFromFloat("alpha", alpha_);

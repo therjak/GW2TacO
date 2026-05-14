@@ -22,7 +22,7 @@ OverlayWindow::OverlayWindow() : CWBGuiType() {}
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
 gui::CWBItem* OverlayWindow::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                     Rect& Pos) {
+                                     const Rect& Pos) {
   return OverlayWindow::Create(Root, Pos);
 }
 

@@ -34,7 +34,7 @@ void DungeonProgress::OnDraw(gui::CWBDrawAPI* api) {
   if (key && key->Valid() &&
       (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
     if (!fetch_task_.valid() || fetch_task_.wait_for(std::chrono::seconds(0)) ==
-                                  std::future_status::ready) {
+                                    std::future_status::ready) {
       last_fetch_time_ = GetTime();
       fetch_task_ = std::async(std::launch::async, [this, key]() {
         const auto& dungeon_data = key->QuerySet("/v2/account/dungeons");
@@ -188,8 +188,8 @@ DungeonProgress::DungeonProgress()
 
 DungeonProgress::~DungeonProgress() {}
 
-gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* root, CXMLNode& node,
-                                       Rect& pos) {
+gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* root, const CXMLNode& node,
+                                       const Rect& pos) {
   return DungeonProgress::Create(root, pos);
 }
 

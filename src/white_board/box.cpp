@@ -449,7 +449,7 @@ void CWBBox::SetSizing(WBBOXAXIS axis, WBBOXSIZING siz) {
   RearrangeChildren();
 }
 
-CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, Rect& Pos) {
+CWBItem* CWBBox::Factory(CWBItem* Root, const CXMLNode& node, const Rect& Pos) {
   auto box = CWBBox::Create(Root, Pos);
 
   if (node.HasAttribute("clickthrough")) {

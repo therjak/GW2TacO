@@ -130,7 +130,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
         float width = GameToWorldCoords(20);
 
         trail.SetupAndDraw(const_buffer_.get(), texture, cam_, persp_, one,
-                           x == 0, fadeoutBubble, data,
+                           x == 0, fadeoutBubble, &data,
                            GetMapFade() * globalOpacity, width, width, 1.0f);
       }
 
@@ -254,7 +254,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
                                    2.0f));
 
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
-                           one, false, 0, data,
+                           one, false, 0, &data,
                            mapFade * alpha * minimapOpacity, 1.0f,
                            GameToWorldCoords(20) * 0.1f, trailWidth);
       }
@@ -303,14 +303,12 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
         }
 
         float alpha =
-            1.0f -
-            std::max(
-                0.0f,
-                std::min(1.0f, (mumbleLink.big_map.map_scale -
-                                trail.type_data_.mini_map_fade_out_level_) /
-                                   2.0f));
+            1.0f - std::clamp((mumbleLink.big_map.map_scale -
+                               trail.type_data_.mini_map_fade_out_level_) /
+                                  2.0f,
+                              0.0f, 1.0f);
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
-                           one, false, 0, data,
+                           one, false, 0, &data,
                            (1.0f - mapFade) * alpha * minimapOpacity, 1.0f,
                            GameToWorldCoords(20) * 0.1f, trailWidth);
       }
@@ -569,7 +567,7 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
 GW2TrailDisplay::~GW2TrailDisplay() { texture_cache_.clear(); }
 
 gui::CWBItem* GW2TrailDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                       Rect& Pos) {
+                                       const Rect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos);
 }
 
@@ -875,8 +873,8 @@ void GW2Trail::Update() {
 
 void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
                             renderer::Texture* texture, Matrix4x4& cam_,
-                            Matrix4x4& persp_, float& one, bool scaleData,
-                            int32_t fadeoutBubble, std::array<float, 8>& data,
+                            const Matrix4x4& persp_, float one, bool scaleData,
+                            int32_t fadeoutBubble, std::array<float, 8>* data,
                             float fadeAlpha, float width, float uvScale,
                             float width2d) {
   if (category_ && !category_->IsVisible()) return;
@@ -885,9 +883,9 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
 
   App->GetDevice()->SetTexture(renderer::Sampler::kPs0, texture);
 
-  data[0] = GetTime() / 1000.0f;
+  (*data)[0] = GetTime() / 1000.0f;
 
-  data[0] *= type_data_.anim_speed_;
+  (*data)[0] *= type_data_.anim_speed_;
 
   const_buffer_->Reset();
   const auto& cam_data = cam_.data();
@@ -904,30 +902,30 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
   const_buffer_->AddData(persp_data[3].data(), persp_size_x);
   const_buffer_->AddData(&mumbleLink.char_position, 12);
   const_buffer_->AddData(&one, 4);
-  const_buffer_->AddData(data.data(), 16);
+  const_buffer_->AddData(data->data(), 16);
   // color
 
-  data[0] = type_data_.color_.R() / 255.0f;
-  data[1] = type_data_.color_.G() / 255.0f;
-  data[2] = type_data_.color_.B() / 255.0f;
-  data[3] = type_data_.alpha_ * fadeAlpha;
+  (*data)[0] = type_data_.color_.R() / 255.0f;
+  (*data)[1] = type_data_.color_.G() / 255.0f;
+  (*data)[2] = type_data_.color_.B() / 255.0f;
+  (*data)[3] = type_data_.alpha_ * fadeAlpha;
 
   if (scaleData) {
-    data[0] *= 0.5;
-    data[1] *= 0.5;
-    data[2] *= 0.5;
+    (*data)[0] *= 0.5;
+    (*data)[1] *= 0.5;
+    (*data)[2] *= 0.5;
   }
 
-  const_buffer_->AddData(data.data(), 16);
+  const_buffer_->AddData(data->data(), 16);
 
-  data[0] = GameToWorldCoords(type_data_.fade_near_);
-  data[1] = GameToWorldCoords(type_data_.fade_far_);
-  data[2] = static_cast<float>(fadeoutBubble);
-  data[3] = width;
-  data[4] = uvScale;
-  data[5] = width2d;
+  (*data)[0] = GameToWorldCoords(type_data_.fade_near_);
+  (*data)[1] = GameToWorldCoords(type_data_.fade_far_);
+  (*data)[2] = static_cast<float>(fadeoutBubble);
+  (*data)[3] = width;
+  (*data)[4] = uvScale;
+  (*data)[5] = width2d;
 
-  const_buffer_->AddData(data.data(), 32);
+  const_buffer_->AddData(data->data(), 32);
 
   const_buffer_->Upload();
   App->GetDevice()->SetShaderConstants(const_buffer_);
@@ -941,7 +939,7 @@ void GW2Trail::SetCategory(GW2TacticalCategory* t) {
   type_ = t->GetFullTypeName();
 }
 
-bool GW2Trail::Import(CStreamReaderMemory& f, bool keepPoints) {
+bool GW2Trail::Import(const CStreamReaderMemory& f, bool keepPoints) {
   if (keepPoints) {
     positions_.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++) {

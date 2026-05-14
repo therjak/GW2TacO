@@ -2796,7 +2796,7 @@ bool LoadBMFontBinaryMonochrome(gui::CWBFontDescription* fd, uint8_t* Binary,
 
   int32_t xr = 0, yr = 0;
 
-  auto img = DecompressImage(image, ImageSize, xr, yr);
+  auto img = DecompressImage(image, ImageSize, &xr, &yr);
   if (!img) {
     Log_Err("[gui] Error loading font data: font img could not be loaded");
     return false;
@@ -2818,7 +2818,7 @@ bool LoadBMFontBinaryPNG(gui::CWBFontDescription* fd, uint8_t* Binary,
   int32_t xr = 0, yr = 0;
 
   std::unique_ptr<uint8_t[]> img = nullptr;
-  bool result = DecompressPNG(image, ImageSize, img, xr, yr);
+  bool result = DecompressPNG(image, ImageSize, &img, &xr, &yr);
   if (!result) {
     Log_Err("[gui] Error loading font data: font img could not be loaded");
     return false;

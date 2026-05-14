@@ -130,10 +130,10 @@ bool DX11Texture2D::Create(const uint8_t* data, const int32_t size) {
   Release();
 
   int32_t x_res = 0, y_res = 0;
-  auto img = DecompressImage(data, size, x_res, y_res);
+  auto img = DecompressImage(data, size, &x_res, &y_res);
 
   if (!img) {
-    if (!DecompressPNG(data, size, img, x_res, y_res)) {
+    if (!DecompressPNG(data, size, &img, &x_res, &y_res)) {
       if (!CreateDDSTextureFromMemory(
               d3d_device_, data, size,
               reinterpret_cast<ID3D11Resource**>(&texture_handle_), &view_)) {

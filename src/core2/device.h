@@ -73,7 +73,7 @@ class Device {
   Texture* GetTexture(Sampler sampler);
 
   virtual bool SetRenderTarget(Texture2D* rt) = 0;
-  virtual bool SetViewport(math::Rect viewport) = 0;
+  virtual bool SetViewport(const math::Rect& viewport) = 0;
 
   virtual std::unique_ptr<VertexShader> CreateVertexShader(
       LPCSTR code, int32_t code_size, LPCSTR entry_function,
@@ -128,6 +128,7 @@ class Device {
   virtual void TakeScreenShot(std::string_view filename) = 0;
 
   virtual void InitializeDebugAPI() = 0;
+
   virtual void CaptureCurrentFrame() = 0;
 
   virtual float GetUVOffset() { return 0; }

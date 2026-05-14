@@ -44,7 +44,8 @@ class CWBBox : public CWBGuiType<"box", CWBItem> {
     return r;
   }
   ~CWBBox() override;
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node, math::Rect& Pos);
+  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
+                          const math::Rect& Pos);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
   WBBOXARRANGEMENT GetArrangement();

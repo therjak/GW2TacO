@@ -63,7 +63,7 @@ bool CXMLDocument::LoadFromString(std::string_view s) {
   return true;
 }
 
-CXMLNode CXMLDocument::GetDocumentNode() { return {doc.get(), this, 0}; }
+CXMLNode CXMLDocument::GetDocumentNode() const { return {doc.get(), this, 0}; }
 
 std::string CXMLDocument::SaveToString() {
   std::stringstream ss;

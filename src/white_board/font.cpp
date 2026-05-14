@@ -38,7 +38,7 @@ CWBFontDescription::~CWBFontDescription() = default;
 bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
                                           const uint8_t* img, int32_t xr,
                                           int32_t yr,
-                                          std::vector<int>& enabledGlyphs) {
+                                          std::vector<int>* enabledGlyphs) {
   if (!img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0) return false;
 
   XRes = xr;
@@ -136,9 +136,9 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
         const BMCHAR* c = reinterpret_cast<BMCHAR*>(BlockData.get());
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMCHAR); x++) {
-          if (enabledGlyphs.empty() ||
-              std::find(enabledGlyphs.begin(), enabledGlyphs.end(), c[x].id) !=
-                  enabledGlyphs.end()) {
+          if (!enabledGlyphs || enabledGlyphs->empty() ||
+              std::find(enabledGlyphs->begin(), enabledGlyphs->end(),
+                        c[x].id) != enabledGlyphs->end()) {
             WBSYMBOLINPUT s;
             s.Char = c[x].id;
             s.Advance = c[x].xadvance;
@@ -180,16 +180,16 @@ bool CWBFontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
   return true;
 }
 
-bool ReadInt(const std::string& s, const std::string& val, int32_t& result) {
+bool ReadInt(const std::string& s, const std::string& val, int32_t* result) {
   auto p = s.find(val + "=");
   if (p == s.npos) return false;
-  return std::sscanf(s.substr(p).c_str(), (val + "=%d").c_str(), &result) == 1;
+  return std::sscanf(s.substr(p).c_str(), (val + "=%d").c_str(), result) == 1;
 }
 
 bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
                                         const uint8_t* img, int32_t xr,
                                         int32_t yr,
-                                        std::vector<int>& enabledGlyphs) {
+                                        std::vector<int>* enabledGlyphs) {
   if (!img || !Binary || BinarySize <= 0 || xr <= 0 || yr <= 0) return false;
 
   XRes = xr;
@@ -214,8 +214,8 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
     if (s.find("info") == 0) continue;
 
     if (s.find("common") == 0) {
-      if (!ReadInt(s, "lineHeight", LineHeight)) return false;
-      if (!ReadInt(s, "base", Base)) return false;
+      if (!ReadInt(s, "lineHeight", &LineHeight)) return false;
+      if (!ReadInt(s, "base", &Base)) return false;
       continue;
     }
 
@@ -229,30 +229,30 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       WBSYMBOLINPUT r;
       int32_t v = 0;
 
-      if (!ReadInt(s, "id", v)) return false;
+      if (!ReadInt(s, "id", &v)) return false;
       r.Char = v;
 
-      if (!ReadInt(s, "xadvance", v)) return false;
+      if (!ReadInt(s, "xadvance", &v)) return false;
       r.Advance = v;
 
-      if (!ReadInt(s, "xoffset", v)) return false;
+      if (!ReadInt(s, "xoffset", &v)) return false;
       r.Offset.x = v;
 
-      if (!ReadInt(s, "yoffset", v)) return false;
+      if (!ReadInt(s, "yoffset", &v)) return false;
       r.Offset.y = v;
 
       int x = 0, y = 0, width = 0, height = 0;
 
-      if (!ReadInt(s, "x", x)) return false;
-      if (!ReadInt(s, "y", y)) return false;
-      if (!ReadInt(s, "width", width)) return false;
-      if (!ReadInt(s, "height", height)) return false;
+      if (!ReadInt(s, "x", &x)) return false;
+      if (!ReadInt(s, "y", &y)) return false;
+      if (!ReadInt(s, "width", &width)) return false;
+      if (!ReadInt(s, "height", &height)) return false;
 
       r.UV = Rect(x, y, x + width, y + height);
 
-      if (enabledGlyphs.empty() ||
-          std::find(enabledGlyphs.begin(), enabledGlyphs.end(), r.Char) !=
-              enabledGlyphs.end()) {
+      if (!enabledGlyphs || enabledGlyphs->empty() ||
+          std::find(enabledGlyphs->begin(), enabledGlyphs->end(), r.Char) !=
+              enabledGlyphs->end()) {
         if (r.Char >= 0 && r.Char <= 0xffff) {
           Alphabet.push_back(r);
         }
@@ -267,13 +267,13 @@ bool CWBFontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       WBKERNINGDATA d{};
       int32_t v = 0;
 
-      if (!ReadInt(s, "first", v)) return false;
+      if (!ReadInt(s, "first", &v)) return false;
       d.First = v;
 
-      if (!ReadInt(s, "second", v)) return false;
+      if (!ReadInt(s, "second", &v)) return false;
       d.Second = v;
 
-      if (!ReadInt(s, "amount", v)) return false;
+      if (!ReadInt(s, "amount", &v)) return false;
       d.Amount = v;
 
       KerningData.push_back(d);

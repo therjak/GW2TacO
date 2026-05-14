@@ -20,14 +20,14 @@ CStyleManager::~CStyleManager() = default;
 
 void CStyleManager::ParseDeclarations(
     std::string_view s,
-    std::unordered_map<std::string, std::string>& dRuleset) {
+    std::unordered_map<std::string, std::string>* dRuleset) {
   auto propertiesArr = Split(s, ";");
   for (const auto& p : propertiesArr) {
     auto prop = Split(p, ":");
     if (prop.size() != static_cast<size_t>(2)) continue;
     std::string key(Trim(prop[0]));
     std::string value(Trim(prop[1]));
-    dRuleset[key] = value;
+    (*dRuleset)[key] = value;
   }
 }
 
@@ -47,7 +47,7 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
     if (properties.size() != 2) continue;
 
     std::unordered_map<std::string, std::string> dRuleset;
-    ParseDeclarations(properties[1], dRuleset);
+    ParseDeclarations(properties[1], &dRuleset);
 
     auto selectors = Split(properties[0], ",");
     for (const auto& s : selectors) {
@@ -64,10 +64,10 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
 void CStyleManager::Reset() { dRules.clear(); }
 
 void CStyleManager::CollectElementsBySimpleSelector(
-    CWBItem* pItem, std::vector<CWBItem*>& itemset, std::string_view selector,
+    CWBItem* pItem, std::vector<CWBItem*>* itemset, std::string_view selector,
     bool bIncludeRoot) {
   if (bIncludeRoot && pItem->IsFitForSelector(selector)) {
-    itemset.emplace_back(pItem);
+    itemset->emplace_back(pItem);
   }
 
   for (unsigned int i = 0; i < pItem->NumChildren(); i++) {
@@ -85,7 +85,7 @@ std::vector<CWBItem*> CStyleManager::GetElementsBySelector(
     if (components[i].size() < 1) continue;
     std::vector<CWBItem*> narrowResult;
     for (const auto& r : result) {
-      CollectElementsBySimpleSelector(r, narrowResult, components[i], i == 0);
+      CollectElementsBySimpleSelector(r, &narrowResult, components[i], i == 0);
     }
     result = narrowResult;
   }
@@ -119,7 +119,7 @@ void CStyleManager::ApplyStyles(CWBItem* pRootItem) {
 void CStyleManager::ApplyStylesFromDeclarations(
     CWBItem* pRootItem, std::string_view sDeclarations) {
   std::unordered_map<std::string, std::string> dRuleset;
-  ParseDeclarations(sDeclarations, dRuleset);
+  ParseDeclarations(sDeclarations, &dRuleset);
 
   for (auto& r : dRuleset) {
     std::string rule = r.first;

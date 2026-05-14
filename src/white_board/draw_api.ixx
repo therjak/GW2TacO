@@ -132,7 +132,7 @@ class CWBDrawAPI {
                 std::array<WBGUIVERTEX, 6>& Vertices, int32_t& VertexCount);
   void RenderDisplayList();
 
-  bool RequestAtlasImageUse(WBATLASHANDLE h, math::Rect& r);
+  bool RequestAtlasImageUse(WBATLASHANDLE h, math::Rect* r);
 
   template <class UV, class RES>
   float UVTRANSLATION(UV uv, RES res) {

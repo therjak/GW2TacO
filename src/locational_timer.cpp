@@ -170,6 +170,6 @@ TimerDisplay::TimerDisplay() : CWBGuiType() {}
 TimerDisplay::~TimerDisplay() = default;
 
 gui::CWBItem* TimerDisplay::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                    Rect& pos) {
+                                    const Rect& pos) {
   return TimerDisplay::Create(root, pos);
 }

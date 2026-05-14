@@ -141,7 +141,7 @@ CAtlas::CAtlas(int32_t XSize, int32_t YSize)
   }
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), r);
+  RequestImageUse(WhitePixel->GetHandle(), &r);
   WhitePixelPosition = r.TopLeft();
 }
 
@@ -289,7 +289,7 @@ bool CAtlas::Optimize(bool DebugMode) {
   }
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), r);
+  RequestImageUse(WhitePixel->GetHandle(), &r);
   WhitePixelPosition = r.TopLeft() + Point(1, 1);
 
   TextureUpdateNeeded = true;
@@ -325,9 +325,9 @@ Size CAtlas::GetSize(WBATLASHANDLE h) {
   return Size(0, 0);
 }
 
-bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect& r) {
+bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect* r) {
   if (!h) {
-    r = Rect(0, 0, 0, 0);
+    *r = Rect(0, 0, 0, 0);
     return true;
   }
 
@@ -346,7 +346,7 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect& r) {
     }
 
     if (!n) {
-      r = Rect(0, 0, 0, 0);
+      *r = Rect(0, 0, 0, 0);
       return false;
     }
   }
@@ -355,7 +355,7 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect& r) {
   if (n->GetImage()) {
     n->GetImage()->TagRequired();
   }
-  r = n->Area;
+  *r = n->Area;
 
   return true;
 }
@@ -402,7 +402,7 @@ bool CAtlas::Reset() {
   if (!PackImage(WhitePixel)) return false;
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), r);
+  RequestImageUse(WhitePixel->GetHandle(), &r);
   WhitePixelPosition = r.TopLeft() + Point(1, 1);
 
   TextureUpdateNeeded = true;
@@ -433,7 +433,7 @@ bool CAtlas::Resize(renderer::Device* Device, int32_t XSize, int32_t YSize) {
   if (!PackImage(WhitePixel)) return false;
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), r);
+  RequestImageUse(WhitePixel->GetHandle(), &r);
   WhitePixelPosition = r.TopLeft() + Point(1, 1);
 
   return true;
