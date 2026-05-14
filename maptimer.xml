@@ -359,5 +359,9 @@
       <Event Name="Secrets of the Weald" Length="35" Color="80df5b2c" />
       <Event Name="" Length="85" Color="00000000" />
     </Map>
+    <Map Category="voe" Name="Shackles of the Ancients" Length="120" Start="10" id="voesa">
+      <Event Name="Shackles of the Ancients" Length="25" Color="80df5b2c" />
+      <Event Name="" Length="85" Color="00000000" />
+    </Map>
   </Maps>
 </GW2MapTimer>
