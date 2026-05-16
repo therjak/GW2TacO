@@ -105,15 +105,11 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
                                     std::future_status::ready) {
       last_fetch_time_ = GetTime();
       fetch_task_ = std::async(std::launch::async, [this, key]() {
-        auto qbuys = "{\"buys\":" +
-                     key->QueryAPI("/v2/commerce/transactions/current/buys");
-        auto qsells = "{\"sells\":" +
-                      key->QueryAPI("/v2/commerce/transactions/current/sells");
+        auto qbuys = key->QueryAPI("/v2/commerce/transactions/current/buys");
+        auto qsells = key->QueryAPI("/v2/commerce/transactions/current/sells");
 
-        std::vector<TransactionItem> incoming =
-            ParseTransactionList(qbuys, "buys");
-        std::vector<TransactionItem> outgoing =
-            ParseTransactionList(qsells, "sells");
+        std::vector<TransactionItem> incoming = ParseTransactionList(qbuys);
+        std::vector<TransactionItem> outgoing = ParseTransactionList(qsells);
 
         std::vector<int32_t> unknown_items;
         std::vector<int32_t> price_check_list;
@@ -156,8 +152,8 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
 
                 std::unique_ptr<uint8_t[]> image_data = nullptr;
                 int32_t x_res = 0, y_res = 0;
-                if (DecompressPNG((uint8_t*)png.c_str(), png.size(), &image_data,
-                                  &x_res, &y_res)) {
+                if (DecompressPNG((uint8_t*)png.c_str(), png.size(),
+                                  &image_data, &x_res, &y_res)) {
                   ARGBtoABGR(image_data.get(), x_res, y_res);
                   Rect area = Rect(0, 0, x_res, y_res);
                   item_data.icon = GetApplication()->GetAtlas()->AddImage(

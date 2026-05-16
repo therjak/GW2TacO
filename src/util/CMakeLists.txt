@@ -4,7 +4,6 @@ set(PROJECT_NAME third_party)
 # Source groups
 ################################################################################
 set(Header_Files
-    "jsonxx.h"
     "miniz.h"
     "RapidXML/rapidxml.hpp"
     "RapidXML/rapidxml_iterators.hpp"
@@ -16,7 +15,6 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "jsonxx.cc"
     "miniz.c"
 )
 source_group("Source Files" FILES ${Source_Files})
