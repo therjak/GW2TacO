@@ -6,7 +6,7 @@ module;
 #include <unordered_set>
 #include <vector>
 
-#include "src/util/jsonxx.h"
+#include "nlohmann/json.hpp"
 
 module taco.web;
 
@@ -14,43 +14,34 @@ import math;
 
 std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
   std::vector<WvwObjectiveData> result;
-  jsonxx::Array wvw_objs;
-  wvw_objs.parse(json_data);
-  for (auto& x : wvw_objs.values()) {
-    if (!x->is<jsonxx::Object>()) continue;
-    auto obj = x->get<jsonxx::Object>();
+  nlohmann::json wvw_objs = nlohmann::json::parse(json_data, nullptr, false);
+  if (wvw_objs.is_discarded() || !wvw_objs.is_array()) return result;
+
+  for (const auto& obj : wvw_objs) {
+    if (!obj.is_object()) continue;
 
     WvwObjectiveData data;
-    if (obj.has<jsonxx::String>("id")) data.id = obj.get<jsonxx::String>("id");
-    if (obj.has<jsonxx::String>("name"))
-      data.name = obj.get<jsonxx::String>("name");
-    if (obj.has<jsonxx::String>("type"))
-      data.type = obj.get<jsonxx::String>("type");
-    if (obj.has<jsonxx::Number>("sector_id"))
-      data.sector_id = static_cast<int>(obj.get<jsonxx::Number>("sector_id"));
-    if (obj.has<jsonxx::Number>("map_id"))
-      data.map_id = static_cast<int>(obj.get<jsonxx::Number>("map_id"));
-    if (obj.has<jsonxx::String>("map_type"))
-      data.map_type = obj.get<jsonxx::String>("map_type");
-    if (obj.has<jsonxx::String>("marker"))
-      data.marker = obj.get<jsonxx::String>("marker");
-    if (obj.has<jsonxx::String>("chat_link"))
-      data.chat_link = obj.get<jsonxx::String>("chat_link");
-    if (obj.has<jsonxx::Number>("upgrade_id"))
-      data.upgrade_id = static_cast<int>(obj.get<jsonxx::Number>("upgrade_id"));
+    if (obj.contains("id") && obj["id"].is_string()) data.id = obj["id"].get<std::string>();
+    if (obj.contains("name") && obj["name"].is_string()) data.name = obj["name"].get<std::string>();
+    if (obj.contains("type") && obj["type"].is_string()) data.type = obj["type"].get<std::string>();
+    if (obj.contains("sector_id") && obj["sector_id"].is_number()) data.sector_id = obj["sector_id"].get<int>();
+    if (obj.contains("map_id") && obj["map_id"].is_number()) data.map_id = obj["map_id"].get<int>();
+    if (obj.contains("map_type") && obj["map_type"].is_string()) data.map_type = obj["map_type"].get<std::string>();
+    if (obj.contains("marker") && obj["marker"].is_string()) data.marker = obj["marker"].get<std::string>();
+    if (obj.contains("chat_link") && obj["chat_link"].is_string()) data.chat_link = obj["chat_link"].get<std::string>();
+    if (obj.contains("upgrade_id") && obj["upgrade_id"].is_number()) data.upgrade_id = obj["upgrade_id"].get<int>();
 
-    if (obj.has<jsonxx::Array>("coord")) {
-      for (auto& v : obj.get<jsonxx::Array>("coord").values()) {
-        if (v->is<jsonxx::Number>()) {
-          data.coord.push_back(static_cast<float>(v->get<jsonxx::Number>()));
+    if (obj.contains("coord") && obj["coord"].is_array()) {
+      for (const auto& v : obj["coord"]) {
+        if (v.is_number()) {
+          data.coord.push_back(v.get<float>());
         }
       }
     }
-    if (obj.has<jsonxx::Array>("label_coord")) {
-      for (auto& v : obj.get<jsonxx::Array>("label_coord").values()) {
-        if (v->is<jsonxx::Number>()) {
-          data.label_coord.push_back(
-              static_cast<float>(v->get<jsonxx::Number>()));
+    if (obj.contains("label_coord") && obj["label_coord"].is_array()) {
+      for (const auto& v : obj["label_coord"]) {
+        if (v.is_number()) {
+          data.label_coord.push_back(v.get<float>());
         }
       }
     }
@@ -61,63 +52,46 @@ std::vector<WvwObjectiveData> ParseWvwObjectives(const std::string& json_data) {
 
 WvwMapData ParseWvwMapData(const std::string& json_data) {
   WvwMapData data;
-  jsonxx::Object map;
-  if (!map.parse(json_data)) return data;
+  nlohmann::json map = nlohmann::json::parse(json_data, nullptr, false);
+  if (map.is_discarded() || !map.is_object()) return data;
 
-  if (map.has<jsonxx::Number>("id"))
-    data.id = static_cast<int>(map.get<jsonxx::Number>("id"));
-  if (map.has<jsonxx::String>("name"))
-    data.name = map.get<jsonxx::String>("name");
-  if (map.has<jsonxx::Number>("min_level"))
-    data.min_level = static_cast<int>(map.get<jsonxx::Number>("min_level"));
-  if (map.has<jsonxx::Number>("max_level"))
-    data.max_level = static_cast<int>(map.get<jsonxx::Number>("max_level"));
-  if (map.has<jsonxx::Number>("default_floor"))
-    data.default_floor =
-        static_cast<int>(map.get<jsonxx::Number>("default_floor"));
-  if (map.has<jsonxx::String>("type"))
-    data.type = map.get<jsonxx::String>("type");
+  if (map.contains("id") && map["id"].is_number()) data.id = map["id"].get<int>();
+  if (map.contains("name") && map["name"].is_string()) data.name = map["name"].get<std::string>();
+  if (map.contains("min_level") && map["min_level"].is_number()) data.min_level = map["min_level"].get<int>();
+  if (map.contains("max_level") && map["max_level"].is_number()) data.max_level = map["max_level"].get<int>();
+  if (map.contains("default_floor") && map["default_floor"].is_number()) data.default_floor = map["default_floor"].get<int>();
+  if (map.contains("type") && map["type"].is_string()) data.type = map["type"].get<std::string>();
 
-  if (map.has<jsonxx::Array>("floors")) {
-    for (auto& v : map.get<jsonxx::Array>("floors").values()) {
-      if (v->is<jsonxx::Number>())
-        data.floors.push_back(static_cast<int>(v->get<jsonxx::Number>()));
+  if (map.contains("floors") && map["floors"].is_array()) {
+    for (const auto& v : map["floors"]) {
+      if (v.is_number()) data.floors.push_back(v.get<int>());
     }
   }
 
-  if (map.has<jsonxx::Number>("region_id"))
-    data.region_id = static_cast<int>(map.get<jsonxx::Number>("region_id"));
-  if (map.has<jsonxx::String>("region_name"))
-    data.region_name = map.get<jsonxx::String>("region_name");
-  if (map.has<jsonxx::Number>("continent_id"))
-    data.continent_id =
-        static_cast<int>(map.get<jsonxx::Number>("continent_id"));
-  if (map.has<jsonxx::String>("continent_name"))
-    data.continent_name = map.get<jsonxx::String>("continent_name");
+  if (map.contains("region_id") && map["region_id"].is_number()) data.region_id = map["region_id"].get<int>();
+  if (map.contains("region_name") && map["region_name"].is_string()) data.region_name = map["region_name"].get<std::string>();
+  if (map.contains("continent_id") && map["continent_id"].is_number()) data.continent_id = map["continent_id"].get<int>();
+  if (map.contains("continent_name") && map["continent_name"].is_string()) data.continent_name = map["continent_name"].get<std::string>();
 
-  auto parse_rect = [](const jsonxx::Array& arr) -> std::optional<math::Rect> {
-    if (arr.values().size() != 2) return std::nullopt;
+  auto parse_rect = [](const nlohmann::json& arr) -> std::optional<math::Rect> {
+    if (!arr.is_array() || arr.size() != 2) return std::nullopt;
     int rect_values[4];
     int rect_cnt = 0;
     for (int x = 0; x < 2; x++) {
-      if (!arr.values()[x]->is<jsonxx::Array>()) return std::nullopt;
-      auto coords = arr.values()[x]->get<jsonxx::Array>().values();
-      if (coords.size() != 2) return std::nullopt;
+      if (!arr[x].is_array() || arr[x].size() != 2) return std::nullopt;
       for (int y = 0; y < 2; y++) {
-        if (!coords[y]->is<jsonxx::Number>()) return std::nullopt;
-        rect_values[rect_cnt++] =
-            static_cast<int>(coords[y]->get<jsonxx::Number>());
+        if (!arr[x][y].is_number()) return std::nullopt;
+        rect_values[rect_cnt++] = arr[x][y].get<int>();
       }
     }
-    return math::Rect(rect_values[0], rect_values[1], rect_values[2],
-                      rect_values[3]);
+    return math::Rect(rect_values[0], rect_values[1], rect_values[2], rect_values[3]);
   };
 
-  if (map.has<jsonxx::Array>("map_rect")) {
-    data.map_rect = parse_rect(map.get<jsonxx::Array>("map_rect"));
+  if (map.contains("map_rect")) {
+    data.map_rect = parse_rect(map["map_rect"]);
   }
-  if (map.has<jsonxx::Array>("continent_rect")) {
-    data.continent_rect = parse_rect(map.get<jsonxx::Array>("continent_rect"));
+  if (map.contains("continent_rect")) {
+    data.continent_rect = parse_rect(map["continent_rect"]);
   }
 
   return data;
@@ -125,118 +99,81 @@ WvwMapData ParseWvwMapData(const std::string& json_data) {
 
 WvwMatch ParseWvwMatch(const std::string& json_data) {
   WvwMatch result;
-  jsonxx::Object o;
-  if (!o.parse(json_data)) return result;
+  nlohmann::json o = nlohmann::json::parse(json_data, nullptr, false);
+  if (o.is_discarded() || !o.is_object()) return result;
 
-  if (o.has<jsonxx::String>("id")) result.id = o.get<jsonxx::String>("id");
-  if (o.has<jsonxx::String>("start_time"))
-    result.start_time = o.get<jsonxx::String>("start_time");
-  if (o.has<jsonxx::String>("end_time"))
-    result.end_time = o.get<jsonxx::String>("end_time");
+  if (o.contains("id") && o["id"].is_string()) result.id = o["id"].get<std::string>();
+  if (o.contains("start_time") && o["start_time"].is_string()) result.start_time = o["start_time"].get<std::string>();
+  if (o.contains("end_time") && o["end_time"].is_string()) result.end_time = o["end_time"].get<std::string>();
 
-  auto parse_string_int_map = [](const jsonxx::Object& obj) {
+  auto parse_string_int_map = [](const nlohmann::json& obj) {
     std::unordered_map<std::string, int> res;
-    for (const auto& kv : obj.kv_map()) {
-      if (kv.second->is<jsonxx::Number>()) {
-        res[kv.first] = static_cast<int>(kv.second->get<jsonxx::Number>());
+    if (obj.is_object()) {
+      for (auto it = obj.begin(); it != obj.end(); ++it) {
+        if (it.value().is_number()) {
+          res[it.key()] = it.value().get<int>();
+        }
       }
     }
     return res;
   };
 
-  if (o.has<jsonxx::Object>("scores"))
-    result.scores = parse_string_int_map(o.get<jsonxx::Object>("scores"));
-  if (o.has<jsonxx::Object>("worlds"))
-    result.worlds = parse_string_int_map(o.get<jsonxx::Object>("worlds"));
-  if (o.has<jsonxx::Object>("deaths"))
-    result.deaths = parse_string_int_map(o.get<jsonxx::Object>("deaths"));
-  if (o.has<jsonxx::Object>("kills"))
-    result.kills = parse_string_int_map(o.get<jsonxx::Object>("kills"));
-  if (o.has<jsonxx::Object>("victory_points"))
-    result.victory_points =
-        parse_string_int_map(o.get<jsonxx::Object>("victory_points"));
+  if (o.contains("scores")) result.scores = parse_string_int_map(o["scores"]);
+  if (o.contains("worlds")) result.worlds = parse_string_int_map(o["worlds"]);
+  if (o.contains("deaths")) result.deaths = parse_string_int_map(o["deaths"]);
+  if (o.contains("kills")) result.kills = parse_string_int_map(o["kills"]);
+  if (o.contains("victory_points")) result.victory_points = parse_string_int_map(o["victory_points"]);
 
-  if (o.has<jsonxx::Object>("all_worlds")) {
-    auto aw = o.get<jsonxx::Object>("all_worlds");
-    for (const auto& kv : aw.kv_map()) {
-      if (kv.second->is<jsonxx::Array>()) {
+  if (o.contains("all_worlds") && o["all_worlds"].is_object()) {
+    for (auto it = o["all_worlds"].begin(); it != o["all_worlds"].end(); ++it) {
+      if (it.value().is_array()) {
         std::vector<int> worlds;
-        for (auto& v : kv.second->get<jsonxx::Array>().values()) {
-          if (v->is<jsonxx::Number>())
-            worlds.push_back(static_cast<int>(v->get<jsonxx::Number>()));
+        for (const auto& v : it.value()) {
+          if (v.is_number()) worlds.push_back(v.get<int>());
         }
-        result.all_worlds[kv.first] = worlds;
+        result.all_worlds[it.key()] = worlds;
       }
     }
   }
 
-  if (o.has<jsonxx::Array>("maps")) {
-    for (auto& m : o.get<jsonxx::Array>("maps").values()) {
-      if (!m->is<jsonxx::Object>()) continue;
-      auto map_obj = m->get<jsonxx::Object>();
+  if (o.contains("maps") && o["maps"].is_array()) {
+    for (const auto& m : o["maps"]) {
+      if (!m.is_object()) continue;
       WvwMatchMap map_data;
-      if (map_obj.has<jsonxx::Number>("id"))
-        map_data.id = static_cast<int>(map_obj.get<jsonxx::Number>("id"));
-      if (map_obj.has<jsonxx::String>("type"))
-        map_data.type = map_obj.get<jsonxx::String>("type");
-      if (map_obj.has<jsonxx::Object>("scores"))
-        map_data.scores =
-            parse_string_int_map(map_obj.get<jsonxx::Object>("scores"));
-      if (map_obj.has<jsonxx::Object>("deaths"))
-        map_data.deaths =
-            parse_string_int_map(map_obj.get<jsonxx::Object>("deaths"));
-      if (map_obj.has<jsonxx::Object>("kills"))
-        map_data.kills =
-            parse_string_int_map(map_obj.get<jsonxx::Object>("kills"));
+      if (m.contains("id") && m["id"].is_number()) map_data.id = m["id"].get<int>();
+      if (m.contains("type") && m["type"].is_string()) map_data.type = m["type"].get<std::string>();
+      if (m.contains("scores")) map_data.scores = parse_string_int_map(m["scores"]);
+      if (m.contains("deaths")) map_data.deaths = parse_string_int_map(m["deaths"]);
+      if (m.contains("kills")) map_data.kills = parse_string_int_map(m["kills"]);
 
-      if (map_obj.has<jsonxx::Array>("bonuses")) {
-        for (auto& b : map_obj.get<jsonxx::Array>("bonuses").values()) {
-          if (!b->is<jsonxx::Object>()) continue;
-          auto bonus_obj = b->get<jsonxx::Object>();
+      if (m.contains("bonuses") && m["bonuses"].is_array()) {
+        for (const auto& b : m["bonuses"]) {
+          if (!b.is_object()) continue;
           WvwMatchBonus bonus;
-          if (bonus_obj.has<jsonxx::String>("type"))
-            bonus.type = bonus_obj.get<jsonxx::String>("type");
-          if (bonus_obj.has<jsonxx::String>("owner"))
-            bonus.owner = bonus_obj.get<jsonxx::String>("owner");
+          if (b.contains("type") && b["type"].is_string()) bonus.type = b["type"].get<std::string>();
+          if (b.contains("owner") && b["owner"].is_string()) bonus.owner = b["owner"].get<std::string>();
           map_data.bonuses.push_back(bonus);
         }
       }
 
-      if (map_obj.has<jsonxx::Array>("objectives")) {
-        for (auto& obj : map_obj.get<jsonxx::Array>("objectives").values()) {
-          if (!obj->is<jsonxx::Object>()) continue;
-          auto objective = obj->get<jsonxx::Object>();
+      if (m.contains("objectives") && m["objectives"].is_array()) {
+        for (const auto& obj : m["objectives"]) {
+          if (!obj.is_object()) continue;
           WvwMatchObjective obj_data;
 
-          if (objective.has<jsonxx::String>("id"))
-            obj_data.id = objective.get<jsonxx::String>("id");
-          if (objective.has<jsonxx::String>("type"))
-            obj_data.type = objective.get<jsonxx::String>("type");
-          if (objective.has<jsonxx::String>("owner"))
-            obj_data.owner = objective.get<jsonxx::String>("owner");
-          if (objective.has<jsonxx::String>("last_flipped"))
-            obj_data.last_flipped =
-                objective.get<jsonxx::String>("last_flipped");
-          if (objective.has<jsonxx::String>("claimed_by"))
-            obj_data.claimed_by = objective.get<jsonxx::String>("claimed_by");
-          if (objective.has<jsonxx::String>("claimed_at"))
-            obj_data.claimed_at = objective.get<jsonxx::String>("claimed_at");
-          if (objective.has<jsonxx::Number>("points_tick"))
-            obj_data.points_tick =
-                static_cast<int>(objective.get<jsonxx::Number>("points_tick"));
-          if (objective.has<jsonxx::Number>("points_capture"))
-            obj_data.points_capture = static_cast<int>(
-                objective.get<jsonxx::Number>("points_capture"));
-          if (objective.has<jsonxx::Number>("yaks_delivered"))
-            obj_data.yaks_delivered = static_cast<int>(
-                objective.get<jsonxx::Number>("yaks_delivered"));
+          if (obj.contains("id") && obj["id"].is_string()) obj_data.id = obj["id"].get<std::string>();
+          if (obj.contains("type") && obj["type"].is_string()) obj_data.type = obj["type"].get<std::string>();
+          if (obj.contains("owner") && obj["owner"].is_string()) obj_data.owner = obj["owner"].get<std::string>();
+          if (obj.contains("last_flipped") && obj["last_flipped"].is_string()) obj_data.last_flipped = obj["last_flipped"].get<std::string>();
+          if (obj.contains("claimed_by") && obj["claimed_by"].is_string()) obj_data.claimed_by = obj["claimed_by"].get<std::string>();
+          if (obj.contains("claimed_at") && obj["claimed_at"].is_string()) obj_data.claimed_at = obj["claimed_at"].get<std::string>();
+          if (obj.contains("points_tick") && obj["points_tick"].is_number()) obj_data.points_tick = obj["points_tick"].get<int>();
+          if (obj.contains("points_capture") && obj["points_capture"].is_number()) obj_data.points_capture = obj["points_capture"].get<int>();
+          if (obj.contains("yaks_delivered") && obj["yaks_delivered"].is_number()) obj_data.yaks_delivered = obj["yaks_delivered"].get<int>();
 
-          if (objective.has<jsonxx::Array>("guild_upgrades")) {
-            for (auto& gu :
-                 objective.get<jsonxx::Array>("guild_upgrades").values()) {
-              if (gu->is<jsonxx::Number>())
-                obj_data.guild_upgrades.push_back(
-                    static_cast<int>(gu->get<jsonxx::Number>()));
+          if (obj.contains("guild_upgrades") && obj["guild_upgrades"].is_array()) {
+            for (const auto& gu : obj["guild_upgrades"]) {
+              if (gu.is_number()) obj_data.guild_upgrades.push_back(gu.get<int>());
             }
           }
 
@@ -247,29 +184,20 @@ WvwMatch ParseWvwMatch(const std::string& json_data) {
     }
   }
 
-  if (o.has<jsonxx::Array>("skirmishes")) {
-    for (auto& s : o.get<jsonxx::Array>("skirmishes").values()) {
-      if (!s->is<jsonxx::Object>()) continue;
-      auto skirmish_obj = s->get<jsonxx::Object>();
+  if (o.contains("skirmishes") && o["skirmishes"].is_array()) {
+    for (const auto& s : o["skirmishes"]) {
+      if (!s.is_object()) continue;
       WvwMatchSkirmish skirmish;
 
-      if (skirmish_obj.has<jsonxx::Number>("id"))
-        skirmish.id = static_cast<int>(skirmish_obj.get<jsonxx::Number>("id"));
-      if (skirmish_obj.has<jsonxx::Object>("scores"))
-        skirmish.scores =
-            parse_string_int_map(skirmish_obj.get<jsonxx::Object>("scores"));
+      if (s.contains("id") && s["id"].is_number()) skirmish.id = s["id"].get<int>();
+      if (s.contains("scores")) skirmish.scores = parse_string_int_map(s["scores"]);
 
-      if (skirmish_obj.has<jsonxx::Array>("map_scores")) {
-        for (auto& ms :
-             skirmish_obj.get<jsonxx::Array>("map_scores").values()) {
-          if (!ms->is<jsonxx::Object>()) continue;
-          auto map_score_obj = ms->get<jsonxx::Object>();
+      if (s.contains("map_scores") && s["map_scores"].is_array()) {
+        for (const auto& ms : s["map_scores"]) {
+          if (!ms.is_object()) continue;
           WvwMatchSkirmishMap map_score;
-          if (map_score_obj.has<jsonxx::String>("type"))
-            map_score.type = map_score_obj.get<jsonxx::String>("type");
-          if (map_score_obj.has<jsonxx::Object>("scores"))
-            map_score.scores = parse_string_int_map(
-                map_score_obj.get<jsonxx::Object>("scores"));
+          if (ms.contains("type") && ms["type"].is_string()) map_score.type = ms["type"].get<std::string>();
+          if (ms.contains("scores")) map_score.scores = parse_string_int_map(ms["scores"]);
           skirmish.map_scores.push_back(map_score);
         }
       }
@@ -280,40 +208,32 @@ WvwMatch ParseWvwMatch(const std::string& json_data) {
   return result;
 }
 
-bool ParseTransaction(const jsonxx::Object& object, TransactionItem* output) {
-  if (!object.has<jsonxx::Number>("id") ||
-      !object.has<jsonxx::Number>("item_id") ||
-      !object.has<jsonxx::Number>("price") ||
-      !object.has<jsonxx::Number>("quantity") ||
-      !object.has<jsonxx::String>("created")) {
+bool ParseTransaction(const nlohmann::json& object, TransactionItem* output) {
+  if (!object.is_object() ||
+      !object.contains("id") || !object["id"].is_number() ||
+      !object.contains("item_id") || !object["item_id"].is_number() ||
+      !object.contains("price") || !object["price"].is_number() ||
+      !object.contains("quantity") || !object["quantity"].is_number() ||
+      !object.contains("created") || !object["created"].is_string()) {
     return false;
   }
-  output->transaction_id = int32_t(object.get<jsonxx::Number>("id"));
-  output->item_id = int32_t(object.get<jsonxx::Number>("item_id"));
-  output->price = int32_t(object.get<jsonxx::Number>("price"));
-  output->quantity = int32_t(object.get<jsonxx::Number>("quantity"));
-  output->created = object.get<jsonxx::String>("created");
+  output->transaction_id = object["id"].get<int64_t>();
+  output->item_id = object["item_id"].get<int32_t>();
+  output->price = object["price"].get<int32_t>();
+  output->quantity = object["quantity"].get<int32_t>();
+  output->created = object["created"].get<std::string>();
   return true;
 }
 
-std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
-                                                  const std::string& root_key) {
+std::vector<TransactionItem> ParseTransactionList(const std::string& json_data) {
   std::vector<TransactionItem> result;
-  jsonxx::Object json;
-  json.parse(json_data);
+  nlohmann::json json = nlohmann::json::parse(json_data, nullptr, false);
+  if (json.is_discarded() || !json.is_array()) return result;
 
-  if (json.has<jsonxx::Array>(root_key)) {
-    auto data = json.get<jsonxx::Array>(root_key).values();
-
-    for (auto& x : data) {
-      if (!x->is<jsonxx::Object>()) continue;
-
-      const jsonxx::Object& item = x->get<jsonxx::Object>();
-
-      TransactionItem item_data;
-      if (ParseTransaction(item, &item_data)) {
-        result.push_back(item_data);
-      }
+  for (const auto& x : json) {
+    TransactionItem item_data;
+    if (ParseTransaction(x, &item_data)) {
+      result.push_back(item_data);
     }
   }
 
@@ -322,46 +242,40 @@ std::vector<TransactionItem> ParseTransactionList(const std::string& json_data,
 
 std::vector<CommercePrice> ParseCommercePrices(const std::string& items_json) {
   std::vector<CommercePrice> result;
-  jsonxx::Object item_json;
-  item_json.parse(items_json);
+  nlohmann::json item_json = nlohmann::json::parse(items_json, nullptr, false);
+  if (item_json.is_discarded() || !item_json.is_object()) return result;
 
-  if (item_json.has<jsonxx::Array>("items")) {
-    auto items = item_json.get<jsonxx::Array>("items").values();
+  if (item_json.contains("items") && item_json["items"].is_array()) {
+    for (const auto& item : item_json["items"]) {
+      if (!item.is_object()) continue;
 
-    for (auto& x : items) {
-      if (!x->is<jsonxx::Object>()) continue;
-
-      const jsonxx::Object& item = x->get<jsonxx::Object>();
-
-      if (!item.has<jsonxx::Number>("id") ||
-          !item.has<jsonxx::Object>("buys") ||
-          !item.has<jsonxx::Object>("sells")) {
+      if (!item.contains("id") || !item["id"].is_number() ||
+          !item.contains("buys") || !item["buys"].is_object() ||
+          !item.contains("sells") || !item["sells"].is_object()) {
         continue;
       }
 
       CommercePrice price;
-      price.id = int32_t(item.get<jsonxx::Number>("id"));
-      if (item.has<jsonxx::Boolean>("whitelisted")) {
-        price.whitelisted = item.get<jsonxx::Boolean>("whitelisted");
+      price.id = item["id"].get<int32_t>();
+      if (item.contains("whitelisted") && item["whitelisted"].is_boolean()) {
+        price.whitelisted = item["whitelisted"].get<bool>();
       }
 
-      jsonxx::Object buys_ = item.get<jsonxx::Object>("buys");
-      jsonxx::Object sells_ = item.get<jsonxx::Object>("sells");
+      const auto& buys_ = item["buys"];
+      const auto& sells_ = item["sells"];
 
-      if (buys_.has<jsonxx::Number>("quantity")) {
-        price.buys.quantity = int32_t(buys_.get<jsonxx::Number>("quantity"));
+      if (buys_.contains("quantity") && buys_["quantity"].is_number()) {
+        price.buys.quantity = buys_["quantity"].get<int32_t>();
       }
-      if (buys_.has<jsonxx::Number>("unit_price")) {
-        price.buys.unit_price =
-            int32_t(buys_.get<jsonxx::Number>("unit_price"));
+      if (buys_.contains("unit_price") && buys_["unit_price"].is_number()) {
+        price.buys.unit_price = buys_["unit_price"].get<int32_t>();
       }
 
-      if (sells_.has<jsonxx::Number>("quantity")) {
-        price.sells.quantity = int32_t(sells_.get<jsonxx::Number>("quantity"));
+      if (sells_.contains("quantity") && sells_["quantity"].is_number()) {
+        price.sells.quantity = sells_["quantity"].get<int32_t>();
       }
-      if (sells_.has<jsonxx::Number>("unit_price")) {
-        price.sells.unit_price =
-            int32_t(sells_.get<jsonxx::Number>("unit_price"));
+      if (sells_.contains("unit_price") && sells_["unit_price"].is_number()) {
+        price.sells.unit_price = sells_["unit_price"].get<int32_t>();
       }
 
       result.push_back(price);
@@ -373,26 +287,22 @@ std::vector<CommercePrice> ParseCommercePrices(const std::string& items_json) {
 
 std::vector<GW2ItemData> ParseGW2Items(const std::string& items_json) {
   std::vector<GW2ItemData> result;
-  jsonxx::Object item_json;
-  item_json.parse(items_json);
+  nlohmann::json item_json = nlohmann::json::parse(items_json, nullptr, false);
+  if (item_json.is_discarded() || !item_json.is_object()) return result;
 
-  if (item_json.has<jsonxx::Array>("items")) {
-    auto items = item_json.get<jsonxx::Array>("items").values();
-
-    for (auto& x : items) {
-      if (!x->is<jsonxx::Object>()) continue;
-
-      const jsonxx::Object& item = x->get<jsonxx::Object>();
+  if (item_json.contains("items") && item_json["items"].is_array()) {
+    for (const auto& item : item_json["items"]) {
+      if (!item.is_object()) continue;
 
       GW2ItemData item_data;
-      if (!item.has<jsonxx::String>("name") ||
-          !item.has<jsonxx::Number>("id")) {
+      if (!item.contains("name") || !item["name"].is_string() ||
+          !item.contains("id") || !item["id"].is_number()) {
         continue;
       }
-      item_data.name = item.get<jsonxx::String>("name");
-      item_data.item_id = int32_t(item.get<jsonxx::Number>("id"));
-      if (item.has<jsonxx::String>("icon")) {
-        item_data.icon_file = item.get<jsonxx::String>("icon");
+      item_data.name = item["name"].get<std::string>();
+      item_data.item_id = item["id"].get<int32_t>();
+      if (item.contains("icon") && item["icon"].is_string()) {
+        item_data.icon_file = item["icon"].get<std::string>();
       }
 
       result.push_back(item_data);
@@ -406,30 +316,26 @@ std::unordered_map<int32_t, Achievement> ParseAchievements(
     const std::string& achievements_data) {
   std::unordered_map<int32_t, Achievement> result;
 
-  jsonxx::Object json;
-  json.parse(achievements_data);
+  nlohmann::json json = nlohmann::json::parse(achievements_data, nullptr, false);
+  if (json.is_discarded() || !json.is_object()) return result;
 
-  if (!json.has<jsonxx::Array>("achievements")) return result;
+  if (!json.contains("achievements") || !json["achievements"].is_array()) return result;
 
-  auto achi_data = json.get<jsonxx::Array>("achievements").values();
+  for (const auto& data : json["achievements"]) {
+    if (!data.is_object()) continue;
 
-  for (auto& x : achi_data) {
-    if (!x->is<jsonxx::Object>()) continue;
-    auto& data = x->get<jsonxx::Object>();
+    if (!data.contains("done") || !data["done"].is_boolean()) continue;
+    bool done = data["done"].get<bool>();
 
-    if (!data.has<jsonxx::Boolean>("done")) continue;
-    bool done = data.get<jsonxx::Boolean>("done");
-
-    if (!data.has<jsonxx::Number>("id")) continue;
-    int32_t achi_id = int32_t(data.get<jsonxx::Number>("id"));
+    if (!data.contains("id") || !data["id"].is_number()) continue;
+    int32_t achi_id = data["id"].get<int32_t>();
     result[achi_id].done = done;
 
-    if (!done && data.has<jsonxx::Array>("bits")) {
+    if (!done && data.contains("bits") && data["bits"].is_array()) {
       auto& bit_array = result[achi_id].bits;
-      auto bits = data.get<jsonxx::Array>("bits").values();
-      for (auto& bit : bits) {
-        if (!bit->is<jsonxx::Number>()) continue;
-        bit_array.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
+      for (const auto& bit : data["bits"]) {
+        if (!bit.is_number()) continue;
+        bit_array.push_back(bit.get<int32_t>());
       }
     } else if (done) {
       result[achi_id].bits.clear();
@@ -441,39 +347,40 @@ std::unordered_map<int32_t, Achievement> ParseAchievements(
 
 AccountAchievement ParseAccountAchievement(const std::string& json_data) {
   AccountAchievement result;
-  jsonxx::Object obj;
+  nlohmann::json parsed = nlohmann::json::parse(json_data, nullptr, false);
+  if (parsed.is_discarded()) return result;
 
-  jsonxx::Array arr;
-  if (arr.parse(json_data) && !arr.values().empty() &&
-      arr.values()[0]->is<jsonxx::Object>()) {
-    obj = arr.values()[0]->get<jsonxx::Object>();
-  } else if (!obj.parse(json_data)) {
+  nlohmann::json obj;
+  if (parsed.is_array() && !parsed.empty() && parsed[0].is_object()) {
+    obj = parsed[0];
+  } else if (parsed.is_object()) {
+    obj = parsed;
+  } else {
     return result;
   }
 
-  if (obj.has<jsonxx::Number>("id")) {
-    result.id = static_cast<int32_t>(obj.get<jsonxx::Number>("id"));
+  if (obj.contains("id") && obj["id"].is_number()) {
+    result.id = obj["id"].get<int32_t>();
   }
-  if (obj.has<jsonxx::Number>("current")) {
-    result.current = static_cast<int32_t>(obj.get<jsonxx::Number>("current"));
+  if (obj.contains("current") && obj["current"].is_number()) {
+    result.current = obj["current"].get<int32_t>();
   }
-  if (obj.has<jsonxx::Number>("max")) {
-    result.max = static_cast<int32_t>(obj.get<jsonxx::Number>("max"));
+  if (obj.contains("max") && obj["max"].is_number()) {
+    result.max = obj["max"].get<int32_t>();
   }
-  if (obj.has<jsonxx::Boolean>("done")) {
-    result.done = obj.get<jsonxx::Boolean>("done");
+  if (obj.contains("done") && obj["done"].is_boolean()) {
+    result.done = obj["done"].get<bool>();
   }
-  if (obj.has<jsonxx::Number>("repeated")) {
-    result.repeated = static_cast<int32_t>(obj.get<jsonxx::Number>("repeated"));
+  if (obj.contains("repeated") && obj["repeated"].is_number()) {
+    result.repeated = obj["repeated"].get<int32_t>();
   }
-  if (obj.has<jsonxx::Boolean>("unlocked")) {
-    result.unlocked = obj.get<jsonxx::Boolean>("unlocked");
+  if (obj.contains("unlocked") && obj["unlocked"].is_boolean()) {
+    result.unlocked = obj["unlocked"].get<bool>();
   }
-  if (obj.has<jsonxx::Array>("bits")) {
-    auto bits = obj.get<jsonxx::Array>("bits").values();
-    for (auto& bit : bits) {
-      if (bit->is<jsonxx::Number>()) {
-        result.bits.push_back(static_cast<int32_t>(bit->get<jsonxx::Number>()));
+  if (obj.contains("bits") && obj["bits"].is_array()) {
+    for (const auto& bit : obj["bits"]) {
+      if (bit.is_number()) {
+        result.bits.push_back(bit.get<int32_t>());
       }
     }
   }
@@ -483,21 +390,20 @@ AccountAchievement ParseAccountAchievement(const std::string& json_data) {
 
 TokenInfo ParseTokenInfo(const std::string& json_data) {
   TokenInfo result;
-  jsonxx::Object json;
-  if (!json.parse(json_data)) return result;
+  nlohmann::json json = nlohmann::json::parse(json_data, nullptr, false);
+  if (json.is_discarded() || !json.is_object()) return result;
 
-  if (json.has<jsonxx::String>("id")) {
-    result.id = json.get<jsonxx::String>("id");
+  if (json.contains("id") && json["id"].is_string()) {
+    result.id = json["id"].get<std::string>();
   }
-  if (json.has<jsonxx::String>("name")) {
-    result.name = json.get<jsonxx::String>("name");
+  if (json.contains("name") && json["name"].is_string()) {
+    result.name = json["name"].get<std::string>();
   }
-  if (json.has<jsonxx::Array>("permissions")) {
+  if (json.contains("permissions") && json["permissions"].is_array()) {
     std::vector<std::string> perms;
-    auto& values = json.get<jsonxx::Array>("permissions").values();
-    for (auto v : values) {
-      if (v->is<jsonxx::String>()) {
-        perms.push_back(v->get<jsonxx::String>());
+    for (const auto& v : json["permissions"]) {
+      if (v.is_string()) {
+        perms.push_back(v.get<std::string>());
       }
     }
     result.permissions = std::move(perms);
@@ -507,63 +413,48 @@ TokenInfo ParseTokenInfo(const std::string& json_data) {
 
 AccountInfo ParseAccountInfo(const std::string& json_data) {
   AccountInfo result;
-  jsonxx::Object json;
-  if (!json.parse(json_data)) return result;
+  nlohmann::json json = nlohmann::json::parse(json_data, nullptr, false);
+  if (json.is_discarded() || !json.is_object()) return result;
 
-  if (json.has<jsonxx::String>("id"))
-    result.id = json.get<jsonxx::String>("id");
-  if (json.has<jsonxx::String>("name"))
-    result.name = json.get<jsonxx::String>("name");
-  if (json.has<jsonxx::Number>("age"))
-    result.age = static_cast<int32_t>(json.get<jsonxx::Number>("age"));
-  if (json.has<jsonxx::Number>("world"))
-    result.world = static_cast<int32_t>(json.get<jsonxx::Number>("world"));
+  if (json.contains("id") && json["id"].is_string()) result.id = json["id"].get<std::string>();
+  if (json.contains("name") && json["name"].is_string()) result.name = json["name"].get<std::string>();
+  if (json.contains("age") && json["age"].is_number()) result.age = json["age"].get<int32_t>();
+  if (json.contains("world") && json["world"].is_number()) result.world = json["world"].get<int32_t>();
 
   auto parse_string_array =
-      [](const jsonxx::Object& obj,
+      [](const nlohmann::json& obj,
          const std::string& key) -> std::optional<std::vector<std::string>> {
-    if (!obj.has<jsonxx::Array>(key)) return std::nullopt;
+    if (!obj.contains(key) || !obj[key].is_array()) return std::nullopt;
     std::vector<std::string> res;
-    for (auto v : obj.get<jsonxx::Array>(key).values()) {
-      if (v->is<jsonxx::String>()) res.push_back(v->get<jsonxx::String>());
+    for (const auto& v : obj[key]) {
+      if (v.is_string()) res.push_back(v.get<std::string>());
     }
     return res;
   };
 
   result.guilds = parse_string_array(json, "guilds");
   result.guild_leader = parse_string_array(json, "guild_leader");
-  if (json.has<jsonxx::String>("created"))
-    result.created = json.get<jsonxx::String>("created");
+  if (json.contains("created") && json["created"].is_string()) result.created = json["created"].get<std::string>();
   result.access = parse_string_array(json, "access");
 
-  if (json.has<jsonxx::Boolean>("commander"))
-    result.commander = json.get<jsonxx::Boolean>("commander");
-  if (json.has<jsonxx::Number>("fractal_level"))
-    result.fractal_level =
-        static_cast<int32_t>(json.get<jsonxx::Number>("fractal_level"));
-  if (json.has<jsonxx::Number>("daily_ap"))
-    result.daily_ap =
-        static_cast<int32_t>(json.get<jsonxx::Number>("daily_ap"));
-  if (json.has<jsonxx::Number>("monthly_ap"))
-    result.monthly_ap =
-        static_cast<int32_t>(json.get<jsonxx::Number>("monthly_ap"));
-  if (json.has<jsonxx::Number>("wvw_rank"))
-    result.wvw_rank =
-        static_cast<int32_t>(json.get<jsonxx::Number>("wvw_rank"));
-  if (json.has<jsonxx::String>("last_modified"))
-    result.last_modified = json.get<jsonxx::String>("last_modified");
+  if (json.contains("commander") && json["commander"].is_boolean()) result.commander = json["commander"].get<bool>();
+  if (json.contains("fractal_level") && json["fractal_level"].is_number()) result.fractal_level = json["fractal_level"].get<int32_t>();
+  if (json.contains("daily_ap") && json["daily_ap"].is_number()) result.daily_ap = json["daily_ap"].get<int32_t>();
+  if (json.contains("monthly_ap") && json["monthly_ap"].is_number()) result.monthly_ap = json["monthly_ap"].get<int32_t>();
+  if (json.contains("wvw_rank") && json["wvw_rank"].is_number()) result.wvw_rank = json["wvw_rank"].get<int32_t>();
+  if (json.contains("last_modified") && json["last_modified"].is_string()) result.last_modified = json["last_modified"].get<std::string>();
 
   return result;
 }
 
 std::unordered_set<std::string> ParseArray(const std::string& json_data) {
-  jsonxx::Array arr;
   std::unordered_set<std::string> result;
-  if (!arr.parse(json_data)) return result;
+  nlohmann::json arr = nlohmann::json::parse(json_data, nullptr, false);
+  if (arr.is_discarded() || !arr.is_array()) return result;
 
-  for (auto v : arr.values()) {
-    if (v->is<jsonxx::String>()) {
-      result.emplace(v->get<jsonxx::String>());
+  for (const auto& v : arr) {
+    if (v.is_string()) {
+      result.emplace(v.get<std::string>());
     }
   }
   return result;

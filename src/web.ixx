@@ -109,7 +109,7 @@ export WvwMapData ParseWvwMapData(const std::string& json_data);
 export WvwMatch ParseWvwMatch(const std::string& json_data);
 
 export struct TransactionItem {
-  int32_t transaction_id = 0;
+  int64_t transaction_id = 0;
   int32_t item_id = 0;
   int32_t price = 0;
   int32_t quantity = 0;
@@ -141,7 +141,7 @@ export struct GW2ItemData {
 // https://api.guildwars2.com/v2/commerce/transactions/current/sells
 // https://wiki.guildwars2.com/wiki/API:2/commerce/transactions
 export std::vector<TransactionItem> ParseTransactionList(
-    const std::string& json_data, const std::string& root_key);
+    const std::string& json_data);
 
 // https://api.guildwars2.com/v2/commerce/prices
 // https://wiki.guildwars2.com/wiki/API:2/commerce/prices

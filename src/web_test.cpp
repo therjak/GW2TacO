@@ -329,20 +329,18 @@ TEST(ParseWvwMatchTest, HandlesInvalidJson) {
 }
 
 TEST(ParseTransactionListTest, ParsesCorrectly) {
-  const std::string json_data = R"({
-    "test_root": [
-      {
-        "id": 123,
-        "item_id": 456,
-        "price": 100,
-        "quantity": 2,
-        "created": "2023-01-01T00:00:00Z"
-      }
-    ]
-  })";
-  auto result = ParseTransactionList(json_data, "test_root");
+  const std::string json_data = R"([
+    {
+      "id": 1234567890123,
+      "item_id": 456,
+      "price": 100,
+      "quantity": 2,
+      "created": "2023-01-01T00:00:00Z"
+    }
+  ])";
+  auto result = ParseTransactionList(json_data);
   ASSERT_EQ(result.size(), 1);
-  EXPECT_EQ(result[0].transaction_id, 123);
+  EXPECT_EQ(result[0].transaction_id, 1234567890123LL);
   EXPECT_EQ(result[0].item_id, 456);
   EXPECT_EQ(result[0].price, 100);
   EXPECT_EQ(result[0].quantity, 2);
@@ -350,7 +348,7 @@ TEST(ParseTransactionListTest, ParsesCorrectly) {
 }
 
 TEST(ParseTransactionListTest, HandlesInvalidJson) {
-  auto result = ParseTransactionList(R"(invalid)", "test_root");
+  auto result = ParseTransactionList(R"(invalid)");
   EXPECT_TRUE(result.empty());
 }
 

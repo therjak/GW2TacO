@@ -15,7 +15,12 @@ FetchContent_Declare(
 )
 # For Windows: Do not override the settings
 set(gtest_force_shared_crt OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
+FetchContent_Declare(
+  json
+  URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+)
+set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest json)
 
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
@@ -489,6 +494,7 @@ target_link_libraries(taco PUBLIC
     taco_core2
     whiteboard
     third_party
+    nlohmann_json::nlohmann_json
 )
 use_props(taco "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 
