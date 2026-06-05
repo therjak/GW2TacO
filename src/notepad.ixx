@@ -11,11 +11,11 @@ import math;
 import whiteboard;
 import xml;
 
-export class Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
+export class Notepad : public gui::GuiType<"notepad", gui::Widget> {
  public:
   Notepad();
   ~Notepad() override;
-  static inline Notepad* Create(gui::CWBItem* parent, math::Rect position) {
+  static inline Notepad* Create(gui::Widget* parent, math::Rect position) {
     auto p = std::make_unique<Notepad>();
     p->Initialize(parent, position);
     Notepad* r = p.get();
@@ -24,8 +24,8 @@ export class Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
@@ -33,8 +33,9 @@ export class Notepad : public gui::CWBGuiType<"notepad", gui::CWBItem> {
   void StartEdit();
 
  private:
+  bool Initialize(gui::Widget* parent, const math::Rect& position) override;
   bool MessageProc(const gui::CWBMessage& message) override;
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
   bool hidden_ = false;
   GUID current_poi_{};
 

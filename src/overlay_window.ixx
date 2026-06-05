@@ -9,12 +9,11 @@ import math;
 import whiteboard;
 import xml;
 
-export class OverlayWindow
-    : public gui::CWBGuiType<"OverlayWindow", gui::CWBWindow> {
+export class OverlayWindow : public gui::GuiType<"OverlayWindow", gui::Window> {
  public:
   OverlayWindow();
   ~OverlayWindow() override;
-  static inline OverlayWindow* Create(gui::CWBItem* parent,
+  static inline OverlayWindow* Create(gui::Widget* parent,
                                       math::Rect position) {
     auto p = std::make_unique<OverlayWindow>();
     p->Initialize(parent, position);
@@ -24,11 +23,11 @@ export class OverlayWindow
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   bool MessageProc(const gui::CWBMessage& message) override;
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
 };

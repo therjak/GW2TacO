@@ -8,7 +8,7 @@ export module taco.overlay_application;
 
 import whiteboard;
 
-export class OverlayApplication : public gui::CWBApplication {
+export class OverlayApplication : public gui::Application {
  public:
   OverlayApplication();
   ~OverlayApplication() override;

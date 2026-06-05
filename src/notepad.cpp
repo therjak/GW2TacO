@@ -20,27 +20,29 @@ bool Notepad::IsMouseTransparent(const Point& client_space_point,
   return true;
 }
 
-Notepad::Notepad() : CWBGuiType() {
-  App->GenerateGUITemplate(this, "gw2pois", "notepad");
+Notepad::Notepad() : GuiType() {}
+
+bool Notepad::Initialize(Widget* parent, const math::Rect& position) {
+  Widget::Initialize(parent, position);
+  GetApplication()->GenerateGUITemplate(this, "gw2pois", "notepad");
 
   SetID("notepad");
 
   CStreamReaderMemory nptext;
-  if (!nptext.Open("notepad.txt")) return;
+  if (!nptext.Open("notepad.txt")) return false;
 
-  auto* tb =
-      dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
-  if (!tb) return;
+  auto* tb = dynamic_cast<gui::TextBox*>(FindChildByID("notepad", "textbox"));
+  if (!tb) return false;
 
   tb->SetForcedMouseTransparency(true);
   tb->SetText(std::string_view(reinterpret_cast<const char*>(nptext.GetData()),
                                static_cast<int32_t>(nptext.GetLength())));
   tb->SetCursorPos(0, false);
+  return true;
 }
 
 Notepad::~Notepad() {
-  auto* tb =
-      dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
+  auto* tb = dynamic_cast<gui::TextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   CStreamWriterFile nptext;
@@ -49,14 +51,13 @@ Notepad::~Notepad() {
   nptext.Write(tb->GetText());
 }
 
-gui::CWBItem* Notepad::Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const Rect& pos) {
+gui::Widget* Notepad::Factory(gui::Widget* root, const CXMLNode& node,
+                              const Rect& pos) {
   return Notepad::Create(root, pos);
 }
 
 void Notepad::StartEdit() {
-  auto* tb =
-      dynamic_cast<gui::CWBTextBox*>(FindChildByID("notepad", "textbox"));
+  auto* tb = dynamic_cast<gui::TextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
   can_set_focus_ = true;
@@ -64,23 +65,23 @@ void Notepad::StartEdit() {
   tb->SetCursorPos(tb->GetText().size(), false);
 }
 
-void Notepad::OnDraw(gui::CWBDrawAPI* api) {}
+void Notepad::OnDraw(gui::DrawAPI* api) {}
 
 bool Notepad::MessageProc(const gui::CWBMessage& message) {
   switch (message.Get()) {
     case gui::WBM_FOCUSGAINED: {
-      gui::CWBItem* tb = FindChildByID("notepad", "textbox");
+      gui::Widget* tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == message.GetTarget()) {
         tb->SetForcedMouseTransparency(false);
       }
     } break;
     case gui::WBM_FOCUSLOST: {
-      gui::CWBItem* tb = FindChildByID("notepad", "textbox");
+      gui::Widget* tb = FindChildByID("notepad", "textbox");
       if (tb->GetGuid() == message.GetTarget()) {
         tb->SetForcedMouseTransparency(true);
       }
     } break;
   }
 
-  return CWBItem::MessageProc(message);
+  return Widget::MessageProc(message);
 }

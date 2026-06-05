@@ -49,10 +49,10 @@ export enum class APIKeys {
   GW2APIKey,
 };
 
-export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
+export class GW2TacO : public gui::GuiType<"GW2TacO", gui::Widget> {
  public:
   GW2TacO();
-  static inline GW2TacO* Create(gui::CWBItem* parent, math::Rect position) {
+  static inline GW2TacO* Create(gui::Widget* parent, math::Rect position) {
     auto p = std::make_unique<GW2TacO>();
     p->Initialize(parent, position);
     auto r = p.get();
@@ -62,12 +62,12 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
   }
   ~GW2TacO() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   void OpenWindow(std::string_view s);
-  void OnDraw(gui::CWBDrawAPI* api) override;
-  void OnPostDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
+  void OnPostDraw(gui::DrawAPI* api) override;
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
 
@@ -85,7 +85,7 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
  private:
   void OpenAboutWindow();
   void BuildChannelTree(TS3Connection::TS3Schandler& h,
-                        gui::CWBContextItem* parent_itm, int32_t parent_id);
+                        gui::ContextItem* parent_itm, int32_t parent_id);
   void RebindAction(TacOKeyAction action);
   void RebindScriptKey(int32_t event_idx);
   void ApiKeyInputAction(APIKeys key_type, int32_t idx);
@@ -112,7 +112,7 @@ export class GW2TacO : public gui::CWBGuiType<"GW2TacO", gui::CWBItem> {
 
   std::vector<GW2TacticalCategory*> category_list_;
 
-  gui::CWBTextBox* api_key_input_ = nullptr;
+  gui::TextBox* api_key_input_ = nullptr;
 
   bool menu_hover_last_frame_ = false;
   int32_t last_menu_hover_transition_time_ = 0;

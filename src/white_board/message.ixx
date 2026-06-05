@@ -10,7 +10,7 @@ import math;
 
 export namespace gui {
 
-class CWBApplication;
+class Application;
 
 class CWBMessage final {
  public:
@@ -29,15 +29,14 @@ class CWBMessage final {
   };
 
   CWBMessage();
-  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target);
-  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x);
-  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target, int32_t x,
+  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target);
+  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target, int32_t x);
+  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target, int32_t x,
              int32_t y);
-  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target,
-             keyboard&& kb);
-  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target,
+  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target, keyboard&& kb);
+  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target,
              menucontext&& mc);
-  CWBMessage(CWBApplication* App, WBMESSAGE Message, WBGUID Target,
+  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target,
              const math::Rect rec, bool moved, bool resized);
   CWBMessage(const CWBMessage&) = default;
   CWBMessage(CWBMessage&&) = default;
@@ -86,7 +85,7 @@ class CWBMessage final {
   bool IsMouseMessage();
 
  private:
-  CWBApplication* app_;
+  Application* app_;
   WBMESSAGE message_;
   WBGUID target_;
   std::variant<reposition, std::array<int32_t, 2>, int32_t, keyboard,

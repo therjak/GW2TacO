@@ -122,7 +122,7 @@ mz_zip_archive* OpenZipFile(std::string_view zf) {
   return zipDict[zipFile].get();
 }
 
-gui::WBATLASHANDLE GetMapIcon(gui::CWBApplication* App, std::string_view fname,
+gui::WBATLASHANDLE GetMapIcon(gui::Application* App, std::string_view fname,
                               std::string_view zipFile,
                               std::string_view categoryZip) {
   std::string filename(fname);
@@ -409,7 +409,7 @@ void GW2TacticalDisplay::InsertPOI(POI* poi) {
   mapPOIs.push_back(poi);
 }
 
-void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
+void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
                                  const time_t& currtime, POI* poi,
                                  bool drawDistance, std::string* info_text) {
   bool drawCountdown = false;
@@ -594,7 +594,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   }
 
   if (drawWvWNames && poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
-    gui::CWBFont* f = App->GetDefaultFont();
+    gui::Font* f = GetApplication()->GetDefaultFont();
     std::string wvw_objective_name;
 
     if (poi->wvw_objective_id < wvw_objectives.size()) {
@@ -627,11 +627,11 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   }
 
   if (drawCountdown) {
-    gui::CWBFont* f = GetFont(GetState());
+    gui::Font* f = GetFont(GetState());
     if (!f) return;
 
     if (poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
-      f = App->GetDefaultFont();
+      f = GetApplication()->GetDefaultFont();
     }
 
     std::string txt;
@@ -693,7 +693,7 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
   }
 
   if (drawDistance) {
-    gui::CWBFont* f = App->GetDefaultFont();
+    gui::Font* f = GetApplication()->GetDefaultFont();
     if (!f) return;
 
     if (Alpha * alphaMultiplier > 0) {
@@ -724,11 +724,10 @@ void GW2TacticalDisplay::DrawPOI(gui::CWBDrawAPI* API, const tm& ptm,
 
 float uiScale = 1.0f;
 
-void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
-                                        const Rect& miniRect, Vector2 pos,
-                                        const tm& ptm, const time_t& currtime,
-                                        const POI& poi, float alpha,
-                                        float zoomLevel) {
+void GW2TacticalDisplay::DrawPOIMinimap(gui::DrawAPI* API, const Rect& miniRect,
+                                        Vector2 pos, const tm& ptm,
+                                        const time_t& currtime, const POI& poi,
+                                        float alpha, float zoomLevel) {
   if (alpha <= 0) return;
   if (!poi.IsVisible(ptm, currtime, achievements)) {
     return;
@@ -772,7 +771,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::CWBDrawAPI* API,
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
 }
 
-void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
+void GW2TacticalDisplay::OnDraw(gui::DrawAPI* API) {
   int opac = GetConfigValue("OpacityIngame");
   if (opac == 0) globalOpacity = 1.0f;
   if (opac == 1) globalOpacity = 2 / 3.0f;
@@ -886,7 +885,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
       if (!mp->type_data_.bits_.in_game_visible_ && showIngameMarkers != 2)
         continue;
       if (!mp->icon) {
-        mp->icon = GetMapIcon(App, mp->icon_file_, mp->zip_file_,
+        mp->icon = GetMapIcon(GetApplication(), mp->icon_file_, mp->zip_file_,
                               mp->category ? mp->category->zip_file : "");
       }
       DrawPOI(API, ptm, currtime, mp, drawDistance, &infoText);
@@ -899,7 +898,8 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
   API->FlushDrawBuffer();
   API->GetDevice()->SetRenderState(
-      (dynamic_cast<OverlayApplication*>(App))->hole_punch_blend_state.get());
+      (dynamic_cast<OverlayApplication*>(GetApplication()))
+          ->hole_punch_blend_state.get());
 
   API->DrawRect(miniRect, CColor(0, 0, 0, 0));
 
@@ -909,7 +909,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   // draw minimap trails
 
   auto* trails = dynamic_cast<GW2TrailDisplay*>(
-      App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+      GetRoot()->FindChildByID("trail", "gw2Trails"));
   if (trails) trails->DrawProxy(API, true);
 
   // draw minimap
@@ -935,8 +935,9 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
       Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
-        mmp->icon = GetMapIcon(App, mmp->icon_file_, mmp->zip_file_,
-                               mmp->category ? mmp->category->zip_file : "");
+        mmp->icon =
+            GetMapIcon(GetApplication(), mmp->icon_file_, mmp->zip_file_,
+                       mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, mapFade, mumbleLink.mini_map.map_scale);
@@ -956,8 +957,9 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
 
       Vector3 poiPos(mmp->position * miniMapTrafo);
       if (!mmp->icon) {
-        mmp->icon = GetMapIcon(App, mmp->icon_file_, mmp->zip_file_,
-                               mmp->category ? mmp->category->zip_file : "");
+        mmp->icon =
+            GetMapIcon(GetApplication(), mmp->icon_file_, mmp->zip_file_,
+                       mmp->category ? mmp->category->zip_file : "");
       }
       DrawPOIMinimap(API, miniRect, Vector2(poiPos.x, poiPos.y), ptm, currtime,
                      *mmp, 1.0f - mapFade, mumbleLink.big_map.map_scale);
@@ -965,7 +967,7 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   }
 
   if (GetConfigValue("TacticalInfoTextVisible")) {
-    auto font = GetApplication()->GetRoot()->GetFont(GetState());
+    auto font = GetRoot()->GetFont(GetState());
     int32_t width = font->GetWidth(infoText);
     font->Write(
         API, infoText,
@@ -974,13 +976,13 @@ void GW2TacticalDisplay::OnDraw(gui::CWBDrawAPI* API) {
   }
 }
 
-GW2TacticalDisplay::GW2TacticalDisplay() : CWBGuiType() {}
+GW2TacticalDisplay::GW2TacticalDisplay() : GuiType() {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
-gui::CWBItem* GW2TacticalDisplay::Factory(gui::CWBItem* Root,
-                                          const CXMLNode& node,
-                                          const Rect& Pos) {
+gui::Widget* GW2TacticalDisplay::Factory(gui::Widget* Root,
+                                         const CXMLNode& node,
+                                         const Rect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos);
 }
 
@@ -1573,7 +1575,7 @@ void UpdatePOI() {
   }
 }
 
-void AddTypeContextMenu(gui::CWBContextItem* ctx,
+void AddTypeContextMenu(gui::ContextItem* ctx,
                         std::vector<GW2TacticalCategory*>& category_list_,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
@@ -1610,7 +1612,7 @@ void AddTypeContextMenu(gui::CWBContextItem* ctx,
   }
 }
 
-void AddTypeContextMenu(gui::CWBContextMenu* ctx,
+void AddTypeContextMenu(gui::ContextMenu* ctx,
                         std::vector<GW2TacticalCategory*>& category_list_,
                         const GW2TacticalCategory* Parent,
                         bool AddVisibilityMarkers, int32_t BaseID,
@@ -1647,7 +1649,7 @@ void AddTypeContextMenu(gui::CWBContextMenu* ctx,
   }
 }
 
-void OpenTypeContextMenu(gui::CWBContextItem* ctx,
+void OpenTypeContextMenu(gui::ContextItem* ctx,
                          std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {
@@ -1656,7 +1658,7 @@ void OpenTypeContextMenu(gui::CWBContextItem* ctx,
                      BaseID, closeOnClick);
 }
 
-void OpenTypeContextMenu(gui::CWBContextMenu* ctx,
+void OpenTypeContextMenu(gui::ContextMenu* ctx,
                          std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {

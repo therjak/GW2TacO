@@ -32,20 +32,20 @@ enum class WBBOXSIZING : uint8_t {
   WB_SIZING_FILL,
 };
 
-class CWBBox : public CWBGuiType<"box", CWBItem> {
+class Box : public GuiType<"box", Widget> {
  public:
-  CWBBox();
-  static inline CWBBox* Create(CWBItem* Parent, const math::Rect& Pos) {
-    auto p = std::make_unique<CWBBox>();
+  Box();
+  static inline Box* Create(Widget* Parent, const math::Rect& Pos) {
+    auto p = std::make_unique<Box>();
     p->Initialize(Parent, Pos);
-    CWBBox* r = p.get();
+    Box* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~CWBBox() override;
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          const math::Rect& Pos);
+  ~Box() override;
+  static Widget* Factory(Widget* Root, const CXMLNode& node,
+                         const math::Rect& Pos);
 
   virtual void SetArrangement(WBBOXARRANGEMENT a);
   WBBOXARRANGEMENT GetArrangement();
@@ -58,20 +58,20 @@ class CWBBox : public CWBGuiType<"box", CWBItem> {
                           WBMESSAGE MessageType) override;
 
  protected:
-  void AddChild(std::unique_ptr<CWBItem>&& Item) override;
+  void AddChild(std::unique_ptr<Widget>&& Item) override;
   bool MessageProc(const CWBMessage& Message) override;
   virtual void RearrangeChildren();
 
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(DrawAPI* API) override;
   void RearrangeHorizontal();
   void RearrangeVertical();
   void UpdateScrollbarData();
 
-  int32_t Spacing{};
-  WBBOXARRANGEMENT Arrangement;
-  WBALIGNMENT AlignmentX, AlignmentY;
-  WBBOXSIZING SizingX, SizingY;
-  bool ClickThrough = false;
+  int32_t spacing_{};
+  WBBOXARRANGEMENT arrangement_;
+  WBALIGNMENT alignment_x_, alignment_y_;
+  WBBOXSIZING sizing_x_, sizing_y_;
+  bool click_through_ = false;
 };
 
 }  // namespace gui

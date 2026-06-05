@@ -72,8 +72,8 @@ __inline std::string ToGold(int32_t value) {
   return result;
 }
 
-void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
-  gui::CWBFont* f = GetFont(GetState());
+void TPTracker::OnDraw(gui::DrawAPI* api) {
+  gui::Font* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
   if (!HasConfigValue("TPTrackerOnlyShowOutbid")) {
@@ -326,12 +326,12 @@ void TPTracker::OnDraw(gui::CWBDrawAPI* api) {
   DrawBorder(api);
 }
 
-TPTracker::TPTracker() : CWBGuiType() {}
+TPTracker::TPTracker() : GuiType() {}
 
 TPTracker::~TPTracker() {}
 
-gui::CWBItem* TPTracker::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                 const Rect& pos) {
+gui::Widget* TPTracker::Factory(gui::Widget* root, const CXMLNode& node,
+                                const Rect& pos) {
   return TPTracker::Create(root, pos);
 }
 

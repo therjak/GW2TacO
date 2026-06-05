@@ -14,27 +14,27 @@ import :gui_item;
 
 export namespace gui {
 
-class CWBButton : public CWBGuiType<"button", CWBItem> {
+class Button : public GuiType<"button", Widget> {
  public:
-  CWBButton(std::string_view txt);
-  static inline CWBButton* Create(CWBItem* Parent, const math::Rect& Pos,
-                                  std::string_view txt = "") {
-    auto p = std::make_unique<CWBButton>(txt);
+  Button(std::string_view txt);
+  static inline Button* Create(Widget* Parent, const math::Rect& Pos,
+                               std::string_view txt = "") {
+    auto p = std::make_unique<Button>(txt);
     p->Initialize(Parent, Pos);
-    CWBButton* r = p.get();
+    Button* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~CWBButton() override;
+  ~Button() override;
 
-  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
+  bool Initialize(Widget* Parent, const math::Rect& Position) override;
 
   [[nodiscard]] std::string GetText() const;
   void SetText(std::string_view val);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          const math::Rect& Pos);
+  static Widget* Factory(Widget* Root, const CXMLNode& node,
+                         const math::Rect& Pos);
 
   math::Size GetContentSize() override;
 
@@ -44,11 +44,11 @@ class CWBButton : public CWBGuiType<"button", CWBItem> {
   WBITEMSTATE GetState() override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(DrawAPI* API) override;
   bool MessageProc(const CWBMessage& Message) override;
 
-  std::string Text;
-  bool Pushed = false;
+  std::string text_;
+  bool pushed_ = false;
 };
 
 }  // namespace gui

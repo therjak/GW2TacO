@@ -52,7 +52,7 @@ void GlobalDoTrailLogging(int32_t map_id, Vector3 charPos) {
   if (trails) trails->DoTrailLogging(map_id, charPos);
 }
 
-void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
+void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
   int32_t fadeoutBubble = GetConfigValue("FadeoutBubble");
 
   draw_rect_ = GetClientRect();
@@ -320,7 +320,7 @@ void GW2TrailDisplay::DrawProxy(gui::CWBDrawAPI* API, bool miniMaprender) {
   API->SetUIRenderState();
 }
 
-void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
+void GW2TrailDisplay::OnDraw(gui::DrawAPI* API) {
   if (!HasConfigValue("TrailLayerVisible")) {
     SetConfigValue("TrailLayerVisible", 1);
   }
@@ -340,7 +340,7 @@ void GW2TrailDisplay::OnDraw(gui::CWBDrawAPI* API) {
   DrawProxy(API, false);
 
   if (GetConfigValue("LogTrails")) {
-    gui::CWBFont* f = GetFont(GetState());
+    gui::Font* f = GetFont(GetState());
     int32_t ypos = math::Lerp(GetClientRect().y1, GetClientRect().y2, 0.25f);
 
     std::string_view s = "TacO is logging your trail.";
@@ -457,11 +457,11 @@ renderer::Texture2D* GW2TrailDisplay::GetTexture(
   return texture_cache_[s].get();
 }
 
-GW2TrailDisplay::GW2TrailDisplay() : CWBGuiType() {}
+GW2TrailDisplay::GW2TrailDisplay() : GuiType() {}
 
-bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
+bool GW2TrailDisplay::Initialize(gui::Widget* Parent,
                                  const math::Rect& Position) {
-  if (!gui::CWBItem::Initialize(Parent, Position)) return false;
+  if (!gui::Widget::Initialize(Parent, Position)) return false;
 
   const_buffer_ = App->GetDevice()->CreateConstantBuffer();
 
@@ -566,8 +566,8 @@ bool GW2TrailDisplay::Initialize(gui::CWBItem* Parent,
 
 GW2TrailDisplay::~GW2TrailDisplay() { texture_cache_.clear(); }
 
-gui::CWBItem* GW2TrailDisplay::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                       const Rect& Pos) {
+gui::Widget* GW2TrailDisplay::Factory(gui::Widget* Root, const CXMLNode& node,
+                                      const Rect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos);
 }
 
@@ -584,13 +584,13 @@ void GW2TrailDisplay::StartStopTrailRecording(bool start) {
 void GW2TrailDisplay::PauseTrail(bool pause, bool newSection) {
   trail_record_paused_ = pause;
 
-  auto* btn = App->GetRoot()->FindChildByID<gui::CWBButton>("pausetrail");
+  auto* btn = App->GetRoot()->FindChildByID<gui::Button>("pausetrail");
   if (btn) {
     btn->Push(pause);
     btn->SetText(btn->IsPushed() ? "Resume Recording" : "Pause Recording");
   }
 
-  btn = App->GetRoot()->FindChildByID<gui::CWBButton>("startnewsection");
+  btn = App->GetRoot()->FindChildByID<gui::Button>("startnewsection");
   if (btn) btn->Hide(!pause);
 
   if (!pause && newSection && edited_trail_) {
@@ -698,9 +698,9 @@ void GW2TrailDisplay::ImportTrail() {
       ClearEditedTrail();
       PauseTrail(true);
 
-      auto* btn = App->GetRoot()->FindChildByID<gui::CWBButton>("starttrail");
+      auto* btn = GetRoot()->FindChildByID<gui::Button>("starttrail");
       if (btn) btn->Push(true);
-      btn = App->GetRoot()->FindChildByID<gui::CWBButton>("pausetrail");
+      btn = GetRoot()->FindChildByID<gui::Button>("pausetrail");
       if (btn) btn->Push(true);
 
       if (!edited_trail_) {

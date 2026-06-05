@@ -40,12 +40,10 @@ export class LocationalTimer {
   int32_t start_time_ = 0;
 };
 
-export class TimerDisplay
-    : public gui::CWBGuiType<"TimerDisplay", gui::CWBItem> {
+export class TimerDisplay : public gui::GuiType<"TimerDisplay", gui::Widget> {
  public:
   TimerDisplay();
-  static inline TimerDisplay* Create(gui::CWBItem* parent,
-                                     math::Rect position) {
+  static inline TimerDisplay* Create(gui::Widget* parent, math::Rect position) {
     auto p = std::make_unique<TimerDisplay>();
     p->Initialize(parent, position);
     TimerDisplay* r = p.get();
@@ -55,10 +53,10 @@ export class TimerDisplay
   }
   ~TimerDisplay() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
 };

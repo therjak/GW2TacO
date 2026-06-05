@@ -12,7 +12,7 @@ using math::Rect;
 
 namespace gui {
 
-bool CWBRoot::MessageProc(const CWBMessage& Message) {
+bool Root::MessageProc(const CWBMessage& Message) {
   switch (Message.Get()) {
     default:
       break;
@@ -21,26 +21,26 @@ bool CWBRoot::MessageProc(const CWBMessage& Message) {
       if (Message.GetTarget() == GetGuid() || Message.GetTarget() == 0) {
         if (!Message.Resized()) return true;  // ignore movement
 
-        CWBItem::MessageProc(Message);
+        Widget::MessageProc(Message);
         for (uint32_t x = 0; x < NumChildren(); x++) {
-          App->Send(CWBMessage(App, WBM_ROOTRESIZE, GetChild(x)->GetGuid(),
-                               Message.Rectangle().Width(),
-                               Message.Rectangle().Height()));
+          GetApplication()->Send(CWBMessage(
+              GetApplication(), WBM_ROOTRESIZE, GetChild(x)->GetGuid(),
+              Message.Rectangle().Width(), Message.Rectangle().Height()));
         }
         return true;
       }
     }
   }
 
-  return CWBItem::MessageProc(Message);
+  return Widget::MessageProc(Message);
 }
 
-CWBRoot::CWBRoot() : CWBGuiType() {}
+Root::Root() : GuiType() {}
 
-CWBRoot::~CWBRoot() = default;
+Root::~Root() = default;
 
-void CWBRoot::SetApplication(CWBApplication* Application) { App = Application; }
+void Root::SetApplication(Application* Application) { app_ = Application; }
 
-void CWBRoot::OnDraw(CWBDrawAPI* API) {}
+void Root::OnDraw(DrawAPI* API) {}
 
 }  // namespace gui

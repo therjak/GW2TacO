@@ -13,10 +13,10 @@ import math;
 import whiteboard;
 import xml;
 
-export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
+export class GW2HPGrid : public gui::GuiType<"hpgrid", gui::Widget> {
  public:
   GW2HPGrid();
-  static inline GW2HPGrid* Create(gui::CWBItem* parent, math::Rect position) {
+  static inline GW2HPGrid* Create(gui::Widget* parent, math::Rect position) {
     auto p = std::make_unique<GW2HPGrid>();
     p->Initialize(parent, position);
     GW2HPGrid* r = p.get();
@@ -26,8 +26,8 @@ export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
   }
   ~GW2HPGrid() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
@@ -35,7 +35,7 @@ export class GW2HPGrid : public gui::CWBGuiType<"hpgrid", gui::CWBItem> {
   virtual void LoadGrids();
 
  private:
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
 
   math::Point last_pos_;
 

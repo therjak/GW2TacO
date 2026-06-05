@@ -22,10 +22,10 @@ import xml;
 using math::Point;
 using math::Rect;
 
-void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
+void RaidProgress::OnDraw(gui::DrawAPI* api) {
   bool compact = GetConfigValue("CompactRaidWindow");
 
-  gui::CWBFont* f = GetFont(GetState());
+  gui::Font* f = GetFont(GetState());
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(api, f);
   if (status != GW2::APIKeyManager::Status::OK) {
@@ -126,7 +126,7 @@ void RaidProgress::OnDraw(gui::CWBDrawAPI* api) {
 }
 
 RaidProgress::RaidProgress()
-    : CWBGuiType(),
+    : GuiType(),
       raids_{
           Raid{"Forsaken Thicket",
                "FT",
@@ -189,8 +189,8 @@ RaidProgress::RaidProgress()
 
 RaidProgress::~RaidProgress() {}
 
-gui::CWBItem* RaidProgress::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                    const Rect& pos) {
+gui::Widget* RaidProgress::Factory(gui::Widget* root, const CXMLNode& node,
+                                   const Rect& pos) {
   return RaidProgress::Create(root, pos);
 }
 

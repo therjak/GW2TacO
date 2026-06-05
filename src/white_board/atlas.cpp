@@ -22,71 +22,71 @@ namespace gui {
 
 static WBATLASHANDLE AtlasHandle = 1;
 
-CAtlasNode::CAtlasNode() = default;
+AtlasNode::AtlasNode() = default;
 
-CAtlasNode::~CAtlasNode() = default;
+AtlasNode::~AtlasNode() = default;
 
-Rect& CAtlasNode::GetArea() { return Area; }
+Rect& AtlasNode::GetArea() { return area_; }
 
-CAtlasNode* CAtlasNode::AddNode(int32_t width, int32_t height) {
-  CAtlasNode* NewNode = nullptr;
-  if (Children[0]) {
-    NewNode = Children[0]->AddNode(width, height);
-    return NewNode ? NewNode : Children[1]->AddNode(width, height);
+AtlasNode* AtlasNode::AddNode(int32_t width, int32_t height) {
+  AtlasNode* NewNode = nullptr;
+  if (children_[0]) {
+    NewNode = children_[0]->AddNode(width, height);
+    return NewNode ? NewNode : children_[1]->AddNode(width, height);
   }
 
-  if (Occupied || Area.Width() < width || Area.Height() < height) {
+  if (occupied_ || area_.Width() < width || area_.Height() < height) {
     return nullptr;
   }
 
-  if (Area.Width() == width && Area.Height() == height) {
-    Occupied = true;
+  if (area_.Width() == width && area_.Height() == height) {
+    occupied_ = true;
     return this;
   }
 
-  Children[0] = std::make_unique<CAtlasNode>();
-  Children[1] = std::make_unique<CAtlasNode>();
+  children_[0] = std::make_unique<AtlasNode>();
+  children_[1] = std::make_unique<AtlasNode>();
 
-  if (Area.Width() - width > Area.Height() - height) {
-    Children[0]->Area = Rect(Area.x1, Area.y1, Area.x1 + width, Area.y2);
-    Children[1]->Area = Rect(Area.x1 + width, Area.y1, Area.x2, Area.y2);
+  if (area_.Width() - width > area_.Height() - height) {
+    children_[0]->area_ = Rect(area_.x1, area_.y1, area_.x1 + width, area_.y2);
+    children_[1]->area_ = Rect(area_.x1 + width, area_.y1, area_.x2, area_.y2);
   } else {
-    Children[0]->Area = Rect(Area.x1, Area.y1, Area.x2, Area.y1 + height);
-    Children[1]->Area = Rect(Area.x1, Area.y1 + height, Area.x2, Area.y2);
+    children_[0]->area_ = Rect(area_.x1, area_.y1, area_.x2, area_.y1 + height);
+    children_[1]->area_ = Rect(area_.x1, area_.y1 + height, area_.x2, area_.y2);
   }
 
-  return Children[0]->AddNode(width, height);
+  return children_[0]->AddNode(width, height);
 }
 
-CAtlasImage* CAtlasNode::GetImage() { return Image; }
+AtlasImage* AtlasNode::GetImage() { return image_; }
 
-CAtlasImage::CAtlasImage()
-    : Image(nullptr),
-      XRes(0),
-      YRes(0),
-      Handle(AtlasHandle++),
-      Required(false) {}
+AtlasImage::AtlasImage()
+    : image_(nullptr),
+      x_res_(0),
+      y_res_(0),
+      handle_(AtlasHandle++),
+      required_(false) {}
 
-CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
-                         int32_t SrcYRes, const Rect& Source)
-    : Image(nullptr),
-      XRes(Source.Width()),
-      YRes(Source.Height()),
-      Handle(AtlasHandle++),
-      Required(false) {
+AtlasImage::AtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
+                       int32_t SrcYRes, const Rect& Source)
+    : image_(nullptr),
+      x_res_(Source.Width()),
+      y_res_(Source.Height()),
+      handle_(AtlasHandle++),
+      required_(false) {
   if (Source.Area() > 0) {
-    Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
-    memset(Image.get(), 0, XRes * YRes * 4);
+    image_ = std::make_unique<uint8_t[]>(x_res_ * y_res_ * 4);
+    memset(image_.get(), 0, x_res_ * y_res_ * 4);
 
-    uint8_t* i = Image.get();
+    uint8_t* i = image_.get();
 
-    for (int32_t y = 0; y < YRes; y++) {
+    for (int32_t y = 0; y < y_res_; y++) {
       if (y + Source.y1 < 0 || y + Source.y1 >= SrcYRes) {
         Log_Err("[gui] Atlas source image out of bounds, failed to add image");
         return;
       }
 
-      for (int32_t x = 0; x < XRes; x++) {
+      for (int32_t x = 0; x < x_res_; x++) {
         if (x + Source.x1 < 0 || x + Source.x1 >= SrcXRes) {
           Log_Err(
               "[gui] Atlas source image out of bounds, failed to add image");
@@ -104,55 +104,55 @@ CAtlasImage::CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
   }
 }
 
-CAtlasImage::~CAtlasImage() = default;
+AtlasImage::~AtlasImage() = default;
 
-WBATLASHANDLE CAtlasImage::GetHandle() { return Handle; }
+WBATLASHANDLE AtlasImage::GetHandle() { return handle_; }
 
-uint8_t* CAtlasImage::GetImage() { return Image.get(); }
+uint8_t* AtlasImage::GetImage() { return image_.get(); }
 
-Size CAtlasImage::GetSize() const { return Size(XRes, YRes); }
+Size AtlasImage::GetSize() const { return Size(x_res_, y_res_); }
 
-void CAtlasImage::TagRequired() { Required = true; }
+void AtlasImage::TagRequired() { required_ = true; }
 
-void CAtlasImage::ClearRequired() { Required = false; }
+void AtlasImage::ClearRequired() { required_ = false; }
 
-bool CAtlasImage::IsRequired() { return Required; }
+bool AtlasImage::IsRequired() { return required_; }
 
-CAtlas::CAtlas(int32_t XSize, int32_t YSize)
-    : XRes(XSize),
-      YRes(YSize),
-      Image(std::make_unique<uint8_t[]>(XSize * YSize * 4)),
-      Atlas(nullptr),
-      TextureUpdateNeeded(false),
-      Root(std::make_unique<CAtlasNode>()) {
+Atlas::Atlas(int32_t XSize, int32_t YSize)
+    : x_res_(XSize),
+      y_res_(YSize),
+      image_(std::make_unique<uint8_t[]>(XSize * YSize * 4)),
+      atlas_(nullptr),
+      texture_update_needed_(false),
+      root_(std::make_unique<AtlasNode>()) {
   FlushCache();
-  memset(Image.get(), 0, XRes * YRes * 4);
-  Root->Area = Rect(0, 0, XRes, YRes);
-  Root->Occupied = false;
+  memset(image_.get(), 0, x_res_ * y_res_ * 4);
+  root_->area_ = Rect(0, 0, x_res_, y_res_);
+  root_->occupied_ = false;
 
   uint8_t White[4 * 4];
   memset(&White[0], 0xff, 4 * 4);
 
   {
-    std::lock_guard<std::mutex> lockGuard(mtx);
-    auto img = std::make_unique<CAtlasImage>(&White[0], 2, 2, Rect(0, 0, 2, 2));
-    WhitePixel = img.get();
-    ImageStorage[img->GetHandle()] = std::move(img);
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+    auto img = std::make_unique<AtlasImage>(&White[0], 2, 2, Rect(0, 0, 2, 2));
+    white_pixel_ = img.get();
+    image_storage_[img->GetHandle()] = std::move(img);
   }
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), &r);
-  WhitePixelPosition = r.TopLeft();
+  RequestImageUse(white_pixel_->GetHandle(), &r);
+  white_pixel_position_ = r.TopLeft();
 }
 
-CAtlas::~CAtlas() {
+Atlas::~Atlas() {
   {
-    std::lock_guard<std::mutex> lockGuard(mtx);
-    ImageStorage.clear();
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+    image_storage_.clear();
   }
 }
 
-bool CAtlas::PackImage(CAtlasImage* img) {
+bool Atlas::PackImage(AtlasImage* img) {
   if (!img) return false;
 
   // Log_Dbg("Packing Image {:d}",img->GetHandle());
@@ -160,64 +160,64 @@ bool CAtlas::PackImage(CAtlasImage* img) {
   FlushCache();
   const Size s = img->GetSize();
 
-  CAtlasNode* n = Root->AddNode(s.x, s.y);
+  AtlasNode* n = root_->AddNode(s.x, s.y);
   if (!n) {
     Log_Warn("[gui] Atlas full. Image can't be added.");
     return false;
   }
 
-  uint8_t* target = Image.get() + (n->Area.x1 + n->Area.y1 * XRes) * 4;
+  uint8_t* target = image_.get() + (n->area_.x1 + n->area_.y1 * x_res_) * 4;
   uint8_t* source = img->GetImage();
 
   for (int32_t y = 0; y < s.y; y++) {
     memcpy(target, source, img->GetSize().x * 4);
-    target += XRes * 4;
+    target += x_res_ * 4;
     source += img->GetSize().x * 4;
   }
 
   const WBATLASHANDLE Handle = img->GetHandle();
 
-  n->Image = img;
-  Dictionary[Handle] = n;
+  n->image_ = img;
+  dictionary_[Handle] = n;
   img->TagRequired();
 
-  TextureUpdateNeeded = true;
+  texture_update_needed_ = true;
 
   return img->GetHandle() != 0;
 }
 
-bool CAtlas::InitializeTexture(renderer::Device* Device) {
+bool Atlas::InitializeTexture(renderer::Device* Device) {
   if (!Device) return false;
-  Atlas = Device->CreateTexture2D(XRes, YRes, Image.get());
-  return Atlas.operator bool();
+  atlas_ = Device->CreateTexture2D(x_res_, y_res_, image_.get());
+  return atlas_.operator bool();
 }
 
-WBATLASHANDLE CAtlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
-                               const Rect& a) {
+WBATLASHANDLE Atlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
+                              const Rect& a) {
   if (a.Width() == 0 || a.Height() == 0) return 0;
 
-  std::lock_guard<std::mutex> lockGuard(mtx);
+  std::lock_guard<std::mutex> lockGuard(mtx_);
 
-  auto img = std::make_unique<CAtlasImage>(i, xs, ys, a);
+  auto img = std::make_unique<AtlasImage>(i, xs, ys, a);
   const auto h = img->GetHandle();
-  ImageStorage[img->GetHandle()] = std::move(img);
+  image_storage_[img->GetHandle()] = std::move(img);
   return h;
 }
 
-bool CAtlas::UpdateTexture() {
+bool Atlas::UpdateTexture() {
   // Log_Dbg("Atlas Texture Update Request");
 
-  if (!TextureUpdateNeeded) return true;
+  if (!texture_update_needed_) return true;
 
   // Log_Dbg("Updating Atlas Texture");
 
-  if (!Atlas || !Atlas->Update(Image.get(), XRes, YRes, 4)) return false;
+  if (!atlas_ || !atlas_->Update(image_.get(), x_res_, y_res_, 4)) return false;
 
-  TextureUpdateNeeded = false;
+  texture_update_needed_ = false;
   return true;
 }
 
-int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
+int SortImageStorage(AtlasImage* const& a, AtlasImage* const& b) {
   const Size ra = a->GetSize();
   const Size rb = b->GetSize();
 
@@ -228,46 +228,46 @@ int SortImageStorage(CAtlasImage* const& a, CAtlasImage* const& b) {
   return h;
 }
 
-bool CAtlas::Optimize(bool DebugMode) {
+bool Atlas::Optimize(bool DebugMode) {
   // rearranges the atlas in a more optimal fashion and removes unused
 
   Log_Dbg("[gui] Optimizing Atlas");
 
-  memset(Image.get(), 0, XRes * YRes * 4);
+  memset(image_.get(), 0, x_res_ * y_res_ * 4);
 
   if (DebugMode) {
-    std::lock_guard<std::mutex> lockGuard(mtx);
-    for (auto& x : ImageStorage) {
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+    for (auto& x : image_storage_) {
       const auto handle = x.second->GetHandle();
-      if (Dictionary.find(handle) != Dictionary.end()) {
+      if (dictionary_.find(handle) != dictionary_.end()) {
         x.second->TagRequired();
       }
     }
   }
 
-  Root = std::make_unique<CAtlasNode>();
-  Root->Area = Rect(0, 0, XRes, YRes);
-  Root->Occupied = false;
+  root_ = std::make_unique<AtlasNode>();
+  root_->area_ = Rect(0, 0, x_res_, y_res_);
+  root_->occupied_ = false;
 
-  Dictionary.clear();
+  dictionary_.clear();
   FlushCache();
 
   {
-    std::lock_guard<std::mutex> lockGuard(mtx);
+    std::lock_guard<std::mutex> lockGuard(mtx_);
     int32_t RequiredCount = 0;
-    for (auto& x : ImageStorage) {
+    for (auto& x : image_storage_) {
       RequiredCount += x.second->IsRequired() ? 1 : 0;
     }
 
-    WhitePixel->TagRequired();
+    white_pixel_->TagRequired();
 
     if (RequiredCount) {
-      std::vector<CAtlasImage*> images;
-      for (auto& x : ImageStorage) {
+      std::vector<AtlasImage*> images;
+      for (auto& x : image_storage_) {
         images.push_back(x.second.get());
       }
       std::sort(images.begin(), images.end(),
-                [](const CAtlasImage* a, const CAtlasImage* b) {
+                [](const AtlasImage* a, const AtlasImage* b) {
                   const Size ra = a->GetSize();
                   const Size rb = b->GetSize();
                   // As sort creates an ascending order and we want the largest
@@ -284,61 +284,61 @@ bool CAtlas::Optimize(bool DebugMode) {
         }
       }
     } else {
-      if (!PackImage(WhitePixel)) return false;
+      if (!PackImage(white_pixel_)) return false;
     }
   }
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), &r);
-  WhitePixelPosition = r.TopLeft() + Point(1, 1);
+  RequestImageUse(white_pixel_->GetHandle(), &r);
+  white_pixel_position_ = r.TopLeft() + Point(1, 1);
 
-  TextureUpdateNeeded = true;
+  texture_update_needed_ = true;
   return true;
 }
 
-void CAtlas::DeleteImage(const WBATLASHANDLE h) {
+void Atlas::DeleteImage(const WBATLASHANDLE h) {
   {
-    std::lock_guard<std::mutex> lockGuard(mtx);
-    ImageStorage.erase(h);
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+    image_storage_.erase(h);
   }
 
-  CAtlasNode* n = GetNodeCached(h);
+  AtlasNode* n = GetNodeCached(h);
   if (!n) return;
-  n->Image = nullptr;
-  Dictionary.erase(h);
+  n->image_ = nullptr;
+  dictionary_.erase(h);
   FlushCache();
   return;
 }
 
-renderer::Texture2D* CAtlas::GetTexture() { return Atlas.get(); }
+renderer::Texture2D* Atlas::GetTexture() { return atlas_.get(); }
 
-Size CAtlas::GetSize(WBATLASHANDLE h) {
-  CAtlasNode* n = GetNodeCached(h);
+Size Atlas::GetSize(WBATLASHANDLE h) {
+  AtlasNode* n = GetNodeCached(h);
   if (n) return n->GetArea().Size();
 
   {
-    std::lock_guard<std::mutex> lockGuard(mtx);
-    auto it = ImageStorage.find(h);
-    if (it != ImageStorage.end()) return it->second->GetSize();
+    std::lock_guard<std::mutex> lockGuard(mtx_);
+    auto it = image_storage_.find(h);
+    if (it != image_storage_.end()) return it->second->GetSize();
   }
 
   return Size(0, 0);
 }
 
-bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect* r) {
+bool Atlas::RequestImageUse(WBATLASHANDLE h, Rect* r) {
   if (!h) {
     *r = Rect(0, 0, 0, 0);
     return true;
   }
 
-  CAtlasNode* n = GetNodeCached(h);
+  AtlasNode* n = GetNodeCached(h);
 
   if (!n) {
     // image not on atlas, add it
     {
-      std::lock_guard<std::mutex> lockGuard(mtx);
-      auto it = ImageStorage.find(h);
-      if (it != ImageStorage.end()) {
+      std::lock_guard<std::mutex> lockGuard(mtx_);
+      auto it = image_storage_.find(h);
+      if (it != image_storage_.end()) {
         if (PackImage(it->second.get())) {
           n = GetNodeCached(h);
         }
@@ -355,86 +355,86 @@ bool CAtlas::RequestImageUse(WBATLASHANDLE h, Rect* r) {
   if (n->GetImage()) {
     n->GetImage()->TagRequired();
   }
-  *r = n->Area;
+  *r = n->area_;
 
   return true;
 }
 
-Point CAtlas::GetWhitePixelUV() { return WhitePixelPosition; }
+Point Atlas::GetWhitePixelUV() { return white_pixel_position_; }
 
-void CAtlas::ClearImageUsageflags() {
-  std::lock_guard<std::mutex> lockGuard(mtx);
-  for (auto& x : ImageStorage) x.second->ClearRequired();
+void Atlas::ClearImageUsageflags() {
+  std::lock_guard<std::mutex> lockGuard(mtx_);
+  for (auto& x : image_storage_) x.second->ClearRequired();
 }
 
-void CAtlas::FlushCache() {
-  for (auto& x : AtlasCache) {
-    x = CAtlasCacheElement{};
+void Atlas::FlushCache() {
+  for (auto& x : atlas_cache_) {
+    x = AtlasCacheElement{};
   }
 }
 
-CAtlasNode* CAtlas::GetNodeCached(WBATLASHANDLE Handle) {
+AtlasNode* Atlas::GetNodeCached(WBATLASHANDLE Handle) {
   const int32_t idx = Handle & (kAtlasCacheSize - 1);
 
-  if (AtlasCache[idx].Handle == Handle) return AtlasCache[idx].Node;
+  if (atlas_cache_[idx].Handle == Handle) return atlas_cache_[idx].Node;
 
-  CAtlasNode* n = nullptr;
-  auto it = Dictionary.find(Handle);
-  if (it != Dictionary.end()) {
+  AtlasNode* n = nullptr;
+  auto it = dictionary_.find(Handle);
+  if (it != dictionary_.end()) {
     n = it->second;
   }
 
-  AtlasCache[idx].Handle = Handle;
-  AtlasCache[idx].Node = n;
+  atlas_cache_[idx].Handle = Handle;
+  atlas_cache_[idx].Node = n;
 
   return n;
 }
 
-bool CAtlas::Reset() {
-  Root = std::make_unique<CAtlasNode>();
-  Root->Area = Rect(0, 0, XRes, YRes);
-  Root->Occupied = false;
+bool Atlas::Reset() {
+  root_ = std::make_unique<AtlasNode>();
+  root_->area_ = Rect(0, 0, x_res_, y_res_);
+  root_->occupied_ = false;
 
-  Dictionary.clear();
+  dictionary_.clear();
   FlushCache();
-  WhitePixel->TagRequired();
+  white_pixel_->TagRequired();
 
-  if (!PackImage(WhitePixel)) return false;
+  if (!PackImage(white_pixel_)) return false;
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), &r);
-  WhitePixelPosition = r.TopLeft() + Point(1, 1);
+  RequestImageUse(white_pixel_->GetHandle(), &r);
+  white_pixel_position_ = r.TopLeft() + Point(1, 1);
 
-  TextureUpdateNeeded = true;
+  texture_update_needed_ = true;
   return true;
 }
 
-bool CAtlas::Resize(renderer::Device* Device, int32_t XSize, int32_t YSize) {
-  Root.reset();
-  Image.reset();
-  Atlas.reset();
+bool Atlas::Resize(renderer::Device* Device, int32_t XSize, int32_t YSize) {
+  root_.reset();
+  image_.reset();
+  atlas_.reset();
 
   FlushCache();
-  XRes = XSize;
-  YRes = YSize;
+  x_res_ = XSize;
+  y_res_ = YSize;
 
-  Image = std::make_unique<uint8_t[]>(XRes * YRes * 4);
-  memset(Image.get(), 0, XRes * YRes * 4);
+  image_ = std::make_unique<uint8_t[]>(x_res_ * y_res_ * 4);
+  memset(image_.get(), 0, x_res_ * y_res_ * 4);
 
-  Root = std::make_unique<CAtlasNode>();
-  Root->Area = Rect(0, 0, XRes, YRes);
-  Root->Occupied = false;
+  root_ = std::make_unique<AtlasNode>();
+  root_->area_ = Rect(0, 0, x_res_, y_res_);
+  root_->occupied_ = false;
 
-  Dictionary.clear();
-  WhitePixel->TagRequired();
+  dictionary_.clear();
+  white_pixel_->TagRequired();
 
   if (!InitializeTexture(Device)) return false;
 
-  if (!PackImage(WhitePixel)) return false;
+  if (!PackImage(white_pixel_)) return false;
 
   Rect r;
-  RequestImageUse(WhitePixel->GetHandle(), &r);
-  WhitePixelPosition = r.TopLeft() + Point(1, 1);
+  RequestImageUse(white_pixel_->GetHandle(), &r);
+  white_pixel_position_ = r.TopLeft() + Point(1, 1);
 
   return true;
 }

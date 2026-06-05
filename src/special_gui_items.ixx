@@ -11,11 +11,11 @@ import whiteboard;
 import xml;
 
 export class ClickThroughButton
-    : public gui::CWBGuiType<"clickthroughbutton", gui::CWBButton> {
+    : public gui::GuiType<"clickthroughbutton", gui::Button> {
  public:
   ClickThroughButton(std::string_view txt);
   ~ClickThroughButton() override;
-  static inline ClickThroughButton* Create(gui::CWBItem* parent,
+  static inline ClickThroughButton* Create(gui::Widget* parent,
                                            const math::Rect& pos,
                                            std::string_view txt = "") {
     auto p = std::make_unique<ClickThroughButton>(txt);
@@ -26,6 +26,6 @@ export class ClickThroughButton
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 };

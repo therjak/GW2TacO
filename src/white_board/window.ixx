@@ -46,52 +46,52 @@ enum class WBWINDOWELEMENT : char {
   WB_WINELEMENT_TITLE,
 };
 
-class CWBWindow : public CWBGuiType<"window", CWBItem> {
+class Window : public GuiType<"window", Widget> {
  public:
-  CWBWindow(const TCHAR* txt = "", uint32_t style = WB_WINDOW_DEFAULT);
-  static inline CWBWindow* Create(CWBItem* Parent, const math::Rect& Pos,
-                                  const TCHAR* txt = "",
-                                  uint32_t style = WB_WINDOW_DEFAULT) {
-    auto p = std::make_unique<CWBWindow>(txt, style);
+  Window(const TCHAR* txt = "", uint32_t style = WB_WINDOW_DEFAULT);
+  static inline Window* Create(Widget* Parent, const math::Rect& Pos,
+                               const TCHAR* txt = "",
+                               uint32_t style = WB_WINDOW_DEFAULT) {
+    auto p = std::make_unique<Window>(txt, style);
     p->Initialize(Parent, Pos);
-    CWBWindow* r = p.get();
+    Window* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~CWBWindow() override;
+  ~Window() override;
 
-  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
+  bool Initialize(Widget* Parent, const math::Rect& Position) override;
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
 
-  [[nodiscard]] std::string GetTitle() const { return WindowTitle; }
-  void SetTitle(std::string_view val) { WindowTitle = val; }
+  [[nodiscard]] std::string GetTitle() const { return window_title_; }
+  void SetTitle(std::string_view val) { window_title_ = val; }
 
   uint32_t GetDragMode();
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          const math::Rect& Pos);
+  static Widget* Factory(Widget* Root, const CXMLNode& node,
+                         const math::Rect& Pos);
 
   math::Rect GetElementPos(WBWINDOWELEMENT Element);
   uint32_t GetBorderSelectionArea(const math::Point& mousepos);
 
  protected:
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(DrawAPI* API) override;
   bool MessageProc(const CWBMessage& Message) override;
 
-  uint32_t Style;
-  uint32_t DragMode{0};
+  uint32_t style_;
+  uint32_t drag_mode_{0};
 
  private:
-  int32_t BorderWidth{3};
-  int32_t TitleBarHeight;
-  int32_t CornerSelectionSize{15};
+  int32_t border_width_{3};
+  int32_t title_bar_height_;
+  int32_t corner_selection_size_{15};
 
-  math::Size MinSize;
+  math::Size min_size_;
 
-  std::string WindowTitle;
+  std::string window_title_;
 
-  std::unordered_map<WBWINDOWELEMENT, CWBCSSPropertyBatch> Elements;
+  std::unordered_map<WBWINDOWELEMENT, CssPropertyBatch> elements_;
 };
 
 }  // namespace gui

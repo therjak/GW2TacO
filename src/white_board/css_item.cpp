@@ -11,22 +11,22 @@ import :css_item;
 
 namespace gui {
 
-IWBCSS::IWBCSS() = default;
+CSS::CSS() = default;
 
-IWBCSS::~IWBCSS() = default;
+CSS::~CSS() = default;
 
-void IWBCSS::AddClass(std::string_view s) {
+void CSS::AddClass(std::string_view s) {
   if (!HasClass(s)) {
-    aClasses.emplace_back(s);
+    classes_.emplace_back(s);
   }
 }
 
-void IWBCSS::RemoveClass(std::string_view s) {
-  aClasses.erase(std::remove(aClasses.begin(), aClasses.end(), s),
-                 aClasses.end());
+void CSS::RemoveClass(std::string_view s) {
+  classes_.erase(std::remove(classes_.begin(), classes_.end(), s),
+                 classes_.end());
 }
 
-void IWBCSS::ToggleClass(std::string_view s) {
+void CSS::ToggleClass(std::string_view s) {
   if (HasClass(s)) {
     RemoveClass(s);
   } else {
@@ -34,15 +34,15 @@ void IWBCSS::ToggleClass(std::string_view s) {
   }
 }
 
-bool IWBCSS::HasClass(std::string_view s) {
-  return std::find(aClasses.begin(), aClasses.end(), s) != aClasses.end();
+bool CSS::HasClass(std::string_view s) {
+  return std::find(classes_.begin(), classes_.end(), s) != classes_.end();
 }
 
-void IWBCSS::SetID(std::string_view s) { sID = s; }
+void CSS::SetID(std::string_view s) { id_ = s; }
 
-std::string_view IWBCSS::GetID() const { return sID; }
+std::string_view CSS::GetID() const { return id_; }
 
-bool IWBCSS::IsFitForSelector(std::string_view selector) {
+bool CSS::IsFitForSelector(std::string_view selector) {
   if (selector.empty()) {
     return false;
   }
@@ -58,14 +58,14 @@ bool IWBCSS::IsFitForSelector(std::string_view selector) {
   return true;
 }
 
-bool IWBCSS::ApplyStyle(std::string_view prop, std::string_view value,
-                        const std::vector<std::string>& Pseudo) {
+bool CSS::ApplyStyle(std::string_view prop, std::string_view value,
+                     const std::vector<std::string>& Pseudo) {
   return false;
 }
 
-std::string IWBCSS::GetClassString() {
+std::string CSS::GetClassString() {
   std::string ret;
-  for (const auto& p : aClasses) {
+  for (const auto& p : classes_) {
     if (!ret.empty()) {
       ret.append(" ");
     }

@@ -9,11 +9,11 @@ import math;
 import whiteboard;
 import xml;
 
-export class Ts3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
+export class Ts3Control : public gui::GuiType<"ts3control", gui::Widget> {
  public:
   Ts3Control();
   ~Ts3Control() override;
-  static inline Ts3Control* Create(gui::CWBItem* parent, math::Rect position) {
+  static inline Ts3Control* Create(gui::Widget* parent, math::Rect position) {
     auto p = std::make_unique<Ts3Control>();
     p->Initialize(parent, position);
     Ts3Control* r = p.get();
@@ -22,12 +22,12 @@ export class Ts3Control : public gui::CWBGuiType<"ts3control", gui::CWBItem> {
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
 
  private:
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
 };

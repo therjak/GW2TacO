@@ -104,10 +104,10 @@ extern gui::WBATLASHANDLE DefaultIconHandle;
 
 POISet& GetMapPOIs();
 
-class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
+class GW2TacticalDisplay : public gui::GuiType<"gw2tactical", gui::Widget> {
  public:
   GW2TacticalDisplay();
-  static inline GW2TacticalDisplay* Create(gui::CWBItem* Parent,
+  static inline GW2TacticalDisplay* Create(gui::Widget* Parent,
                                            math::Rect Position) {
     auto p = std::make_unique<GW2TacticalDisplay>();
     p->Initialize(Parent, Position);
@@ -118,8 +118,8 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
   }
   ~GW2TacticalDisplay() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               const math::Rect& Pos);
+  static gui::Widget* Factory(gui::Widget* Root, const CXMLNode& node,
+                              const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           gui::WBMESSAGE MessageType) override;
@@ -128,12 +128,12 @@ class GW2TacticalDisplay : public gui::CWBGuiType<"gw2tactical", gui::CWBItem> {
  private:
   void FetchAchievements();
   void InsertPOI(POI* poi);
-  void DrawPOI(gui::CWBDrawAPI* API, const tm& ptm, const time_t& currtime,
+  void DrawPOI(gui::DrawAPI* API, const tm& ptm, const time_t& currtime,
                POI* poi, bool drawDistance, std::string* info_text);
-  void DrawPOIMinimap(gui::CWBDrawAPI* API, const math::Rect& miniRect,
+  void DrawPOIMinimap(gui::DrawAPI* API, const math::Rect& miniRect,
                       math::Vector2 pos, const tm& ptm, const time_t& currtime,
                       const POI& poi, float alpha, float zoomLevel);
-  void OnDraw(gui::CWBDrawAPI* API) override;
+  void OnDraw(gui::DrawAPI* API) override;
   math::Vector3 ProjectTacticalPos(math::Vector3 pos, float fov, float asp);
 
   bool TacticalIconsOnEdge = false;
@@ -161,11 +161,11 @@ void ImportPOIS();
 void ExportPOIS();
 void ImportPOIActivationData();
 
-void OpenTypeContextMenu(gui::CWBContextMenu* ctx,
+void OpenTypeContextMenu(gui::ContextMenu* ctx,
                          std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers = false, int32_t BaseID = 0,
                          bool closeOnClick = false);
-void OpenTypeContextMenu(gui::CWBContextItem* ctx,
+void OpenTypeContextMenu(gui::ContextItem* ctx,
                          std::vector<GW2TacticalCategory*>& category_list_,
                          bool AddVisibilityMarkers = false, int32_t BaseID = 0,
                          bool closeOnClick = false);

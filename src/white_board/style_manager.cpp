@@ -14,11 +14,11 @@ import :style_manager;
 
 namespace gui {
 
-CStyleManager::CStyleManager() = default;
+StyleManager::StyleManager() = default;
 
-CStyleManager::~CStyleManager() = default;
+StyleManager::~StyleManager() = default;
 
-void CStyleManager::ParseDeclarations(
+void StyleManager::ParseDeclarations(
     std::string_view s,
     std::unordered_map<std::string, std::string>* dRuleset) {
   auto propertiesArr = Split(s, ";");
@@ -31,7 +31,7 @@ void CStyleManager::ParseDeclarations(
   }
 }
 
-bool CStyleManager::ParseStyleData(std::string_view s) {
+bool StyleManager::ParseStyleData(std::string_view s) {
   int nPos = 0;
   std::string style(s);
   while ((nPos = style.find("/*")) != std::string::npos) {
@@ -52,7 +52,7 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
     auto selectors = Split(properties[0], ",");
     for (const auto& s : selectors) {
       std::string selector(Trim(s));
-      auto& mr = dRules[selector];
+      auto& mr = rules_[selector];
       for (auto& rs : dRuleset) {
         mr.insert_or_assign(rs.first, rs.second);
       }
@@ -61,10 +61,10 @@ bool CStyleManager::ParseStyleData(std::string_view s) {
   return true;
 }
 
-void CStyleManager::Reset() { dRules.clear(); }
+void StyleManager::Reset() { rules_.clear(); }
 
-void CStyleManager::CollectElementsBySimpleSelector(
-    CWBItem* pItem, std::vector<CWBItem*>* itemset, std::string_view selector,
+void StyleManager::CollectElementsBySimpleSelector(
+    Widget* pItem, std::vector<Widget*>* itemset, std::string_view selector,
     bool bIncludeRoot) {
   if (bIncludeRoot && pItem->IsFitForSelector(selector)) {
     itemset->emplace_back(pItem);
@@ -76,14 +76,14 @@ void CStyleManager::CollectElementsBySimpleSelector(
   }
 }
 
-std::vector<CWBItem*> CStyleManager::GetElementsBySelector(
-    CWBItem* pRootItem, std::string_view selector) {
-  std::vector<CWBItem*> result;
+std::vector<Widget*> StyleManager::GetElementsBySelector(
+    Widget* pRootItem, std::string_view selector) {
+  std::vector<Widget*> result;
   result.emplace_back(pRootItem);
   auto components = Split(selector, " ");
   for (size_t i = 0; i < components.size(); i++) {
     if (components[i].size() < 1) continue;
-    std::vector<CWBItem*> narrowResult;
+    std::vector<Widget*> narrowResult;
     for (const auto& r : result) {
       CollectElementsBySimpleSelector(r, &narrowResult, components[i], i == 0);
     }
@@ -93,13 +93,13 @@ std::vector<CWBItem*> CStyleManager::GetElementsBySelector(
   return result;
 }
 
-void CStyleManager::ApplyStyles(CWBItem* pRootItem) {
-  for (auto& r : dRules) {
+void StyleManager::ApplyStyles(Widget* pRootItem) {
+  for (auto& r : rules_) {
     std::string selector = r.first;
     std::unordered_map<std::string, std::string>& rules = r.second;
 
     auto PseudoTags = Split(selector, ":");
-    std::vector<CWBItem*> items =
+    std::vector<Widget*> items =
         GetElementsBySelector(pRootItem, PseudoTags[0]);
 
     for (auto& item : items) {
@@ -116,8 +116,8 @@ void CStyleManager::ApplyStyles(CWBItem* pRootItem) {
   }
 }
 
-void CStyleManager::ApplyStylesFromDeclarations(
-    CWBItem* pRootItem, std::string_view sDeclarations) {
+void StyleManager::ApplyStylesFromDeclarations(Widget* pRootItem,
+                                               std::string_view sDeclarations) {
   std::unordered_map<std::string, std::string> dRuleset;
   ParseDeclarations(sDeclarations, &dRuleset);
 

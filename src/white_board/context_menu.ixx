@@ -14,79 +14,79 @@ import :gui_item;
 
 export namespace gui {
 
-class CWBContextItem {
-  friend class CWBContextMenu;
+class ContextItem {
+  friend class ContextMenu;
 
  public:
-  CWBContextItem();
-  virtual ~CWBContextItem();
-  virtual CWBContextItem* AddItem(std::string_view Text, int32_t ID,
-                                  bool Highlighted = false,
-                                  bool closesContext = true);
+  ContextItem();
+  virtual ~ContextItem();
+  virtual ContextItem* AddItem(std::string_view Text, int32_t ID,
+                               bool Highlighted = false,
+                               bool closesContext = true);
   virtual void AddSeparator();
   virtual void SetText(std::string_view text);
   virtual void SetHighlight(bool highlighted);
 
  private:
-  void CopyChildrenFrom(CWBContextItem* itm);
-  std::string Text;
-  int32_t ReturnID;
-  bool Separator;
-  bool Highlighted{};
-  bool closesContext{};
+  void CopyChildrenFrom(ContextItem* itm);
+  std::string text_;
+  int32_t return_id_;
+  bool separator_;
+  bool highlighted_{};
+  bool closes_context_{};
 
-  std::vector<std::unique_ptr<CWBContextItem>> Children;
-  CWBContextItem* CopyOf = nullptr;
+  std::vector<std::unique_ptr<ContextItem>> children_;
+  ContextItem* copy_of_ = nullptr;
 };
 
-class CWBContextMenu : public CWBGuiType<"contextmenu", CWBItem> {
+class ContextMenu : public GuiType<"contextmenu", Widget> {
  public:
-  CWBContextMenu(WBGUID Target);
-  static inline CWBContextMenu* Create(CWBItem* Parent, const math::Rect& Pos,
-                                       WBGUID Target) {
-    auto p = std::make_unique<CWBContextMenu>(Target);
+  ContextMenu(WBGUID Target);
+  static inline ContextMenu* Create(Widget* Parent, const math::Rect& Pos,
+                                    WBGUID Target) {
+    auto p = std::make_unique<ContextMenu>(Target);
     p->Initialize(Parent, Pos);
-    CWBContextMenu* r = p.get();
+    ContextMenu* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~CWBContextMenu() override;
+  ~ContextMenu() override;
 
-  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
+  bool Initialize(Widget* Parent, const math::Rect& Position) override;
 
-  virtual CWBContextItem* AddItem(std::string_view Text, int32_t ID,
-                                  bool Highlighted = false,
-                                  bool closesContext = true);
+  virtual ContextItem* AddItem(std::string_view Text, int32_t ID,
+                               bool Highlighted = false,
+                               bool closesContext = true);
   virtual void AddSeparator();
 
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
-  virtual CWBContextItem* GetItem(int32_t ID);
+  virtual ContextItem* GetItem(int32_t ID);
 
  private:
   bool MessageProc(const CWBMessage& Message) override;
   virtual void ResizeToContentSize();
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(DrawAPI* API) override;
   void SpawnSubMenu(int32_t itemidx);
   math::Rect GetItemRect(int32_t idx);
   void MarkParentForDeletion();
   bool MouseInContextHierarchy();
-  CWBContextMenu* GetContextRoot();
-  bool AllowMouseHighlightWhileCaptureItem() override { return true; }
+  ContextMenu* GetContextRoot();
+  bool AllowMouseHighlightWhileCaptureItem() const override { return true; }
   void MarkForDeletion() override;
 
   // used to ignore mouse clicks originating from the opening item
-  bool Pushed = false;
-  WBGUID Target = 0;
+  bool pushed_ = false;
+  WBGUID target_ = 0;
 
   // SubMenu is also a child
-  CWBContextMenu* SubMenu = nullptr;
-  int32_t SubMenuIdx = -1;
-  CWBContextMenu* ParentMenu = nullptr;
-  std::vector<std::unique_ptr<CWBContextItem>> Items;
+  ContextMenu* sub_menu_ = nullptr;
+  int32_t sub_menu_idx_ = -1;
+  ContextMenu* parent_menu_ = nullptr;
+  std::vector<std::unique_ptr<ContextItem>> items_;
 
-  CWBCSSPropertyBatch SeparatorElements;
+  CssPropertyBatch separator_elements_;
 };
 
 }  // namespace gui

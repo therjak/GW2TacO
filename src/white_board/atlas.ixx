@@ -18,34 +18,34 @@ constexpr int32_t kAtlasCacheSize = 32;
 
 typedef int32_t WBATLASHANDLE;
 
-class CAtlasImage;
+class AtlasImage;
 
 // stores a node for the rectpacker
-class CAtlasNode {
-  friend class CAtlas;
+class AtlasNode {
+  friend class Atlas;
 
  public:
-  CAtlasNode();
-  virtual ~CAtlasNode();
-  CAtlasNode* AddNode(int32_t width, int32_t height);
+  AtlasNode();
+  virtual ~AtlasNode();
+  AtlasNode* AddNode(int32_t width, int32_t height);
   math::Rect& GetArea();
-  CAtlasImage* GetImage();
+  AtlasImage* GetImage();
 
  private:
-  math::Rect Area;
-  std::array<std::unique_ptr<CAtlasNode>, 2> Children;
-  bool Occupied = false;
+  math::Rect area_;
+  std::array<std::unique_ptr<AtlasNode>, 2> children_;
+  bool occupied_ = false;
 
-  CAtlasImage* Image = nullptr;
+  AtlasImage* image_ = nullptr;
 };
 
 // stores image data not currently in the atlas
-class CAtlasImage {
+class AtlasImage {
  public:
-  CAtlasImage();
-  CAtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
-              const math::Rect& Source);
-  virtual ~CAtlasImage();
+  AtlasImage();
+  AtlasImage(const uint8_t* SourceImage, int32_t SrcXRes, int32_t SrcYRes,
+             const math::Rect& Source);
+  virtual ~AtlasImage();
 
   WBATLASHANDLE GetHandle();
   uint8_t* GetImage();
@@ -55,24 +55,24 @@ class CAtlasImage {
   bool IsRequired();
 
  private:
-  std::unique_ptr<uint8_t[]> Image;
-  int32_t XRes, YRes;
-  WBATLASHANDLE Handle;
+  std::unique_ptr<uint8_t[]> image_;
+  int32_t x_res_, y_res_;
+  WBATLASHANDLE handle_;
 
-  bool Required;
+  bool required_;
 };
 
-struct CAtlasCacheElement {
+struct AtlasCacheElement {
   WBATLASHANDLE Handle = 0;
-  CAtlasNode* Node = nullptr;
+  AtlasNode* Node = nullptr;
 };
 
-class CAtlas {
-  friend class CWBDrawAPI;
+class Atlas {
+  friend class DrawAPI;
 
  public:
-  CAtlas(int32_t XSize, int32_t YSize);
-  virtual ~CAtlas();
+  Atlas(int32_t XSize, int32_t YSize);
+  virtual ~Atlas();
 
   bool InitializeTexture(renderer::Device* Device);
   bool UpdateTexture();
@@ -94,35 +94,35 @@ class CAtlas {
 
   void ClearImageUsageflags();
 
-  [[nodiscard]] int32_t GetXRes() const { return XRes; }
-  [[nodiscard]] int32_t GetYRes() const { return YRes; }
+  [[nodiscard]] int32_t GetXRes() const { return x_res_; }
+  [[nodiscard]] int32_t GetYRes() const { return y_res_; }
 
   bool Resize(renderer::Device* Device, int32_t XSize, int32_t YSize);
 
  private:
-  bool PackImage(CAtlasImage* img);
+  bool PackImage(AtlasImage* img);
 
   void FlushCache();
-  CAtlasNode* GetNodeCached(WBATLASHANDLE Handle);
+  AtlasNode* GetNodeCached(WBATLASHANDLE Handle);
 
-  int32_t XRes, YRes;
-  std::unique_ptr<uint8_t[]> Image;
-  std::unique_ptr<renderer::Texture2D> Atlas;
+  int32_t x_res_, y_res_;
+  std::unique_ptr<uint8_t[]> image_;
+  std::unique_ptr<renderer::Texture2D> atlas_;
 
-  bool TextureUpdateNeeded;
+  bool texture_update_needed_;
 
-  std::array<CAtlasCacheElement, kAtlasCacheSize> AtlasCache;
+  std::array<AtlasCacheElement, kAtlasCacheSize> atlas_cache_;
 
-  std::unordered_map<WBATLASHANDLE, CAtlasNode*> Dictionary;
-  std::unordered_map<WBATLASHANDLE, std::unique_ptr<CAtlasImage>> ImageStorage;
+  std::unordered_map<WBATLASHANDLE, AtlasNode*> dictionary_;
+  std::unordered_map<WBATLASHANDLE, std::unique_ptr<AtlasImage>> image_storage_;
 
-  std::unique_ptr<CAtlasNode> Root;
+  std::unique_ptr<AtlasNode> root_;
 
-  CAtlasImage* WhitePixel;
+  AtlasImage* white_pixel_;
   // recalculated on each optimization and reset
-  math::Point WhitePixelPosition;
+  math::Point white_pixel_position_;
 
-  std::mutex mtx;
+  std::mutex mtx_;
 };
 
 }  // namespace gui

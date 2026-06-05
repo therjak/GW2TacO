@@ -8,21 +8,11 @@
 #include <vector>
 
 import math;
+import renderer;
 
 namespace renderer {
 
 class Device;
-
-enum class MouseCursor : uint16_t {
-  kArrow,
-  kCross,
-  kSizeWe,
-  kSizeNs,
-  kSizeNeSw,
-  kSizeNwSe,
-  kText,
-  kWait,
-};
 
 //////////////////////////////////////////////////////////////////////////
 // window init parameter structure

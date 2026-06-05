@@ -16,8 +16,8 @@ import math;
 
 export namespace gui {
 
-class CWBApplication;
-class CWBItem;
+class Application;
+class Widget;
 
 struct WBDISPLAYLINE {
   math::Point p1, p2;
@@ -26,37 +26,37 @@ struct WBDISPLAYLINE {
 };
 
 struct WBGUIVERTEX {
-  math::Vector4 Pos;
-  math::Vector2 UV;
-  CColor Color;
+  math::Vector4 pos;
+  math::Vector2 uv;
+  CColor color;
 
   WBGUIVERTEX() = default;
 
   WBGUIVERTEX(const float x, const float y, const float u, const float v,
               const CColor& color)
-      : Pos(x, y, 0, 1), UV(u, v), Color(color) {}
+      : pos(x, y, 0, 1), uv(u, v), color(color) {}
 
   WBGUIVERTEX(const math::Vector2& pos, const math::Vector2& uv,
               const CColor& color)
-      : Pos(pos.x, pos.y, 0, 1), UV(uv.x, uv.y), Color(color) {}
+      : pos(pos.x, pos.y, 0, 1), uv(uv.x, uv.y), color(color) {}
 };
 
 enum class WBDRAWMODE : uint8_t { WBD_RECTANGLES, WBD_LINES, WBD_TRIANGLES };
 
-class CWBDrawAPI {
-  friend class CWBApplication;
+class DrawAPI {
+  friend class Application;
   // these are the only things that need to access the
   // renderdisplaylist function
 
-  friend class CWBItem;
+  friend class Widget;
   // screen space top left corner of the client rect for
   // the currently drawn item
 
  public:
-  CWBDrawAPI();
-  virtual ~CWBDrawAPI();
+  DrawAPI();
+  virtual ~DrawAPI();
 
-  bool Initialize(CWBApplication* App, renderer::Device* Device, CAtlas* Atlas);
+  bool Initialize(Application* App, renderer::Device* Device, Atlas* Atlas);
 
   void DrawRect(const math::Rect& r, CColor Color);
   void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2);
@@ -83,10 +83,10 @@ class CWBDrawAPI {
 
   void SetOffset(const math::Point& p);
   void SetCropRect(const math::Rect& r);
-  void SetParentCropRect(const math::Rect& r) { ParentCropRect = r; };
-  math::Rect& GetCropRect() { return CropRect; }
-  math::Rect& GetParentCropRect() { return ParentCropRect; }
-  math::Point& GetOffset() { return Offset; }
+  void SetParentCropRect(const math::Rect& r) { parent_crop_rect_ = r; };
+  math::Rect& GetCropRect() { return crop_rect_; }
+  math::Rect& GetParentCropRect() { return parent_crop_rect_; }
+  math::Point& GetOffset() { return offset_; }
 
   void SetUIRenderState();
   void SetUIBlendState(std::unique_ptr<renderer::BlendState>&& BlendState);
@@ -101,7 +101,7 @@ class CWBDrawAPI {
                         CColor Color = CColor(0xffffffff));
   void DrawAtlasElementRotated(WBATLASHANDLE h, const math::Rect& Position,
                                CColor Color, float rotation);
-  void SetCropToClient(const CWBItem* i);
+  void SetCropToClient(const Widget* i);
 
   void FlushDrawBuffer();
   renderer::Device* GetDevice();
@@ -136,37 +136,37 @@ class CWBDrawAPI {
 
   template <class UV, class RES>
   float UVTRANSLATION(UV uv, RES res) {
-    return (uv + UVOffset) / static_cast<float>(res);
+    return (uv + uv_offset_) / static_cast<float>(res);
   }
 
-  math::Point Offset;
+  math::Point offset_;
   // screen space window rect for the currently drawn item
-  math::Rect CropRect;
-  WBDRAWMODE DrawMode;
-  uint8_t Opacity;
-  CWBApplication* App;
+  math::Rect crop_rect_;
+  WBDRAWMODE draw_mode_;
+  uint8_t opacity_;
+  Application* app_;
 
-  std::vector<WBGUIVERTEX> DisplayList;
-  CAtlas* Atlas;
-  renderer::Device* Device;
+  std::vector<WBGUIVERTEX> display_list_;
+  Atlas* atlas_;
+  renderer::Device* device_;
 
-  float UVOffset = 0;  // texel offset to fix 0.5 texel shift in Directx9
+  float uv_offset_ = 0;  // texel offset to fix 0.5 texel shift in Directx9
 
-  math::Rect ParentCropRect;
+  math::Rect parent_crop_rect_;
 
-  std::unique_ptr<renderer::IndexBuffer> rectIndexBuffer;
-  std::unique_ptr<renderer::VertexBuffer> VertexBuffer;
-  std::unique_ptr<renderer::VertexFormat> VertexFormat;
+  std::unique_ptr<renderer::IndexBuffer> rect_index_buffer_;
+  std::unique_ptr<renderer::VertexBuffer> vertex_buffer_;
+  std::unique_ptr<renderer::VertexFormat> vertex_format_;
 
-  std::unique_ptr<renderer::VertexShader> VxShader;
-  std::unique_ptr<renderer::PixelShader> PxShader;
+  std::unique_ptr<renderer::VertexShader> vx_shader_;
+  std::unique_ptr<renderer::PixelShader> px_shader_;
 
-  std::unique_ptr<renderer::SamplerState> GuiSampler;
-  std::unique_ptr<renderer::BlendState> GuiBlendState;
-  std::unique_ptr<renderer::RasterizerState> GuiRasterState;
-  std::unique_ptr<renderer::DepthStencilState> GuiZState;
+  std::unique_ptr<renderer::SamplerState> gui_sampler_;
+  std::unique_ptr<renderer::BlendState> gui_blend_state_;
+  std::unique_ptr<renderer::RasterizerState> gui_raster_state_;
+  std::unique_ptr<renderer::DepthStencilState> gui_zstate_;
 
-  std::unique_ptr<renderer::ConstantBuffer> ResolutionData;
+  std::unique_ptr<renderer::ConstantBuffer> resolution_data_;
 };
 
 // helper functions for common use cases
