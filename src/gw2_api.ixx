@@ -71,7 +71,7 @@ class APIKeyManager {
   size_t size();
   APIKey* GetIdentifiedAPIKey();
   Status GetStatus();
-  Status DisplayStatusText(gui::CWBDrawAPI* API, gui::CWBFont* font);
+  Status DisplayStatusText(gui::DrawAPI* API, gui::Font* font);
   void Initialize();
   void RebuildConfigValues();
 

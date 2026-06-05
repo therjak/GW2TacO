@@ -21,8 +21,8 @@ import xml;
 using math::Point;
 using math::Rect;
 
-void DungeonProgress::OnDraw(gui::CWBDrawAPI* api) {
-  gui::CWBFont* f = GetFont(GetState());
+void DungeonProgress::OnDraw(gui::DrawAPI* api) {
+  gui::Font* f = GetFont(GetState());
 
   GW2::APIKeyManager::Status status =
       GW2::apiKeyManager.DisplayStatusText(api, f);
@@ -133,7 +133,7 @@ constexpr int32_t ignore = -1;  // does not count for dungeon frequenter
 }  // namespace
 
 DungeonProgress::DungeonProgress()
-    : CWBGuiType(),
+    : GuiType(),
       dungeons_{
           Dungeon{"ascalonian_catacombs",
                   "AC",
@@ -188,8 +188,8 @@ DungeonProgress::DungeonProgress()
 
 DungeonProgress::~DungeonProgress() {}
 
-gui::CWBItem* DungeonProgress::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                       const Rect& pos) {
+gui::Widget* DungeonProgress::Factory(gui::Widget* root, const CXMLNode& node,
+                                      const Rect& pos) {
   return DungeonProgress::Create(root, pos);
 }
 

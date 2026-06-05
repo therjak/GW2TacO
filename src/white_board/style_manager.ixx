@@ -10,31 +10,31 @@ import :gui_item;
 
 export namespace gui {
 
-class CStyleManager {
+class StyleManager {
  public:
-  CStyleManager();
-  ~CStyleManager();
+  StyleManager();
+  ~StyleManager();
   void Reset();
   bool ParseStyleData(std::string_view s);
 
-  void ApplyStyles(CWBItem* pRootItem);
+  void ApplyStyles(Widget* pRootItem);
 
-  static std::vector<CWBItem*> GetElementsBySelector(CWBItem* pRootItem,
-                                                     std::string_view selector);
-  static void ApplyStylesFromDeclarations(CWBItem* pRootItem,
+  static std::vector<Widget*> GetElementsBySelector(Widget* pRootItem,
+                                                    std::string_view selector);
+  static void ApplyStylesFromDeclarations(Widget* pRootItem,
                                           std::string_view sDeclarations);
 
  private:
   static void ParseDeclarations(
       std::string_view s,
       std::unordered_map<std::string, std::string>* dRuleset);
-  static void CollectElementsBySimpleSelector(CWBItem* pItem,
-                                              std::vector<CWBItem*>* itemset,
+  static void CollectElementsBySimpleSelector(Widget* pItem,
+                                              std::vector<Widget*>* itemset,
                                               std::string_view selector,
                                               bool bIncludeRoot);
 
   std::unordered_map<std::string, std::unordered_map<std::string, std::string>>
-      dRules;
+      rules_;
 };
 
 }  // namespace gui

@@ -39,7 +39,7 @@ void GW2MapTimer::OnResize(const Size& s) {
   }
 }
 
-void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
+void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
   if (!GetConfigValue("MapTimerVisible")) {
     return;
   }
@@ -93,7 +93,7 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
   gmtime_s(&ptm, &rawtime);
 
   gui::WBITEMSTATE i = GetState();
-  gui::CWBFont* f = GetFont(i);
+  gui::Font* f = GetFont(i);
 
   bar_height = f->GetLineHeight();
   map_height = bar_height + f->GetLineHeight();
@@ -109,13 +109,13 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
     }
   }
 
-  DrawBackgroundItem(api, CSSProperties.DisplayDescriptor,
+  DrawBackgroundItem(api, GetDisplayDescriptor(),
                      Rect(Point(cl.x1 + padding_left, cl.y1),
                           Point(cl.Width(), map_count * map_height + 1)),
                      GetState());
 
   auto text_transform = static_cast<gui::WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, gui::WB_ITEM_TEXTTRANSFORM));
+      GetDisplayDescriptor().GetValue(i, gui::WB_ITEM_TEXTTRANSFORM));
 
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
   int32_t left_time = minutes - time_window / 2;
@@ -295,11 +295,11 @@ void GW2MapTimer::OnDraw(gui::CWBDrawAPI* api) {
 
 int32_t GW2MapTimer::GetScrollbarStep() { return 5; }
 
-gui::CWBItem* GW2MapTimer::GetItemUnderMouse(const Point& point,
-                                             const Rect& crop_rect,
-                                             gui::WBMESSAGE message_type) {
-  gui::CWBItem* item =
-      gui::CWBItem::GetItemUnderMouse(point, crop_rect, message_type);
+gui::Widget* GW2MapTimer::GetItemUnderMouse(const Point& point,
+                                            const Rect& crop_rect,
+                                            gui::WBMESSAGE message_type) {
+  gui::Widget* item =
+      gui::Widget::GetItemUnderMouse(point, crop_rect, message_type);
   if (item && IsScrollbarVisible()) {
     // Only the scrollbar needs to be "visible"
 
@@ -452,7 +452,7 @@ void GW2MapTimer::UpdateScrollbarData(int ypos, const Rect& cl) {
   }
 }
 
-GW2MapTimer::GW2MapTimer() : CWBGuiType() {
+GW2MapTimer::GW2MapTimer() : GuiType() {
   CXMLDocument d;
   if (!d.LoadFromFile("maptimer.xml")) {
     return;
@@ -470,7 +470,7 @@ GW2MapTimer::GW2MapTimer() : CWBGuiType() {
 
 GW2MapTimer::~GW2MapTimer() {}
 
-gui::CWBItem* GW2MapTimer::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                   const Rect& pos) {
+gui::Widget* GW2MapTimer::Factory(gui::Widget* root, const CXMLNode& node,
+                                  const Rect& pos) {
   return GW2MapTimer::Create(root, pos);
 }

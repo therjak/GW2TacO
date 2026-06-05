@@ -33,32 +33,31 @@ enum class WBMOUSECLICKREPEATMODE : uint8_t {
   WB_MCR_MIDDLE = 3
 };
 
-typedef CWBItem*(__cdecl* WBFACTORYCALLBACK)(CWBItem* Root,
-                                             const CXMLNode& node,
-                                             const math::Rect& Pos);
+typedef Widget*(__cdecl* WBFACTORYCALLBACK)(Widget* Root, const CXMLNode& node,
+                                            const math::Rect& Pos);
 
-class CWBApplication : public renderer::WindowHandlerWin {
-  friend class CWBItem;
+class Application : public renderer::WindowHandlerWin {
+  friend class Widget;
 
  public:
-  CWBApplication();
-  ~CWBApplication() override;
+  Application();
+  ~Application() override;
   bool Initialize(const renderer::WindowParameters& WindowParams) override;
 
-  CWBItem* GetRoot();
-  CWBItem* GetFocusItem();
+  Widget* GetRoot();
+  Widget* GetFocusItem();
   bool HandleMessages() override;
   virtual bool IsDone() { return done_; }
   virtual void SetDone(bool d);
   virtual void Display();
-  virtual void Display(CWBDrawAPI* DrawAPI);
+  virtual void Display(DrawAPI* DrawAPI);
 
-  void RegisterItem(CWBItem* Item);
-  void UnRegisterItem(CWBItem* Item);
-  CWBItem* FindItemByGuid(WBGUID Guid, const TCHAR* type = nullptr) const;
+  void RegisterItem(Widget* Item);
+  void UnRegisterItem(Widget* Item);
+  Widget* FindItemByGuid(WBGUID Guid, const TCHAR* type = nullptr) const;
 
   template <typename... Args>
-  CWBItem* FindItemByGuids(WBGUID Guid, Args... args) const {
+  Widget* FindItemByGuids(WBGUID Guid, Args... args) const {
     int len = sizeof...(Args);
     const TCHAR* vals[] = {args...};
 
@@ -73,32 +72,32 @@ class CWBApplication : public renderer::WindowHandlerWin {
   }
 
   virtual void Send(const CWBMessage& Message);
-  CWBItem* SetCapture(CWBItem* Capturer);
+  Widget* SetCapture(Widget* Capturer);
   bool ReleaseCapture();
 
-  CWBItem* GetMouseItem();
-  CWBItem* GetMouseCaptureItem();
+  Widget* GetMouseItem();
+  Widget* GetMouseCaptureItem();
 
-  bool InitFont(std::string_view FontName, CWBFontDescription* Font);
-  CWBFont* GetFont(std::string_view FontName);
-  CWBFont* GetDefaultFont();
+  bool InitFont(std::string_view FontName, FontDescription* Font);
+  Font* GetFont(std::string_view FontName);
+  Font* GetDefaultFont();
   bool SetDefaultFont(std::string_view FontName);
-  void AddToTrash(std::unique_ptr<CWBItem>&& item);
+  void AddToTrash(std::unique_ptr<Widget>&& item);
 
-  bool GetCtrlState() { return Ctrl; }
-  bool GetAltState() { return Alt; }
-  bool GetShiftState() { return Shift; }
-  bool GetLeftButtonState() { return Left; }
-  bool GetRightButtonState() { return Right; }
-  bool GetMiddleButtonState() { return Middle; }
+  bool GetCtrlState() const { return ctrl_; }
+  bool GetAltState() const { return alt_; }
+  bool GetShiftState() const { return shift_; }
+  bool GetLeftButtonState() const { return left_; }
+  bool GetRightButtonState() const { return right_; }
+  bool GetMiddleButtonState() const { return middle_; }
 
   bool LoadXMLLayout(std::string_view XML);
   bool LoadXMLLayoutFromFile(std::string_view FileName);
   bool LoadCSS(std::string_view CSS, bool ResetStyleManager = true);
   bool LoadCSSFromFile(std::string_view FileName,
                        bool ResetStyleManager = true);
-  bool GenerateGUI(CWBItem* Root, std::string_view Layout);
-  bool GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
+  bool GenerateGUI(Widget* Root, std::string_view Layout);
+  bool GenerateGUITemplate(Widget* Root, std::string_view Layout,
                            std::string_view TemplateID);
   bool LoadSkin(std::string_view XML, std::vector<int>& enabledGlyphs);
   bool LoadSkin(std::string_view XML) {
@@ -112,20 +111,20 @@ class CWBApplication : public renderer::WindowHandlerWin {
     return LoadSkinFromFile(FileName, eg);
   }
 
-  CAtlas* GetAtlas();
-  CWBSkin* GetSkin();
+  Atlas* GetAtlas();
+  Skin* GetSkin();
 
-  void ApplyStyle(CWBItem* Target);
+  void ApplyStyle(Widget* Target);
   void ReApplyStyle();
 
   void RegisterUIFactoryCallback(std::string_view ElementName,
                                  WBFACTORYCALLBACK FactoryCallback);
 
   virtual void TakeScreenshot();
-  void SetScreenshotName(std::string_view s) { ScreenShotName = s; }
+  void SetScreenshotName(std::string_view s) { screen_shot_name_ = s; }
 
-  void SetVSync(bool vs) { Vsync = vs; }
-  void SetClearColor(CColor color) { ClearColor = color; }
+  void SetVSync(bool vs) { vsync_ = vs; }
+  void SetClearColor(CColor color) { clear_color_ = color; }
 
   float GetFrameRate();
   int32_t GetInitialKeyboardDelay();
@@ -138,55 +137,55 @@ class CWBApplication : public renderer::WindowHandlerWin {
  protected:
   LRESULT WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) override;
 
-  std::unique_ptr<CWBDrawAPI> DrawAPI;
+  std::unique_ptr<DrawAPI> draw_api_;
 
  private:
   bool Initialize();
-  bool GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc);
-  bool SendMessageToItem(const CWBMessage& Message, CWBItem* Target);
+  bool GenerateGUIFromXML(Widget* Root, CXMLDocument* doc);
+  bool SendMessageToItem(const CWBMessage& Message, Widget* Target);
   void ProcessMessage(CWBMessage& Message);
-  CWBItem* GetItemUnderMouse(const math::Point& Point, WBMESSAGE w);
+  Widget* GetItemUnderMouse(const math::Point& Point, WBMESSAGE w);
 
   virtual void UpdateMouseItem();
   virtual void CleanTrash();
   virtual void UpdateControlKeyStates();  // update ctrl alt shift states
   virtual int32_t GetKeyboardState();
-  bool ProcessGUIXML(CWBItem* Root, const CXMLNode& node);
-  bool GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
+  bool ProcessGUIXML(Widget* Root, const CXMLNode& node);
+  bool GenerateGUIFromXMLNode(Widget* Root, const CXMLNode& node,
                               math::Rect* Pos);
-  bool GenerateGUITemplateFromXML(CWBItem* Root, CXMLDocument* doc,
+  bool GenerateGUITemplateFromXML(Widget* Root, CXMLDocument* doc,
                                   std::string_view TemplateID);
-  CWBItem* GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                          const math::Rect& Pos);
+  Widget* GenerateUIItem(Widget* Root, const CXMLNode& node,
+                         const math::Rect& Pos);
 
-  std::unique_ptr<CRingBuffer<int32_t, 60>> FrameTimes;
-  int32_t LastFrameTime;
+  std::unique_ptr<CRingBuffer<int32_t, 60>> frame_times_;
+  int32_t last_frame_time_;
 
-  std::unordered_map<WBGUID, CWBItem*> Items;
-  std::recursive_mutex MessageBufferMutex;
-  std::vector<CWBMessage> MessageBuffer;
-  std::recursive_mutex TrashMutex;
-  std::vector<std::unique_ptr<CWBItem>> Trash;
+  std::unordered_map<WBGUID, Widget*> items_;
+  std::recursive_mutex message_buffer_mutex_;
+  std::vector<CWBMessage> message_buffer_;
+  std::recursive_mutex trash_mutex_;
+  std::vector<std::unique_ptr<Widget>> trash_;
 
-  CWBItem* MouseCaptureItem;
-  CWBItem* MouseItem;
+  Widget* mouse_capture_item_;
+  Widget* mouse_item_;
 
-  std::unique_ptr<CWBSkin> Skin;
-  std::unordered_map<std::string, std::unique_ptr<CWBFont>> Fonts;
-  std::unique_ptr<CAtlas> Atlas;
-  std::unique_ptr<CWBRoot> Root;
+  std::unique_ptr<Skin> skin_;
+  std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
+  std::unique_ptr<Atlas> atlas_;
+  std::unique_ptr<Root> root_;
 
-  CWBFont* DefaultFont;
-  bool Alt, Ctrl, Shift, Left, Middle, Right;
-  bool Vsync;
-  std::string ScreenShotName;
-  WBMOUSECLICKREPEATMODE ClickRepeaterMode;
-  int64_t NextRepeatedClickTime{};
+  Font* default_font_;
+  bool alt_, ctrl_, shift_, left_, middle_, right_;
+  bool vsync_;
+  std::string screen_shot_name_;
+  WBMOUSECLICKREPEATMODE click_repeater_mode_;
+  int64_t next_repeated_click_time_{};
   std::unordered_map<std::string, std::unique_ptr<CXMLDocument>>
-      LayoutRepository;
-  CStyleManager StyleManager;
-  std::unordered_map<std::string, WBFACTORYCALLBACK> FactoryCallbacks;
-  CColor ClearColor = CColor(0, 0, 0, 255);
+      layout_repository_;
+  StyleManager style_manager_;
+  std::unordered_map<std::string, WBFACTORYCALLBACK> factory_callbacks_;
+  CColor clear_color_ = CColor(0, 0, 0, 255);
 };
 
 }  // namespace gui

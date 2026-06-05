@@ -43,55 +43,54 @@ using math::Rect;
 
 namespace gui {
 
-CWBApplication::CWBApplication()
+Application::Application()
     : WindowHandlerWin(),
-      DrawAPI(std::make_unique<CWBDrawAPI>()),
-      FrameTimes(std::make_unique<CRingBuffer<int32_t, 60>>()),
-      LastFrameTime(0),
-      MouseCaptureItem(nullptr),
-      MouseItem(nullptr),
-      Skin(std::make_unique<CWBSkin>()),
-      Root(nullptr),
-      DefaultFont(nullptr),
-      Alt(false),
-      Ctrl(false),
-      Shift(false),
-      Left(false),
-      Middle(false),
-      Right(false),
-      Vsync(true),
-      ClickRepeaterMode(WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
+      draw_api_(std::make_unique<DrawAPI>()),
+      frame_times_(std::make_unique<CRingBuffer<int32_t, 60>>()),
+      last_frame_time_(0),
+      mouse_capture_item_(nullptr),
+      mouse_item_(nullptr),
+      skin_(std::make_unique<Skin>()),
+      root_(nullptr),
+      default_font_(nullptr),
+      alt_(false),
+      ctrl_(false),
+      shift_(false),
+      left_(false),
+      middle_(false),
+      right_(false),
+      vsync_(true),
+      click_repeater_mode_(WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
   // initialize default factory calls
 
-  RegisterUIFactoryCallback("window", CWBWindow::Factory);
-  RegisterUIFactoryCallback("button", CWBButton::Factory);
-  RegisterUIFactoryCallback("box", CWBBox::Factory);
-  RegisterUIFactoryCallback("label", CWBLabel::Factory);
-  RegisterUIFactoryCallback("textbox", CWBTextBox::Factory);
+  RegisterUIFactoryCallback("window", Window::Factory);
+  RegisterUIFactoryCallback("button", Button::Factory);
+  RegisterUIFactoryCallback("box", Box::Factory);
+  RegisterUIFactoryCallback("label", Label::Factory);
+  RegisterUIFactoryCallback("textbox", TextBox::Factory);
 }
 
-CWBApplication::~CWBApplication() {
-  Items.clear();
-  Trash.clear();
-  Fonts.clear();
-  Skin.reset();
-  Atlas.reset();
-  DrawAPI.reset();
-  LayoutRepository.clear();
-  Root.reset();
+Application::~Application() {
+  items_.clear();
+  trash_.clear();
+  fonts_.clear();
+  skin_.reset();
+  atlas_.reset();
+  draw_api_.reset();
+  layout_repository_.clear();
+  root_.reset();
 }
 
-bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
-                                       CWBItem* Target) {
-  if (Root && Message.GetTarget() == Root->GetGuid()) {
-    Target = Root.get();
+bool Application::SendMessageToItem(const CWBMessage& Message, Widget* Target) {
+  if (root_ && Message.GetTarget() == root_->GetGuid()) {
+    Target = root_.get();
   }
 
   if (!Target) {
     return false;
   }
 
-  std::vector<CWBItem*> MessagePath;
+  std::vector<Widget*> MessagePath;
   while (Target) {
     MessagePath.push_back(Target);
     Target = Target->GetParent();
@@ -104,9 +103,9 @@ bool CWBApplication::SendMessageToItem(const CWBMessage& Message,
   return false;
 }
 
-void CWBApplication::ProcessMessage(CWBMessage& Message) {
+void Application::ProcessMessage(CWBMessage& Message) {
   if (Message.GetTarget()) {
-    CWBItem* Target = FindItemByGuid(Message.GetTarget());
+    Widget* Target = FindItemByGuid(Message.GetTarget());
     SendMessageToItem(Message, Target);
     return;
   }
@@ -128,14 +127,14 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
       mid_down_pos_ = Point(Message.GetPosition());
     }
 
-    if (MouseCaptureItem) {
+    if (mouse_capture_item_) {
       // mouse messages are captured by this item, send
       // them directly there
-      MouseCaptureItem->MessageProc(Message);
+      mouse_capture_item_->MessageProc(Message);
       return;
     }
 
-    CWBItem* mi = GetItemUnderMouse(mouse_pos_, Message.Get());
+    Widget* mi = GetItemUnderMouse(mouse_pos_, Message.Get());
 
     if (mi) {
       // handle focus change
@@ -153,16 +152,16 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
 
   // handle messages aimed at the item in focus
 
-  // top to bottom version : CWBItem* fi = GetRoot();
+  // top to bottom version : Widget* fi = GetRoot();
   // while (fi) {
   //   if (fi->MessageProc(Message)) return;
   //   fi = fi->ChildInFocus;
   // }
 
   // bottom to top version:
-  std::vector<CWBItem*> MessagePath;
+  std::vector<Widget*> MessagePath;
 
-  CWBItem* Target = GetRoot();
+  Widget* Target = GetRoot();
   while (Target) {
     MessagePath.push_back(Target);
     Target = Target->GetChildInFocus();
@@ -173,46 +172,46 @@ void CWBApplication::ProcessMessage(CWBMessage& Message) {
   }
 }
 
-CWBItem* CWBApplication::GetItemUnderMouse(const Point& Point, WBMESSAGE w) {
-  if (!Root) {
+Widget* Application::GetItemUnderMouse(const Point& Point, WBMESSAGE w) {
+  if (!root_) {
     return nullptr;
   }
-  Rect r = Root->GetScreenRect();
-  return Root->GetItemUnderMouse(Point, r, w);
+  Rect r = root_->GetScreenRect();
+  return root_->GetItemUnderMouse(Point, r, w);
 }
 
-void CWBApplication::HandleResize() {
+void Application::HandleResize() {
   WindowHandlerWin::HandleResize();
 
-  if (Root) {
-    Root->SetPosition(Rect(0, 0, x_res_, y_res_));
+  if (root_) {
+    root_->SetPosition(Rect(0, 0, x_res_, y_res_));
   }
 }
 
-LRESULT CWBApplication::InjectMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT Application::InjectMessage(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   return WindowProc(uMsg, wParam, lParam);
 }
 
-void CWBApplication::UpdateControlKeyStates() {
-  Alt = (GetKeyState(VK_MENU) < 0) || (GetAsyncKeyState(VK_MENU) & 0x8000) ||
-        (GetAsyncKeyState(VK_LMENU) & 0x8000) ||
-        (GetAsyncKeyState(VK_RMENU) & 0x8000);
-  Ctrl = (GetKeyState(VK_CONTROL) < 0) ||
-         (GetAsyncKeyState(VK_CONTROL) & 0x8000) ||
-         (GetAsyncKeyState(VK_LCONTROL) & 0x8000) ||
-         (GetAsyncKeyState(VK_RCONTROL) & 0x8000);
-  Shift = (GetKeyState(VK_SHIFT) < 0) ||
-          (GetAsyncKeyState(VK_SHIFT) & 0x8000) ||
-          (GetAsyncKeyState(VK_LSHIFT) & 0x8000) ||
-          (GetAsyncKeyState(VK_RSHIFT) & 0x8000);
+void Application::UpdateControlKeyStates() {
+  alt_ = (GetKeyState(VK_MENU) < 0) || (GetAsyncKeyState(VK_MENU) & 0x8000) ||
+         (GetAsyncKeyState(VK_LMENU) & 0x8000) ||
+         (GetAsyncKeyState(VK_RMENU) & 0x8000);
+  ctrl_ = (GetKeyState(VK_CONTROL) < 0) ||
+          (GetAsyncKeyState(VK_CONTROL) & 0x8000) ||
+          (GetAsyncKeyState(VK_LCONTROL) & 0x8000) ||
+          (GetAsyncKeyState(VK_RCONTROL) & 0x8000);
+  shift_ = (GetKeyState(VK_SHIFT) < 0) ||
+           (GetAsyncKeyState(VK_SHIFT) & 0x8000) ||
+           (GetAsyncKeyState(VK_LSHIFT) & 0x8000) ||
+           (GetAsyncKeyState(VK_RSHIFT) & 0x8000);
 }
 
-int32_t CWBApplication::GetKeyboardState() {
-  return (Alt * WB_KBSTATE_ALT) | (Ctrl * WB_KBSTATE_CTRL) |
-         (Shift * WB_KBSTATE_SHIFT);
+int32_t Application::GetKeyboardState() {
+  return (alt_ * WB_KBSTATE_ALT) | (ctrl_ * WB_KBSTATE_CTRL) |
+         (shift_ * WB_KBSTATE_SHIFT);
 }
 
-int32_t CWBApplication::GetInitialKeyboardDelay() {
+int32_t Application::GetInitialKeyboardDelay() {
   int32_t setting = 0;
   if (!SystemParametersInfo(SPI_GETKEYBOARDDELAY, 0, &setting, 0)) {
     return (1 + 1) * 250;  // 1 by default
@@ -220,7 +219,7 @@ int32_t CWBApplication::GetInitialKeyboardDelay() {
   return (setting + 1) * 250;
 }
 
-int32_t CWBApplication::GetKeyboardRepeatTime() {
+int32_t Application::GetKeyboardRepeatTime() {
   int32_t setting = 0;
   if (!SystemParametersInfo(SPI_GETKEYBOARDSPEED, 0, &setting, 0)) {
     return 400 - (31 * 12);  // 31 by default
@@ -228,7 +227,7 @@ int32_t CWBApplication::GetKeyboardRepeatTime() {
   return 400 - (setting * 12);
 }
 
-LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   switch (uMsg) {
     case WM_ACTIVATE:
       if (LOWORD(wParam)) UpdateControlKeyStates();
@@ -241,7 +240,7 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     } break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK: {
-      Left = true;
+      left_ = true;
 
       ::SetCapture(window_handle_);
       POINT ap;
@@ -253,22 +252,23 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Send(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
-      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_LEFT;
-      NextRepeatedClickTime = static_cast<int64_t>(globalTimer.GetTime()) +
-                              static_cast<int64_t>(GetInitialKeyboardDelay());
+      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_LEFT;
+      next_repeated_click_time_ =
+          static_cast<int64_t>(globalTimer.GetTime()) +
+          static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_LBUTTONUP: {
-      Left = false;
+      left_ = false;
       ::ReleaseCapture();
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
-      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
+      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK: {
-      Right = true;
+      right_ = true;
       ::SetCapture(window_handle_);
       POINT ap;
       GetCursorPos(&ap);
@@ -279,22 +279,23 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Send(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
-      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT;
-      NextRepeatedClickTime = static_cast<int64_t>(globalTimer.GetTime()) +
-                              static_cast<int64_t>(GetInitialKeyboardDelay());
+      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT;
+      next_repeated_click_time_ =
+          static_cast<int64_t>(globalTimer.GetTime()) +
+          static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_RBUTTONUP: {
-      Right = false;
+      right_ = false;
       ::ReleaseCapture();
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
-      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
+      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK: {
-      Middle = true;
+      middle_ = true;
       ::SetCapture(window_handle_);
       POINT ap;
       GetCursorPos(&ap);
@@ -305,18 +306,19 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         Send(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
-      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE;
-      NextRepeatedClickTime = static_cast<int64_t>(globalTimer.GetTime()) +
-                              static_cast<int64_t>(GetInitialKeyboardDelay());
+      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE;
+      next_repeated_click_time_ =
+          static_cast<int64_t>(globalTimer.GetTime()) +
+          static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_MBUTTONUP: {
-      Middle = false;
+      middle_ = false;
       ::ReleaseCapture();
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
       Send(CWBMessage(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
-      ClickRepeaterMode = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
+      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
     } break;
     case WM_MOUSEWHEEL: {
       Send(CWBMessage(this, WBM_MOUSEWHEEL, 0,
@@ -326,13 +328,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_KEYDOWN:
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
           wParam == VK_RCONTROL) {
-        Ctrl = true;
+        ctrl_ = true;
       }
       if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
-        Shift = true;
+        shift_ = true;
       }
       if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
-        Alt = true;
+        alt_ = true;
       }
 
       Send(CWBMessage(this, WBM_KEYDOWN, 0,
@@ -343,13 +345,13 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
     case WM_KEYUP:
       if (wParam == VK_CONTROL || wParam == VK_LCONTROL ||
           wParam == VK_RCONTROL) {
-        Ctrl = false;
+        ctrl_ = false;
       }
       if (wParam == VK_SHIFT || wParam == VK_LSHIFT || wParam == VK_RSHIFT) {
-        Shift = false;
+        shift_ = false;
       }
       if (wParam == VK_MENU || wParam == VK_LMENU || wParam == VK_RMENU) {
-        Alt = false;
+        alt_ = false;
       }
 
       switch (wParam) {
@@ -375,55 +377,54 @@ LRESULT CWBApplication::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
   return WindowHandlerWin::WindowProc(uMsg, wParam, lParam);
 }
 
-bool CWBApplication::Initialize() {
-  Atlas = std::make_unique<CAtlas>(2048, 2048);
-  if (!Atlas->InitializeTexture(device_.get())) {
+bool Application::Initialize() {
+  atlas_ = std::make_unique<Atlas>(2048, 2048);
+  if (!atlas_->InitializeTexture(device_.get())) {
     Log_Err("[gui] Error creating UI Texture Atlas");
     return false;
   }
 
-  if (!DrawAPI->Initialize(this, device_.get(), Atlas.get())) return false;
+  if (!draw_api_->Initialize(this, device_.get(), atlas_.get())) return false;
 
-  Root = CWBRoot::Create(Rect(0, 0, x_res_, y_res_));
-  Root->SetApplication(this);
+  root_ = Root::Create(Rect(0, 0, x_res_, y_res_));
+  root_->SetApplication(this);
 
   setlocale(LC_NUMERIC, "C");
 
   return true;
 }
 
-bool CWBApplication::Initialize(
-    const renderer::WindowParameters& WindowParams) {
+bool Application::Initialize(const renderer::WindowParameters& WindowParams) {
   if (!WindowHandlerWin::Initialize(WindowParams)) return false;
   return Initialize();
 }
 
-CWBItem* CWBApplication::GetRoot() { return Root.get(); }
+Widget* Application::GetRoot() { return root_.get(); }
 
-CWBItem* CWBApplication::GetFocusItem() {
-  CWBItem* fi = Root.get();
+Widget* Application::GetFocusItem() {
+  Widget* fi = root_.get();
   while (fi) {
-    if (!fi->ChildInFocus) {
+    if (!fi->child_in_focus_) {
       return fi;
     }
-    fi = fi->ChildInFocus;
+    fi = fi->child_in_focus_;
   }
-  return Root.get();
+  return root_.get();
 }
 
-bool CWBApplication::HandleMessages() {
+bool Application::HandleMessages() {
   // as this function is called once every frame, it's the best place to update
   // the timer as well
   globalTimer.Update();
 
   // mouse click repeater
-  if (ClickRepeaterMode != WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
-    if (globalTimer.GetTime() > NextRepeatedClickTime) {
+  if (click_repeater_mode_ != WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
+    if (globalTimer.GetTime() > next_repeated_click_time_) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
 
-      switch (ClickRepeaterMode) {
+      switch (click_repeater_mode_) {
         case WBMOUSECLICKREPEATMODE::WB_MCR_LEFT:
           Send(CWBMessage(this, WBM_LEFTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
@@ -434,7 +435,7 @@ bool CWBApplication::HandleMessages() {
           Send(CWBMessage(this, WBM_MIDDLEBUTTONREPEAT, 0, ap.x, ap.y));
           break;
       }
-      NextRepeatedClickTime += GetKeyboardRepeatTime();
+      next_repeated_click_time_ += GetKeyboardRepeatTime();
     }
   }
 
@@ -442,64 +443,64 @@ bool CWBApplication::HandleMessages() {
 
   // handle gui messages here
   {
-    std::scoped_lock l(MessageBufferMutex);
+    std::scoped_lock l(message_buffer_mutex_);
     // This stuff is very brittle. It even depends on Messages added during this
     // loop to be executed at the end of this loop. So even changing the for
     // loop to a range loop causes bugs.
-    for (size_t i = 0; i < MessageBuffer.size(); i++) {
-      ProcessMessage(MessageBuffer[i]);
+    for (size_t i = 0; i < message_buffer_.size(); i++) {
+      ProcessMessage(message_buffer_[i]);
     }
-    MessageBuffer.clear();
+    message_buffer_.clear();
   }
   return true;
 }
 
-void CWBApplication::RegisterItem(CWBItem* Item) {
-  Items[Item->GetGuid()] = Item;
+void Application::RegisterItem(Widget* Item) {
+  items_[Item->GetGuid()] = Item;
 
   if (Item->GetScreenRect().Contains(mouse_pos_)) UpdateMouseItem();
 }
 
-void CWBApplication::UnRegisterItem(CWBItem* Item) {
-  std::scoped_lock l(TrashMutex);
+void Application::UnRegisterItem(Widget* Item) {
+  std::scoped_lock l(trash_mutex_);
   auto it = std::find_if(
-      Trash.begin(), Trash.end(),
-      [Item](const std::unique_ptr<CWBItem>& i) { return i.get() == Item; });
-  if (it != Trash.end()) {
-    Trash.erase(it);
+      trash_.begin(), trash_.end(),
+      [Item](const std::unique_ptr<Widget>& i) { return i.get() == Item; });
+  if (it != trash_.end()) {
+    trash_.erase(it);
   }
 
-  if (MouseCaptureItem == Item) ReleaseCapture();
-  Items.erase(Item->GetGuid());
+  if (mouse_capture_item_ == Item) ReleaseCapture();
+  items_.erase(Item->GetGuid());
 
   if (Item->GetScreenRect().Contains(mouse_pos_)) UpdateMouseItem();
 }
 
-void CWBApplication::SetDone(bool d) { done_ = d; }
+void Application::SetDone(bool d) { done_ = d; }
 
-void CWBApplication::Display() { Display(DrawAPI.get()); }
+void Application::Display() { Display(draw_api_.get()); }
 
-void CWBApplication::Display(CWBDrawAPI* API) {
+void Application::Display(DrawAPI* API) {
   CleanTrash();
 
   FinalizeMouseCursor();
   SelectMouseCursor(renderer::MouseCursor::kArrow);
 
-  DrawAPI->SetUIRenderState();
-  device_->Clear(true, true, ClearColor);
+  draw_api_->SetUIRenderState();
+  device_->Clear(true, true, clear_color_);
   device_->BeginScene();
 
-  DrawAPI->SetOffset(Root->GetScreenRect().TopLeft());
-  DrawAPI->SetParentCropRect(Root->GetScreenRect());
-  DrawAPI->SetCropRect(Root->GetScreenRect());
+  draw_api_->SetOffset(root_->GetScreenRect().TopLeft());
+  draw_api_->SetParentCropRect(root_->GetScreenRect());
+  draw_api_->SetCropRect(root_->GetScreenRect());
 
-  Atlas->ClearImageUsageflags();
+  atlas_->ClearImageUsageflags();
 
-  Root->DrawTree(API);
+  root_->DrawTree(API);
 
-  DrawAPI->RenderDisplayList();
+  draw_api_->RenderDisplayList();
   device_->EndScene();
-  device_->Flip(Vsync);
+  device_->Flip(vsync_);
 
   // Log_Dbg("End Frame");
 
@@ -508,121 +509,121 @@ void CWBApplication::Display(CWBDrawAPI* API) {
 
   // update frame time
   const int32_t frametime = globalTimer.GetTime();
-  FrameTimes->Add(frametime - LastFrameTime);
-  LastFrameTime = frametime;
+  frame_times_->Add(frametime - last_frame_time_);
+  last_frame_time_ = frametime;
 }
 
-CWBItem* CWBApplication::FindItemByGuid(WBGUID Guid, const TCHAR* type) const {
-  if (auto it = Items.find(Guid); it != Items.end()) {
-    CWBItem* i = it->second;
+Widget* Application::FindItemByGuid(WBGUID Guid, const TCHAR* type) const {
+  if (auto it = items_.find(Guid); it != items_.end()) {
+    Widget* i = it->second;
     return (!type || i->InstanceOf(type)) ? i : nullptr;
   }
   return nullptr;
 }
 
-void CWBApplication::Send(const CWBMessage& Message) {
-  std::scoped_lock l(MessageBufferMutex);
-  MessageBuffer.emplace_back(Message);
+void Application::Send(const CWBMessage& Message) {
+  std::scoped_lock l(message_buffer_mutex_);
+  message_buffer_.emplace_back(Message);
 }
 
-CWBItem* CWBApplication::SetCapture(CWBItem* Capturer) {
-  CWBItem* old = MouseCaptureItem;
-  MouseCaptureItem = Capturer;
+Widget* Application::SetCapture(Widget* Capturer) {
+  Widget* old = mouse_capture_item_;
+  mouse_capture_item_ = Capturer;
   return old;
 }
 
-bool CWBApplication::ReleaseCapture() {
-  MouseCaptureItem = nullptr;
+bool Application::ReleaseCapture() {
+  mouse_capture_item_ = nullptr;
   return true;
 }
 
-void CWBApplication::UpdateMouseItem() {
-  CWBItem* MouseItemOld = MouseItem;
-  MouseItem = GetItemUnderMouse(mouse_pos_, WBM_MOUSEMOVE);
-  if (MouseItem != MouseItemOld) {
+void Application::UpdateMouseItem() {
+  Widget* MouseItemOld = mouse_item_;
+  mouse_item_ = GetItemUnderMouse(mouse_pos_, WBM_MOUSEMOVE);
+  if (mouse_item_ != MouseItemOld) {
     // call onmouseleave for the old items
-    if (MouseItem) {
-      CWBItem* olditem = MouseItemOld;
+    if (mouse_item_) {
+      Widget* olditem = MouseItemOld;
       while (olditem) {
         // find the old item in the tree of the new. if not found the mouse left
         // the item
-        if (!MouseItem->FindItemInParentTree(olditem)) olditem->OnMouseLeave();
-        olditem = olditem->Parent;
+        if (!mouse_item_->FindItemInParentTree(olditem))
+          olditem->OnMouseLeave();
+        olditem = olditem->GetParent();
       }
     }
 
     // call onmouseenter for the new items
     if (MouseItemOld) {
-      CWBItem* newitem = MouseItem;
+      Widget* newitem = mouse_item_;
       while (newitem) {
         // find the new item in the tree of the old. if not found the mouse
         // entered the item
         if (!MouseItemOld->FindItemInParentTree(newitem)) {
           newitem->OnMouseEnter();
         }
-        newitem = newitem->Parent;
+        newitem = newitem->GetParent();
       }
     }
   }
 }
 
-void CWBApplication::CleanTrash() {
-  std::scoped_lock l(TrashMutex);
-  for (auto i = Trash.size(); i > 0; i--) {
-    auto& t = Trash[i - 1];
+void Application::CleanTrash() {
+  std::scoped_lock l(trash_mutex_);
+  for (auto i = trash_.size(); i > 0; i--) {
+    auto& t = trash_[i - 1];
     t.reset();
   }
-  Trash.clear();
+  trash_.clear();
 }
 
-CWBItem* CWBApplication::GetMouseItem() { return MouseItem; }
+Widget* Application::GetMouseItem() { return mouse_item_; }
 
-CWBItem* CWBApplication::GetMouseCaptureItem() { return MouseCaptureItem; }
+Widget* Application::GetMouseCaptureItem() { return mouse_capture_item_; }
 
-bool CWBApplication::InitFont(std::string_view FontName,
-                              CWBFontDescription* Font) {
+bool Application::InitFont(std::string_view FontName, FontDescription* Font) {
   if (!Font) return false;
 
-  auto f = std::make_unique<CWBFont>(Atlas.get());
+  auto f = std::make_unique<gui::Font>(atlas_.get());
 
   if (!f->Initialize(Font)) {
     return false;
   }
 
-  if (Fonts.empty()) DefaultFont = f.get();
+  if (fonts_.empty()) default_font_ = f.get();
 
-  Fonts[std::string(FontName)] = std::move(f);
+  fonts_[std::string(FontName)] = std::move(f);
 
   return true;
 }
 
-CWBFont* CWBApplication::GetFont(std::string_view FontName) {
-  auto f = Fonts.find(std::string(FontName));
-  if (f != Fonts.end()) {
+Font* Application::GetFont(std::string_view FontName) {
+  auto f = fonts_.find(std::string(FontName));
+  if (f != fonts_.end()) {
     return f->second.get();
   }
   Log_Warn("[gui] Font {:s} not found, falling back to default font", FontName);
-  return DefaultFont;
+  return default_font_;
 }
 
-CWBFont* CWBApplication::GetDefaultFont() { return DefaultFont; }
+Font* Application::GetDefaultFont() { return default_font_; }
 
-bool CWBApplication::SetDefaultFont(std::string_view FontName) {
-  CWBFont* f = GetFont(FontName);
+bool Application::SetDefaultFont(std::string_view FontName) {
+  Font* f = GetFont(FontName);
   if (!f) return false;
-  DefaultFont = f;
+  default_font_ = f;
   return true;
 }
 
-void CWBApplication::AddToTrash(std::unique_ptr<CWBItem>&& item) {
-  std::scoped_lock l(TrashMutex);
-  auto it = std::find(Trash.begin(), Trash.end(), item);
-  if (it == Trash.end()) {
-    Trash.emplace_back(std::move(item));
+void Application::AddToTrash(std::unique_ptr<Widget>&& item) {
+  std::scoped_lock l(trash_mutex_);
+  auto it = std::find(trash_.begin(), trash_.end(), item);
+  if (it == trash_.end()) {
+    trash_.emplace_back(std::move(item));
   }
 }
 
-bool CWBApplication::LoadXMLLayout(std::string_view XML) {
+bool Application::LoadXMLLayout(std::string_view XML) {
   auto doc = std::make_unique<CXMLDocument>();
   if (!doc->LoadFromString(XML)) {
     Log_Err("[gui] Error loading XML Layout: parsing failed");
@@ -651,12 +652,12 @@ bool CWBApplication::LoadXMLLayout(std::string_view XML) {
 
   auto id = gui.GetAttribute("id");
 
-  LayoutRepository[id] = std::move(doc);
+  layout_repository_[id] = std::move(doc);
 
   return true;
 }
 
-bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
+bool Application::LoadXMLLayoutFromFile(std::string_view FileName) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
     Log_Err("[gui] Error loading XML Layout: file '{:s}' not found", FileName);
@@ -668,61 +669,61 @@ bool CWBApplication::LoadXMLLayoutFromFile(std::string_view FileName) {
   return LoadXMLLayout(s);
 }
 
-bool CWBApplication::GenerateGUI(CWBItem* Root, std::string_view Layout) {
+bool Application::GenerateGUI(Widget* Root, std::string_view Layout) {
   std::string l(Layout);
-  if (LayoutRepository.find(l) == LayoutRepository.end()) {
+  if (layout_repository_.find(l) == layout_repository_.end()) {
     Log_Err("[gui] Error generating UI: layout '{:s}' not loaded", l);
     return false;
   }
 
-  const bool b = GenerateGUIFromXML(Root, LayoutRepository[l].get());
+  const bool b = GenerateGUIFromXML(Root, layout_repository_[l].get());
   if (!b) return false;
 
-  StyleManager.ApplyStyles(Root);
+  style_manager_.ApplyStyles(Root);
   CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
   return true;
 }
 
-bool CWBApplication::GenerateGUITemplate(CWBItem* Root, std::string_view Layout,
-                                         std::string_view TemplateID) {
+bool Application::GenerateGUITemplate(Widget* Root, std::string_view Layout,
+                                      std::string_view TemplateID) {
   std::string l(Layout);
-  if (LayoutRepository.find(l) == LayoutRepository.end()) {
+  if (layout_repository_.find(l) == layout_repository_.end()) {
     Log_Err("[gui] Error generating UI template: layout '{:s}' not loaded", l);
     return false;
   }
 
   const bool b =
-      GenerateGUITemplateFromXML(Root, LayoutRepository[l].get(), TemplateID);
+      GenerateGUITemplateFromXML(Root, layout_repository_[l].get(), TemplateID);
   if (!b) return false;
 
-  StyleManager.ApplyStyles(Root);
+  style_manager_.ApplyStyles(Root);
   CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
 
   return true;
 }
 
-void CWBApplication::ApplyStyle(CWBItem* Target) {
-  StyleManager.ApplyStyles(Target);
+void Application::ApplyStyle(Widget* Target) {
+  style_manager_.ApplyStyles(Target);
   CWBMessage m = Target->BuildPositionMessage(Target->GetPosition(), true);
   Target->MessageProc(m);
 }
 
-void CWBApplication::ReApplyStyle() {
-  CWBItem* Root = GetRoot();
-  StyleManager.ApplyStyles(Root);
+void Application::ReApplyStyle() {
+  Widget* Root = GetRoot();
+  style_manager_.ApplyStyles(Root);
   CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
 }
 
-bool CWBApplication::LoadCSS(std::string_view CSS, bool ResetStyleManager) {
-  if (ResetStyleManager) StyleManager.Reset();
-  return StyleManager.ParseStyleData(CSS);
+bool Application::LoadCSS(std::string_view CSS, bool ResetStyleManager) {
+  if (ResetStyleManager) style_manager_.Reset();
+  return style_manager_.ParseStyleData(CSS);
 }
 
-bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
-                                     bool ResetStyleManager) {
+bool Application::LoadCSSFromFile(std::string_view FileName,
+                                  bool ResetStyleManager) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
     Log_Err("[gui] Error loading CSS: file '{:s}' not found", FileName);
@@ -736,12 +737,12 @@ bool CWBApplication::LoadCSSFromFile(std::string_view FileName,
   return b;
 }
 
-CAtlas* CWBApplication::GetAtlas() { return Atlas.get(); }
+Atlas* Application::GetAtlas() { return atlas_.get(); }
 
-CWBSkin* CWBApplication::GetSkin() { return Skin.get(); }
+Skin* Application::GetSkin() { return skin_.get(); }
 
-bool CWBApplication::LoadSkin(std::string_view XML,
-                              std::vector<int>& enabledGlyphs) {
+bool Application::LoadSkin(std::string_view XML,
+                           std::vector<int>& enabledGlyphs) {
   CXMLDocument doc;
   if (!doc.LoadFromString(XML)) return false;
   if (!doc.GetDocumentNode().GetChildCount("whiteboardskin")) return false;
@@ -774,10 +775,10 @@ bool CWBApplication::LoadSkin(std::string_view XML,
         e.GetAttributeAsInteger("x-behavior", &b.x);
         e.GetAttributeAsInteger("y-behavior", &b.y);
 
-        const WBATLASHANDLE h = Atlas->AddImage(Image.get(), XRes, YRes, r2);
-        Skin->AddElement(e.GetAttributeAsString("name"), h,
-                         static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
-                         static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
+        const WBATLASHANDLE h = atlas_->AddImage(Image.get(), XRes, YRes, r2);
+        skin_->AddElement(e.GetAttributeAsString("name"), h,
+                          static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
+                          static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
       }
     }
   }
@@ -791,9 +792,9 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     m.GetAttributeAsInteger("overshootx2", &r2.x2);
     m.GetAttributeAsInteger("overshooty2", &r2.y2);
 
-    Skin->AddMosaic(m.GetAttributeAsString("name"),
-                    m.GetAttributeAsString("description"), r2.x1, r2.y1, r2.x2,
-                    r2.y2);
+    skin_->AddMosaic(m.GetAttributeAsString("name"),
+                     m.GetAttributeAsString("description"), r2.x1, r2.y1, r2.x2,
+                     r2.y2);
   }
 
   for (int32_t x = 0; x < r.GetChildCount("font"); x++) {
@@ -814,7 +815,7 @@ bool CWBApplication::LoadSkin(std::string_view XML,
     if (DecompressPNG((unsigned char*)dataimg.c_str(), dataimg.size(), &Image,
                       &XRes, &YRes)) {
       ARGBtoABGR(Image.get(), XRes, YRes);
-      auto fd = std::make_unique<CWBFontDescription>();
+      auto fd = std::make_unique<FontDescription>();
       if (fd->LoadBMFontBinary((unsigned char*)databin.c_str(), databin.size(),
                                Image.get(), XRes, YRes, &enabledGlyphs)) {
         InitFont(Name, fd.get());
@@ -831,8 +832,8 @@ bool CWBApplication::LoadSkin(std::string_view XML,
   return true;
 }
 
-bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
-                                      std::vector<int>& enabledGlyphs) {
+bool Application::LoadSkinFromFile(std::string_view FileName,
+                                   std::vector<int>& enabledGlyphs) {
   CStreamReaderMemory f;
   if (!f.Open(FileName)) {
     Log_Err("[gui] Error loading Skin: file '{:s}' not found", FileName);
@@ -847,7 +848,7 @@ bool CWBApplication::LoadSkinFromFile(std::string_view FileName,
   return b;
 }
 
-bool CWBApplication::GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc) {
+bool Application::GenerateGUIFromXML(Widget* Root, CXMLDocument* doc) {
   CXMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) return false;
@@ -861,9 +862,8 @@ bool CWBApplication::GenerateGUIFromXML(CWBItem* Root, CXMLDocument* doc) {
   return ProcessGUIXML(Root, gui);
 }
 
-bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
-                                                CXMLDocument* doc,
-                                                std::string_view TemplateID) {
+bool Application::GenerateGUITemplateFromXML(Widget* Root, CXMLDocument* doc,
+                                             std::string_view TemplateID) {
   CXMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) return false;
@@ -890,7 +890,7 @@ bool CWBApplication::GenerateGUITemplateFromXML(CWBItem* Root,
   return false;
 }
 
-bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
+bool Application::ProcessGUIXML(Widget* Root, const CXMLNode& node) {
   Rect Pos(5, 5, 25, 25);
 
   bool b = true;
@@ -902,9 +902,9 @@ bool CWBApplication::ProcessGUIXML(CWBItem* Root, const CXMLNode& node) {
   return b;
 }
 
-bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
-                                            Rect* Pos) {
-  CWBItem* NewItem = GenerateUIItem(Root, node, *Pos);
+bool Application::GenerateGUIFromXMLNode(Widget* Root, const CXMLNode& node,
+                                         Rect* Pos) {
+  Widget* NewItem = GenerateUIItem(Root, node, *Pos);
   if (!NewItem) return false;
 
   if (node.HasAttribute("pos")) {
@@ -939,32 +939,32 @@ bool CWBApplication::GenerateGUIFromXMLNode(CWBItem* Root, const CXMLNode& node,
   return ProcessGUIXML(NewItem, node);
 }
 
-CWBItem* CWBApplication::GenerateUIItem(CWBItem* Root, const CXMLNode& node,
-                                        const Rect& Pos) {
-  if (FactoryCallbacks.find(node.GetNodeName()) != FactoryCallbacks.end()) {
-    return FactoryCallbacks[node.GetNodeName()](Root, node, Pos);
+Widget* Application::GenerateUIItem(Widget* Root, const CXMLNode& node,
+                                    const Rect& Pos) {
+  if (factory_callbacks_.find(node.GetNodeName()) != factory_callbacks_.end()) {
+    return factory_callbacks_[node.GetNodeName()](Root, node, Pos);
   }
 
   Log_Err("[xml2gui] Unknown tag: '{:s}'", node.GetNodeName());
   return nullptr;
 }
 
-void CWBApplication::RegisterUIFactoryCallback(
-    std::string_view ElementName, WBFACTORYCALLBACK FactoryCallback) {
-  FactoryCallbacks[std::string(ElementName)] = FactoryCallback;
+void Application::RegisterUIFactoryCallback(std::string_view ElementName,
+                                            WBFACTORYCALLBACK FactoryCallback) {
+  factory_callbacks_[std::string(ElementName)] = FactoryCallback;
 }
 
-void CWBApplication::TakeScreenshot() {
+void Application::TakeScreenshot() {
   CreateDirectory("Screenshots", nullptr);
 
   int32_t maxcnt = 0;
   {
-    auto s = ScreenShotName + "_*.png";
+    auto s = screen_shot_name_ + "_*.png";
     CFileList fl(s, "Screenshots");
 
     for (auto& File : fl.Files) {
-      if (File.FileName.find(ScreenShotName) == std::string::npos) {
-        auto s2 = ScreenShotName + "_%d";
+      if (File.FileName.find(screen_shot_name_) == std::string::npos) {
+        auto s2 = screen_shot_name_ + "_%d";
 
         int32_t no = -1;
         sscanf(File.FileName.c_str(), s2.c_str(), &no);
@@ -973,34 +973,34 @@ void CWBApplication::TakeScreenshot() {
     }
   }
 
-  DrawAPI->FlushDrawBuffer();
+  draw_api_->FlushDrawBuffer();
 
-  auto b = DrawAPI->GetDevice()->CreateBlendState();
+  auto b = draw_api_->GetDevice()->CreateBlendState();
   b->SetBlendEnable(0, true);
   b->SetIndependentBlend(true);
   b->SetSrcBlend(0, renderer::BlendFactor::kZero);
   b->SetDestBlend(0, renderer::BlendFactor::kOne);
   b->SetSrcBlendAlpha(0, renderer::BlendFactor::kOne);
   b->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
-  DrawAPI->GetDevice()->SetRenderState(b.get());
+  draw_api_->GetDevice()->SetRenderState(b.get());
 
-  DrawAPI->SetCropRect(Rect(0, 0, x_res_, y_res_));
-  DrawAPI->DrawRect(Rect(0, 0, x_res_, y_res_), CColor{0xff000000});
-  DrawAPI->FlushDrawBuffer();
+  draw_api_->SetCropRect(Rect(0, 0, x_res_, y_res_));
+  draw_api_->DrawRect(Rect(0, 0, x_res_, y_res_), CColor{0xff000000});
+  draw_api_->FlushDrawBuffer();
 
-  auto fname =
-      std::format("Screenshots\\{:s}_{:04d}.png", ScreenShotName, maxcnt + 1);
-  DrawAPI->GetDevice()->TakeScreenShot(fname);
+  auto fname = std::format("Screenshots\\{:s}_{:04d}.png", screen_shot_name_,
+                           maxcnt + 1);
+  draw_api_->GetDevice()->TakeScreenShot(fname);
 
-  DrawAPI->SetUIRenderState();
+  draw_api_->SetUIRenderState();
 }
 
-float CWBApplication::GetFrameRate() {
+float Application::GetFrameRate() {
   int32_t FrameTimeAcc = 0;
   int32_t FrameCount = 0;
   for (int32_t x = 0; x < 60; x++) {
-    if (FrameTimes->NumItems() < x) break;
-    FrameTimeAcc += (*FrameTimes)[FrameTimes->NumItems() - 1 - x];
+    if (frame_times_->NumItems() < x) break;
+    FrameTimeAcc += (*frame_times_)[frame_times_->NumItems() - 1 - x];
     FrameCount++;
   }
 

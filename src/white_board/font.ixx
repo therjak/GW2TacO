@@ -56,33 +56,33 @@ struct WBKERNINGDATA {
   int16_t Amount;
 };
 
-class CWBKerningPair {
+class KerningPair {
  public:
-  uint32_t First, Second;
+  uint32_t first_, second_;
 
-  CWBKerningPair();
-  CWBKerningPair(uint16_t a, uint16_t b);
+  KerningPair();
+  KerningPair(uint16_t a, uint16_t b);
 
-  constexpr friend bool operator==(const CWBKerningPair& lhs,
-                                   const CWBKerningPair& rhs) = default;
+  constexpr friend bool operator==(const KerningPair& lhs,
+                                   const KerningPair& rhs) = default;
 };
 
-uint32_t DictionaryHash(const CWBKerningPair& i);
+uint32_t DictionaryHash(const KerningPair& i);
 
 struct DHash {
-  std::size_t operator()(const CWBKerningPair& i) const {
+  std::size_t operator()(const KerningPair& i) const {
     return DictionaryHash(i);
   }
 };
 
-class CWBDrawAPI;
+class DrawAPI;
 
-class CWBFontDescription {
-  friend class CWBFont;
+class FontDescription {
+  friend class Font;
 
  public:
-  CWBFontDescription();
-  ~CWBFontDescription();
+  FontDescription();
+  ~FontDescription();
 
   // 32 bit raw image data
   bool LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
@@ -104,21 +104,21 @@ class CWBFontDescription {
   }
 
  private:
-  std::unique_ptr<uint8_t[]> Image;
-  int32_t XRes = 0, YRes = 0;
+  std::unique_ptr<uint8_t[]> image_;
+  int32_t x_res_ = 0, y_res_ = 0;
 
-  std::vector<WBSYMBOLINPUT> Alphabet;
-  std::vector<WBKERNINGDATA> KerningData;
+  std::vector<WBSYMBOLINPUT> alphabet_;
+  std::vector<WBKERNINGDATA> kerning_data_;
 
-  int32_t LineHeight = 0;
-  int32_t Base = 0;
+  int32_t line_height_ = 0;
+  int32_t base_ = 0;
 };
 
-class CWBFont {
+class Font {
  public:
-  explicit CWBFont(CAtlas* Atlas);
-  virtual ~CWBFont();
-  bool Initialize(CWBFontDescription* Description, TCHAR MissingChar = 'o');
+  explicit Font(Atlas* Atlas);
+  virtual ~Font();
+  bool Initialize(FontDescription* Description, TCHAR missing_char_ = 'o');
 
   int32_t GetLineHeight();
   int32_t GetBase();
@@ -132,16 +132,16 @@ class CWBFont {
                         WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE);
   int32_t GetMedian();
 
-  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, int32_t x, int32_t y,
+  int32_t WriteChar(DrawAPI* DrawApi, int Char, int32_t x, int32_t y,
                     CColor Color = CColor(0xffffffff));
-  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String, int32_t x,
-                int32_t y, CColor Color = CColor(0xffffffff),
+  int32_t Write(DrawAPI* DrawApi, std::string_view String, int32_t x, int32_t y,
+                CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
                 bool DoKerning = true);
-  int32_t WriteChar(CWBDrawAPI* DrawApi, int Char, const math::Point& p,
+  int32_t WriteChar(DrawAPI* DrawApi, int Char, const math::Point& p,
                     CColor Color = CColor(0xffffffff));
-  int32_t Write(CWBDrawAPI* DrawApi, std::string_view String,
-                const math::Point& p, CColor Color = CColor(0xffffffff),
+  int32_t Write(DrawAPI* DrawApi, std::string_view String, const math::Point& p,
+                CColor Color = CColor(0xffffffff),
                 WBTEXTTRANSFORM Transform = WBTEXTTRANSFORM::WBTT_NONE,
                 bool DoKerning = true);
   int32_t GetWidth(
@@ -173,18 +173,18 @@ class CWBFont {
   uint16_t ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
                                   WBTEXTTRANSFORM Transform);
 
-  CAtlas* Atlas;
-  int32_t AlphabetSize = 0;
-  std::unique_ptr<WBSYMBOL[]> Alphabet;
-  std::unordered_map<CWBKerningPair, int16_t, DHash> Kerning;
+  Atlas* atlas_;
+  int32_t alphabet_size_ = 0;
+  std::unique_ptr<WBSYMBOL[]> alphabet_;
+  std::unordered_map<KerningPair, int16_t, DHash> kerning_;
 
-  int32_t LineHeight = 0;
-  int32_t Base = 0;
+  int32_t line_height_ = 0;
+  int32_t base_ = 0;
 
-  int32_t Offset_X_Char = 0;
-  int32_t Height_X_Char = 0;
+  int32_t offset_x_char_ = 0;
+  int32_t height_x_char_ = 0;
 
-  TCHAR MissingChar = 0;
+  TCHAR missing_char_ = 0;
 };
 
 }  // namespace gui

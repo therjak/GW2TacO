@@ -21,9 +21,9 @@ enum class WBMETRICTYPE : uint8_t {
   WB_RELATIVE,
 };
 
-class CWBMetricValue {
+class MetricValue {
  public:
-  CWBMetricValue();
+  MetricValue();
   void SetMetric(WBMETRICTYPE w, float Value);
   void SetValue(float Relative, float Pixels);
   [[nodiscard]] float GetValue(float ParentSize, int32_t ContentSize) const;
@@ -31,19 +31,19 @@ class CWBMetricValue {
   bool IsAutoResizer();
 
  private:
-  float& MetricsAt(WBMETRICTYPE t) { return Metrics[static_cast<uint8_t>(t)]; }
+  float& MetricsAt(WBMETRICTYPE t) { return metrics_[static_cast<uint8_t>(t)]; }
   [[nodiscard]] const float& MetricsAt(WBMETRICTYPE t) const {
-    return Metrics[static_cast<uint8_t>(t)];
+    return metrics_[static_cast<uint8_t>(t)];
   }
   bool& MetricsUsedAt(WBMETRICTYPE t) {
-    return MetricsUsed[static_cast<uint8_t>(t)];
+    return metrics_used_[static_cast<uint8_t>(t)];
   }
   [[nodiscard]] const bool& MetricsUsedAt(WBMETRICTYPE t) const {
-    return MetricsUsed[static_cast<uint8_t>(t)];
+    return metrics_used_[static_cast<uint8_t>(t)];
   }
-  std::array<float, 3> Metrics{0};
-  std::array<bool, 3> MetricsUsed{false};
-  bool AutoSize = false;
+  std::array<float, 3> metrics_{0};
+  std::array<bool, 3> metrics_used_{false};
+  bool auto_size_ = false;
 };
 
 enum class WBPOSITIONTYPE : uint16_t {
@@ -59,7 +59,7 @@ enum class WBPOSITIONTYPE : uint16_t {
   WB_PADDING_BOTTOM = 9
 };
 
-class CWBPositionDescriptor {
+class PositionDescriptor {
  public:
   void SetValue(WBPOSITIONTYPE p, float Relative, float Pixels);
   void SetMetric(WBPOSITIONTYPE p, WBMETRICTYPE m, float Value);
@@ -79,23 +79,23 @@ class CWBPositionDescriptor {
   bool IsAutoResizer();
 
  private:
-  std::unordered_map<WBPOSITIONTYPE, CWBMetricValue> Positions;
+  std::unordered_map<WBPOSITIONTYPE, MetricValue> positions_;
 };
 
-class CWBPositionDescriptorPixels {
+class PositionDescriptorPixels {
  public:
-  CWBPositionDescriptorPixels();
+  PositionDescriptorPixels();
   void SetValue(WBPOSITIONTYPE p, int32_t Pixels);
   math::Rect GetPosition(math::Size ParentSize);
 
  private:
-  bool& SetAt(WBPOSITIONTYPE p) { return Set[static_cast<uint16_t>(p)]; }
+  bool& SetAt(WBPOSITIONTYPE p) { return set_[static_cast<uint16_t>(p)]; }
   int32_t& PositionsAt(WBPOSITIONTYPE p) {
-    return Positions[static_cast<uint16_t>(p)];
+    return positions_[static_cast<uint16_t>(p)];
   }
 
-  std::array<bool, 6> Set = {false};
-  std::array<int32_t, 6> Positions = {0};
+  std::array<bool, 6> set_ = {false};
+  std::array<int32_t, 6> positions_ = {0};
 };
 
 enum class WBSKINELEMENTBEHAVIOR : uint8_t {
@@ -111,11 +111,11 @@ enum class WBRECTSIDE : uint8_t {
   WB_RECTSIDE_BOTTOM = 3,
 };
 
-class CWBSkinElement {
+class SkinElement {
  public:
-  CWBSkinElement();
-  CWBSkinElement(const CWBSkinElement& Copy);
-  CWBSkinElement& operator=(const CWBSkinElement& Copy);
+  SkinElement();
+  SkinElement(const SkinElement& Copy);
+  SkinElement& operator=(const SkinElement& Copy);
 
   void SetHandle(WBATLASHANDLE h);
   void SetBehavior(int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior);
@@ -124,81 +124,80 @@ class CWBSkinElement {
   WBATLASHANDLE GetHandle();
   std::string& GetName();
 
-  void Render(CWBDrawAPI* API, const math::Rect& Pos);
-  math::Size GetElementSize(CWBDrawAPI* API);
+  void Render(DrawAPI* API, const math::Rect& Pos);
+  math::Size GetElementSize(DrawAPI* API);
 
  private:
-  std::string Name;
-  WBATLASHANDLE Handle;
+  std::string name_;
+  WBATLASHANDLE handle_;
   // x-y stretching behaviors
-  std::array<WBSKINELEMENTBEHAVIOR, 2> DefaultBehavior{};
+  std::array<WBSKINELEMENTBEHAVIOR, 2> default_behavior_{};
 };
 
-class CWBMosaicImage {
+class MosaicImage {
  public:
-  CWBMosaicImage();
+  MosaicImage();
   void SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels);
   void SetTiling(int32_t Axis, bool v);
   void SetStretching(int32_t Axis, bool v);
   void SetHandle(WBATLASHANDLE handle);
   void SetColor(CColor color);
 
-  void Render(CWBDrawAPI* API, const math::Rect& Pos);
+  void Render(DrawAPI* API, const math::Rect& Pos);
 
  private:
-  CWBPositionDescriptorPixels Position;
-  std::array<bool, 2> Tiling = {false};
-  std::array<bool, 2> Stretching = {false};
-  WBATLASHANDLE Handle = 0;
-  CColor Color = CColor(0xffffffff);
+  PositionDescriptorPixels position_;
+  std::array<bool, 2> tiling_ = {false};
+  std::array<bool, 2> stretching_ = {false};
+  WBATLASHANDLE handle_ = 0;
+  CColor color_ = CColor(0xffffffff);
 };
 
-class CWBMosaic {
+class Mosaic {
  public:
-  CWBMosaic();
-  CWBMosaic(const CWBMosaic& Copy);
-  CWBMosaic& operator=(const CWBMosaic& Copy);
+  Mosaic();
+  Mosaic(const Mosaic& Copy);
+  Mosaic& operator=(const Mosaic& Copy);
 
   void SetName(std::string_view Name);
   std::string& GetName();
-  void AddImage(const CWBMosaicImage& Image);
+  void AddImage(const MosaicImage& Image);
   void Flush();
-  void Render(CWBDrawAPI* API, const math::Rect& Position);
+  void Render(DrawAPI* API, const math::Rect& Position);
   void SetOverShoot(WBRECTSIDE side, int32_t val);
 
  private:
   int32_t& OvershootAt(WBRECTSIDE s) {
-    return Overshoot[static_cast<uint8_t>(s)];
+    return overshoot_[static_cast<uint8_t>(s)];
   }
 
-  std::string Name;
-  std::vector<CWBMosaicImage> Images;
-  std::array<int32_t, 4> Overshoot = {0};
+  std::string name_;
+  std::vector<MosaicImage> images_;
+  std::array<int32_t, 4> overshoot_ = {0};
 };
 
 typedef uint32_t WBSKINELEMENTID;
 
-class CWBSkin {
+class Skin {
  public:
   void AddElement(std::string_view Name, WBATLASHANDLE Handle,
                   WBSKINELEMENTBEHAVIOR Xbehav, WBSKINELEMENTBEHAVIOR Ybehav);
-  CWBMosaic* AddMosaic(std::string_view Name, std::string_view Description,
-                       int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
-                       int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
+  Mosaic* AddMosaic(std::string_view Name, std::string_view Description,
+                    int32_t OverShootLeft = 0, int32_t OverShootTop = 0,
+                    int32_t OverShootRight = 0, int32_t OverShootBottom = 0);
 
-  void RenderElement(CWBDrawAPI* API, WBSKINELEMENTID ID,
-                     const math::Rect& Pos);
-  void RenderElement(CWBDrawAPI* API, std::string_view Name,
+  void RenderElement(DrawAPI* API, WBSKINELEMENTID ID, const math::Rect& Pos);
+  void RenderElement(DrawAPI* API, std::string_view Name,
                      const math::Rect& Pos);
   WBSKINELEMENTID GetElementID(std::string_view Name);
-  CWBSkinElement* GetElement(WBSKINELEMENTID id);
-  math::Size GetElementSize(CWBDrawAPI* API, WBSKINELEMENTID id);
+  SkinElement* GetElement(WBSKINELEMENTID id);
+  math::Size GetElementSize(DrawAPI* API, WBSKINELEMENTID id);
 
  private:
-  CWBSkinElement* GetElement(std::string_view Name);
+  SkinElement* GetElement(std::string_view Name);
 
-  std::vector<CWBSkinElement> SkinItems;
-  std::vector<CWBMosaic> Mosaics;
+  std::vector<SkinElement> skin_items_;
+  std::vector<Mosaic> mosaics_;
 };
 
 }  // namespace gui

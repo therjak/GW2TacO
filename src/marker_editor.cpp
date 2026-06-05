@@ -22,18 +22,23 @@ bool GW2MarkerEditor::IsMouseTransparent(const Point& client_space_point,
   return true;
 }
 
-GW2MarkerEditor::GW2MarkerEditor() : CWBGuiType() {
-  App->GenerateGUITemplate(this, "gw2pois", "markereditor");
+GW2MarkerEditor::GW2MarkerEditor() : GuiType() {}
+
+bool GW2MarkerEditor::Initialize(gui::Widget* parent,
+                                 const math::Rect& position) {
+  Widget::Initialize(parent, position);
+  GetApplication()->GenerateGUITemplate(this, "gw2pois", "markereditor");
+  return true;
 }
 
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
-gui::CWBItem* GW2MarkerEditor::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                       const Rect& pos) {
+gui::Widget* GW2MarkerEditor::Factory(gui::Widget* root, const CXMLNode& node,
+                                      const Rect& pos) {
   return GW2MarkerEditor::Create(root, pos);
 }
 
-void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* api) {
+void GW2MarkerEditor::OnDraw(gui::DrawAPI* api) {
   bool auto_hide = GetConfigValue("AutoHideMarkerEditor");
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
@@ -60,7 +65,7 @@ void GW2MarkerEditor::OnDraw(gui::CWBDrawAPI* api) {
 
       if (current_poi_ != cpoi.guid) {
         auto* type =
-            dynamic_cast<gui::CWBLabel*>(FindChildByID("markertype", "label"));
+            dynamic_cast<gui::Label*>(FindChildByID("markertype", "label"));
         if (type) {
           std::string type_name;
           if (cpoi.category) type_name = cpoi.category->GetFullTypeName();
@@ -95,17 +100,17 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
     case gui::WBM_COMMAND: {
       if (hidden_) break;
 
-      auto* b = dynamic_cast<gui::CWBButton*>(
-          App->FindItemByGuid(message.GetTarget(), "button"));
+      auto* b = dynamic_cast<gui::Button*>(
+          GetApplication()->FindItemByGuid(message.GetTarget(), "button"));
       if (!b) break;
       if (b->GetID() == "changemarkertype") {
-        auto ctx = b->OpenContextMenu(App->GetMousePos());
+        auto ctx = b->OpenContextMenu(GetMousePos());
         OpenTypeContextMenu(ctx, category_list_, false, 0, true);
         change_default_ = false;
       }
 
       if (b->GetID() == "changedefaultmarkertype") {
-        auto ctx = b->OpenContextMenu(App->GetMousePos());
+        auto ctx = b->OpenContextMenu(GetMousePos());
         OpenTypeContextMenu(ctx, category_list_, false, 0, true);
         change_default_ = true;
       }
@@ -114,37 +119,37 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
         b->Push(!b->IsPushed());
         b->SetText(b->IsPushed() ? "Stop Recording" : "Start New Trail");
         auto* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+            GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->StartStopTrailRecording(b->IsPushed());
       }
 
       if (b->GetID() == "pausetrail") {
         auto* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+            GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->PauseTrail(!b->IsPushed());
       }
 
       if (b->GetID() == "startnewsection") {
         auto* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+            GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->PauseTrail(false, true);
       }
 
       if (b->GetID() == "deletelastsegment") {
         auto* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+            GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->DeleteLastTrailSegment();
       }
 
       if (b->GetID() == "savetrail") {
         auto* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+            GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->ExportTrail();
       }
 
       if (b->GetID() == "loadtrail") {
         auto* trails = dynamic_cast<GW2TrailDisplay*>(
-            App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+            GetRoot()->FindChildByID("trail", "gw2Trails"));
         if (trails) trails->ImportTrail();
       }
     } break;
@@ -155,8 +160,8 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
           auto& m_pois = GetMapPOIs();
           m_pois[current_poi_].SetCategory(category_list_[message.Data()]);
           ExportPOIS();
-          auto* type = dynamic_cast<gui::CWBLabel*>(
-              FindChildByID("markertype", "label"));
+          auto* type =
+              dynamic_cast<gui::Label*>(FindChildByID("markertype", "label"));
           if (type) {
             type->SetText("Marker Type: " +
                           category_list_[message.Data()]->GetFullTypeName());
@@ -164,7 +169,7 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
         } else {
           default_marker_category =
               category_list_[message.Data()]->GetFullTypeName();
-          auto* type = dynamic_cast<gui::CWBLabel*>(
+          auto* type = dynamic_cast<gui::Label*>(
               FindChildByID("defaultmarkertype", "label"));
           if (type) {
             type->SetText("Default Marker Type: " +
@@ -179,5 +184,5 @@ bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
       break;
   }
 
-  return gui::CWBItem::MessageProc(message);
+  return gui::Widget::MessageProc(message);
 }

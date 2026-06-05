@@ -20,7 +20,7 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-void GW2RangeDisplay::DrawRangeCircle(gui::CWBDrawAPI* api, float range,
+void GW2RangeDisplay::DrawRangeCircle(gui::DrawAPI* api, float range,
                                       float alpha) {
   if (!mumbleLink.IsValid()) return;
 
@@ -139,7 +139,7 @@ void GW2RangeDisplay::DrawRangeCircle(gui::CWBDrawAPI* api, float range,
   }
 }
 
-void GW2RangeDisplay::OnDraw(gui::CWBDrawAPI* api) {
+void GW2RangeDisplay::OnDraw(gui::DrawAPI* api) {
   if (!mumbleLink.IsValid()) return;
 
   if (GetConfigValue("RangeCirclesVisible")) {
@@ -158,11 +158,11 @@ void GW2RangeDisplay::OnDraw(gui::CWBDrawAPI* api) {
   }
 }
 
-GW2RangeDisplay::GW2RangeDisplay() : CWBGuiType() {}
+GW2RangeDisplay::GW2RangeDisplay() : GuiType() {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
-gui::CWBItem* GW2RangeDisplay::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                       const Rect& pos) {
+gui::Widget* GW2RangeDisplay::Factory(gui::Widget* root, const CXMLNode& node,
+                                      const Rect& pos) {
   return GW2RangeDisplay::Create(root, pos);
 }
 

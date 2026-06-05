@@ -18,56 +18,55 @@ using math::Size;
 
 namespace gui {
 
-void CWBLabel::OnDraw(CWBDrawAPI* API) {
+void Label::OnDraw(DrawAPI* API) {
   DrawBackground(API);
 
   const WBITEMSTATE i = GetState();
-  CWBFont* Font = GetFont(i);
+  Font* Font = GetFont(i);
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
+      GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
     const CColor TextColor =
-        CSSProperties.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR);
-    const Point TextPos =
-        Font->GetTextPosition(Text, GetClientRect(), CSSProperties.TextAlignX,
-                              CSSProperties.TextAlignY, TextTransform);
-    Font->Write(API, Text, TextPos, TextColor, TextTransform);
+        GetDisplayDescriptor().GetColor(i, WB_ITEM_FONTCOLOR);
+    const Point TextPos = Font->GetTextPosition(
+        text_, GetClientRect(), GetCSSProperties().text_align_x_,
+        GetCSSProperties().text_align_y_, TextTransform);
+    Font->Write(API, text_, TextPos, TextColor, TextTransform);
   }
 
   DrawBorder(API);
 }
 
-CWBLabel::CWBLabel(std::string_view Txt) : CWBGuiType(), Text(Txt) {}
+Label::Label(std::string_view Txt) : GuiType(), text_(Txt) {}
 
-CWBLabel::~CWBLabel() = default;
+Label::~Label() = default;
 
-bool CWBLabel::Initialize(CWBItem* Parent, const Rect& Position) {
-  if (!CWBItem::Initialize(Parent, Position)) return false;
+bool Label::Initialize(Widget* Parent, const Rect& Position) {
+  if (!Widget::Initialize(Parent, Position)) return false;
   ContentChanged();
   return true;
 }
 
-CWBItem* CWBLabel::Factory(CWBItem* Root, const CXMLNode& node,
-                           const Rect& Pos) {
-  auto label = CWBLabel::Create(Root, Pos);
+Widget* Label::Factory(Widget* Root, const CXMLNode& node, const Rect& Pos) {
+  auto label = Label::Create(Root, Pos);
   if (node.HasAttribute("text")) label->SetText(node.GetAttribute("text"));
   return label;
 }
 
-void CWBLabel::SetText(std::string_view val) {
-  Text = val;
+void Label::SetText(std::string_view val) {
+  text_ = val;
   ContentChanged();
 }
 
-Size CWBLabel::GetContentSize() {
+Size Label::GetContentSize() {
   const WBITEMSTATE i = GetState();
-  CWBFont* Font = GetFont(i);
+  Font* Font = GetFont(i);
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
+      GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return Size(0, 0);
-  return Size(Font->GetWidth(Text, false, TextTransform),
+  return Size(Font->GetWidth(text_, false, TextTransform),
               Font->GetLineHeight());
 }
 

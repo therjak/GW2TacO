@@ -13,7 +13,7 @@ OverlayApplication::OverlayApplication() = default;
 
 bool OverlayApplication::Initialize(
     const renderer::WindowParameters& window_params) {
-  if (!CWBApplication::Initialize(window_params)) return false;
+  if (!Application::Initialize(window_params)) return false;
 
   auto gui_blend_state = device_->CreateBlendState();
   if (!gui_blend_state) {
@@ -27,9 +27,9 @@ bool OverlayApplication::Initialize(
   gui_blend_state->SetSrcBlendAlpha(0, renderer::BlendFactor::kOne);
   gui_blend_state->SetDestBlendAlpha(0, renderer::BlendFactor::kInvSrcAlpha);
 
-  DrawAPI->SetUIBlendState(std::move(gui_blend_state));
+  draw_api_->SetUIBlendState(std::move(gui_blend_state));
 
-  hole_punch_blend_state = DrawAPI->GetDevice()->CreateBlendState();
+  hole_punch_blend_state = draw_api_->GetDevice()->CreateBlendState();
   hole_punch_blend_state->SetBlendEnable(0, true);
   hole_punch_blend_state->SetIndependentBlend(true);
   hole_punch_blend_state->SetSrcBlend(0, renderer::BlendFactor::kZero);

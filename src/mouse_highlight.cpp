@@ -12,12 +12,12 @@ import whiteboard;
 using math::Point;
 using math::Rect;
 
-void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* api) {
+void GW2MouseHighlight::OnDraw(gui::DrawAPI* api) {
   if (!GetConfigValue("MouseHighlightVisible")) return;
 
   POINT pos;
   GetCursorPos(&pos);
-  ::ScreenToClient(App->GetHandle(), &pos);
+  ::ScreenToClient(GetApplication()->GetHandle(), &pos);
   Point cp(pos.x, pos.y);
 
   if ((GetKeyState(VK_RBUTTON) & 0x100) != 0) {
@@ -48,13 +48,12 @@ void GW2MouseHighlight::OnDraw(gui::CWBDrawAPI* api) {
   api->DrawRect(Rect(cl.x1, cp.y, cl.x2, cp.y + 1), CGAPalette[color]);
 }
 
-GW2MouseHighlight::GW2MouseHighlight() : CWBGuiType() {}
+GW2MouseHighlight::GW2MouseHighlight() : GuiType() {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
-gui::CWBItem* GW2MouseHighlight::Factory(gui::CWBItem* root,
-                                         const CXMLNode& node,
-                                         const Rect& pos) {
+gui::Widget* GW2MouseHighlight::Factory(gui::Widget* root, const CXMLNode& node,
+                                        const Rect& pos) {
   return GW2MouseHighlight::Create(root, pos);
 }
 

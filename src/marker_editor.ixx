@@ -14,10 +14,10 @@ import whiteboard;
 import xml;
 
 export class GW2MarkerEditor
-    : public gui::CWBGuiType<"markereditor", gui::CWBItem> {
+    : public gui::GuiType<"markereditor", gui::Widget> {
  public:
   GW2MarkerEditor();
-  static inline GW2MarkerEditor* Create(gui::CWBItem* parent,
+  static inline GW2MarkerEditor* Create(gui::Widget* parent,
                                         math::Rect position) {
     auto p = std::make_unique<GW2MarkerEditor>();
     p->Initialize(parent, position);
@@ -28,15 +28,16 @@ export class GW2MarkerEditor
   }
   ~GW2MarkerEditor() override;
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
 
  private:
+  bool Initialize(gui::Widget* parent, const math::Rect& position) override;
   bool MessageProc(const gui::CWBMessage& message) override;
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
 
   bool hidden_ = false;
   GUID current_poi_{};

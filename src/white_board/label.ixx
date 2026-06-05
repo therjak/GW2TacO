@@ -14,27 +14,27 @@ import :gui_item;
 
 export namespace gui {
 
-class CWBLabel : public CWBGuiType<"label", CWBItem> {
+class Label : public GuiType<"label", Widget> {
  public:
-  CWBLabel(std::string_view txt);
-  static inline CWBLabel* Create(CWBItem* Parent, const math::Rect& Pos,
-                                 std::string_view txt = "") {
-    auto p = std::make_unique<CWBLabel>(txt);
+  Label(std::string_view txt);
+  static inline Label* Create(Widget* Parent, const math::Rect& Pos,
+                              std::string_view txt = "") {
+    auto p = std::make_unique<Label>(txt);
     p->Initialize(Parent, Pos);
-    CWBLabel* r = p.get();
+    Label* r = p.get();
     assert(Parent);
     Parent->AddChild(std::move(p));
     return r;
   }
-  ~CWBLabel() override;
+  ~Label() override;
 
-  bool Initialize(CWBItem* Parent, const math::Rect& Position) override;
+  bool Initialize(Widget* Parent, const math::Rect& Position) override;
 
-  [[nodiscard]] std::string GetText() const { return Text; }
+  [[nodiscard]] std::string GetText() const { return text_; }
   void SetText(std::string_view val);
 
-  static CWBItem* Factory(CWBItem* Root, const CXMLNode& node,
-                          const math::Rect& Pos);
+  static Widget* Factory(Widget* Root, const CXMLNode& node,
+                         const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                           WBMESSAGE MessageType) override {
@@ -43,8 +43,8 @@ class CWBLabel : public CWBGuiType<"label", CWBItem> {
   math::Size GetContentSize() override;
 
  private:
-  void OnDraw(CWBDrawAPI* API) override;
-  std::string Text;
+  void OnDraw(DrawAPI* API) override;
+  std::string text_;
 };
 
 }  // namespace gui

@@ -63,7 +63,7 @@ using math::Rect;
 HWND gw2Window;
 HWND gw2WindowFromPid = nullptr;
 
-bool InitGUI(gui::CWBApplication* App) {
+bool InitGUI(gui::Application* App) {
   CreateUniFontOutlined(App, "UniFontOutlined");
   CreateProFontOutlined(App, "ProFontOutlined");
   CreateUniFont(App, "UniFont");
@@ -114,7 +114,7 @@ bool InitGUI(gui::CWBApplication* App) {
   return true;
 }
 
-void OpenWindows(gui::CWBApplication* App) {
+void OpenWindows(gui::Application* App) {
   auto root = App->GetRoot();
   auto* taco =
       dynamic_cast<GW2TacO*>(root->FindChildByID("tacoroot", "GW2TacO"));
@@ -574,7 +574,7 @@ bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
   return true;
 }
 
-void ImportMarkerPack(gui::CWBApplication* App, std::string_view zipFile);
+void ImportMarkerPack(gui::Application* App, std::string_view zipFile);
 
 void FlushZipDict();
 

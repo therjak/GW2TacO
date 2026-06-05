@@ -227,8 +227,8 @@ APIKeyManager::Status APIKeyManager::GetStatus() {
   return Status::OK;
 }
 
-APIKeyManager::Status APIKeyManager::DisplayStatusText(gui::CWBDrawAPI* API,
-                                                       gui::CWBFont* font) {
+APIKeyManager::Status APIKeyManager::DisplayStatusText(gui::DrawAPI* API,
+                                                       gui::Font* font) {
   APIKeyManager::Status status = GetStatus();
 
   switch (status) {

@@ -2789,7 +2789,7 @@ unsigned char raw_profont_outlined_png[] = {
 
 int raw_profont_outlined_png_size = 4315;
 
-bool LoadBMFontBinaryMonochrome(gui::CWBFontDescription* fd, uint8_t* Binary,
+bool LoadBMFontBinaryMonochrome(gui::FontDescription* fd, uint8_t* Binary,
                                 int32_t BinarySize, uint8_t* image,
                                 int32_t ImageSize) {
   if (!Binary || !BinarySize || !image || !ImageSize) return false;
@@ -2810,7 +2810,7 @@ bool LoadBMFontBinaryMonochrome(gui::CWBFontDescription* fd, uint8_t* Binary,
   return res;
 }
 
-bool LoadBMFontBinaryPNG(gui::CWBFontDescription* fd, uint8_t* Binary,
+bool LoadBMFontBinaryPNG(gui::FontDescription* fd, uint8_t* Binary,
                          int32_t BinarySize, uint8_t* image,
                          int32_t ImageSize) {
   if (!Binary || !BinarySize || !image || !ImageSize) return false;
@@ -2828,8 +2828,8 @@ bool LoadBMFontBinaryPNG(gui::CWBFontDescription* fd, uint8_t* Binary,
   return res;
 }
 
-bool CreateProFont(gui::CWBApplication* app, std::string_view font_name) {
-  auto fd = std::make_unique<gui::CWBFontDescription>();
+bool CreateProFont(gui::Application* app, std::string_view font_name) {
+  auto fd = std::make_unique<gui::FontDescription>();
   if (!LoadBMFontBinaryMonochrome(fd.get(), raw_profont_bin,
                                   raw_profont_bin_size, raw_profontgifsmall,
                                   raw_profontgifsmall_size)) {
@@ -2839,8 +2839,8 @@ bool CreateProFont(gui::CWBApplication* app, std::string_view font_name) {
   return f;
 }
 
-bool CreateUniFont(gui::CWBApplication* app, std::string_view font_name) {
-  auto fd = std::make_unique<gui::CWBFontDescription>();
+bool CreateUniFont(gui::Application* app, std::string_view font_name) {
+  auto fd = std::make_unique<gui::FontDescription>();
   if (!LoadBMFontBinaryMonochrome(fd.get(), raw_uni_fnt, raw_uni_fnt_size,
                                   raw_uni_png, raw_uni_png_size)) {
     return NULL;
@@ -2849,9 +2849,8 @@ bool CreateUniFont(gui::CWBApplication* app, std::string_view font_name) {
   return f;
 }
 
-bool CreateUniFontOutlined(gui::CWBApplication* app,
-                           std::string_view font_name) {
-  auto fd = std::make_unique<gui::CWBFontDescription>();
+bool CreateUniFontOutlined(gui::Application* app, std::string_view font_name) {
+  auto fd = std::make_unique<gui::FontDescription>();
   if (!LoadBMFontBinaryPNG(
           fd.get(), raw_unifont_outline_fnt, raw_unifont_outline_fnt_size,
           raw_unifont_outline_png, raw_unifont_outline_png_size)) {
@@ -2861,9 +2860,8 @@ bool CreateUniFontOutlined(gui::CWBApplication* app,
   return f;
 }
 
-bool CreateProFontOutlined(gui::CWBApplication* app,
-                           std::string_view font_name) {
-  auto fd = std::make_unique<gui::CWBFontDescription>();
+bool CreateProFontOutlined(gui::Application* app, std::string_view font_name) {
+  auto fd = std::make_unique<gui::FontDescription>();
   if (!LoadBMFontBinaryPNG(
           fd.get(), raw_profont_outlined_fnt, raw_profont_outlined_fnt_size,
           raw_profont_outlined_png, raw_profont_outlined_png_size)) {

@@ -3,4 +3,4 @@ module;
 export module taco.app;
 import whiteboard;
 
-export std::unique_ptr<gui::CWBApplication> App;
+export std::unique_ptr<gui::Application> App;

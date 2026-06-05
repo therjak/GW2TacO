@@ -19,29 +19,29 @@ using math::Size;
 
 namespace gui {
 
-uint32_t CWBWindow::GetBorderSelectionArea(const Point& mousepos) {
-  if (App->GetMouseItem() != this) return 0;
+uint32_t Window::GetBorderSelectionArea(const Point& mousepos) {
+  if (GetMouseItem() != this) return 0;
 
   const Rect r = GetScreenRect();
 
-  if ((r + Rect(-BorderWidth, -BorderWidth, -BorderWidth, -BorderWidth))
+  if ((r + Rect(-border_width_, -border_width_, -border_width_, -border_width_))
           .Contains(mousepos)) {
     return 0;
   }
 
   uint32_t result = 0;
 
-  if (r.x1 + CornerSelectionSize > mousepos.x) result |= WB_DRAGMODE_LEFT;
-  if (r.x2 - CornerSelectionSize < mousepos.x) result |= WB_DRAGMODE_RIGHT;
-  if (r.y1 + CornerSelectionSize > mousepos.y) result |= WB_DRAGMODE_TOP;
-  if (r.y2 - CornerSelectionSize < mousepos.y) result |= WB_DRAGMODE_BOTTOM;
+  if (r.x1 + corner_selection_size_ > mousepos.x) result |= WB_DRAGMODE_LEFT;
+  if (r.x2 - corner_selection_size_ < mousepos.x) result |= WB_DRAGMODE_RIGHT;
+  if (r.y1 + corner_selection_size_ > mousepos.y) result |= WB_DRAGMODE_TOP;
+  if (r.y2 - corner_selection_size_ < mousepos.y) result |= WB_DRAGMODE_BOTTOM;
 
   return result;
 }
 
-Rect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
-  if (Elements.find(Element) != Elements.end()) {
-    return Elements[Element].PositionDescriptor.GetPosition(
+Rect Window::GetElementPos(WBWINDOWELEMENT Element) {
+  if (elements_.find(Element) != elements_.end()) {
+    return elements_[Element].position_descriptor_.GetPosition(
                GetWindowRect().Size(), Size(0, 0), Rect(0, 0, 10, 10)) +
            GetWindowRect().TopLeft();
   }
@@ -69,33 +69,34 @@ Rect CWBWindow::GetElementPos(WBWINDOWELEMENT Element) {
   }
 }
 
-void CWBWindow::OnDraw(CWBDrawAPI* API) {
+void Window::OnDraw(DrawAPI* API) {
   const WBITEMSTATE i = GetState();
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
+      GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API);
 
   // title text
-  if ((Style & WB_WINDOW_TITLE)) {
-    CWBCSSPropertyBatch& TitleProps =
-        Elements[WBWINDOWELEMENT::WB_WINELEMENT_TITLE];
+  if ((style_ & WB_WINDOW_TITLE)) {
+    CssPropertyBatch& TitleProps =
+        elements_[WBWINDOWELEMENT::WB_WINELEMENT_TITLE];
 
-    CWBFont* Font = TitleProps.GetFont(App, i);
+    Font* Font = TitleProps.GetFont(GetApplication(), i);
     if (Font) {
       Rect titlepos = GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_TITLE);
-      titlepos = TitleProps.PositionDescriptor.GetPadding(titlepos.Size(),
-                                                          Rect(0, 0, 0, 0)) +
+      titlepos = TitleProps.position_descriptor_.GetPadding(titlepos.Size(),
+                                                            Rect(0, 0, 0, 0)) +
                  titlepos.TopLeft();
       const Rect r = API->GetCropRect();
       API->SetCropRect(ClientToScreen(titlepos));
 
       const Point TitlePos = Font->GetTextPosition(
-          WindowTitle, titlepos, TitleProps.TextAlignX, TitleProps.TextAlignY,
-          static_cast<WBTEXTTRANSFORM>(
-              TitleProps.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM)));
-      Font->Write(API, WindowTitle, TitlePos,
-                  TitleProps.DisplayDescriptor.GetColor(i, WB_ITEM_FONTCOLOR),
+          window_title_, titlepos, TitleProps.text_align_x_,
+          TitleProps.text_align_y_,
+          static_cast<WBTEXTTRANSFORM>(TitleProps.display_descriptor_.GetValue(
+              i, WB_ITEM_TEXTTRANSFORM)));
+      Font->Write(API, window_title_, TitlePos,
+                  TitleProps.display_descriptor_.GetColor(i, WB_ITEM_FONTCOLOR),
                   TextTransform);
       API->SetCropRect(r);
     }
@@ -104,15 +105,15 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
   bool MouseOverButton = false;
 
   // close button
-  if (Style & WB_WINDOW_CLOSEABLE) {
+  if (style_ & WB_WINDOW_CLOSEABLE) {
     const Rect closebuttonpos =
         GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE);
 
     WBITEMSTATE buttonstate = WB_STATE_NORMAL;
-    if (App->GetMouseItem() == this) {
-      if (closebuttonpos.Contains(ScreenToClient(App->GetMousePos()))) {
+    if (GetMouseItem() == this) {
+      if (closebuttonpos.Contains(ScreenToClient(GetMousePos()))) {
         MouseOverButton = true;
-        if (App->GetMouseCaptureItem() == this) {
+        if (GetMouseCaptureItem() == this) {
           buttonstate = WB_STATE_ACTIVE;
         } else {
           buttonstate = WB_STATE_HOVER;
@@ -120,20 +121,22 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
       }
     }
 
-    if (Elements.find(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE) != Elements.end()) {
-      if (Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
-              .DisplayDescriptor.GetSkin(
+    if (elements_.find(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE) !=
+        elements_.end()) {
+      if (elements_[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
+              .display_descriptor_.GetSkin(
                   buttonstate, WB_ITEM_BACKGROUNDIMAGE) != 0xffffffff) {
         const int x = 0;
       }
 
       DrawBackgroundItem(
-          API, Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE].DisplayDescriptor,
+          API,
+          elements_[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE].display_descriptor_,
           closebuttonpos, buttonstate);
 
-      CWBFont* Font = GetFont(i);
-      if (Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
-              .DisplayDescriptor.GetSkin(
+      Font* Font = GetFont(i);
+      if (elements_[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE]
+              .display_descriptor_.GetSkin(
                   buttonstate, WB_ITEM_BACKGROUNDIMAGE) == 0xffffffff) {
         if (Font) Font->Write(API, "X", Font->GetCenter("X", closebuttonpos));
       }
@@ -142,126 +145,127 @@ void CWBWindow::OnDraw(CWBDrawAPI* API) {
 
   DrawBorder(API);
 
-  if (MouseOverButton || !(Style & WB_WINDOW_RESIZABLE)) return;
-  if (App->GetMouseCaptureItem() && App->GetMouseCaptureItem() != this) return;
+  if (MouseOverButton || !(style_ & WB_WINDOW_RESIZABLE)) return;
+  if (GetMouseCaptureItem() && GetMouseCaptureItem() != this) return;
   if (ScrollbarDragged()) return;
 
   // change mouse cursor
-  int32_t border = DragMode;
-  if (!border) border = GetBorderSelectionArea(App->GetMousePos());
+  int32_t border = drag_mode_;
+  if (!border) border = GetBorderSelectionArea(GetMousePos());
 
   if ((border & WB_DRAGMODE_LEFT) || (border & WB_DRAGMODE_RIGHT)) {
-    App->SelectMouseCursor(renderer::MouseCursor::kSizeWe);
+    SelectMouseCursor(renderer::MouseCursor::kSizeWe);
   }
   if ((border & WB_DRAGMODE_TOP) || (border & WB_DRAGMODE_BOTTOM)) {
-    App->SelectMouseCursor(renderer::MouseCursor::kSizeNs);
+    SelectMouseCursor(renderer::MouseCursor::kSizeNs);
   }
   if (((border & WB_DRAGMODE_LEFT) && (border & WB_DRAGMODE_TOP)) ||
       ((border & WB_DRAGMODE_RIGHT) && (border & WB_DRAGMODE_BOTTOM))) {
-    App->SelectMouseCursor(renderer::MouseCursor::kSizeNwSe);
+    SelectMouseCursor(renderer::MouseCursor::kSizeNwSe);
   }
   if (((border & WB_DRAGMODE_LEFT) && (border & WB_DRAGMODE_BOTTOM)) ||
       ((border & WB_DRAGMODE_RIGHT) && (border & WB_DRAGMODE_TOP))) {
-    App->SelectMouseCursor(renderer::MouseCursor::kSizeNeSw);
+    SelectMouseCursor(renderer::MouseCursor::kSizeNeSw);
   }
 }
 
-CWBWindow::CWBWindow(const TCHAR* txt, uint32_t style)
-    : CWBGuiType(),
+Window::Window(const TCHAR* txt, uint32_t style)
+    : GuiType(),
 
-      TitleBarHeight(style & WB_WINDOW_TITLE ? 12 : 0),
+      title_bar_height_(style & WB_WINDOW_TITLE ? 12 : 0),
 
-      MinSize(CornerSelectionSize * 2 + 1, CornerSelectionSize * 2 + 1),
-      WindowTitle(txt),
-      Style(style) {}
+      min_size_(corner_selection_size_ * 2 + 1, corner_selection_size_ * 2 + 1),
+      window_title_(txt),
+      style_(style) {}
 
-CWBWindow::~CWBWindow() = default;
+Window::~Window() = default;
 
-bool CWBWindow::Initialize(CWBItem* Parent, const Rect& Position) {
-  auto& element = Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
-  auto& pdescriptor = element.PositionDescriptor;
+bool Window::Initialize(Widget* Parent, const Rect& Position) {
+  auto& element = elements_[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE];
+  auto& pdescriptor = element.position_descriptor_;
   pdescriptor.SetMetric(WBPOSITIONTYPE::WB_MARGIN_TOP, WBMETRICTYPE::WB_PIXELS,
                         3);
   pdescriptor.SetMetric(WBPOSITIONTYPE::WB_MARGIN_RIGHT,
                         WBMETRICTYPE::WB_PIXELS, 3);
   pdescriptor.SetMetric(WBPOSITIONTYPE::WB_WIDTH, WBMETRICTYPE::WB_PIXELS, 11);
   pdescriptor.SetMetric(WBPOSITIONTYPE::WB_HEIGHT, WBMETRICTYPE::WB_PIXELS, 11);
-  auto& ddescriptor = element.DisplayDescriptor;
+  auto& ddescriptor = element.display_descriptor_;
   ddescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR, 0xff2d2d30);
   ddescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR, 0xff1c97ea);
   ddescriptor.SetValue(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR, 0xff3e3e40);
 
-  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL,
-                                           WB_ITEM_BACKGROUNDCOLOR, 0xff2d2d30);
-  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_ACTIVE,
-                                           WB_ITEM_BACKGROUNDCOLOR, 0xff007acc);
-  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL, WB_ITEM_BORDERCOLOR,
-                                           0xff424245);
-  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_ACTIVE, WB_ITEM_BORDERCOLOR,
-                                           0xff007acc);
+  GetDisplayDescriptor().SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
+                                  0xff2d2d30);
+  GetDisplayDescriptor().SetValue(WB_STATE_ACTIVE, WB_ITEM_BACKGROUNDCOLOR,
+                                  0xff007acc);
+  GetDisplayDescriptor().SetValue(WB_STATE_NORMAL, WB_ITEM_BORDERCOLOR,
+                                  0xff424245);
+  GetDisplayDescriptor().SetValue(WB_STATE_ACTIVE, WB_ITEM_BORDERCOLOR,
+                                  0xff007acc);
 
-  if (!CWBItem::Initialize(Parent, Position)) return false;
+  if (!Widget::Initialize(Parent, Position)) return false;
   SetBorderSizes(1, 1, 1, 1);
-  SetClientPadding(BorderWidth - 1, TitleBarHeight + BorderWidth - 1,
-                   BorderWidth - 1, BorderWidth - 1);
+  SetClientPadding(border_width_ - 1, title_bar_height_ + border_width_ - 1,
+                   border_width_ - 1, border_width_ - 1);
   return true;
 }
 
-bool CWBWindow::MessageProc(const CWBMessage& Message) {
+bool Window::MessageProc(const CWBMessage& Message) {
   switch (Message.Get()) {
     case WBM_LEFTBUTTONDOWN:
-      if (CWBItem::MessageProc(Message)) return true;
-      if (App->GetMouseItem() == this) {
+      if (Widget::MessageProc(Message)) return true;
+      if (GetMouseItem() == this) {
         SetCapture();
         SavePosition();
 
-        if (Style & WB_WINDOW_CLOSEABLE) {
+        if (style_ & WB_WINDOW_CLOSEABLE) {
           if (GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
                   .Contains(ScreenToClient(Message.GetPosition()))) {
-            DragMode = WB_DRAGMODE_CLOSEBUTTON;
+            drag_mode_ = WB_DRAGMODE_CLOSEBUTTON;
             return true;
           }
         }
 
-        if (Style & WB_WINDOW_RESIZABLE) {
-          DragMode = GetBorderSelectionArea(Message.GetPosition());
-          if (DragMode & WB_DRAGMASK) return true;
+        if (style_ & WB_WINDOW_RESIZABLE) {
+          drag_mode_ = GetBorderSelectionArea(Message.GetPosition());
+          if (drag_mode_ & WB_DRAGMASK) return true;
         }
 
-        if (Style & WB_WINDOW_MOVEABLE) {
+        if (style_ & WB_WINDOW_MOVEABLE) {
           if (!GetClientRect().Contains(
                   ScreenToClient(Message.GetPosition()))) {
-            DragMode = WB_DRAGMODE_MOVE;
+            drag_mode_ = WB_DRAGMODE_MOVE;
             return true;
           }
         }
 
-        DragMode = 0;
+        drag_mode_ = 0;
       }
       break;
 
     case WBM_MOUSEMOVE:
-      if (CWBItem::MessageProc(Message)) return true;
-      if (App->GetMouseCaptureItem() == this) {
-        if (DragMode == WB_DRAGMODE_MOVE && (Style & WB_WINDOW_MOVEABLE)) {
-          SetPosition(GetSavedPosition() - App->GetLeftDownPos() +
+      if (Widget::MessageProc(Message)) return true;
+      if (GetMouseCaptureItem() == this) {
+        if (drag_mode_ == WB_DRAGMODE_MOVE && (style_ & WB_WINDOW_MOVEABLE)) {
+          SetPosition(GetSavedPosition() - GetApplication()->GetLeftDownPos() +
                       Message.GetPosition());
           return true;
         }
-        if ((DragMode & WB_DRAGMASK) && (Style & WB_WINDOW_RESIZABLE)) {
+        if ((drag_mode_ & WB_DRAGMASK) && (style_ & WB_WINDOW_RESIZABLE)) {
           Rect r = GetSavedPosition();
-          const Point md = Message.GetPosition() - App->GetLeftDownPos();
-          if (DragMode & WB_DRAGMODE_LEFT) {
-            r.x1 = std::min(r.x1 + md.x, r.x2 - MinSize.x);
+          const Point md =
+              Message.GetPosition() - GetApplication()->GetLeftDownPos();
+          if (drag_mode_ & WB_DRAGMODE_LEFT) {
+            r.x1 = std::min(r.x1 + md.x, r.x2 - min_size_.x);
           }
-          if (DragMode & WB_DRAGMODE_TOP) {
-            r.y1 = std::min(r.y1 + md.y, r.y2 - MinSize.y);
+          if (drag_mode_ & WB_DRAGMODE_TOP) {
+            r.y1 = std::min(r.y1 + md.y, r.y2 - min_size_.y);
           }
-          if (DragMode & WB_DRAGMODE_RIGHT) {
-            r.x2 = std::max(r.x2 + md.x, r.x1 + MinSize.x);
+          if (drag_mode_ & WB_DRAGMODE_RIGHT) {
+            r.x2 = std::max(r.x2 + md.x, r.x1 + min_size_.x);
           }
-          if (DragMode & WB_DRAGMODE_BOTTOM) {
-            r.y2 = std::max(r.y2 + md.y, r.y1 + MinSize.y);
+          if (drag_mode_ & WB_DRAGMODE_BOTTOM) {
+            r.y2 = std::max(r.y2 + md.y, r.y1 + min_size_.y);
           }
           SetPosition(r);
           return true;
@@ -270,19 +274,21 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
       break;
 
     case WBM_LEFTBUTTONUP:
-      if (CWBItem::MessageProc(Message)) return true;
-      if (App->GetMouseCaptureItem() == this) {
-        if (DragMode == WB_DRAGMODE_CLOSEBUTTON) {
+      if (Widget::MessageProc(Message)) return true;
+      if (GetMouseCaptureItem() == this) {
+        if (drag_mode_ == WB_DRAGMODE_CLOSEBUTTON) {
           if (GetElementPos(WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
                   .Contains(ScreenToClient(Message.GetPosition()))) {
-            App->Send(CWBMessage(App, WBM_CLOSE, GetGuid()));
+            GetApplication()->Send(
+                CWBMessage(GetApplication(), WBM_CLOSE, GetGuid()));
           }
         }
 
         const bool b = ReleaseCapture();
-        if (DragMode) {
-          DragMode = 0;
-          App->Send(CWBMessage(App, WBM_WINDOWDRAGSTOPPED, GetGuid()));
+        if (drag_mode_) {
+          drag_mode_ = 0;
+          GetApplication()->Send(
+              CWBMessage(GetApplication(), WBM_WINDOWDRAGSTOPPED, GetGuid()));
           return b;
         }
       }
@@ -298,13 +304,13 @@ bool CWBWindow::MessageProc(const CWBMessage& Message) {
       break;
   }
 
-  return CWBItem::MessageProc(Message);
+  return Widget::MessageProc(Message);
 }
 
-uint32_t CWBWindow::GetDragMode() { return DragMode; }
+uint32_t Window::GetDragMode() { return drag_mode_; }
 
-bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
-                           const std::vector<std::string>& pseudo) {
+bool Window::ApplyStyle(std::string_view prop, std::string_view value,
+                        const std::vector<std::string>& pseudo) {
   bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
@@ -317,34 +323,34 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
 
   // apply font styling to list item anyway
   if (!ElementTarget) {
-    InterpretFontString(Elements[WBWINDOWELEMENT::WB_WINELEMENT_TITLE], prop,
+    InterpretFontString(elements_[WBWINDOWELEMENT::WB_WINELEMENT_TITLE], prop,
                         value, pseudo);
   }
-  if (!ElementTarget) return CWBItem::ApplyStyle(prop, value, pseudo);
+  if (!ElementTarget) return Widget::ApplyStyle(prop, value, pseudo);
 
   bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == "title") {
-      Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_TITLE].ApplyStyle(
+      Handled |= elements_[WBWINDOWELEMENT::WB_WINELEMENT_TITLE].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
 
     if (pseudo[x] == "close") {
-      Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE].ApplyStyle(
+      Handled |= elements_[WBWINDOWELEMENT::WB_WINELEMENT_CLOSE].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
 
     if (pseudo[x] == "minimize") {
-      Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_MINIMIZE].ApplyStyle(
+      Handled |= elements_[WBWINDOWELEMENT::WB_WINELEMENT_MINIMIZE].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
 
     if (pseudo[x] == "info") {
-      Handled |= Elements[WBWINDOWELEMENT::WB_WINELEMENT_INFO].ApplyStyle(
+      Handled |= elements_[WBWINDOWELEMENT::WB_WINELEMENT_INFO].ApplyStyle(
           this, prop, value, pseudo);
       continue;
     }
@@ -353,9 +359,8 @@ bool CWBWindow::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBItem* CWBWindow::Factory(CWBItem* Root, const CXMLNode& node,
-                            const Rect& Pos) {
-  auto window = CWBWindow::Create(Root, Pos);
+Widget* Window::Factory(Widget* Root, const CXMLNode& node, const Rect& Pos) {
+  auto window = Window::Create(Root, Pos);
   if (node.HasAttribute("title")) window->SetTitle(node.GetAttribute("title"));
   return window;
 }

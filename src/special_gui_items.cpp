@@ -9,12 +9,12 @@ import whiteboard;
 using math::Rect;
 
 ClickThroughButton::ClickThroughButton(std::string_view txt /*=  ""  */)
-    : CWBGuiType(txt) {}
+    : GuiType(txt) {}
 ClickThroughButton::~ClickThroughButton() = default;
 
-gui::CWBItem* ClickThroughButton::Factory(gui::CWBItem* root,
-                                          const CXMLNode& node,
-                                          const Rect& pos) {
+gui::Widget* ClickThroughButton::Factory(gui::Widget* root,
+                                         const CXMLNode& node,
+                                         const Rect& pos) {
   auto button = ClickThroughButton::Create(root, pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
 

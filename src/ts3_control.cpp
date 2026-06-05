@@ -15,8 +15,8 @@ import whiteboard;
 using math::Point;
 using math::Rect;
 
-void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
-  gui::CWBFont* f = GetFont(GetState());
+void Ts3Control::OnDraw(gui::DrawAPI* API) {
+  gui::Font* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
   if (!teamSpeakConnection.authenticated_) {
@@ -38,15 +38,19 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
     }
   }
 
-  gui::WBSKINELEMENTID playeroff = App->GetSkin()->GetElementID("ts3playeroff");
-  gui::WBSKINELEMENTID playeron = App->GetSkin()->GetElementID("ts3playeron");
+  gui::WBSKINELEMENTID playeroff =
+      GetApplication()->GetSkin()->GetElementID("ts3playeroff");
+  gui::WBSKINELEMENTID playeron =
+      GetApplication()->GetSkin()->GetElementID("ts3playeron");
   gui::WBSKINELEMENTID outputoff =
-      App->GetSkin()->GetElementID("ts3outputmuted");
-  gui::WBSKINELEMENTID inputoff = App->GetSkin()->GetElementID("ts3inputmuted");
+      GetApplication()->GetSkin()->GetElementID("ts3outputmuted");
+  gui::WBSKINELEMENTID inputoff =
+      GetApplication()->GetSkin()->GetElementID("ts3inputmuted");
 
   bool LeftAlign = true;
   Rect r = ClientToScreen(GetClientRect());
-  LeftAlign = r.x1 < App->GetXRes() / 2 && r.x2 < App->GetXRes() / 2;
+  LeftAlign = r.x1 < GetApplication()->GetXRes() / 2 &&
+              r.x2 < GetApplication()->GetXRes() / 2;
 
   Rect displayrect = GetClientRect();
 
@@ -107,7 +111,7 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
             if (cl->output_muted) id = outputoff;
             if (cl->talk_status) id = playeron;
 
-            App->GetSkin()->RenderElement(
+            GetApplication()->GetSkin()->RenderElement(
                 API, id,
                 LeftAlign
                     ? Rect(size / 2, ypos, size / 2 + size - 1, ypos + size - 1)
@@ -132,7 +136,7 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
     }
 
     if (!cnt) {
-      DrawBackgroundItem(API, CSSProperties.DisplayDescriptor,
+      DrawBackgroundItem(API, GetDisplayDescriptor(),
                          Rect(0, 0, GetClientRect().Width(), ypos), GetState());
     }
   }
@@ -140,12 +144,12 @@ void Ts3Control::OnDraw(gui::CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-Ts3Control::Ts3Control() : CWBGuiType() {}
+Ts3Control::Ts3Control() : GuiType() {}
 
 Ts3Control::~Ts3Control() = default;
 
-gui::CWBItem* Ts3Control::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                  const Rect& Pos) {
+gui::Widget* Ts3Control::Factory(gui::Widget* Root, const CXMLNode& node,
+                                 const Rect& Pos) {
   return Ts3Control::Create(Root, Pos);
 }
 

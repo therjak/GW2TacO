@@ -8,23 +8,23 @@ import :gui_item;
 
 export namespace gui {
 
-class CWBApplication;
+class Application;
 
-class CWBRoot : public CWBGuiType<"root", CWBItem> {
+class Root : public GuiType<"root", Widget> {
  public:
-  CWBRoot();
-  static inline std::unique_ptr<CWBRoot> Create(const math::Rect& Pos) {
-    auto p = std::make_unique<CWBRoot>();
+  Root();
+  static inline std::unique_ptr<Root> Create(const math::Rect& Pos) {
+    auto p = std::make_unique<Root>();
     p->Initialize(nullptr, Pos);
     return p;
   }
-  ~CWBRoot() override;
+  ~Root() override;
 
-  void SetApplication(CWBApplication* Application);
+  void SetApplication(Application* Application);
 
  private:
   bool MessageProc(const CWBMessage& Message) override;
-  void OnDraw(CWBDrawAPI* API) override;
+  void OnDraw(DrawAPI* API) override;
 };
 
 }  // namespace gui

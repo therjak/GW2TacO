@@ -20,44 +20,45 @@ using math::Size;
 
 namespace gui {
 
-void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
+void ContextMenu::OnDraw(DrawAPI* API) {
   const WBITEMSTATE i = GetState();
-  CWBFont* Font = GetFont(i);
+  Font* Font = GetFont(i);
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
+      GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API, WB_STATE_NORMAL);
 
   const Rect Client = GetClientRect();
-  const Rect padding = CSSProperties.PositionDescriptor.GetPadding(
-      Client.Size(), Rect(0, 0, 0, 0));
+  const Rect padding =
+      GetPositionDescriptor().GetPadding(Client.Size(), Rect(0, 0, 0, 0));
 
   Point Offset = Point(padding.x1, padding.y1);
 
-  for (int32_t x = 0; x < Items.size(); x++) {
-    if (Items[x]->Separator) {
+  for (int32_t x = 0; x < items_.size(); x++) {
+    if (items_[x]->separator_) {
       constexpr int arbitraryValue = 200;
 
-      const Rect padding = SeparatorElements.PositionDescriptor.GetPadding(
+      const Rect padding = separator_elements_.position_descriptor_.GetPadding(
           Size(GetWindowRect().Width(), arbitraryValue), Rect(0, 0, 0, 0));
       Offset.y += padding.y1;
 
-      const int height = SeparatorElements.PositionDescriptor.GetHeight(
+      const int height = separator_elements_.position_descriptor_.GetHeight(
           Size(0, 0), Size(0, 0));
 
       const Rect separatorRect =
           Rect(GetWindowRect().x1 + padding.x1, Offset.y,
                GetWindowRect().x1 + padding.x2, Offset.y + height);
 
-      const WBSKINELEMENTID id = SeparatorElements.DisplayDescriptor.GetSkin(
-          WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
+      const WBSKINELEMENTID id =
+          separator_elements_.display_descriptor_.GetSkin(
+              WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
 
       // draw separator
       if (id != 0xffffffff) {
-        App->GetSkin()->RenderElement(API, id, separatorRect);
+        GetApplication()->GetSkin()->RenderElement(API, id, separatorRect);
       } else {
-        API->DrawRect(separatorRect, CSSProperties.DisplayDescriptor.GetColor(
-                                         i, WB_ITEM_BORDERCOLOR));
+        API->DrawRect(separatorRect,
+                      GetDisplayDescriptor().GetColor(i, WB_ITEM_BORDERCOLOR));
       }
 
       Offset.y += height;
@@ -68,37 +69,34 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
       EntryPos.x1 += padding.x1;
       EntryPos.x2 -= Client.Width() - padding.x2;
 
-      CColor textColor = CSSProperties.DisplayDescriptor.GetColor(
-          WB_STATE_NORMAL, WB_ITEM_FONTCOLOR);
+      CColor textColor =
+          GetDisplayDescriptor().GetColor(WB_STATE_NORMAL, WB_ITEM_FONTCOLOR);
 
-      if (Items[x]->Highlighted) {
-        textColor = CSSProperties.DisplayDescriptor.GetColor(WB_STATE_ACTIVE,
-                                                             WB_ITEM_FONTCOLOR);
+      if (items_[x]->highlighted_) {
+        textColor =
+            GetDisplayDescriptor().GetColor(WB_STATE_ACTIVE, WB_ITEM_FONTCOLOR);
       }
 
       // highlight background
-      if (MouseOver() &&
-          EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
-        API->DrawRect(EntryPos, CSSProperties.DisplayDescriptor.GetColor(
+      if (MouseOver() && EntryPos.Contains(ScreenToClient(GetMousePos()))) {
+        API->DrawRect(EntryPos, GetDisplayDescriptor().GetColor(
                                     WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR));
-        textColor = CSSProperties.DisplayDescriptor.GetColor(WB_STATE_HOVER,
-                                                             WB_ITEM_FONTCOLOR);
+        textColor =
+            GetDisplayDescriptor().GetColor(WB_STATE_HOVER, WB_ITEM_FONTCOLOR);
       }
 
-      Font->Write(API, Items[x]->Text, Offset, textColor, TextTransform);
+      Font->Write(API, items_[x]->text_, Offset, textColor, TextTransform);
 
       // draw sub arrow
-      if (!Items[x]->Children.empty()) {
-        if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
-            0xffffffff) {
+      if (!items_[x]->children_.empty()) {
+        if (GetDisplayDescriptor().GetSkin(i, WB_ITEM_SUBSKIN) != 0xffffffff) {
         } else {
           const int32_t wi = Font->GetWidth(">");
-          Font->Write(
-              API, ">",
-              Point(GetWindowRect().x2 - wi - CSSProperties.BorderSizes.x2 -
-                        (Client.x2 - padding.x2),
-                    Offset.y),
-              textColor);
+          Font->Write(API, ">",
+                      Point(GetWindowRect().x2 - wi - GetBorderSizes().x2 -
+                                (Client.x2 - padding.x2),
+                            Offset.y),
+                      textColor);
         }
       }
 
@@ -109,52 +107,50 @@ void CWBContextMenu::OnDraw(CWBDrawAPI* API) {
   DrawBorder(API);
 }
 
-CWBContextMenu::CWBContextMenu(WBGUID trg) : CWBGuiType(), Target(trg) {}
+ContextMenu::ContextMenu(WBGUID trg) : GuiType(), target_(trg) {}
 
-CWBContextMenu::~CWBContextMenu() {
-  if (ParentMenu) {
-    ParentMenu->SubMenu = nullptr;
-    ParentMenu->SubMenuIdx = -1;
+ContextMenu::~ContextMenu() {
+  if (parent_menu_) {
+    parent_menu_->sub_menu_ = nullptr;
+    parent_menu_->sub_menu_idx_ = -1;
   }
 }
 
-void CWBContextMenu::ResizeToContentSize() {
+void ContextMenu::ResizeToContentSize() {
   const WBITEMSTATE i = GetState();
-  CWBFont* Font = GetFont(i);
+  Font* Font = GetFont(i);
   const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
-      CSSProperties.DisplayDescriptor.GetValue(i, WB_ITEM_TEXTTRANSFORM));
+      GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   Size ContentSize = Size(0, 0);
 
   bool NeedsSubArrow = false;
-  for (const auto& item : Items) {
-    if (!item->Children.empty()) {
+  for (const auto& item : items_) {
+    if (!item->children_.empty()) {
       NeedsSubArrow = true;
     }
   }
   constexpr int arbitraryValue = 0;
-  Rect padding = SeparatorElements.PositionDescriptor.GetPadding(
+  Rect padding = separator_elements_.position_descriptor_.GetPadding(
       Size(0, arbitraryValue), Rect(0, 0, 0, 0));
-  const int height =
-      SeparatorElements.PositionDescriptor.GetHeight(Size(0, 0), Size(0, 0));
+  const int height = separator_elements_.position_descriptor_.GetHeight(
+      Size(0, 0), Size(0, 0));
   const int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
 
   const Rect Client = GetClientRect();
-  padding = CSSProperties.PositionDescriptor.GetPadding(Client.Size(),
-                                                        Rect(0, 0, 0, 0));
+  padding = GetPositionDescriptor().GetPadding(Client.Size(), Rect(0, 0, 0, 0));
 
   ContentSize.y = padding.y1;
 
-  for (const auto& item : Items) {
-    if (item->Separator) {
+  for (const auto& item : items_) {
+    if (item->separator_) {
       ContentSize.y += separatorHeight;
     } else if (Font) {
       int32_t arrowPadding = 0;
 
       // account for sub arrow
-      if (!item->Children.empty()) {
-        if (CSSProperties.DisplayDescriptor.GetSkin(i, WB_ITEM_SUBSKIN) !=
-            0xffffffff) {
+      if (!item->children_.empty()) {
+        if (GetDisplayDescriptor().GetSkin(i, WB_ITEM_SUBSKIN) != 0xffffffff) {
         } else {
           arrowPadding = Font->GetWidth(">");
         }
@@ -162,7 +158,7 @@ void CWBContextMenu::ResizeToContentSize() {
 
       ContentSize.x = std::max(
           ContentSize.x, padding.x1 + Client.x2 - padding.x2 + arrowPadding +
-                             Font->GetWidth(item->Text, true, TextTransform));
+                             Font->GetWidth(item->text_, true, TextTransform));
       ContentSize.y += Font->GetLineHeight();
     }
   }
@@ -174,47 +170,47 @@ void CWBContextMenu::ResizeToContentSize() {
   SetPosition(Rect(r.TopLeft(), r.TopLeft() + Size));
 }
 
-bool CWBContextMenu::Initialize(CWBItem* Parent, const Rect& Position) {
-  if (!CWBItem::Initialize(Parent, Position)) return false;
+bool ContextMenu::Initialize(Widget* Parent, const Rect& Position) {
+  if (!Widget::Initialize(Parent, Position)) return false;
 
   SetClientPadding(2, 0, 2, 0);
   SetBorderSizes(1, 1, 1, 1);
 
-  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_NORMAL,
-                                           WB_ITEM_BACKGROUNDCOLOR, 0xff1b1b1c);
-  CSSProperties.DisplayDescriptor.SetValue(WB_STATE_HOVER,
-                                           WB_ITEM_BACKGROUNDCOLOR, 0xff434346);
+  GetDisplayDescriptor().SetValue(WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR,
+                                  0xff1b1b1c);
+  GetDisplayDescriptor().SetValue(WB_STATE_HOVER, WB_ITEM_BACKGROUNDCOLOR,
+                                  0xff434346);
 
-  SeparatorElements.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_PADDING_TOP,
-                                                0, 1);
-  SeparatorElements.PositionDescriptor.SetValue(WBPOSITIONTYPE::WB_HEIGHT, 0,
-                                                1);
-  SeparatorElements.PositionDescriptor.SetValue(
+  separator_elements_.position_descriptor_.SetValue(
+      WBPOSITIONTYPE::WB_PADDING_TOP, 0, 1);
+  separator_elements_.position_descriptor_.SetValue(WBPOSITIONTYPE::WB_HEIGHT,
+                                                    0, 1);
+  separator_elements_.position_descriptor_.SetValue(
       WBPOSITIONTYPE::WB_PADDING_BOTTOM, 0, 1);
 
-  App->SetCapture(this);
+  SetCapture();
   return true;
 }
 
-CWBContextItem* CWBContextMenu::AddItem(std::string_view Text, int32_t ID,
-                                        bool Highlighted, bool closesContext) {
-  Items.emplace_back(std::make_unique<CWBContextItem>());
-  auto& item = Items.back();
-  item->Text = Text;
-  item->ReturnID = ID;
-  item->Highlighted = Highlighted;
-  item->closesContext = closesContext;
+ContextItem* ContextMenu::AddItem(std::string_view Text, int32_t ID,
+                                  bool Highlighted, bool closesContext) {
+  items_.emplace_back(std::make_unique<ContextItem>());
+  auto& item = items_.back();
+  item->text_ = Text;
+  item->return_id_ = ID;
+  item->highlighted_ = Highlighted;
+  item->closes_context_ = closesContext;
   ResizeToContentSize();
 
   return item.get();
 }
 
-void CWBContextMenu::AddSeparator() {
-  Items.emplace_back(std::make_unique<CWBContextItem>());
-  Items.back()->Separator = true;
+void ContextMenu::AddSeparator() {
+  items_.emplace_back(std::make_unique<ContextItem>());
+  items_.back()->separator_ = true;
 }
 
-bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
+bool ContextMenu::MessageProc(const CWBMessage& Message) {
   switch (Message.Get()) {
     case WBM_REPOSITION:
       if (Message.GetTarget() == GetGuid()) {
@@ -225,24 +221,24 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
         if (p.y1 < 0) p += Point(0, -p.y1);
         if (p.x2 > r.x2) p -= Point(p.x2 - r.x2, 0);
         if (p.y2 > r.y2) p -= Point(0, p.y2 - r.y2);
-        CWBMessage m(App, WBM_REPOSITION, Message.GetTarget(), p,
+        CWBMessage m(GetApplication(), WBM_REPOSITION, Message.GetTarget(), p,
                      Message.Moved(), Message.Resized());
-        return CWBItem::MessageProc(m);
+        return Widget::MessageProc(m);
       }
       break;
     case WBM_MOUSEMOVE:
       if (MouseOver()) {
-        for (int32_t x = 0; x < Items.size(); x++) {
-          if (!Items[x]->Separator) {
+        for (int32_t x = 0; x < items_.size(); x++) {
+          if (!items_[x]->separator_) {
             const Rect EntryPos = GetItemRect(x);
-            if (EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
+            if (EntryPos.Contains(ScreenToClient(GetMousePos()))) {
               SpawnSubMenu(x);
               return true;
             }
           }
         }
       }
-      if (SubMenu) SubMenu->MessageProc(Message);
+      if (sub_menu_) sub_menu_->MessageProc(Message);
       return true;
 
     case WBM_RIGHTBUTTONDOWN:
@@ -252,43 +248,43 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       if (!MouseInContextHierarchy() && !MarkedForDeletion()) {
         MarkForDeletion();
         MarkParentForDeletion();
-        App->ReleaseCapture();
+        GetApplication()->ReleaseCapture();
         // resend message
-        App->Send(Message);
+        GetApplication()->Send(Message);
         return true;
       }
 
-      Pushed = true;
-      App->SetCapture(GetContextRoot());
+      pushed_ = true;
+      GetApplication()->SetCapture(GetContextRoot());
       if (!MouseOver()) {
-        if (SubMenu) SubMenu->MessageProc(Message);
+        if (sub_menu_) sub_menu_->MessageProc(Message);
       }
       return true;
 
     case WBM_RIGHTBUTTONUP:
     case WBM_LEFTBUTTONUP:
 
-      if (!Pushed) {
+      if (!pushed_) {
         // original click doesn't count
         return true;
       }
 
       // check if any of the items are clicked on
-      for (int32_t x = 0; x < Items.size(); x++) {
-        if (!Items[x]->Separator) {
+      for (int32_t x = 0; x < items_.size(); x++) {
+        if (!items_[x]->separator_) {
           const Rect EntryPos = GetItemRect(x);
-          if (MouseOver() &&
-              EntryPos.Contains(ScreenToClient(App->GetMousePos()))) {
-            App->Send(CWBMessage(App, WBM_CONTEXTMESSAGE, Target,
-                                 Items[x]->ReturnID));
-            if (Items[x]->closesContext) {
+          if (MouseOver() && EntryPos.Contains(ScreenToClient(GetMousePos()))) {
+            GetApplication()->Send(CWBMessage(GetApplication(),
+                                              WBM_CONTEXTMESSAGE, target_,
+                                              items_[x]->return_id_));
+            if (items_[x]->closes_context_) {
               MarkForDeletion();
               MarkParentForDeletion();
-              App->ReleaseCapture();
+              GetApplication()->ReleaseCapture();
             } else {
-              App->Send(CWBMessage(
-                  App, WBM_REBUILDCONTEXTITEM, Target,
-                  CWBMessage::menucontext{Items[x]->ReturnID, GetGuid()}));
+              GetApplication()->Send(CWBMessage(
+                  GetApplication(), WBM_REBUILDCONTEXTITEM, target_,
+                  CWBMessage::menucontext{items_[x]->return_id_, GetGuid()}));
             }
 
             return true;
@@ -297,14 +293,14 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       }
 
       if (MouseInContextHierarchy()) {
-        if (SubMenu) SubMenu->MessageProc(Message);
+        if (sub_menu_) sub_menu_->MessageProc(Message);
       }
 
       // check for off item mouse releases
-      if (!MouseInContextHierarchy() && Pushed) {
+      if (!MouseInContextHierarchy() && pushed_) {
         MarkForDeletion();
         MarkParentForDeletion();
-        App->ReleaseCapture();
+        GetApplication()->ReleaseCapture();
       }
 
       return true;
@@ -313,32 +309,32 @@ bool CWBContextMenu::MessageProc(const CWBMessage& Message) {
       break;
   }
 
-  return CWBItem::MessageProc(Message);
+  return Widget::MessageProc(Message);
 }
 
-void CWBContextMenu::MarkForDeletion() {
-  if (ParentMenu) {
-    ParentMenu->SubMenu = nullptr;
-    ParentMenu->SubMenuIdx = -1;
-    ParentMenu = nullptr;
+void ContextMenu::MarkForDeletion() {
+  if (parent_menu_) {
+    parent_menu_->sub_menu_ = nullptr;
+    parent_menu_->sub_menu_idx_ = -1;
+    parent_menu_ = nullptr;
   }
-  if (SubMenu) {
-    SubMenu->MarkForDeletion();
+  if (sub_menu_) {
+    sub_menu_->MarkForDeletion();
   }
-  CWBItem::MarkForDeletion();
+  Widget::MarkForDeletion();
 }
 
-void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
-  if (itemidx < 0 || itemidx >= Items.size()) return;
-  if (itemidx == SubMenuIdx) {
+void ContextMenu::SpawnSubMenu(int32_t itemidx) {
+  if (itemidx < 0 || itemidx >= items_.size()) return;
+  if (itemidx == sub_menu_idx_) {
     return;
   }
-  if (SubMenu) {
-    SubMenu->MarkForDeletion();
-    SubMenu = nullptr;
-    SubMenuIdx = -1;
+  if (sub_menu_) {
+    sub_menu_->MarkForDeletion();
+    sub_menu_ = nullptr;
+    sub_menu_idx_ = -1;
   }
-  if (Items[itemidx]->Children.size() <= 0) return;
+  if (items_[itemidx]->children_.size() <= 0) return;
 
   const Rect p = GetItemRect(itemidx) + GetPosition().TopLeft();
   const Rect w = GetPosition();
@@ -347,46 +343,45 @@ void CWBContextMenu::SpawnSubMenu(int32_t itemidx) {
 
   // We need to select the parent as we are restricted to draw within the parent
   // rect.
-  auto sm = CWBContextMenu::Create(GetParent(), newpos, Target);
-  SubMenu = sm;
-  SubMenuIdx = itemidx;
-  App->ApplyStyle(SubMenu);
-  SubMenu->ParentMenu = this;
+  auto sm = ContextMenu::Create(GetParent(), newpos, target_);
+  sub_menu_ = sm;
+  sub_menu_idx_ = itemidx;
+  GetApplication()->ApplyStyle(sub_menu_);
+  sub_menu_->parent_menu_ = this;
   // message control must stay with the root item
-  App->SetCapture(GetContextRoot());
+  GetApplication()->SetCapture(GetContextRoot());
 
-  for (auto& child : Items[itemidx]->Children) {
-    CWBContextItem* olditm = child.get();
-    CWBContextItem* newitm = SubMenu->AddItem(olditm->Text, olditm->ReturnID);
-    newitm->CopyOf = olditm;
-    newitm->Separator = olditm->Separator;
-    newitm->Highlighted = olditm->Highlighted;
-    newitm->closesContext = olditm->closesContext;
+  for (auto& child : items_[itemidx]->children_) {
+    ContextItem* olditm = child.get();
+    ContextItem* newitm = sub_menu_->AddItem(olditm->text_, olditm->return_id_);
+    newitm->copy_of_ = olditm;
+    newitm->separator_ = olditm->separator_;
+    newitm->highlighted_ = olditm->highlighted_;
+    newitm->closes_context_ = olditm->closes_context_;
     newitm->CopyChildrenFrom(olditm);
   }
 
-  SubMenu->ResizeToContentSize();
+  sub_menu_->ResizeToContentSize();
 }
 
-Rect CWBContextMenu::GetItemRect(int32_t idx) {
+Rect ContextMenu::GetItemRect(int32_t idx) {
   Point Offset = Point(0, 0);
 
   constexpr int arbitraryValue = 0;
-  Rect padding = SeparatorElements.PositionDescriptor.GetPadding(
+  Rect padding = separator_elements_.position_descriptor_.GetPadding(
       Size(0, arbitraryValue), Rect(0, 0, 0, 0));
-  const int height =
-      SeparatorElements.PositionDescriptor.GetHeight(Size(0, 0), Size(0, 0));
+  const int height = separator_elements_.position_descriptor_.GetHeight(
+      Size(0, 0), Size(0, 0));
   const int separatorHeight = padding.y1 + height + arbitraryValue - padding.y2;
 
   const Rect Client = GetClientRect();
-  padding = CSSProperties.PositionDescriptor.GetPadding(Client.Size(),
-                                                        Rect(0, 0, 0, 0));
+  padding = GetPositionDescriptor().GetPadding(Client.Size(), Rect(0, 0, 0, 0));
 
   Offset.y = padding.y1;
 
-  CWBFont* Font = GetFont(WB_STATE_HOVER);
-  for (int32_t x = 0; x < Items.size(); x++) {
-    if (Items[x]->Separator) {
+  Font* Font = GetFont(WB_STATE_HOVER);
+  for (int32_t x = 0; x < items_.size(); x++) {
+    if (items_[x]->separator_) {
       Offset.y += separatorHeight;
     } else if (Font) {
       const Rect EntryPos(GetWindowRect().x1, Offset.y, GetWindowRect().x2,
@@ -399,72 +394,72 @@ Rect CWBContextMenu::GetItemRect(int32_t idx) {
   return Rect(0, 0, 0, 0);
 }
 
-void CWBContextMenu::MarkParentForDeletion() {
-  if (ParentMenu) {
-    ParentMenu->MarkForDeletion();
-    ParentMenu->MarkParentForDeletion();
+void ContextMenu::MarkParentForDeletion() {
+  if (parent_menu_) {
+    parent_menu_->MarkForDeletion();
+    parent_menu_->MarkParentForDeletion();
   }
 }
 
-bool CWBContextMenu::MouseInContextHierarchy() {
-  if (!SubMenu) return MouseOver();
-  return MouseOver() || SubMenu->MouseInContextHierarchy();
+bool ContextMenu::MouseInContextHierarchy() {
+  if (!sub_menu_) return MouseOver();
+  return MouseOver() || sub_menu_->MouseInContextHierarchy();
 }
 
-CWBContextMenu* CWBContextMenu::GetContextRoot() {
-  if (!ParentMenu) return this;
-  return ParentMenu->GetContextRoot();
+ContextMenu* ContextMenu::GetContextRoot() {
+  if (!parent_menu_) return this;
+  return parent_menu_->GetContextRoot();
 }
 
-CWBContextItem::CWBContextItem()
-    : Text(""),
-      ReturnID(0),
-      Separator(false),
-      Highlighted(false),
-      closesContext(false) {}
+ContextItem::ContextItem()
+    : text_(""),
+      return_id_(0),
+      separator_(false),
+      highlighted_(false),
+      closes_context_(false) {}
 
-CWBContextItem::~CWBContextItem() = default;
+ContextItem::~ContextItem() = default;
 
-void CWBContextItem::CopyChildrenFrom(CWBContextItem* itm) {
-  for (auto& child : itm->Children) {
-    CWBContextItem* olditm = child.get();
-    CWBContextItem* newitm = AddItem(olditm->Text, olditm->ReturnID);
-    newitm->Separator = olditm->Separator;
-    newitm->Highlighted = olditm->Highlighted;
-    newitm->closesContext = olditm->closesContext;
+void ContextItem::CopyChildrenFrom(ContextItem* itm) {
+  for (auto& child : itm->children_) {
+    ContextItem* olditm = child.get();
+    ContextItem* newitm = AddItem(olditm->text_, olditm->return_id_);
+    newitm->separator_ = olditm->separator_;
+    newitm->highlighted_ = olditm->highlighted_;
+    newitm->closes_context_ = olditm->closes_context_;
     newitm->CopyChildrenFrom(olditm);
-    newitm->CopyOf = olditm;
+    newitm->copy_of_ = olditm;
   }
 }
 
-CWBContextItem* CWBContextItem::AddItem(std::string_view Text, int32_t ID,
-                                        bool Highlighted, bool closesContext) {
-  Children.emplace_back(std::make_unique<CWBContextItem>());
-  auto& item = Children.back();
-  item->Text = Text;
-  item->ReturnID = ID;
-  item->Highlighted = Highlighted;
-  item->closesContext = closesContext;
+ContextItem* ContextItem::AddItem(std::string_view Text, int32_t ID,
+                                  bool Highlighted, bool closesContext) {
+  children_.emplace_back(std::make_unique<ContextItem>());
+  auto& item = children_.back();
+  item->text_ = Text;
+  item->return_id_ = ID;
+  item->highlighted_ = Highlighted;
+  item->closes_context_ = closesContext;
   return item.get();
 }
 
-void CWBContextItem::AddSeparator() {
-  Children.emplace_back(std::make_unique<CWBContextItem>());
-  Children.back()->Separator = true;
+void ContextItem::AddSeparator() {
+  children_.emplace_back(std::make_unique<ContextItem>());
+  children_.back()->separator_ = true;
 }
 
-void CWBContextItem::SetText(std::string_view text) {
-  Text = text;
-  if (CopyOf) CopyOf->SetText(text);
+void ContextItem::SetText(std::string_view text) {
+  text_ = text;
+  if (copy_of_) copy_of_->SetText(text);
 }
 
-void CWBContextItem::SetHighlight(bool highlighted) {
-  Highlighted = highlighted;
-  if (CopyOf) CopyOf->SetHighlight(highlighted);
+void ContextItem::SetHighlight(bool highlighted) {
+  highlighted_ = highlighted;
+  if (copy_of_) copy_of_->SetHighlight(highlighted);
 }
 
-bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
-                                const std::vector<std::string>& pseudo) {
+bool ContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
+                             const std::vector<std::string>& pseudo) {
   bool ElementTarget = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
@@ -475,14 +470,15 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   }
 
   // apply font styling to list item anyway
-  if (!ElementTarget) InterpretFontString(CSSProperties, prop, value, pseudo);
-  if (!ElementTarget) return CWBItem::ApplyStyle(prop, value, pseudo);
+  if (!ElementTarget)
+    InterpretFontString(GetCSSProperties(), prop, value, pseudo);
+  if (!ElementTarget) return Widget::ApplyStyle(prop, value, pseudo);
 
   bool Handled = false;
 
   for (size_t x = 1; x < pseudo.size(); x++) {
     if (pseudo[x] == "separator") {
-      Handled |= SeparatorElements.ApplyStyle(this, prop, value, pseudo);
+      Handled |= separator_elements_.ApplyStyle(this, prop, value, pseudo);
       continue;
     }
   }
@@ -490,9 +486,9 @@ bool CWBContextMenu::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-CWBContextItem* CWBContextMenu::GetItem(int32_t ID) {
-  for (const auto& item : Items) {
-    if (item->ReturnID == ID) return item.get();
+ContextItem* ContextMenu::GetItem(int32_t ID) {
+  for (const auto& item : items_) {
+    if (item->return_id_ == ID) return item.get();
   }
   return nullptr;
 }

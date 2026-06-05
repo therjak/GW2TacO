@@ -8,10 +8,10 @@ export module whiteboard:css_item;
 
 export namespace gui {
 
-class IWBCSS {
+class CSS {
  public:
-  IWBCSS();
-  virtual ~IWBCSS();
+  CSS();
+  virtual ~CSS();
 
   void SetID(std::string_view s);
   [[nodiscard]] std::string_view GetID() const;
@@ -33,8 +33,8 @@ class IWBCSS {
   std::string GetClassString();
 
  private:
-  std::vector<std::string> aClasses;
-  std::string sID;
+  std::vector<std::string> classes_;
+  std::string id_;
 };
 
 }  // namespace gui

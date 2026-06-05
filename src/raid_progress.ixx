@@ -43,13 +43,11 @@ export class Raid {
   std::vector<Wing> wings;
 };
 
-export class RaidProgress
-    : public gui::CWBGuiType<"raidprogress", gui::CWBItem> {
+export class RaidProgress : public gui::GuiType<"raidprogress", gui::Widget> {
  public:
   RaidProgress();
   ~RaidProgress() override;
-  static inline RaidProgress* Create(gui::CWBItem* parent,
-                                     math::Rect position) {
+  static inline RaidProgress* Create(gui::Widget* parent, math::Rect position) {
     auto p = std::make_unique<RaidProgress>();
     p->Initialize(parent, position);
     RaidProgress* r = p.get();
@@ -58,15 +56,15 @@ export class RaidProgress
     return r;
   }
 
-  static gui::CWBItem* Factory(gui::CWBItem* root, const CXMLNode& node,
-                               const math::Rect& pos);
+  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+                              const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
                           gui::WBMESSAGE message_type) override;
   std::vector<Raid>& GetRaids();
 
  private:
-  void OnDraw(gui::CWBDrawAPI* api) override;
+  void OnDraw(gui::DrawAPI* api) override;
 
   math::Point last_pos_;
   LockFreeQueue<std::unordered_set<std::string>> raid_queue;

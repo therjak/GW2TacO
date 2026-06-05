@@ -17,7 +17,7 @@ import xml;
 using math::Point;
 using math::Rect;
 
-void GW2HPGrid::OnDraw(gui::CWBDrawAPI* api) {
+void GW2HPGrid::OnDraw(gui::DrawAPI* api) {
   if (!GetConfigValue("HPGridVisible")) {
     return;
   }
@@ -41,12 +41,12 @@ void GW2HPGrid::OnDraw(gui::CWBDrawAPI* api) {
   }
 }
 
-GW2HPGrid::GW2HPGrid() : CWBGuiType() { LoadGrids(); }
+GW2HPGrid::GW2HPGrid() : GuiType() { LoadGrids(); }
 
 GW2HPGrid::~GW2HPGrid() = default;
 
-gui::CWBItem* GW2HPGrid::Factory(gui::CWBItem* root, const CXMLNode& node,
-                                 const Rect& pos) {
+gui::Widget* GW2HPGrid::Factory(gui::Widget* root, const CXMLNode& node,
+                                const Rect& pos) {
   return GW2HPGrid::Create(root, pos);
 }
 

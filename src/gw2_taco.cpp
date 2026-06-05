@@ -202,15 +202,15 @@ bool GW2TacO::IsMouseTransparent(const Point& ClientSpacePoint,
   return true;
 }
 
-GW2TacO::GW2TacO() : CWBGuiType() {
+GW2TacO::GW2TacO() : GuiType() {
   GetKeyBindings(key_bindings_);
   GetScriptKeyBindings(script_key_bindings_);
 }
 
 GW2TacO::~GW2TacO() {}
 
-gui::CWBItem* GW2TacO::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                               const Rect& Pos) {
+gui::Widget* GW2TacO::Factory(gui::Widget* Root, const CXMLNode& node,
+                              const Rect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();
 
@@ -257,14 +257,14 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
 bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
   switch (Message.Get()) {
     case gui::WBM_COMMAND: {
-      auto* cb = dynamic_cast<gui::CWBButton*>(
+      auto* cb = dynamic_cast<gui::Button*>(
           App->FindItemByGuid(Message.GetTarget(), "clickthroughbutton"));
       if (cb && cb->GetID() == "TPButton") {
         TurnOffTPLight();
         break;
       }
 
-      auto* b = dynamic_cast<gui::CWBButton*>(
+      auto* b = dynamic_cast<gui::Button*>(
           App->FindItemByGuid(Message.GetTarget(), "button"));
       if (!b) break;
 
@@ -770,7 +770,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         if (rp) {
           auto& raids = rp->GetRaids();
           if (raidToggle < raids.size()) {
-            auto* ctxMenu = dynamic_cast<gui::CWBContextMenu*>(
+            auto* ctxMenu = dynamic_cast<gui::ContextMenu*>(
                 App->FindItemByGuid(menucontext.menu));
             auto itm = ctxMenu->GetItem(menucontext.item);
             auto& r = raids[raidToggle];
@@ -785,7 +785,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
 
       if (menucontext.item >= Menu_MarkerFilter_Base &&
           menucontext.item < Menu_MarkerFilter_Base + category_list_.size()) {
-        auto* ctxMenu = dynamic_cast<gui::CWBContextMenu*>(
+        auto* ctxMenu = dynamic_cast<gui::ContextMenu*>(
             App->FindItemByGuid(menucontext.menu));
         if (ctxMenu) {
           auto itm = ctxMenu->GetItem(menucontext.item);
@@ -807,7 +807,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         break;
       }
       if (menucontext.item >= Menu_ToggleMapTimerMap) {
-        auto* ctxMenu = dynamic_cast<gui::CWBContextMenu*>(
+        auto* ctxMenu = dynamic_cast<gui::ContextMenu*>(
             App->FindItemByGuid(menucontext.menu));
         auto itm = ctxMenu->GetItem(menucontext.item);
         int32_t map_idx = menucontext.item - Menu_ToggleMapTimerMap;
@@ -828,7 +828,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
       }
 
       {
-        auto* ctxMenu = dynamic_cast<gui::CWBContextMenu*>(
+        auto* ctxMenu = dynamic_cast<gui::ContextMenu*>(
             App->FindItemByGuid(menucontext.menu));
         auto itm = ctxMenu->GetItem(menucontext.item);
 
@@ -1330,26 +1330,30 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
           }
 
           case TacOKeyAction::StartTrailRec: {
-            auto* startTrail = dynamic_cast<gui::CWBButton*>(
-                App->GetRoot()->FindChildByID("starttrail", "button"));
+            auto* startTrail = dynamic_cast<gui::Button*>(
+                GetApplication()->GetRoot()->FindChildByID("starttrail",
+                                                           "button"));
             auto* trails = dynamic_cast<GW2TrailDisplay*>(
-                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+                GetApplication()->GetRoot()->FindChildByID("trail",
+                                                           "gw2Trails"));
             if (startTrail && trails) {
               // startTrail->Push( !startTrail->IsPushed() );
-              App->Send(gui::CWBMessage(App, gui::WBM_COMMAND,
-                                        startTrail->GetGuid()));
+              GetApplication()->Send(gui::CWBMessage(
+                  GetApplication(), gui::WBM_COMMAND, startTrail->GetGuid()));
             }
           }
             return true;
           case TacOKeyAction::PauseTrailRec: {
-            auto* pauseTrail = dynamic_cast<gui::CWBButton*>(
-                App->GetRoot()->FindChildByID("pausetrail", "button"));
+            auto* pauseTrail = dynamic_cast<gui::Button*>(
+                GetApplication()->GetRoot()->FindChildByID("pausetrail",
+                                                           "button"));
             auto* trails = dynamic_cast<GW2TrailDisplay*>(
-                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+                GetApplication()->GetRoot()->FindChildByID("trail",
+                                                           "gw2Trails"));
             if (pauseTrail && trails) {
               // pauseTrail->Push( !pauseTrail->IsPushed() );
-              App->Send(gui::CWBMessage(App, gui::WBM_COMMAND,
-                                        pauseTrail->GetGuid()));
+              GetApplication()->Send(gui::CWBMessage(
+                  GetApplication(), gui::WBM_COMMAND, pauseTrail->GetGuid()));
             }
           }
             return true;
@@ -1360,13 +1364,15 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
           }
             return true;
           case TacOKeyAction::ResumeTrailAndCreateNewSection: {
-            auto* pauseTrail = dynamic_cast<gui::CWBButton*>(
-                App->GetRoot()->FindChildByID("startnewsection", "button"));
+            auto* pauseTrail = dynamic_cast<gui::Button*>(
+                GetApplication()->GetRoot()->FindChildByID("startnewsection",
+                                                           "button"));
             auto* trails = dynamic_cast<GW2TrailDisplay*>(
-                App->GetRoot()->FindChildByID("trail", "gw2Trails"));
+                GetApplication()->GetRoot()->FindChildByID("trail",
+                                                           "gw2Trails"));
             if (pauseTrail && !pauseTrail->IsHidden() && trails) {
-              App->Send(gui::CWBMessage(App, gui::WBM_COMMAND,
-                                        pauseTrail->GetGuid()));
+              GetApplication()->Send(gui::CWBMessage(
+                  GetApplication(), gui::WBM_COMMAND, pauseTrail->GetGuid()));
             }
           }
             return true;
@@ -1452,7 +1458,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
       break;
   }
 
-  return gui::CWBItem::MessageProc(Message);
+  return gui::Widget::MessageProc(Message);
 }
 
 void GW2TacO::SetInfoLine(std::string_view string) { last_info_line_ = string; }
@@ -1475,37 +1481,35 @@ void GW2TacO::OpenAboutWindow() {
 
   Point cl = GetClientRect().Center();
 
-  auto w = gui::CWBWindow::Create(
+  auto w = gui::Window::Create(
       this, Rect(cl - Point(180, 160), cl + Point(180, 50 + 26)),
       "About GW2 TacO");
   w->SetID("About");
 
   w->ReapplyStyles();
 
-  auto l1 =
-      gui::CWBLabel::Create(w, w->GetClientRect() + Point(0, 2),
-                            "GW2 TacO - The Guild Wars 2 Tactical Overlay");
+  auto l1 = gui::Label::Create(w, w->GetClientRect() + Point(0, 2),
+                               "GW2 TacO - The Guild Wars 2 Tactical Overlay");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = gui::CWBLabel::Create(
+  l1 = gui::Label::Create(
       w, w->GetClientRect() + Point(0, 16),
       "Build " + taco_build_ + " built on " + build_date_time_);
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = gui::CWBLabel::Create(w, w->GetClientRect() + Point(0, 32),
-                             "(c) BoyC / Conspiracy");
+  l1 = gui::Label::Create(w, w->GetClientRect() + Point(0, 32),
+                          "(c) BoyC / Conspiracy");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = gui::CWBLabel::Create(w, w->GetClientRect() + Point(0, 48),
-                             "(c) therjak");
+  l1 = gui::Label::Create(w, w->GetClientRect() + Point(0, 48), "(c) therjak");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
-  l1 = gui::CWBLabel::Create(w, w->GetClientRect() + Point(0, 64),
-                             "Taco Icon from http://icons8.com");
+  l1 = gui::Label::Create(w, w->GetClientRect() + Point(0, 64),
+                          "Taco Icon from http://icons8.com");
   l1->ApplyStyleDeclarations(
       "font-family:ProFont;text-align:center;vertical-align:top;");
 
-  auto TacoIcon = gui::CWBButton::Create(
+  auto TacoIcon = gui::Button::Create(
       w, Rect(-50, -40 + 16, 50, 72 + 16) + w->GetClientRect().Center());
   TacoIcon->ApplyStyleDeclarations(
       "background-color:none;background: skin(TacoIcon) center middle;");
@@ -1513,7 +1517,7 @@ void GW2TacO::OpenAboutWindow() {
   int32_t width = w->GetClientRect().Width();
   int32_t height = w->GetClientRect().Height();
 
-  auto WebsiteButton = gui::CWBButton::Create(
+  auto WebsiteButton = gui::Button::Create(
       w, Rect(3, height - 25, width / 2 - 1, height - 3), "WebSite");
   WebsiteButton->SetID("GoToWebsite");
   WebsiteButton->ApplyStyleDeclarations("font-family:ProFont;");
@@ -1533,7 +1537,7 @@ float GetWindowTooSmallScale() {
   return 1.0f;
 }
 
-void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
+void GW2TacO::OnDraw(gui::DrawAPI* API) {
   mouse_tool_tip_ = "";
 
   float windowTooSmallScale = GetWindowTooSmallScale();
@@ -1552,7 +1556,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
   auto it = FindChildByID("MenuHoverBox");
   if (it) {
     auto taco =
-        dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
+        dynamic_cast<gui::Button*>(FindChildByID("MenuButton", "button"));
     if (taco) {
       constexpr float kSpeed = 500.0f;
 
@@ -1600,7 +1604,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
     Rect r = tpFlairButton->ClientToScreen(tpFlairButton->GetClientRect());
     auto& dd = tpFlairButton->GetDisplayDescriptor();
     auto skin = dd.GetSkin(gui::WB_STATE_NORMAL, gui::WB_ITEM_BACKGROUNDIMAGE);
-    gui::CWBSkinElement* e = App->GetSkin()->GetElement(skin);
+    gui::SkinElement* e = App->GetSkin()->GetElement(skin);
     if (e) {
       API->DrawAtlasElementRotated(e->GetHandle(), r, CColor{0x80ffffff},
                                    GetTime() / 1000.0f);
@@ -1712,7 +1716,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
 
   if (rebind_mode_) {
     API->DrawRect(GetClientRect(), CColor{0x60000000});
-    gui::CWBFont* f = GetFont(GetState());
+    gui::Font* f = GetFont(GetState());
 
     std::string line1;
 
@@ -1767,7 +1771,7 @@ void GW2TacO::OnDraw(gui::CWBDrawAPI* API) {
 
   if (api_key_input_mode_) {
     API->DrawRect(GetClientRect(), CColor{0x60000000});
-    gui::CWBFont* f = GetFont(GetState());
+    gui::Font* f = GetFont(GetState());
 
     auto line1 = DICT("enter_api") + " " +
                  DICT(APIKeyNames[static_cast<int32_t>(api_key_to_set_)]) +
@@ -1831,9 +1835,8 @@ void SetMouseToolTip(std::string_view toolTip) {
   tacoRoot->SetMouseToolTip(toolTip);
 }
 
-void GW2TacO::OnPostDraw(gui::CWBDrawAPI* API) {
-  gui::CWBFont* font =
-      GetApplication()->GetRoot()->GetFont(gui::WB_STATE_NORMAL);
+void GW2TacO::OnPostDraw(gui::DrawAPI* API) {
+  gui::Font* font = GetApplication()->GetRoot()->GetFont(gui::WB_STATE_NORMAL);
 
   if (!font) return;
 
@@ -1935,8 +1938,7 @@ void GW2TacO::OpenWindow(std::string_view s) {
 }
 
 void GW2TacO::BuildChannelTree(TS3Connection::TS3Schandler& h,
-                               gui::CWBContextItem* parentitm,
-                               int32_t ParentID) {
+                               gui::ContextItem* parentitm, int32_t ParentID) {
   for (const auto& x : h.channels) {
     const TS3Connection::TS3Channel& chn = x.second;
     if (chn.parent_id == ParentID) {
@@ -1963,8 +1965,8 @@ void GW2TacO::RebindScriptKey(int32_t eventIndex) {
 void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   api_key_input_mode_ = true;
   api_key_to_set_ = keyType;
-  api_key_input_ = gui::CWBTextBox::Create(this, GetClientRect(),
-                                           gui::WB_TEXTBOX_SINGLELINE);
+  api_key_input_ =
+      gui::TextBox::Create(this, GetClientRect(), gui::WB_TEXTBOX_SINGLELINE);
   api_key_input_->SetID("APIkeyInput");
   api_key_input_->ReapplyStyles();
   api_key_input_->EnableHScrollbar(false, false);
@@ -1993,7 +1995,7 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
 }
 
 void GW2TacO::TurnOnTPLight() {
-  auto* tpButton = dynamic_cast<gui::CWBButton*>(
+  auto* tpButton = dynamic_cast<gui::Button*>(
       App->GetRoot()->FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) {
     tpButton->ApplyStyleDeclarations(
@@ -2003,7 +2005,7 @@ void GW2TacO::TurnOnTPLight() {
 }
 
 void GW2TacO::TurnOffTPLight() {
-  auto* tpButton = dynamic_cast<gui::CWBButton*>(
+  auto* tpButton = dynamic_cast<gui::Button*>(
       App->GetRoot()->FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) {
     tpButton->ApplyStyleDeclarations(
@@ -2037,14 +2039,13 @@ void GW2TacO::CheckItemPickup() {
 }
 
 void GW2TacO::StoreIconSizes() {
-  auto taco =
-      dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
+  auto taco = dynamic_cast<gui::Button*>(FindChildByID("MenuButton", "button"));
   if (taco) tacoIconRect = taco->GetClientRect();
 
   auto menuHover = FindChildByID("MenuHoverBox");
   if (menuHover) menuHoverRect = menuHover->GetClientRect();
 
-  auto tpButton = dynamic_cast<gui::CWBButton*>(
+  auto tpButton = dynamic_cast<gui::Button*>(
       FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) tpButtonRect = tpButton->GetClientRect();
 
@@ -2057,8 +2058,7 @@ void GW2TacO::StoreIconSizes() {
 void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
   if (!iconSizesStored) return;
 
-  auto taco =
-      dynamic_cast<gui::CWBButton*>(FindChildByID("MenuButton", "button"));
+  auto taco = dynamic_cast<gui::Button*>(FindChildByID("MenuButton", "button"));
   if (taco) {
     taco->SetPosition(Rect(tacoIconRect.TopLeft() * scale,
                            tacoIconRect.BottomRight() * scale));
@@ -2070,7 +2070,7 @@ void GW2TacO::AdjustMenuForWindowTooSmallScale(float scale) {
                                 menuHoverRect.BottomRight() * scale));
   }
 
-  auto tpButton = dynamic_cast<gui::CWBButton*>(
+  auto tpButton = dynamic_cast<gui::Button*>(
       FindChildByID("TPButton", "clickthroughbutton"));
   if (tpButton) {
     tpButton->SetPosition(Rect(tpButtonRect.TopLeft() * scale,

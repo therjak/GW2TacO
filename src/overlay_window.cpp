@@ -17,47 +17,47 @@ bool OverlayWindow::IsMouseTransparent(const Point& ClientSpacePoint,
   return true;
 }
 
-OverlayWindow::OverlayWindow() : CWBGuiType() {}
+OverlayWindow::OverlayWindow() : GuiType() {}
 
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
-gui::CWBItem* OverlayWindow::Factory(gui::CWBItem* Root, const CXMLNode& node,
-                                     const Rect& Pos) {
+gui::Widget* OverlayWindow::Factory(gui::Widget* Root, const CXMLNode& node,
+                                    const Rect& Pos) {
   return OverlayWindow::Create(Root, Pos);
 }
 
-void OverlayWindow::OnDraw(gui::CWBDrawAPI* API) {
+void OverlayWindow::OnDraw(gui::DrawAPI* API) {
   if (!GetConfigValue("EditMode")) return;
-  gui::CWBWindow::OnDraw(API);
+  gui::Window::OnDraw(API);
 }
 
 bool OverlayWindow::MessageProc(const gui::CWBMessage& Message) {
   switch (Message.Get()) {
     case gui::WBM_LEFTBUTTONDOWN:
-      if (gui::CWBWindow::MessageProc(Message)) return true;
-      if (App->GetMouseItem() == this) {
+      if (gui::Window::MessageProc(Message)) return true;
+      if (GetMouseItem() == this) {
         SetCapture();
         SavePosition();
 
-        if (Style & gui::WB_WINDOW_CLOSEABLE) {
+        if (style_ & gui::WB_WINDOW_CLOSEABLE) {
           if (GetElementPos(gui::WBWINDOWELEMENT::WB_WINELEMENT_CLOSE)
                   .Contains(ScreenToClient(Message.GetPosition()))) {
-            DragMode = gui::WB_DRAGMODE_CLOSEBUTTON;
+            drag_mode_ = gui::WB_DRAGMODE_CLOSEBUTTON;
             return true;
           }
         }
 
-        if (Style & gui::WB_WINDOW_RESIZABLE) {
-          DragMode = GetBorderSelectionArea(Message.GetPosition());
-          if (DragMode & gui::WB_DRAGMASK) return true;
+        if (style_ & gui::WB_WINDOW_RESIZABLE) {
+          drag_mode_ = GetBorderSelectionArea(Message.GetPosition());
+          if (drag_mode_ & gui::WB_DRAGMASK) return true;
         }
 
-        if (Style & gui::WB_WINDOW_MOVEABLE) {
-          DragMode = gui::WB_DRAGMODE_MOVE;
+        if (style_ & gui::WB_WINDOW_MOVEABLE) {
+          drag_mode_ = gui::WB_DRAGMODE_MOVE;
           return true;
         }
 
-        DragMode = 0;
+        drag_mode_ = 0;
       }
       break;
     case gui::WBM_REPOSITION:
@@ -68,5 +68,5 @@ bool OverlayWindow::MessageProc(const gui::CWBMessage& Message) {
       break;
   }
 
-  return gui::CWBWindow::MessageProc(Message);
+  return gui::Window::MessageProc(Message);
 }
