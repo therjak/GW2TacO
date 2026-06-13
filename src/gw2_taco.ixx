@@ -62,17 +62,17 @@ export class GW2TacO : public gui::GuiType<"GW2TacO", gui::Widget> {
   }
   ~GW2TacO() override;
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   void OpenWindow(std::string_view s);
   void OnDraw(gui::DrawAPI* api) override;
   void OnPostDraw(gui::DrawAPI* api) override;
   bool IsMouseTransparent(const math::Point& client_space_point,
-                          gui::WBMESSAGE message_type) override;
+                          gui::MessageType type) override;
 
   // return true if this item handled the message
-  bool MessageProc(const gui::CWBMessage& message) override;
+  bool MessageProc(const gui::Message& message) override;
 
   void SetInfoLine(std::string_view string);
   void SetMouseToolTip(std::string_view tool_tip);
@@ -126,7 +126,7 @@ export class GW2TacO : public gui::GuiType<"GW2TacO", gui::Widget> {
   std::future<void> pickup_fetch_task_;
 };
 
-export constexpr std::string_view UIFileNames[] = {
+export constexpr std::string_view kUiFileNames[] = {
     "UI_small.css",
     "UI_normal.css",
     "UI_large.css",

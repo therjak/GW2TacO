@@ -232,18 +232,18 @@ void LoadWvwObjectives() {
       }
 
       WvwObjective o;
-      o.id_ = api_obj.id;
-      o.map_id_ = map_id;
-      o.objective_id_ = obj_ident;
-      o.coord_ = wvw_objective_coords[obj_ident];
+      o.id = api_obj.id;
+      o.map_id = map_id;
+      o.objective_id = obj_ident;
+      o.coord = wvw_objective_coords[obj_ident];
 
-      if (!api_obj.type.empty()) o.type_ = api_obj.type;
+      if (!api_obj.type.empty()) o.type = api_obj.type;
 
       if (!api_obj.name.empty()) {
-        o.name_token_ = o.name_ = api_obj.name;
+        o.name_token = o.name = api_obj.name;
       }
 
-      for (char& n : o.name_token_) {
+      for (char& n : o.name_token) {
         if (!std::isalnum(static_cast<unsigned char>(n))) {
           n = '_';
         } else {
@@ -252,18 +252,18 @@ void LoadWvwObjectives() {
       }
 
       POI poi;
-      poi.position = o.coord_;
-      poi.map_id = o.map_id_;
+      poi.position = o.coord;
+      poi.map_id = o.map_id;
       poi.icon = DefaultIconHandle;
       poi.wvw_objective_id = static_cast<int>(wvw_objectives.size());
 
       wvw_objectives.push_back(o);
       CoCreateGuid(&poi.guid);
 
-      auto cat = GetCategory("Tactical.WvW." + o.type_);
+      auto cat = GetCategory("Tactical.WvW." + o.type);
       if (cat) poi.SetCategory(cat);
       poi.type_data_.behavior_ = POIBehavior::WvwObjective;
-      wvw_pois[o.id_] = poi;
+      wvw_pois[o.id] = poi;
     }
     UpdateWvwStatus();
     wvw_can_be_rendered = true;
@@ -291,9 +291,9 @@ void UpdateWvwStatus() {
   }
 
   wvw_update_task = std::async(std::launch::async, []() {
-    GW2::APIKeyManager::Status status = GW2::apiKeyManager.GetStatus();
+    GW2::APIKeyManager::Status status = GW2::api_key_manager.GetStatus();
     if (status != GW2::APIKeyManager::Status::OK) return;
-    GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+    GW2::APIKey* key = GW2::api_key_manager.GetIdentifiedAPIKey();
     if (!key || !key->Valid() || !key->HasCaps("account")) return;
 
     auto api_path = std::format("/v2/wvw/matches?world={:d}", key->WorldID());
@@ -306,20 +306,20 @@ void UpdateWvwStatus() {
         for (const auto& objective : map.objectives) {
           if (objective.id.empty()) continue;
 
-          WvwPoiUpdate update{.id_ = objective.id};
+          WvwPoiUpdate update{.id = objective.id};
           if (objective.owner == "Red")
-            update.owner_ = WvwPoiUpdate::Team::kRed;
+            update.owner = WvwPoiUpdate::Team::kRed;
           else if (objective.owner == "Green")
-            update.owner_ = WvwPoiUpdate::Team::kGreen;
+            update.owner = WvwPoiUpdate::Team::kGreen;
           else if (objective.owner == "Blue")
-            update.owner_ = WvwPoiUpdate::Team::kBlue;
+            update.owner = WvwPoiUpdate::Team::kBlue;
           else
-            update.owner_ = WvwPoiUpdate::Team::kNone;
+            update.owner = WvwPoiUpdate::Team::kNone;
 
           time_t flip_time = 0;
           char flags = 0;
           ParseISO8601(objective.last_flipped.c_str(), flip_time, flags);
-          update.last_flipped_ = flip_time;
+          update.last_flipped = flip_time;
           updates.push_back(update);
         }
       }

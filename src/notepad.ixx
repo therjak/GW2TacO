@@ -24,17 +24,17 @@ export class Notepad : public gui::GuiType<"notepad", gui::Widget> {
     return r;
   }
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
-                          gui::WBMESSAGE message_type) override;
+                          gui::MessageType type) override;
 
   void StartEdit();
 
  private:
   bool Initialize(gui::Widget* parent, const math::Rect& position) override;
-  bool MessageProc(const gui::CWBMessage& message) override;
+  bool MessageProc(const gui::Message& message) override;
   void OnDraw(gui::DrawAPI* api) override;
   bool hidden_ = false;
   GUID current_poi_{};

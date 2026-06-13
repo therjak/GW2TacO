@@ -33,11 +33,11 @@ class Label : public GuiType<"label", Widget> {
   [[nodiscard]] std::string GetText() const { return text_; }
   void SetText(std::string_view val);
 
-  static Widget* Factory(Widget* Root, const CXMLNode& node,
+  static Widget* Factory(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          WBMESSAGE MessageType) override {
+                          MessageType message_type) override {
     return true;
   }
   math::Size GetContentSize() override;

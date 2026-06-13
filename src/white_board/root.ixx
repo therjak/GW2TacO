@@ -23,7 +23,7 @@ class Root : public GuiType<"root", Widget> {
   void SetApplication(Application* Application);
 
  private:
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const Message& message) override;
   void OnDraw(DrawAPI* API) override;
 };
 

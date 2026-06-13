@@ -131,7 +131,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
 
         trail.SetupAndDraw(const_buffer_.get(), texture, cam_, persp_, one,
                            x == 0, fadeoutBubble, &data,
-                           GetMapFade() * globalOpacity, width, width, 1.0f);
+                           GetMapFade() * global_opacity, width, width, 1.0f);
       }
 
       if (edited_trail_) {
@@ -255,7 +255,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
 
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
                            one, false, 0, &data,
-                           mapFade * alpha * minimapOpacity, 1.0f,
+                           mapFade * alpha * minimap_opacity, 1.0f,
                            GameToWorldCoords(20) * 0.1f, trailWidth);
       }
     }
@@ -309,7 +309,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
                               0.0f, 1.0f);
         trail.SetupAndDraw(const_buffer_.get(), texture, camera, perspective,
                            one, false, 0, &data,
-                           (1.0f - mapFade) * alpha * minimapOpacity, 1.0f,
+                           (1.0f - mapFade) * alpha * minimap_opacity, 1.0f,
                            GameToWorldCoords(20) * 0.1f, trailWidth);
       }
     }
@@ -347,9 +347,8 @@ void GW2TrailDisplay::OnDraw(gui::DrawAPI* API) {
 
     Point pos = f->GetTextPosition(
         s, Rect(GetClientRect().x1, ypos, GetClientRect().x2, ypos),
-        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE,
-        true);
+        gui::TextAlignmentX::WBTA_CENTERX, gui::TextAlignmentY::WBTA_CENTERY,
+        gui::TextTransform::WBTT_NONE, true);
     ypos += f->GetLineHeight();
     f->Write(API, s, pos, CColor{0xffff0000});
   }
@@ -566,13 +565,13 @@ bool GW2TrailDisplay::Initialize(gui::Widget* Parent,
 
 GW2TrailDisplay::~GW2TrailDisplay() { texture_cache_.clear(); }
 
-gui::Widget* GW2TrailDisplay::Factory(gui::Widget* Root, const CXMLNode& node,
+gui::Widget* GW2TrailDisplay::Factory(gui::Widget* Root, const XMLNode& node,
                                       const Rect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos);
 }
 
 bool GW2TrailDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
-                                         gui::WBMESSAGE MessageType) {
+                                         gui::MessageType message_type) {
   return true;
 }
 
@@ -611,7 +610,7 @@ void GW2TrailDisplay::DeleteTrailSegment() {}
 void GW2TrailDisplay::ExportTrail() {
   if (!edited_trail_) return;
 
-  disableHooks = true;
+  disable_hooks = true;
 
   TCHAR dir[1024];
   if (!GetCurrentDirectory(1024, dir)) memset(dir, 0, sizeof(TCHAR) * 1024);
@@ -654,11 +653,11 @@ void GW2TrailDisplay::ExportTrail() {
 
   SetCurrentDirectory(dir);
 
-  disableHooks = false;
+  disable_hooks = false;
 }
 
 void GW2TrailDisplay::ImportTrail() {
-  disableHooks = true;
+  disable_hooks = true;
 
   TCHAR dir[1024];
   if (!GetCurrentDirectory(1024, dir)) memset(dir, 0, sizeof(TCHAR) * 1024);
@@ -715,7 +714,7 @@ void GW2TrailDisplay::ImportTrail() {
 
   SetCurrentDirectory(dir);
 
-  disableHooks = false;
+  disable_hooks = false;
 }
 
 void GW2Trail::Reset(int32_t _map_id /*= 0 */) {

@@ -17,7 +17,7 @@ export class OverlayApplication : public gui::Application {
 
   void TakeScreenshot() override;
 
-  std::unique_ptr<renderer::BlendState> hole_punch_blend_state;
+  std::unique_ptr<renderer::BlendState> hole_punch_blend_state_;
 
  protected:
   bool DeviceOk() override;

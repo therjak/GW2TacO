@@ -42,13 +42,13 @@ class APIKey {
 
   std::unordered_set<std::string> QuerySet(std::string_view path) const;
   std::unordered_set<int32_t> QueryAchievementBits(int id) const;
-
-  std::string apiKey;
+  std::string Key() const { return api_key_; }
 
  private:
   friend class APIKeyManager;
-  std::atomic<bool> initialized = false;
-  std::future<void> fetchTask;
+  std::string api_key_;
+  std::atomic<bool> initialized_ = false;
+  std::future<void> fetch_task_;
   KeyData key_data;
   LockFreeQueue<KeyData> key_data_queue;
 };
@@ -76,10 +76,10 @@ class APIKeyManager {
   void RebuildConfigValues();
 
  private:
-  bool initialized = false;
-  std::mutex keyMutex;
-  std::vector<std::unique_ptr<APIKey>> keys;
+  bool initialized_ = false;
+  std::mutex key_mutex_;
+  std::vector<std::unique_ptr<APIKey>> keys_;
 };
 
-APIKeyManager apiKeyManager;
+APIKeyManager api_key_manager;
 }  // namespace GW2

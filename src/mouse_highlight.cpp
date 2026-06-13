@@ -44,20 +44,20 @@ void GW2MouseHighlight::OnDraw(gui::DrawAPI* api) {
     api->DrawRect(Rect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), CColor{0xff000000});
   }
 
-  api->DrawRect(Rect(cp.x, cl.y1, cp.x + 1, cl.y2), CGAPalette[color]);
-  api->DrawRect(Rect(cl.x1, cp.y, cl.x2, cp.y + 1), CGAPalette[color]);
+  api->DrawRect(Rect(cp.x, cl.y1, cp.x + 1, cl.y2), kCGAPalette[color]);
+  api->DrawRect(Rect(cl.x1, cp.y, cl.x2, cp.y + 1), kCGAPalette[color]);
 }
 
 GW2MouseHighlight::GW2MouseHighlight() : GuiType() {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
-gui::Widget* GW2MouseHighlight::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* GW2MouseHighlight::Factory(gui::Widget* root, const XMLNode& node,
                                         const Rect& pos) {
   return GW2MouseHighlight::Create(root, pos);
 }
 
 bool GW2MouseHighlight::IsMouseTransparent(const Point& client_space_point,
-                                           gui::WBMESSAGE message_type) {
+                                           gui::MessageType type) {
   return true;
 }

@@ -46,8 +46,8 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
 
   std::string mouse_tool_tip;
 
-  if (GW2::apiKeyManager.GetStatus() == GW2::APIKeyManager::Status::OK) {
-    GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+  if (GW2::api_key_manager.GetStatus() == GW2::APIKeyManager::Status::OK) {
+    GW2::APIKey* key = GW2::api_key_manager.GetIdentifiedAPIKey();
 
     if (key && key->Valid() &&
         (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
@@ -92,7 +92,7 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
   struct tm ptm {};
   gmtime_s(&ptm, &rawtime);
 
-  gui::WBITEMSTATE i = GetState();
+  gui::ItemState i = GetState();
   gui::Font* f = GetFont(i);
 
   bar_height = f->GetLineHeight();
@@ -114,7 +114,7 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
                           Point(cl.Width(), map_count * map_height + 1)),
                      GetState());
 
-  auto text_transform = static_cast<gui::WBTEXTTRANSFORM>(
+  auto text_transform = static_cast<gui::TextTransform>(
       GetDisplayDescriptor().GetValue(i, gui::WB_ITEM_TEXTTRANSFORM));
 
   int32_t minutes = ptm.tm_hour * 60 + ptm.tm_min;
@@ -297,9 +297,8 @@ int32_t GW2MapTimer::GetScrollbarStep() { return 5; }
 
 gui::Widget* GW2MapTimer::GetItemUnderMouse(const Point& point,
                                             const Rect& crop_rect,
-                                            gui::WBMESSAGE message_type) {
-  gui::Widget* item =
-      gui::Widget::GetItemUnderMouse(point, crop_rect, message_type);
+                                            gui::MessageType type) {
+  gui::Widget* item = gui::Widget::GetItemUnderMouse(point, crop_rect, type);
   if (item && IsScrollbarVisible()) {
     // Only the scrollbar needs to be "visible"
 
@@ -316,15 +315,15 @@ gui::Widget* GW2MapTimer::GetItemUnderMouse(const Point& point,
   return item;
 }
 
-void GW2MapTimer::SetLayout(const CXMLNode& node) {
+void GW2MapTimer::SetLayout(const XMLNode& node) {
   std::unordered_map<std::string, std::vector<Map>> category_maps_dict;
   std::vector<std::string> categories_list;
 
   // categories
-  const CXMLNode& categories_node = node.GetChild("Categories");
+  const XMLNode& categories_node = node.GetChild("Categories");
   if (categories_node.IsValid()) {
     for (int x = 0; x < categories_node.GetChildCount("Category"); ++x) {
-      const CXMLNode& category_node = categories_node.GetChild("Category", x);
+      const XMLNode& category_node = categories_node.GetChild("Category", x);
 
       Category category;
       if (category_node.HasAttribute("id")) {
@@ -347,10 +346,10 @@ void GW2MapTimer::SetLayout(const CXMLNode& node) {
   }
 
   // maps
-  const CXMLNode& maps_node = node.GetChild("Maps");
+  const XMLNode& maps_node = node.GetChild("Maps");
   if (maps_node.IsValid()) {
     for (int x = 0; x < maps_node.GetChildCount("Map"); x++) {
-      const CXMLNode& map_node = maps_node.GetChild("Map", x);
+      const XMLNode& map_node = maps_node.GetChild("Map", x);
 
       Map map;
       if (map_node.HasAttribute("Name")) {
@@ -385,7 +384,7 @@ void GW2MapTimer::SetLayout(const CXMLNode& node) {
 
       // events
       for (int y = 0; y < map_node.GetChildCount("Event"); y++) {
-        const CXMLNode& event_node = map_node.GetChild("Event", y);
+        const XMLNode& event_node = map_node.GetChild("Event", y);
         Event event;
         event.length = 0;
         event.start = start;
@@ -453,7 +452,7 @@ void GW2MapTimer::UpdateScrollbarData(int ypos, const Rect& cl) {
 }
 
 GW2MapTimer::GW2MapTimer() : GuiType() {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromFile("maptimer.xml")) {
     return;
   }
@@ -461,7 +460,7 @@ GW2MapTimer::GW2MapTimer() : GuiType() {
   if (!d.GetDocumentNode().GetChildCount("GW2MapTimer")) {
     return;
   }
-  CXMLNode root = d.GetDocumentNode().GetChild("GW2MapTimer");
+  XMLNode root = d.GetDocumentNode().GetChild("GW2MapTimer");
   SetLayout(root);
 
   SetID("MapTimer");
@@ -470,7 +469,7 @@ GW2MapTimer::GW2MapTimer() : GuiType() {
 
 GW2MapTimer::~GW2MapTimer() {}
 
-gui::Widget* GW2MapTimer::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* GW2MapTimer::Factory(gui::Widget* root, const XMLNode& node,
                                   const Rect& pos) {
   return GW2MapTimer::Create(root, pos);
 }

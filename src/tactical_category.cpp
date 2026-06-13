@@ -13,7 +13,7 @@ std::string GW2TacticalCategory::GetFullTypeName() {
   if (!cached_type_name_.empty()) return cached_type_name_;
 
   if (!parent) return "";
-  if (parent == &CategoryRoot) {
+  if (parent == &category_root) {
     std::string n = name;
     std::transform(n.begin(), n.end(), n.begin(),
                    [](unsigned char c) { return std::tolower(c); });
@@ -58,7 +58,7 @@ GW2TacticalCategory* GetCategory(std::string_view sv) {
   std::transform(s.begin(), s.end(), s.begin(),
                  [](unsigned char c) { return std::tolower(c); });
 
-  const auto& fc = CategoryMap.find(s);
-  if (fc != CategoryMap.end()) return fc->second;
+  const auto& fc = category_map.find(s);
+  if (fc != category_map.end()) return fc->second;
   return nullptr;
 }

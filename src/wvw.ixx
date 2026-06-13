@@ -11,19 +11,18 @@ export module taco.wvw;
 
 import math;
 
-export class WvwObjective {
- public:
-  std::string id_;
-  std::string type_;
-  std::string map_type_;
-  int map_id_ = 0;
-  int objective_id_ = 0;
-  math::Vector3 coord_;
-  std::string marker_;
-  std::string chat_link_;
+export struct WvwObjective {
+  std::string id;
+  std::string type;
+  std::string map_type;
+  int map_id = 0;
+  int objective_id = 0;
+  math::Vector3 coord;
+  std::string marker;
+  std::string chat_link;
 
-  std::string name_;
-  std::string name_token_;
+  std::string name;
+  std::string name_token;
 };
 
 export struct WvwPoiUpdate {
@@ -33,9 +32,9 @@ export struct WvwPoiUpdate {
     kBlue,
     kNone,
   };
-  std::string id_;
-  time_t last_flipped_ = 0;
-  Team owner_;
+  std::string id;
+  time_t last_flipped = 0;
+  Team owner;
 };
 
 export LockFreeQueue<std::vector<WvwPoiUpdate>> wvw_poi_updates;

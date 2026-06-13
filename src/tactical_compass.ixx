@@ -24,11 +24,11 @@ export class GW2TacticalCompass
     return r;
   }
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
-                          gui::WBMESSAGE message_type) override;
+                          gui::MessageType type) override;
 
  private:
   void OnDraw(gui::DrawAPI* api) override;

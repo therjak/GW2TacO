@@ -18,8 +18,8 @@ using math::Size;
 
 namespace gui {
 
-WBITEMSTATE Button::GetState() {
-  WBITEMSTATE i = Widget::GetState();
+ItemState Button::GetState() {
+  ItemState i = Widget::GetState();
   if (pushed_) {
     i = IsEnabled() ? WB_STATE_ACTIVE : WB_STATE_DISABLED_ACTIVE;
   } else {
@@ -47,9 +47,9 @@ WBITEMSTATE Button::GetState() {
 void Button::OnDraw(DrawAPI* API) {
   DrawBackground(API);
 
-  const WBITEMSTATE i = GetState();
+  const ItemState i = GetState();
   Font* Font = GetFont(i);
-  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto text_transform = static_cast<TextTransform>(
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
@@ -57,8 +57,8 @@ void Button::OnDraw(DrawAPI* API) {
         GetDisplayDescriptor().GetColor(i, WB_ITEM_FONTCOLOR);
     const Point TextPos = Font->GetTextPosition(
         text_, GetClientRect(), GetCSSProperties().text_align_x_,
-        GetCSSProperties().text_align_y_, TextTransform);
-    Font->Write(API, text_, TextPos, TextColor, TextTransform);
+        GetCSSProperties().text_align_y_, text_transform);
+    Font->Write(API, text_, TextPos, TextColor, text_transform);
   }
 
   DrawBorder(API);
@@ -87,8 +87,8 @@ bool Button::Initialize(Widget* Parent, const Rect& Position) {
   return true;
 }
 
-bool Button::MessageProc(const CWBMessage& Message) {
-  switch (Message.Get()) {
+bool Button::MessageProc(const Message& message) {
+  switch (message.Get()) {
     default:
       break;
 
@@ -102,7 +102,7 @@ bool Button::MessageProc(const CWBMessage& Message) {
       GetApplication()->ReleaseCapture();
       if (GetApplication()->GetMouseItem() == this && IsEnabled()) {
         GetApplication()->Send(
-            CWBMessage(GetApplication(), WBM_COMMAND, GetGuid()));
+            Message(GetApplication(), WBM_COMMAND, GetGuid()));
       }
       return true;
 
@@ -115,17 +115,17 @@ bool Button::MessageProc(const CWBMessage& Message) {
       return true;
   }
 
-  return Widget::MessageProc(Message);
+  return Widget::MessageProc(message);
 }
 
 Size Button::GetContentSize() {
-  const WBITEMSTATE i = GetState();
+  const ItemState i = GetState();
   Font* Font = GetFont(i);
-  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto text_transform = static_cast<TextTransform>(
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return Size(0, 0);
-  return Size(Font->GetWidth(text_, false, TextTransform),
+  return Size(Font->GetWidth(text_, false, text_transform),
               Font->GetLineHeight());
 }
 
@@ -140,7 +140,7 @@ std::string Button::GetText() const { return text_; }
 
 bool Button::IsPushed() { return pushed_; }
 
-Widget* Button::Factory(Widget* Root, const CXMLNode& node, const Rect& Pos) {
+Widget* Button::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
   auto button = Button::Create(Root, Pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
   return button;

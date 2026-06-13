@@ -90,11 +90,11 @@ export class GW2TrailDisplay : public gui::GuiType<"gw2Trails", gui::Widget> {
 
   bool Initialize(gui::Widget* Parent, const math::Rect& Position) override;
 
-  static gui::Widget* Factory(gui::Widget* Root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* Root, const XMLNode& node,
                               const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+                          gui::MessageType message_type) override;
 
   void DoTrailLogging(int32_t map_id, math::Vector3 charPos);
 
@@ -144,6 +144,6 @@ export class GW2TrailDisplay : public gui::GuiType<"gw2Trails", gui::Widget> {
 export typedef std::unordered_map<GUID, std::unique_ptr<GW2Trail>> TrailSet;
 export std::unordered_map<int, TrailSet> trails;
 export TrailSet& GetMapTrails();
-export bool disableHooks = false;
-export float globalOpacity = 1.0f;
-export float minimapOpacity = 1.0f;
+export bool disable_hooks = false;
+export float global_opacity = 1.0f;
+export float minimap_opacity = 1.0f;

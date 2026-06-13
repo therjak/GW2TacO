@@ -19,29 +19,28 @@ export namespace gui {
 class Application;
 class Widget;
 
-struct WBDISPLAYLINE {
+struct DisplayLine {
   math::Point p1, p2;
   float u1 = 0, v1 = 0, u2 = 0, v2 = 0;
   CColor c1, c2;
 };
 
-struct WBGUIVERTEX {
+struct Vertex {
   math::Vector4 pos;
   math::Vector2 uv;
   CColor color;
 
-  WBGUIVERTEX() = default;
+  Vertex() = default;
 
-  WBGUIVERTEX(const float x, const float y, const float u, const float v,
-              const CColor& color)
+  Vertex(const float x, const float y, const float u, const float v,
+         const CColor& color)
       : pos(x, y, 0, 1), uv(u, v), color(color) {}
 
-  WBGUIVERTEX(const math::Vector2& pos, const math::Vector2& uv,
-              const CColor& color)
+  Vertex(const math::Vector2& pos, const math::Vector2& uv, const CColor& color)
       : pos(pos.x, pos.y, 0, 1), uv(uv.x, uv.y), color(color) {}
 };
 
-enum class WBDRAWMODE : uint8_t { WBD_RECTANGLES, WBD_LINES, WBD_TRIANGLES };
+enum class DrawMode : uint8_t { WBD_RECTANGLES, WBD_LINES, WBD_TRIANGLES };
 
 class DrawAPI {
   friend class Application;
@@ -58,20 +57,20 @@ class DrawAPI {
 
   bool Initialize(Application* App, renderer::Device* Device, Atlas* Atlas);
 
-  void DrawRect(const math::Rect& r, CColor Color);
+  void DrawRect(const math::Rect& r, CColor color);
   void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2);
   void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2,
-                CColor Color);
-  void DrawRectBorder(const math::Rect& r, CColor Color);
+                CColor color);
+  void DrawRectBorder(const math::Rect& r, CColor color);
   void DrawRectRotated(const math::Rect& r, float u1, float v1, float u2,
-                       float v2, CColor Color, float rotation);
+                       float v2, CColor color, float rotation);
 
-  void DrawLine(const math::Point& p1, const math::Point& p2, CColor Color);
-  void DrawLine(const math::Point& p1, const math::Point& p2, CColor Color1,
-                CColor Color2);
+  void DrawLine(const math::Point& p1, const math::Point& p2, CColor color);
+  void DrawLine(const math::Point& p1, const math::Point& p2, CColor color1,
+                CColor color2);
 
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
-                    const math::Point& p3, CColor Color);
+                    const math::Point& p3, CColor color);
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
                     const math::Point& p3, CColor a, CColor b, CColor c);
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
@@ -93,14 +92,14 @@ class DrawAPI {
   void SetUISamplerState(
       std::unique_ptr<renderer::SamplerState>&& SamplerState);
 
-  math::Size GetAtlasElementSize(WBATLASHANDLE h);
-  void DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
-                        CColor Color = CColor(0xffffffff));
-  void DrawAtlasElement(WBATLASHANDLE h, const math::Rect& Position, bool TileX,
+  math::Size GetAtlasElementSize(AtlasHandle h);
+  void DrawAtlasElement(AtlasHandle h, int32_t x, int32_t y,
+                        CColor color = CColor(0xffffffff));
+  void DrawAtlasElement(AtlasHandle h, const math::Rect& Position, bool TileX,
                         bool TileY, bool StretchX, bool StretchY,
-                        CColor Color = CColor(0xffffffff));
-  void DrawAtlasElementRotated(WBATLASHANDLE h, const math::Rect& Position,
-                               CColor Color, float rotation);
+                        CColor color = CColor(0xffffffff));
+  void DrawAtlasElementRotated(AtlasHandle h, const math::Rect& Position,
+                               CColor color, float rotation);
   void SetCropToClient(const Widget* i);
 
   void FlushDrawBuffer();
@@ -126,13 +125,13 @@ class DrawAPI {
                      const float u2, const float v2, const float u3,
                      const float v3, const CColor a, const CColor b,
                      const CColor c);
-  void ClipTriX(int32_t x, bool KeepRight, std::array<WBGUIVERTEX, 6>& Vertices,
+  void ClipTriX(int32_t x, bool KeepRight, std::array<Vertex, 6>& Vertices,
                 int32_t& VertexCount);
-  void ClipTriY(int32_t y, bool KeepBottom,
-                std::array<WBGUIVERTEX, 6>& Vertices, int32_t& VertexCount);
+  void ClipTriY(int32_t y, bool KeepBottom, std::array<Vertex, 6>& Vertices,
+                int32_t& VertexCount);
   void RenderDisplayList();
 
-  bool RequestAtlasImageUse(WBATLASHANDLE h, math::Rect* r);
+  bool RequestAtlasImageUse(AtlasHandle h, math::Rect* r);
 
   template <class UV, class RES>
   float UVTRANSLATION(UV uv, RES res) {
@@ -142,11 +141,11 @@ class DrawAPI {
   math::Point offset_;
   // screen space window rect for the currently drawn item
   math::Rect crop_rect_;
-  WBDRAWMODE draw_mode_;
+  DrawMode draw_mode_;
   uint8_t opacity_;
   Application* app_;
 
-  std::vector<WBGUIVERTEX> display_list_;
+  std::vector<Vertex> display_list_;
   Atlas* atlas_;
   renderer::Device* device_;
 

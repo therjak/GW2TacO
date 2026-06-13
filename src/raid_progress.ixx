@@ -18,8 +18,7 @@ import math;
 import whiteboard;
 import xml;
 
-export class RaidEvent {
- public:
+export struct RaidEvent {
   enum class Type : char { Boss, Checkpoint };
   RaidEvent(std::string_view name, Type type)
       : name(name), type(std::move(type)) {}
@@ -29,14 +28,12 @@ export class RaidEvent {
   std::atomic<bool> finished = false;
 };
 
-export class Wing {
- public:
+export struct Wing {
   std::string_view name;
   std::vector<RaidEvent> events;
 };
 
-export class Raid {
- public:
+export struct Raid {
   std::string_view name;
   std::string_view short_name;
   std::string_view config_name;
@@ -56,11 +53,11 @@ export class RaidProgress : public gui::GuiType<"raidprogress", gui::Widget> {
     return r;
   }
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
-                          gui::WBMESSAGE message_type) override;
+                          gui::MessageType type) override;
   std::vector<Raid>& GetRaids();
 
  private:

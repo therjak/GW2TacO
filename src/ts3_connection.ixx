@@ -10,8 +10,7 @@ export module taco.ts3connection;
 
 export class TS3Connection {
  public:
-  class TS3Client {
-   public:
+  struct TS3Client {
     int32_t client_id = 0;
     int32_t channel_id = 0;
     std::string name;
@@ -22,16 +21,14 @@ export class TS3Connection {
     uint64_t last_talk_time = 0;
   };
 
-  class TS3Channel {
-   public:
+  struct TS3Channel {
     int32_t id = 0;
     int32_t parent_id = 0;
     int32_t order = 0;
     std::string name;
   };
 
-  class TS3Schandler {
-   public:
+  struct TS3Schandler {
     int32_t id = 0;
     bool connected = false;
     int32_t my_client_id = 0;
@@ -73,4 +70,4 @@ export class TS3Connection {
   int32_t last_ping_time_ = 0;
 };
 
-export TS3Connection teamSpeakConnection;
+export TS3Connection teamspeak_connection;

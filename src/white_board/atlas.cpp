@@ -20,7 +20,7 @@ using math::Size;
 
 namespace gui {
 
-static WBATLASHANDLE AtlasHandle = 1;
+static AtlasHandle atlas_handle = 1;
 
 AtlasNode::AtlasNode() = default;
 
@@ -64,7 +64,7 @@ AtlasImage::AtlasImage()
     : image_(nullptr),
       x_res_(0),
       y_res_(0),
-      handle_(AtlasHandle++),
+      handle_(atlas_handle++),
       required_(false) {}
 
 AtlasImage::AtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
@@ -72,7 +72,7 @@ AtlasImage::AtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
     : image_(nullptr),
       x_res_(Source.Width()),
       y_res_(Source.Height()),
-      handle_(AtlasHandle++),
+      handle_(atlas_handle++),
       required_(false) {
   if (Source.Area() > 0) {
     image_ = std::make_unique<uint8_t[]>(x_res_ * y_res_ * 4);
@@ -106,7 +106,7 @@ AtlasImage::AtlasImage(const uint8_t* SourceImage, int32_t SrcXRes,
 
 AtlasImage::~AtlasImage() = default;
 
-WBATLASHANDLE AtlasImage::GetHandle() { return handle_; }
+AtlasHandle AtlasImage::GetHandle() { return handle_; }
 
 uint8_t* AtlasImage::GetImage() { return image_.get(); }
 
@@ -175,7 +175,7 @@ bool Atlas::PackImage(AtlasImage* img) {
     source += img->GetSize().x * 4;
   }
 
-  const WBATLASHANDLE Handle = img->GetHandle();
+  const AtlasHandle Handle = img->GetHandle();
 
   n->image_ = img;
   dictionary_[Handle] = n;
@@ -192,8 +192,7 @@ bool Atlas::InitializeTexture(renderer::Device* Device) {
   return atlas_.operator bool();
 }
 
-WBATLASHANDLE Atlas::AddImage(uint8_t* i, int32_t xs, int32_t ys,
-                              const Rect& a) {
+AtlasHandle Atlas::AddImage(uint8_t* i, int32_t xs, int32_t ys, const Rect& a) {
   if (a.Width() == 0 || a.Height() == 0) return 0;
 
   std::lock_guard<std::mutex> lockGuard(mtx_);
@@ -296,7 +295,7 @@ bool Atlas::Optimize(bool DebugMode) {
   return true;
 }
 
-void Atlas::DeleteImage(const WBATLASHANDLE h) {
+void Atlas::DeleteImage(const AtlasHandle h) {
   {
     std::lock_guard<std::mutex> lockGuard(mtx_);
     image_storage_.erase(h);
@@ -312,7 +311,7 @@ void Atlas::DeleteImage(const WBATLASHANDLE h) {
 
 renderer::Texture2D* Atlas::GetTexture() { return atlas_.get(); }
 
-Size Atlas::GetSize(WBATLASHANDLE h) {
+Size Atlas::GetSize(AtlasHandle h) {
   AtlasNode* n = GetNodeCached(h);
   if (n) return n->GetArea().Size();
 
@@ -325,7 +324,7 @@ Size Atlas::GetSize(WBATLASHANDLE h) {
   return Size(0, 0);
 }
 
-bool Atlas::RequestImageUse(WBATLASHANDLE h, Rect* r) {
+bool Atlas::RequestImageUse(AtlasHandle h, Rect* r) {
   if (!h) {
     *r = Rect(0, 0, 0, 0);
     return true;
@@ -373,10 +372,10 @@ void Atlas::FlushCache() {
   }
 }
 
-AtlasNode* Atlas::GetNodeCached(WBATLASHANDLE Handle) {
+AtlasNode* Atlas::GetNodeCached(AtlasHandle Handle) {
   const int32_t idx = Handle & (kAtlasCacheSize - 1);
 
-  if (atlas_cache_[idx].Handle == Handle) return atlas_cache_[idx].Node;
+  if (atlas_cache_[idx].handle == Handle) return atlas_cache_[idx].node;
 
   AtlasNode* n = nullptr;
   auto it = dictionary_.find(Handle);
@@ -384,8 +383,8 @@ AtlasNode* Atlas::GetNodeCached(WBATLASHANDLE Handle) {
     n = it->second;
   }
 
-  atlas_cache_[idx].Handle = Handle;
-  atlas_cache_[idx].Node = n;
+  atlas_cache_[idx].handle = Handle;
+  atlas_cache_[idx].node = n;
 
   return n;
 }

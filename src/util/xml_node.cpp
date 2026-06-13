@@ -28,24 +28,24 @@ int32_t GetStringHash(const char* string) {
   return Hash;
 }
 
-CXMLNode::CXMLNode() : pNode(nullptr), pDoc(nullptr), nLevel(0) {}
+XMLNode::XMLNode() : pNode(nullptr), pDoc(nullptr), nLevel(0) {}
 
-CXMLNode::CXMLNode(const CXMLNode& Original)
+XMLNode::XMLNode(const XMLNode& Original)
     : nLevel(Original.nLevel), pNode(Original.pNode), pDoc(Original.pDoc) {}
 
-CXMLNode::CXMLNode(xml_node<char>* p, const CXMLDocument* d, int32_t l)
+XMLNode::XMLNode(xml_node<char>* p, const XMLDocument* d, int32_t l)
     : pNode(p), pDoc(d), nLevel(l) {}
 
-CXMLNode& CXMLNode::operator=(const CXMLNode& Original) {
+XMLNode& XMLNode::operator=(const XMLNode& Original) {
   nLevel = Original.nLevel;
   pNode = Original.pNode;
   pDoc = Original.pDoc;
   return *this;
 }
 
-CXMLNode::~CXMLNode() = default;
+XMLNode::~XMLNode() = default;
 
-int32_t CXMLNode::GetChildCount() const {
+int32_t XMLNode::GetChildCount() const {
   if (!pNode) return 0;
 
   if (childCount != -1) return childCount;
@@ -65,7 +65,7 @@ int32_t CXMLNode::GetChildCount() const {
   return count;
 }
 
-int32_t CXMLNode::GetChildCount(const char* szNodeName) const {
+int32_t XMLNode::GetChildCount(const char* szNodeName) const {
   int32_t hash = GetStringHash(szNodeName);
 
   if (childCounts.find(hash) != childCounts.end()) return childCounts[hash];
@@ -85,12 +85,12 @@ int32_t CXMLNode::GetChildCount(const char* szNodeName) const {
   return count;
 }
 
-std::string CXMLNode::GetNodeName() const {
+std::string XMLNode::GetNodeName() const {
   if (!pNode) return {};
   return (pNode->name());
 }
 
-CXMLNode CXMLNode::GetChild(int32_t n) const {
+XMLNode XMLNode::GetChild(int32_t n) const {
   if (!pNode) return {};
 
   auto node = pNode->first_node();
@@ -108,7 +108,7 @@ CXMLNode CXMLNode::GetChild(int32_t n) const {
   return {};
 }
 
-CXMLNode CXMLNode::GetChild(const char* szNodeName) const {
+XMLNode XMLNode::GetChild(const char* szNodeName) const {
   if (!pNode) return {};
 
   auto node = pNode->first_node(szNodeName);
@@ -117,7 +117,7 @@ CXMLNode CXMLNode::GetChild(const char* szNodeName) const {
   return {node, pDoc, nLevel + 1};
 }
 
-CXMLNode CXMLNode::GetChild(const char* szNodeName, int32_t n) const {
+XMLNode XMLNode::GetChild(const char* szNodeName, int32_t n) const {
   if (!pNode) return {};
 
   auto node = pNode->first_node(szNodeName);
@@ -135,28 +135,28 @@ CXMLNode CXMLNode::GetChild(const char* szNodeName, int32_t n) const {
   return {};
 }
 
-bool CXMLNode::Next(CXMLNode* out, const char* szNodeName) {
+bool XMLNode::Next(XMLNode* out, const char* szNodeName) {
   if (!pNode) return false;
 
   auto node = pNode->next_sibling(szNodeName);
   if (!node) return false;
 
-  *out = CXMLNode(node, pDoc, nLevel);
+  *out = XMLNode(node, pDoc, nLevel);
   return true;
 }
 
-void CXMLNode::GetText(char* szBuffer, int32_t nBufferSize) const {
+void XMLNode::GetText(char* szBuffer, int32_t nBufferSize) const {
   if (!pNode) return;
   strncpy_s(szBuffer, nBufferSize, pNode->value(), _TRUNCATE);
 }
 
-std::string CXMLNode::GetText() const {
+std::string XMLNode::GetText() const {
   if (!pNode) return {};
   return std::string(pNode->value(), pNode->value_size());
 }
 
-bool CXMLNode::GetAttribute(std::string_view szAttribute, char* szBuffer,
-                            int32_t nBufferSize) const {
+bool XMLNode::GetAttribute(std::string_view szAttribute, char* szBuffer,
+                           int32_t nBufferSize) const {
   if (!pNode) return false;
 
   auto attr = pNode->first_attribute(szAttribute.data());
@@ -166,7 +166,7 @@ bool CXMLNode::GetAttribute(std::string_view szAttribute, char* szBuffer,
   return true;
 }
 
-std::string CXMLNode::GetAttribute(std::string_view szAttribute) const {
+std::string XMLNode::GetAttribute(std::string_view szAttribute) const {
   if (!pNode) return {};
 
   auto attr = pNode->first_attribute(szAttribute.data(), szAttribute.size());
@@ -175,39 +175,39 @@ std::string CXMLNode::GetAttribute(std::string_view szAttribute) const {
   return std::string(attr->value(), attr->value_size());
 }
 
-std::string CXMLNode::GetAttributeAsString(std::string_view szAttribute) const {
+std::string XMLNode::GetAttributeAsString(std::string_view szAttribute) const {
   return GetAttribute(szAttribute);
 }
 
-bool CXMLNode::HasAttribute(std::string_view szAttribute) const {
+bool XMLNode::HasAttribute(std::string_view szAttribute) const {
   if (!pNode) return false;
 
   auto attr = pNode->first_attribute(szAttribute.data(), szAttribute.size());
   return attr != nullptr;
 }
 
-int32_t CXMLNode::IsValid() const { return pNode != nullptr; }
+int32_t XMLNode::IsValid() const { return pNode != nullptr; }
 
-void CXMLNode::GetAttributeAsInteger(std::string_view szAttribute,
-                                     int32_t* pnValue) const {
+void XMLNode::GetAttributeAsInteger(std::string_view szAttribute,
+                                    int32_t* pnValue) const {
   char s[20] = {0};
   GetAttribute(szAttribute, s, 20);
   sscanf_s(s, "%d", pnValue);
 }
 
-void CXMLNode::GetAttributeAsFloat(std::string_view szAttribute,
-                                   float* pfValue) const {
+void XMLNode::GetAttributeAsFloat(std::string_view szAttribute,
+                                  float* pfValue) const {
   char s[20] = {0};
   GetAttribute(szAttribute, s, 20);
   sscanf_s(s, "%g", pfValue);
 }
 
-CXMLNode& CXMLNode::AddChild(std::string_view szNodeName) {
+XMLNode& XMLNode::AddChild(std::string_view szNodeName) {
   std::string tc(szNodeName);
   std::replace(tc.begin(), tc.end(), ' ', '_');
 
   if (!pNode || !pDoc) {
-    children.emplace_back(std::make_unique<CXMLNode>());
+    children.emplace_back(std::make_unique<XMLNode>());
     return *children.back();
   }
   stringStore.emplace_back(std::make_unique<std::string>(tc));
@@ -216,12 +216,12 @@ CXMLNode& CXMLNode::AddChild(std::string_view szNodeName) {
 
   pNode->append_node(node);
 
-  children.emplace_back(std::make_unique<CXMLNode>(node, pDoc, nLevel + 1));
+  children.emplace_back(std::make_unique<XMLNode>(node, pDoc, nLevel + 1));
   return *children.back();
 }
 
-void CXMLNode::SetAttribute(std::string_view szAttributeName,
-                            std::string_view szValue) {
+void XMLNode::SetAttribute(std::string_view szAttributeName,
+                           std::string_view szValue) {
   if (!pNode || !pDoc) return;
 
   stringStore.emplace_back(std::make_unique<std::string>(szValue));
@@ -242,22 +242,22 @@ void CXMLNode::SetAttribute(std::string_view szAttributeName,
   attr->value(strVal->c_str());
 }
 
-void CXMLNode::SetAttributeFromInteger(std::string_view szAttributeName,
-                                       int32_t nValue) {
+void XMLNode::SetAttributeFromInteger(std::string_view szAttributeName,
+                                      int32_t nValue) {
   char s[64];
   memset(s, 0, sizeof(char) * 64);
   _snprintf_s(s, 64, "%d", nValue);
   SetAttribute(szAttributeName, s);
 }
 
-void CXMLNode::SetAttributeFromFloat(std::string_view szAttributeName,
-                                     float fValue) {
+void XMLNode::SetAttributeFromFloat(std::string_view szAttributeName,
+                                    float fValue) {
   char s[64];
   _snprintf_s(s, 64, "%g", fValue);
   SetAttribute(szAttributeName, s);
 }
 
-void CXMLNode::SetText(std::string_view s) {
+void XMLNode::SetText(std::string_view s) {
   if (!pNode) return;
 
   stringStore.emplace_back(std::make_unique<std::string>(s));
@@ -266,25 +266,25 @@ void CXMLNode::SetText(std::string_view s) {
   pNode->value(str->c_str());
 }
 
-void CXMLNode::SetInt(int32_t Int) {
+void XMLNode::SetInt(int32_t Int) {
   char s[64];
   _snprintf_s(s, 64, "%d", Int);
   SetText(s);
 }
 
-void CXMLNode::SetFloat(float Float) {
+void XMLNode::SetFloat(float Float) {
   char s[64];
   _snprintf_s(s, 64, "%g", Float);
   SetText(s);
 }
 
-bool CXMLNode::GetValue(int32_t* value) const {
+bool XMLNode::GetValue(int32_t* value) const {
   char s[20] = {0};
   GetText(s, 20);
   return sscanf_s(s, "%d", value) == 1;
 }
 
-bool CXMLNode::GetValue(uint8_t* value) const {
+bool XMLNode::GetValue(uint8_t* value) const {
   char s[20] = {0};
   GetText(s, 20);
   int32_t x = 0;
@@ -293,7 +293,7 @@ bool CXMLNode::GetValue(uint8_t* value) const {
   return r == 1;
 }
 
-bool CXMLNode::GetValue(bool* value) const {
+bool XMLNode::GetValue(bool* value) const {
   char s[20] = {0};
   GetText(s, 20);
   int32_t x = 0;
@@ -302,7 +302,7 @@ bool CXMLNode::GetValue(bool* value) const {
   return r == 1;
 }
 
-bool CXMLNode::GetValue(float* value) const {
+bool XMLNode::GetValue(float* value) const {
   char s[20] = {0};
   GetText(s, 20);
   return sscanf_s(s, "%g", value) == 1;

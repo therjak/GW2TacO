@@ -198,7 +198,7 @@ enum MainMenuItems {
 };
 
 bool GW2TacO::IsMouseTransparent(const Point& ClientSpacePoint,
-                                 gui::WBMESSAGE MessageType) {
+                                 gui::MessageType message_type) {
   return true;
 }
 
@@ -209,7 +209,7 @@ GW2TacO::GW2TacO() : GuiType() {
 
 GW2TacO::~GW2TacO() {}
 
-gui::Widget* GW2TacO::Factory(gui::Widget* Root, const CXMLNode& node,
+gui::Widget* GW2TacO::Factory(gui::Widget* Root, const XMLNode& node,
                               const Rect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();
@@ -235,7 +235,7 @@ void ChangeUIScale(int size) {
 
   if (!App) return;
 
-  if (App->LoadCSSFromFile(UIFileNames[size], true)) {
+  if (App->LoadCSSFromFile(kUiFileNames[size], true)) {
     SetConfigValue("InterfaceSize", size);
   }
   App->ReApplyStyle();
@@ -254,18 +254,18 @@ std::string GW2TacO::GetKeybindString(TacOKeyAction action) {
   return "";
 }
 
-bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
-  switch (Message.Get()) {
+bool GW2TacO::MessageProc(const gui::Message& message) {
+  switch (message.Get()) {
     case gui::WBM_COMMAND: {
       auto* cb = dynamic_cast<gui::Button*>(
-          App->FindItemByGuid(Message.GetTarget(), "clickthroughbutton"));
+          App->FindItemByGuid(message.GetTarget(), "clickthroughbutton"));
       if (cb && cb->GetID() == "TPButton") {
         TurnOffTPLight();
         break;
       }
 
       auto* b = dynamic_cast<gui::Button*>(
-          App->FindItemByGuid(Message.GetTarget(), "button"));
+          App->FindItemByGuid(message.GetTarget(), "button"));
       if (!b) break;
 
       if (b->GetID() == "MenuButton") {
@@ -521,12 +521,12 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
             mouseColor = GetConfigValue("MouseHighlightColor");
           }
 
-          for (int x = 0; x < CGAPaletteNames.size(); x++) {
+          for (int x = 0; x < kkCGAPaletteNames.size(); x++) {
             if (mouseColor == x) {
-              cols->AddItem(("[x] " + DICT(CGAPaletteNames[x])),
+              cols->AddItem(("[x] " + DICT(kkCGAPaletteNames[x])),
                             Menu_MouseHighlightColor0 + x, true);
             } else {
-              cols->AddItem(("[ ] " + DICT(CGAPaletteNames[x])),
+              cols->AddItem(("[ ] " + DICT(kkCGAPaletteNames[x])),
                             Menu_MouseHighlightColor0 + x, false);
             }
           }
@@ -717,17 +717,17 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         auto apiKeys = settings->AddItem(DICT("apikeys"), 0);
         auto gw2keys = apiKeys->AddItem(DICT("gw2apikey"), 0);
 
-        auto currKey = GW2::apiKeyManager.GetIdentifiedAPIKey();
+        auto currKey = GW2::api_key_manager.GetIdentifiedAPIKey();
 
-        for (int32_t x = 0; x < GW2::apiKeyManager.size(); x++) {
-          auto key = GW2::apiKeyManager.GetKey(x);
+        for (int32_t x = 0; x < GW2::api_key_manager.size(); x++) {
+          auto key = GW2::api_key_manager.GetKey(x);
           auto keyMenu = gw2keys->AddItem(
-              (key->AccountName().empty()) ? key->apiKey : key->AccountName(),
+              (key->AccountName().empty()) ? key->Key() : key->AccountName(),
               Menu_GW2APIKey_Base + x, key == currKey);
           keyMenu->AddItem(DICT("deletekey"), Menu_DeleteGW2APIKey_Base + x);
         }
 
-        if (!GW2::apiKeyManager.empty()) {
+        if (!GW2::api_key_manager.empty()) {
           gw2keys->AddSeparator();
         }
 
@@ -761,7 +761,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
       }
     } break;
     case gui::WBM_REBUILDCONTEXTITEM: {
-      const auto& menucontext = Message.MenuContext();
+      const auto& menucontext = message.MenuContext();
       if (menucontext.item >= Menu_RaidToggles &&
           menucontext.item < Menu_RaidToggles_End) {
         int32_t raidToggle = menucontext.item - Menu_RaidToggles;
@@ -905,24 +905,24 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
     }
 
     case gui::WBM_CONTEXTMESSAGE:
-      if (Message.Data() >= Menu_GW2APIKey_Base &&
-          Message.Data() < Menu_GW2APIKey_End) {
-        int32_t idx = Message.Data() - Menu_GW2APIKey_Base;
+      if (message.Data() >= Menu_GW2APIKey_Base &&
+          message.Data() < Menu_GW2APIKey_End) {
+        int32_t idx = message.Data() - Menu_GW2APIKey_Base;
         ApiKeyInputAction(APIKeys::GW2APIKey, idx);
         return true;
       }
 
-      if (Message.Data() >= Menu_DeleteGW2APIKey_Base &&
-          Message.Data() < Menu_DeleteGW2APIKey_End) {
-        int32_t idx = Message.Data() - Menu_DeleteGW2APIKey_Base;
-        GW2::apiKeyManager.RemoveKey(idx);
-        GW2::apiKeyManager.RebuildConfigValues();
+      if (message.Data() >= Menu_DeleteGW2APIKey_Base &&
+          message.Data() < Menu_DeleteGW2APIKey_End) {
+        int32_t idx = message.Data() - Menu_DeleteGW2APIKey_Base;
+        GW2::api_key_manager.RemoveKey(idx);
+        GW2::api_key_manager.RebuildConfigValues();
         return true;
       }
 
-      if (Message.Data() >= Menu_RaidToggles &&
-          Message.Data() < Menu_RaidToggles_End) {
-        int32_t raidToggle = Message.Data() - Menu_RaidToggles;
+      if (message.Data() >= Menu_RaidToggles &&
+          message.Data() < Menu_RaidToggles_End) {
+        int32_t raidToggle = message.Data() - Menu_RaidToggles;
 
         auto* rp = FindChildByID<RaidProgress>("RaidProgressView");
         if (rp) {
@@ -938,46 +938,46 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         break;
       }
 
-      if (Message.Data() >= Menu_RebindKey_Base &&
-          Message.Data() < Menu_RebindKey_Base + ActionNames.size()) {
+      if (message.Data() >= Menu_RebindKey_Base &&
+          message.Data() < Menu_RebindKey_Base + ActionNames.size()) {
         RebindAction(
-            static_cast<TacOKeyAction>(Message.Data() - Menu_RebindKey_Base));
+            static_cast<TacOKeyAction>(message.Data() - Menu_RebindKey_Base));
         break;
       }
 
       {
         auto languages = localization->GetLanguages();
 
-        if (Message.Data() >= Menu_Language_Base &&
-            Message.Data() < Menu_Language_Base + languages.size()) {
+        if (message.Data() >= Menu_Language_Base &&
+            message.Data() < Menu_Language_Base + languages.size()) {
           localization->SetActiveLanguage(
-              languages[Message.Data() - Menu_Language_Base]);
+              languages[message.Data() - Menu_Language_Base]);
           break;
         }
       }
 
-      if (Message.Data() >= Menu_MarkerFilter_Base &&
-          Message.Data() < Menu_MarkerFilter_Base + category_list_.size()) {
+      if (message.Data() >= Menu_MarkerFilter_Base &&
+          message.Data() < Menu_MarkerFilter_Base + category_list_.size()) {
         bool displayed =
-            !category_list_[Message.Data() - Menu_MarkerFilter_Base]
+            !category_list_[message.Data() - Menu_MarkerFilter_Base]
                  ->is_displayed;
-        category_list_[Message.Data() - Menu_MarkerFilter_Base]->is_displayed =
+        category_list_[message.Data() - Menu_MarkerFilter_Base]->is_displayed =
             displayed;
         SetConfigValue(("CategoryVisible_" +
-                        category_list_[Message.Data() - Menu_MarkerFilter_Base]
+                        category_list_[message.Data() - Menu_MarkerFilter_Base]
                             ->GetFullTypeName()),
                        displayed);
-        CategoryRoot.CalculateVisibilityCache();
+        category_root.CalculateVisibilityCache();
         break;
       }
 
-      if (Message.Data() >= Menu_ToggleMapTimerMap) {
+      if (message.Data() >= Menu_ToggleMapTimerMap) {
         auto* timer = dynamic_cast<GW2MapTimer*>(
             App->GetRoot()->FindChildByID("MapTimer", "maptimer"));
 
         if (timer) {
-          if (Message.Data() < Menu_ToggleMapTimerMap + timer->maps_.size()) {
-            int32_t map_idx = Message.Data() - Menu_ToggleMapTimerMap;
+          if (message.Data() < Menu_ToggleMapTimerMap + timer->maps_.size()) {
+            int32_t map_idx = message.Data() - Menu_ToggleMapTimerMap;
             auto str = "maptimer_mapopen_" + timer->maps_[map_idx].id;
             timer->maps_[map_idx].display = !timer->maps_[map_idx].display;
             SetConfigValue(str, timer->maps_[map_idx].display);
@@ -986,7 +986,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         }
       }
 
-      switch (Message.Data()) {
+      switch (message.Data()) {
         case Menu_Exit:
           GetApplication()->SetDone(true);
           return true;
@@ -1051,9 +1051,9 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         // case Menu_Interface_Normal:
         // case Menu_Interface_Large:
         // case Menu_Interface_Larger:
-        //  if ( App->LoadCSSFromFile( UIFileNames[ Message.Data -
+        //  if ( App->LoadCSSFromFile( kUiFileNames[ message.Data -
         //  Menu_Interface_Small ], true ) )
-        //    SetConfigValue( "InterfaceSize", Message.Data -
+        //    SetConfigValue( "InterfaceSize", message.Data -
         //    Menu_Interface_Small );
         //  App->ReApplyStyle();
         //  return true;
@@ -1162,7 +1162,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         case Menu_MouseHighlightColore:
         case Menu_MouseHighlightColorf:
           SetConfigValue("MouseHighlightColor",
-                         Message.Data() - Menu_MouseHighlightColor0);
+                         message.Data() - Menu_MouseHighlightColor0);
           return true;
         case Menu_TS3APIKey:
           ApiKeyInputAction(APIKeys::TS3APIKey, 0);
@@ -1274,8 +1274,9 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
           return true;
 
         case Menu_AddGW2ApiKey: {
-          GW2::apiKeyManager.AddKey(std::make_unique<GW2::APIKey>());
-          ApiKeyInputAction(APIKeys::GW2APIKey, GW2::apiKeyManager.size() - 1);
+          GW2::api_key_manager.AddKey(std::make_unique<GW2::APIKey>());
+          ApiKeyInputAction(APIKeys::GW2APIKey,
+                            GW2::api_key_manager.size() - 1);
           return true;
         } break;
         default:
@@ -1295,9 +1296,9 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
             }
           }
 
-          if (Message.Key() != VK_ESCAPE) {
-            key_bindings_[Message.Key()] = action_to_rebind_;
-            SetKeyBinding(action_to_rebind_, Message.Key());
+          if (message.Key() != VK_ESCAPE) {
+            key_bindings_[message.Key()] = action_to_rebind_;
+            SetKeyBinding(action_to_rebind_, message.Key());
           }
         }
 
@@ -1307,8 +1308,8 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
       }
 
       if (GetConfigValue("KeybindsEnabled") &&
-          key_bindings_.find(Message.Key()) != key_bindings_.end()) {
-        switch (key_bindings_[Message.Key()]) {
+          key_bindings_.find(message.Key()) != key_bindings_.end()) {
+        switch (key_bindings_[message.Key()]) {
           case TacOKeyAction::AddPOI:
             AddPOI();
             return true;
@@ -1338,7 +1339,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
                                                            "gw2Trails"));
             if (startTrail && trails) {
               // startTrail->Push( !startTrail->IsPushed() );
-              GetApplication()->Send(gui::CWBMessage(
+              GetApplication()->Send(gui::Message(
                   GetApplication(), gui::WBM_COMMAND, startTrail->GetGuid()));
             }
           }
@@ -1352,7 +1353,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
                                                            "gw2Trails"));
             if (pauseTrail && trails) {
               // pauseTrail->Push( !pauseTrail->IsPushed() );
-              GetApplication()->Send(gui::CWBMessage(
+              GetApplication()->Send(gui::Message(
                   GetApplication(), gui::WBM_COMMAND, pauseTrail->GetGuid()));
             }
           }
@@ -1371,7 +1372,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
                 GetApplication()->GetRoot()->FindChildByID("trail",
                                                            "gw2Trails"));
             if (pauseTrail && !pauseTrail->IsHidden() && trails) {
-              GetApplication()->Send(gui::CWBMessage(
+              GetApplication()->Send(gui::Message(
                   GetApplication(), gui::WBM_COMMAND, pauseTrail->GetGuid()));
             }
           }
@@ -1421,18 +1422,18 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
         }
       }
 
-      if (script_key_bindings_.find(Message.Key()) !=
+      if (script_key_bindings_.find(message.Key()) !=
           script_key_bindings_.end()) {
-        TriggerScriptEngineKeyEvent(script_key_bindings_[Message.Key()]);
+        TriggerScriptEngineKeyEvent(script_key_bindings_[message.Key()]);
       }
 
       break;
     case gui::WBM_FOCUSLOST:
-      if (Message.GetTarget() == GetGuid()) {
+      if (message.GetTarget() == GetGuid()) {
         rebind_mode_ = false;
         script_rebind_mode_ = false;
       }
-      if (api_key_input_ && Message.GetTarget() == api_key_input_->GetGuid()) {
+      if (api_key_input_ && message.GetTarget() == api_key_input_->GetGuid()) {
         api_key_input_mode_ = false;
         switch (api_key_to_set_) {
           case APIKeys::None:
@@ -1441,10 +1442,10 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
             SetConfigString("TS3APIKey", api_key_input_->GetText());
             break;
           case APIKeys::GW2APIKey: {
-            auto key = GW2::apiKeyManager.GetKey(api_key_index_);
+            auto key = GW2::api_key_manager.GetKey(api_key_index_);
             key->SetKey(api_key_input_->GetText());
 
-            GW2::apiKeyManager.RebuildConfigValues();
+            GW2::api_key_manager.RebuildConfigValues();
           } break;
           default:
             break;
@@ -1458,7 +1459,7 @@ bool GW2TacO::MessageProc(const gui::CWBMessage& Message) {
       break;
   }
 
-  return gui::Widget::MessageProc(Message);
+  return gui::Widget::MessageProc(message);
 }
 
 void GW2TacO::SetInfoLine(std::string_view string) { last_info_line_ = string; }
@@ -1549,7 +1550,7 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
   scaleCountDownHack--;
 
   if (IsWindowOpen("TS3Control")) {
-    teamSpeakConnection.Tick();
+    teamspeak_connection.Tick();
   }
   CheckItemPickup();
 
@@ -1706,11 +1707,11 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
     }
 
     Point startpos = font->GetTextPosition(
-        infoline, GetClientRect(), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-        gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_UPPERCASE);
+        infoline, GetClientRect(), gui::TextAlignmentX::WBTA_CENTERX,
+        gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_UPPERCASE);
 
     font->Write(API, infoline, startpos, CColor{0xffffffff},
-                gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, true);
+                gui::TextTransform::WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
   }
 
@@ -1748,18 +1749,15 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
     }
     auto line2 = DICT("press_to_bind");
     auto line3 = DICT("escape_to_unbind");
-    Point line1p = f->GetTextPosition(line1, GetClientRect(),
-                                      gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                      gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                      gui::WBTEXTTRANSFORM::WBTT_NONE, true);
-    Point line2p = f->GetTextPosition(line2, GetClientRect(),
-                                      gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                      gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                      gui::WBTEXTTRANSFORM::WBTT_NONE, true);
-    Point line3p = f->GetTextPosition(line3, GetClientRect(),
-                                      gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                      gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                      gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+    Point line1p = f->GetTextPosition(
+        line1, GetClientRect(), gui::TextAlignmentX::WBTA_CENTERX,
+        gui::TextAlignmentY::WBTA_CENTERY, gui::TextTransform::WBTT_NONE, true);
+    Point line2p = f->GetTextPosition(
+        line2, GetClientRect(), gui::TextAlignmentX::WBTA_CENTERX,
+        gui::TextAlignmentY::WBTA_CENTERY, gui::TextTransform::WBTT_NONE, true);
+    Point line3p = f->GetTextPosition(
+        line3, GetClientRect(), gui::TextAlignmentX::WBTA_CENTERX,
+        gui::TextAlignmentY::WBTA_CENTERY, gui::TextTransform::WBTT_NONE, true);
     f->Write(API, line1, line1p - Point(0, f->GetLineHeight() / 2));
     f->Write(API, line2,
              line2p - Point(0, f->GetLineHeight() / 2) +
@@ -1776,22 +1774,21 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
     auto line1 = DICT("enter_api") + " " +
                  DICT(APIKeyNames[static_cast<int32_t>(api_key_to_set_)]) +
                  " " + DICT("below_and_press");
-    Point line1p = f->GetTextPosition(line1, GetClientRect(),
-                                      gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                      gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                      gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+    Point line1p = f->GetTextPosition(
+        line1, GetClientRect(), gui::TextAlignmentX::WBTA_CENTERX,
+        gui::TextAlignmentY::WBTA_CENTERY, gui::TextTransform::WBTT_NONE, true);
 
     if (api_key_to_set_ == APIKeys::TS3APIKey) {
       auto line2 = DICT("ts3_help_1");
       auto line3 = DICT("ts3_help_2");
       Point line2p = f->GetTextPosition(line2, GetClientRect(),
-                                        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                        gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                        gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+                                        gui::TextAlignmentX::WBTA_CENTERX,
+                                        gui::TextAlignmentY::WBTA_CENTERY,
+                                        gui::TextTransform::WBTT_NONE, true);
       Point line3p = f->GetTextPosition(line3, GetClientRect(),
-                                        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                        gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                        gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+                                        gui::TextAlignmentX::WBTA_CENTERX,
+                                        gui::TextAlignmentY::WBTA_CENTERY,
+                                        gui::TextTransform::WBTT_NONE, true);
 
       f->Write(API, line2,
                line2p - Point(0, f->GetLineHeight() / 2) +
@@ -1805,13 +1802,13 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
       auto line2 = DICT("gw2_api_help_1");
       std::string_view line3("https://account.arena.net/applications");
       Point line2p = f->GetTextPosition(line2, GetClientRect(),
-                                        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                        gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                        gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+                                        gui::TextAlignmentX::WBTA_CENTERX,
+                                        gui::TextAlignmentY::WBTA_CENTERY,
+                                        gui::TextTransform::WBTT_NONE, true);
       Point line3p = f->GetTextPosition(line3, GetClientRect(),
-                                        gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                        gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                        gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+                                        gui::TextAlignmentX::WBTA_CENTERX,
+                                        gui::TextAlignmentY::WBTA_CENTERY,
+                                        gui::TextTransform::WBTT_NONE, true);
 
       f->Write(API, line2,
                line2p - Point(0, f->GetLineHeight() / 2) +
@@ -1971,7 +1968,7 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
   api_key_input_->ReapplyStyles();
   api_key_input_->EnableHScrollbar(false, false);
   api_key_input_->EnableVScrollbar(false, false);
-  gui::CWBMessage m = BuildPositionMessage(GetClientRect(), true);
+  gui::Message m = BuildPositionMessage(GetClientRect(), true);
   App->Send(m);
   api_key_index_ = idx;
 
@@ -1984,8 +1981,8 @@ void GW2TacO::ApiKeyInputAction(APIKeys keyType, int32_t idx) {
       }
       break;
     case APIKeys::GW2APIKey: {
-      auto key = GW2::apiKeyManager.GetKey(idx);
-      api_key_input_->SetText(key->apiKey);
+      auto key = GW2::api_key_manager.GetKey(idx);
+      api_key_input_->SetText(key->Key());
     } break;
     default:
       break;
@@ -2025,7 +2022,7 @@ void GW2TacO::CheckItemPickup() {
   last_pickup_fetch_time_ = GetTime();
 
   pickup_fetch_task_ = std::async(std::launch::async, [this]() {
-    auto key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+    auto key = GW2::api_key_manager.GetIdentifiedAPIKey();
     if (key && key->HasCaps("inventories")) {
       auto pickupData = key->QueryAPI("/v2/account/inventory");
       if (pickupData != last_item_pickup_) {

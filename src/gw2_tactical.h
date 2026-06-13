@@ -32,7 +32,7 @@ struct POI {
       const std::unordered_map<int32_t, Achievement>& achievements) const;
 
   MarkerTypeData type_data_;
-  gui::WBATLASHANDLE icon = 0;
+  gui::AtlasHandle icon = 0;
 
   math::Vector4 cameraSpacePosition;
 
@@ -100,7 +100,7 @@ extern std::unordered_map<int, POISet> POIs;
 extern std::unordered_map<POIActivationDataKey, POIActivationData>
     ActivationData;
 extern std::vector<POIRoute> Routes;
-extern gui::WBATLASHANDLE DefaultIconHandle;
+extern gui::AtlasHandle DefaultIconHandle;
 
 POISet& GetMapPOIs();
 
@@ -118,11 +118,11 @@ class GW2TacticalDisplay : public gui::GuiType<"gw2tactical", gui::Widget> {
   }
   ~GW2TacticalDisplay() override;
 
-  static gui::Widget* Factory(gui::Widget* Root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* Root, const XMLNode& node,
                               const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          gui::WBMESSAGE MessageType) override;
+                          gui::MessageType message_type) override;
   void RemoveUserMarkersFromMap();
 
  private:

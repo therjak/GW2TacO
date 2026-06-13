@@ -161,12 +161,12 @@ void GW2RangeDisplay::OnDraw(gui::DrawAPI* api) {
 GW2RangeDisplay::GW2RangeDisplay() : GuiType() {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
-gui::Widget* GW2RangeDisplay::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* GW2RangeDisplay::Factory(gui::Widget* root, const XMLNode& node,
                                       const Rect& pos) {
   return GW2RangeDisplay::Create(root, pos);
 }
 
 bool GW2RangeDisplay::IsMouseTransparent(const Point& client_space_point,
-                                         gui::WBMESSAGE message_type) {
+                                         gui::MessageType type) {
   return true;
 }

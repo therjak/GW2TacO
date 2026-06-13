@@ -16,7 +16,7 @@ export namespace gui {
 // cache size must be 2^x
 constexpr int32_t kAtlasCacheSize = 32;
 
-typedef int32_t WBATLASHANDLE;
+typedef int32_t AtlasHandle;
 
 class AtlasImage;
 
@@ -47,7 +47,7 @@ class AtlasImage {
              const math::Rect& Source);
   virtual ~AtlasImage();
 
-  WBATLASHANDLE GetHandle();
+  AtlasHandle GetHandle();
   uint8_t* GetImage();
   [[nodiscard]] math::Size GetSize() const;
   void TagRequired();
@@ -57,14 +57,14 @@ class AtlasImage {
  private:
   std::unique_ptr<uint8_t[]> image_;
   int32_t x_res_, y_res_;
-  WBATLASHANDLE handle_;
+  AtlasHandle handle_;
 
   bool required_;
 };
 
 struct AtlasCacheElement {
-  WBATLASHANDLE Handle = 0;
-  AtlasNode* Node = nullptr;
+  AtlasHandle handle = 0;
+  AtlasNode* node = nullptr;
 };
 
 class Atlas {
@@ -78,18 +78,18 @@ class Atlas {
   bool UpdateTexture();
   renderer::Texture2D* GetTexture();
 
-  WBATLASHANDLE AddImage(uint8_t* Image, int32_t XRes, int32_t YRes,
-                         const math::Rect& SourceArea);
+  AtlasHandle AddImage(uint8_t* Image, int32_t XRes, int32_t YRes,
+                       const math::Rect& SourceArea);
   // doesn't immediately remove image from atlas
-  void DeleteImage(WBATLASHANDLE h);
+  void DeleteImage(AtlasHandle h);
 
   bool Optimize(bool DebugMode = false);
   bool Reset();
 
-  math::Size GetSize(WBATLASHANDLE h);
+  math::Size GetSize(AtlasHandle h);
   // returns false only if there was not enough room
   // in the atlas to add the requested image
-  bool RequestImageUse(WBATLASHANDLE h, math::Rect* UV);
+  bool RequestImageUse(AtlasHandle h, math::Rect* UV);
   math::Point GetWhitePixelUV();
 
   void ClearImageUsageflags();
@@ -103,7 +103,7 @@ class Atlas {
   bool PackImage(AtlasImage* img);
 
   void FlushCache();
-  AtlasNode* GetNodeCached(WBATLASHANDLE Handle);
+  AtlasNode* GetNodeCached(AtlasHandle Handle);
 
   int32_t x_res_, y_res_;
   std::unique_ptr<uint8_t[]> image_;
@@ -113,8 +113,8 @@ class Atlas {
 
   std::array<AtlasCacheElement, kAtlasCacheSize> atlas_cache_;
 
-  std::unordered_map<WBATLASHANDLE, AtlasNode*> dictionary_;
-  std::unordered_map<WBATLASHANDLE, std::unique_ptr<AtlasImage>> image_storage_;
+  std::unordered_map<AtlasHandle, AtlasNode*> dictionary_;
+  std::unordered_map<AtlasHandle, std::unique_ptr<AtlasImage>> image_storage_;
 
   std::unique_ptr<AtlasNode> root_;
 

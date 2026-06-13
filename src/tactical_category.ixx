@@ -38,6 +38,6 @@ export class GW2TacticalCategory {
   std::string cached_type_name_;
 };
 
-export GW2TacticalCategory CategoryRoot;
-export std::unordered_map<std::string, GW2TacticalCategory*> CategoryMap;
+export GW2TacticalCategory category_root;
+export std::unordered_map<std::string, GW2TacticalCategory*> category_map;
 export GW2TacticalCategory* GetCategory(std::string_view sv);

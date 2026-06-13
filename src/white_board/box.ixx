@@ -16,18 +16,18 @@ import :gui_item;
 
 export namespace gui {
 
-enum class WBBOXAXIS : uint8_t {
+enum class BoxAxis : uint8_t {
   WB_HORIZONTAL = 0,
   WB_VERTICAL,
 };
 
-enum class WBBOXARRANGEMENT : uint8_t {
+enum class BoxArrangement : uint8_t {
   WB_ARRANGE_NONE = 0,
   WB_ARRANGE_HORIZONTAL,
   WB_ARRANGE_VERTICAL
 };
 
-enum class WBBOXSIZING : uint8_t {
+enum class BoxSizing : uint8_t {
   WB_SIZING_KEEP = 0,
   WB_SIZING_FILL,
 };
@@ -44,22 +44,22 @@ class Box : public GuiType<"box", Widget> {
     return r;
   }
   ~Box() override;
-  static Widget* Factory(Widget* Root, const CXMLNode& node,
+  static Widget* Factory(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
-  virtual void SetArrangement(WBBOXARRANGEMENT a);
-  WBBOXARRANGEMENT GetArrangement();
+  virtual void SetArrangement(BoxArrangement a);
+  BoxArrangement GetArrangement();
   virtual void SetSpacing(int32_t s);
-  virtual void SetAlignment(WBBOXAXIS axis, WBALIGNMENT align);
-  virtual void SetSizing(WBBOXAXIS axis, WBBOXSIZING siz);
+  virtual void SetAlignment(BoxAxis axis, Alignment align);
+  virtual void SetSizing(BoxAxis axis, BoxSizing siz);
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                          WBMESSAGE MessageType) override;
+                          MessageType message_type) override;
 
  protected:
   void AddChild(std::unique_ptr<Widget>&& Item) override;
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const Message& message) override;
   virtual void RearrangeChildren();
 
   void OnDraw(DrawAPI* API) override;
@@ -68,9 +68,9 @@ class Box : public GuiType<"box", Widget> {
   void UpdateScrollbarData();
 
   int32_t spacing_{};
-  WBBOXARRANGEMENT arrangement_;
-  WBALIGNMENT alignment_x_, alignment_y_;
-  WBBOXSIZING sizing_x_, sizing_y_;
+  BoxArrangement arrangement_;
+  Alignment alignment_x_, alignment_y_;
+  BoxSizing sizing_x_, sizing_y_;
   bool click_through_ = false;
 };
 

@@ -26,15 +26,15 @@ import xml;
 
 export namespace gui {
 
-enum class WBMOUSECLICKREPEATMODE : uint8_t {
+enum class MouseClickRepeatMode : uint8_t {
   WB_MCR_OFF = 0,
   WB_MCR_LEFT = 1,
   WB_MCR_RIGHT = 2,
   WB_MCR_MIDDLE = 3
 };
 
-typedef Widget*(__cdecl* WBFACTORYCALLBACK)(Widget* Root, const CXMLNode& node,
-                                            const math::Rect& Pos);
+typedef Widget*(__cdecl* FactoryCallback)(Widget* Root, const XMLNode& node,
+                                          const math::Rect& Pos);
 
 class Application : public renderer::WindowHandlerWin {
   friend class Widget;
@@ -71,7 +71,7 @@ class Application : public renderer::WindowHandlerWin {
     return nullptr;
   }
 
-  virtual void Send(const CWBMessage& Message);
+  virtual void Send(const Message& message);
   Widget* SetCapture(Widget* Capturer);
   bool ReleaseCapture();
 
@@ -118,7 +118,7 @@ class Application : public renderer::WindowHandlerWin {
   void ReApplyStyle();
 
   void RegisterUIFactoryCallback(std::string_view ElementName,
-                                 WBFACTORYCALLBACK FactoryCallback);
+                                 FactoryCallback FactoryCallback);
 
   virtual void TakeScreenshot();
   void SetScreenshotName(std::string_view s) { screen_shot_name_ = s; }
@@ -141,21 +141,21 @@ class Application : public renderer::WindowHandlerWin {
 
  private:
   bool Initialize();
-  bool GenerateGUIFromXML(Widget* Root, CXMLDocument* doc);
-  bool SendMessageToItem(const CWBMessage& Message, Widget* Target);
-  void ProcessMessage(CWBMessage& Message);
-  Widget* GetItemUnderMouse(const math::Point& Point, WBMESSAGE w);
+  bool GenerateGUIFromXML(Widget* Root, XMLDocument* doc);
+  bool SendMessageToItem(const Message& Message, Widget* Target);
+  void ProcessMessage(Message& message);
+  Widget* GetItemUnderMouse(const math::Point& Point, MessageType w);
 
   virtual void UpdateMouseItem();
   virtual void CleanTrash();
   virtual void UpdateControlKeyStates();  // update ctrl alt shift states
   virtual int32_t GetKeyboardState();
-  bool ProcessGUIXML(Widget* Root, const CXMLNode& node);
-  bool GenerateGUIFromXMLNode(Widget* Root, const CXMLNode& node,
+  bool ProcessGUIXML(Widget* Root, const XMLNode& node);
+  bool GenerateGUIFromXMLNode(Widget* Root, const XMLNode& node,
                               math::Rect* Pos);
-  bool GenerateGUITemplateFromXML(Widget* Root, CXMLDocument* doc,
+  bool GenerateGUITemplateFromXML(Widget* Root, XMLDocument* doc,
                                   std::string_view TemplateID);
-  Widget* GenerateUIItem(Widget* Root, const CXMLNode& node,
+  Widget* GenerateUIItem(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
   std::unique_ptr<CRingBuffer<int32_t, 60>> frame_times_;
@@ -163,7 +163,7 @@ class Application : public renderer::WindowHandlerWin {
 
   std::unordered_map<WBGUID, Widget*> items_;
   std::recursive_mutex message_buffer_mutex_;
-  std::vector<CWBMessage> message_buffer_;
+  std::vector<Message> message_buffer_;
   std::recursive_mutex trash_mutex_;
   std::vector<std::unique_ptr<Widget>> trash_;
 
@@ -179,12 +179,12 @@ class Application : public renderer::WindowHandlerWin {
   bool alt_, ctrl_, shift_, left_, middle_, right_;
   bool vsync_;
   std::string screen_shot_name_;
-  WBMOUSECLICKREPEATMODE click_repeater_mode_;
+  MouseClickRepeatMode click_repeater_mode_;
   int64_t next_repeated_click_time_{};
-  std::unordered_map<std::string, std::unique_ptr<CXMLDocument>>
+  std::unordered_map<std::string, std::unique_ptr<XMLDocument>>
       layout_repository_;
   StyleManager style_manager_;
-  std::unordered_map<std::string, WBFACTORYCALLBACK> factory_callbacks_;
+  std::unordered_map<std::string, FactoryCallback> factory_callbacks_;
   CColor clear_color_ = CColor(0, 0, 0, 255);
 };
 

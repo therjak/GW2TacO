@@ -29,12 +29,12 @@ std::string ReadFile(std::string_view name) {
 }
 }  // namespace
 
-CXMLDocument::CXMLDocument()
+XMLDocument::XMLDocument()
     : doc(std::make_unique<rapidxml::xml_document<>>()) {}
 
-CXMLDocument::~CXMLDocument() {}
+XMLDocument::~XMLDocument() {}
 
-bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
+bool XMLDocument::LoadFromFile(std::string_view szFileName) {
   memString = ReadFile(szFileName);
   if (memString.empty()) {
     return false;
@@ -50,7 +50,7 @@ bool CXMLDocument::LoadFromFile(std::string_view szFileName) {
   return true;
 }
 
-bool CXMLDocument::LoadFromString(std::string_view s) {
+bool XMLDocument::LoadFromString(std::string_view s) {
   memString = s;
 
   try {
@@ -63,15 +63,15 @@ bool CXMLDocument::LoadFromString(std::string_view s) {
   return true;
 }
 
-CXMLNode CXMLDocument::GetDocumentNode() const { return {doc.get(), this, 0}; }
+XMLNode XMLDocument::GetDocumentNode() const { return {doc.get(), this, 0}; }
 
-std::string CXMLDocument::SaveToString() {
+std::string XMLDocument::SaveToString() {
   std::stringstream ss;
   rapidxml::print<char>(ss, *doc->first_node());
   return ss.str();
 }
 
-bool CXMLDocument::SaveToFile(std::string_view sz) {
+bool XMLDocument::SaveToFile(std::string_view sz) {
   auto s = SaveToString();
   std::FILE* fp = std::fopen(sz.data(), "wb");
   if (!fp) {

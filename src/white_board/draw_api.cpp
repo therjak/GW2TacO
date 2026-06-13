@@ -38,8 +38,8 @@ void DrawAPI::AddDisplayRect(
 
   if (!crop_rect_.Intersects(rect)) return;
 
-  if (draw_mode_ != WBDRAWMODE::WBD_RECTANGLES) RenderDisplayList();
-  draw_mode_ = WBDRAWMODE::WBD_RECTANGLES;
+  if (draw_mode_ != DrawMode::WBD_RECTANGLES) RenderDisplayList();
+  draw_mode_ = DrawMode::WBD_RECTANGLES;
 
   float u1f = u1;
   float v1f = v1;
@@ -72,16 +72,16 @@ void DrawAPI::AddDisplayRect(
   const Vector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
   const Vector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
 
-  display_list_.emplace_back(WBGUIVERTEX{TL.x, TL.y, u1f, v1f, Color});
-  display_list_.emplace_back(WBGUIVERTEX{BR.x, TL.y, u2f, v1f, Color});
-  display_list_.emplace_back(WBGUIVERTEX{BR.x, BR.y, u2f, v2f, Color});
-  display_list_.emplace_back(WBGUIVERTEX{TL.x, BR.y, u1f, v2f, Color});
+  display_list_.emplace_back(Vertex{TL.x, TL.y, u1f, v1f, Color});
+  display_list_.emplace_back(Vertex{BR.x, TL.y, u2f, v1f, Color});
+  display_list_.emplace_back(Vertex{BR.x, BR.y, u2f, v2f, Color});
+  display_list_.emplace_back(Vertex{TL.x, BR.y, u1f, v2f, Color});
 }
 
 void DrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2, const float u1,
                              const float v1, const float u2, const float v2,
                              const CColor a, const CColor b) {
-  WBDISPLAYLINE r;
+  DisplayLine r;
 
   const Point p1 = _p1 + offset_;
   const Point p2 = _p2 + offset_;
@@ -90,9 +90,9 @@ void DrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2, const float u1,
   Area.Normalize();
   const Rect rArea = crop_rect_ | Area;
   if (rArea.Width() < 0 || rArea.Height() < 0) return;
-  if (draw_mode_ != WBDRAWMODE::WBD_LINES) RenderDisplayList();
+  if (draw_mode_ != DrawMode::WBD_LINES) RenderDisplayList();
 
-  draw_mode_ = WBDRAWMODE::WBD_LINES;
+  draw_mode_ = DrawMode::WBD_LINES;
 
   float t1 = 0;
   float t2 = 0;
@@ -127,10 +127,10 @@ void DrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2, const float u1,
   r.c1 = Lerp(a, b, t1);
   r.c2 = Lerp(a, b, t2);
 
-  display_list_.emplace_back(WBGUIVERTEX(Vector2(r.p1.x + 0.5f, r.p1.y - 0.5f),
-                                         Vector2(r.u1, r.v1), r.c1));
-  display_list_.emplace_back(WBGUIVERTEX(Vector2(r.p2.x + 0.5f, r.p2.y - 0.5f),
-                                         Vector2(r.u2, r.v2), r.c2));
+  display_list_.emplace_back(
+      Vertex(Vector2(r.p1.x + 0.5f, r.p1.y - 0.5f), Vector2(r.u1, r.v1), r.c1));
+  display_list_.emplace_back(
+      Vertex(Vector2(r.p2.x + 0.5f, r.p2.y - 0.5f), Vector2(r.u2, r.v2), r.c2));
 }
 
 void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
@@ -143,8 +143,8 @@ void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
 
   if (!crop_rect_.Intersects(rect)) return;
 
-  if (draw_mode_ != WBDRAWMODE::WBD_RECTANGLES) RenderDisplayList();
-  draw_mode_ = WBDRAWMODE::WBD_RECTANGLES;
+  if (draw_mode_ != DrawMode::WBD_RECTANGLES) RenderDisplayList();
+  draw_mode_ = DrawMode::WBD_RECTANGLES;
 
   float u1f = u1;
   float v1f = v1;
@@ -183,14 +183,14 @@ void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
   const auto c = Vector2(BR.x, BR.y).Rotated(center, rotation);
   const auto d = Vector2(TL.x, BR.y).Rotated(center, rotation);
 
-  display_list_.emplace_back(WBGUIVERTEX{a.x, a.y, u1f, v1f, Color});
-  display_list_.emplace_back(WBGUIVERTEX{b.x, b.y, u2f, v1f, Color});
-  display_list_.emplace_back(WBGUIVERTEX{c.x, c.y, u2f, v2f, Color});
-  display_list_.emplace_back(WBGUIVERTEX{d.x, d.y, u1f, v2f, Color});
+  display_list_.emplace_back(Vertex{a.x, a.y, u1f, v1f, Color});
+  display_list_.emplace_back(Vertex{b.x, b.y, u2f, v1f, Color});
+  display_list_.emplace_back(Vertex{c.x, c.y, u2f, v2f, Color});
+  display_list_.emplace_back(Vertex{d.x, d.y, u1f, v2f, Color});
 }
 
-WBGUIVERTEX Lerp(const WBGUIVERTEX& a, const WBGUIVERTEX& b, float t) {
-  WBGUIVERTEX r;
+Vertex Lerp(const Vertex& a, const Vertex& b, float t) {
+  Vertex r;
   r.pos = math::Lerp(a.pos, b.pos, t);
   r.uv = math::Lerp(a.uv, b.uv, t);
   r.color = Lerp(a.color, b.color, t);
@@ -198,18 +198,17 @@ WBGUIVERTEX Lerp(const WBGUIVERTEX& a, const WBGUIVERTEX& b, float t) {
 }
 
 void DrawAPI::ClipTriX(int32_t x, bool KeepRight,
-                       std::array<WBGUIVERTEX, 6>& Vertices,
-                       int32_t& VertexCount) {
-  std::array<WBGUIVERTEX, 6> NewVertices;
+                       std::array<Vertex, 6>& Vertices, int32_t& VertexCount) {
+  std::array<Vertex, 6> NewVertices;
   int32_t NewVertexCount = 0;
 
   if (VertexCount > 6) {
     Log_Err("Something got fucked up");
   }
 
-  WBGUIVERTEX S = Vertices[VertexCount - 1];
+  Vertex S = Vertices[VertexCount - 1];
   for (int32_t e = 0; e < VertexCount; e++) {
-    WBGUIVERTEX E = Vertices[e];
+    Vertex E = Vertices[e];
 
     const bool eInside =
         (E.pos.x > x && KeepRight) || (E.pos.x < x && !KeepRight);
@@ -236,14 +235,13 @@ void DrawAPI::ClipTriX(int32_t x, bool KeepRight,
 }
 
 void DrawAPI::ClipTriY(int32_t y, bool KeepBottom,
-                       std::array<WBGUIVERTEX, 6>& Vertices,
-                       int32_t& VertexCount) {
-  std::array<WBGUIVERTEX, 6> NewVertices;
+                       std::array<Vertex, 6>& Vertices, int32_t& VertexCount) {
+  std::array<Vertex, 6> NewVertices;
   int32_t NewVertexCount = 0;
 
-  WBGUIVERTEX S = Vertices[VertexCount - 1];
+  Vertex S = Vertices[VertexCount - 1];
   for (int32_t e = 0; e < VertexCount; e++) {
-    WBGUIVERTEX E = Vertices[e];
+    Vertex E = Vertices[e];
 
     const bool eInside =
         (E.pos.y > y && KeepBottom) || (E.pos.y < y && !KeepBottom);
@@ -285,11 +283,11 @@ void DrawAPI::AddDisplayTri(const Point& _p1, const Point& _p2,
   Bound |= crop_rect_ | Bound;
   if (Bound.Width() <= 0 || Bound.Height() <= 0) return;
 
-  if (draw_mode_ != WBDRAWMODE::WBD_TRIANGLES) RenderDisplayList();
-  draw_mode_ = WBDRAWMODE::WBD_TRIANGLES;
+  if (draw_mode_ != DrawMode::WBD_TRIANGLES) RenderDisplayList();
+  draw_mode_ = DrawMode::WBD_TRIANGLES;
 
   // max vertex count is 6, when all triangle edges are cut
-  std::array<WBGUIVERTEX, 6> Vertices;
+  std::array<Vertex, 6> Vertices;
   int32_t VertexCount = 3;
   Vertices[0].pos =
       Vector4(static_cast<float>(p1.x), static_cast<float>(p1.y), 0, 1);
@@ -342,14 +340,14 @@ void DrawAPI::RenderDisplayList() {
 
     void* Buffer = nullptr;
 
-    if (!vertex_buffer_->Lock(&Buffer, 0, Count * sizeof(WBGUIVERTEX),
+    if (!vertex_buffer_->Lock(&Buffer, 0, Count * sizeof(Vertex),
                               renderer::kLockDiscard)) {
       Log_Err("[gui] Error locking UI Vertex Buffer during draw.");
       return;
     }
 
     memcpy(Buffer, &display_list_[display_list_.size() - VxCount],
-           Count * sizeof(WBGUIVERTEX));
+           Count * sizeof(Vertex));
 
     if (!vertex_buffer_->UnLock()) {
       Log_Err("[gui] Error unlocking UI Vertex Buffer during draw.");
@@ -357,20 +355,20 @@ void DrawAPI::RenderDisplayList() {
     }
 
     switch (draw_mode_) {
-      case WBDRAWMODE::WBD_RECTANGLES:
+      case DrawMode::WBD_RECTANGLES:
         if (!device_->DrawIndexedTriangles(Count / 2, Count)) {
           Log_Err("[gui] Error drawing UI Triangles ({:d} {:d})", Count / 2,
                   Count);
           return;
         }
         break;
-      case WBDRAWMODE::WBD_LINES:
+      case DrawMode::WBD_LINES:
         if (!device_->DrawLines(Count / 2)) {
           Log_Err("[gui] Error drawing UI Lines ({:d})", Count / 2);
           return;
         }
         break;
-      case WBDRAWMODE::WBD_TRIANGLES:
+      case DrawMode::WBD_TRIANGLES:
         if (!device_->DrawTriangles(Count / 3)) {
           Log_Err("[gui] Error drawing UI Triangles ({:d})", Count / 3);
           return;
@@ -389,7 +387,7 @@ void DrawAPI::RenderDisplayList() {
 DrawAPI::DrawAPI()
     : offset_(0, 0),
       crop_rect_(0, 0, 0, 0),
-      draw_mode_(WBDRAWMODE::WBD_RECTANGLES),
+      draw_mode_(DrawMode::WBD_RECTANGLES),
       opacity_(255),
       app_(nullptr),
       atlas_(nullptr),
@@ -405,7 +403,7 @@ bool DrawAPI::Initialize(Application* Application, renderer::Device* Dev,
   if (!device_ || !atlas_) return false;
 
   vertex_buffer_ = device_->CreateVertexBufferDynamic(
-      sizeof(WBGUIVERTEX) * VertexBufferRectCount * 4);
+      sizeof(Vertex) * VertexBufferRectCount * 4);
   if (!vertex_buffer_) {
     Log_Err("[gui] Error creating UI Vertex Buffer");
     return false;
@@ -651,23 +649,23 @@ void DrawAPI::SetOffset(const Point& p) { offset_ = p; }
 
 void DrawAPI::SetCropRect(const Rect& r) { crop_rect_ = parent_crop_rect_ | r; }
 
-void DrawAPI::DrawRect(const Rect& r, CColor Color) {
+void DrawAPI::DrawRect(const Rect& r, CColor color) {
   const Point white = atlas_->GetWhitePixelUV();
   const float u = UVTRANSLATION(white.x, atlas_->GetXRes());
   const float v = UVTRANSLATION(white.y, atlas_->GetYRes());
-  AddDisplayRect(r, u, v, u, v, Color);
+  AddDisplayRect(r, u, v, u, v, color);
 }
 
-void DrawAPI::DrawRectBorder(const Rect& r, CColor Color) {
-  DrawRect(Rect(r.TopLeft(), r.BottomLeft() + Point(1, 0)), Color);
-  DrawRect(Rect(r.TopLeft(), r.TopRight() + Point(0, 1)), Color);
-  DrawRect(Rect(r.TopRight() - Point(1, 0), r.BottomRight()), Color);
-  DrawRect(Rect(r.BottomLeft() - Point(0, 1), r.BottomRight()), Color);
+void DrawAPI::DrawRectBorder(const Rect& r, CColor color) {
+  DrawRect(Rect(r.TopLeft(), r.BottomLeft() + Point(1, 0)), color);
+  DrawRect(Rect(r.TopLeft(), r.TopRight() + Point(0, 1)), color);
+  DrawRect(Rect(r.TopRight() - Point(1, 0), r.BottomRight()), color);
+  DrawRect(Rect(r.BottomLeft() - Point(0, 1), r.BottomRight()), color);
 }
 
 void DrawAPI::DrawRectRotated(const Rect& r, float u1, float v1, float u2,
-                              float v2, CColor Color, float rotation) {
-  AddDisplayRectRotated(r, u1, v1, u2, v2, Color, rotation);
+                              float v2, CColor color, float rotation) {
+  AddDisplayRectRotated(r, u1, v1, u2, v2, color, rotation);
 }
 
 void DrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2, float v2) {
@@ -675,36 +673,36 @@ void DrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2, float v2) {
 }
 
 void DrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2, float v2,
-                       CColor Color) {
-  AddDisplayRect(r, u1, v1, u2, v2, Color);
+                       CColor color) {
+  AddDisplayRect(r, u1, v1, u2, v2, color);
 }
 
-void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor Color) {
+void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor color) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayLine(p1, p2, UVTRANSLATION(white.x, atlas_->GetXRes()),
                  UVTRANSLATION(white.y, atlas_->GetYRes()),
                  UVTRANSLATION(white.x, atlas_->GetXRes()),
-                 UVTRANSLATION(white.y, atlas_->GetYRes()), Color, Color);
+                 UVTRANSLATION(white.y, atlas_->GetYRes()), color, color);
 }
 
-void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor Color1,
-                       CColor Color2) {
+void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor color1,
+                       CColor color2) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayLine(p1, p2, UVTRANSLATION(white.x, atlas_->GetXRes()),
                  UVTRANSLATION(white.y, atlas_->GetYRes()),
                  UVTRANSLATION(white.x, atlas_->GetXRes()),
-                 UVTRANSLATION(white.y, atlas_->GetYRes()), Color1, Color2);
+                 UVTRANSLATION(white.y, atlas_->GetYRes()), color1, color2);
 }
 
 void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
-                           CColor Color) {
+                           CColor color) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayTri(p1, p2, p3, UVTRANSLATION(white.x, atlas_->GetXRes()),
                 UVTRANSLATION(white.y, atlas_->GetYRes()),
                 UVTRANSLATION(white.x, atlas_->GetXRes()),
                 UVTRANSLATION(white.y, atlas_->GetYRes()),
                 UVTRANSLATION(white.x, atlas_->GetXRes()),
-                UVTRANSLATION(white.y, atlas_->GetYRes()), Color, Color, Color);
+                UVTRANSLATION(white.y, atlas_->GetYRes()), color, color, color);
 }
 
 void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
@@ -773,14 +771,14 @@ void DrawAPI::SetUISamplerState(
 
 void DrawAPI::SetRenderView(Rect r) { device_->SetViewport(r); }
 
-Size DrawAPI::GetAtlasElementSize(WBATLASHANDLE h) {
+Size DrawAPI::GetAtlasElementSize(AtlasHandle h) {
   if (!atlas_) return Size(0, 0);
   return atlas_->GetSize(h);
 }
 
 static int32_t defragmentReportCount = 0;
 
-bool DrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect* r) {
+bool DrawAPI::RequestAtlasImageUse(AtlasHandle h, Rect* r) {
   if (!atlas_) return false;
 
   if (!atlas_->RequestImageUse(h, r)) {
@@ -822,8 +820,8 @@ bool DrawAPI::RequestAtlasImageUse(WBATLASHANDLE h, Rect* r) {
   return true;
 }
 
-void DrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
-                               CColor Color) {
+void DrawAPI::DrawAtlasElement(AtlasHandle h, int32_t x, int32_t y,
+                               CColor color) {
   if (!atlas_) return;
 
   const Point pos = Point(x, y) + offset_;
@@ -840,12 +838,12 @@ void DrawAPI::DrawAtlasElement(WBATLASHANDLE h, int32_t x, int32_t y,
            UVTRANSLATION(UV.x1, atlas_->GetXRes()),
            UVTRANSLATION(UV.y1, atlas_->GetYRes()),
            UVTRANSLATION(UV.x2, atlas_->GetXRes()),
-           UVTRANSLATION(UV.y2, atlas_->GetYRes()), Color);
+           UVTRANSLATION(UV.y2, atlas_->GetYRes()), color);
 }
 
-void DrawAPI::DrawAtlasElement(WBATLASHANDLE h, const Rect& Position,
-                               bool TileX, bool TileY, bool StretchX,
-                               bool StretchY, CColor Color /*=0xffffffff*/) {
+void DrawAPI::DrawAtlasElement(AtlasHandle h, const Rect& Position, bool TileX,
+                               bool TileY, bool StretchX, bool StretchY,
+                               CColor color /*=0xffffffff*/) {
   if (!atlas_) return;
 
   const Rect rect = crop_rect_ | (Position + offset_);
@@ -899,15 +897,15 @@ void DrawAPI::DrawAtlasElement(WBATLASHANDLE h, const Rect& Position,
                UVTRANSLATION(UV.x1 + uvmod.x, atlas_->GetXRes()),
                UVTRANSLATION(UV.y1 + uvmod.y, atlas_->GetYRes()),
                UVTRANSLATION(UV.x2 - uvmod.x, atlas_->GetXRes()),
-               UVTRANSLATION(UV.y2 - uvmod.y, atlas_->GetYRes()), Color);
+               UVTRANSLATION(UV.y2 - uvmod.y, atlas_->GetYRes()), color);
     }
   }
 
   crop_rect_ = cr;
 }
 
-void DrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const Rect& position,
-                                      CColor Color, float rotation) {
+void DrawAPI::DrawAtlasElementRotated(AtlasHandle h, const Rect& position,
+                                      CColor color, float rotation) {
   if (!atlas_) return;
 
   const Rect pos = position + offset_;
@@ -923,7 +921,7 @@ void DrawAPI::DrawAtlasElementRotated(WBATLASHANDLE h, const Rect& position,
   DrawRectRotated(pos, UVTRANSLATION(UV.x1 + 0.5f, atlas_->GetXRes()),
                   UVTRANSLATION(UV.y1 + 0.5f, atlas_->GetYRes()),
                   UVTRANSLATION(UV.x2 - 0.5f, atlas_->GetXRes()),
-                  UVTRANSLATION(UV.y2 - 0.5f, atlas_->GetYRes()), Color,
+                  UVTRANSLATION(UV.y2 - 0.5f, atlas_->GetYRes()), color,
                   rotation);
 }
 

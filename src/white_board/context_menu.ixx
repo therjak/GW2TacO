@@ -65,7 +65,7 @@ class ContextMenu : public GuiType<"contextmenu", Widget> {
   virtual ContextItem* GetItem(int32_t ID);
 
  private:
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const Message& message) override;
   virtual void ResizeToContentSize();
   void OnDraw(DrawAPI* API) override;
   void SpawnSubMenu(int32_t itemidx);

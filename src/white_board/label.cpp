@@ -21,9 +21,9 @@ namespace gui {
 void Label::OnDraw(DrawAPI* API) {
   DrawBackground(API);
 
-  const WBITEMSTATE i = GetState();
+  const ItemState i = GetState();
   Font* Font = GetFont(i);
-  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto text_transform = static_cast<TextTransform>(
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
@@ -31,8 +31,8 @@ void Label::OnDraw(DrawAPI* API) {
         GetDisplayDescriptor().GetColor(i, WB_ITEM_FONTCOLOR);
     const Point TextPos = Font->GetTextPosition(
         text_, GetClientRect(), GetCSSProperties().text_align_x_,
-        GetCSSProperties().text_align_y_, TextTransform);
-    Font->Write(API, text_, TextPos, TextColor, TextTransform);
+        GetCSSProperties().text_align_y_, text_transform);
+    Font->Write(API, text_, TextPos, TextColor, text_transform);
   }
 
   DrawBorder(API);
@@ -48,7 +48,7 @@ bool Label::Initialize(Widget* Parent, const Rect& Position) {
   return true;
 }
 
-Widget* Label::Factory(Widget* Root, const CXMLNode& node, const Rect& Pos) {
+Widget* Label::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
   auto label = Label::Create(Root, Pos);
   if (node.HasAttribute("text")) label->SetText(node.GetAttribute("text"));
   return label;
@@ -60,13 +60,13 @@ void Label::SetText(std::string_view val) {
 }
 
 Size Label::GetContentSize() {
-  const WBITEMSTATE i = GetState();
+  const ItemState i = GetState();
   Font* Font = GetFont(i);
-  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto text_transform = static_cast<TextTransform>(
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (!Font) return Size(0, 0);
-  return Size(Font->GetWidth(text_, false, TextTransform),
+  return Size(Font->GetWidth(text_, false, text_transform),
               Font->GetLineHeight());
 }
 

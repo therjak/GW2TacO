@@ -17,11 +17,11 @@ using math::Point;
 using math::Rect;
 
 void ImportLocationalTimers() {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromFile("locationaltimers.xml")) return;
 
   if (!d.GetDocumentNode().GetChildCount("timers")) return;
-  CXMLNode root = d.GetDocumentNode().GetChild("timers");
+  XMLNode root = d.GetDocumentNode().GetChild("timers");
 
   for (int32_t x = 0; x < root.GetChildCount("areatriggeredtimer"); x++) {
     LocationalTimer t;
@@ -57,7 +57,7 @@ void LocationalTimer::Update() {
   }
 }
 
-void LocationalTimer::ImportData(const CXMLNode& node) {
+void LocationalTimer::ImportData(const XMLNode& node) {
   if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &map_id_);
   if (node.HasAttribute("length")) {
     node.GetAttributeAsInteger("length", &timer_length_);
@@ -103,7 +103,7 @@ void LocationalTimer::ImportData(const CXMLNode& node) {
   }
 
   for (int32_t x = 0; x < node.GetChildCount("timeevent"); x++) {
-    CXMLNode te = node.GetChild("timeevent", x);
+    XMLNode te = node.GetChild("timeevent", x);
     TimerEvent tmr;
     if (te.HasAttribute("text")) tmr.text = te.GetAttributeAsString("text");
     if (te.HasAttribute("timestamp")) {
@@ -151,9 +151,8 @@ void TimerDisplay::OnDraw(gui::DrawAPI* api) {
           Rect(static_cast<float>(GetClientRect().x1), static_cast<float>(ypos),
                static_cast<float>(GetClientRect().x2),
                static_cast<float>(ypos)),
-          gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_CENTERY, gui::WBTEXTTRANSFORM::WBTT_NONE,
-          true);
+          gui::TextAlignmentX::WBTA_CENTERX, gui::TextAlignmentY::WBTA_CENTERY,
+          gui::TextTransform::WBTT_NONE, true);
       ypos += f->GetLineHeight();
       f->Write(api, s, pos);
     }
@@ -161,7 +160,7 @@ void TimerDisplay::OnDraw(gui::DrawAPI* api) {
 }
 
 bool TimerDisplay::IsMouseTransparent(const Point& client_space_point,
-                                      gui::WBMESSAGE message_type) {
+                                      gui::MessageType type) {
   return true;
 }
 
@@ -169,7 +168,7 @@ TimerDisplay::TimerDisplay() : GuiType() {}
 
 TimerDisplay::~TimerDisplay() = default;
 
-gui::Widget* TimerDisplay::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* TimerDisplay::Factory(gui::Widget* root, const XMLNode& node,
                                    const Rect& pos) {
   return TimerDisplay::Create(root, pos);
 }
