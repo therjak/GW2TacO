@@ -28,10 +28,8 @@ using math::Vector2;
 using math::Vector4;
 
 void DrawAPI::AddDisplayRect(
-    const math::Rect& Rect, const float u1, const float v1, const float u2,
-    const float v2,
-    const CColor
-        color /*, const CColor c2, const CColor c3, const CColor c4*/) {
+    const math::Rect& Rect, float u1, float v1, float u2, float v2,
+    Color color /*, const Color c2, const Color c3, const Color c4*/) {
   if (!opacity_) return;
 
   const math::Rect rect = Rect + offset_;
@@ -66,21 +64,19 @@ void DrawAPI::AddDisplayRect(
     v2f = vs * y2f + v1;
   }
 
-  CColor Color = color;
-  Color.A() = (Color.A() * opacity_) / 255;
+  color.A() = (color.A() * opacity_) / 255;
 
   const Vector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
   const Vector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
 
-  display_list_.emplace_back(Vertex{TL.x, TL.y, u1f, v1f, Color});
-  display_list_.emplace_back(Vertex{BR.x, TL.y, u2f, v1f, Color});
-  display_list_.emplace_back(Vertex{BR.x, BR.y, u2f, v2f, Color});
-  display_list_.emplace_back(Vertex{TL.x, BR.y, u1f, v2f, Color});
+  display_list_.emplace_back(Vertex{TL.x, TL.y, u1f, v1f, color});
+  display_list_.emplace_back(Vertex{BR.x, TL.y, u2f, v1f, color});
+  display_list_.emplace_back(Vertex{BR.x, BR.y, u2f, v2f, color});
+  display_list_.emplace_back(Vertex{TL.x, BR.y, u1f, v2f, color});
 }
 
-void DrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2, const float u1,
-                             const float v1, const float u2, const float v2,
-                             const CColor a, const CColor b) {
+void DrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2, float u1,
+                             float v1, float u2, float v2, Color a, Color b) {
   DisplayLine r;
 
   const Point p1 = _p1 + offset_;
@@ -133,9 +129,8 @@ void DrawAPI::AddDisplayLine(const Point& _p1, const Point& _p2, const float u1,
       Vertex(Vector2(r.p2.x + 0.5f, r.p2.y - 0.5f), Vector2(r.u2, r.v2), r.c2));
 }
 
-void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
-                                    const float v1, const float u2,
-                                    const float v2, const CColor color,
+void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, float u1, float v1,
+                                    float u2, float v2, Color color,
                                     float rotation) {
   if (!opacity_) return;
 
@@ -171,8 +166,7 @@ void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
     v2f = vs * y2f + v1;
   }
 
-  CColor Color = color;
-  Color.A() = (Color.A() * opacity_) / 255;
+  color.A() = (color.A() * opacity_) / 255;
 
   const Vector2 TL(static_cast<float>(Pos.x1), static_cast<float>(Pos.y1));
   const Vector2 BR(static_cast<float>(Pos.x2), static_cast<float>(Pos.y2));
@@ -183,10 +177,10 @@ void DrawAPI::AddDisplayRectRotated(const math::Rect& Rect, const float u1,
   const auto c = Vector2(BR.x, BR.y).Rotated(center, rotation);
   const auto d = Vector2(TL.x, BR.y).Rotated(center, rotation);
 
-  display_list_.emplace_back(Vertex{a.x, a.y, u1f, v1f, Color});
-  display_list_.emplace_back(Vertex{b.x, b.y, u2f, v1f, Color});
-  display_list_.emplace_back(Vertex{c.x, c.y, u2f, v2f, Color});
-  display_list_.emplace_back(Vertex{d.x, d.y, u1f, v2f, Color});
+  display_list_.emplace_back(Vertex{a.x, a.y, u1f, v1f, color});
+  display_list_.emplace_back(Vertex{b.x, b.y, u2f, v1f, color});
+  display_list_.emplace_back(Vertex{c.x, c.y, u2f, v2f, color});
+  display_list_.emplace_back(Vertex{d.x, d.y, u1f, v2f, color});
 }
 
 Vertex Lerp(const Vertex& a, const Vertex& b, float t) {
@@ -266,10 +260,9 @@ void DrawAPI::ClipTriY(int32_t y, bool KeepBottom,
 }
 
 void DrawAPI::AddDisplayTri(const Point& _p1, const Point& _p2,
-                            const Point& _p3, const float u1, const float v1,
-                            const float u2, const float v2, const float u3,
-                            const float v3, const CColor a, const CColor b,
-                            const CColor c) {
+                            const Point& _p3, float u1, float v1, float u2,
+                            float v2, float u3, float v3, Color a, Color b,
+                            Color c) {
   Point p1 = _p1 + offset_;
   Point p2 = _p2 + offset_;
   Point p3 = _p3 + offset_;
@@ -649,14 +642,14 @@ void DrawAPI::SetOffset(const Point& p) { offset_ = p; }
 
 void DrawAPI::SetCropRect(const Rect& r) { crop_rect_ = parent_crop_rect_ | r; }
 
-void DrawAPI::DrawRect(const Rect& r, CColor color) {
+void DrawAPI::DrawRect(const Rect& r, Color color) {
   const Point white = atlas_->GetWhitePixelUV();
   const float u = UVTRANSLATION(white.x, atlas_->GetXRes());
   const float v = UVTRANSLATION(white.y, atlas_->GetYRes());
   AddDisplayRect(r, u, v, u, v, color);
 }
 
-void DrawAPI::DrawRectBorder(const Rect& r, CColor color) {
+void DrawAPI::DrawRectBorder(const Rect& r, Color color) {
   DrawRect(Rect(r.TopLeft(), r.BottomLeft() + Point(1, 0)), color);
   DrawRect(Rect(r.TopLeft(), r.TopRight() + Point(0, 1)), color);
   DrawRect(Rect(r.TopRight() - Point(1, 0), r.BottomRight()), color);
@@ -664,20 +657,20 @@ void DrawAPI::DrawRectBorder(const Rect& r, CColor color) {
 }
 
 void DrawAPI::DrawRectRotated(const Rect& r, float u1, float v1, float u2,
-                              float v2, CColor color, float rotation) {
+                              float v2, Color color, float rotation) {
   AddDisplayRectRotated(r, u1, v1, u2, v2, color, rotation);
 }
 
 void DrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2, float v2) {
-  AddDisplayRect(r, u1, v1, u2, v2, CColor{0xffffffff});
+  AddDisplayRect(r, u1, v1, u2, v2, Color{0xffffffff});
 }
 
 void DrawAPI::DrawRect(const Rect& r, float u1, float v1, float u2, float v2,
-                       CColor color) {
+                       Color color) {
   AddDisplayRect(r, u1, v1, u2, v2, color);
 }
 
-void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor color) {
+void DrawAPI::DrawLine(const Point& p1, const Point& p2, Color color) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayLine(p1, p2, UVTRANSLATION(white.x, atlas_->GetXRes()),
                  UVTRANSLATION(white.y, atlas_->GetYRes()),
@@ -685,8 +678,8 @@ void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor color) {
                  UVTRANSLATION(white.y, atlas_->GetYRes()), color, color);
 }
 
-void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor color1,
-                       CColor color2) {
+void DrawAPI::DrawLine(const Point& p1, const Point& p2, Color color1,
+                       Color color2) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayLine(p1, p2, UVTRANSLATION(white.x, atlas_->GetXRes()),
                  UVTRANSLATION(white.y, atlas_->GetYRes()),
@@ -695,7 +688,7 @@ void DrawAPI::DrawLine(const Point& p1, const Point& p2, CColor color1,
 }
 
 void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
-                           CColor color) {
+                           Color color) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayTri(p1, p2, p3, UVTRANSLATION(white.x, atlas_->GetXRes()),
                 UVTRANSLATION(white.y, atlas_->GetYRes()),
@@ -706,7 +699,7 @@ void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
 }
 
 void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
-                           CColor a, CColor b, CColor c) {
+                           Color a, Color b, Color c) {
   const Point white = atlas_->GetWhitePixelUV();
   AddDisplayTri(p1, p2, p3, UVTRANSLATION(white.x, atlas_->GetXRes()),
                 UVTRANSLATION(white.y, atlas_->GetYRes()),
@@ -718,15 +711,15 @@ void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
 
 void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
                            float u1, float v1, float u2, float v2, float u3,
-                           float v3, CColor a, CColor b, CColor c) {
+                           float v3, Color a, Color b, Color c) {
   AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, a, b, c);
 }
 
 void DrawAPI::DrawTriangle(const Point& p1, const Point& p2, const Point& p3,
                            float u1, float v1, float u2, float v2, float u3,
                            float v3) {
-  AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, CColor{0xffffffff},
-                CColor{0xffffffff}, CColor{0xffffffff});
+  AddDisplayTri(p1, p2, p3, u1, v1, u2, v2, u3, v3, Color{0xffffffff},
+                Color{0xffffffff}, Color{0xffffffff});
 }
 
 void DrawAPI::SetUIRenderState() {
@@ -821,7 +814,7 @@ bool DrawAPI::RequestAtlasImageUse(AtlasHandle h, Rect* r) {
 }
 
 void DrawAPI::DrawAtlasElement(AtlasHandle h, int32_t x, int32_t y,
-                               CColor color) {
+                               Color color) {
   if (!atlas_) return;
 
   const Point pos = Point(x, y) + offset_;
@@ -843,7 +836,7 @@ void DrawAPI::DrawAtlasElement(AtlasHandle h, int32_t x, int32_t y,
 
 void DrawAPI::DrawAtlasElement(AtlasHandle h, const Rect& Position, bool TileX,
                                bool TileY, bool StretchX, bool StretchY,
-                               CColor color /*=0xffffffff*/) {
+                               Color color /*=0xffffffff*/) {
   if (!atlas_) return;
 
   const Rect rect = crop_rect_ | (Position + offset_);
@@ -905,7 +898,7 @@ void DrawAPI::DrawAtlasElement(AtlasHandle h, const Rect& Position, bool TileX,
 }
 
 void DrawAPI::DrawAtlasElementRotated(AtlasHandle h, const Rect& position,
-                                      CColor color, float rotation) {
+                                      Color color, float rotation) {
   if (!atlas_) return;
 
   const Rect pos = position + offset_;

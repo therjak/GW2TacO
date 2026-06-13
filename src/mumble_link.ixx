@@ -105,7 +105,7 @@ export class CMumbleLink {
 
   math::Vector4 averaged_char_position;
 
-  std::unique_ptr<CRingBuffer<int32_t, 60>> frame_times;
+  std::unique_ptr<RingBuffer<int32_t, 60>> frame_times;
 
   int32_t last_frame_time = 0;
 

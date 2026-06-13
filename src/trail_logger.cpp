@@ -41,7 +41,7 @@ using math::Vector4;
 
 TrailSet& GetMapTrails() { return trails[mumbleLink.map_id]; }
 
-CStreamWriterFile* TrailLog = nullptr;
+StreamWriterFile* TrailLog = nullptr;
 
 int32_t lastMap = -1;
 Vector3 last_pos = Vector3(0, 0, 0);
@@ -350,7 +350,7 @@ void GW2TrailDisplay::OnDraw(gui::DrawAPI* API) {
         gui::TextAlignmentX::WBTA_CENTERX, gui::TextAlignmentY::WBTA_CENTERY,
         gui::TextTransform::WBTT_NONE, true);
     ypos += f->GetLineHeight();
-    f->Write(API, s, pos, CColor{0xffff0000});
+    f->Write(API, s, pos, Color{0xffff0000});
   }
 }
 
@@ -442,7 +442,7 @@ renderer::Texture2D* GW2TrailDisplay::GetTexture(
     return GetTexture(s, "", "");
   }
 
-  CStreamReaderMemory f;
+  StreamReaderMemory f;
   if (!f.Open(s) && !f.Open("POIs\\" + s)) {
     texture_cache_[s] = nullptr;
     Log_Err("[GW2TacO] Failed to open image {:s}", s);
@@ -464,7 +464,7 @@ bool GW2TrailDisplay::Initialize(gui::Widget* Parent,
 
   const_buffer_ = App->GetDevice()->CreateConstantBuffer();
 
-  CStreamReaderMemory tex;
+  StreamReaderMemory tex;
   if (tex.Open("Data\\trail.png")) {
     trail_texture_ = App->GetDevice()->CreateTexture2D(
         tex.GetData(), static_cast<int32_t>(tex.GetLength()));
@@ -691,7 +691,7 @@ void GW2TrailDisplay::ImportTrail() {
   opf.FlagsEx = 0;
 
   if (GetOpenFileName(&opf)) {
-    CStreamReaderMemory file;
+    StreamReaderMemory file;
     if (file.Open(opf.lpstrFile)) {
       StartStopTrailRecording(true);
       ClearEditedTrail();
@@ -725,7 +725,7 @@ void GW2Trail::Reset(int32_t _map_id /*= 0 */) {
 bool GW2Trail::SaveToFile(std::string_view fname) {
   if (positions_.empty()) return false;
 
-  CStreamWriterFile TrailLog;
+  StreamWriterFile TrailLog;
   if (!TrailLog.Open(fname)) return false;
 
   TrailLog.WriteDWord(kTrailFileVersion);
@@ -798,8 +798,8 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id, const float* points,
     vertices[vertPos + 1].pos = Vector4(p2.x, p2.y, p2.z, 1);
     vertices[vertPos].center_pos = Vector4(pos.x, pos.y, pos.z, 1);
     vertices[vertPos + 1].center_pos = Vector4(pos.x, pos.y, pos.z, 1);
-    vertices[vertPos].color = CColor{0xffffffff};
-    vertices[vertPos + 1].color = CColor{0xffffffff};
+    vertices[vertPos].color = Color{0xffffffff};
+    vertices[vertPos + 1].color = Color{0xffffffff};
     vertices[vertPos].uv = Vector2(0, -uvStretch);
     vertices[vertPos + 1].uv = Vector2(1, -uvStretch);
 
@@ -938,7 +938,7 @@ void GW2Trail::SetCategory(GW2TacticalCategory* t) {
   type_ = t->GetFullTypeName();
 }
 
-bool GW2Trail::Import(const CStreamReaderMemory& f, bool keepPoints) {
+bool GW2Trail::Import(const StreamReaderMemory& f, bool keepPoints) {
   if (keepPoints) {
     positions_.clear();
     for (int32_t x = 0; x < (f.GetLength() - 8) / 12; x++) {
@@ -970,7 +970,7 @@ bool GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
           if (mz_zip_reader_extract_to_mem(
                   zip, idx, data.get(),
                   static_cast<int32_t>(stat.m_uncomp_size), 0)) {
-            CStreamReaderMemory f;
+            StreamReaderMemory f;
             if (f.Open(data.get(), static_cast<int32_t>(stat.m_uncomp_size))) {
               if (Import(f, keepPoints)) return true;
             }
@@ -980,7 +980,7 @@ bool GW2Trail::Import(std::string_view fileName, std::string_view zipFile,
     }
   }
 
-  CStreamReaderMemory f;
+  StreamReaderMemory f;
   if (!f.Open(fileName) && !f.Open("POIs\\" + std::string(fileName))) {
     Log_Err("[GW2TacO] Failed to open trail data file {:s}", fileName);
     return false;

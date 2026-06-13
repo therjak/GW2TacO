@@ -8,13 +8,13 @@
 
 #include <algorithm>
 
-CTimer globalTimer;
+Timer global_timer;
 
-CTimer::CTimer() { LastUpdateTime = StartTime = timeGetTime(); }
+Timer::Timer() { LastUpdateTime = StartTime = timeGetTime(); }
 
-CTimer::~CTimer() = default;
+Timer::~Timer() = default;
 
-void CTimer::Update() {
+void Timer::Update() {
   int32_t CurrentTime = timeGetTime();
   double ElapsedTime = CurrentTime - LastUpdateTime;
 
@@ -22,4 +22,4 @@ void CTimer::Update() {
   LastUpdateTime = CurrentTime;
 }
 
-int32_t CTimer::GetTime() { return Time; }
+int32_t Timer::GetTime() { return Time; }

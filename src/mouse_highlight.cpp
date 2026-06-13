@@ -40,8 +40,8 @@ void GW2MouseHighlight::OnDraw(gui::DrawAPI* api) {
   int color = GetConfigValue("MouseHighlightColor");
 
   if (GetConfigValue("MouseHighlightOutline")) {
-    api->DrawRect(Rect(cp.x - 1, cl.y1, cp.x + 2, cl.y2), CColor{0xff000000});
-    api->DrawRect(Rect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), CColor{0xff000000});
+    api->DrawRect(Rect(cp.x - 1, cl.y1, cp.x + 2, cl.y2), Color{0xff000000});
+    api->DrawRect(Rect(cl.x1, cp.y - 1, cl.x2, cp.y + 2), Color{0xff000000});
   }
 
   api->DrawRect(Rect(cp.x, cl.y1, cp.x + 1, cl.y2), kCGAPalette[color]);

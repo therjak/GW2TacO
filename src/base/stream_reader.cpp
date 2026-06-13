@@ -13,14 +13,14 @@
 //////////////////////////////////////////////////////////////////////////
 // base class implementation
 
-CStreamReader::CStreamReader() {
+StreamReader::StreamReader() {
   readerBitOffset = 0;
   readerLastChar = 0;
 }
 
-CStreamReader::~CStreamReader() = default;
+StreamReader::~StreamReader() = default;
 
-int32_t CStreamReader::Read(void* lpBuf, uint32_t nCount) {
+int32_t StreamReader::Read(void* lpBuf, uint32_t nCount) {
   if (readerBitOffset == 0) {  // non bitstream mode
     return ReadStream(lpBuf, nCount);
   }
@@ -33,19 +33,19 @@ int32_t CStreamReader::Read(void* lpBuf, uint32_t nCount) {
   return nCount;
 }
 
-uint32_t CStreamReader::ReadDWord() {
+uint32_t StreamReader::ReadDWord() {
   uint32_t i = 0;
   BASEASSERT(Read(&i, sizeof(uint32_t)) == sizeof(uint32_t));
   return i;
 }
 
-uint8_t CStreamReader::ReadByte() {
+uint8_t StreamReader::ReadByte() {
   uint8_t i = 0;
   BASEASSERT(Read(&i, sizeof(uint8_t)) == sizeof(uint8_t));
   return i;
 }
 
-uint32_t CStreamReader::ReadBits(uint32_t BitCount) {
+uint32_t StreamReader::ReadBits(uint32_t BitCount) {
   BASEASSERT(BitCount <= 64);
 
   uint32_t result = 0;
@@ -67,7 +67,7 @@ uint32_t CStreamReader::ReadBits(uint32_t BitCount) {
   return result;
 }
 
-std::string CStreamReaderMemory::ReadLine() {
+std::string StreamReaderMemory::ReadLine() {
   std::string result;
 
   std::array<char, 2> s{{0, 0}};
@@ -83,16 +83,16 @@ std::string CStreamReaderMemory::ReadLine() {
   return result;
 }
 
-bool CStreamReader::eof() { return GetOffset() >= GetLength(); }
+bool StreamReader::eof() { return GetOffset() >= GetLength(); }
 
 //////////////////////////////////////////////////////////////////////////
 // streamreader memory
 
-CStreamReaderMemory::CStreamReaderMemory() : CStreamReader() {}
+StreamReaderMemory::StreamReaderMemory() : StreamReader() {}
 
-CStreamReaderMemory::~CStreamReaderMemory() = default;
+StreamReaderMemory::~StreamReaderMemory() = default;
 
-int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
+int32_t StreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
   auto bytestoread =
       std::max(static_cast<std::vector<uint8_t>::size_type>(0),
                std::min(static_cast<std::vector<uint8_t>::size_type>(nCount),
@@ -102,7 +102,7 @@ int32_t CStreamReaderMemory::ReadStream(void* lpBuf, uint32_t nCount) {
   return static_cast<int32_t>(bytestoread);
 }
 
-int32_t CStreamReaderMemory::Open(uint8_t* data, uint32_t size) {
+int32_t StreamReaderMemory::Open(uint8_t* data, uint32_t size) {
   if (!data || !size) return 0;
 
   Offset = 0;
@@ -112,7 +112,7 @@ int32_t CStreamReaderMemory::Open(uint8_t* data, uint32_t size) {
   return 1;
 }
 
-int32_t CStreamReaderMemory::Open(std::string_view Filename) {
+int32_t StreamReaderMemory::Open(std::string_view Filename) {
   std::string filename_str(Filename);
   FILE* file = std::fopen(filename_str.c_str(), "rb");
   if (!file) return 0;
@@ -142,12 +142,12 @@ int32_t CStreamReaderMemory::Open(std::string_view Filename) {
   return nRead == static_cast<size_t>(tDataSize);
 }
 
-const uint8_t* CStreamReaderMemory::GetData() const { return &Data[0]; }
+const uint8_t* StreamReaderMemory::GetData() const { return &Data[0]; }
 
-int64_t CStreamReaderMemory::GetLength() const {
+int64_t StreamReaderMemory::GetLength() const {
   return static_cast<int64_t>(Data.size());
 }
 
-int64_t CStreamReaderMemory::GetOffset() const {
+int64_t StreamReaderMemory::GetOffset() const {
   return static_cast<int64_t>(Offset);
 }

@@ -418,7 +418,7 @@ std::string FetchHTTPS(std::string_view url, std::string_view path) {
     return "";
   }
 
-  CStreamWriterMemory data;
+  StreamWriterMemory data;
 
   do {
     dwSize = 0;
@@ -544,7 +544,7 @@ bool SetupTacoProtocolHandling() {
   return true;
 }
 
-bool DownloadFile(std::string_view url, CStreamWriterMemory& mem) {
+bool DownloadFile(std::string_view url, StreamWriterMemory& mem) {
   LPSTREAM stream = nullptr;
 
   HRESULT hr = URLOpenBlockingStream(
@@ -600,13 +600,13 @@ BOOL __stdcall gw2WindowFromPIDFunction(HWND hWnd, LPARAM a2) {
 INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                    _In_ LPSTR lpCmdLine, _In_ INT nCmdShow) {
   ImmDisableIME(-1);
-  lastSlowEventTime = globalTimer.GetTime();
+  lastSlowEventTime = global_timer.GetTime();
 
-  Logger.AddOutput(std::make_unique<CLoggerOutput_File>("GW2TacO.log"));
-  Logger.SetVerbosity(LOGVERBOSITY::LOG_DEBUG);
+  logger.AddOutput(std::make_unique<LoggerOutput_File>("GW2TacO.log"));
+  logger.SetVerbosity(LOGVERBOSITY::LOG_DEBUG);
 
-  Logger.Log(LOGVERBOSITY::LOG_INFO, false, false, "");
-  Logger.Log(LOGVERBOSITY::LOG_INFO, false, false,
+  logger.Log(LOGVERBOSITY::LOG_INFO, false, false, "");
+  logger.Log(LOGVERBOSITY::LOG_INFO, false, false,
              "----------------------------------------------");
   std::string cmdLine(GetCommandLineA());
   Log_Nfo("[GW2TacO] CommandLine: {:s}", cmdLine);
@@ -748,7 +748,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   DWORD hookThreadID = 0;
 
   App->SetScreenshotName("GW2TacO");
-  App->SetClearColor(CColor(0, 0, 0, 0));
+  App->SetClearColor(Color(0, 0, 0, 0));
 
   ImportPOIS();
 
@@ -795,7 +795,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   taco->InitScriptEngines();
 
-  auto lastRenderTime = globalTimer.GetTime();
+  auto lastRenderTime = global_timer.GetTime();
 
   bool frameThrottling = GetConfigValue("FrameThrottling") != 0;
 
@@ -810,7 +810,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
 #endif
 
-    if (globalTimer.GetTime() - lastSlowEventTime > 1000) {
+    if (global_timer.GetTime() - lastSlowEventTime > 1000) {
       if (GetConfigValue("CloseWithGW2")) {
         if (!gw2Window && FoundGW2Window) {
           if (!IsProcessRunning(GW2Pid)) {
@@ -849,11 +849,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
 
     if (App->DeviceOk()) {
-      auto currTime = globalTimer.GetTime();
+      auto currTime = global_timer.GetTime();
 
       if (currTime - lastSlowEventTime > 1000) {
         hideOnLoadingScreens = GetConfigValue("HideOnLoadingScreens");
-        lastSlowEventTime = globalTimer.GetTime();
+        lastSlowEventTime = global_timer.GetTime();
         gw2WindowFromPid = nullptr;
         EnumWindows(gw2WindowFromPIDFunction, mumbleLink.last_gw2_process_id);
         gw2Window = gw2WindowFromPid;

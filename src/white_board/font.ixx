@@ -132,15 +132,15 @@ class Font {
   int32_t GetMedian();
 
   int32_t WriteChar(DrawAPI* DrawApi, int Char, int32_t x, int32_t y,
-                    CColor color = CColor(0xffffffff));
+                    Color color = Color(0xffffffff));
   int32_t Write(DrawAPI* DrawApi, std::string_view String, int32_t x, int32_t y,
-                CColor color = CColor(0xffffffff),
+                Color color = Color(0xffffffff),
                 TextTransform Transform = TextTransform::WBTT_NONE,
                 bool DoKerning = true);
   int32_t WriteChar(DrawAPI* DrawApi, int Char, const math::Point& p,
-                    CColor color = CColor(0xffffffff));
+                    Color color = Color(0xffffffff));
   int32_t Write(DrawAPI* DrawApi, std::string_view String, const math::Point& p,
-                CColor color = CColor(0xffffffff),
+                Color color = Color(0xffffffff),
                 TextTransform Transform = TextTransform::WBTT_NONE,
                 bool DoKerning = true);
   int32_t GetWidth(

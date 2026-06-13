@@ -9,11 +9,10 @@ import :vector;
 
 export namespace math {
 
-class CSphere {
+class Sphere {
  public:
-  constexpr CSphere() = default;
-  constexpr CSphere(const Vector3& p, const float r)
-      : Radius(r), Position(p) {}
+  constexpr Sphere() = default;
+  constexpr Sphere(const Vector3& p, const float r) : Radius(r), Position(p) {}
 
   [[nodiscard]] bool Intersect(const Plane& p) const {
     return std::abs(p.Distance(Position)) < Radius;

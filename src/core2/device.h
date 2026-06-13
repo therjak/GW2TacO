@@ -115,7 +115,7 @@ class Device {
   virtual bool EndScene() = 0;
   virtual bool Clear(const bool clear_pixels = true,
                      const bool clear_depth = true,
-                     const CColor& color = CColor(), const float depth = 1,
+                     const Color& color = Color(), const float depth = 1,
                      const int32_t stencil = 0) = 0;
   virtual bool Flip(bool vsync = true) = 0;
   virtual bool DrawIndexedTriangles(int32_t count, int32_t num_vertices) = 0;

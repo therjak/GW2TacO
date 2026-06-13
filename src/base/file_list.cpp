@@ -14,15 +14,15 @@ bool exists(std::string_view fname) {
   return true;
 }
 
-CFileList::CFileList(std::string_view Mask, std::string_view Path /* ="" */,
-                     bool Recursive /* =false */) {
+FileList::FileList(std::string_view Mask, std::string_view Path /* ="" */,
+                   bool Recursive /* =false */) {
   ExpandSearch(Mask, Path, Recursive);
 }
 
-CFileList::CFileList() = default;
+FileList::FileList() = default;
 
-void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
-                             bool Recursive, bool getDirectories) {
+void FileList::ExpandSearch(std::string_view Mask, std::string_view Path,
+                            bool Recursive, bool getDirectories) {
   HANDLE hSearch = nullptr;
   WIN32_FIND_DATA FileData;
 
@@ -47,7 +47,7 @@ void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
       if (getDirectories &&
           ((FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) &&
            FileName != "." && FileName != "..")) {
-        CFileListEntry e(ValidPath, FileName);
+        FileListEntry e(ValidPath, FileName);
         e.isDirectory = true;
         Files.emplace_back(e);
       }
@@ -76,15 +76,15 @@ void CFileList::ExpandSearch(std::string_view Mask, std::string_view Path,
   }
 }
 
-CFileList::~CFileList() = default;
+FileList::~FileList() = default;
 
-CFileListEntry::CFileListEntry(std::string&& pth, std::string&& fn)
+FileListEntry::FileListEntry(std::string&& pth, std::string&& fn)
     :
 
       Path(std::move(pth)),
       FileName(std::move(fn)) {}
 
-CFileListEntry::CFileListEntry(std::string pth, std::string fn)
+FileListEntry::FileListEntry(std::string pth, std::string fn)
     : Path(std::move(pth)), FileName(std::move(fn)) {}
 
-CFileListEntry::CFileListEntry() = default;
+FileListEntry::FileListEntry() = default;

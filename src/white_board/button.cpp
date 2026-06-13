@@ -53,7 +53,7 @@ void Button::OnDraw(DrawAPI* API) {
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   if (Font) {
-    const CColor TextColor =
+    const Color TextColor =
         GetDisplayDescriptor().GetColor(i, WB_ITEM_FONTCOLOR);
     const Point TextPos = Font->GetTextPosition(
         text_, GetClientRect(), GetCSSProperties().text_align_x_,

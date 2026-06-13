@@ -1607,9 +1607,9 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
     auto skin = dd.GetSkin(gui::WB_STATE_NORMAL, gui::WB_ITEM_BACKGROUNDIMAGE);
     gui::SkinElement* e = App->GetSkin()->GetElement(skin);
     if (e) {
-      API->DrawAtlasElementRotated(e->GetHandle(), r, CColor{0x80ffffff},
+      API->DrawAtlasElementRotated(e->GetHandle(), r, Color{0x80ffffff},
                                    GetTime() / 1000.0f);
-      API->DrawAtlasElementRotated(e->GetHandle(), r, CColor{0x80ffffff},
+      API->DrawAtlasElementRotated(e->GetHandle(), r, Color{0x80ffffff},
                                    -GetTime() / 1000.0f);
     }
   }
@@ -1710,13 +1710,13 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
         infoline, GetClientRect(), gui::TextAlignmentX::WBTA_CENTERX,
         gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_UPPERCASE);
 
-    font->Write(API, infoline, startpos, CColor{0xffffffff},
+    font->Write(API, infoline, startpos, Color{0xffffffff},
                 gui::TextTransform::WBTT_UPPERCASE, true);
     ypos += font->GetLineHeight();
   }
 
   if (rebind_mode_) {
-    API->DrawRect(GetClientRect(), CColor{0x60000000});
+    API->DrawRect(GetClientRect(), Color{0x60000000});
     gui::Font* f = GetFont(GetState());
 
     std::string line1;
@@ -1768,7 +1768,7 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
   }
 
   if (api_key_input_mode_) {
-    API->DrawRect(GetClientRect(), CColor{0x60000000});
+    API->DrawRect(GetClientRect(), Color{0x60000000});
     gui::Font* f = GetFont(GetState());
 
     auto line1 = DICT("enter_api") + " " +
@@ -1846,7 +1846,7 @@ void GW2TacO::OnPostDraw(gui::DrawAPI* API) {
   pos.y -= font->GetLineHeight() / 2;
 
   API->DrawRect(Rect(pos, pos + Point(width, font->GetLineHeight())),
-                CColor(0, 0, 0, 0x80));
+                Color(0, 0, 0, 0x80));
   font->Write(API, mouse_tool_tip_, pos);
 }
 

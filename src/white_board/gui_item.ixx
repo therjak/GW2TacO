@@ -120,7 +120,7 @@ class DisplayState {
   virtual ~DisplayState();
 
   bool IsSet(ItemVisualComponent v);
-  CColor GetColor(ItemVisualComponent v);
+  Color GetColor(ItemVisualComponent v);
   SkinElementId GetSkin(ItemVisualComponent v);
   void SetValue(ItemVisualComponent v, int32_t value);
   int32_t GetValue(ItemVisualComponent v);
@@ -135,7 +135,7 @@ class DisplayProperties {
   DisplayProperties();
   virtual ~DisplayProperties();
 
-  CColor GetColor(ItemState s, ItemVisualComponent v);
+  Color GetColor(ItemState s, ItemVisualComponent v);
   SkinElementId GetSkin(ItemState s, ItemVisualComponent v);
   void SetValue(ItemState s, ItemVisualComponent v, int32_t value);
   int32_t GetValue(ItemState s, ItemVisualComponent v);
@@ -398,7 +398,7 @@ class Widget : public CSS {
 
   virtual std::vector<std::string> ExplodeValueWithoutSplittingParameters(
       std::string_view String);
-  virtual bool ParseRGBA(std::string_view description, CColor* output);
+  virtual bool ParseRGBA(std::string_view description, Color* output);
 
   static void PositionApplicator(PositionDescriptor& pos, PositionType Type,
                                  std::string_view Value);

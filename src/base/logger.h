@@ -23,25 +23,25 @@ constexpr auto LOGGER_BASE_OUTPUT_VERBOSITY = LOGVERBOSITY::LOG_DEBUG;
 // logged items with a verbosity above this value are killed compile time:
 constexpr auto LOGGER_DROPPED_OUTPUT_VERBOSITY = LOGVERBOSITY::LOG_WARNING;
 
-class CLoggerOutput {
+class LoggerOutput {
  public:
-  CLoggerOutput();
-  virtual ~CLoggerOutput();
+  LoggerOutput();
+  virtual ~LoggerOutput();
   virtual void Process(LOGVERBOSITY v, const std::string& String);
 };
 
-class CLoggerOutput_DebugOutput : public CLoggerOutput {
+class LoggerOutput_DebugOutput : public LoggerOutput {
  public:
-  CLoggerOutput_DebugOutput();
-  ~CLoggerOutput_DebugOutput() override;
+  LoggerOutput_DebugOutput();
+  ~LoggerOutput_DebugOutput() override;
   void Process(LOGVERBOSITY v, const std::string& String) override;
 };
 
-class CLoggerOutput_File : public CLoggerOutput {
+class LoggerOutput_File : public LoggerOutput {
  public:
-  CLoggerOutput_File();
-  explicit CLoggerOutput_File(std::string_view Filename, bool append = true);
-  ~CLoggerOutput_File() override;
+  LoggerOutput_File();
+  explicit LoggerOutput_File(std::string_view Filename, bool append = true);
+  ~LoggerOutput_File() override;
   bool OpenLogFile(std::string_view Filename, bool Append = true);
   void Process(LOGVERBOSITY v, const std::string& String) override;
 
@@ -51,29 +51,29 @@ class CLoggerOutput_File : public CLoggerOutput {
   bool Append;
 };
 
-class CLogger {
+class Logger {
  public:
-  CLogger();
-  virtual ~CLogger();
+  Logger();
+  virtual ~Logger();
   void Close();
   void Log(LOGVERBOSITY v, bool Prefix, bool TimeStamp,
            std::string_view String);
   void SetVerbosity(LOGVERBOSITY v);
-  void AddOutput(std::unique_ptr<CLoggerOutput>&& Output);
+  void AddOutput(std::unique_ptr<LoggerOutput>&& Output);
   void ResetEntryCounter();
   int32_t GetNewEntryCount();
 
  private:
-  std::vector<std::unique_ptr<CLoggerOutput>> Outputs;
+  std::vector<std::unique_ptr<LoggerOutput>> Outputs;
   LOGVERBOSITY Verbosity = LOGVERBOSITY::LOG_NONE;
   int32_t NewEntryCount = 0;
 };
 
-extern CLogger Logger;
+extern Logger logger;
 
 template <typename T, class... Args>
 inline void Log(LOGVERBOSITY v, T&& fmt, Args&&... args) {
-  Logger.Log(v, true, true, std::vformat(fmt, std::make_format_args(args...)));
+  logger.Log(v, true, true, std::vformat(fmt, std::make_format_args(args...)));
 }
 
 template <typename T, class... Args>

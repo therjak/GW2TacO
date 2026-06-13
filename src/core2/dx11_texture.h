@@ -67,6 +67,6 @@ class DX11TextureCube : public TextureCube {
 };
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* d3d_device_context,
-                       _In_ ID3D11Resource* source, CStreamWriter& writer);
+                       _In_ ID3D11Resource* source, StreamWriter& writer);
 
 }  // namespace renderer

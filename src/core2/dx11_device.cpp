@@ -930,7 +930,7 @@ bool DX11Device::BeginScene() { return true; }
 bool DX11Device::EndScene() { return true; }
 
 bool DX11Device::Clear(const bool clear_pixels, const bool clear_depth,
-                       const CColor& color, const float depth,
+                       const Color& color, const float depth,
                        const int32_t stencil) {
   const float clear_color[4] = {color.R() / 255.0f, color.G() / 255.0f,
                                 color.B() / 255.0f, color.A() / 255.0f};

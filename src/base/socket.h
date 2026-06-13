@@ -9,7 +9,7 @@
 #include "src/base/stream_writer.h"
 typedef UINT_PTR SOCKET;
 
-class CSocket : public CStreamReader, public CStreamWriter {
+class CSocket : public StreamReader, public StreamWriter {
  public:
   CSocket();
   CSocket(const CSocket&) = delete;

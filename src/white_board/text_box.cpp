@@ -29,10 +29,10 @@ namespace gui {
 
 void TextBox::DrawCursor(DrawAPI* API, const Point& p) {
   const ItemState s = GetState();
-  if (!(((globalTimer.GetTime() - cursor_blink_start_time_) / 500) % 2)) {
+  if (!(((global_timer.GetTime() - cursor_blink_start_time_) / 500) % 2)) {
     API->DrawRect(
         Rect(p + Point(0, 1), p + Point(1, GetFont(s)->GetLineHeight() - 1)),
-        CColor{0xffffffff});
+        Color{0xffffffff});
   }
 }
 
@@ -53,14 +53,14 @@ void TextBox::OnDraw(DrawAPI* API) {
 
   API->SetCropToClient(this);
 
-  CColor color = GetDisplayDescriptor().GetColor(i, WB_ITEM_FONTCOLOR);
-  CColor BackgroundColor(0x00000000);
-  CColor SelectionColor = Lerp(
+  Color color = GetDisplayDescriptor().GetColor(i, WB_ITEM_FONTCOLOR);
+  Color BackgroundColor(0x00000000);
+  Color SelectionColor = Lerp(
       selection_.display_descriptor_.GetColor(WB_STATE_HOVER,
                                               WB_ITEM_BACKGROUNDCOLOR),
       selection_.display_descriptor_.GetColor(WB_STATE_ACTIVE,
                                               WB_ITEM_BACKGROUNDCOLOR),
-      std::min(1.0f, (globalTimer.GetTime() - higlight_start_time_) / 300.0f));
+      std::min(1.0f, (global_timer.GetTime() - higlight_start_time_) / 300.0f));
   if (!InFocus()) {
     SelectionColor = selection_.display_descriptor_.GetColor(
         WB_STATE_NORMAL, WB_ITEM_BACKGROUNDCOLOR);
@@ -147,7 +147,7 @@ void TextBox::OnDraw(DrawAPI* API) {
 
 TextBox::TextBox(int32_t flags)
     : GuiType(),
-      cursor_blink_start_time_(globalTimer.GetTime()),
+      cursor_blink_start_time_(global_timer.GetTime()),
       flags_(flags) {}
 
 TextBox::~TextBox() = default;
@@ -179,7 +179,7 @@ void TextBox::SetCursorPos(int32_t pos, bool Selecting) {
   Font* Font = GetFont(GetState());
   const int32_t TabWidth = Font->GetWidth(' ') * 4;
 
-  cursor_blink_start_time_ = globalTimer.GetTime();
+  cursor_blink_start_time_ = global_timer.GetTime();
 
   if (!Selecting) {
     selection_start_ = selection_end_ = selection_origin_ = cursor_pos_ = pos;
@@ -351,7 +351,7 @@ void TextBox::Copy() {
 
     CloseClipboard();
 
-    higlight_start_time_ = globalTimer.GetTime();
+    higlight_start_time_ = global_timer.GetTime();
   } else {
     Log_Warn("[gui] Failed to open clipboard");
   }
@@ -1020,7 +1020,7 @@ void TextBox::SetSelection(int32_t start, int32_t end) {
       std::min(static_cast<int32_t>(text_.size()), std::max(start, end));
 }
 
-CColor TextBox::GetTextColor(int32_t Index, const CColor& DefaultColor) {
+Color TextBox::GetTextColor(int32_t Index, const Color& DefaultColor) {
   return DefaultColor;
 }
 

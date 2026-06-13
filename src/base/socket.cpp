@@ -13,7 +13,7 @@ WSADATA wsaData;
 #include <vector>
 #pragma comment(lib, "Ws2_32.lib")
 
-CSocket::CSocket() : CStreamReader(), CStreamWriter() {
+CSocket::CSocket() : StreamReader(), StreamWriter() {
   Socket = INVALID_SOCKET;
   LastActivity = GetTickCount64();
 }

@@ -132,7 +132,7 @@ TEST(MathTest, PlaneOps) {
 }
 
 TEST(MathTest, SphereOps) {
-  math::CSphere s({0.0f, 0.0f, 0.0f}, 1.0f);
+  math::Sphere s({0.0f, 0.0f, 0.0f}, 1.0f);
   EXPECT_TRUE(s.Contains({0.5f, 0.0f, 0.0f}));
   EXPECT_FALSE(s.Contains({1.5f, 0.0f, 0.0f}));
 

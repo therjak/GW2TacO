@@ -24,17 +24,16 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
     // clutter.
     return;
     if (HasConfigString("TS3APIKey")) {
-      f->Write(API, DICT("ts3authfail1"), Point(0, 0), CColor{0xffffffff});
-      f->Write(API, DICT("ts3authfail2"), Point(0, size), CColor{0xffffffff});
+      f->Write(API, DICT("ts3authfail1"), Point(0, 0), Color{0xffffffff});
+      f->Write(API, DICT("ts3authfail2"), Point(0, size), Color{0xffffffff});
       f->Write(API, DICT("ts3authfail3"), Point(0, size * 2),
-               CColor{0xffffffff});
-      f->Write(API, DICT("ts3authfail4"), Point(0, size * 3),
-               CColor{0xfffffff});
+               Color{0xffffffff});
+      f->Write(API, DICT("ts3authfail4"), Point(0, size * 3), Color{0xfffffff});
     } else {
-      f->Write(API, DICT("ts3nokeyset1"), Point(0, 0), CColor{0xffffffff});
-      f->Write(API, DICT("ts3nokeyset2"), Point(0, size), CColor{0xffffffff});
+      f->Write(API, DICT("ts3nokeyset1"), Point(0, 0), Color{0xffffffff});
+      f->Write(API, DICT("ts3nokeyset2"), Point(0, size), Color{0xffffffff});
       f->Write(API, DICT("ts3nokeyset3"), Point(0, size * 2),
-               CColor{0xffffffff});
+               Color{0xffffffff});
     }
   }
 

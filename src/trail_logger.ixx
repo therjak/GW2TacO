@@ -26,7 +26,7 @@ export struct GW2TrailVertex {
   math::Vector4 pos;
   math::Vector2 uv;
   math::Vector4 center_pos;
-  CColor color;
+  Color color;
 };
 
 export class GW2TrailDisplay;
@@ -47,7 +47,7 @@ export class GW2Trail {
                     float fadeAlpha, float width, float uvScale, float width2d);
   void SetCategory(GW2TacticalCategory* t);
 
-  bool Import(const CStreamReaderMemory& file, bool keepPoints = false);
+  bool Import(const StreamReaderMemory& file, bool keepPoints = false);
   bool Import(std::string_view fileName, std::string_view zipFile,
               bool keepPoints = false);
 

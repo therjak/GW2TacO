@@ -4,28 +4,28 @@
 #include <string_view>
 #include <vector>
 
-class CFileListEntry {
+class FileListEntry {
  public:
   std::string Path;
   std::string FileName;
   bool isDirectory = false;
 
-  CFileListEntry();
-  CFileListEntry(std::string&& pth, std::string&& fn);
-  CFileListEntry(std::string pth, std::string fn);
+  FileListEntry();
+  FileListEntry(std::string&& pth, std::string&& fn);
+  FileListEntry(std::string pth, std::string fn);
 
-  constexpr friend bool operator==(const CFileListEntry& f1,
-                                   const CFileListEntry& f2) = default;
+  constexpr friend bool operator==(const FileListEntry& f1,
+                                   const FileListEntry& f2) = default;
 };
 
-class CFileList {
+class FileList {
  public:
-  std::vector<CFileListEntry> Files;
+  std::vector<FileListEntry> Files;
 
-  CFileList();
-  ~CFileList();
-  explicit CFileList(std::string_view Mask, std::string_view Path = "",
-                     bool Recursive = false);
+  FileList();
+  ~FileList();
+  explicit FileList(std::string_view Mask, std::string_view Path = "",
+                    bool Recursive = false);
 
   void ExpandSearch(std::string_view Mask, std::string_view Path,
                     bool Recursive, bool getDirectories = false);

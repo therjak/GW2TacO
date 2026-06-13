@@ -237,25 +237,25 @@ APIKeyManager::Status APIKeyManager::DisplayStatusText(gui::DrawAPI* API,
       break;
     case Status::KeyNotSet:
       font->Write(API, DICT("apikeynotset1"), Point(0, 0),
-                  CColor(0xff, 0x40, 0x40, 0xff));
+                  Color(0xff, 0x40, 0x40, 0xff));
       font->Write(API, DICT("apikeynotset2"), Point(0, font->GetLineHeight()),
-                  CColor(0xff, 0x40, 0x40, 0xff));
+                  Color(0xff, 0x40, 0x40, 0xff));
       break;
     case Status::CouldNotIdentifyAccount:
       font->Write(API, DICT("couldntidentifyaccount1"), Point(0, 0),
-                  CColor(0xff, 0x40, 0x40, 0xff));
+                  Color(0xff, 0x40, 0x40, 0xff));
       font->Write(API, DICT("couldntidentifyaccount2"),
                   Point(0, font->GetLineHeight()),
-                  CColor(0xff, 0x40, 0x40, 0xff));
+                  Color(0xff, 0x40, 0x40, 0xff));
       break;
     case Status::WaitingForMumbleCharacterName:
       font->Write(API, DICT("waitingforcharactername1"), Point(0, 0));
       break;
     case Status::AllKeysInvalid:
       font->Write(API, DICT("apierror1"), Point(0, 0),
-                  CColor(0xff, 0x40, 0x40, 0xff));
+                  Color(0xff, 0x40, 0x40, 0xff));
       font->Write(API, DICT("apierror2"), Point(0, font->GetLineHeight()),
-                  CColor(0xff, 0x40, 0x40, 0xff));
+                  Color(0xff, 0x40, 0x40, 0xff));
       break;
   }
   return status;

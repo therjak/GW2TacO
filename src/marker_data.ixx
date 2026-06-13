@@ -70,7 +70,7 @@ export struct MarkerTypeData {
   float info_range_ = 2.0f;
 
   POIBehavior behavior_ = POIBehavior::AlwaysVisible;
-  CColor color_ = CColor(0xffffffff);
+  Color color_ = Color(0xffffffff);
 
   int16_t reset_length_ = 0;
   int16_t min_size_ = 5;

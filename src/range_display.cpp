@@ -134,8 +134,8 @@ void GW2RangeDisplay::DrawRangeCircle(gui::DrawAPI* api, float range,
     a1 = std::max(0.f, std::min(1.f, a1)) * alpha * 255.f;
     a2 = std::max(0.f, std::min(1.f, a2)) * alpha * 255.f;
 
-    api->DrawLine(pa, pb, CColor(228, 210, 157, static_cast<uint8_t>(a1)),
-                  CColor(228, 210, 157, static_cast<uint8_t>(a2)));
+    api->DrawLine(pa, pb, Color(228, 210, 157, static_cast<uint8_t>(a1)),
+                  Color(228, 210, 157, static_cast<uint8_t>(a2)));
   }
 }
 

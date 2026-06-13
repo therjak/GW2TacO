@@ -97,7 +97,7 @@ void GW2HPGrid::LoadGrids() {
         auto colhex = perc.GetAttributeAsString("color");
         unsigned int val = 0;
         std::sscanf(colhex.c_str(), "%x", &val);
-        line.color = CColor(val);
+        line.color = Color(val);
       }
       gd.displayed_percentages.emplace_back(std::move(line));
     }
