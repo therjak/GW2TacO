@@ -131,7 +131,7 @@ export struct CommercePrice {
 export struct GW2ItemData {
   int32_t item_id = 0;
   std::string name;
-  gui::WBATLASHANDLE icon = 0;
+  gui::AtlasHandle icon = 0;
   int32_t buy_price = 0;
   int32_t sell_price = 0;
   std::string icon_file;

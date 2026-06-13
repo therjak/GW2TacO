@@ -5,7 +5,7 @@ export module whiteboard:message_enum;
 
 export namespace gui {
 
-enum WBMESSAGE {
+enum MessageType {
   WBM_NONE = 0,
   WBM_REPOSITION = 0x100,
   WBM_ROOTRESIZE,

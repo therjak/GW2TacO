@@ -25,7 +25,7 @@ export class LocationalTimer {
   virtual ~LocationalTimer();
 
   void Update();
-  void ImportData(const CXMLNode& node);
+  void ImportData(const XMLNode& node);
 
   int32_t map_id_ = 0;
   math::CSphere enter_sphere_ = math::CSphere(math::Vector3(0, 0, 0), 0);
@@ -53,12 +53,12 @@ export class TimerDisplay : public gui::GuiType<"TimerDisplay", gui::Widget> {
   }
   ~TimerDisplay() override;
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   void OnDraw(gui::DrawAPI* api) override;
   bool IsMouseTransparent(const math::Point& client_space_point,
-                          gui::WBMESSAGE message_type) override;
+                          gui::MessageType type) override;
 };
 
 export std::vector<LocationalTimer> LocationalTimers;

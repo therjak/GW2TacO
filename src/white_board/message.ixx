@@ -12,7 +12,7 @@ export namespace gui {
 
 class Application;
 
-class CWBMessage final {
+class Message final {
  public:
   struct reposition {
     math::Rect rectangle;
@@ -28,23 +28,23 @@ class CWBMessage final {
     WBGUID menu;
   };
 
-  CWBMessage();
-  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target);
-  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target, int32_t x);
-  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target, int32_t x,
-             int32_t y);
-  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target, keyboard&& kb);
-  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target,
-             menucontext&& mc);
-  CWBMessage(Application* App, WBMESSAGE Message, WBGUID Target,
-             const math::Rect rec, bool moved, bool resized);
-  CWBMessage(const CWBMessage&) = default;
-  CWBMessage(CWBMessage&&) = default;
-  CWBMessage& operator=(const CWBMessage&) = default;
-  CWBMessage& operator=(CWBMessage&&) = default;
-  ~CWBMessage() = default;
+  Message();
+  Message(Application* App, MessageType Message, WBGUID Target);
+  Message(Application* App, MessageType Message, WBGUID Target, int32_t x);
+  Message(Application* App, MessageType Message, WBGUID Target, int32_t x,
+          int32_t y);
+  Message(Application* App, MessageType Message, WBGUID Target, keyboard&& kb);
+  Message(Application* App, MessageType Message, WBGUID Target,
+          menucontext&& mc);
+  Message(Application* App, MessageType Message, WBGUID Target,
+          const math::Rect rec, bool moved, bool resized);
+  Message(const Message&) = default;
+  Message(Message&&) = default;
+  Message& operator=(const Message&) = default;
+  Message& operator=(Message&&) = default;
+  ~Message() = default;
 
-  WBMESSAGE Get() const { return message_; }
+  MessageType Get() const { return message_; }
   [[nodiscard]] WBGUID GetTarget() const { return target_; }
 
   // WBM_CONTENTOFFSETCHANGE, yes, this is x,y but really?
@@ -86,7 +86,7 @@ class CWBMessage final {
 
  private:
   Application* app_;
-  WBMESSAGE message_;
+  MessageType message_;
   WBGUID target_;
   std::variant<reposition, std::array<int32_t, 2>, int32_t, keyboard,
                menucontext>

@@ -25,13 +25,13 @@ export namespace gui {
 typedef uint32_t WBGUID;
 class DrawAPI;
 class Application;
-class CWBMessage;
+class Message;
 
 constexpr int32_t WBMarginKeep = (INT_MAX);
 
 class ContextMenu;
 
-enum class WBALIGNMENT : uint8_t {
+enum class Alignment : uint8_t {
   TOP = 0,
   LEFT = 0,
   CENTER = 1,
@@ -40,7 +40,7 @@ enum class WBALIGNMENT : uint8_t {
   BOTTOM = 2,
 };
 
-enum WBITEMSTATE {
+enum ItemState {
   WB_STATE_NORMAL = 0,
   WB_STATE_ACTIVE = 1,
   WB_STATE_HOVER = 2,
@@ -50,7 +50,7 @@ enum WBITEMSTATE {
   WB_STATE_COUNT,  // don't remove this, used as array size
 };
 
-enum WBITEMVISUALCOMPONENT {
+enum ItemVisualComponent {
   WB_ITEM_BACKGROUNDCOLOR = 0,
   WB_ITEM_FOREGROUNDCOLOR,
   WB_ITEM_BORDERCOLOR,
@@ -77,7 +77,7 @@ enum WBITEMVISUALCOMPONENT {
   WB_ITEM_COUNT,  // don't remove this, used as array size
 };
 
-enum WBSCROLLDRAGMODE {
+enum ScrollDragMode {
   WB_SCROLLDRAG_NONE = 0,
   WB_SCROLLDRAG_BUTTON1,
   WB_SCROLLDRAG_UP,
@@ -110,7 +110,7 @@ class ScrollbarParams {
   int32_t view_size_;
 
   // dragging data
-  WBSCROLLDRAGMODE drag_mode_;
+  ScrollDragMode drag_mode_;
   int32_t drag_start_position_;
 };
 
@@ -119,11 +119,11 @@ class DisplayState {
   DisplayState();
   virtual ~DisplayState();
 
-  bool IsSet(WBITEMVISUALCOMPONENT v);
-  CColor GetColor(WBITEMVISUALCOMPONENT v);
-  WBSKINELEMENTID GetSkin(WBITEMVISUALCOMPONENT v);
-  void SetValue(WBITEMVISUALCOMPONENT v, int32_t value);
-  int32_t GetValue(WBITEMVISUALCOMPONENT v);
+  bool IsSet(ItemVisualComponent v);
+  CColor GetColor(ItemVisualComponent v);
+  SkinElementId GetSkin(ItemVisualComponent v);
+  void SetValue(ItemVisualComponent v, int32_t value);
+  int32_t GetValue(ItemVisualComponent v);
 
  private:
   std::array<uint32_t, WB_ITEM_COUNT> visuals_ = {0};
@@ -135,10 +135,10 @@ class DisplayProperties {
   DisplayProperties();
   virtual ~DisplayProperties();
 
-  CColor GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v);
-  WBSKINELEMENTID GetSkin(WBITEMSTATE s, WBITEMVISUALCOMPONENT v);
-  void SetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v, int32_t value);
-  int32_t GetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v);
+  CColor GetColor(ItemState s, ItemVisualComponent v);
+  SkinElementId GetSkin(ItemState s, ItemVisualComponent v);
+  void SetValue(ItemState s, ItemVisualComponent v, int32_t value);
+  int32_t GetValue(ItemState s, ItemVisualComponent v);
 
  private:
   std::array<DisplayState, WB_STATE_COUNT> states_;
@@ -147,16 +147,16 @@ class DisplayProperties {
 class CssPropertyBatch {
  public:
   CssPropertyBatch();
-  Font* GetFont(Application* App, WBITEMSTATE State);
+  Font* GetFont(Application* App, ItemState State);
   bool ApplyStyle(Widget* Owner, std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo);
 
   math::Rect border_sizes_;
-  WBTEXTALIGNMENTX text_align_x_;
-  WBTEXTALIGNMENTY text_align_y_;
+  TextAlignmentX text_align_x_;
+  TextAlignmentY text_align_y_;
   DisplayProperties display_descriptor_;
   PositionDescriptor position_descriptor_;
-  std::unordered_map<WBITEMSTATE, std::string> fonts_;
+  std::unordered_map<ItemState, std::string> fonts_;
 };
 
 class Widget : public CSS {
@@ -169,7 +169,7 @@ class Widget : public CSS {
   void RemoveChild(const Widget* Item);
   virtual bool Initialize(Widget* Parent, const math::Rect& Position);
   // return true if this item handled the message
-  virtual bool MessageProc(const CWBMessage& Message);
+  virtual bool MessageProc(const Message& message);
   bool FindItemInParentTree(const Widget* Item);
 
   [[nodiscard]] const WBGUID GetGuid() const { return guid_; }
@@ -263,7 +263,7 @@ class Widget : public CSS {
   const math::Rect& GetBorderSizes() const {
     return css_properties_.border_sizes_;
   }
-  virtual void SetFont(WBITEMSTATE State, std::string_view Font);
+  virtual void SetFont(ItemState State, std::string_view Font);
 
   bool ApplyStyle(std::string_view prop, std::string_view value,
                   const std::vector<std::string>& pseudo) override;
@@ -296,14 +296,13 @@ class Widget : public CSS {
                          std::string_view type = "") const;
   virtual void CalculateWindowPosition(const math::Size& s);
 
-  [[nodiscard]] CWBMessage BuildPositionMessage(const math::Rect& Pos) const;
-  [[nodiscard]] CWBMessage BuildPositionMessage(const math::Rect& Pos,
-                                                bool resized) const;
+  [[nodiscard]] Message BuildPositionMessage(const math::Rect& Pos) const;
+  [[nodiscard]] Message BuildPositionMessage(const math::Rect& Pos,
+                                             bool resized) const;
   void ApplyStyleDeclarations(std::string_view String);
 
-  virtual WBITEMSTATE GetState();
-  void SetDisplayProperty(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
-                          int32_t value);
+  virtual ItemState GetState();
+  void SetDisplayProperty(ItemState s, ItemVisualComponent v, int32_t value);
   DisplayProperties& GetDisplayDescriptor() {
     return css_properties_.display_descriptor_;
   }
@@ -312,7 +311,7 @@ class Widget : public CSS {
   }
   CssPropertyBatch& GetCSSProperties() { return css_properties_; }
 
-  virtual Font* GetFont(WBITEMSTATE State);
+  virtual Font* GetFont(ItemState State);
 
   PositionDescriptor& GetPositionDescriptor() {
     return css_properties_.position_descriptor_;
@@ -367,7 +366,7 @@ class Widget : public CSS {
   const Widget* GetFocusItem() const;
   virtual Widget* GetItemUnderMouse(const math::Point& Point,
                                     const math::Rect& CropRect,
-                                    WBMESSAGE MessageType);
+                                    MessageType type);
   const Widget* GetMouseItem() const;
   const Widget* GetMouseCaptureItem() const;
   const math::Point GetMousePos() const;
@@ -376,7 +375,7 @@ class Widget : public CSS {
   virtual void SetChildAsTopmost(int32_t Index);
   virtual void SetChildAsBottommost(int32_t Index);
   virtual bool IsMouseTransparent(const math::Point& ClientSpacePoint,
-                                  WBMESSAGE MessageType);
+                                  MessageType type);
 
   Widget* SetCapture();
   [[nodiscard]] bool ReleaseCapture() const;
@@ -386,14 +385,14 @@ class Widget : public CSS {
 
   virtual void DrawBackgroundItem(
       DrawAPI* API, DisplayProperties& Descriptor, const math::Rect& Pos,
-      WBITEMSTATE i, WBITEMVISUALCOMPONENT v = WB_ITEM_BACKGROUNDIMAGE);
-  virtual void DrawBackground(DrawAPI* API, WBITEMSTATE State);
+      ItemState i, ItemVisualComponent v = WB_ITEM_BACKGROUNDIMAGE);
+  virtual void DrawBackground(DrawAPI* API, ItemState State);
   virtual void DrawBackground(DrawAPI* API);
   virtual void DrawBorder(DrawAPI* API);
   virtual void ApplyOpacity(DrawAPI* API);
 
   virtual void DrawBackground(DrawAPI* API, const math::Rect& rect,
-                              WBITEMSTATE State, CssPropertyBatch& cssProps);
+                              ItemState State, CssPropertyBatch& cssProps);
   virtual void DrawBorder(DrawAPI* API, const math::Rect& rect,
                           CssPropertyBatch& cssProps);
 
@@ -401,10 +400,10 @@ class Widget : public CSS {
       std::string_view String);
   virtual bool ParseRGBA(std::string_view description, CColor* output);
 
-  static void PositionApplicator(PositionDescriptor& pos, WBPOSITIONTYPE Type,
+  static void PositionApplicator(PositionDescriptor& pos, PositionType Type,
                                  std::string_view Value);
   static void VisualStyleApplicator(DisplayProperties& desc,
-                                    WBITEMVISUALCOMPONENT TargetComponent,
+                                    ItemVisualComponent TargetComponent,
                                     int32_t Value,
                                     const std::vector<std::string>& pseudo);
   static void FontStyleApplicator(CssPropertyBatch& desc,
@@ -448,22 +447,22 @@ class Widget : public CSS {
                                              int32_t scrollbarsize,
                                              int32_t delta);
   virtual void DrawScrollbarButton(DrawAPI* API, ScrollbarParams& s,
-                                   math::Rect& r, WBITEMVISUALCOMPONENT Button);
+                                   math::Rect& r, ItemVisualComponent Button);
   virtual void DrawHScrollbar(DrawAPI* API);
   virtual void DrawVScrollbar(DrawAPI* API);
-  virtual void HandleHScrollbarClick(WBSCROLLDRAGMODE m);
-  virtual void HandleVScrollbarClick(WBSCROLLDRAGMODE m);
+  virtual void HandleHScrollbarClick(ScrollDragMode m);
+  virtual void HandleVScrollbarClick(ScrollDragMode m);
   virtual bool AllowMouseHighlightWhileCaptureItem() const { return false; }
 
   bool ScanPXValue(std::string_view Value, int32_t* Result,
                    std::string_view PropName);
-  bool ScanSkinValue(std::string_view Value, WBSKINELEMENTID* Result,
+  bool ScanSkinValue(std::string_view Value, SkinElementId* Result,
                      std::string_view PropName);
 
   Widget* ChildSearcherFunct(std::string_view value,
                              std::string_view type = "");
 
-  WBITEMSTATE GetScrollbarState(WBITEMVISUALCOMPONENT Component, math::Rect r);
+  ItemState GetScrollbarState(ItemVisualComponent Component, math::Rect r);
   virtual void ChangeContentOffset(math::Point ContentOff);
 
   static const std::string& GetClassName() {

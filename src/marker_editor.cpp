@@ -18,7 +18,7 @@ using math::Rect;
 using math::Vector3;
 
 bool GW2MarkerEditor::IsMouseTransparent(const Point& client_space_point,
-                                         gui::WBMESSAGE message_type) {
+                                         gui::MessageType type) {
   return true;
 }
 
@@ -33,7 +33,7 @@ bool GW2MarkerEditor::Initialize(gui::Widget* parent,
 
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
-gui::Widget* GW2MarkerEditor::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* GW2MarkerEditor::Factory(gui::Widget* root, const XMLNode& node,
                                       const Rect& pos) {
   return GW2MarkerEditor::Create(root, pos);
 }
@@ -95,7 +95,7 @@ void GW2MarkerEditor::OnDraw(gui::DrawAPI* api) {
   }
 }
 
-bool GW2MarkerEditor::MessageProc(const gui::CWBMessage& message) {
+bool GW2MarkerEditor::MessageProc(const gui::Message& message) {
   switch (message.Get()) {
     case gui::WBM_COMMAND: {
       if (hidden_) break;

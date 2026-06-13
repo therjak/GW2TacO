@@ -29,13 +29,13 @@ bool OverlayApplication::Initialize(
 
   draw_api_->SetUIBlendState(std::move(gui_blend_state));
 
-  hole_punch_blend_state = draw_api_->GetDevice()->CreateBlendState();
-  hole_punch_blend_state->SetBlendEnable(0, true);
-  hole_punch_blend_state->SetIndependentBlend(true);
-  hole_punch_blend_state->SetSrcBlend(0, renderer::BlendFactor::kZero);
-  hole_punch_blend_state->SetDestBlend(0, renderer::BlendFactor::kZero);
-  hole_punch_blend_state->SetSrcBlendAlpha(0, renderer::BlendFactor::kZero);
-  hole_punch_blend_state->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state_ = draw_api_->GetDevice()->CreateBlendState();
+  hole_punch_blend_state_->SetBlendEnable(0, true);
+  hole_punch_blend_state_->SetIndependentBlend(true);
+  hole_punch_blend_state_->SetSrcBlend(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state_->SetDestBlend(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state_->SetSrcBlendAlpha(0, renderer::BlendFactor::kZero);
+  hole_punch_blend_state_->SetDestBlendAlpha(0, renderer::BlendFactor::kZero);
 
   return true;
 }

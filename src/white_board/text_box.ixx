@@ -67,7 +67,7 @@ class TextBox : public GuiType<"textbox", Widget> {
   [[nodiscard]] std::string GetText() const { return text_; }
   void SetText(std::string_view val, bool EnableUndo = false);
 
-  static Widget* Factory(Widget* Root, const CXMLNode& node,
+  static Widget* Factory(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
   virtual void SetSelection(int32_t start, int32_t end);
@@ -75,7 +75,7 @@ class TextBox : public GuiType<"textbox", Widget> {
 
  protected:
   void OnDraw(DrawAPI* API) override;
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const Message& message) override;
   void InsertText(int32_t Position, std::string_view Text, int32_t Length,
                   int32_t CursorPosAfter, bool ChangeHistory = true);
   void RemoveText(int32_t Position, int32_t Length, int32_t CursorPosAfter,

@@ -7,15 +7,13 @@ import xml;
 
 namespace renderer {
 
-RenderStateBatch::RenderStateBatch(Device* device)
-    : Resource(device) {
+RenderStateBatch::RenderStateBatch(Device* device) : Resource(device) {
   dirty_ = true;
 }
 
 RenderStateBatch::~RenderStateBatch() = default;
 
-BlendState::BlendState(Device* device)
-    : RenderStateBatch(device) {
+BlendState::BlendState(Device* device) : RenderStateBatch(device) {
   alpha_to_coverage_ = false;
   independent_blend_ = false;
 
@@ -33,23 +31,21 @@ BlendState::BlendState(Device* device)
 
 BlendState::~BlendState() = default;
 
-void BlendState::SetRenderTargetWriteMask(int32_t render_target,
-                                               uint8_t mask) {
+void BlendState::SetRenderTargetWriteMask(int32_t render_target, uint8_t mask) {
   if (render_target_blend_states_[render_target].render_target_write_mask !=
       mask)
     dirty_ = true;
   render_target_blend_states_[render_target].render_target_write_mask = mask;
 }
 
-void BlendState::SetBlendOpAlpha(int32_t render_target,
-                                      BlendOp blend_op) {
+void BlendState::SetBlendOpAlpha(int32_t render_target, BlendOp blend_op) {
   if (render_target_blend_states_[render_target].blend_op_alpha != blend_op)
     dirty_ = true;
   render_target_blend_states_[render_target].blend_op_alpha = blend_op;
 }
 
 void BlendState::SetDestBlendAlpha(int32_t render_target,
-                                        BlendFactor blend_factor) {
+                                   BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].dest_blend_alpha !=
       blend_factor)
     dirty_ = true;
@@ -57,7 +53,7 @@ void BlendState::SetDestBlendAlpha(int32_t render_target,
 }
 
 void BlendState::SetSrcBlendAlpha(int32_t render_target,
-                                       BlendFactor blend_factor) {
+                                  BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].src_blend_alpha !=
       blend_factor)
     dirty_ = true;
@@ -70,15 +66,13 @@ void BlendState::SetBlendOp(int32_t render_target, BlendOp blend_op) {
   render_target_blend_states_[render_target].blend_op = blend_op;
 }
 
-void BlendState::SetDestBlend(int32_t render_target,
-                                   BlendFactor blend_factor) {
+void BlendState::SetDestBlend(int32_t render_target, BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].dest_blend != blend_factor)
     dirty_ = true;
   render_target_blend_states_[render_target].dest_blend = blend_factor;
 }
 
-void BlendState::SetSrcBlend(int32_t render_target,
-                                  BlendFactor blend_factor) {
+void BlendState::SetSrcBlend(int32_t render_target, BlendFactor blend_factor) {
   if (render_target_blend_states_[render_target].src_blend != blend_factor)
     dirty_ = true;
   render_target_blend_states_[render_target].src_blend = blend_factor;
@@ -100,7 +94,7 @@ void BlendState::SetAlphaToCoverage(bool enabled) {
   alpha_to_coverage_ = enabled;
 }
 
-bool BlendState::Import(CXMLNode* node) {
+bool BlendState::Import(XMLNode* node) {
   std::string value_str;
 
   if (node->HasAttribute("AlphaToCoverage")) {
@@ -111,7 +105,7 @@ bool BlendState::Import(CXMLNode* node) {
   }
 
   for (int32_t x = 0; x < node->GetChildCount("RenderTarget"); x++) {
-    CXMLNode child = node->GetChild("RenderTarget", x);
+    XMLNode child = node->GetChild("RenderTarget", x);
     int32_t id = 0;
     child.GetAttributeAsInteger("Target", &id);
 
@@ -161,12 +155,12 @@ bool BlendState::Import(CXMLNode* node) {
   return true;
 }
 
-void BlendState::Export(CXMLNode* node) {
+void BlendState::Export(XMLNode* node) {
   node->AddChild("AlphaToCoverage").SetInt(alpha_to_coverage_);
   node->AddChild("IndependentBlend").SetInt(independent_blend_);
 
   for (int32_t x = 0; x < 8; x++) {
-    CXMLNode blend_node = node->AddChild("RenderTarget");
+    XMLNode blend_node = node->AddChild("RenderTarget");
     blend_node.SetAttributeFromInteger("Target", x);
 
     blend_node.AddChild("BlendEnable")
@@ -225,7 +219,7 @@ void DepthStencilState::SetDepthEnable(bool enabled) {
   depth_enable_ = enabled;
 }
 
-bool DepthStencilState::Import(CXMLNode* node) {
+bool DepthStencilState::Import(XMLNode* node) {
   if (node->GetChildCount("DepthEnable")) {
     node->GetChild("DepthEnable").GetValue(&depth_enable_);
   }
@@ -241,15 +235,14 @@ bool DepthStencilState::Import(CXMLNode* node) {
   return true;
 }
 
-void DepthStencilState::Export(CXMLNode* node) {
+void DepthStencilState::Export(XMLNode* node) {
   node->AddChild("DepthEnable").SetInt(depth_enable_);
   node->AddChild("ZWriteEnable").SetInt(z_write_enable_);
   node->AddChild("DepthFunc")
       .SetText(FindNameByEnum(ComparisonFunctionNames, depth_func_).data());
 }
 
-RasterizerState::RasterizerState(Device* device)
-    : RenderStateBatch(device) {
+RasterizerState::RasterizerState(Device* device) : RenderStateBatch(device) {
   fill_mode_ = FillMode::kSolid;
   cull_mode_ = CullMode::kCcw;
   front_counter_clockwise_ = false;
@@ -314,7 +307,7 @@ void RasterizerState::SetFillMode(FillMode mode) {
   fill_mode_ = mode;
 }
 
-bool RasterizerState::Import(CXMLNode* node) {
+bool RasterizerState::Import(XMLNode* node) {
   if (node->GetChildCount("FillMode")) {
     auto value_str = node->GetChild("FillMode").GetText();
     FindEnumByName(FillModeNames, value_str, fill_mode_);
@@ -354,7 +347,7 @@ bool RasterizerState::Import(CXMLNode* node) {
   return true;
 }
 
-void RasterizerState::Export(CXMLNode* node) {
+void RasterizerState::Export(XMLNode* node) {
   node->AddChild("FillMode")
       .SetText(FindNameByEnum(FillModeNames, fill_mode_).data());
   node->AddChild("CullMode")
@@ -370,8 +363,7 @@ void RasterizerState::Export(CXMLNode* node) {
   node->AddChild("AntialiasedLineEnable").SetInt(antialiased_line_enable_);
 }
 
-SamplerState::SamplerState(Device* device)
-    : RenderStateBatch(device) {
+SamplerState::SamplerState(Device* device) : RenderStateBatch(device) {
   filter_ = Filter::kMinMagMipLinear;
   address_u_ = TextureAddressMode::kClamp;
   address_v_ = TextureAddressMode::kClamp;
@@ -442,7 +434,7 @@ void SamplerState::SetFilter(Filter filter) {
   filter_ = filter;
 }
 
-bool SamplerState::Import(CXMLNode* node) {
+bool SamplerState::Import(XMLNode* node) {
   if (node->GetChildCount("Filter")) {
     auto value_str = node->GetChild("Filter").GetText();
     FindEnumByName(FilterNames, value_str, filter_);
@@ -483,7 +475,7 @@ bool SamplerState::Import(CXMLNode* node) {
   return true;
 }
 
-void SamplerState::Export(CXMLNode* node) {
+void SamplerState::Export(XMLNode* node) {
   node->AddChild("Filter").SetText(FindNameByEnum(FilterNames, filter_));
   node->AddChild("AddressU")
       .SetText(FindNameByEnum(AddressModeNames, address_u_));

@@ -33,29 +33,28 @@ DisplayState::DisplayState() = default;
 
 DisplayState::~DisplayState() = default;
 
-CColor DisplayState::GetColor(WBITEMVISUALCOMPONENT v) {
+CColor DisplayState::GetColor(ItemVisualComponent v) {
   return CColor(visuals_[v]);
 }
 
-bool DisplayState::IsSet(WBITEMVISUALCOMPONENT v) { return visual_set_[v]; }
+bool DisplayState::IsSet(ItemVisualComponent v) { return visual_set_[v]; }
 
-void DisplayState::SetValue(WBITEMVISUALCOMPONENT v, int32_t value) {
+void DisplayState::SetValue(ItemVisualComponent v, int32_t value) {
   visuals_[v] = value;
   visual_set_[v] = true;
 }
 
-WBSKINELEMENTID DisplayState::GetSkin(WBITEMVISUALCOMPONENT v) {
+SkinElementId DisplayState::GetSkin(ItemVisualComponent v) {
   return visuals_[v];
 }
 
-int32_t DisplayState::GetValue(WBITEMVISUALCOMPONENT v) { return visuals_[v]; }
+int32_t DisplayState::GetValue(ItemVisualComponent v) { return visuals_[v]; }
 
 DisplayProperties::DisplayProperties() = default;
 
 DisplayProperties::~DisplayProperties() = default;
 
-WBSKINELEMENTID DisplayProperties::GetSkin(WBITEMSTATE s,
-                                           WBITEMVISUALCOMPONENT v) {
+SkinElementId DisplayProperties::GetSkin(ItemState s, ItemVisualComponent v) {
   // if (States.HasKey(s))
   {
     if (states_[s].IsSet(v)) return states_[s].GetSkin(v);
@@ -70,7 +69,7 @@ WBSKINELEMENTID DisplayProperties::GetSkin(WBITEMSTATE s,
   return 0xffffffff;
 }
 
-CColor DisplayProperties::GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
+CColor DisplayProperties::GetColor(ItemState s, ItemVisualComponent v) {
   // if (States.HasKey(s))
   {
     if (states_[s].IsSet(v)) return states_[s].GetColor(v);
@@ -96,22 +95,22 @@ CColor DisplayProperties::GetColor(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
   }
 }
 
-void DisplayProperties::SetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
+void DisplayProperties::SetValue(ItemState s, ItemVisualComponent v,
                                  int32_t value) {
   states_[s].SetValue(v, value);
 }
 
-int32_t DisplayProperties::GetValue(WBITEMSTATE s, WBITEMVISUALCOMPONENT v) {
+int32_t DisplayProperties::GetValue(ItemState s, ItemVisualComponent v) {
   if (states_[s].IsSet(v)) return states_[s].GetValue(v);
   return -1;
 }
 
 CssPropertyBatch::CssPropertyBatch()
     : border_sizes_(0, 0, 0, 0),
-      text_align_x_(WBTEXTALIGNMENTX::WBTA_CENTERX),
-      text_align_y_(WBTEXTALIGNMENTY::WBTA_CENTERY) {}
+      text_align_x_(TextAlignmentX::WBTA_CENTERX),
+      text_align_y_(TextAlignmentY::WBTA_CENTERY) {}
 
-Font* CssPropertyBatch::GetFont(Application* app, WBITEMSTATE State) {
+Font* CssPropertyBatch::GetFont(Application* app, ItemState State) {
   if (fonts_.find(State) != fonts_.end()) {
     return app->GetFont(fonts_[State]);
   }
@@ -149,7 +148,7 @@ void Widget::UpdateScreenRect() {
   }
 }
 
-void Widget::HandleHScrollbarClick(WBSCROLLDRAGMODE m) {
+void Widget::HandleHScrollbarClick(ScrollDragMode m) {
   switch (m) {
     case WB_SCROLLDRAG_BUTTON1:
       SetHScrollbarPos(GetHScrollbarPos() - GetScrollbarStep(), true);
@@ -168,7 +167,7 @@ void Widget::HandleHScrollbarClick(WBSCROLLDRAGMODE m) {
   }
 }
 
-void Widget::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
+void Widget::HandleVScrollbarClick(ScrollDragMode m) {
   switch (m) {
     case WB_SCROLLDRAG_BUTTON1:
       SetVScrollbarPos(GetVScrollbarPos() - GetScrollbarStep(), true);
@@ -187,11 +186,11 @@ void Widget::HandleVScrollbarClick(WBSCROLLDRAGMODE m) {
   }
 }
 
-bool Widget::MessageProc(const CWBMessage& Message) {
-  switch (Message.Get()) {
+bool Widget::MessageProc(const Message& message) {
+  switch (message.Get()) {
     case WBM_NONE:
       Log_Err("[gui] Message Type 0 Encountered. Message Target is {:d}",
-              Message.GetTarget());
+              message.GetTarget());
       return true;
 
     case WBM_LEFTBUTTONDOWN:
@@ -199,7 +198,7 @@ bool Widget::MessageProc(const CWBMessage& Message) {
       if (GetMouseItem() == this) {
         Rect b1, up, th, dn, b2;
         // mouse pos
-        Point mp = Message.GetPosition();
+        Point mp = message.GetPosition();
         if (GetHScrollbarRectangles(&b1, &up, &th, &dn, &b2)) {
           if (ClientToScreen(b1).Contains(mp)) {
             HScrollbar.drag_mode_ = WB_SCROLLDRAG_BUTTON1;
@@ -256,7 +255,7 @@ bool Widget::MessageProc(const CWBMessage& Message) {
             HScrollbar.drag_mode_ != WB_SCROLLDRAG_THUMB) {
           Rect b1, up, th, dn, b2;
           // mouse pos
-          Point mp = Message.GetPosition();
+          Point mp = message.GetPosition();
           if (GetHScrollbarRectangles(&b1, &up, &th, &dn, &b2)) {
             if (ClientToScreen(b1).Contains(mp) &&
                 HScrollbar.drag_mode_ == WB_SCROLLDRAG_BUTTON1) {
@@ -283,7 +282,7 @@ bool Widget::MessageProc(const CWBMessage& Message) {
             VScrollbar.drag_mode_ != WB_SCROLLDRAG_THUMB) {
           Rect b1, up, th, dn, b2;
           // mouse pos
-          Point mp = Message.GetPosition();
+          Point mp = message.GetPosition();
           if (GetVScrollbarRectangles(&b1, &up, &th, &dn, &b2)) {
             if (ClientToScreen(b1).Contains(mp) &&
                 VScrollbar.drag_mode_ == WB_SCROLLDRAG_BUTTON1) {
@@ -313,19 +312,19 @@ bool Widget::MessageProc(const CWBMessage& Message) {
       if (GetMouseCaptureItem() == this) {
         if (ScrollbarDragged()) {
           // mouse delta
-          const Point md = Message.GetPosition() - app_->GetLeftDownPos();
+          const Point md = message.GetPosition() - app_->GetLeftDownPos();
 
           if (HScrollbar.drag_mode_ == WB_SCROLLDRAG_THUMB) {
             const int32_t newpos = CalculateScrollbarMovement(
                 HScrollbar, GetClientRect().Width(), md.x);
             HScrollbar.scroll_pos_ = newpos;
-            app_->Send(CWBMessage(app_, WBM_HSCROLL, GetGuid(), newpos));
+            app_->Send(Message(app_, WBM_HSCROLL, GetGuid(), newpos));
           }
           if (VScrollbar.drag_mode_ == WB_SCROLLDRAG_THUMB) {
             const int32_t newpos = CalculateScrollbarMovement(
                 VScrollbar, GetClientRect().Height(), md.y);
             VScrollbar.scroll_pos_ = newpos;
-            app_->Send(CWBMessage(app_, WBM_VSCROLL, GetGuid(), newpos));
+            app_->Send(Message(app_, WBM_VSCROLL, GetGuid(), newpos));
           }
 
           return true;
@@ -348,11 +347,11 @@ bool Widget::MessageProc(const CWBMessage& Message) {
       break;
 
     case WBM_REPOSITION:
-      if (Message.GetTarget() == guid_) {
-        ApplyPosition(Message.Rectangle());
-        if (Message.Moved()) OnMove(Message.Rectangle().TopLeft());
-        if (Message.Resized()) {
-          OnResize(Message.Rectangle().Size());
+      if (message.GetTarget() == guid_) {
+        ApplyPosition(message.Rectangle());
+        if (message.Moved()) OnMove(message.Rectangle().TopLeft());
+        if (message.Resized()) {
+          OnResize(message.Rectangle().Size());
         }
         for (auto& c : children_) {
           c->CalculateWindowPosition(GetClientRect().Size());
@@ -364,14 +363,14 @@ bool Widget::MessageProc(const CWBMessage& Message) {
       break;
 
       // case WBM_FOCUSLOST:
-      //   if (Message.GetTarget() == Guid) {
+      //   if (message.GetTarget() == Guid) {
       //     if (Parent) Parent->child_in_focus_ = NULL;
       //     return true;
       //   }
       //   return false;
 
     case WBM_HIDE:
-      if (Message.GetTarget() == guid_) {
+      if (message.GetTarget() == guid_) {
         hidden_ = true;
         return true;
       }
@@ -379,7 +378,7 @@ bool Widget::MessageProc(const CWBMessage& Message) {
       break;
 
     case WBM_UNHIDE:
-      if (Message.GetTarget() == guid_) {
+      if (message.GetTarget() == guid_) {
         hidden_ = false;
         return true;
       }
@@ -387,8 +386,8 @@ bool Widget::MessageProc(const CWBMessage& Message) {
       break;
 
     case WBM_CONTENTOFFSETCHANGE:
-      if (Message.GetTarget() == GetGuid()) {
-        ChangeContentOffset(Message.GetPosition());
+      if (message.GetTarget() == GetGuid()) {
+        ChangeContentOffset(message.GetPosition());
         return true;
       }
       break;
@@ -401,46 +400,46 @@ bool Widget::MessageProc(const CWBMessage& Message) {
 }
 
 void Widget::DrawBackgroundItem(DrawAPI* API, DisplayProperties& Descriptor,
-                                const Rect& Pos, WBITEMSTATE i,
-                                WBITEMVISUALCOMPONENT v) {
+                                const Rect& Pos, ItemState i,
+                                ItemVisualComponent v) {
   CColor bck = Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR);
   if (bck.A()) {
     // API->SetCropRect(ClientToScreen(Pos));
     API->DrawRect(Pos, Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR));
   }
 
-  const WBSKINELEMENTID id = Descriptor.GetSkin(i, v);
+  const SkinElementId id = Descriptor.GetSkin(i, v);
 
   if (id != 0xffffffff) {
     if (id & 0x80000000) {
       // skin element
       SkinElement* e = app_->GetSkin()->GetElement(id);
       if (e) {
-        const auto AlignX = static_cast<WBALIGNMENT>(
+        const auto AlignX = static_cast<Alignment>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_X));
-        const auto AlignY = static_cast<WBALIGNMENT>(
+        const auto AlignY = static_cast<Alignment>(
             Descriptor.GetValue(i, WB_ITEM_BACKGROUNDALIGNMENT_Y));
         const Size elementsize = e->GetElementSize(API);
         Point offset = Point(0, 0);
         Size size = Pos.Size();
 
         if (e->GetBehavior(0) ==
-            WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
-          if (AlignX == WBALIGNMENT::RIGHT) {
+            SkinElementBehavior::WB_SKINBEHAVIOR_PIXELCORRECT) {
+          if (AlignX == Alignment::RIGHT) {
             offset.x = Pos.Width() - elementsize.x;
           }
-          if (AlignX == WBALIGNMENT::CENTER) {
+          if (AlignX == Alignment::CENTER) {
             offset.x = (Pos.Width() - elementsize.x) / 2;
           }
           size.x = elementsize.x;
         }
 
         if (e->GetBehavior(1) ==
-            WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT) {
-          if (AlignY == WBALIGNMENT::BOTTOM) {
+            SkinElementBehavior::WB_SKINBEHAVIOR_PIXELCORRECT) {
+          if (AlignY == Alignment::BOTTOM) {
             offset.y = Pos.Height() - elementsize.y;
           }
-          if (AlignY == WBALIGNMENT::MIDDLE) {
+          if (AlignY == Alignment::MIDDLE) {
             offset.y = (Pos.Height() - elementsize.y) / 2;
           }
           size.y = elementsize.y;
@@ -459,13 +458,13 @@ void Widget::DrawBackgroundItem(DrawAPI* API, DisplayProperties& Descriptor,
   }
 }
 
-void Widget::DrawBackground(DrawAPI* API, WBITEMSTATE State) {
+void Widget::DrawBackground(DrawAPI* API, ItemState State) {
   DrawBackground(API, GetWindowRect(), State, css_properties_);
 }
 
 void Widget::DrawBackground(DrawAPI* API) { DrawBackground(API, GetState()); }
 
-void Widget::DrawBackground(DrawAPI* API, const Rect& rect, WBITEMSTATE State,
+void Widget::DrawBackground(DrawAPI* API, const Rect& rect, ItemState State,
                             CssPropertyBatch& cssProps) {
   DrawBackgroundItem(API, cssProps.display_descriptor_, rect, State);
 }
@@ -606,7 +605,7 @@ Widget* Widget::SetCapture() { return app_->SetCapture(this); }
 bool Widget::ReleaseCapture() const { return app_->ReleaseCapture(); }
 
 bool Widget::IsMouseTransparent(const Point& ClientSpacePoint,
-                                WBMESSAGE MessageType) {
+                                MessageType message_type) {
   if (force_mouse_transparent_) return true;
   if (hidden_) return true;
   return false;
@@ -622,7 +621,7 @@ bool Widget::FindItemInParentTree(const Widget* Item) {
 }
 
 Widget* Widget::GetItemUnderMouse(const Point& Pos, const Rect& CropRect,
-                                  WBMESSAGE MessageType) {
+                                  MessageType message_type) {
   Rect LocalCropRect = CropRect;
   LocalCropRect = LocalCropRect | screen_rect_;
 
@@ -634,11 +633,11 @@ Widget* Widget::GetItemUnderMouse(const Point& Pos, const Rect& CropRect,
 
   for (int32_t x = children_.size(); x > 0; x--) {
     Widget* Res =
-        children_[x - 1]->GetItemUnderMouse(Pos, LocalCropRect, MessageType);
+        children_[x - 1]->GetItemUnderMouse(Pos, LocalCropRect, message_type);
     if (Res) return Res;
   }
 
-  if (IsMouseTransparent(ScreenToClient(Pos), MessageType)) return nullptr;
+  if (IsMouseTransparent(ScreenToClient(Pos), message_type)) return nullptr;
 
   return this;
 }
@@ -779,39 +778,39 @@ Rect Widget::ScreenToClient(const Rect& p) const {
   return p - screen_rect_.TopLeft() - client_rect_.TopLeft();
 }
 
-CWBMessage Widget::BuildPositionMessage(const Rect& Pos) const {
+Message Widget::BuildPositionMessage(const Rect& Pos) const {
   const bool moved = Pos.x1 != position_.x1 || Pos.y1 != position_.y1;
   const bool resized =
       Pos.Width() != position_.Width() || Pos.Height() != position_.Height();
-  return CWBMessage(app_, WBM_REPOSITION, guid_, Pos, moved, resized);
+  return Message(app_, WBM_REPOSITION, guid_, Pos, moved, resized);
 }
 
-CWBMessage Widget::BuildPositionMessage(const Rect& Pos, bool resized) const {
+Message Widget::BuildPositionMessage(const Rect& Pos, bool resized) const {
   const bool moved = Pos.x1 != position_.x1 || Pos.y1 != position_.y1;
-  return CWBMessage(app_, WBM_REPOSITION, guid_, Pos, moved, resized);
+  return Message(app_, WBM_REPOSITION, guid_, Pos, moved, resized);
 }
 
 void Widget::SetPosition(const Rect& Pos) {
-  const CWBMessage m = BuildPositionMessage(Pos);
+  const Message m = BuildPositionMessage(Pos);
   app_->Send(m);
 }
 
 void Widget::SetClientPadding(int32_t left, int32_t top, int32_t right,
                               int32_t bottom) {
   if (left != WBMarginKeep) {
-    GetPositionDescriptor().SetValue(WBPOSITIONTYPE::WB_PADDING_LEFT, 0,
+    GetPositionDescriptor().SetValue(PositionType::WB_PADDING_LEFT, 0,
                                      static_cast<float>(left));
   }
   if (right != WBMarginKeep) {
-    GetPositionDescriptor().SetValue(WBPOSITIONTYPE::WB_PADDING_RIGHT, 0,
+    GetPositionDescriptor().SetValue(PositionType::WB_PADDING_RIGHT, 0,
                                      static_cast<float>(right));
   }
   if (top != WBMarginKeep) {
-    GetPositionDescriptor().SetValue(WBPOSITIONTYPE::WB_PADDING_TOP, 0,
+    GetPositionDescriptor().SetValue(PositionType::WB_PADDING_TOP, 0,
                                      static_cast<float>(top));
   }
   if (bottom != WBMarginKeep) {
-    GetPositionDescriptor().SetValue(WBPOSITIONTYPE::WB_PADDING_BOTTOM, 0,
+    GetPositionDescriptor().SetValue(PositionType::WB_PADDING_BOTTOM, 0,
                                      static_cast<float>(bottom));
   }
 
@@ -853,8 +852,8 @@ bool Widget::InLocalFocus() const {
 void Widget::SetFocus() {
   const Widget* fi = GetFocusItem();
   if (fi != this) {
-    app_->Send(CWBMessage(app_, WBM_FOCUSGAINED, GetGuid()));
-    if (fi) app_->Send(CWBMessage(app_, WBM_FOCUSLOST, fi->GetGuid()));
+    app_->Send(Message(app_, WBM_FOCUSGAINED, GetGuid()));
+    if (fi) app_->Send(Message(app_, WBM_FOCUSLOST, fi->GetGuid()));
   }
 
   Widget* p = parent_;
@@ -868,7 +867,7 @@ void Widget::SetFocus() {
 
 void Widget::ClearFocus() {
   // if (Parent) Parent->child_in_focus_ = NULL;
-  app_->Send(CWBMessage(app_, WBM_FOCUSLOST, GetGuid()));
+  app_->Send(Message(app_, WBM_FOCUSLOST, GetGuid()));
 }
 
 bool Widget::MouseOver() const {
@@ -895,7 +894,7 @@ Widget* Widget::GetChild(uint32_t idx) { return children_[idx].get(); }
 Size Widget::GetContentSize() { return GetClientRect().Size(); }
 
 void Widget::Hide(bool Hide) {
-  app_->Send(CWBMessage(app_, Hide ? WBM_HIDE : WBM_UNHIDE, GetGuid()));
+  app_->Send(Message(app_, Hide ? WBM_HIDE : WBM_UNHIDE, GetGuid()));
 }
 
 bool Widget::IsHidden() { return hidden_; }
@@ -979,7 +978,7 @@ int32_t Widget::CalculateScrollbarMovement(const ScrollbarParams& s,
   return newscrollpos;
 }
 
-WBITEMSTATE Widget::GetScrollbarState(WBITEMVISUALCOMPONENT Component, Rect r) {
+ItemState Widget::GetScrollbarState(ItemVisualComponent Component, Rect r) {
   // mouse not over item, early exit if dragging is not in effect
   const bool HBar =
       Component == WB_ITEM_SCROLL_HBAR || Component == WB_ITEM_SCROLL_HTHUMB ||
@@ -1086,9 +1085,9 @@ bool Widget::GetHScrollbarRectangles(Rect* button1, Rect* Scrollup, Rect* Thumb,
 }
 
 void Widget::DrawScrollbarButton(DrawAPI* API, ScrollbarParams& s, Rect& r,
-                                 WBITEMVISUALCOMPONENT Button) {
-  const WBITEMSTATE State = GetScrollbarState(Button, r);
-  const WBSKINELEMENTID ButtonSkin =
+                                 ItemVisualComponent Button) {
+  const ItemState State = GetScrollbarState(Button, r);
+  const SkinElementId ButtonSkin =
       GetDisplayDescriptor().GetSkin(State, Button);
 
   if (ButtonSkin == 0xffffffff) {
@@ -1121,10 +1120,9 @@ void Widget::DrawHScrollbar(DrawAPI* API) {
   API->SetCropRect(RealClientRect);
 
   // draw background
-  const WBITEMSTATE BackgroundState =
-      GetScrollbarState(WB_ITEM_SCROLL_HBAR, th);
+  const ItemState BackgroundState = GetScrollbarState(WB_ITEM_SCROLL_HBAR, th);
   const Rect BackgroundRect = Rect(b1.TopLeft(), b2.BottomRight());
-  const WBSKINELEMENTID Background =
+  const SkinElementId Background =
       GetDisplayDescriptor().GetSkin(BackgroundState, WB_ITEM_SCROLL_HBAR);
 
   if (Background == 0xffffffff) {
@@ -1134,8 +1132,8 @@ void Widget::DrawHScrollbar(DrawAPI* API) {
   }
 
   // draw thumb
-  const WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_HTHUMB, th);
-  const WBSKINELEMENTID Thumb =
+  const ItemState ThumbState = GetScrollbarState(WB_ITEM_SCROLL_HTHUMB, th);
+  const SkinElementId Thumb =
       GetDisplayDescriptor().GetSkin(ThumbState, WB_ITEM_SCROLL_HTHUMB);
 
   if (Thumb == 0xffffffff) {
@@ -1198,10 +1196,9 @@ void Widget::DrawVScrollbar(DrawAPI* API) {
   API->SetCropRect(RealClientRect);
 
   // draw background
-  const WBITEMSTATE BackgroundState =
-      GetScrollbarState(WB_ITEM_SCROLL_VBAR, th);
+  const ItemState BackgroundState = GetScrollbarState(WB_ITEM_SCROLL_VBAR, th);
   const Rect BackgroundRect = Rect(b1.TopLeft(), b2.BottomRight());
-  const WBSKINELEMENTID Background =
+  const SkinElementId Background =
       GetDisplayDescriptor().GetSkin(BackgroundState, WB_ITEM_SCROLL_VBAR);
 
   if (Background == 0xffffffff) {
@@ -1211,8 +1208,8 @@ void Widget::DrawVScrollbar(DrawAPI* API) {
   }
 
   // draw thumb
-  const WBITEMSTATE ThumbState = GetScrollbarState(WB_ITEM_SCROLL_VTHUMB, th);
-  const WBSKINELEMENTID Thumb =
+  const ItemState ThumbState = GetScrollbarState(WB_ITEM_SCROLL_VTHUMB, th);
+  const SkinElementId Thumb =
       GetDisplayDescriptor().GetSkin(ThumbState, WB_ITEM_SCROLL_VTHUMB);
 
   if (Thumb == 0xffffffff) {
@@ -1288,7 +1285,7 @@ void Widget::AdjustClientAreaToFitScrollbars() {
   ScrollbarHelperFunct(HScrollbar, &Rect.y2, ScrollbarRequired(HScrollbar));
 
   if (app_ && Rect != client_rect_) {
-    app_->Send(CWBMessage(app_, WBM_CLIENTAREACHANGED, GetGuid()));
+    app_->Send(Message(app_, WBM_CLIENTAREACHANGED, GetGuid()));
   }
 
   client_rect_ = Rect;
@@ -1354,7 +1351,7 @@ void Widget::SetHScrollbarPos(int32_t ScrollPos, bool Clamp) {
   }
   if (sc != HScrollbar.scroll_pos_) {
     HScrollbar.scroll_pos_ = sc;
-    app_->Send(CWBMessage(app_, WBM_HSCROLL, GetGuid(), sc));
+    app_->Send(Message(app_, WBM_HSCROLL, GetGuid(), sc));
     CalculateClientPosition();
   }
 }
@@ -1367,7 +1364,7 @@ void Widget::SetVScrollbarPos(int32_t ScrollPos, bool Clamp) {
   }
   if (sc != VScrollbar.scroll_pos_) {
     VScrollbar.scroll_pos_ = sc;
-    app_->Send(CWBMessage(app_, WBM_VSCROLL, GetGuid(), sc));
+    app_->Send(Message(app_, WBM_VSCROLL, GetGuid(), sc));
     CalculateClientPosition();
   }
 }
@@ -1380,7 +1377,7 @@ void Widget::ApplyRelativePosition() {
 }
 
 void Widget::VisualStyleApplicator(DisplayProperties& desc,
-                                   WBITEMVISUALCOMPONENT TargetComponent,
+                                   ItemVisualComponent TargetComponent,
                                    int32_t Value,
                                    const std::vector<std::string>& pseudo) {
   int32_t StateCount = 0;
@@ -1430,86 +1427,86 @@ bool Widget::InterpretPositionString(CssPropertyBatch& props,
                                      std::string_view value,
                                      const std::vector<std::string>& pseudo) {
   if (prop == "left") {
-    PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_LEFT, value);
+    PositionApplicator(props.position_descriptor_, PositionType::WB_MARGIN_LEFT,
+                       value);
     return true;
   }
 
   if (prop == "right") {
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_RIGHT, value);
+                       PositionType::WB_MARGIN_RIGHT, value);
     return true;
   }
 
   if (prop == "top") {
-    PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_TOP, value);
+    PositionApplicator(props.position_descriptor_, PositionType::WB_MARGIN_TOP,
+                       value);
     return true;
   }
 
   if (prop == "bottom") {
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_BOTTOM, value);
+                       PositionType::WB_MARGIN_BOTTOM, value);
     return true;
   }
 
   if (prop == "width") {
-    PositionApplicator(props.position_descriptor_, WBPOSITIONTYPE::WB_WIDTH,
+    PositionApplicator(props.position_descriptor_, PositionType::WB_WIDTH,
                        value);
     return true;
   }
 
   if (prop == "height") {
-    PositionApplicator(props.position_descriptor_, WBPOSITIONTYPE::WB_HEIGHT,
+    PositionApplicator(props.position_descriptor_, PositionType::WB_HEIGHT,
                        value);
     return true;
   }
 
   if (prop == "padding-left") {
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_LEFT, value);
+                       PositionType::WB_PADDING_LEFT, value);
     return true;
   }
 
   if (prop == "padding-right") {
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_RIGHT, value);
+                       PositionType::WB_PADDING_RIGHT, value);
     return true;
   }
 
   if (prop == "padding-top") {
-    PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_TOP, value);
+    PositionApplicator(props.position_descriptor_, PositionType::WB_PADDING_TOP,
+                       value);
     return true;
   }
 
   if (prop == "padding-bottom") {
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_BOTTOM, value);
+                       PositionType::WB_PADDING_BOTTOM, value);
     return true;
   }
 
   if (prop == "margin") {
+    PositionApplicator(props.position_descriptor_, PositionType::WB_MARGIN_LEFT,
+                       value);
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_LEFT, value);
+                       PositionType::WB_MARGIN_RIGHT, value);
+    PositionApplicator(props.position_descriptor_, PositionType::WB_MARGIN_TOP,
+                       value);
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_RIGHT, value);
-    PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_TOP, value);
-    PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_MARGIN_BOTTOM, value);
+                       PositionType::WB_MARGIN_BOTTOM, value);
     return true;
   }
 
   if (prop == "padding") {
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_LEFT, value);
+                       PositionType::WB_PADDING_LEFT, value);
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_RIGHT, value);
+                       PositionType::WB_PADDING_RIGHT, value);
+    PositionApplicator(props.position_descriptor_, PositionType::WB_PADDING_TOP,
+                       value);
     PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_TOP, value);
-    PositionApplicator(props.position_descriptor_,
-                       WBPOSITIONTYPE::WB_PADDING_BOTTOM, value);
+                       PositionType::WB_PADDING_BOTTOM, value);
     return true;
   }
 
@@ -1594,32 +1591,32 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
       if (attrib == ("left")) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
-                              static_cast<int32_t>(WBALIGNMENT::LEFT), pseudo);
+                              static_cast<int32_t>(Alignment::LEFT), pseudo);
       }
       if (attrib == ("center")) {
-        VisualStyleApplicator(
-            props.display_descriptor_, WB_ITEM_BACKGROUNDALIGNMENT_X,
-            static_cast<int32_t>(WBALIGNMENT::CENTER), pseudo);
+        VisualStyleApplicator(props.display_descriptor_,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X,
+                              static_cast<int32_t>(Alignment::CENTER), pseudo);
       }
       if (attrib == ("right")) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
-                              static_cast<int32_t>(WBALIGNMENT::RIGHT), pseudo);
+                              static_cast<int32_t>(Alignment::RIGHT), pseudo);
       }
       if (attrib == ("top")) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y,
-                              static_cast<int32_t>(WBALIGNMENT::TOP), pseudo);
+                              static_cast<int32_t>(Alignment::TOP), pseudo);
       }
       if (attrib == ("middle")) {
-        VisualStyleApplicator(
-            props.display_descriptor_, WB_ITEM_BACKGROUNDALIGNMENT_Y,
-            static_cast<int32_t>(WBALIGNMENT::MIDDLE), pseudo);
+        VisualStyleApplicator(props.display_descriptor_,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y,
+                              static_cast<int32_t>(Alignment::MIDDLE), pseudo);
       }
       if (attrib == ("bottom")) {
-        VisualStyleApplicator(
-            props.display_descriptor_, WB_ITEM_BACKGROUNDALIGNMENT_Y,
-            static_cast<int32_t>(WBALIGNMENT::BOTTOM), pseudo);
+        VisualStyleApplicator(props.display_descriptor_,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y,
+                              static_cast<int32_t>(Alignment::BOTTOM), pseudo);
       }
 
       if (attrib.find("rgba(") == 0) {
@@ -1633,7 +1630,7 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
                               WB_ITEM_BACKGROUNDCOLOR, col.argb(), pseudo);
       }
 
-      WBSKINELEMENTID id = 0;
+      SkinElementId id = 0;
       if (ScanSkinValue(attrib, &id, prop)) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDIMAGE, id, pseudo);
@@ -1708,32 +1705,32 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
       if (attrib == ("left")) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
-                              static_cast<int32_t>(WBALIGNMENT::LEFT), pseudo);
+                              static_cast<int32_t>(Alignment::LEFT), pseudo);
       }
       if (attrib == ("center")) {
-        VisualStyleApplicator(
-            props.display_descriptor_, WB_ITEM_BACKGROUNDALIGNMENT_X,
-            static_cast<int32_t>(WBALIGNMENT::CENTER), pseudo);
+        VisualStyleApplicator(props.display_descriptor_,
+                              WB_ITEM_BACKGROUNDALIGNMENT_X,
+                              static_cast<int32_t>(Alignment::CENTER), pseudo);
       }
       if (attrib == ("right")) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDALIGNMENT_X,
-                              static_cast<int32_t>(WBALIGNMENT::RIGHT), pseudo);
+                              static_cast<int32_t>(Alignment::RIGHT), pseudo);
       }
       if (attrib == ("top")) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDALIGNMENT_Y,
-                              static_cast<int32_t>(WBALIGNMENT::TOP), pseudo);
+                              static_cast<int32_t>(Alignment::TOP), pseudo);
       }
       if (attrib == ("middle")) {
-        VisualStyleApplicator(
-            props.display_descriptor_, WB_ITEM_BACKGROUNDALIGNMENT_Y,
-            static_cast<int32_t>(WBALIGNMENT::MIDDLE), pseudo);
+        VisualStyleApplicator(props.display_descriptor_,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y,
+                              static_cast<int32_t>(Alignment::MIDDLE), pseudo);
       }
       if (attrib == ("bottom")) {
-        VisualStyleApplicator(
-            props.display_descriptor_, WB_ITEM_BACKGROUNDALIGNMENT_Y,
-            static_cast<int32_t>(WBALIGNMENT::BOTTOM), pseudo);
+        VisualStyleApplicator(props.display_descriptor_,
+                              WB_ITEM_BACKGROUNDALIGNMENT_Y,
+                              static_cast<int32_t>(Alignment::BOTTOM), pseudo);
       }
     }
 
@@ -1749,7 +1746,7 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
                               WB_ITEM_BACKGROUNDIMAGE, 0xffffffff, pseudo);
       }
 
-      WBSKINELEMENTID id = 0;
+      SkinElementId id = 0;
       if (ScanSkinValue(attrib, &id, prop)) {
         VisualStyleApplicator(props.display_descriptor_,
                               WB_ITEM_BACKGROUNDIMAGE, id, pseudo);
@@ -1783,7 +1780,7 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
 
   // quick check for scrollbar related stuff
   if (prop[0] == 's') {
-    WBSKINELEMENTID id = 0;
+    SkinElementId id = 0;
 
     if (prop == "scrollbar-up") {
       if (ScanSkinValue(value, &id, prop)) {
@@ -1872,23 +1869,23 @@ bool Widget::InterpretFontString(CssPropertyBatch& props, std::string_view prop,
   if (prop == "text-transform") {
     if (value == ("none")) {
       VisualStyleApplicator(props.display_descriptor_, WB_ITEM_TEXTTRANSFORM,
-                            static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_NONE),
+                            static_cast<int32_t>(TextTransform::WBTT_NONE),
                             pseudo);
     }
     if (value == ("capitalize")) {
       VisualStyleApplicator(
           props.display_descriptor_, WB_ITEM_TEXTTRANSFORM,
-          static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_CAPITALIZE), pseudo);
+          static_cast<int32_t>(TextTransform::WBTT_CAPITALIZE), pseudo);
     }
     if (value == ("uppercase")) {
-      VisualStyleApplicator(
-          props.display_descriptor_, WB_ITEM_TEXTTRANSFORM,
-          static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_UPPERCASE), pseudo);
+      VisualStyleApplicator(props.display_descriptor_, WB_ITEM_TEXTTRANSFORM,
+                            static_cast<int32_t>(TextTransform::WBTT_UPPERCASE),
+                            pseudo);
     }
     if (value == ("lowercase")) {
-      VisualStyleApplicator(
-          props.display_descriptor_, WB_ITEM_TEXTTRANSFORM,
-          static_cast<int32_t>(WBTEXTTRANSFORM::WBTT_LOWERCASE), pseudo);
+      VisualStyleApplicator(props.display_descriptor_, WB_ITEM_TEXTTRANSFORM,
+                            static_cast<int32_t>(TextTransform::WBTT_LOWERCASE),
+                            pseudo);
     }
 
     return true;
@@ -1926,16 +1923,16 @@ bool Widget::InterpretFontString(CssPropertyBatch& props, std::string_view prop,
   }
 
   if (prop == "text-align") {
-    if (value == "left") props.text_align_x_ = WBTEXTALIGNMENTX::WBTA_LEFT;
-    if (value == "center") props.text_align_x_ = WBTEXTALIGNMENTX::WBTA_CENTERX;
-    if (value == "right") props.text_align_x_ = WBTEXTALIGNMENTX::WBTA_RIGHT;
+    if (value == "left") props.text_align_x_ = TextAlignmentX::WBTA_LEFT;
+    if (value == "center") props.text_align_x_ = TextAlignmentX::WBTA_CENTERX;
+    if (value == "right") props.text_align_x_ = TextAlignmentX::WBTA_RIGHT;
     return true;
   }
 
   if (prop == "vertical-align") {
-    if (value == "top") props.text_align_y_ = WBTEXTALIGNMENTY::WBTA_TOP;
-    if (value == "middle") props.text_align_y_ = WBTEXTALIGNMENTY::WBTA_CENTERY;
-    if (value == "bottom") props.text_align_y_ = WBTEXTALIGNMENTY::WBTA_BOTTOM;
+    if (value == "top") props.text_align_y_ = TextAlignmentY::WBTA_TOP;
+    if (value == "middle") props.text_align_y_ = TextAlignmentY::WBTA_CENTERY;
+    if (value == "bottom") props.text_align_y_ = TextAlignmentY::WBTA_BOTTOM;
     return true;
   }
 
@@ -2044,9 +2041,9 @@ bool Widget::ApplyStyle(std::string_view prop, std::string_view value,
   return false;
 }
 
-void Widget::PositionApplicator(PositionDescriptor& pos, WBPOSITIONTYPE Type,
+void Widget::PositionApplicator(PositionDescriptor& pos, PositionType Type,
                                 std::string_view value) {
-  if (Type == WBPOSITIONTYPE::WB_WIDTH || Type == WBPOSITIONTYPE::WB_HEIGHT) {
+  if (Type == PositionType::WB_WIDTH || Type == PositionType::WB_HEIGHT) {
     if (value == "none") {
       pos.ClearMetrics(Type);
       return;
@@ -2081,7 +2078,7 @@ void Widget::PositionApplicator(PositionDescriptor& pos, WBPOSITIONTYPE Type,
       return;
     }
     pos.ClearMetrics(Type);
-    pos.SetMetric(Type, WBMETRICTYPE::WB_PIXELS, pxv);
+    pos.SetMetric(Type, MetricType::WB_PIXELS, pxv);
     return;
   }
 
@@ -2091,7 +2088,7 @@ void Widget::PositionApplicator(PositionDescriptor& pos, WBPOSITIONTYPE Type,
       return;
     }
     pos.ClearMetrics(Type);
-    pos.SetMetric(Type, WBMETRICTYPE::WB_RELATIVE, pcv / 100.0f);
+    pos.SetMetric(Type, MetricType::WB_RELATIVE, pcv / 100.0f);
     return;
   }
 
@@ -2103,8 +2100,8 @@ void Widget::PositionApplicator(PositionDescriptor& pos, WBPOSITIONTYPE Type,
   }
 
   pos.ClearMetrics(Type);
-  pos.SetMetric(Type, WBMETRICTYPE::WB_PIXELS, pxv);
-  pos.SetMetric(Type, WBMETRICTYPE::WB_RELATIVE, pcv / 100.0f);
+  pos.SetMetric(Type, MetricType::WB_PIXELS, pxv);
+  pos.SetMetric(Type, MetricType::WB_RELATIVE, pcv / 100.0f);
 }
 
 Widget* Widget::GetRoot() { return app_->GetRoot(); }
@@ -2156,8 +2153,8 @@ void Widget::ApplyStyleDeclarations(std::string_view String) {
   app_->style_manager_.ApplyStylesFromDeclarations(this, String);
 }
 
-WBITEMSTATE Widget::GetState() {
-  WBITEMSTATE i = WB_STATE_NORMAL;
+ItemState Widget::GetState() {
+  ItemState i = WB_STATE_NORMAL;
   if (disabled_) i = WB_STATE_DISABLED;
   if (MouseOver() && !disabled_) i = WB_STATE_HOVER;
 
@@ -2176,12 +2173,12 @@ void Widget::SetBorderSizes(char Left, char Top, char Right, char Bottom) {
   css_properties_.border_sizes_ = Rect(Left, Top, Right, Bottom);
 }
 
-void Widget::SetDisplayProperty(WBITEMSTATE s, WBITEMVISUALCOMPONENT v,
+void Widget::SetDisplayProperty(ItemState s, ItemVisualComponent v,
                                 int32_t value) {
   GetDisplayDescriptor().SetValue(s, v, value);
 }
 
-Font* Widget::GetFont(WBITEMSTATE State) {
+Font* Widget::GetFont(ItemState State) {
   return css_properties_.GetFont(app_, State);
 }
 
@@ -2281,7 +2278,7 @@ bool Widget::ScanPXValue(std::string_view Value, int32_t* Result,
   return true;
 }
 
-bool Widget::ScanSkinValue(std::string_view Value, WBSKINELEMENTID* Result,
+bool Widget::ScanSkinValue(std::string_view Value, SkinElementId* Result,
                            std::string_view PropName) {
   if (Value.find("skin(") == 0) {
     const int32_t i = Value.find(')');
@@ -2299,7 +2296,7 @@ bool Widget::ScanSkinValue(std::string_view Value, WBSKINELEMENTID* Result,
   return false;
 }
 
-void Widget::SetFont(WBITEMSTATE State, std::string_view Font) {
+void Widget::SetFont(ItemState State, std::string_view Font) {
   css_properties_.fonts_[State] = Font;
 }
 
@@ -2314,10 +2311,10 @@ void Widget::ContentChanged() {
 
   stored_content_size_ = GetContentSize() + ParentSize - ClientSize;
 
-  CWBMessage m(app_, WBM_REPOSITION, guid_,
-               Rect(GetPosition().TopLeft(),
-                    GetPosition().TopLeft() + stored_content_size_),
-               true, true);
+  Message m(app_, WBM_REPOSITION, guid_,
+            Rect(GetPosition().TopLeft(),
+                 GetPosition().TopLeft() + stored_content_size_),
+            true, true);
   app_->Send(m);
 }
 
@@ -2328,13 +2325,13 @@ void Widget::ChangeContentOffset(Point ContentOff) {
 }
 
 void Widget::ChangeContentOffsetX(int32_t OffsetX) {
-  app_->Send(CWBMessage(app_, WBM_CONTENTOFFSETCHANGE, GetGuid(), OffsetX,
-                        content_offset_.y));
+  app_->Send(Message(app_, WBM_CONTENTOFFSETCHANGE, GetGuid(), OffsetX,
+                     content_offset_.y));
 }
 
 void Widget::ChangeContentOffsetY(int32_t OffsetY) {
-  app_->Send(CWBMessage(app_, WBM_CONTENTOFFSETCHANGE, GetGuid(),
-                        content_offset_.x, OffsetY));
+  app_->Send(Message(app_, WBM_CONTENTOFFSETCHANGE, GetGuid(),
+                     content_offset_.x, OffsetY));
 }
 
 bool Widget::ScrollbarsEnabled() {
@@ -2352,7 +2349,7 @@ float Widget::GetTreeOpacityMultiplier() { return opacity_multiplier_; }
 
 void Widget::ReapplyStyles() {
   app_->style_manager_.ApplyStyles(this);
-  CWBMessage m = BuildPositionMessage(GetPosition(), true);
+  Message m = BuildPositionMessage(GetPosition(), true);
   MessageProc(m);
 }
 

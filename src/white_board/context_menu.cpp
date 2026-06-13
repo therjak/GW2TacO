@@ -21,9 +21,9 @@ using math::Size;
 namespace gui {
 
 void ContextMenu::OnDraw(DrawAPI* API) {
-  const WBITEMSTATE i = GetState();
+  const ItemState i = GetState();
   Font* Font = GetFont(i);
-  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto text_transform = static_cast<TextTransform>(
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   DrawBackground(API, WB_STATE_NORMAL);
@@ -49,9 +49,8 @@ void ContextMenu::OnDraw(DrawAPI* API) {
           Rect(GetWindowRect().x1 + padding.x1, Offset.y,
                GetWindowRect().x1 + padding.x2, Offset.y + height);
 
-      const WBSKINELEMENTID id =
-          separator_elements_.display_descriptor_.GetSkin(
-              WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
+      const SkinElementId id = separator_elements_.display_descriptor_.GetSkin(
+          WB_STATE_NORMAL, WB_ITEM_BACKGROUNDIMAGE);
 
       // draw separator
       if (id != 0xffffffff) {
@@ -85,7 +84,7 @@ void ContextMenu::OnDraw(DrawAPI* API) {
             GetDisplayDescriptor().GetColor(WB_STATE_HOVER, WB_ITEM_FONTCOLOR);
       }
 
-      Font->Write(API, items_[x]->text_, Offset, textColor, TextTransform);
+      Font->Write(API, items_[x]->text_, Offset, textColor, text_transform);
 
       // draw sub arrow
       if (!items_[x]->children_.empty()) {
@@ -117,9 +116,9 @@ ContextMenu::~ContextMenu() {
 }
 
 void ContextMenu::ResizeToContentSize() {
-  const WBITEMSTATE i = GetState();
+  const ItemState i = GetState();
   Font* Font = GetFont(i);
-  const auto TextTransform = static_cast<WBTEXTTRANSFORM>(
+  const auto text_transform = static_cast<TextTransform>(
       GetDisplayDescriptor().GetValue(i, WB_ITEM_TEXTTRANSFORM));
 
   Size ContentSize = Size(0, 0);
@@ -158,7 +157,7 @@ void ContextMenu::ResizeToContentSize() {
 
       ContentSize.x = std::max(
           ContentSize.x, padding.x1 + Client.x2 - padding.x2 + arrowPadding +
-                             Font->GetWidth(item->text_, true, TextTransform));
+                             Font->GetWidth(item->text_, true, text_transform));
       ContentSize.y += Font->GetLineHeight();
     }
   }
@@ -182,11 +181,11 @@ bool ContextMenu::Initialize(Widget* Parent, const Rect& Position) {
                                   0xff434346);
 
   separator_elements_.position_descriptor_.SetValue(
-      WBPOSITIONTYPE::WB_PADDING_TOP, 0, 1);
-  separator_elements_.position_descriptor_.SetValue(WBPOSITIONTYPE::WB_HEIGHT,
-                                                    0, 1);
+      PositionType::WB_PADDING_TOP, 0, 1);
+  separator_elements_.position_descriptor_.SetValue(PositionType::WB_HEIGHT, 0,
+                                                    1);
   separator_elements_.position_descriptor_.SetValue(
-      WBPOSITIONTYPE::WB_PADDING_BOTTOM, 0, 1);
+      PositionType::WB_PADDING_BOTTOM, 0, 1);
 
   SetCapture();
   return true;
@@ -210,19 +209,19 @@ void ContextMenu::AddSeparator() {
   items_.back()->separator_ = true;
 }
 
-bool ContextMenu::MessageProc(const CWBMessage& Message) {
-  switch (Message.Get()) {
+bool ContextMenu::MessageProc(const Message& message) {
+  switch (message.Get()) {
     case WBM_REPOSITION:
-      if (Message.GetTarget() == GetGuid()) {
+      if (message.GetTarget() == GetGuid()) {
         // push position inside of parent
-        Rect p = Message.Rectangle();
+        Rect p = message.Rectangle();
         const Rect r = GetParent()->GetClientRect();
         if (p.x1 < 0) p += Point(-p.x1, 0);
         if (p.y1 < 0) p += Point(0, -p.y1);
         if (p.x2 > r.x2) p -= Point(p.x2 - r.x2, 0);
         if (p.y2 > r.y2) p -= Point(0, p.y2 - r.y2);
-        CWBMessage m(GetApplication(), WBM_REPOSITION, Message.GetTarget(), p,
-                     Message.Moved(), Message.Resized());
+        Message m(GetApplication(), WBM_REPOSITION, message.GetTarget(), p,
+                  message.Moved(), message.Resized());
         return Widget::MessageProc(m);
       }
       break;
@@ -238,7 +237,7 @@ bool ContextMenu::MessageProc(const CWBMessage& Message) {
           }
         }
       }
-      if (sub_menu_) sub_menu_->MessageProc(Message);
+      if (sub_menu_) sub_menu_->MessageProc(message);
       return true;
 
     case WBM_RIGHTBUTTONDOWN:
@@ -250,14 +249,14 @@ bool ContextMenu::MessageProc(const CWBMessage& Message) {
         MarkParentForDeletion();
         GetApplication()->ReleaseCapture();
         // resend message
-        GetApplication()->Send(Message);
+        GetApplication()->Send(message);
         return true;
       }
 
       pushed_ = true;
       GetApplication()->SetCapture(GetContextRoot());
       if (!MouseOver()) {
-        if (sub_menu_) sub_menu_->MessageProc(Message);
+        if (sub_menu_) sub_menu_->MessageProc(message);
       }
       return true;
 
@@ -274,17 +273,16 @@ bool ContextMenu::MessageProc(const CWBMessage& Message) {
         if (!items_[x]->separator_) {
           const Rect EntryPos = GetItemRect(x);
           if (MouseOver() && EntryPos.Contains(ScreenToClient(GetMousePos()))) {
-            GetApplication()->Send(CWBMessage(GetApplication(),
-                                              WBM_CONTEXTMESSAGE, target_,
-                                              items_[x]->return_id_));
+            GetApplication()->Send(Message(GetApplication(), WBM_CONTEXTMESSAGE,
+                                           target_, items_[x]->return_id_));
             if (items_[x]->closes_context_) {
               MarkForDeletion();
               MarkParentForDeletion();
               GetApplication()->ReleaseCapture();
             } else {
-              GetApplication()->Send(CWBMessage(
+              GetApplication()->Send(Message(
                   GetApplication(), WBM_REBUILDCONTEXTITEM, target_,
-                  CWBMessage::menucontext{items_[x]->return_id_, GetGuid()}));
+                  Message::menucontext{items_[x]->return_id_, GetGuid()}));
             }
 
             return true;
@@ -293,7 +291,7 @@ bool ContextMenu::MessageProc(const CWBMessage& Message) {
       }
 
       if (MouseInContextHierarchy()) {
-        if (sub_menu_) sub_menu_->MessageProc(Message);
+        if (sub_menu_) sub_menu_->MessageProc(message);
       }
 
       // check for off item mouse releases
@@ -309,7 +307,7 @@ bool ContextMenu::MessageProc(const CWBMessage& Message) {
       break;
   }
 
-  return Widget::MessageProc(Message);
+  return Widget::MessageProc(message);
 }
 
 void ContextMenu::MarkForDeletion() {

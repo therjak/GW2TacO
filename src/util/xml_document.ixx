@@ -10,16 +10,16 @@ export module xml:document;
 
 import :node;
 
-export class CXMLDocument {
+export class XMLDocument {
  public:
-  CXMLDocument();
-  ~CXMLDocument();
+  XMLDocument();
+  ~XMLDocument();
 
   bool LoadFromFile(std::string_view);
   bool LoadFromString(std::string_view);
   bool SaveToFile(std::string_view);
   std::string SaveToString();
-  CXMLNode GetDocumentNode() const;
+  XMLNode GetDocumentNode() const;
 
  private:
   std::unique_ptr<rapidxml::xml_document<>> doc;

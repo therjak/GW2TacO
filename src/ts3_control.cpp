@@ -19,7 +19,7 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
   gui::Font* f = GetFont(GetState());
   int32_t size = f->GetLineHeight();
 
-  if (!teamSpeakConnection.authenticated_) {
+  if (!teamspeak_connection.authenticated_) {
     // If we got no ts running, just quit. Do not annoy with useless screen
     // clutter.
     return;
@@ -38,13 +38,13 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
     }
   }
 
-  gui::WBSKINELEMENTID playeroff =
+  gui::SkinElementId playeroff =
       GetApplication()->GetSkin()->GetElementID("ts3playeroff");
-  gui::WBSKINELEMENTID playeron =
+  gui::SkinElementId playeron =
       GetApplication()->GetSkin()->GetElementID("ts3playeron");
-  gui::WBSKINELEMENTID outputoff =
+  gui::SkinElementId outputoff =
       GetApplication()->GetSkin()->GetElementID("ts3outputmuted");
-  gui::WBSKINELEMENTID inputoff =
+  gui::SkinElementId inputoff =
       GetApplication()->GetSkin()->GetElementID("ts3inputmuted");
 
   bool LeftAlign = true;
@@ -56,16 +56,15 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
 
   for (int32_t cnt = 0; cnt < 2; cnt++) {
     int32_t ypos = 0;
-    for (auto& x : teamSpeakConnection.handlers_) {
+    for (auto& x : teamspeak_connection.handlers_) {
       TS3Connection::TS3Schandler& handler = x.second;
       if (handler.connected &&
           handler.clients.find(handler.my_client_id) != handler.clients.end()) {
         Point p = f->GetTextPosition(
             handler.name, GetClientRect() - Rect(0, ypos, 0, 0),
-            LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
-                      : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
-            gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
-            true);
+            LeftAlign ? gui::TextAlignmentX::WBTA_LEFT
+                      : gui::TextAlignmentX::WBTA_RIGHT,
+            gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_NONE, true);
         if (cnt) f->Write(API, handler.name, p);
         ypos += f->GetLineHeight();
 
@@ -83,9 +82,9 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
 
           Point p = f->GetTextPosition(
               channel_text, GetClientRect() - Rect(size / 2, ypos, 0, 0),
-              LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
-                        : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
-              gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE,
+              LeftAlign ? gui::TextAlignmentX::WBTA_LEFT
+                        : gui::TextAlignmentX::WBTA_RIGHT,
+              gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_NONE,
               true);
           if (cnt) f->Write(API, channel_text, p);
           ypos += f->GetLineHeight();
@@ -106,7 +105,7 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
           if ((ypos + f->GetLineHeight()) > displayrect.y2) break;
 
           if (cl->channel_id == mychannelid) {
-            gui::WBSKINELEMENTID id = playeroff;
+            gui::SkinElementId id = playeroff;
             if (cl->input_muted) id = inputoff;
             if (cl->output_muted) id = outputoff;
             if (cl->talk_status) id = playeron;
@@ -121,10 +120,10 @@ void Ts3Control::OnDraw(gui::DrawAPI* API) {
 
             Point p = f->GetTextPosition(
                 cl->name, GetClientRect() - Rect(2 * size, ypos, 2 * size, 0),
-                LeftAlign ? gui::WBTEXTALIGNMENTX::WBTA_LEFT
-                          : gui::WBTEXTALIGNMENTX::WBTA_RIGHT,
-                gui::WBTEXTALIGNMENTY::WBTA_TOP,
-                gui::WBTEXTTRANSFORM::WBTT_NONE, true);
+                LeftAlign ? gui::TextAlignmentX::WBTA_LEFT
+                          : gui::TextAlignmentX::WBTA_RIGHT,
+                gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_NONE,
+                true);
 
             if (cnt) f->Write(API, cl->name, p);
 
@@ -148,12 +147,12 @@ Ts3Control::Ts3Control() : GuiType() {}
 
 Ts3Control::~Ts3Control() = default;
 
-gui::Widget* Ts3Control::Factory(gui::Widget* Root, const CXMLNode& node,
+gui::Widget* Ts3Control::Factory(gui::Widget* Root, const XMLNode& node,
                                  const Rect& Pos) {
   return Ts3Control::Create(Root, Pos);
 }
 
 bool Ts3Control::IsMouseTransparent(const Point& ClientSpacePoint,
-                                    gui::WBMESSAGE MessageType) {
+                                    gui::MessageType message_type) {
   return true;
 }

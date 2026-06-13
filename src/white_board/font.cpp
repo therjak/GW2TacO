@@ -139,11 +139,11 @@ bool FontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
           if (!enabledGlyphs || enabledGlyphs->empty() ||
               std::find(enabledGlyphs->begin(), enabledGlyphs->end(),
                         c[x].id) != enabledGlyphs->end()) {
-            WBSYMBOLINPUT s;
-            s.Char = c[x].id;
-            s.Advance = c[x].xadvance;
-            s.Offset = Point(c[x].xoffset, c[x].yoffset);
-            s.UV =
+            SymbolInput s;
+            s.id = c[x].id;
+            s.advance = c[x].xadvance;
+            s.offset = Point(c[x].xoffset, c[x].yoffset);
+            s.uv =
                 Rect(c[x].x, c[x].y, c[x].x + c[x].width, c[x].y + c[x].height);
 
             if (c[x].id >= 0 && c[x].id <= 0xffff) alphabet_.push_back(s);
@@ -163,10 +163,10 @@ bool FontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
             reinterpret_cast<BMKERNINGDATA*>(BlockData.get());
 
         for (uint32_t x = 0; x < BlockSize / sizeof(BMKERNINGDATA); x++) {
-          WBKERNINGDATA d{};
-          d.First = k[x].first;
-          d.Second = k[x].second;
-          d.Amount = k[x].amount;
+          KerningData d{};
+          d.first = k[x].first;
+          d.second = k[x].second;
+          d.amount = k[x].amount;
           kerning_data_.push_back(d);
         }
       } break;
@@ -225,20 +225,20 @@ bool FontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
     if (s.find("char") == 0) {
       if (s.find("chars") == 0) continue;
 
-      WBSYMBOLINPUT r;
+      SymbolInput r;
       int32_t v = 0;
 
       if (!ReadInt(s, "id", &v)) return false;
-      r.Char = v;
+      r.id = v;
 
       if (!ReadInt(s, "xadvance", &v)) return false;
-      r.Advance = v;
+      r.advance = v;
 
       if (!ReadInt(s, "xoffset", &v)) return false;
-      r.Offset.x = v;
+      r.offset.x = v;
 
       if (!ReadInt(s, "yoffset", &v)) return false;
-      r.Offset.y = v;
+      r.offset.y = v;
 
       int x = 0, y = 0, width = 0, height = 0;
 
@@ -247,12 +247,12 @@ bool FontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
       if (!ReadInt(s, "width", &width)) return false;
       if (!ReadInt(s, "height", &height)) return false;
 
-      r.UV = Rect(x, y, x + width, y + height);
+      r.uv = Rect(x, y, x + width, y + height);
 
       if (!enabledGlyphs || enabledGlyphs->empty() ||
-          std::find(enabledGlyphs->begin(), enabledGlyphs->end(), r.Char) !=
+          std::find(enabledGlyphs->begin(), enabledGlyphs->end(), r.id) !=
               enabledGlyphs->end()) {
-        if (r.Char >= 0 && r.Char <= 0xffff) {
+        if (r.id >= 0 && r.id <= 0xffff) {
           alphabet_.push_back(r);
         }
       }
@@ -263,17 +263,17 @@ bool FontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
     if (s.find("kerning") == 0) {
       if (s.find("kernings") == 0) continue;
 
-      WBKERNINGDATA d{};
+      KerningData d{};
       int32_t v = 0;
 
       if (!ReadInt(s, "first", &v)) return false;
-      d.First = v;
+      d.first = v;
 
       if (!ReadInt(s, "second", &v)) return false;
-      d.Second = v;
+      d.second = v;
 
       if (!ReadInt(s, "amount", &v)) return false;
-      d.Amount = v;
+      d.amount = v;
 
       kerning_data_.push_back(d);
       continue;
@@ -287,23 +287,23 @@ Font::Font(Atlas* atlas) : atlas_(atlas) {}
 
 Font::~Font() {
   for (int32_t x = 0; x < alphabet_size_; x++) {
-    if (alphabet_[x].Char == x) atlas_->DeleteImage(alphabet_[x].Handle);
+    if (alphabet_[x].id == x) atlas_->DeleteImage(alphabet_[x].handle);
   }
 }
 
-void Font::AddSymbol(uint16_t Char, WBATLASHANDLE Handle, const Size& Size,
+void Font::AddSymbol(uint16_t Char, AtlasHandle Handle, const Size& Size,
                      const Point& Offset, int32_t Advance, Rect contentRect) {
   if (Char >= alphabet_size_) return;
 
-  WBSYMBOL s;
-  s.Char = Char;
-  s.Handle = Handle;
-  s.OffsetX = Offset.x;
-  s.OffsetY = Offset.y;
-  s.Advance = Advance;
-  s.SizeX = Size.x;
-  s.SizeY = Size.y;
-  s.calculatedContentRect = contentRect;
+  Symbol s;
+  s.id = Char;
+  s.handle = Handle;
+  s.offset_x = Offset.x;
+  s.offset_y = Offset.y;
+  s.advance = Advance;
+  s.size_x = Size.x;
+  s.size_y = Size.y;
+  s.calculated_content_rect = contentRect;
 
   alphabet_[Char] = s;
   // alphabet_.Add(Char, s);
@@ -367,11 +367,11 @@ uint32_t ReadUTF8Char(char const*& Text) {
 }
 
 int32_t Font::WriteChar(DrawAPI* DrawApi, int Char, int32_t x, int32_t y,
-                        CColor Color) {
+                        CColor color) {
   if (Char >= alphabet_size_ ||
-      alphabet_[static_cast<uint16_t>(Char)].Char != Char) {
+      alphabet_[static_cast<uint16_t>(Char)].id != Char) {
     // missing character replaced by a simple rectangle
-    if (alphabet_[static_cast<uint16_t>(missing_char_)].Char != missing_char_) {
+    if (alphabet_[static_cast<uint16_t>(missing_char_)].id != missing_char_) {
       Log_Warn(
           "[font] Used character {:d} and fallback character {:d} also missing "
           "from font.",
@@ -382,28 +382,28 @@ int32_t Font::WriteChar(DrawAPI* DrawApi, int Char, int32_t x, int32_t y,
     const int32_t width = GetWidth(missing_char_);
 
     if (Char != ' ') {
-      const WBSYMBOL& mc = alphabet_[static_cast<uint16_t>(missing_char_)];
+      const Symbol& mc = alphabet_[static_cast<uint16_t>(missing_char_)];
       DrawApi->DrawRectBorder(
-          Rect(x + mc.OffsetX, y + mc.OffsetY, x + mc.OffsetX + mc.SizeX,
-               y + mc.OffsetY + mc.SizeY),
-          Color);
+          Rect(x + mc.offset_x, y + mc.offset_y, x + mc.offset_x + mc.size_x,
+               y + mc.offset_y + mc.size_y),
+          color);
     }
     return width;
   }
 
-  const WBSYMBOL& Symbol = alphabet_[static_cast<uint16_t>(Char)];
-  const int32_t width = Symbol.Advance;
+  const Symbol& Symbol = alphabet_[static_cast<uint16_t>(Char)];
+  const int32_t width = Symbol.advance;
   if (!width) return 0;
   // DrawApi->DrawRect(Rect(x + Symbol.OffsetX, y + Symbol.OffsetY, x +
   // Symbol.OffsetX + Symbol.SizeX, y + Symbol.OffsetY + Symbol.SizeY),
   // 0x80808080);
-  DrawApi->DrawAtlasElement(Symbol.Handle, x + Symbol.OffsetX,
-                            y + Symbol.OffsetY, Color);
+  DrawApi->DrawAtlasElement(Symbol.handle, x + Symbol.offset_x,
+                            y + Symbol.offset_y, color);
   return width;
 }
 
 int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, int32_t x,
-                    int32_t y, CColor Color, WBTEXTTRANSFORM Transform,
+                    int32_t y, CColor color, TextTransform Transform,
                     bool DoKerning) {
   if (String.empty()) return 0;
   std::string t(String);  // make sure we have a \0 at the correct place.
@@ -421,7 +421,7 @@ int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, int32_t x,
       continue;
     }
 
-    xp += WriteChar(DrawApi, Char, xp, yp, Color);
+    xp += WriteChar(DrawApi, Char, xp, yp, color);
 
     if (DoKerning && *Text && !kerning_.empty()) {
       auto next = Text;
@@ -436,30 +436,30 @@ int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, int32_t x,
 }
 
 int32_t Font::WriteChar(DrawAPI* DrawApi, int Char, const Point& p,
-                        CColor Color) {
-  return WriteChar(DrawApi, Char, p.x, p.y, Color);
+                        CColor color) {
+  return WriteChar(DrawApi, Char, p.x, p.y, color);
 }
 
 int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, const Point& p,
-                    CColor Color, WBTEXTTRANSFORM Transform, bool DoKerning) {
-  return Write(DrawApi, String, p.x, p.y, Color, Transform, DoKerning);
+                    CColor color, TextTransform Transform, bool DoKerning) {
+  return Write(DrawApi, String, p.x, p.y, color, Transform, DoKerning);
 }
 
 int32_t Font::GetWidth(uint16_t Char, bool Advance) {
-  if (Char >= alphabet_size_ || alphabet_[Char].Char != Char) {
+  if (Char >= alphabet_size_ || alphabet_[Char].id != Char) {
     // missing character
-    if (alphabet_[static_cast<uint16_t>(missing_char_)].Char != missing_char_) {
+    if (alphabet_[static_cast<uint16_t>(missing_char_)].id != missing_char_) {
       return 0;
     }
-    return alphabet_[static_cast<uint16_t>(missing_char_)].Advance;
+    return alphabet_[static_cast<uint16_t>(missing_char_)].advance;
   }
-  return Advance ? alphabet_[Char].Advance
-                 : (alphabet_[Char].OffsetX +
-                    alphabet_[Char].calculatedContentRect.x2);
+  return Advance ? alphabet_[Char].advance
+                 : (alphabet_[Char].offset_x +
+                    alphabet_[Char].calculated_content_rect.x2);
 }
 
 int32_t Font::GetWidth(std::string_view String, bool AdvanceLastChar,
-                       WBTEXTTRANSFORM Transform, bool DoKerning,
+                       TextTransform Transform, bool DoKerning,
                        bool firstCharHack) {
   if (String.empty()) return 0;
   std::string t(String);  // make sure we have a \0 at the correct place.
@@ -479,11 +479,11 @@ int32_t Font::GetWidth(std::string_view String, bool AdvanceLastChar,
     }
 
     if (firstCharHack && firstChar && !AdvanceLastChar) {
-      if (Char >= alphabet_size_ || alphabet_[Char].Char != Char) {
+      if (Char >= alphabet_size_ || alphabet_[Char].id != Char) {
         xp -= alphabet_[static_cast<uint16_t>(missing_char_)]
-                  .calculatedContentRect.x1;
+                  .calculated_content_rect.x1;
       } else {
-        xp -= alphabet_[Char].calculatedContentRect.x1;
+        xp -= alphabet_[Char].calculated_content_rect.x1;
       }
     }
 
@@ -521,31 +521,31 @@ bool Font::Initialize(FontDescription* Description, TCHAR mc) {
 
   alphabet_size_ = 0;
   for (const auto& abc : Description->alphabet_) {
-    alphabet_size_ = std::max<int32_t>(alphabet_size_, abc.Char) + 1;
+    alphabet_size_ = std::max<int32_t>(alphabet_size_, abc.id) + 1;
   }
 
-  alphabet_ = std::make_unique<WBSYMBOL[]>(alphabet_size_);
-  memset(alphabet_.get(), 0, alphabet_size_ * sizeof(WBSYMBOL));
+  alphabet_ = std::make_unique<Symbol[]>(alphabet_size_);
+  memset(alphabet_.get(), 0, alphabet_size_ * sizeof(Symbol));
   for (int32_t x = 0; x < alphabet_size_; x++) {
-    alphabet_[x].Char = static_cast<int16_t>(x - 1);
+    alphabet_[x].id = static_cast<int16_t>(x - 1);
   }
 
   for (const auto& abc : Description->alphabet_) {
-    if (abc.UV.Area() > 0) {
-      const WBATLASHANDLE h =
+    if (abc.uv.Area() > 0) {
+      const AtlasHandle h =
           atlas_->AddImage(Description->image_.get(), Description->x_res_,
-                           Description->y_res_, abc.UV);
+                           Description->y_res_, abc.uv);
 
       if (!h) {
         Log_Err("[gui] Atlas Error while creating font!");
         return false;
       }
 
-      Rect content = Rect(abc.UV.x2, abc.UV.y2, abc.UV.x1, abc.UV.y1);
+      Rect content = Rect(abc.uv.x2, abc.uv.y2, abc.uv.x1, abc.uv.y1);
       bool hadContent = false;
 
-      for (int j = abc.UV.y1; j < abc.UV.y2; j++) {
-        for (int i = abc.UV.x1; i < abc.UV.x2; i++) {
+      for (int j = abc.uv.y1; j < abc.uv.y2; j++) {
+        for (int i = abc.uv.x1; i < abc.uv.x2; i++) {
           const uint8_t* c =
               &Description->image_[(j * Description->x_res_ + i) * 4];
 
@@ -560,17 +560,17 @@ bool Font::Initialize(FontDescription* Description, TCHAR mc) {
       }
 
       if (hadContent) {
-        content -= abc.UV.TopLeft();
+        content -= abc.uv.TopLeft();
       } else {
-        content = Rect(0, 0, abc.UV.Width(), abc.UV.Height());
+        content = Rect(0, 0, abc.uv.Width(), abc.uv.Height());
       }
 
-      AddSymbol(abc.Char, h, abc.UV.Size(), abc.Offset, abc.Advance, content);
+      AddSymbol(abc.id, h, abc.uv.Size(), abc.offset, abc.advance, content);
     }
   }
 
   for (const auto& kd : Description->kerning_data_) {
-    AddKerningPair(kd.First, kd.Second, kd.Amount);
+    AddKerningPair(kd.first, kd.second, kd.amount);
   }
 
   line_height_ = Description->line_height_;
@@ -585,32 +585,32 @@ int32_t Font::GetBase() { return base_; }
 
 int32_t Font::GetOffsetX(TCHAR Char) {
   if (Char >= alphabet_size_ ||
-      alphabet_[static_cast<uint16_t>(Char)].Char != Char) {
+      alphabet_[static_cast<uint16_t>(Char)].id != Char) {
     Char = missing_char_;
   }
   if (Char >= alphabet_size_ ||
-      alphabet_[static_cast<uint16_t>(Char)].Char != Char) {
+      alphabet_[static_cast<uint16_t>(Char)].id != Char) {
     return 0;
   }
 
-  return alphabet_[static_cast<uint16_t>(Char)].OffsetX;
+  return alphabet_[static_cast<uint16_t>(Char)].offset_x;
 }
 
 int32_t Font::GetOffsetY(TCHAR Char) {
   if (Char >= alphabet_size_ ||
-      alphabet_[static_cast<uint16_t>(Char)].Char != Char) {
+      alphabet_[static_cast<uint16_t>(Char)].id != Char) {
     Char = missing_char_;
   }
   if (Char >= alphabet_size_ ||
-      alphabet_[static_cast<uint16_t>(Char)].Char != Char) {
+      alphabet_[static_cast<uint16_t>(Char)].id != Char) {
     return 0;
   }
 
-  return alphabet_[static_cast<uint16_t>(Char)].OffsetY;
+  return alphabet_[static_cast<uint16_t>(Char)].offset_y;
 }
 
 int32_t Font::GetCenterWidth(int32_t x1, int32_t x2, std::string_view Text,
-                             WBTEXTTRANSFORM Transform) {
+                             TextTransform Transform) {
   return (x1 + x2 - GetWidth(Text, false, Transform, true)) /
          2;  // -GetOffsetX(Char);
 }
@@ -620,7 +620,7 @@ int32_t Font::GetCenterHeight(int32_t y1, int32_t y2) {
 }
 
 Point Font::GetCenter(std::string_view Text, Rect Rect,
-                      WBTEXTTRANSFORM Transform) {
+                      TextTransform Transform) {
   return Point(GetCenterWidth(Rect.x1, Rect.x2, Text, Transform),
                GetCenterHeight(Rect.y1, Rect.y2));
 }
@@ -629,19 +629,19 @@ int32_t Font::GetMedian() { return offset_x_char_ + height_x_char_ / 2; }
 
 void Font::ConvertToUppercase() {
   for (int32_t x = 0; x < alphabet_size_; x++) {
-    if (alphabet_[x].Char == x) {
-      WBSYMBOL& c = alphabet_[x];
-      if (c.Char != towupper(c.Char)) {
-        if (alphabet_[towupper(c.Char)].Char == towupper(c.Char)) {
-          const WBSYMBOL& C = alphabet_[towupper(c.Char)];
+    if (alphabet_[x].id == x) {
+      Symbol& c = alphabet_[x];
+      if (c.id != towupper(c.id)) {
+        if (alphabet_[towupper(c.id)].id == towupper(c.id)) {
+          const Symbol& uc = alphabet_[towupper(c.id)];
 
-          c.Advance = C.Advance;
-          atlas_->DeleteImage(c.Handle);
-          c.Handle = C.Handle;
-          c.OffsetX = C.OffsetX;
-          c.OffsetY = C.OffsetY;
-          c.SizeX = C.SizeX;
-          c.SizeY = C.SizeY;
+          c.advance = uc.advance;
+          atlas_->DeleteImage(c.handle);
+          c.handle = uc.handle;
+          c.offset_x = uc.offset_x;
+          c.offset_y = uc.offset_y;
+          c.size_x = uc.size_x;
+          c.size_y = uc.size_y;
         }
       }
     }
@@ -649,22 +649,22 @@ void Font::ConvertToUppercase() {
 }
 
 char Font::ApplyTextTransform(const char* Text, const char* CurrPos,
-                              WBTEXTTRANSFORM Transform) {
+                              TextTransform Transform) {
   switch (Transform) {
     default:
-    case WBTEXTTRANSFORM::WBTT_NONE:
+    case TextTransform::WBTT_NONE:
       return *CurrPos;
       break;
-    case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
+    case TextTransform::WBTT_CAPITALIZE:
       if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1)))) {
         return std::toupper(*CurrPos);
       }
       return std::tolower(*CurrPos);
       break;
-    case WBTEXTTRANSFORM::WBTT_UPPERCASE:
+    case TextTransform::WBTT_UPPERCASE:
       return std::toupper(*CurrPos);
       break;
-    case WBTEXTTRANSFORM::WBTT_LOWERCASE:
+    case TextTransform::WBTT_LOWERCASE:
       return std::tolower(*CurrPos);
       break;
   }
@@ -673,24 +673,24 @@ char Font::ApplyTextTransform(const char* Text, const char* CurrPos,
 
 // Also increments CurrPos.
 uint16_t Font::ApplyTextTransformUtf8(const char* Text, char const*& CurrPos,
-                                      WBTEXTTRANSFORM Transform) {
+                                      TextTransform Transform) {
   const uint32_t decoded = ReadUTF8Char(CurrPos);
 
   switch (Transform) {
     default:
-    case WBTEXTTRANSFORM::WBTT_NONE:
+    case TextTransform::WBTT_NONE:
       return decoded;
       break;
-    case WBTEXTTRANSFORM::WBTT_CAPITALIZE:
+    case TextTransform::WBTT_CAPITALIZE:
       if (Text == CurrPos || (CurrPos > Text && std::isspace(*(CurrPos - 1)))) {
         return std::toupper(decoded);
       }
       return std::tolower(decoded);
       break;
-    case WBTEXTTRANSFORM::WBTT_UPPERCASE:
+    case TextTransform::WBTT_UPPERCASE:
       return std::toupper(decoded);
       break;
-    case WBTEXTTRANSFORM::WBTT_LOWERCASE:
+    case TextTransform::WBTT_LOWERCASE:
       return std::tolower(decoded);
       break;
   }
@@ -709,22 +709,22 @@ int32_t Font::GetHeight(std::string_view String) {
 }
 
 Point Font::GetTextPosition(std::string_view String, const Rect& Container,
-                            WBTEXTALIGNMENTX XAlign, WBTEXTALIGNMENTY YAlign,
-                            WBTEXTTRANSFORM Transform /*= WBTT_NONE*/,
+                            TextAlignmentX XAlign, TextAlignmentY YAlign,
+                            TextTransform Transform /*= WBTT_NONE*/,
                             bool DoKerning /*= true*/) {
   Point p = Container.TopLeft();
 
   const int32_t Width = GetWidth(String, false, Transform, DoKerning);
   const int32_t Height = GetLineHeight();
 
-  if (XAlign == WBTEXTALIGNMENTX::WBTA_CENTERX) {
+  if (XAlign == TextAlignmentX::WBTA_CENTERX) {
     p.x = GetCenterWidth(Container.x1, Container.x2, String, Transform);
   }
-  if (XAlign == WBTEXTALIGNMENTX::WBTA_RIGHT) p.x = Container.x2 - Width;
-  if (YAlign == WBTEXTALIGNMENTY::WBTA_CENTERY) {
+  if (XAlign == TextAlignmentX::WBTA_RIGHT) p.x = Container.x2 - Width;
+  if (YAlign == TextAlignmentY::WBTA_CENTERY) {
     p.y = GetCenterHeight(Container.y1, Container.y2);
   }
-  if (YAlign == WBTEXTALIGNMENTY::WBTA_BOTTOM) p.y = Container.y2 - Height;
+  if (YAlign == TextAlignmentY::WBTA_BOTTOM) p.y = Container.y2 - Height;
 
   return p;
 }

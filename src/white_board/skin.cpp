@@ -23,26 +23,26 @@ namespace gui {
 
 MetricValue::MetricValue() = default;
 
-void MetricValue::SetMetric(WBMETRICTYPE w, float Value) {
+void MetricValue::SetMetric(MetricType w, float Value) {
   MetricsAt(w) = Value;
   MetricsUsedAt(w) = true;
 }
 
 void MetricValue::SetValue(float Relative, float Pixels) {
-  MetricsAt(WBMETRICTYPE::WB_RELATIVE) = Relative;
-  MetricsAt(WBMETRICTYPE::WB_PIXELS) = Pixels;
-  MetricsUsedAt(WBMETRICTYPE::WB_RELATIVE) = true;
-  MetricsUsedAt(WBMETRICTYPE::WB_PIXELS) = true;
+  MetricsAt(MetricType::WB_RELATIVE) = Relative;
+  MetricsAt(MetricType::WB_PIXELS) = Pixels;
+  MetricsUsedAt(MetricType::WB_RELATIVE) = true;
+  MetricsUsedAt(MetricType::WB_PIXELS) = true;
 }
 
 float MetricValue::GetValue(float ParentSize, int32_t ContentSize) const {
   if (auto_size_) return ContentSize + 0.5f;
   float v = 0;
-  if (MetricsUsedAt(WBMETRICTYPE::WB_PIXELS)) {
-    v += MetricsAt(WBMETRICTYPE::WB_PIXELS);
+  if (MetricsUsedAt(MetricType::WB_PIXELS)) {
+    v += MetricsAt(MetricType::WB_PIXELS);
   }
-  if (MetricsUsedAt(WBMETRICTYPE::WB_RELATIVE)) {
-    v += MetricsAt(WBMETRICTYPE::WB_RELATIVE) * ParentSize;
+  if (MetricsUsedAt(MetricType::WB_RELATIVE)) {
+    v += MetricsAt(MetricType::WB_RELATIVE) * ParentSize;
   }
   return v;
 }
@@ -66,45 +66,43 @@ Rect PositionDescriptor::GetPosition(Size ParentSize, Size ContentSize,
   int32_t Bottom = 0;
 
   const bool WidthSet =
-      positions_.find(WBPOSITIONTYPE::WB_WIDTH) != positions_.end();
+      positions_.find(PositionType::WB_WIDTH) != positions_.end();
   const bool HeightSet =
-      positions_.find(WBPOSITIONTYPE::WB_HEIGHT) != positions_.end();
+      positions_.find(PositionType::WB_HEIGHT) != positions_.end();
   const bool TopSet =
-      positions_.find(WBPOSITIONTYPE::WB_MARGIN_TOP) != positions_.end();
+      positions_.find(PositionType::WB_MARGIN_TOP) != positions_.end();
   const bool LeftSet =
-      positions_.find(WBPOSITIONTYPE::WB_MARGIN_LEFT) != positions_.end();
+      positions_.find(PositionType::WB_MARGIN_LEFT) != positions_.end();
   const bool RightSet =
-      positions_.find(WBPOSITIONTYPE::WB_MARGIN_RIGHT) != positions_.end();
+      positions_.find(PositionType::WB_MARGIN_RIGHT) != positions_.end();
   const bool BottomSet =
-      positions_.find(WBPOSITIONTYPE::WB_MARGIN_BOTTOM) != positions_.end();
+      positions_.find(PositionType::WB_MARGIN_BOTTOM) != positions_.end();
 
   if (WidthSet) {
-    Width = static_cast<int32_t>(positions_[WBPOSITIONTYPE::WB_WIDTH].GetValue(
+    Width = static_cast<int32_t>(positions_[PositionType::WB_WIDTH].GetValue(
         static_cast<float>(ParentSize.x), ContentSize.x));
   }
   if (HeightSet) {
-    Height =
-        static_cast<int32_t>(positions_[WBPOSITIONTYPE::WB_HEIGHT].GetValue(
-            static_cast<float>(ParentSize.y), ContentSize.y));
+    Height = static_cast<int32_t>(positions_[PositionType::WB_HEIGHT].GetValue(
+        static_cast<float>(ParentSize.y), ContentSize.y));
   }
   if (TopSet) {
-    Top =
-        static_cast<int32_t>(positions_[WBPOSITIONTYPE::WB_MARGIN_TOP].GetValue(
-            static_cast<float>(ParentSize.y), 0));
+    Top = static_cast<int32_t>(positions_[PositionType::WB_MARGIN_TOP].GetValue(
+        static_cast<float>(ParentSize.y), 0));
   }
   if (LeftSet) {
-    Left = static_cast<int32_t>(
-        positions_[WBPOSITIONTYPE::WB_MARGIN_LEFT].GetValue(
+    Left =
+        static_cast<int32_t>(positions_[PositionType::WB_MARGIN_LEFT].GetValue(
             static_cast<float>(ParentSize.x), 0));
   }
   if (RightSet) {
-    Right = static_cast<int32_t>(
-        positions_[WBPOSITIONTYPE::WB_MARGIN_RIGHT].GetValue(
+    Right =
+        static_cast<int32_t>(positions_[PositionType::WB_MARGIN_RIGHT].GetValue(
             static_cast<float>(ParentSize.x), 0));
   }
   if (BottomSet) {
     Bottom = static_cast<int32_t>(
-        positions_[WBPOSITIONTYPE::WB_MARGIN_BOTTOM].GetValue(
+        positions_[PositionType::WB_MARGIN_BOTTOM].GetValue(
             static_cast<float>(ParentSize.y), 0));
   }
 
@@ -140,49 +138,47 @@ Rect PositionDescriptor::GetPadding(Size ParentSize, const Rect& BorderSizes) {
   Rect r(0, 0, 0, 0);
 
   r.x1 =
-      static_cast<int32_t>(positions_[WBPOSITIONTYPE::WB_PADDING_LEFT].GetValue(
+      static_cast<int32_t>(positions_[PositionType::WB_PADDING_LEFT].GetValue(
           static_cast<float>(ParentSize.x), 0)) +
       BorderSizes.x1;
-  r.y1 =
-      static_cast<int32_t>(positions_[WBPOSITIONTYPE::WB_PADDING_TOP].GetValue(
-          static_cast<float>(ParentSize.y), 0)) +
-      BorderSizes.y1;
-  r.x2 = ParentSize.x -
-         static_cast<int32_t>(
-             positions_[WBPOSITIONTYPE::WB_PADDING_RIGHT].GetValue(
-                 static_cast<float>(ParentSize.x), 0)) -
-         BorderSizes.x2;
-  r.y2 = ParentSize.y -
-         static_cast<int32_t>(
-             positions_[WBPOSITIONTYPE::WB_PADDING_BOTTOM].GetValue(
-                 static_cast<float>(ParentSize.y), 0)) -
-         BorderSizes.y2;
+  r.y1 = static_cast<int32_t>(positions_[PositionType::WB_PADDING_TOP].GetValue(
+             static_cast<float>(ParentSize.y), 0)) +
+         BorderSizes.y1;
+  r.x2 =
+      ParentSize.x -
+      static_cast<int32_t>(positions_[PositionType::WB_PADDING_RIGHT].GetValue(
+          static_cast<float>(ParentSize.x), 0)) -
+      BorderSizes.x2;
+  r.y2 =
+      ParentSize.y -
+      static_cast<int32_t>(positions_[PositionType::WB_PADDING_BOTTOM].GetValue(
+          static_cast<float>(ParentSize.y), 0)) -
+      BorderSizes.y2;
 
   return r;
 }
 
-void PositionDescriptor::SetMetric(WBPOSITIONTYPE p, WBMETRICTYPE m,
-                                   float Value) {
+void PositionDescriptor::SetMetric(PositionType p, MetricType m, float Value) {
   positions_[p].SetMetric(m, Value);
 }
 
-void PositionDescriptor::SetValue(WBPOSITIONTYPE p, float Relative,
+void PositionDescriptor::SetValue(PositionType p, float Relative,
                                   float Pixels) {
   positions_[p].SetValue(Relative, Pixels);
 }
 
-void PositionDescriptor::ClearMetrics(WBPOSITIONTYPE p) { positions_.erase(p); }
+void PositionDescriptor::ClearMetrics(PositionType p) { positions_.erase(p); }
 
 bool PositionDescriptor::IsWidthSet() const {
-  return positions_.find(WBPOSITIONTYPE::WB_WIDTH) != positions_.end();
+  return positions_.find(PositionType::WB_WIDTH) != positions_.end();
 }
 
 bool PositionDescriptor::IsHeightSet() const {
-  return positions_.find(WBPOSITIONTYPE::WB_HEIGHT) != positions_.end();
+  return positions_.find(PositionType::WB_HEIGHT) != positions_.end();
 }
 
 int32_t PositionDescriptor::GetWidth(Size ParentSize, Size ContentSize) const {
-  const auto pos = positions_.find(WBPOSITIONTYPE::WB_WIDTH);
+  const auto pos = positions_.find(PositionType::WB_WIDTH);
   if (pos == positions_.end()) {
     return 0;
   }
@@ -191,7 +187,7 @@ int32_t PositionDescriptor::GetWidth(Size ParentSize, Size ContentSize) const {
 }
 
 int32_t PositionDescriptor::GetHeight(Size ParentSize, Size ContentSize) const {
-  const auto pos = positions_.find(WBPOSITIONTYPE::WB_HEIGHT);
+  const auto pos = positions_.find(PositionType::WB_HEIGHT);
   if (pos == positions_.end()) {
     return 0;
   }
@@ -201,21 +197,21 @@ int32_t PositionDescriptor::GetHeight(Size ParentSize, Size ContentSize) const {
 
 bool PositionDescriptor::IsAutoResizer() {
   const bool WidthSet =
-      positions_.find(WBPOSITIONTYPE::WB_WIDTH) != positions_.end();
-  if (WidthSet && positions_[WBPOSITIONTYPE::WB_WIDTH].IsAutoResizer()) {
+      positions_.find(PositionType::WB_WIDTH) != positions_.end();
+  if (WidthSet && positions_[PositionType::WB_WIDTH].IsAutoResizer()) {
     return true;
   }
 
   const bool HeightSet =
-      positions_.find(WBPOSITIONTYPE::WB_HEIGHT) != positions_.end();
-  if (HeightSet && positions_[WBPOSITIONTYPE::WB_HEIGHT].IsAutoResizer()) {
+      positions_.find(PositionType::WB_HEIGHT) != positions_.end();
+  if (HeightSet && positions_[PositionType::WB_HEIGHT].IsAutoResizer()) {
     return true;
   }
 
   return false;
 }
 
-void PositionDescriptor::SetAutoSize(WBPOSITIONTYPE p) {
+void PositionDescriptor::SetAutoSize(PositionType p) {
   positions_[p].SetAutoSize(true);
 }
 
@@ -224,8 +220,8 @@ void PositionDescriptor::SetAutoSize(WBPOSITIONTYPE p) {
 
 PositionDescriptorPixels::PositionDescriptorPixels() = default;
 
-void PositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
-  if (static_cast<int32_t>(p) < 0 || p > WBPOSITIONTYPE::WB_HEIGHT) return;
+void PositionDescriptorPixels::SetValue(PositionType p, int32_t Pixels) {
+  if (static_cast<int32_t>(p) < 0 || p > PositionType::WB_HEIGHT) return;
   PositionsAt(p) = Pixels;
   SetAt(p) = true;
 }
@@ -233,33 +229,33 @@ void PositionDescriptorPixels::SetValue(WBPOSITIONTYPE p, int32_t Pixels) {
 Rect PositionDescriptorPixels::GetPosition(Size ParentSize) {
   Rect r(0, 0, 0, 0);
 
-  r.x1 = SetAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
-             ? PositionsAt(WBPOSITIONTYPE::WB_MARGIN_LEFT)
-             : (ParentSize.x - (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT) +
-                                PositionsAt(WBPOSITIONTYPE::WB_WIDTH)));
-  r.y1 = SetAt(WBPOSITIONTYPE::WB_MARGIN_TOP)
-             ? PositionsAt(WBPOSITIONTYPE::WB_MARGIN_TOP)
-             : (ParentSize.y - (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM) +
-                                PositionsAt(WBPOSITIONTYPE::WB_HEIGHT)));
-  r.x2 = SetAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT)
-             ? (ParentSize.x - PositionsAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT))
-             : (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_LEFT) +
-                PositionsAt(WBPOSITIONTYPE::WB_WIDTH));
-  r.y2 = SetAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM)
-             ? (ParentSize.y - PositionsAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM))
-             : (PositionsAt(WBPOSITIONTYPE::WB_MARGIN_TOP) +
-                PositionsAt(WBPOSITIONTYPE::WB_HEIGHT));
+  r.x1 = SetAt(PositionType::WB_MARGIN_LEFT)
+             ? PositionsAt(PositionType::WB_MARGIN_LEFT)
+             : (ParentSize.x - (PositionsAt(PositionType::WB_MARGIN_RIGHT) +
+                                PositionsAt(PositionType::WB_WIDTH)));
+  r.y1 = SetAt(PositionType::WB_MARGIN_TOP)
+             ? PositionsAt(PositionType::WB_MARGIN_TOP)
+             : (ParentSize.y - (PositionsAt(PositionType::WB_MARGIN_BOTTOM) +
+                                PositionsAt(PositionType::WB_HEIGHT)));
+  r.x2 = SetAt(PositionType::WB_MARGIN_RIGHT)
+             ? (ParentSize.x - PositionsAt(PositionType::WB_MARGIN_RIGHT))
+             : (PositionsAt(PositionType::WB_MARGIN_LEFT) +
+                PositionsAt(PositionType::WB_WIDTH));
+  r.y2 = SetAt(PositionType::WB_MARGIN_BOTTOM)
+             ? (ParentSize.y - PositionsAt(PositionType::WB_MARGIN_BOTTOM))
+             : (PositionsAt(PositionType::WB_MARGIN_TOP) +
+                PositionsAt(PositionType::WB_HEIGHT));
 
-  if (!SetAt(WBPOSITIONTYPE::WB_MARGIN_LEFT) &&
-      !SetAt(WBPOSITIONTYPE::WB_MARGIN_RIGHT)) {
-    r.x1 = (ParentSize.x - PositionsAt(WBPOSITIONTYPE::WB_WIDTH)) / 2;
-    r.x2 = r.x1 + PositionsAt(WBPOSITIONTYPE::WB_WIDTH);
+  if (!SetAt(PositionType::WB_MARGIN_LEFT) &&
+      !SetAt(PositionType::WB_MARGIN_RIGHT)) {
+    r.x1 = (ParentSize.x - PositionsAt(PositionType::WB_WIDTH)) / 2;
+    r.x2 = r.x1 + PositionsAt(PositionType::WB_WIDTH);
   }
 
-  if (!SetAt(WBPOSITIONTYPE::WB_MARGIN_TOP) &&
-      !SetAt(WBPOSITIONTYPE::WB_MARGIN_BOTTOM)) {
-    r.y1 = (ParentSize.y - PositionsAt(WBPOSITIONTYPE::WB_HEIGHT)) / 2;
-    r.y2 = r.y1 + PositionsAt(WBPOSITIONTYPE::WB_HEIGHT);
+  if (!SetAt(PositionType::WB_MARGIN_TOP) &&
+      !SetAt(PositionType::WB_MARGIN_BOTTOM)) {
+    r.y1 = (ParentSize.y - PositionsAt(PositionType::WB_HEIGHT)) / 2;
+    r.y2 = r.y1 + PositionsAt(PositionType::WB_HEIGHT);
   }
 
   return r;
@@ -267,7 +263,7 @@ Rect PositionDescriptorPixels::GetPosition(Size ParentSize) {
 
 MosaicImage::MosaicImage() = default;
 
-void MosaicImage::SetPositionValue(WBPOSITIONTYPE p, int32_t Pixels) {
+void MosaicImage::SetPositionValue(PositionType p, int32_t Pixels) {
   position_.SetValue(p, Pixels);
 }
 
@@ -275,7 +271,7 @@ void MosaicImage::SetTiling(int32_t Axis, bool y) { tiling_[Axis] = y; }
 
 void MosaicImage::SetStretching(int32_t Axis, bool y) { stretching_[Axis] = y; }
 
-void MosaicImage::SetHandle(WBATLASHANDLE handle) { handle_ = handle; }
+void MosaicImage::SetHandle(AtlasHandle handle) { handle_ = handle; }
 
 void MosaicImage::Render(DrawAPI* API, const Rect& Pos) {
   const Rect Croprect = API->GetCropRect();
@@ -296,10 +292,10 @@ void Mosaic::AddImage(const MosaicImage& Image) { images_.push_back(Image); }
 void Mosaic::Render(DrawAPI* API, const Rect& Position) {
   for (auto& image : images_) {
     image.Render(API,
-                 Position + Rect(OvershootAt(WBRECTSIDE::WB_RECTSIDE_LEFT),
-                                 OvershootAt(WBRECTSIDE::WB_RECTSIDE_TOP),
-                                 OvershootAt(WBRECTSIDE::WB_RECTSIDE_RIGHT),
-                                 OvershootAt(WBRECTSIDE::WB_RECTSIDE_BOTTOM)));
+                 Position + Rect(OvershootAt(RectSide::WB_RECTSIDE_LEFT),
+                                 OvershootAt(RectSide::WB_RECTSIDE_TOP),
+                                 OvershootAt(RectSide::WB_RECTSIDE_RIGHT),
+                                 OvershootAt(RectSide::WB_RECTSIDE_BOTTOM)));
   }
 }
 
@@ -322,7 +318,7 @@ Mosaic& Mosaic::operator=(const Mosaic& Copy) {
 
 void Mosaic::Flush() { images_.clear(); }
 
-void Mosaic::SetOverShoot(WBRECTSIDE side, int32_t val) {
+void Mosaic::SetOverShoot(RectSide side, int32_t val) {
   OvershootAt(side) = val;
 }
 
@@ -333,19 +329,19 @@ std::string& SkinElement::GetName() { return name_; }
 void SkinElement::Render(DrawAPI* API, const Rect& Pos) {
   API->DrawAtlasElement(
       handle_, Pos,
-      default_behavior_[0] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE,
-      default_behavior_[1] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE,
-      default_behavior_[0] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH,
-      default_behavior_[1] == WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
+      default_behavior_[0] == SkinElementBehavior::WB_SKINBEHAVIOR_TILE,
+      default_behavior_[1] == SkinElementBehavior::WB_SKINBEHAVIOR_TILE,
+      default_behavior_[0] == SkinElementBehavior::WB_SKINBEHAVIOR_STRETCH,
+      default_behavior_[1] == SkinElementBehavior::WB_SKINBEHAVIOR_STRETCH);
 }
 
-void SkinElement::SetHandle(WBATLASHANDLE h) { handle_ = h; }
+void SkinElement::SetHandle(AtlasHandle h) { handle_ = h; }
 
-void SkinElement::SetBehavior(int32_t Axis, WBSKINELEMENTBEHAVIOR Behavior) {
+void SkinElement::SetBehavior(int32_t Axis, SkinElementBehavior Behavior) {
   default_behavior_[Axis] = Behavior;
 }
 
-WBSKINELEMENTBEHAVIOR SkinElement::GetBehavior(int32_t Axis) {
+SkinElementBehavior SkinElement::GetBehavior(int32_t Axis) {
   return default_behavior_[Axis];
 }
 
@@ -365,16 +361,16 @@ SkinElement::SkinElement(const SkinElement& Copy)
 
 SkinElement::SkinElement()
     : handle_(0),
-      default_behavior_{WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT,
-                        WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_PIXELCORRECT} {}
+      default_behavior_{SkinElementBehavior::WB_SKINBEHAVIOR_PIXELCORRECT,
+                        SkinElementBehavior::WB_SKINBEHAVIOR_PIXELCORRECT} {}
 
-WBATLASHANDLE SkinElement::GetHandle() { return handle_; }
+AtlasHandle SkinElement::GetHandle() { return handle_; }
 
 Size SkinElement::GetElementSize(DrawAPI* API) {
   return API->GetAtlasElementSize(handle_);
 }
 
-void Skin::RenderElement(DrawAPI* API, WBSKINELEMENTID ID, const Rect& Pos) {
+void Skin::RenderElement(DrawAPI* API, SkinElementId ID, const Rect& Pos) {
   if (ID == 0xffffffff) return;
 
   const uint32_t idx = ID & 0x7fffffff;
@@ -395,7 +391,7 @@ void Skin::RenderElement(DrawAPI* API, std::string_view Name, const Rect& Pos) {
   RenderElement(API, GetElementID(Name), Pos);
 }
 
-WBSKINELEMENTID Skin::GetElementID(std::string_view Name) {
+SkinElementId Skin::GetElementID(std::string_view Name) {
   for (uint32_t x = 0; x < mosaics_.size(); x++) {
     if (mosaics_[x].GetName() == Name) return x;
   }
@@ -407,9 +403,8 @@ WBSKINELEMENTID Skin::GetElementID(std::string_view Name) {
   return 0xffffffff;
 }
 
-void Skin::AddElement(std::string_view Name, WBATLASHANDLE Handle,
-                      WBSKINELEMENTBEHAVIOR Xbehav,
-                      WBSKINELEMENTBEHAVIOR Ybehav) {
+void Skin::AddElement(std::string_view Name, AtlasHandle Handle,
+                      SkinElementBehavior Xbehav, SkinElementBehavior Ybehav) {
   for (auto& skin : skin_items_) {
     if (skin.GetName() == Name) {
       skin.SetHandle(Handle);
@@ -438,10 +433,10 @@ Mosaic* Skin::AddMosaic(std::string_view Name, std::string_view Description,
   mosaics_.emplace_back(Mosaic());
   mosaics_.back().SetName(Name);
 
-  mosaics_.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_LEFT, OverShootLeft);
-  mosaics_.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_TOP, OverShootTop);
-  mosaics_.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_RIGHT, OverShootRight);
-  mosaics_.back().SetOverShoot(WBRECTSIDE::WB_RECTSIDE_BOTTOM, OverShootBottom);
+  mosaics_.back().SetOverShoot(RectSide::WB_RECTSIDE_LEFT, OverShootLeft);
+  mosaics_.back().SetOverShoot(RectSide::WB_RECTSIDE_TOP, OverShootTop);
+  mosaics_.back().SetOverShoot(RectSide::WB_RECTSIDE_RIGHT, OverShootRight);
+  mosaics_.back().SetOverShoot(RectSide::WB_RECTSIDE_BOTTOM, OverShootBottom);
 
   auto Lines = Split(Description, ")");
   for (const auto& l : Lines) {
@@ -452,14 +447,14 @@ Mosaic* Skin::AddMosaic(std::string_view Name, std::string_view Description,
       SkinElement* e = GetElement(Trim(Data[0]));
       if (e) {
         i.SetHandle(e->GetHandle());
-        i.SetTiling(0, e->GetBehavior(0) ==
-                           WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE);
-        i.SetTiling(1, e->GetBehavior(1) ==
-                           WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_TILE);
+        i.SetTiling(
+            0, e->GetBehavior(0) == SkinElementBehavior::WB_SKINBEHAVIOR_TILE);
+        i.SetTiling(
+            1, e->GetBehavior(1) == SkinElementBehavior::WB_SKINBEHAVIOR_TILE);
         i.SetStretching(0, e->GetBehavior(0) ==
-                               WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
+                               SkinElementBehavior::WB_SKINBEHAVIOR_STRETCH);
         i.SetStretching(1, e->GetBehavior(1) ==
-                               WBSKINELEMENTBEHAVIOR::WB_SKINBEHAVIOR_STRETCH);
+                               SkinElementBehavior::WB_SKINBEHAVIOR_STRETCH);
 
         auto Data2 = Split(Data[1], ";");
 
@@ -472,26 +467,25 @@ Mosaic* Skin::AddMosaic(std::string_view Name, std::string_view Description,
             if (keyvalue.size() > 1) value = Trim(keyvalue[1]);
 
             if (key == "top") {
-              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_TOP,
-                                 std::stoi(value));
+              i.SetPositionValue(PositionType::WB_MARGIN_TOP, std::stoi(value));
             }
             if (key == "left") {
-              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_LEFT,
+              i.SetPositionValue(PositionType::WB_MARGIN_LEFT,
                                  std::stoi(value));
             }
             if (key == "right") {
-              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_RIGHT,
+              i.SetPositionValue(PositionType::WB_MARGIN_RIGHT,
                                  std::stoi(value));
             }
             if (key == "bottom") {
-              i.SetPositionValue(WBPOSITIONTYPE::WB_MARGIN_BOTTOM,
+              i.SetPositionValue(PositionType::WB_MARGIN_BOTTOM,
                                  std::stoi(value));
             }
             if (key == "width") {
-              i.SetPositionValue(WBPOSITIONTYPE::WB_WIDTH, std::stoi(value));
+              i.SetPositionValue(PositionType::WB_WIDTH, std::stoi(value));
             }
             if (key == "height") {
-              i.SetPositionValue(WBPOSITIONTYPE::WB_HEIGHT, std::stoi(value));
+              i.SetPositionValue(PositionType::WB_HEIGHT, std::stoi(value));
             }
 
             if (key == "repeat-x") i.SetTiling(0, true);
@@ -522,7 +516,7 @@ SkinElement* Skin::GetElement(std::string_view Name) {
   return nullptr;
 }
 
-SkinElement* Skin::GetElement(WBSKINELEMENTID id) {
+SkinElement* Skin::GetElement(SkinElementId id) {
   if (id == 0xffffffff) return nullptr;
   if (!(id & 0x80000000)) return nullptr;  // mosaic
   const uint32_t idx = id & 0x7fffffff;
@@ -530,7 +524,7 @@ SkinElement* Skin::GetElement(WBSKINELEMENTID id) {
   return &skin_items_[idx];
 }
 
-Size Skin::GetElementSize(DrawAPI* API, WBSKINELEMENTID ID) {
+Size Skin::GetElementSize(DrawAPI* API, SkinElementId ID) {
   if (ID == 0xffffffff) return Size(0, 0);
 
   const uint32_t idx = ID & 0x7fffffff;

@@ -27,11 +27,11 @@ void RaidProgress::OnDraw(gui::DrawAPI* api) {
 
   gui::Font* f = GetFont(GetState());
   GW2::APIKeyManager::Status status =
-      GW2::apiKeyManager.DisplayStatusText(api, f);
+      GW2::api_key_manager.DisplayStatusText(api, f);
   if (status != GW2::APIKeyManager::Status::OK) {
     return;
   }
-  GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+  GW2::APIKey* key = GW2::api_key_manager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
       (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
@@ -108,10 +108,9 @@ void RaidProgress::OnDraw(gui::DrawAPI* api) {
 
         if (e.type == RaidEvent::Type::Boss) cnt++;
 
-        Point tp = f->GetTextPosition(s, r + Rect(-3, 0, 0, 0),
-                                      gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                                      gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                                      gui::WBTEXTTRANSFORM::WBTT_NONE);
+        Point tp = f->GetTextPosition(
+            s, r + Rect(-3, 0, 0, 0), gui::TextAlignmentX::WBTA_CENTERX,
+            gui::TextAlignmentY::WBTA_CENTERY, gui::TextTransform::WBTT_NONE);
         tp.y = pos_y + 1;
         f->Write(api, s, tp, CColor{0xffffffff});
         api->DrawRectBorder(r, CColor{0x80000000});
@@ -189,13 +188,13 @@ RaidProgress::RaidProgress()
 
 RaidProgress::~RaidProgress() {}
 
-gui::Widget* RaidProgress::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* RaidProgress::Factory(gui::Widget* root, const XMLNode& node,
                                    const Rect& pos) {
   return RaidProgress::Create(root, pos);
 }
 
 bool RaidProgress::IsMouseTransparent(const Point& client_space_point,
-                                      gui::WBMESSAGE message_type) {
+                                      gui::MessageType type) {
   return true;
 }
 

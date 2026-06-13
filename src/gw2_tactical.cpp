@@ -47,10 +47,10 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-gui::WBATLASHANDLE DefaultIconHandle = -1;
-gui::WBATLASHANDLE forbiddenIconHandle = -1;
+gui::AtlasHandle DefaultIconHandle = -1;
+gui::AtlasHandle forbiddenIconHandle = -1;
 Size forbiddenIconSize;
-std::unordered_map<std::string, gui::WBATLASHANDLE> MapIcons;
+std::unordered_map<std::string, gui::AtlasHandle> MapIcons;
 int32_t useMetricDisplay = 0;
 
 float GetUIScale();
@@ -122,9 +122,9 @@ mz_zip_archive* OpenZipFile(std::string_view zf) {
   return zipDict[zipFile].get();
 }
 
-gui::WBATLASHANDLE GetMapIcon(gui::Application* App, std::string_view fname,
-                              std::string_view zipFile,
-                              std::string_view categoryZip) {
+gui::AtlasHandle GetMapIcon(gui::Application* App, std::string_view fname,
+                            std::string_view zipFile,
+                            std::string_view categoryZip) {
   std::string filename(fname);
   for (char& x : filename) {
     if (x == '\\') x = '/';
@@ -199,7 +199,7 @@ gui::WBATLASHANDLE GetMapIcon(gui::Application* App, std::string_view fname,
     }
 
     // zipfile load failed, fall back to regular load and add it as an alias
-    gui::WBATLASHANDLE handle = GetMapIcon(App, filename, "", "");
+    gui::AtlasHandle handle = GetMapIcon(App, filename, "", "");
     if (handle == DefaultIconHandle) return handle;
     MapIcons[s] = handle;
     return handle;
@@ -355,9 +355,10 @@ float GetMapFade() {
 }
 
 void GW2TacticalDisplay::FetchAchievements() {
-  if (GW2::apiKeyManager.GetStatus() != GW2::APIKeyManager::Status::OK) return;
+  if (GW2::api_key_manager.GetStatus() != GW2::APIKeyManager::Status::OK)
+    return;
 
-  GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+  GW2::APIKey* key = GW2::api_key_manager.GetIdentifiedAPIKey();
 
   if (fetchTask.valid() &&
       fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
@@ -500,7 +501,7 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
 
   float mapFade = GetMapFade();
 
-  gui::WBATLASHANDLE icon = poi->icon;
+  gui::AtlasHandle icon = poi->icon;
   float size = poi->type_data_.size_;
   float Alpha = poi->type_data_.alpha_;
 
@@ -586,9 +587,9 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
     CColor col = poi->type_data_.color_;
     if (icon != DefaultIconHandle) {
       col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
-                                     mapFade * globalOpacity);
+                                     mapFade * global_opacity);
     } else {
-      col.A() = static_cast<uint8_t>(col.A() * mapFade * globalOpacity);
+      col.A() = static_cast<uint8_t>(col.A() * mapFade * global_opacity);
     }
     API->DrawAtlasElement(icon, rect, false, false, true, true, col);
   }
@@ -599,30 +600,30 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
 
     if (poi->wvw_objective_id < wvw_objectives.size()) {
       wvw_objective_name =
-          DICT(wvw_objectives[poi->wvw_objective_id].name_token_,
-               wvw_objectives[poi->wvw_objective_id].name_);
+          DICT(wvw_objectives[poi->wvw_objective_id].name_token,
+               wvw_objectives[poi->wvw_objective_id].name);
     }
 
     if (!wvw_objective_name.empty()) {
       p = f->GetTextPosition(wvw_objective_name, rect,
-                             gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             gui::WBTEXTALIGNMENTY::WBTA_TOP,
-                             gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false) -
+                             gui::TextAlignmentX::WBTA_CENTERX,
+                             gui::TextAlignmentY::WBTA_TOP,
+                             gui::TextTransform::WBTT_UPPERCASE, false) -
           Point(0, f->GetLineHeight());
       /*
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
           f->Write(API, wvw_objective_name, p + Point(x - 1, y - 1),
                    CColor(0, 0, 0,
-                          uint8_t(255 * alphaMultiplier * globalOpacity *
+                          uint8_t(255 * alphaMultiplier * global_opacity *
                                   mapFade / 2.0f)),
-                   gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
+                   gui::TextTransform::WBTT_UPPERCASE, false);
       */
       f->Write(API, wvw_objective_name, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
-                                           globalOpacity)),
-               gui::WBTEXTTRANSFORM::WBTT_UPPERCASE, false);
+                                           global_opacity)),
+               gui::TextTransform::WBTT_UPPERCASE, false);
     }
   }
 
@@ -654,41 +655,41 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
         CColor col(0xffffffff);
         if (icon != DefaultIconHandle) {
           col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
-                                         mapFade * globalOpacity);
+                                         mapFade * global_opacity);
         } else {
-          col.A() = static_cast<uint8_t>(col.A() * mapFade * globalOpacity);
+          col.A() = static_cast<uint8_t>(col.A() * mapFade * global_opacity);
         }
         API->DrawAtlasElement(forbiddenIconHandle, rect, false, false, true,
                               true, col);
       }
 
-      p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             gui::WBTEXTALIGNMENTY::WBTA_BOTTOM,
-                             gui::WBTEXTTRANSFORM::WBTT_NONE, false) +
+      p = f->GetTextPosition(txt, rect, gui::TextAlignmentX::WBTA_CENTERX,
+                             gui::TextAlignmentY::WBTA_BOTTOM,
+                             gui::TextTransform::WBTT_NONE, false) +
           Point(0, f->GetLineHeight() + offset);
       /*
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
           f->Write(API, txt, p + Point(x - 1, y - 1),
                    CColor(0, 0, 0,
-                          uint8_t(255 * alphaMultiplier * globalOpacity *
+                          uint8_t(255 * alphaMultiplier * global_opacity *
                                   mapFade / 2.0f)),
-                   gui::WBTEXTTRANSFORM::WBTT_NONE, false);
+                   gui::TextTransform::WBTT_NONE, false);
       */
       f->Write(API, txt, p,
                CColor(255, 255, 0,
                       static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
-                                           globalOpacity)),
-               gui::WBTEXTTRANSFORM::WBTT_NONE, false);
+                                           global_opacity)),
+               gui::TextTransform::WBTT_NONE, false);
     } else {
-      p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             gui::WBTEXTALIGNMENTY::WBTA_CENTERY,
-                             gui::WBTEXTTRANSFORM::WBTT_NONE, false);
+      p = f->GetTextPosition(txt, rect, gui::TextAlignmentX::WBTA_CENTERX,
+                             gui::TextAlignmentY::WBTA_CENTERY,
+                             gui::TextTransform::WBTT_NONE, false);
       p.y += offset;
       f->Write(API, txt, p,
                CColor(255, 255, 0,
-                      static_cast<uint8_t>(255 * mapFade * globalOpacity)),
-               gui::WBTEXTTRANSFORM::WBTT_NONE, false);
+                      static_cast<uint8_t>(255 * mapFade * global_opacity)),
+               gui::TextTransform::WBTT_NONE, false);
     }
   }
 
@@ -709,15 +710,15 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
         txt = std::format("{:.1f}m", charDist);
       }
 
-      p = f->GetTextPosition(txt, rect, gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-                             gui::WBTEXTALIGNMENTY::WBTA_BOTTOM,
-                             gui::WBTEXTTRANSFORM::WBTT_NONE, false) +
+      p = f->GetTextPosition(txt, rect, gui::TextAlignmentX::WBTA_CENTERX,
+                             gui::TextAlignmentY::WBTA_BOTTOM,
+                             gui::TextTransform::WBTT_NONE, false) +
           Point(0, f->GetLineHeight());
       f->Write(API, txt, p,
                CColor(255, 255, 255,
                       static_cast<uint8_t>(255 * Alpha * alphaMultiplier *
-                                           mapFade * globalOpacity)),
-               gui::WBTEXTTRANSFORM::WBTT_NONE, false);
+                                           mapFade * global_opacity)),
+               gui::TextTransform::WBTT_NONE, false);
     }
   }
 }
@@ -765,7 +766,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::DrawAPI* API, const Rect& miniRect,
   displayRect.y2 = topLeft.y + static_cast<int32_t>(poiSize);
 
   CColor col = poi.type_data_.color_;
-  col.A() = static_cast<uint8_t>(col.A() * alpha * minimapOpacity *
+  col.A() = static_cast<uint8_t>(col.A() * alpha * minimap_opacity *
                                  poi.type_data_.alpha_);
 
   API->DrawAtlasElement(poi.icon, displayRect, false, false, true, true, col);
@@ -773,14 +774,14 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::DrawAPI* API, const Rect& miniRect,
 
 void GW2TacticalDisplay::OnDraw(gui::DrawAPI* API) {
   int opac = GetConfigValue("OpacityIngame");
-  if (opac == 0) globalOpacity = 1.0f;
-  if (opac == 1) globalOpacity = 2 / 3.0f;
-  if (opac == 2) globalOpacity = 1 / 3.0f;
+  if (opac == 0) global_opacity = 1.0f;
+  if (opac == 1) global_opacity = 2 / 3.0f;
+  if (opac == 2) global_opacity = 1 / 3.0f;
 
   opac = GetConfigValue("OpacityMap");
-  if (opac == 0) minimapOpacity = 1.0f;
-  if (opac == 1) minimapOpacity = 2 / 3.0f;
-  if (opac == 2) minimapOpacity = 1 / 3.0f;
+  if (opac == 0) minimap_opacity = 1.0f;
+  if (opac == 1) minimap_opacity = 2 / 3.0f;
+  if (opac == 2) minimap_opacity = 1 / 3.0f;
 
   useMetricDisplay = GetConfigValue("UseMetricDisplay");
 
@@ -837,10 +838,10 @@ void GW2TacticalDisplay::OnDraw(gui::DrawAPI* API) {
     const auto& updates = wvw_poi_updates.pop();
     if (updates.has_value()) {
       for (auto& e : updates.value()) {
-        if (wvw_pois.find(e.id_) == wvw_pois.end()) continue;
-        auto& poi = wvw_pois[e.id_];
-        poi.lastUpdateTime = e.last_flipped_;
-        switch (e.owner_) {
+        if (wvw_pois.find(e.id) == wvw_pois.end()) continue;
+        auto& poi = wvw_pois[e.id];
+        poi.lastUpdateTime = e.last_flipped;
+        switch (e.owner) {
           case WvwPoiUpdate::Team::kRed:
             poi.type_data_.color_ = CColor{0xffe53b3b};
             break;
@@ -899,7 +900,7 @@ void GW2TacticalDisplay::OnDraw(gui::DrawAPI* API) {
   API->FlushDrawBuffer();
   API->GetDevice()->SetRenderState(
       (dynamic_cast<OverlayApplication*>(GetApplication()))
-          ->hole_punch_blend_state.get());
+          ->hole_punch_blend_state_.get());
 
   API->DrawRect(miniRect, CColor(0, 0, 0, 0));
 
@@ -980,14 +981,13 @@ GW2TacticalDisplay::GW2TacticalDisplay() : GuiType() {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
-gui::Widget* GW2TacticalDisplay::Factory(gui::Widget* Root,
-                                         const CXMLNode& node,
+gui::Widget* GW2TacticalDisplay::Factory(gui::Widget* Root, const XMLNode& node,
                                          const Rect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos);
 }
 
 bool GW2TacticalDisplay::IsMouseTransparent(const Point& ClientSpacePoint,
-                                            gui::WBMESSAGE MessageType) {
+                                            gui::MessageType message_type) {
   return true;
 }
 
@@ -1012,7 +1012,7 @@ bool FindSavedCategory(GW2TacticalCategory* t) {
   return false;
 }
 
-void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
+void ExportSavedCategories(XMLNode* n, GW2TacticalCategory* t) {
   if (!FindSavedCategory(t)) return;
   auto& nn = n->AddChild("MarkerCategory");
   nn.SetAttribute("name", t->name);
@@ -1022,8 +1022,8 @@ void ExportSavedCategories(CXMLNode* n, GW2TacticalCategory* t) {
   for (const auto& c : t->children) ExportSavedCategories(&nn, c.get());
 }
 
-void ExportPOI(CXMLNode* n, const POI& p) {
-  CXMLNode* t = &n->AddChild("POI");
+void ExportPOI(XMLNode* n, const POI& p) {
+  XMLNode* t = &n->AddChild("POI");
   t->SetAttributeFromInteger("MapID", p.map_id);
   t->SetAttributeFromFloat("xpos", p.position.x);
   t->SetAttributeFromFloat("ypos", p.position.y);
@@ -1037,8 +1037,8 @@ void ExportPOI(CXMLNode* n, const POI& p) {
   p.type_data_.Write(t);
 }
 
-void ExportTrail(CXMLNode* n, const GW2Trail& p) {
-  CXMLNode* t = &n->AddChild("Trail");
+void ExportTrail(XMLNode* n, const GW2Trail& p) {
+  XMLNode* t = &n->AddChild("Trail");
   if (!p.type_.empty()) t->SetAttribute("type", p.type_);
   t->SetAttribute("GUID",
                   B64Encode(std::string_view(
@@ -1047,15 +1047,15 @@ void ExportTrail(CXMLNode* n, const GW2Trail& p) {
 }
 
 void ExportPOIS() {
-  CXMLDocument d;
-  CXMLNode root = d.GetDocumentNode();
-  CXMLNode& overlayData = root.AddChild("OverlayData");
+  XMLDocument d;
+  XMLNode root = d.GetDocumentNode();
+  XMLNode& overlayData = root.AddChild("OverlayData");
 
-  for (const auto& c : CategoryRoot.children) {
+  for (const auto& c : category_root.children) {
     ExportSavedCategories(&overlayData, c.get());
   }
 
-  CXMLNode* n = &overlayData.AddChild("POIs");
+  XMLNode* n = &overlayData.AddChild("POIs");
 
   const auto& mPOIs = GetMapPOIs();
   for (auto& poi : mPOIs) {
@@ -1074,7 +1074,7 @@ void ExportPOIS() {
   for (const auto& r : Routes) {
     if (r.external) continue;
 
-    CXMLNode* t = &n->AddChild("Route");
+    XMLNode* t = &n->AddChild("Route");
     t->SetAttribute("Name", r.name);
     t->SetAttributeFromInteger("BackwardDirection",
                                static_cast<int32_t>(r.backwards));
@@ -1090,7 +1090,7 @@ void ExportPOIS() {
   d.SaveToFile("poidata.xml");
 }
 
-GUID LoadGUID(const CXMLNode& n) {
+GUID LoadGUID(const XMLNode& n) {
   auto guidb64 = n.GetAttributeAsString("GUID");
 
   auto data = B64Decode(guidb64);
@@ -1106,7 +1106,7 @@ GUID LoadGUID(const CXMLNode& n) {
   return guid;
 }
 
-void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
+void RecursiveImportPOIType(const XMLNode& root, GW2TacticalCategory* Root,
                             std::string_view currentCategory,
                             const MarkerTypeData& defaults, bool KeepSaveState,
                             std::string_view zipFile) {
@@ -1143,7 +1143,7 @@ void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
         Root2->children.emplace_back(std::move(nc));
         c->name = y;
         c->data = defaults;
-        CategoryMap[newCatName] = c;
+        category_map[newCatName] = c;
         c->parent = Root2;
         Root2 = c;
         displayName = c->name;
@@ -1178,19 +1178,19 @@ void RecursiveImportPOIType(const CXMLNode& root, GW2TacticalCategory* Root,
 }
 
 void ImportPOITypes() {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromFile("categorydata.xml")) return;
 
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
-  CXMLNode root = d.GetDocumentNode().GetChild("OverlayData");
+  XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
-  CategoryMap.clear();
-  CategoryRoot.children.clear();
+  category_map.clear();
+  category_root.children.clear();
   auto defaults = MarkerTypeData();
-  RecursiveImportPOIType(root, &CategoryRoot, "", defaults, false, "");
+  RecursiveImportPOIType(root, &category_root, "", defaults, false, "");
 }
 
-void ImportPOI(const CXMLNode& t, POI* p, std::string_view zipFile) {
+void ImportPOI(const XMLNode& t, POI* p, std::string_view zipFile) {
   if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p->map_id);
   if (t.HasAttribute("xpos")) t.GetAttributeAsFloat("xpos", &p->position.x);
   if (t.HasAttribute("ypos")) t.GetAttributeAsFloat("ypos", &p->position.y);
@@ -1216,7 +1216,7 @@ void ImportPOI(const CXMLNode& t, POI* p, std::string_view zipFile) {
   p->icon_file_ = p->type_data_.icon_file_;
 }
 
-bool ImportTrail(const CXMLNode& t, GW2Trail* p, std::string_view zipFile) {
+bool ImportTrail(const XMLNode& t, GW2Trail* p, std::string_view zipFile) {
   p->zip_file_ = zipFile;
 
   if (t.HasAttribute("type")) p->type_ = t.GetAttributeAsString("type");
@@ -1235,19 +1235,20 @@ bool ImportTrail(const CXMLNode& t, GW2Trail* p, std::string_view zipFile) {
   return p->Import(p->type_data_.trail_data_, zipFile);
 }
 
-void ImportPOIDocument(const CXMLDocument& d, bool External,
+void ImportPOIDocument(const XMLDocument& d, bool External,
                        std::string_view zipFile) {
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
-  CXMLNode root = d.GetDocumentNode().GetChild("OverlayData");
+  XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
   auto defaults = MarkerTypeData();
-  RecursiveImportPOIType(root, &CategoryRoot, "", defaults, !External, zipFile);
+  RecursiveImportPOIType(root, &category_root, "", defaults, !External,
+                         zipFile);
 
   if (root.GetChildCount("POIs")) {
-    CXMLNode n = root.GetChild("POIs");
+    XMLNode n = root.GetChild("POIs");
 
     if (n.GetChildCount("POI") > 0) {
-      CXMLNode t = n.GetChild("POI", 0);
+      XMLNode t = n.GetChild("POI", 0);
       do {
         POI p;
         ImportPOI(t, &p, zipFile);
@@ -1257,7 +1258,7 @@ void ImportPOIDocument(const CXMLDocument& d, bool External,
     }
 
     for (int32_t x = 0; x < n.GetChildCount("Route"); x++) {
-      CXMLNode rn = n.GetChild("Route", x);
+      XMLNode rn = n.GetChild("Route", x);
       POIRoute r;
       if (rn.HasAttribute("Name")) r.name = rn.GetAttributeAsString("Name");
       int32_t b = false;
@@ -1278,7 +1279,7 @@ void ImportPOIDocument(const CXMLDocument& d, bool External,
       }
 
       if (rn.GetChildCount("POI") > 0) {
-        CXMLNode t = rn.GetChild("POI", 0);
+        XMLNode t = rn.GetChild("POI", 0);
         do {
           POI p;
           ImportPOI(t, &p, zipFile);
@@ -1293,7 +1294,7 @@ void ImportPOIDocument(const CXMLDocument& d, bool External,
     }
 
     if (n.GetChildCount("Trail") > 0) {
-      CXMLNode t = n.GetChild("Trail", 0);
+      XMLNode t = n.GetChild("Trail", 0);
       do {
         auto p = std::make_unique<GW2Trail>();
         if (ImportTrail(t, p.get(), zipFile)) {
@@ -1306,13 +1307,13 @@ void ImportPOIDocument(const CXMLDocument& d, bool External,
 }
 
 void ImportPOIFile(std::string_view s, bool External) {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromFile(s.data())) return;
   ImportPOIDocument(d, External, "");
 }
 
 void ImportPOIString(std::string_view data, std::string_view zipFile) {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromString(data)) return;
   ImportPOIDocument(d, true, zipFile);
 }
@@ -1387,17 +1388,17 @@ void ImportPOIS() {
 }
 
 void ImportPOIActivationData() {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromFile("activationdata.xml")) return;
 
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
-  CXMLNode root = d.GetDocumentNode().GetChild("OverlayData");
+  XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
   if (root.GetChildCount("Activations")) {
-    CXMLNode n = root.GetChild("Activations");
+    XMLNode n = root.GetChild("Activations");
 
     for (int32_t x = 0; x < n.GetChildCount("POIActivation"); x++) {
-      CXMLNode t = n.GetChild("POIActivation", x);
+      XMLNode t = n.GetChild("POIActivation", x);
 
       if (!t.HasAttribute("GUID")) continue;
 
@@ -1432,11 +1433,11 @@ void ImportPOIActivationData() {
 }
 
 void ExportPOIActivationData() {
-  CXMLDocument d;
-  CXMLNode root = d.GetDocumentNode();
+  XMLDocument d;
+  XMLNode root = d.GetDocumentNode();
   auto& overlayData = root.AddChild("OverlayData");
 
-  CXMLNode* n = &overlayData.AddChild("Activations");
+  XMLNode* n = &overlayData.AddChild("Activations");
 
   for (auto& ad : ActivationData) {
     auto& dat = ad.second;
@@ -1449,7 +1450,7 @@ void ExportPOIActivationData() {
         }
       }
     }
-    CXMLNode* t = &n->AddChild("POIActivation");
+    XMLNode* t = &n->AddChild("POIActivation");
     t->SetAttributeFromInteger(
         "lut1", (reinterpret_cast<int32_t*>(&dat.lastUpdateTime))[0]);
     t->SetAttributeFromInteger(
@@ -1544,7 +1545,7 @@ void UpdatePOI() {
         GW2TacticalCategory* cat = GetCategory(str);
         if (cat) {
           cat->is_displayed = !cat->is_displayed;
-          CategoryRoot.CalculateVisibilityCache();
+          category_root.CalculateVisibilityCache();
           SetConfigValue(("CategoryVisible_" + cat->GetFullTypeName()),
                          cat->is_displayed);
         }
@@ -1654,7 +1655,7 @@ void OpenTypeContextMenu(gui::ContextItem* ctx,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {
   category_list_.clear();
-  AddTypeContextMenu(ctx, category_list_, &CategoryRoot, AddVisibilityMarkers,
+  AddTypeContextMenu(ctx, category_list_, &category_root, AddVisibilityMarkers,
                      BaseID, closeOnClick);
 }
 
@@ -1663,7 +1664,7 @@ void OpenTypeContextMenu(gui::ContextMenu* ctx,
                          bool AddVisibilityMarkers, int32_t BaseID,
                          bool closeOnClick) {
   category_list_.clear();
-  AddTypeContextMenu(ctx, category_list_, &CategoryRoot, AddVisibilityMarkers,
+  AddTypeContextMenu(ctx, category_list_, &category_root, AddVisibilityMarkers,
                      BaseID, closeOnClick);
 }
 

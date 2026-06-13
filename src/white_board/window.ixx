@@ -39,7 +39,7 @@ constexpr uint32_t WB_DRAGMASK = 0x0000000F;
 constexpr uint32_t WB_DRAGMODE_CLOSEBUTTON = 0x00000010;
 constexpr uint32_t WB_DRAGMODE_MOVE = 0x00000020;
 
-enum class WBWINDOWELEMENT : char {
+enum class WindowElement : char {
   WB_WINELEMENT_CLOSE = 0,
   WB_WINELEMENT_MINIMIZE,
   WB_WINELEMENT_INFO,
@@ -69,15 +69,15 @@ class Window : public GuiType<"window", Widget> {
   void SetTitle(std::string_view val) { window_title_ = val; }
 
   uint32_t GetDragMode();
-  static Widget* Factory(Widget* Root, const CXMLNode& node,
+  static Widget* Factory(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
-  math::Rect GetElementPos(WBWINDOWELEMENT Element);
+  math::Rect GetElementPos(WindowElement Element);
   uint32_t GetBorderSelectionArea(const math::Point& mousepos);
 
  protected:
   void OnDraw(DrawAPI* API) override;
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const Message& message) override;
 
   uint32_t style_;
   uint32_t drag_mode_{0};
@@ -91,7 +91,7 @@ class Window : public GuiType<"window", Widget> {
 
   std::string window_title_;
 
-  std::unordered_map<WBWINDOWELEMENT, CssPropertyBatch> elements_;
+  std::unordered_map<WindowElement, CssPropertyBatch> elements_;
 };
 
 }  // namespace gui

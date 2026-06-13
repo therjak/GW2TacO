@@ -84,7 +84,7 @@ bool InitGUI(gui::Application* App) {
         "Missing File!", MB_ICONERROR);
     return false;
   }
-  if (!App->LoadCSSFromFile(UIFileNames[GetConfigValue("InterfaceSize")])) {
+  if (!App->LoadCSSFromFile(kUiFileNames[GetConfigValue("InterfaceSize")])) {
     MessageBox(
         nullptr,
         "TacO can't find a required UI css style file!\nPlease make sure you "
@@ -154,7 +154,7 @@ void OpenWindows(gui::Application* App) {
 bool ShiftState = false;
 
 LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks) {
+  if (disable_hooks) {
     return CallNextHookEx(nullptr, ccode, wParam, lParam);
   }
 
@@ -227,7 +227,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks || mumbleLink.textbox_has_focus) {
+  if (disable_hooks || mumbleLink.textbox_has_focus) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
   }
 
@@ -277,7 +277,7 @@ LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT __stdcall MouseHook(int code, WPARAM wParam, LPARAM lParam) {
-  if (disableHooks) {
+  if (disable_hooks) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
   }
 

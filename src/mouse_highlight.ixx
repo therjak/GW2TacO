@@ -33,7 +33,7 @@ export enum class MouseColor {
   white
 };
 
-export constexpr std::array CGAPalette = {
+export constexpr std::array kCGAPalette = {
     CColor{0xffaa0000}, CColor{0xffff5555}, CColor{0xff000000},
     CColor{0xff555555}, CColor{0xff0000aa}, CColor{0xff5555ff},
     CColor{0xff00aa00}, CColor{0xff55ff55}, CColor{0xff00aaaa},
@@ -41,7 +41,7 @@ export constexpr std::array CGAPalette = {
     CColor{0xffaa5500}, CColor{0xffffff55}, CColor{0xffaaaaaa},
     CColor{0xffffffff}};
 
-export constexpr std::array CGAPaletteNames = {
+export constexpr std::array kkCGAPaletteNames = {
     "red",   "lightred",   "black",     "gray",      "blue",    "lightblue",
     "green", "lightgreen", "cyan",      "lightcyan", "magenta", "lightmagenta",
     "brown", "yellow",     "lightgray", "white"};
@@ -61,11 +61,11 @@ export class GW2MouseHighlight
   }
   ~GW2MouseHighlight() override;
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,
-                          gui::WBMESSAGE message_type) override;
+                          gui::MessageType type) override;
 
  private:
   void OnDraw(gui::DrawAPI* api) override;

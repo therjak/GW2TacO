@@ -59,7 +59,7 @@ export class GW2MapTimer : public gui::GuiType<"maptimer", gui::Widget> {
     return r;
   }
 
-  static gui::Widget* Factory(gui::Widget* root, const CXMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
                               const math::Rect& pos);
 
   std::vector<Map> maps_;
@@ -71,9 +71,9 @@ export class GW2MapTimer : public gui::GuiType<"maptimer", gui::Widget> {
   int32_t GetScrollbarStep() override;
   Widget* GetItemUnderMouse(const math::Point& point,
                             const math::Rect& crop_rect,
-                            gui::WBMESSAGE message_type) override;
+                            gui::MessageType type) override;
   void OnDraw(gui::DrawAPI* api) override;
-  void SetLayout(const CXMLNode& node);
+  void SetLayout(const XMLNode& node);
   void UpdateScrollbarData(int ypos, const math::Rect& cl);
 
   int32_t last_ypos_ = -1;

@@ -26,7 +26,7 @@ bool configChanged = false;
 auto lastConfigChangeTime = globalTimer.GetTime();
 
 void LoadConfig() {
-  CXMLDocument d;
+  XMLDocument d;
   if (!d.LoadFromFile("TacOConfig.xml")) {
     SetConfigValue("EditMode", 0);
     SetConfigValue("InterfaceSize", 1);
@@ -39,7 +39,7 @@ void LoadConfig() {
   ConfigStrings.clear();
 
   if (!d.GetDocumentNode().GetChildCount("TacOConfig")) return;
-  CXMLNode root = d.GetDocumentNode().GetChild("TacOConfig");
+  XMLNode root = d.GetDocumentNode().GetChild("TacOConfig");
 
   for (int32_t x = 0; x < root.GetChildCount(); x++) {
     auto item = root.GetChild(x);
@@ -58,8 +58,8 @@ void LoadConfig() {
 }
 
 void SaveConfig() {
-  CXMLDocument doc;
-  CXMLNode root = doc.GetDocumentNode();
+  XMLDocument doc;
+  XMLNode root = doc.GetDocumentNode();
   auto& tacoConfig = root.AddChild("TacOConfig");
   for (const auto& kdp : ConfigNums) {
     tacoConfig.AddChild(kdp.first).SetAttributeFromInteger("Data", kdp.second);
@@ -250,7 +250,7 @@ void LoadMarkerCategoryVisibilityInfo() {
       cat->is_displayed = kdp.second != 0;
     }
   }
-  CategoryRoot.CalculateVisibilityCache();
+  category_root.CalculateVisibilityCache();
 }
 
 void AutoSaveConfig() {

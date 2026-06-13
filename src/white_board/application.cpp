@@ -60,7 +60,7 @@ Application::Application()
       middle_(false),
       right_(false),
       vsync_(true),
-      click_repeater_mode_(WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
+      click_repeater_mode_(MouseClickRepeatMode::WB_MCR_OFF) {
   // initialize default factory calls
 
   RegisterUIFactoryCallback("window", Window::Factory);
@@ -81,8 +81,8 @@ Application::~Application() {
   root_.reset();
 }
 
-bool Application::SendMessageToItem(const CWBMessage& Message, Widget* Target) {
-  if (root_ && Message.GetTarget() == root_->GetGuid()) {
+bool Application::SendMessageToItem(const Message& message, Widget* Target) {
+  if (root_ && message.GetTarget() == root_->GetGuid()) {
     Target = root_.get();
   }
 
@@ -97,54 +97,54 @@ bool Application::SendMessageToItem(const CWBMessage& Message, Widget* Target) {
   }
 
   for (int32_t x = MessagePath.size() - 1; x >= 0; x--) {
-    if (MessagePath[x]->MessageProc(Message)) return true;
+    if (MessagePath[x]->MessageProc(message)) return true;
   }
 
   return false;
 }
 
-void Application::ProcessMessage(CWBMessage& Message) {
-  if (Message.GetTarget()) {
-    Widget* Target = FindItemByGuid(Message.GetTarget());
-    SendMessageToItem(Message, Target);
+void Application::ProcessMessage(Message& message) {
+  if (message.GetTarget()) {
+    Widget* Target = FindItemByGuid(message.GetTarget());
+    SendMessageToItem(message, Target);
     return;
   }
 
   // handle messages created by mouse events
-  if (Message.IsMouseMessage()) {
-    if (Message.Get() == WBM_MOUSEMOVE) {
-      mouse_pos_ = Point(Message.GetPosition());
+  if (message.IsMouseMessage()) {
+    if (message.Get() == WBM_MOUSEMOVE) {
+      mouse_pos_ = Point(message.GetPosition());
       UpdateMouseItem();
     }
 
-    if (Message.Get() == WBM_LEFTBUTTONDOWN) {
-      left_down_pos_ = Point(Message.GetPosition());
+    if (message.Get() == WBM_LEFTBUTTONDOWN) {
+      left_down_pos_ = Point(message.GetPosition());
     }
-    if (Message.Get() == WBM_RIGHTBUTTONDOWN) {
-      right_down_pos_ = Point(Message.GetPosition());
+    if (message.Get() == WBM_RIGHTBUTTONDOWN) {
+      right_down_pos_ = Point(message.GetPosition());
     }
-    if (Message.Get() == WBM_MIDDLEBUTTONDOWN) {
-      mid_down_pos_ = Point(Message.GetPosition());
+    if (message.Get() == WBM_MIDDLEBUTTONDOWN) {
+      mid_down_pos_ = Point(message.GetPosition());
     }
 
     if (mouse_capture_item_) {
       // mouse messages are captured by this item, send
       // them directly there
-      mouse_capture_item_->MessageProc(Message);
+      mouse_capture_item_->MessageProc(message);
       return;
     }
 
-    Widget* mi = GetItemUnderMouse(mouse_pos_, Message.Get());
+    Widget* mi = GetItemUnderMouse(mouse_pos_, message.Get());
 
     if (mi) {
       // handle focus change
-      if (Message.Get() == WBM_LEFTBUTTONDOWN ||
-          Message.Get() == WBM_MIDDLEBUTTONDOWN ||
-          Message.Get() == WBM_RIGHTBUTTONDOWN) {
+      if (message.Get() == WBM_LEFTBUTTONDOWN ||
+          message.Get() == WBM_MIDDLEBUTTONDOWN ||
+          message.Get() == WBM_RIGHTBUTTONDOWN) {
         mi->SetFocus();
       }
 
-      SendMessageToItem(Message, mi);
+      SendMessageToItem(message, mi);
     }
 
     return;
@@ -154,7 +154,7 @@ void Application::ProcessMessage(CWBMessage& Message) {
 
   // top to bottom version : Widget* fi = GetRoot();
   // while (fi) {
-  //   if (fi->MessageProc(Message)) return;
+  //   if (fi->MessageProc(message)) return;
   //   fi = fi->ChildInFocus;
   // }
 
@@ -168,11 +168,11 @@ void Application::ProcessMessage(CWBMessage& Message) {
   }
 
   for (int32_t x = MessagePath.size() - 1; x >= 0; x--) {
-    if (MessagePath[x]->MessageProc(Message)) return;
+    if (MessagePath[x]->MessageProc(message)) return;
   }
 }
 
-Widget* Application::GetItemUnderMouse(const Point& Point, WBMESSAGE w) {
+Widget* Application::GetItemUnderMouse(const Point& Point, MessageType w) {
   if (!root_) {
     return nullptr;
   }
@@ -236,7 +236,7 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_MOUSEMOVE, 0, ap.x, ap.y));
+      Send(Message(this, WBM_MOUSEMOVE, 0, ap.x, ap.y));
     } break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK: {
@@ -246,13 +246,13 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_LEFTBUTTONDOWN, 0, ap.x, ap.y));
+      Send(Message(this, WBM_LEFTBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_LBUTTONDBLCLK) {
-        Send(CWBMessage(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
+        Send(Message(this, WBM_LEFTBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
-      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_LEFT;
+      click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_LEFT;
       next_repeated_click_time_ =
           static_cast<int64_t>(globalTimer.GetTime()) +
           static_cast<int64_t>(GetInitialKeyboardDelay());
@@ -263,8 +263,8 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
-      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
+      Send(Message(this, WBM_LEFTBUTTONUP, 0, ap.x, ap.y));
+      click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_OFF;
     } break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK: {
@@ -273,13 +273,13 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_RIGHTBUTTONDOWN, 0, ap.x, ap.y));
+      Send(Message(this, WBM_RIGHTBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_RBUTTONDBLCLK) {
-        Send(CWBMessage(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
+        Send(Message(this, WBM_RIGHTBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
-      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT;
+      click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_RIGHT;
       next_repeated_click_time_ =
           static_cast<int64_t>(globalTimer.GetTime()) +
           static_cast<int64_t>(GetInitialKeyboardDelay());
@@ -290,8 +290,8 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
-      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
+      Send(Message(this, WBM_RIGHTBUTTONUP, 0, ap.x, ap.y));
+      click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_OFF;
     } break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK: {
@@ -300,13 +300,13 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_MIDDLEBUTTONDOWN, 0, ap.x, ap.y));
+      Send(Message(this, WBM_MIDDLEBUTTONDOWN, 0, ap.x, ap.y));
 
       if (uMsg == WM_MBUTTONDBLCLK) {
-        Send(CWBMessage(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
+        Send(Message(this, WBM_MIDDLEBUTTONDBLCLK, 0, ap.x, ap.y));
       }
 
-      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE;
+      click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_MIDDLE;
       next_repeated_click_time_ =
           static_cast<int64_t>(globalTimer.GetTime()) +
           static_cast<int64_t>(GetInitialKeyboardDelay());
@@ -317,12 +317,12 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
-      Send(CWBMessage(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
-      click_repeater_mode_ = WBMOUSECLICKREPEATMODE::WB_MCR_OFF;
+      Send(Message(this, WBM_MIDDLEBUTTONUP, 0, ap.x, ap.y));
+      click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_OFF;
     } break;
     case WM_MOUSEWHEEL: {
-      Send(CWBMessage(this, WBM_MOUSEWHEEL, 0,
-                      GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA));
+      Send(Message(this, WBM_MOUSEWHEEL, 0,
+                   GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA));
     } break;
     case WM_SYSKEYDOWN:
     case WM_KEYDOWN:
@@ -337,9 +337,9 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
         alt_ = true;
       }
 
-      Send(CWBMessage(this, WBM_KEYDOWN, 0,
-                      CWBMessage::keyboard{static_cast<int32_t>(wParam),
-                                           GetKeyboardState()}));
+      Send(Message(
+          this, WBM_KEYDOWN, 0,
+          Message::keyboard{static_cast<int32_t>(wParam), GetKeyboardState()}));
       break;
     case WM_SYSKEYUP:
     case WM_KEYUP:
@@ -360,15 +360,15 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
           break;
       }
 
-      Send(CWBMessage(this, WBM_KEYUP, 0,
-                      CWBMessage::keyboard{static_cast<int32_t>(wParam),
-                                           GetKeyboardState()}));
+      Send(Message(
+          this, WBM_KEYUP, 0,
+          Message::keyboard{static_cast<int32_t>(wParam), GetKeyboardState()}));
       break;
     case WM_SYSCHAR:
     case WM_CHAR:
-      Send(CWBMessage(this, WBM_CHAR, 0,
-                      CWBMessage::keyboard{static_cast<int32_t>(wParam),
-                                           GetKeyboardState()}));
+      Send(Message(
+          this, WBM_CHAR, 0,
+          Message::keyboard{static_cast<int32_t>(wParam), GetKeyboardState()}));
       break;
     default:
       break;
@@ -418,21 +418,21 @@ bool Application::HandleMessages() {
   globalTimer.Update();
 
   // mouse click repeater
-  if (click_repeater_mode_ != WBMOUSECLICKREPEATMODE::WB_MCR_OFF) {
+  if (click_repeater_mode_ != MouseClickRepeatMode::WB_MCR_OFF) {
     if (globalTimer.GetTime() > next_repeated_click_time_) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
 
       switch (click_repeater_mode_) {
-        case WBMOUSECLICKREPEATMODE::WB_MCR_LEFT:
-          Send(CWBMessage(this, WBM_LEFTBUTTONREPEAT, 0, ap.x, ap.y));
+        case MouseClickRepeatMode::WB_MCR_LEFT:
+          Send(Message(this, WBM_LEFTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
-        case WBMOUSECLICKREPEATMODE::WB_MCR_RIGHT:
-          Send(CWBMessage(this, WBM_RIGHTBUTTONREPEAT, 0, ap.x, ap.y));
+        case MouseClickRepeatMode::WB_MCR_RIGHT:
+          Send(Message(this, WBM_RIGHTBUTTONREPEAT, 0, ap.x, ap.y));
           break;
-        case WBMOUSECLICKREPEATMODE::WB_MCR_MIDDLE:
-          Send(CWBMessage(this, WBM_MIDDLEBUTTONREPEAT, 0, ap.x, ap.y));
+        case MouseClickRepeatMode::WB_MCR_MIDDLE:
+          Send(Message(this, WBM_MIDDLEBUTTONREPEAT, 0, ap.x, ap.y));
           break;
       }
       next_repeated_click_time_ += GetKeyboardRepeatTime();
@@ -521,9 +521,9 @@ Widget* Application::FindItemByGuid(WBGUID Guid, const TCHAR* type) const {
   return nullptr;
 }
 
-void Application::Send(const CWBMessage& Message) {
+void Application::Send(const Message& message) {
   std::scoped_lock l(message_buffer_mutex_);
-  message_buffer_.emplace_back(Message);
+  message_buffer_.emplace_back(message);
 }
 
 Widget* Application::SetCapture(Widget* Capturer) {
@@ -624,13 +624,13 @@ void Application::AddToTrash(std::unique_ptr<Widget>&& item) {
 }
 
 bool Application::LoadXMLLayout(std::string_view XML) {
-  auto doc = std::make_unique<CXMLDocument>();
+  auto doc = std::make_unique<XMLDocument>();
   if (!doc->LoadFromString(XML)) {
     Log_Err("[gui] Error loading XML Layout: parsing failed");
     return false;
   }
 
-  CXMLNode root = doc->GetDocumentNode();
+  XMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) {
     Log_Err("[gui] Error loading XML Layout: 'guidescriptor' member missing");
@@ -644,7 +644,7 @@ bool Application::LoadXMLLayout(std::string_view XML) {
     return false;
   }
 
-  CXMLNode gui = root.GetChild("gui");
+  XMLNode gui = root.GetChild("gui");
   if (!gui.HasAttribute("id")) {
     Log_Err("[gui] Error loading XML Layout: 'id' member missing from 'gui'");
     return false;
@@ -680,7 +680,7 @@ bool Application::GenerateGUI(Widget* Root, std::string_view Layout) {
   if (!b) return false;
 
   style_manager_.ApplyStyles(Root);
-  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
+  Message m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
   return true;
 }
@@ -698,7 +698,7 @@ bool Application::GenerateGUITemplate(Widget* Root, std::string_view Layout,
   if (!b) return false;
 
   style_manager_.ApplyStyles(Root);
-  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
+  Message m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
 
   return true;
@@ -706,14 +706,14 @@ bool Application::GenerateGUITemplate(Widget* Root, std::string_view Layout,
 
 void Application::ApplyStyle(Widget* Target) {
   style_manager_.ApplyStyles(Target);
-  CWBMessage m = Target->BuildPositionMessage(Target->GetPosition(), true);
+  Message m = Target->BuildPositionMessage(Target->GetPosition(), true);
   Target->MessageProc(m);
 }
 
 void Application::ReApplyStyle() {
   Widget* Root = GetRoot();
   style_manager_.ApplyStyles(Root);
-  CWBMessage m = Root->BuildPositionMessage(Root->GetPosition(), true);
+  Message m = Root->BuildPositionMessage(Root->GetPosition(), true);
   Root->MessageProc(m);
 }
 
@@ -743,14 +743,14 @@ Skin* Application::GetSkin() { return skin_.get(); }
 
 bool Application::LoadSkin(std::string_view XML,
                            std::vector<int>& enabledGlyphs) {
-  CXMLDocument doc;
+  XMLDocument doc;
   if (!doc.LoadFromString(XML)) return false;
   if (!doc.GetDocumentNode().GetChildCount("whiteboardskin")) return false;
 
-  CXMLNode r = doc.GetDocumentNode().GetChild("whiteboardskin");
+  XMLNode r = doc.GetDocumentNode().GetChild("whiteboardskin");
 
   for (int32_t x = 0; x < r.GetChildCount("image"); x++) {
-    CXMLNode n = r.GetChild("image", x);
+    XMLNode n = r.GetChild("image", x);
     auto img = n.GetAttributeAsString("image");
 
     auto data = B64Decode(img);
@@ -763,7 +763,7 @@ bool Application::LoadSkin(std::string_view XML,
       ClearZeroAlpha(Image.get(), XRes, YRes);
 
       for (int32_t y = 0; y < n.GetChildCount("element"); y++) {
-        CXMLNode e = n.GetChild("element", y);
+        XMLNode e = n.GetChild("element", y);
 
         Rect r2;
         e.GetAttributeAsInteger("x1", &r2.x1);
@@ -775,16 +775,16 @@ bool Application::LoadSkin(std::string_view XML,
         e.GetAttributeAsInteger("x-behavior", &b.x);
         e.GetAttributeAsInteger("y-behavior", &b.y);
 
-        const WBATLASHANDLE h = atlas_->AddImage(Image.get(), XRes, YRes, r2);
+        const AtlasHandle h = atlas_->AddImage(Image.get(), XRes, YRes, r2);
         skin_->AddElement(e.GetAttributeAsString("name"), h,
-                          static_cast<WBSKINELEMENTBEHAVIOR>(b.x),
-                          static_cast<WBSKINELEMENTBEHAVIOR>(b.y));
+                          static_cast<SkinElementBehavior>(b.x),
+                          static_cast<SkinElementBehavior>(b.y));
       }
     }
   }
 
   for (int32_t x = 0; x < r.GetChildCount("mosaic"); x++) {
-    CXMLNode m = r.GetChild("mosaic", x);
+    XMLNode m = r.GetChild("mosaic", x);
 
     Rect r2;
     m.GetAttributeAsInteger("overshootx1", &r2.x1);
@@ -798,7 +798,7 @@ bool Application::LoadSkin(std::string_view XML,
   }
 
   for (int32_t x = 0; x < r.GetChildCount("font"); x++) {
-    CXMLNode n = r.GetChild("font", x);
+    XMLNode n = r.GetChild("font", x);
 
     auto Name = n.GetAttributeAsString("name");
 
@@ -848,8 +848,8 @@ bool Application::LoadSkinFromFile(std::string_view FileName,
   return b;
 }
 
-bool Application::GenerateGUIFromXML(Widget* Root, CXMLDocument* doc) {
-  CXMLNode root = doc->GetDocumentNode();
+bool Application::GenerateGUIFromXML(Widget* Root, XMLDocument* doc) {
+  XMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) return false;
 
@@ -857,21 +857,21 @@ bool Application::GenerateGUIFromXML(Widget* Root, CXMLDocument* doc) {
 
   if (!root.GetChildCount("gui")) return false;
 
-  CXMLNode gui = root.GetChild("gui");
+  XMLNode gui = root.GetChild("gui");
 
   return ProcessGUIXML(Root, gui);
 }
 
-bool Application::GenerateGUITemplateFromXML(Widget* Root, CXMLDocument* doc,
+bool Application::GenerateGUITemplateFromXML(Widget* Root, XMLDocument* doc,
                                              std::string_view TemplateID) {
-  CXMLNode root = doc->GetDocumentNode();
+  XMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) return false;
 
   root = root.GetChild("guidescriptor");
 
   for (int32_t x = 0; x < root.GetChildCount("guitemplate"); x++) {
-    CXMLNode t = root.GetChild("guitemplate", x);
+    XMLNode t = root.GetChild("guitemplate", x);
 
     if (t.HasAttribute("id")) {
       if (t.GetAttributeAsString("id") == TemplateID) {
@@ -890,7 +890,7 @@ bool Application::GenerateGUITemplateFromXML(Widget* Root, CXMLDocument* doc,
   return false;
 }
 
-bool Application::ProcessGUIXML(Widget* Root, const CXMLNode& node) {
+bool Application::ProcessGUIXML(Widget* Root, const XMLNode& node) {
   Rect Pos(5, 5, 25, 25);
 
   bool b = true;
@@ -902,7 +902,7 @@ bool Application::ProcessGUIXML(Widget* Root, const CXMLNode& node) {
   return b;
 }
 
-bool Application::GenerateGUIFromXMLNode(Widget* Root, const CXMLNode& node,
+bool Application::GenerateGUIFromXMLNode(Widget* Root, const XMLNode& node,
                                          Rect* Pos) {
   Widget* NewItem = GenerateUIItem(Root, node, *Pos);
   if (!NewItem) return false;
@@ -939,7 +939,7 @@ bool Application::GenerateGUIFromXMLNode(Widget* Root, const CXMLNode& node,
   return ProcessGUIXML(NewItem, node);
 }
 
-Widget* Application::GenerateUIItem(Widget* Root, const CXMLNode& node,
+Widget* Application::GenerateUIItem(Widget* Root, const XMLNode& node,
                                     const Rect& Pos) {
   if (factory_callbacks_.find(node.GetNodeName()) != factory_callbacks_.end()) {
     return factory_callbacks_[node.GetNodeName()](Root, node, Pos);
@@ -950,7 +950,7 @@ Widget* Application::GenerateUIItem(Widget* Root, const CXMLNode& node,
 }
 
 void Application::RegisterUIFactoryCallback(std::string_view ElementName,
-                                            WBFACTORYCALLBACK FactoryCallback) {
+                                            FactoryCallback FactoryCallback) {
   factory_callbacks_[std::string(ElementName)] = FactoryCallback;
 }
 

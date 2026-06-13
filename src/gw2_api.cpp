@@ -44,18 +44,18 @@ std::string FetchAPIData(std::string_view path, std::string_view apiKey) {
 
 namespace GW2 {
 
-APIKey::APIKey(std::string_view key) : apiKey(key) {}
+APIKey::APIKey(std::string_view key) : api_key_(key) {}
 
 APIKey::~APIKey() {}
 
 void APIKey::FetchData() {
-  if (fetchTask.valid() &&
-      fetchTask.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+  if (fetch_task_.valid() && fetch_task_.wait_for(std::chrono::seconds(0)) !=
+                                 std::future_status::ready)
     return;
 
-  initialized = false;
+  initialized_ = false;
 
-  fetchTask = std::async(std::launch::async, [this]() {
+  fetch_task_ = std::async(std::launch::async, [this]() {
     KeyData new_key_data;
 
     auto keyData = QueryAPI("/v2/tokeninfo");
@@ -106,11 +106,11 @@ void APIKey::FetchData() {
           "[GW2TacO] API error: API key '{:s} - {:s} ({:s})' doesn't have the "
           "'characters' permission - account identification through Mumble "
           "Link will not be possible.",
-          new_key_data.account_name, new_key_data.key_name, apiKey);
+          new_key_data.account_name, new_key_data.key_name, api_key_);
     }
     key_data_queue.push(new_key_data);
 
-    initialized = true;
+    initialized_ = true;
   });
 }
 
@@ -121,20 +121,20 @@ bool APIKey::HasCaps(std::string_view cap) {
 std::string APIKey::QueryAPI(std::string_view path) const {
   Log_Nfo("[GW2TacO] Querying the API: {:s}", path);
 
-  return FetchAPIData(path, apiKey);
+  return FetchAPIData(path, api_key_);
 }
 
 void APIKey::SetKey(std::string_view key) {
-  if (fetchTask.valid()) {
-    fetchTask.wait();
+  if (fetch_task_.valid()) {
+    fetch_task_.wait();
   }
-  apiKey = key;
-  initialized = false;
+  api_key_ = key;
+  initialized_ = false;
   FetchData();
 }
 
 bool APIKey::Valid() {
-  if (!initialized) {
+  if (!initialized_) {
     return false;
   }
   const auto& new_data = key_data_queue.pop();
@@ -161,28 +161,28 @@ std::unordered_set<int32_t> APIKey::QueryAchievementBits(int id) const {
 }
 
 APIKey* APIKeyManager::GetIdentifiedAPIKey() {
-  std::scoped_lock l(keyMutex);
+  std::scoped_lock l(key_mutex_);
   if (!mumbleLink.IsValid()) {
     return nullptr;
   }
   if (mumbleLink.char_name.empty()) {
     return nullptr;
   }
-  if (keys.empty()) {
+  if (keys_.empty()) {
     return nullptr;
   }
 
-  if (!initialized) {
+  if (!initialized_) {
     Initialize();
   }
 
-  for (auto& key : keys) {
+  for (auto& key : keys_) {
     if (!key->Valid()) {
       continue;
     }
 
-    if (key->fetchTask.valid()) {
-      key->fetchTask.wait();
+    if (key->fetch_task_.valid()) {
+      key->fetch_task_.wait();
     }
 
     auto& cn = key->key_data.char_names;
@@ -195,22 +195,22 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
 }
 
 APIKeyManager::Status APIKeyManager::GetStatus() {
-  if (!initialized) {
+  if (!initialized_) {
     Initialize();
   }
 
   {
-    std::scoped_lock l(keyMutex);
-    if (keys.empty()) {
+    std::scoped_lock l(key_mutex_);
+    if (keys_.empty()) {
       return Status::KeyNotSet;
     }
   }
 
   APIKey* key = GetIdentifiedAPIKey();
   if (!key) {
-    std::scoped_lock l(keyMutex);
-    for (const auto& key : keys) {
-      if (!key->initialized) {
+    std::scoped_lock l(key_mutex_);
+    for (const auto& key : keys_) {
+      if (!key->initialized_) {
         return Status::Loading;
       }
     }
@@ -220,7 +220,7 @@ APIKeyManager::Status APIKeyManager::GetStatus() {
     return Status::CouldNotIdentifyAccount;
   }
 
-  if (!key->initialized) {
+  if (!key->initialized_) {
     return Status::Loading;
   }
 
@@ -262,13 +262,13 @@ APIKeyManager::Status APIKeyManager::DisplayStatusText(gui::DrawAPI* API,
 }
 
 void APIKeyManager::Initialize() {
-  if (initialized) return;
+  if (initialized_) return;
 
   if (HasConfigString("GW2APIKey")) {
     auto key = std::make_unique<APIKey>(GetConfigString("GW2APIKey"));
     RemoveConfigEntry("GW2APIKey");
-    std::scoped_lock l(keyMutex);
-    keys.emplace_back(std::move(key));
+    std::scoped_lock l(key_mutex_);
+    keys_.emplace_back(std::move(key));
   }
 
   int x = 0;
@@ -276,8 +276,8 @@ void APIKeyManager::Initialize() {
     std::string cfgName = "GW2APIKey" + std::to_string(x++);
     if (HasConfigString(cfgName)) {
       auto key = std::make_unique<APIKey>(GetConfigString(cfgName));
-      std::scoped_lock l(keyMutex);
-      keys.emplace_back(std::move(key));
+      std::scoped_lock l(key_mutex_);
+      keys_.emplace_back(std::move(key));
     } else {
       break;
     }
@@ -285,37 +285,37 @@ void APIKeyManager::Initialize() {
 
   RebuildConfigValues();
 
-  std::scoped_lock l(keyMutex);
-  for (auto& key : keys) {
+  std::scoped_lock l(key_mutex_);
+  for (auto& key : keys_) {
     key->FetchData();
   }
 
-  initialized = true;
+  initialized_ = true;
 }
 
 bool APIKeyManager::empty() {
-  std::scoped_lock l(keyMutex);
-  return keys.empty();
+  std::scoped_lock l(key_mutex_);
+  return keys_.empty();
 }
 
 APIKey* APIKeyManager::GetKey(int idx) {
-  std::scoped_lock l(keyMutex);
-  return keys[idx].get();
+  std::scoped_lock l(key_mutex_);
+  return keys_[idx].get();
 }
 
 void APIKeyManager::RemoveKey(int idx) {
-  std::scoped_lock l(keyMutex);
-  keys.erase(keys.begin() + idx);
+  std::scoped_lock l(key_mutex_);
+  keys_.erase(keys_.begin() + idx);
 }
 
 size_t APIKeyManager::size() {
-  std::scoped_lock l(keyMutex);
-  return keys.size();
+  std::scoped_lock l(key_mutex_);
+  return keys_.size();
 }
 
 void APIKeyManager::AddKey(std::unique_ptr<APIKey>&& key) {
-  std::scoped_lock l(keyMutex);
-  keys.emplace_back(std::move(key));
+  std::scoped_lock l(key_mutex_);
+  keys_.emplace_back(std::move(key));
 }
 
 void APIKeyManager::RebuildConfigValues() {
@@ -329,10 +329,10 @@ void APIKeyManager::RebuildConfigValues() {
     }
   }
 
-  std::scoped_lock l(keyMutex);
-  for (size_t x = 0; x < keys.size(); x++) {
+  std::scoped_lock l(key_mutex_);
+  for (size_t x = 0; x < keys_.size(); x++) {
     std::string cfgName = "GW2APIKey" + std::to_string(x);
-    SetConfigString(cfgName, keys[x]->apiKey);
+    SetConfigString(cfgName, keys_[x]->api_key_);
   }
 
   SaveConfig();

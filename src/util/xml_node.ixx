@@ -11,24 +11,24 @@ module;
 
 export module xml:node;
 
-export class CXMLDocument;
+export class XMLDocument;
 
-export class CXMLNode {
+export class XMLNode {
  public:
-  CXMLNode();
-  CXMLNode(const CXMLNode& Original);
-  CXMLNode(rapidxml::xml_node<char>*, const CXMLDocument*, int32_t);
-  virtual ~CXMLNode();
+  XMLNode();
+  XMLNode(const XMLNode& Original);
+  XMLNode(rapidxml::xml_node<char>*, const XMLDocument*, int32_t);
+  virtual ~XMLNode();
 
-  CXMLNode& operator=(const CXMLNode& Original);
+  XMLNode& operator=(const XMLNode& Original);
 
   int32_t GetChildCount() const;
   int32_t GetChildCount(const char*) const;
-  CXMLNode GetChild(int32_t) const;
-  CXMLNode GetChild(const char*) const;
-  CXMLNode GetChild(const char*, int32_t) const;
+  XMLNode GetChild(int32_t) const;
+  XMLNode GetChild(const char*) const;
+  XMLNode GetChild(const char*, int32_t) const;
 
-  bool Next(CXMLNode* out, const char*);
+  bool Next(XMLNode* out, const char*);
 
   int32_t IsValid() const;
 
@@ -50,7 +50,7 @@ export class CXMLNode {
   std::string GetAttributeAsString(std::string_view szAttribute) const;
   bool HasAttribute(std::string_view szAttribute) const;
 
-  CXMLNode& AddChild(std::string_view);
+  XMLNode& AddChild(std::string_view);
   void SetText(std::string_view s);
   void SetInt(int32_t Int);
   void SetFloat(float Float);
@@ -63,11 +63,11 @@ export class CXMLNode {
   mutable int32_t childCount = -1;
   mutable std::unordered_map<int32_t, int32_t> childCounts;
   std::vector<std::unique_ptr<std::string>> stringStore;
-  std::vector<std::unique_ptr<CXMLNode>> children;
+  std::vector<std::unique_ptr<XMLNode>> children;
 
   std::string value;
 
   int32_t nLevel;
   rapidxml::xml_node<char>* pNode;
-  const CXMLDocument* pDoc;
+  const XMLDocument* pDoc;
 };

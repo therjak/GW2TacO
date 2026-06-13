@@ -16,7 +16,7 @@ using math::Point;
 using math::Rect;
 
 bool Notepad::IsMouseTransparent(const Point& client_space_point,
-                                 gui::WBMESSAGE message_type) {
+                                 gui::MessageType type) {
   return true;
 }
 
@@ -51,7 +51,7 @@ Notepad::~Notepad() {
   nptext.Write(tb->GetText());
 }
 
-gui::Widget* Notepad::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* Notepad::Factory(gui::Widget* root, const XMLNode& node,
                               const Rect& pos) {
   return Notepad::Create(root, pos);
 }
@@ -67,7 +67,7 @@ void Notepad::StartEdit() {
 
 void Notepad::OnDraw(gui::DrawAPI* api) {}
 
-bool Notepad::MessageProc(const gui::CWBMessage& message) {
+bool Notepad::MessageProc(const gui::Message& message) {
   switch (message.Get()) {
     case gui::WBM_FOCUSGAINED: {
       gui::Widget* tb = FindChildByID("notepad", "textbox");

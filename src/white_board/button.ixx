@@ -33,7 +33,7 @@ class Button : public GuiType<"button", Widget> {
   [[nodiscard]] std::string GetText() const;
   void SetText(std::string_view val);
 
-  static Widget* Factory(Widget* Root, const CXMLNode& node,
+  static Widget* Factory(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
   math::Size GetContentSize() override;
@@ -41,11 +41,11 @@ class Button : public GuiType<"button", Widget> {
   virtual void Push(bool pushed);
   virtual bool IsPushed();
 
-  WBITEMSTATE GetState() override;
+  ItemState GetState() override;
 
  private:
   void OnDraw(DrawAPI* API) override;
-  bool MessageProc(const CWBMessage& Message) override;
+  bool MessageProc(const Message& message) override;
 
   std::string text_;
   bool pushed_ = false;

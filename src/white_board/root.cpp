@@ -12,27 +12,27 @@ using math::Rect;
 
 namespace gui {
 
-bool Root::MessageProc(const CWBMessage& Message) {
-  switch (Message.Get()) {
+bool Root::MessageProc(const Message& message) {
+  switch (message.Get()) {
     default:
       break;
 
     case WBM_REPOSITION: {
-      if (Message.GetTarget() == GetGuid() || Message.GetTarget() == 0) {
-        if (!Message.Resized()) return true;  // ignore movement
+      if (message.GetTarget() == GetGuid() || message.GetTarget() == 0) {
+        if (!message.Resized()) return true;  // ignore movement
 
-        Widget::MessageProc(Message);
+        Widget::MessageProc(message);
         for (uint32_t x = 0; x < NumChildren(); x++) {
-          GetApplication()->Send(CWBMessage(
+          GetApplication()->Send(Message(
               GetApplication(), WBM_ROOTRESIZE, GetChild(x)->GetGuid(),
-              Message.Rectangle().Width(), Message.Rectangle().Height()));
+              message.Rectangle().Width(), message.Rectangle().Height()));
         }
         return true;
       }
     }
   }
 
-  return Widget::MessageProc(Message);
+  return Widget::MessageProc(message);
 }
 
 Root::Root() : GuiType() {}

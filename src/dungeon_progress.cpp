@@ -25,11 +25,11 @@ void DungeonProgress::OnDraw(gui::DrawAPI* api) {
   gui::Font* f = GetFont(GetState());
 
   GW2::APIKeyManager::Status status =
-      GW2::apiKeyManager.DisplayStatusText(api, f);
+      GW2::api_key_manager.DisplayStatusText(api, f);
   if (status != GW2::APIKeyManager::Status::OK) {
     return;
   }
-  GW2::APIKey* key = GW2::apiKeyManager.GetIdentifiedAPIKey();
+  GW2::APIKey* key = GW2::api_key_manager.GetIdentifiedAPIKey();
 
   if (key && key->Valid() &&
       (GetTime() - last_fetch_time_ > 150000 || !last_fetch_time_)) {
@@ -110,8 +110,8 @@ void DungeonProgress::OnDraw(gui::DrawAPI* api) {
       }
 
       Point tp = f->GetTextPosition(
-          s, r + Rect(-3, 0, 0, 0), gui::WBTEXTALIGNMENTX::WBTA_CENTERX,
-          gui::WBTEXTALIGNMENTY::WBTA_TOP, gui::WBTEXTTRANSFORM::WBTT_NONE);
+          s, r + Rect(-3, 0, 0, 0), gui::TextAlignmentX::WBTA_CENTERX,
+          gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_NONE);
       tp.y = posy + 1;
       f->Write(api, s, tp, CColor{0xffffffff});
       {
@@ -188,12 +188,12 @@ DungeonProgress::DungeonProgress()
 
 DungeonProgress::~DungeonProgress() {}
 
-gui::Widget* DungeonProgress::Factory(gui::Widget* root, const CXMLNode& node,
+gui::Widget* DungeonProgress::Factory(gui::Widget* root, const XMLNode& node,
                                       const Rect& pos) {
   return DungeonProgress::Create(root, pos);
 }
 
 bool DungeonProgress::IsMouseTransparent(const Point& client_space_point,
-                                         gui::WBMESSAGE message_type) {
+                                         gui::MessageType type) {
   return true;
 }
