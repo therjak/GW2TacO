@@ -28,7 +28,7 @@ bool Notepad::Initialize(Widget* parent, const math::Rect& position) {
 
   SetID("notepad");
 
-  CStreamReaderMemory nptext;
+  StreamReaderMemory nptext;
   if (!nptext.Open("notepad.txt")) return false;
 
   auto* tb = dynamic_cast<gui::TextBox*>(FindChildByID("notepad", "textbox"));
@@ -45,7 +45,7 @@ Notepad::~Notepad() {
   auto* tb = dynamic_cast<gui::TextBox*>(FindChildByID("notepad", "textbox"));
   if (!tb) return;
 
-  CStreamWriterFile nptext;
+  StreamWriterFile nptext;
   if (!nptext.Open("notepad.txt")) return;
 
   nptext.Write(tb->GetText());

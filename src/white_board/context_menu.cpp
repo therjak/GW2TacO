@@ -68,7 +68,7 @@ void ContextMenu::OnDraw(DrawAPI* API) {
       EntryPos.x1 += padding.x1;
       EntryPos.x2 -= Client.Width() - padding.x2;
 
-      CColor textColor =
+      Color textColor =
           GetDisplayDescriptor().GetColor(WB_STATE_NORMAL, WB_ITEM_FONTCOLOR);
 
       if (items_[x]->highlighted_) {

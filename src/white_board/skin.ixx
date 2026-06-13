@@ -141,7 +141,7 @@ class MosaicImage {
   void SetTiling(int32_t Axis, bool v);
   void SetStretching(int32_t Axis, bool v);
   void SetHandle(AtlasHandle handle);
-  void SetColor(CColor color);
+  void SetColor(Color color);
 
   void Render(DrawAPI* API, const math::Rect& Pos);
 
@@ -150,7 +150,7 @@ class MosaicImage {
   std::array<bool, 2> tiling_ = {false};
   std::array<bool, 2> stretching_ = {false};
   AtlasHandle handle_ = 0;
-  CColor color_ = CColor(0xffffffff);
+  Color color_ = Color(0xffffffff);
 };
 
 class Mosaic {

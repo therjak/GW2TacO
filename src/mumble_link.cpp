@@ -103,7 +103,7 @@ bool CMumbleLink::Update() {
 
     tick_ = lm_->ui_tick;
 
-    globalTimer.Update();
+    global_timer.Update();
     int32_t frametime = GetTime();
     frame_times->Add(frametime - last_frame_time);
     last_frame_time = frametime;
@@ -198,7 +198,7 @@ bool CMumbleLink::Update() {
   map_instance = ctx->shard_id;
 
   if (is_map_open != (ctx->ui_state & 0x01)) {
-    last_map_change_time = globalTimer.GetTime();
+    last_map_change_time = global_timer.GetTime();
   }
 
   is_map_open = (ctx->ui_state & 0x01);
@@ -314,7 +314,7 @@ float CMumbleLink::GetFrameRate() {
 }
 
 CMumbleLink::CMumbleLink(std::string_view mumble_path)
-    : frame_times(std::make_unique<CRingBuffer<int32_t, 60>>()),
+    : frame_times(std::make_unique<RingBuffer<int32_t, 60>>()),
       last_frame_time(GetTime()),
       mumble_path(mumble_path) {}
 

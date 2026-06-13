@@ -285,7 +285,7 @@ void MosaicImage::Render(DrawAPI* API, const Rect& Pos) {
   API->SetCropRect(Croprect);
 }
 
-void MosaicImage::SetColor(CColor color) { color_ = color; }
+void MosaicImage::SetColor(Color color) { color_ = color; }
 
 void Mosaic::AddImage(const MosaicImage& Image) { images_.push_back(Image); }
 
@@ -495,7 +495,7 @@ Mosaic* Skin::AddMosaic(std::string_view Name, std::string_view Description,
             if (key == "color") {
               uint32_t v = std::stoi(value, nullptr, 16);
               if (value.size() <= 6) v = v | 0xff000000;
-              i.SetColor(CColor(v));
+              i.SetColor(Color(v));
             }
           }
         }

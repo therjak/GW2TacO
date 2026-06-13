@@ -41,12 +41,12 @@ export class GW2HPGrid : public gui::GuiType<"hpgrid", gui::Widget> {
 
   struct GridLine {
     float percentage = 0;
-    CColor color;
+    Color color;
   };
 
   struct GridData {
     int map_id = 0;
-    math::CSphere b_sphere;
+    math::Sphere b_sphere;
     std::vector<GridLine> displayed_percentages;
   };
 

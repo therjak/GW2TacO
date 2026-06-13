@@ -2,10 +2,10 @@
 
 #include <cstdint>
 
-class CTimer {
+class Timer {
  public:
-  CTimer();
-  virtual ~CTimer();
+  Timer();
+  virtual ~Timer();
 
   void Update();
   int32_t GetTime();
@@ -17,4 +17,4 @@ class CTimer {
   int32_t Time = 0;
 };
 
-extern CTimer globalTimer;
+extern Timer global_timer;

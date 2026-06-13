@@ -23,7 +23,7 @@ using math::Rect;
 std::map<std::string, int32_t> ConfigNums;
 std::map<std::string, std::string> ConfigStrings;
 bool configChanged = false;
-auto lastConfigChangeTime = globalTimer.GetTime();
+auto lastConfigChangeTime = global_timer.GetTime();
 
 void LoadConfig() {
   XMLDocument d;
@@ -72,7 +72,7 @@ void SaveConfig() {
 
 void ToggleConfigValue(std::string_view key) {
   configChanged = true;
-  lastConfigChangeTime = globalTimer.GetTime();
+  lastConfigChangeTime = global_timer.GetTime();
   std::string k(key);
   if (ConfigNums.find(k) != ConfigNums.end()) {
     int32_t v = ConfigNums[k];
@@ -92,7 +92,7 @@ int32_t GetConfigValue(std::string_view value) {
 
 void SetConfigValue(std::string_view value, int32_t val) {
   configChanged = true;
-  lastConfigChangeTime = globalTimer.GetTime();
+  lastConfigChangeTime = global_timer.GetTime();
   ConfigNums[std::string(value)] = val;
 }
 
@@ -106,7 +106,7 @@ bool HasConfigString(std::string_view value) {
 
 void SetConfigString(std::string_view value, std::string_view val) {
   configChanged = true;
-  lastConfigChangeTime = globalTimer.GetTime();
+  lastConfigChangeTime = global_timer.GetTime();
   ConfigStrings[std::string(value)] = val;
 }
 
@@ -180,7 +180,7 @@ void GetKeyBindings(std::unordered_map<int32_t, TacOKeyAction>& KeyBindings) {
 
 void SetKeyBinding(TacOKeyAction action, int32_t key) {
   configChanged = true;
-  lastConfigChangeTime = globalTimer.GetTime();
+  lastConfigChangeTime = global_timer.GetTime();
   ConfigNums[std::format("KeyboardKey_{:d}", key)] =
       static_cast<int32_t>(action);
 }
@@ -220,7 +220,7 @@ void GetScriptKeyBindings(
 
 void SetScriptKeyBinding(std::string_view scriptEvent, int32_t key) {
   configChanged = true;
-  lastConfigChangeTime = globalTimer.GetTime();
+  lastConfigChangeTime = global_timer.GetTime();
   ConfigNums[std::format("ScriptKey_{:s}", scriptEvent)] = key;
 }
 
@@ -256,7 +256,7 @@ void LoadMarkerCategoryVisibilityInfo() {
 void AutoSaveConfig() {
   if (!configChanged) return;
 
-  if (globalTimer.GetTime() - lastConfigChangeTime > 10000) {
+  if (global_timer.GetTime() - lastConfigChangeTime > 10000) {
     configChanged = false;
     SaveConfig();
   }

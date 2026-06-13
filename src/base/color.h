@@ -12,31 +12,31 @@ constexpr float clamp(float l, float v, float r) {
   return v;
 }
 
-class CColor {
+class Color {
  public:
-  constexpr CColor() = default;
-  constexpr CColor(const uint8_t _r, const uint8_t _g, const uint8_t _b,
-                   const uint8_t _a)
+  constexpr Color() = default;
+  constexpr Color(const uint8_t _r, const uint8_t _g, const uint8_t _b,
+                  const uint8_t _a)
       : b(_b), g(_g), r(_r), a(_a) {}
   // uint32 order is ARGB
-  constexpr explicit CColor(uint32_t argb)
+  constexpr explicit Color(uint32_t argb)
       : b(static_cast<uint8_t>(argb >> 0)),
         g(static_cast<uint8_t>(argb >> 8)),
         r(static_cast<uint8_t>(argb >> 16)),
         a(static_cast<uint8_t>(argb >> 24)) {}
 
-  constexpr CColor(const CColor&) = default;
+  constexpr Color(const Color&) = default;
 
-  static constexpr CColor FromFloat(const float _r, const float _g,
-                                    const float _b, const float _a) {
-    return CColor(static_cast<uint8_t>(clamp(0, _r, 1) * 255),
-                  static_cast<uint8_t>(clamp(0, _g, 1) * 255),
-                  static_cast<uint8_t>(clamp(0, _b, 1) * 255),
-                  static_cast<uint8_t>(clamp(0, _a, 1) * 255));
+  static constexpr Color FromFloat(const float _r, const float _g,
+                                   const float _b, const float _a) {
+    return Color(static_cast<uint8_t>(clamp(0, _r, 1) * 255),
+                 static_cast<uint8_t>(clamp(0, _g, 1) * 255),
+                 static_cast<uint8_t>(clamp(0, _b, 1) * 255),
+                 static_cast<uint8_t>(clamp(0, _a, 1) * 255));
   }
 
-  constexpr friend bool operator==(const CColor& lhs,
-                                   const CColor& rhs) = default;
+  constexpr friend bool operator==(const Color& lhs,
+                                   const Color& rhs) = default;
 
   [[nodiscard]] constexpr uint32_t argb() const {
     return (a << 24) | (r << 16) | (g << 8) | b;
@@ -55,9 +55,9 @@ class CColor {
   uint8_t b = 0, g = 0, r = 0, a = 0;
 };
 
-constexpr CColor Lerp(const CColor a, const CColor b, const float t) {
-  return CColor(static_cast<uint8_t>((b.R() - a.R()) * t + a.R()),
-                static_cast<uint8_t>((b.G() - a.G()) * t + a.G()),
-                static_cast<uint8_t>((b.B() - a.B()) * t + a.B()),
-                static_cast<uint8_t>((b.A() - a.A()) * t + a.A()));
+constexpr Color Lerp(const Color a, const Color b, const float t) {
+  return Color(static_cast<uint8_t>((b.R() - a.R()) * t + a.R()),
+               static_cast<uint8_t>((b.G() - a.G()) * t + a.G()),
+               static_cast<uint8_t>((b.B() - a.B()) * t + a.B()),
+               static_cast<uint8_t>((b.A() - a.A()) * t + a.A()));
 }

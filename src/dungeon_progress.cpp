@@ -77,7 +77,7 @@ void DungeonProgress::OnDraw(gui::DrawAPI* api) {
 
   for (auto& d : dungeons_) {
     f->Write(api, (std::string(d.short_name_) + ":"), Point(0, posy + 1),
-             CColor{0xffffffff});
+             Color{0xffffffff});
     int32_t posx = textwidth + f->GetLineHeight() / 2;
     for (int y = 0; y < d.paths_.size(); y++) {
       auto& p = d.paths_[y];
@@ -90,9 +90,7 @@ void DungeonProgress::OnDraw(gui::DrawAPI* api) {
       if (y == 0) {
         posx += f->GetLineHeight() / 2;
       }
-      {
-        api->DrawRect(r, p.finished_ ? CColor{0x8033cc11} : CColor{0x80cc3322});
-      }
+      { api->DrawRect(r, p.finished_ ? Color{0x8033cc11} : Color{0x80cc3322}); }
       std::string s = y == 0 ? "S" : std::format("P{:d}", y);
 
       if (d.short_name_ == "TA") {
@@ -113,10 +111,10 @@ void DungeonProgress::OnDraw(gui::DrawAPI* api) {
           s, r + Rect(-3, 0, 0, 0), gui::TextAlignmentX::WBTA_CENTERX,
           gui::TextAlignmentY::WBTA_TOP, gui::TextTransform::WBTT_NONE);
       tp.y = posy + 1;
-      f->Write(api, s, tp, CColor{0xffffffff});
+      f->Write(api, s, tp, Color{0xffffffff});
       {
         api->DrawRectBorder(
-            r, p.frequenter_ ? CColor{0xffffcc00} : CColor{0x80000000});
+            r, p.frequenter_ ? Color{0xffffcc00} : Color{0x80000000});
       }
       api->SetCropRect(cr);
     }

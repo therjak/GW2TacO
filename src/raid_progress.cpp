@@ -72,10 +72,10 @@ void RaidProgress::OnDraw(gui::DrawAPI* api) {
 
     if (!compact) {
       f->Write(api, DICT(r.config_name, r.name), Point(0, pos_y + 1),
-               CColor{0xffffffff});
+               Color{0xffffffff});
       pos_y += f->GetLineHeight();
     } else {
-      f->Write(api, r.short_name, Point(0, pos_y + 1), CColor{0xffffffff});
+      f->Write(api, r.short_name, Point(0, pos_y + 1), Color{0xffffffff});
     }
     for (size_t y = 0; y < r.wings.size(); y++) {
       auto& w = r.wings[y];
@@ -88,7 +88,7 @@ void RaidProgress::OnDraw(gui::DrawAPI* api) {
 
       if (!compact) {
         f->Write(api, DICT("raid_wing") + std::to_string(y + 1),
-                 Point(pos_x, pos_y + 1), CColor{0xffffffff});
+                 Point(pos_x, pos_y + 1), Color{0xffffffff});
       }
 
       if (!compact) pos_x = f->GetLineHeight() * 3;
@@ -101,7 +101,7 @@ void RaidProgress::OnDraw(gui::DrawAPI* api) {
         Rect cr = api->GetCropRect();
         api->SetCropRect(ClientToScreen(r));
         pos_x += f->GetLineHeight() * 2 + 1;
-        api->DrawRect(r, e.finished ? CColor{0x8033cc11} : CColor{0x80cc3322});
+        api->DrawRect(r, e.finished ? Color{0x8033cc11} : Color{0x80cc3322});
         auto s = e.type == RaidEvent::Type::Boss
                      ? (DICT("raid_boss") + std::to_string(cnt))
                      : DICT("raid_event");
@@ -112,8 +112,8 @@ void RaidProgress::OnDraw(gui::DrawAPI* api) {
             s, r + Rect(-3, 0, 0, 0), gui::TextAlignmentX::WBTA_CENTERX,
             gui::TextAlignmentY::WBTA_CENTERY, gui::TextTransform::WBTT_NONE);
         tp.y = pos_y + 1;
-        f->Write(api, s, tp, CColor{0xffffffff});
-        api->DrawRectBorder(r, CColor{0x80000000});
+        f->Write(api, s, tp, Color{0xffffffff});
+        api->DrawRectBorder(r, Color{0x80000000});
         api->SetCropRect(cr);
       }
 

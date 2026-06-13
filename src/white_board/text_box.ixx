@@ -107,10 +107,8 @@ class TextBox : public GuiType<"textbox", Widget> {
   TextBoxHistoryEntry* CreateNewHistoryEntry(bool Remove, int Start,
                                              int Length);
 
-  virtual CColor GetTextColor(int32_t Index, const CColor& DefaultColor);
-  virtual bool GetTextBackground(int32_t Index, CColor* Result) {
-    return false;
-  }
+  virtual Color GetTextColor(int32_t Index, const Color& DefaultColor);
+  virtual bool GetTextBackground(int32_t Index, Color* Result) { return false; }
   virtual bool ColoredText() { return false; }
   virtual void OnCursorPosChange(int32_t CursorPos) {}
   virtual void PostCharInsertion(int32_t CursorPos, int32_t Key){};

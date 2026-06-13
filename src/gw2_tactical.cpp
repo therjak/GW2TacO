@@ -205,7 +205,7 @@ gui::AtlasHandle GetMapIcon(gui::Application* App, std::string_view fname,
     return handle;
   }
 
-  CStreamReaderMemory f;
+  StreamReaderMemory f;
   if (!f.Open(s) && !f.Open("POIs\\" + s)) {
     Log_Err("[GWTacO] Failed to open image {:s}", s);
     return DefaultIconHandle;
@@ -341,7 +341,7 @@ Vector3 GW2TacticalDisplay::ProjectTacticalPos(Vector3 pos, float fov,
 float GetMapFade() {
   constexpr int32_t kMapFadeLength = 250;
 
-  int lastMapTime = globalTimer.GetTime() - mumbleLink.last_map_change_time;
+  int lastMapTime = global_timer.GetTime() - mumbleLink.last_map_change_time;
   if (mumbleLink.is_map_open && lastMapTime > kMapFadeLength) return 0.0f;
 
   float mapFade = 1.0f;
@@ -584,7 +584,7 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
 
   if (!drawCountdown ||
       poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
-    CColor col = poi->type_data_.color_;
+    Color col = poi->type_data_.color_;
     if (icon != DefaultIconHandle) {
       col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
                                      mapFade * global_opacity);
@@ -614,15 +614,15 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
           f->Write(API, wvw_objective_name, p + Point(x - 1, y - 1),
-                   CColor(0, 0, 0,
+                   Color(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * global_opacity *
                                   mapFade / 2.0f)),
                    gui::TextTransform::WBTT_UPPERCASE, false);
       */
       f->Write(API, wvw_objective_name, p,
-               CColor(255, 255, 0,
-                      static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
-                                           global_opacity)),
+               Color(255, 255, 0,
+                     static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
+                                          global_opacity)),
                gui::TextTransform::WBTT_UPPERCASE, false);
     }
   }
@@ -652,7 +652,7 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
     Point p;
     if (poi->type_data_.behavior_ == POIBehavior::WvwObjective) {
       if (forbiddenIconHandle != -1) {
-        CColor col(0xffffffff);
+        Color col(0xffffffff);
         if (icon != DefaultIconHandle) {
           col.A() = static_cast<uint8_t>(col.A() * Alpha * alphaMultiplier *
                                          mapFade * global_opacity);
@@ -671,15 +671,15 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
       for (int32_t x = 0; x < 3; x++)
         for (int32_t y = 0; y < 3; y++)
           f->Write(API, txt, p + Point(x - 1, y - 1),
-                   CColor(0, 0, 0,
+                   Color(0, 0, 0,
                           uint8_t(255 * alphaMultiplier * global_opacity *
                                   mapFade / 2.0f)),
                    gui::TextTransform::WBTT_NONE, false);
       */
       f->Write(API, txt, p,
-               CColor(255, 255, 0,
-                      static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
-                                           global_opacity)),
+               Color(255, 255, 0,
+                     static_cast<uint8_t>(255 * alphaMultiplier * mapFade *
+                                          global_opacity)),
                gui::TextTransform::WBTT_NONE, false);
     } else {
       p = f->GetTextPosition(txt, rect, gui::TextAlignmentX::WBTA_CENTERX,
@@ -687,8 +687,8 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
                              gui::TextTransform::WBTT_NONE, false);
       p.y += offset;
       f->Write(API, txt, p,
-               CColor(255, 255, 0,
-                      static_cast<uint8_t>(255 * mapFade * global_opacity)),
+               Color(255, 255, 0,
+                     static_cast<uint8_t>(255 * mapFade * global_opacity)),
                gui::TextTransform::WBTT_NONE, false);
     }
   }
@@ -715,9 +715,9 @@ void GW2TacticalDisplay::DrawPOI(gui::DrawAPI* API, const tm& ptm,
                              gui::TextTransform::WBTT_NONE, false) +
           Point(0, f->GetLineHeight());
       f->Write(API, txt, p,
-               CColor(255, 255, 255,
-                      static_cast<uint8_t>(255 * Alpha * alphaMultiplier *
-                                           mapFade * global_opacity)),
+               Color(255, 255, 255,
+                     static_cast<uint8_t>(255 * Alpha * alphaMultiplier *
+                                          mapFade * global_opacity)),
                gui::TextTransform::WBTT_NONE, false);
     }
   }
@@ -765,7 +765,7 @@ void GW2TacticalDisplay::DrawPOIMinimap(gui::DrawAPI* API, const Rect& miniRect,
   displayRect.x2 = topLeft.x + static_cast<int32_t>(poiSize);
   displayRect.y2 = topLeft.y + static_cast<int32_t>(poiSize);
 
-  CColor col = poi.type_data_.color_;
+  Color col = poi.type_data_.color_;
   col.A() = static_cast<uint8_t>(col.A() * alpha * minimap_opacity *
                                  poi.type_data_.alpha_);
 
@@ -843,16 +843,16 @@ void GW2TacticalDisplay::OnDraw(gui::DrawAPI* API) {
         poi.lastUpdateTime = e.last_flipped;
         switch (e.owner) {
           case WvwPoiUpdate::Team::kRed:
-            poi.type_data_.color_ = CColor{0xffe53b3b};
+            poi.type_data_.color_ = Color{0xffe53b3b};
             break;
           case WvwPoiUpdate::Team::kBlue:
-            poi.type_data_.color_ = CColor{0xff3aa2fa};
+            poi.type_data_.color_ = Color{0xff3aa2fa};
             break;
           case WvwPoiUpdate::Team::kGreen:
-            poi.type_data_.color_ = CColor{0xff3dca67};
+            poi.type_data_.color_ = Color{0xff3dca67};
             break;
           default:
-            poi.type_data_.color_ = CColor{0xffffffff};
+            poi.type_data_.color_ = Color{0xffffffff};
             break;
         }
       }
@@ -902,7 +902,7 @@ void GW2TacticalDisplay::OnDraw(gui::DrawAPI* API) {
       (dynamic_cast<OverlayApplication*>(GetApplication()))
           ->hole_punch_blend_state_.get());
 
-  API->DrawRect(miniRect, CColor(0, 0, 0, 0));
+  API->DrawRect(miniRect, Color(0, 0, 0, 0));
 
   API->FlushDrawBuffer();
   API->SetUIRenderState();
@@ -1359,7 +1359,7 @@ void ImportPOIS() {
   trails.clear();
 
   {
-    CFileList list;
+    FileList list;
     list.ExpandSearch("*.xml", "POIs", false);
     for (auto& File : list.Files) {
       ImportPOIFile(File.Path + File.FileName, true);
@@ -1367,7 +1367,7 @@ void ImportPOIS() {
   }
 
   {
-    CFileList list;
+    FileList list;
     list.ExpandSearch("*.zip", "POIs", false);
     for (auto& File : list.Files) {
       ImportMarkerPack(File.Path + File.FileName);
@@ -1375,7 +1375,7 @@ void ImportPOIS() {
   }
 
   {
-    CFileList list;
+    FileList list;
     list.ExpandSearch("*.taco", "POIs", false);
     for (auto& File : list.Files) {
       ImportMarkerPack(File.Path + File.FileName);

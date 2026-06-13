@@ -215,7 +215,7 @@ void DX11Texture2D::ExportToImage(std::string_view filename, bool clear_alpha,
                                   ExportImageFormat format, bool degamma) {
   if (!texture_handle_) return;
 
-  CStreamWriterMemory writer;
+  StreamWriterMemory writer;
   const HRESULT result =
       SaveDDSTexture(d3d_device_context_, texture_handle_, writer);
   if (result != S_OK) {
@@ -881,7 +881,7 @@ constexpr uint32_t MAKEFOURCC(uint8_t ch0, uint8_t ch1, uint8_t ch2,
 }
 
 HRESULT SaveDDSTexture(_In_ ID3D11DeviceContext* d3d_device_context,
-                       _In_ ID3D11Resource* source, CStreamWriter& writer) {
+                       _In_ ID3D11Resource* source, StreamWriter& writer) {
   constexpr uint32_t DDS_MAGIC = 0x20534444;  // "DDS "
 
   struct DDS_PIXELFORMAT {

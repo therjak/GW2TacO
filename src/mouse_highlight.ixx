@@ -34,12 +34,10 @@ export enum class MouseColor {
 };
 
 export constexpr std::array kCGAPalette = {
-    CColor{0xffaa0000}, CColor{0xffff5555}, CColor{0xff000000},
-    CColor{0xff555555}, CColor{0xff0000aa}, CColor{0xff5555ff},
-    CColor{0xff00aa00}, CColor{0xff55ff55}, CColor{0xff00aaaa},
-    CColor{0xff55ffff}, CColor{0xffaa00aa}, CColor{0xffff55ff},
-    CColor{0xffaa5500}, CColor{0xffffff55}, CColor{0xffaaaaaa},
-    CColor{0xffffffff}};
+    Color{0xffaa0000}, Color{0xffff5555}, Color{0xff000000}, Color{0xff555555},
+    Color{0xff0000aa}, Color{0xff5555ff}, Color{0xff00aa00}, Color{0xff55ff55},
+    Color{0xff00aaaa}, Color{0xff55ffff}, Color{0xffaa00aa}, Color{0xffff55ff},
+    Color{0xffaa5500}, Color{0xffffff55}, Color{0xffaaaaaa}, Color{0xffffffff}};
 
 export constexpr std::array kkCGAPaletteNames = {
     "red",   "lightred",   "black",     "gray",      "blue",    "lightblue",

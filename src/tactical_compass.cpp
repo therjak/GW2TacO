@@ -104,7 +104,7 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::DrawAPI* api) {
     Rect cent = Rect(pa, pa);
     Point p = f->GetCenter(txt[x], cent);
     f->Write(api, txt[x], p,
-             CColor(228, 210, 157, static_cast<uint8_t>(a1 * GetMapFade())));
+             Color(228, 210, 157, static_cast<uint8_t>(a1 * GetMapFade())));
   }
 }
 

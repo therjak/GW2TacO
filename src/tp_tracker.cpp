@@ -237,14 +237,14 @@ void TPTracker::OnDraw(gui::DrawAPI* api) {
           if (itemData.icon) {
             api->DrawAtlasElement(itemData.icon,
                                   Rect(lh, posy, lh * 2 + 5, posy + lh + 5),
-                                  false, false, true, true, CColor{0xffffffff});
+                                  false, false, true, true, Color{0xffffffff});
           }
           auto text = itemData.name + " " + ToGold(price);
           if (buys_[x].quantity > 1) {
             text = std::format("{:d} ", buys_[x].quantity) + text;
           }
           f->Write(api, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
-                   !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
+                   !outbid ? Color{0xffffffff} : Color{0xffee6655});
           written_count++;
           posy += lh + 6;
           if (next_sell_only) {
@@ -259,7 +259,7 @@ void TPTracker::OnDraw(gui::DrawAPI* api) {
 
       if (written_count) {
         f->Write(api, DICT(only_show_outbid ? "outbidbuys" : "buylist"),
-                 Point(0, text_pos_y), CColor{0xffffffff});
+                 Point(0, text_pos_y), Color{0xffffffff});
       } else {
         posy -= lh + 4;
       }
@@ -297,14 +297,14 @@ void TPTracker::OnDraw(gui::DrawAPI* api) {
           if (itemData.icon) {
             api->DrawAtlasElement(itemData.icon,
                                   Rect(lh, posy, lh * 2 + 5, posy + lh + 5),
-                                  false, false, true, true, CColor{0xffffffff});
+                                  false, false, true, true, Color{0xffffffff});
           }
           auto text = itemData.name + " " + ToGold(price);
           if (sells_[x].quantity > 1) {
             text = std::format("{:d} ", sells_[x].quantity) + text;
           }
           f->Write(api, text, Point(static_cast<int>(lh * 2.5 + 3), posy + 3),
-                   !outbid ? CColor{0xffffffff} : CColor{0xffee6655});
+                   !outbid ? Color{0xffffffff} : Color{0xffee6655});
           written_count++;
           posy += lh + 6;
           if (next_sell_only) {
@@ -318,7 +318,7 @@ void TPTracker::OnDraw(gui::DrawAPI* api) {
 
       if (written_count) {
         f->Write(api, DICT(only_show_outbid ? "outbidsells" : "selllist"),
-                 Point(0, text_pos_y), CColor{0xffffffff});
+                 Point(0, text_pos_y), Color{0xffffffff});
       }
     }
   }

@@ -1,18 +1,18 @@
 #pragma once
 
-#include <cstdio>
 #include <cstdint>
+#include <cstdio>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
-#include <string>
 
 using uint8_view = std::basic_string_view<uint8_t>;
 
-class CStreamWriter {
+class StreamWriter {
  public:
-  CStreamWriter();
-  virtual ~CStreamWriter();
+  StreamWriter();
+  virtual ~StreamWriter();
 
   bool Write(std::string_view data);
   bool Write(uint8_view data);
@@ -26,10 +26,10 @@ class CStreamWriter {
   uint8_t writerCurrentChar;
 };
 
-class CStreamWriterMemory : public CStreamWriter {
+class StreamWriterMemory : public StreamWriter {
  public:
-  CStreamWriterMemory();
-  ~CStreamWriterMemory() override;
+  StreamWriterMemory();
+  ~StreamWriterMemory() override;
 
   // std::string_view GetData();
   const uint8_t* GetData() const;
@@ -43,10 +43,10 @@ class CStreamWriterMemory : public CStreamWriter {
   std::vector<uint8_t> Data;
 };
 
-class CStreamWriterFile : public CStreamWriter {
+class StreamWriterFile : public StreamWriter {
  public:
-  CStreamWriterFile();
-  ~CStreamWriterFile() override;
+  StreamWriterFile();
+  ~StreamWriterFile() override;
 
   int32_t Open(std::string_view filename);
   void Flush();

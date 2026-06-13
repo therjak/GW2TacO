@@ -8,66 +8,66 @@
 #include "src/base/assert.h"
 #include "src/base/logger.h"
 
-CStreamWriter::CStreamWriter() : writerCurrentChar(0) {}
+StreamWriter::StreamWriter() : writerCurrentChar(0) {}
 
-CStreamWriter::~CStreamWriter() = default;
+StreamWriter::~StreamWriter() = default;
 
-bool CStreamWriter::Write(std::string_view data) {
+bool StreamWriter::Write(std::string_view data) {
   return WriteStream(data) == data.size();
 }
 
-bool CStreamWriter::Write(uint8_view data) {
+bool StreamWriter::Write(uint8_view data) {
   std::string_view d(reinterpret_cast<const char*>(data.data()), data.size());
   return WriteStream(d) == d.size();
 }
 
-bool CStreamWriter::Write(void* lpBuf, uint32_t nCount) {
+bool StreamWriter::Write(void* lpBuf, uint32_t nCount) {
   return WriteStream(std::string_view(reinterpret_cast<char*>(lpBuf),
                                       nCount)) == nCount;
 }
 
-bool CStreamWriter::WriteByte(uint8_t data) { return Write(&data, 1); }
+bool StreamWriter::WriteByte(uint8_t data) { return Write(&data, 1); }
 
-bool CStreamWriter::WriteDWord(uint32_t data) { return Write(&data, 4); }
+bool StreamWriter::WriteDWord(uint32_t data) { return Write(&data, 4); }
 
 //////////////////////////////////////////////////////////////////////////
 // streamwritermemory
 
-CStreamWriterMemory::CStreamWriterMemory() : CStreamWriter(), Data() {
+StreamWriterMemory::StreamWriterMemory() : StreamWriter(), Data() {
   Data.reserve(1024);
 }
 
-CStreamWriterMemory::~CStreamWriterMemory() = default;
+StreamWriterMemory::~StreamWriterMemory() = default;
 
-int32_t CStreamWriterMemory::WriteStream(std::string_view data) {
+int32_t StreamWriterMemory::WriteStream(std::string_view data) {
   Data.insert(Data.end(), data.begin(), data.end());
   return static_cast<int32_t>(data.size());
 }
 
-const uint8_t* CStreamWriterMemory::GetData() const { return &Data[0]; }
+const uint8_t* StreamWriterMemory::GetData() const { return &Data[0]; }
 
-uint32_t CStreamWriterMemory::GetLength() const {
+uint32_t StreamWriterMemory::GetLength() const {
   return static_cast<uint32_t>(Data.size());
 }
 
-void CStreamWriterMemory::Flush() { Data.clear(); }
+void StreamWriterMemory::Flush() { Data.clear(); }
 
 //////////////////////////////////////////////////////////////////////////
 // streamwriterfile
 
-CStreamWriterFile::CStreamWriterFile() : CStreamWriter() { File = nullptr; }
+StreamWriterFile::StreamWriterFile() : StreamWriter() { File = nullptr; }
 
-CStreamWriterFile::~CStreamWriterFile() {
+StreamWriterFile::~StreamWriterFile() {
   if (File) std::fclose(File);
 }
 
-int32_t CStreamWriterFile::WriteStream(std::string_view data) {
+int32_t StreamWriterFile::WriteStream(std::string_view data) {
   if (!File) return 0;
   size_t nWritten = std::fwrite(data.data(), 1, data.size(), File);
   return static_cast<int32_t>(nWritten);
 }
 
-int32_t CStreamWriterFile::Open(std::string_view Filename) {
+int32_t StreamWriterFile::Open(std::string_view Filename) {
   if (File) std::fclose(File);  // close previous handle
 
   std::string fn(Filename);
@@ -81,7 +81,7 @@ int32_t CStreamWriterFile::Open(std::string_view Filename) {
   return 1;
 }
 
-void CStreamWriterFile::Flush() {
+void StreamWriterFile::Flush() {
   if (File) {
     std::fflush(File);
   }

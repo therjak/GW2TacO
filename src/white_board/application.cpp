@@ -46,7 +46,7 @@ namespace gui {
 Application::Application()
     : WindowHandlerWin(),
       draw_api_(std::make_unique<DrawAPI>()),
-      frame_times_(std::make_unique<CRingBuffer<int32_t, 60>>()),
+      frame_times_(std::make_unique<RingBuffer<int32_t, 60>>()),
       last_frame_time_(0),
       mouse_capture_item_(nullptr),
       mouse_item_(nullptr),
@@ -254,7 +254,7 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
       click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_LEFT;
       next_repeated_click_time_ =
-          static_cast<int64_t>(globalTimer.GetTime()) +
+          static_cast<int64_t>(global_timer.GetTime()) +
           static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_LBUTTONUP: {
@@ -281,7 +281,7 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
       click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_RIGHT;
       next_repeated_click_time_ =
-          static_cast<int64_t>(globalTimer.GetTime()) +
+          static_cast<int64_t>(global_timer.GetTime()) +
           static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_RBUTTONUP: {
@@ -308,7 +308,7 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
       click_repeater_mode_ = MouseClickRepeatMode::WB_MCR_MIDDLE;
       next_repeated_click_time_ =
-          static_cast<int64_t>(globalTimer.GetTime()) +
+          static_cast<int64_t>(global_timer.GetTime()) +
           static_cast<int64_t>(GetInitialKeyboardDelay());
     } break;
     case WM_MBUTTONUP: {
@@ -415,11 +415,11 @@ Widget* Application::GetFocusItem() {
 bool Application::HandleMessages() {
   // as this function is called once every frame, it's the best place to update
   // the timer as well
-  globalTimer.Update();
+  global_timer.Update();
 
   // mouse click repeater
   if (click_repeater_mode_ != MouseClickRepeatMode::WB_MCR_OFF) {
-    if (globalTimer.GetTime() > next_repeated_click_time_) {
+    if (global_timer.GetTime() > next_repeated_click_time_) {
       POINT ap;
       GetCursorPos(&ap);
       ScreenToClient(window_handle_, &ap);
@@ -505,10 +505,10 @@ void Application::Display(DrawAPI* API) {
   // Log_Dbg("End Frame");
 
   // this is a convenient place to store this:
-  Logger.ResetEntryCounter();
+  logger.ResetEntryCounter();
 
   // update frame time
-  const int32_t frametime = globalTimer.GetTime();
+  const int32_t frametime = global_timer.GetTime();
   frame_times_->Add(frametime - last_frame_time_);
   last_frame_time_ = frametime;
 }
@@ -658,7 +658,7 @@ bool Application::LoadXMLLayout(std::string_view XML) {
 }
 
 bool Application::LoadXMLLayoutFromFile(std::string_view FileName) {
-  CStreamReaderMemory f;
+  StreamReaderMemory f;
   if (!f.Open(FileName)) {
     Log_Err("[gui] Error loading XML Layout: file '{:s}' not found", FileName);
     return false;
@@ -724,7 +724,7 @@ bool Application::LoadCSS(std::string_view CSS, bool ResetStyleManager) {
 
 bool Application::LoadCSSFromFile(std::string_view FileName,
                                   bool ResetStyleManager) {
-  CStreamReaderMemory f;
+  StreamReaderMemory f;
   if (!f.Open(FileName)) {
     Log_Err("[gui] Error loading CSS: file '{:s}' not found", FileName);
     return false;
@@ -834,7 +834,7 @@ bool Application::LoadSkin(std::string_view XML,
 
 bool Application::LoadSkinFromFile(std::string_view FileName,
                                    std::vector<int>& enabledGlyphs) {
-  CStreamReaderMemory f;
+  StreamReaderMemory f;
   if (!f.Open(FileName)) {
     Log_Err("[gui] Error loading Skin: file '{:s}' not found", FileName);
     return false;
@@ -960,7 +960,7 @@ void Application::TakeScreenshot() {
   int32_t maxcnt = 0;
   {
     auto s = screen_shot_name_ + "_*.png";
-    CFileList fl(s, "Screenshots");
+    FileList fl(s, "Screenshots");
 
     for (auto& File : fl.Files) {
       if (File.FileName.find(screen_shot_name_) == std::string::npos) {
@@ -985,7 +985,7 @@ void Application::TakeScreenshot() {
   draw_api_->GetDevice()->SetRenderState(b.get());
 
   draw_api_->SetCropRect(Rect(0, 0, x_res_, y_res_));
-  draw_api_->DrawRect(Rect(0, 0, x_res_, y_res_), CColor{0xff000000});
+  draw_api_->DrawRect(Rect(0, 0, x_res_, y_res_), Color{0xff000000});
   draw_api_->FlushDrawBuffer();
 
   auto fname = std::format("Screenshots\\{:s}_{:04d}.png", screen_shot_name_,

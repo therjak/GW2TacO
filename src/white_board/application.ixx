@@ -124,7 +124,7 @@ class Application : public renderer::WindowHandlerWin {
   void SetScreenshotName(std::string_view s) { screen_shot_name_ = s; }
 
   void SetVSync(bool vs) { vsync_ = vs; }
-  void SetClearColor(CColor color) { clear_color_ = color; }
+  void SetClearColor(Color color) { clear_color_ = color; }
 
   float GetFrameRate();
   int32_t GetInitialKeyboardDelay();
@@ -158,7 +158,7 @@ class Application : public renderer::WindowHandlerWin {
   Widget* GenerateUIItem(Widget* Root, const XMLNode& node,
                          const math::Rect& Pos);
 
-  std::unique_ptr<CRingBuffer<int32_t, 60>> frame_times_;
+  std::unique_ptr<RingBuffer<int32_t, 60>> frame_times_;
   int32_t last_frame_time_;
 
   std::unordered_map<WBGUID, Widget*> items_;
@@ -185,7 +185,7 @@ class Application : public renderer::WindowHandlerWin {
       layout_repository_;
   StyleManager style_manager_;
   std::unordered_map<std::string, FactoryCallback> factory_callbacks_;
-  CColor clear_color_ = CColor(0, 0, 0, 255);
+  Color clear_color_ = Color(0, 0, 0, 255);
 };
 
 }  // namespace gui

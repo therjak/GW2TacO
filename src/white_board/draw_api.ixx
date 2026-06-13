@@ -22,21 +22,20 @@ class Widget;
 struct DisplayLine {
   math::Point p1, p2;
   float u1 = 0, v1 = 0, u2 = 0, v2 = 0;
-  CColor c1, c2;
+  Color c1, c2;
 };
 
 struct Vertex {
   math::Vector4 pos;
   math::Vector2 uv;
-  CColor color;
+  Color color;
 
   Vertex() = default;
 
-  Vertex(const float x, const float y, const float u, const float v,
-         const CColor& color)
+  Vertex(float x, float y, float u, float v, const Color& color)
       : pos(x, y, 0, 1), uv(u, v), color(color) {}
 
-  Vertex(const math::Vector2& pos, const math::Vector2& uv, const CColor& color)
+  Vertex(const math::Vector2& pos, const math::Vector2& uv, const Color& color)
       : pos(pos.x, pos.y, 0, 1), uv(uv.x, uv.y), color(color) {}
 };
 
@@ -57,25 +56,25 @@ class DrawAPI {
 
   bool Initialize(Application* App, renderer::Device* Device, Atlas* Atlas);
 
-  void DrawRect(const math::Rect& r, CColor color);
+  void DrawRect(const math::Rect& r, Color color);
   void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2);
   void DrawRect(const math::Rect& r, float u1, float v1, float u2, float v2,
-                CColor color);
-  void DrawRectBorder(const math::Rect& r, CColor color);
+                Color color);
+  void DrawRectBorder(const math::Rect& r, Color color);
   void DrawRectRotated(const math::Rect& r, float u1, float v1, float u2,
-                       float v2, CColor color, float rotation);
+                       float v2, Color color, float rotation);
 
-  void DrawLine(const math::Point& p1, const math::Point& p2, CColor color);
-  void DrawLine(const math::Point& p1, const math::Point& p2, CColor color1,
-                CColor color2);
+  void DrawLine(const math::Point& p1, const math::Point& p2, Color color);
+  void DrawLine(const math::Point& p1, const math::Point& p2, Color color1,
+                Color color2);
 
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
-                    const math::Point& p3, CColor color);
+                    const math::Point& p3, Color color);
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
-                    const math::Point& p3, CColor a, CColor b, CColor c);
+                    const math::Point& p3, Color a, Color b, Color c);
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
                     const math::Point& p3, float u1, float v1, float u2,
-                    float v2, float u3, float v3, CColor a, CColor b, CColor c);
+                    float v2, float u3, float v3, Color a, Color b, Color c);
   void DrawTriangle(const math::Point& p1, const math::Point& p2,
                     const math::Point& p3, float u1, float v1, float u2,
                     float v2, float u3, float v3);
@@ -94,12 +93,12 @@ class DrawAPI {
 
   math::Size GetAtlasElementSize(AtlasHandle h);
   void DrawAtlasElement(AtlasHandle h, int32_t x, int32_t y,
-                        CColor color = CColor(0xffffffff));
+                        Color color = Color(0xffffffff));
   void DrawAtlasElement(AtlasHandle h, const math::Rect& Position, bool TileX,
                         bool TileY, bool StretchX, bool StretchY,
-                        CColor color = CColor(0xffffffff));
+                        Color color = Color(0xffffffff));
   void DrawAtlasElementRotated(AtlasHandle h, const math::Rect& Position,
-                               CColor color, float rotation);
+                               Color color, float rotation);
   void SetCropToClient(const Widget* i);
 
   void FlushDrawBuffer();
@@ -112,19 +111,15 @@ class DrawAPI {
   void SetPixelShader(std::unique_ptr<renderer::PixelShader>&& shader);
 
  private:
-  void AddDisplayRect(const math::Rect& r, const float u1, const float v1,
-                      const float u2, const float v3, const CColor a);
-  void AddDisplayRectRotated(const math::Rect& r, const float u1,
-                             const float v1, const float u2, const float v3,
-                             const CColor a, float rotation);
-  void AddDisplayLine(const math::Point& p1, const math::Point& p2,
-                      const float u1, const float v1, const float u2,
-                      const float v2, const CColor a, const CColor b);
+  void AddDisplayRect(const math::Rect& r, float u1, float v1, float u2,
+                      float v3, Color a);
+  void AddDisplayRectRotated(const math::Rect& r, float u1, float v1, float u2,
+                             float v3, Color a, float rotation);
+  void AddDisplayLine(const math::Point& p1, const math::Point& p2, float u1,
+                      float v1, float u2, float v2, Color a, Color b);
   void AddDisplayTri(const math::Point& p1, const math::Point& p2,
-                     const math::Point& p3, const float u1, const float v1,
-                     const float u2, const float v2, const float u3,
-                     const float v3, const CColor a, const CColor b,
-                     const CColor c);
+                     const math::Point& p3, float u1, float v1, float u2,
+                     float v2, float u3, float v3, Color a, Color b, Color c);
   void ClipTriX(int32_t x, bool KeepRight, std::array<Vertex, 6>& Vertices,
                 int32_t& VertexCount);
   void ClipTriY(int32_t y, bool KeepBottom, std::array<Vertex, 6>& Vertices,

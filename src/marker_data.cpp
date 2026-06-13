@@ -129,7 +129,7 @@ void MarkerTypeData::Read(const XMLNode& n, bool StoreSaveState) {
     auto colorStr = n.GetAttributeAsString("color");
     uint32_t colHex = 0xffffffff;
     std::sscanf(colorStr.c_str(), "%x", &colHex);
-    color_ = CColor(colHex);
+    color_ = Color(colHex);
   }
   if (_trailDataSaved)
     trail_data_ = AddStringToSet(n.GetAttribute("trailData"));

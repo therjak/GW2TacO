@@ -6,10 +6,10 @@
 #include <string_view>
 #include <vector>
 
-class CStreamReader {
+class StreamReader {
  public:
-  CStreamReader();
-  virtual ~CStreamReader();
+  StreamReader();
+  virtual ~StreamReader();
 
   // general purpose reading functions with bitstream support
   // these aren't virtual as they all fall back on ReadStream at one point and
@@ -31,10 +31,10 @@ class CStreamReader {
   uint8_t readerLastChar;
 };
 
-class CStreamReaderMemory : public CStreamReader {
+class StreamReaderMemory : public StreamReader {
  public:
-  CStreamReaderMemory();
-  ~CStreamReaderMemory() override;
+  StreamReaderMemory();
+  ~StreamReaderMemory() override;
 
   int32_t Open(uint8_t* data, uint32_t size);
   int32_t Open(std::string_view filename);

@@ -44,7 +44,9 @@ std::unique_ptr<Device> WindowParameters::CreateDevice() const {
 //////////////////////////////////////////////////////////////////////////
 // windowhandler baseclass
 
-WindowHandler::WindowHandler() { last_rendered_frame_ = globalTimer.GetTime(); }
+WindowHandler::WindowHandler() {
+  last_rendered_frame_ = global_timer.GetTime();
+}
 
 WindowHandler::~WindowHandler() { Destroy(); }
 
@@ -201,7 +203,7 @@ bool WindowHandlerWin::DeviceOk() {
   if (!active_) {
     if (!inactive_frame_limiter_) return device_ && device_->DeviceOk();
 
-    const int32_t time = globalTimer.GetTime();
+    const int32_t time = global_timer.GetTime();
     if (time - last_rendered_frame_ >= 1000 / limited_fps_) {
       last_rendered_frame_ = time;
       return true;

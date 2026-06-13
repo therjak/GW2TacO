@@ -27,7 +27,7 @@ export class GW2MapTimer : public gui::GuiType<"maptimer", gui::Widget> {
     std::string world_boss_id;
     int length = 0;
     int start = 0;
-    CColor color;
+    Color color;
   };
 
   struct Map {
@@ -44,7 +44,7 @@ export class GW2MapTimer : public gui::GuiType<"maptimer", gui::Widget> {
   struct Category {
     std::string id;
     std::string name;
-    CColor color;
+    Color color;
   };
 
  public:

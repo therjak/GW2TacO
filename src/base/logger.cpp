@@ -12,25 +12,25 @@
 #include <string_view>
 #include <utility>
 
-CLogger Logger;
+Logger logger;
 
-void CLoggerOutput::Process(LOGVERBOSITY v, const std::string& String) {}
+void LoggerOutput::Process(LOGVERBOSITY v, const std::string& String) {}
 
-CLoggerOutput::~CLoggerOutput() = default;
+LoggerOutput::~LoggerOutput() = default;
 
-CLoggerOutput::CLoggerOutput() = default;
+LoggerOutput::LoggerOutput() = default;
 
-void CLoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
-                                        const std::string& String) {
+void LoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
+                                       const std::string& String) {
   OutputDebugString(String.c_str());
   OutputDebugString("\n");
 }
 
-CLoggerOutput_DebugOutput::~CLoggerOutput_DebugOutput() = default;
+LoggerOutput_DebugOutput::~LoggerOutput_DebugOutput() = default;
 
-CLoggerOutput_DebugOutput::CLoggerOutput_DebugOutput() = default;
+LoggerOutput_DebugOutput::LoggerOutput_DebugOutput() = default;
 
-void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
+void LoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
   if (!f) {
     if (!OpenLogFile(fname, Append)) return;
     if (!f) return;
@@ -38,8 +38,8 @@ void CLoggerOutput_File::Process(LOGVERBOSITY v, const std::string& String) {
   fprintf(f, "%s\n", String.c_str());
 }
 
-bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
-                                     bool Append /*= true*/) {
+bool LoggerOutput_File::OpenLogFile(std::string_view Filename,
+                                    bool Append /*= true*/) {
   if (!Append) {
     return (!fopen_s(&f, Filename.data(), "wt"));
   } else {
@@ -47,36 +47,36 @@ bool CLoggerOutput_File::OpenLogFile(std::string_view Filename,
   }
 }
 
-CLoggerOutput_File::~CLoggerOutput_File() {
+LoggerOutput_File::~LoggerOutput_File() {
   if (f) fclose(f);
   f = nullptr;
 }
 
-CLoggerOutput_File::CLoggerOutput_File(std::string_view Filename,
-                                       bool append /*= true*/) {
+LoggerOutput_File::LoggerOutput_File(std::string_view Filename,
+                                     bool append /*= true*/) {
   Append = append;
   fname = Filename;
   OpenLogFile(Filename, Append);
 }
 
-CLoggerOutput_File::CLoggerOutput_File() {
+LoggerOutput_File::LoggerOutput_File() {
   f = nullptr;
   Append = true;
   fname = "log.log";
 }
 
-int32_t CLogger::GetNewEntryCount() { return NewEntryCount; }
+int32_t Logger::GetNewEntryCount() { return NewEntryCount; }
 
-void CLogger::ResetEntryCounter() { NewEntryCount = 0; }
+void Logger::ResetEntryCounter() { NewEntryCount = 0; }
 
-void CLogger::AddOutput(std::unique_ptr<CLoggerOutput>&& Output) {
+void Logger::AddOutput(std::unique_ptr<LoggerOutput>&& Output) {
   Outputs.emplace_back(std::move(Output));
 }
 
-void CLogger::SetVerbosity(LOGVERBOSITY v) { Verbosity = v; }
+void Logger::SetVerbosity(LOGVERBOSITY v) { Verbosity = v; }
 
-void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
-                  std::string_view String) {
+void Logger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
+                 std::string_view String) {
   if (Verbosity < v) return;
 
   auto ts = [AddTimeStamp]() -> std::string {
@@ -119,11 +119,11 @@ void CLogger::Log(LOGVERBOSITY v, bool Prefix, bool AddTimeStamp,
   NewEntryCount++;
 }
 
-void CLogger::Close() { Outputs.clear(); }
+void Logger::Close() { Outputs.clear(); }
 
-CLogger::~CLogger() = default;
+Logger::~Logger() = default;
 
-CLogger::CLogger() {
+Logger::Logger() {
   Verbosity = LOGGER_BASE_OUTPUT_VERBOSITY;
-  Outputs.emplace_back(std::make_unique<CLoggerOutput_DebugOutput>());
+  Outputs.emplace_back(std::make_unique<LoggerOutput_DebugOutput>());
 }

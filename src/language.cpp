@@ -168,7 +168,7 @@ constexpr char taco_lang_en[] = "taco_language_en.xml";
 void Localization::Import() {
   ImportFile("TacO_Language_en.xml");
 
-  CFileList list;
+  FileList list;
   list.ExpandSearch("TacO_Language_*.xml", ".", false);
   for (const auto& f : list.Files) {
     if (str_tolower(f.FileName) == taco_lang_en) {

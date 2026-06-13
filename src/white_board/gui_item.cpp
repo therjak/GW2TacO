@@ -33,8 +33,8 @@ DisplayState::DisplayState() = default;
 
 DisplayState::~DisplayState() = default;
 
-CColor DisplayState::GetColor(ItemVisualComponent v) {
-  return CColor(visuals_[v]);
+Color DisplayState::GetColor(ItemVisualComponent v) {
+  return Color(visuals_[v]);
 }
 
 bool DisplayState::IsSet(ItemVisualComponent v) { return visual_set_[v]; }
@@ -69,7 +69,7 @@ SkinElementId DisplayProperties::GetSkin(ItemState s, ItemVisualComponent v) {
   return 0xffffffff;
 }
 
-CColor DisplayProperties::GetColor(ItemState s, ItemVisualComponent v) {
+Color DisplayProperties::GetColor(ItemState s, ItemVisualComponent v) {
   // if (States.HasKey(s))
   {
     if (states_[s].IsSet(v)) return states_[s].GetColor(v);
@@ -83,15 +83,15 @@ CColor DisplayProperties::GetColor(ItemState s, ItemVisualComponent v) {
 
   switch (v) {
     default:
-      return CColor{0xffffffff};
+      return Color{0xffffffff};
     case WB_ITEM_BACKGROUNDCOLOR:
-      return CColor{0};
+      return Color{0};
     case WB_ITEM_FOREGROUNDCOLOR:
-      return CColor{0};
+      return Color{0};
     case WB_ITEM_BORDERCOLOR:
-      return CColor{0xff434346};
+      return Color{0xff434346};
     case WB_ITEM_FONTCOLOR:
-      return CColor{0xffffffff};
+      return Color{0xffffffff};
   }
 }
 
@@ -402,7 +402,7 @@ bool Widget::MessageProc(const Message& message) {
 void Widget::DrawBackgroundItem(DrawAPI* API, DisplayProperties& Descriptor,
                                 const Rect& Pos, ItemState i,
                                 ItemVisualComponent v) {
-  CColor bck = Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR);
+  Color bck = Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR);
   if (bck.A()) {
     // API->SetCropRect(ClientToScreen(Pos));
     API->DrawRect(Pos, Descriptor.GetColor(i, WB_ITEM_BACKGROUNDCOLOR));
@@ -477,7 +477,7 @@ void Widget::DrawBorder(DrawAPI* API, const Rect& r,
                         CssPropertyBatch& cssProps) {
   const auto& crop = API->GetCropRect();
 
-  const CColor color =
+  const Color color =
       cssProps.display_descriptor_.GetColor(GetState(), WB_ITEM_BORDERCOLOR);
 
   API->SetCropRect(ClientToScreen(r));
@@ -1091,10 +1091,10 @@ void Widget::DrawScrollbarButton(DrawAPI* API, ScrollbarParams& s, Rect& r,
       GetDisplayDescriptor().GetSkin(State, Button);
 
   if (ButtonSkin == 0xffffffff) {
-    CColor color{0xff999999};
-    if (State == WB_STATE_HOVER) color = CColor{0xff1c97ea};
-    if (State == WB_STATE_ACTIVE) color = CColor{0xff007acc};
-    if (!ScrollbarRequired(s)) color = CColor{0xff555558};
+    Color color{0xff999999};
+    if (State == WB_STATE_HOVER) color = Color{0xff1c97ea};
+    if (State == WB_STATE_ACTIVE) color = Color{0xff007acc};
+    if (!ScrollbarRequired(s)) color = Color{0xff555558};
 
     const Point margin = Point(4, 4);
     API->DrawRect(Rect(r.TopLeft() + margin, r.BottomRight() - margin), color);
@@ -1126,7 +1126,7 @@ void Widget::DrawHScrollbar(DrawAPI* API) {
       GetDisplayDescriptor().GetSkin(BackgroundState, WB_ITEM_SCROLL_HBAR);
 
   if (Background == 0xffffffff) {
-    API->DrawRect(BackgroundRect, CColor{0xff3e3e42});
+    API->DrawRect(BackgroundRect, Color{0xff3e3e42});
   } else {
     app_->GetSkin()->RenderElement(API, Background, BackgroundRect);
   }
@@ -1137,9 +1137,9 @@ void Widget::DrawHScrollbar(DrawAPI* API) {
       GetDisplayDescriptor().GetSkin(ThumbState, WB_ITEM_SCROLL_HTHUMB);
 
   if (Thumb == 0xffffffff) {
-    CColor color = CColor{0xff686868};
-    if (ThumbState == WB_STATE_HOVER) color = CColor{0xff9e9e9e};
-    if (ThumbState == WB_STATE_ACTIVE) color = CColor{0xffefebef};
+    Color color = Color{0xff686868};
+    if (ThumbState == WB_STATE_HOVER) color = Color{0xff9e9e9e};
+    if (ThumbState == WB_STATE_ACTIVE) color = Color{0xffefebef};
 
     const Point thumbmargin = Point(0, 4);
     API->DrawRect(
@@ -1202,7 +1202,7 @@ void Widget::DrawVScrollbar(DrawAPI* API) {
       GetDisplayDescriptor().GetSkin(BackgroundState, WB_ITEM_SCROLL_VBAR);
 
   if (Background == 0xffffffff) {
-    API->DrawRect(BackgroundRect, CColor{0xff3e3e42});
+    API->DrawRect(BackgroundRect, Color{0xff3e3e42});
   } else {
     app_->GetSkin()->RenderElement(API, Background, BackgroundRect);
   }
@@ -1213,9 +1213,9 @@ void Widget::DrawVScrollbar(DrawAPI* API) {
       GetDisplayDescriptor().GetSkin(ThumbState, WB_ITEM_SCROLL_VTHUMB);
 
   if (Thumb == 0xffffffff) {
-    CColor color = CColor{0xff686868};
-    if (ThumbState == WB_STATE_HOVER) color = CColor{0xff9e9e9e};
-    if (ThumbState == WB_STATE_ACTIVE) color = CColor{0xffefebef};
+    Color color = Color{0xff686868};
+    if (ThumbState == WB_STATE_HOVER) color = Color{0xff9e9e9e};
+    if (ThumbState == WB_STATE_ACTIVE) color = Color{0xffefebef};
 
     const Point thumbmargin = Point(4, 0);
     API->DrawRect(
@@ -1620,7 +1620,7 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
       }
 
       if (attrib.find("rgba(") == 0) {
-        CColor col;
+        Color col;
         if (!ParseRGBA(attrib, &col)) {
           Log_Warn("[gui] CSS rgba() description invalid, skipping: {:s}",
                    attrib);
@@ -1655,7 +1655,7 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
       }
 
       if (attrib.find("rgba(") == 0) {
-        CColor col;
+        Color col;
         if (!ParseRGBA(attrib, &col)) {
           Log_Warn("[gui] CSS rgba() description invalid, skipping: {:s}",
                    attrib);
@@ -1684,7 +1684,7 @@ bool Widget::InterpretDisplayString(CssPropertyBatch& props,
       }
 
       if (attrib.find("rgba(") == 0) {
-        CColor col;
+        Color col;
         if (!ParseRGBA(attrib, &col)) {
           Log_Warn("[gui] CSS rgba() description invalid, skipping: {:s}",
                    attrib);
@@ -1857,7 +1857,7 @@ bool Widget::InterpretFontString(CssPropertyBatch& props, std::string_view prop,
       return true;
     }
 
-    CColor col;
+    Color col;
     if (ParseRGBA(value, &col)) {
       VisualStyleApplicator(props.display_descriptor_, WB_ITEM_FONTCOLOR,
                             col.argb(), pseudo);
@@ -1903,7 +1903,7 @@ bool Widget::InterpretFontString(CssPropertyBatch& props, std::string_view prop,
         continue;
       }
 
-      CColor col;
+      Color col;
       if (ParseRGBA(attrib, &col)) {
         VisualStyleApplicator(props.display_descriptor_, WB_ITEM_FONTCOLOR,
                               col.argb(), pseudo);
@@ -2183,7 +2183,7 @@ Font* Widget::GetFont(ItemState State) {
 }
 
 void Widget::ApplyOpacity(DrawAPI* API) {
-  CColor o = GetDisplayDescriptor().GetColor(GetState(), WB_ITEM_OPACITY);
+  Color o = GetDisplayDescriptor().GetColor(GetState(), WB_ITEM_OPACITY);
   API->SetOpacity(static_cast<uint8_t>(o.A() * opacity_multiplier_));
 }
 
@@ -2206,7 +2206,7 @@ void Widget::SetChildInFocus(Widget* i) {
   if (i->parent_ == this) child_in_focus_ = i;
 }
 
-bool Widget::ParseRGBA(std::string_view description, CColor* output) {
+bool Widget::ParseRGBA(std::string_view description, Color* output) {
   auto Params = Split(description, ",");
   if (Params.size() < 3 || Params.size() > 4) return false;
 
@@ -2229,7 +2229,7 @@ bool Widget::ParseRGBA(std::string_view description, CColor* output) {
   const uint8_t Alpha =
       static_cast<int32_t>(std::max(0.f, std::min(1.f, a)) * 255.f);
 
-  if (output) *output = CColor(Colors[0], Colors[1], Colors[2], Alpha);
+  if (output) *output = Color(Colors[0], Colors[1], Colors[2], Alpha);
   return true;
 }
 

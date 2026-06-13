@@ -115,7 +115,7 @@ class DX11Device : public Device {
   bool BeginScene() override;
   bool EndScene() override;
   bool Clear(const bool clear_pixels = true, const bool clear_depth = true,
-             const CColor& color = CColor(), const float depth = 1,
+             const Color& color = Color(), const float depth = 1,
              const int32_t stencil = 0) override;
   bool Flip(bool vsync = true) override;
   bool DrawIndexedTriangles(int32_t count, int32_t vertex_count) override;

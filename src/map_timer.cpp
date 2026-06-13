@@ -150,7 +150,7 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
             Rect(cl.x1, ypos, cl.x2, ypos + map_height - bar_height + 1),
             text_transform);
         if (!compact) {
-          f->Write(api, map.name, Point(p.x, ypos + 2), CColor{0xffffffff},
+          f->Write(api, map.name, Point(p.x, ypos + 2), Color{0xffffffff},
                    text_transform);
         }
       }
@@ -167,7 +167,7 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
                           last_category->color);
             api->DrawRectBorder(Rect(cl.x1, last_category_start_y,
                                      cl.x1 + category_line_width, top_pos),
-                                CColor{0x80000000});
+                                Color{0x80000000});
           }
           last_category_start_y = top_pos;
           last_category = &category;
@@ -231,7 +231,7 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
           }
 
           Point p = f->GetCenter(text, r, text_transform);
-          f->Write(api, text, Point(p.x, r.y1 + 2), CColor{0xffffffff},
+          f->Write(api, text, Point(p.x, r.y1 + 2), Color{0xffffffff},
                    text_transform);
 
           api->SetCropRect(cr);
@@ -249,7 +249,7 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
           }
 
           if (!is_highlighted) {
-            api->DrawRectBorder(r, CColor{0x80000000});
+            api->DrawRectBorder(r, Color{0x80000000});
           } else {
             highlight_rects.push_back(r);
           }
@@ -270,16 +270,16 @@ void GW2MapTimer::OnDraw(gui::DrawAPI* api) {
           last_category->color);
       api->DrawRectBorder(
           Rect(cl.x1, last_category_start_y, cl.x1 + category_line_width, ypos),
-          CColor{0x80000000});
+          Color{0x80000000});
     }
   }
 
   for (const auto& r : highlight_rects) {
-    api->DrawRectBorder(r, CColor{0xffffcc00});
+    api->DrawRectBorder(r, Color{0xffffcc00});
   }
 
   api->DrawRect(Rect(cl.Width() / 2, 0, cl.Width() / 2 + 1, ypos),
-                CColor{0x80ffffff});
+                Color{0x80ffffff});
   SetMouseToolTip(mouse_tool_tip);
 
   // update scrollbar
@@ -338,7 +338,7 @@ void GW2MapTimer::SetLayout(const XMLNode& node) {
         auto s = category_node.GetAttributeAsString("Color");
         uint32_t c = 0;
         std::sscanf(s.c_str(), "%x", &c);
-        category.color = CColor(c);
+        category.color = Color(c);
       }
 
       categories_[category.id] = category;
@@ -411,7 +411,7 @@ void GW2MapTimer::SetLayout(const XMLNode& node) {
           auto s = event_node.GetAttributeAsString("Color");
           uint32_t c = 0;
           std::sscanf(s.c_str(), "%x", &c);
-          event.color = CColor(c);
+          event.color = Color(c);
         }
 
         map.events.push_back(event);

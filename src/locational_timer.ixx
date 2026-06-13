@@ -28,8 +28,8 @@ export class LocationalTimer {
   void ImportData(const XMLNode& node);
 
   int32_t map_id_ = 0;
-  math::CSphere enter_sphere_ = math::CSphere(math::Vector3(0, 0, 0), 0);
-  math::CSphere exit_sphere_ = math::CSphere(math::Vector3(0, 0, 0), 0);
+  math::Sphere enter_sphere_ = math::Sphere(math::Vector3(0, 0, 0), 0);
+  math::Sphere exit_sphere_ = math::Sphere(math::Vector3(0, 0, 0), 0);
   math::Vector3 reset_point_ = math::Vector3(0, 0, 0);
   int32_t timer_length_ = 0;
   int32_t start_delay_ = 0;

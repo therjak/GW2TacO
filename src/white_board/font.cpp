@@ -82,7 +82,7 @@ bool FontDescription::LoadBMFontBinary(uint8_t* Binary, int32_t BinarySize,
 
 #pragma pack(pop)
 
-  CStreamReaderMemory m;
+  StreamReaderMemory m;
   m.Open(Binary, BinarySize);
 
   if (m.ReadByte() != 'B' || m.ReadByte() != 'M' || m.ReadByte() != 'F' ||
@@ -196,7 +196,7 @@ bool FontDescription::LoadBMFontText(uint8_t* Binary, int32_t BinarySize,
   image_ = std::make_unique<uint8_t[]>(xr * yr * 4);
   memcpy(image_.get(), img, xr * yr * 4);
 
-  CStreamReaderMemory m;
+  StreamReaderMemory m;
   m.Open(Binary, BinarySize);
 
   if (m.ReadByte() != 'i' || m.ReadByte() != 'n' || m.ReadByte() != 'f' ||
@@ -367,7 +367,7 @@ uint32_t ReadUTF8Char(char const*& Text) {
 }
 
 int32_t Font::WriteChar(DrawAPI* DrawApi, int Char, int32_t x, int32_t y,
-                        CColor color) {
+                        Color color) {
   if (Char >= alphabet_size_ ||
       alphabet_[static_cast<uint16_t>(Char)].id != Char) {
     // missing character replaced by a simple rectangle
@@ -403,7 +403,7 @@ int32_t Font::WriteChar(DrawAPI* DrawApi, int Char, int32_t x, int32_t y,
 }
 
 int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, int32_t x,
-                    int32_t y, CColor color, TextTransform Transform,
+                    int32_t y, Color color, TextTransform Transform,
                     bool DoKerning) {
   if (String.empty()) return 0;
   std::string t(String);  // make sure we have a \0 at the correct place.
@@ -436,12 +436,12 @@ int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, int32_t x,
 }
 
 int32_t Font::WriteChar(DrawAPI* DrawApi, int Char, const Point& p,
-                        CColor color) {
+                        Color color) {
   return WriteChar(DrawApi, Char, p.x, p.y, color);
 }
 
 int32_t Font::Write(DrawAPI* DrawApi, std::string_view String, const Point& p,
-                    CColor color, TextTransform Transform, bool DoKerning) {
+                    Color color, TextTransform Transform, bool DoKerning) {
   return Write(DrawApi, String, p.x, p.y, color, Transform, DoKerning);
 }
 

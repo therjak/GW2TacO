@@ -7,16 +7,16 @@
 #include "src/base/assert.h"
 
 template <typename ItemType, int32_t SIZE>
-class CRingBuffer {
+class RingBuffer {
  public:
-  explicit CRingBuffer() = default;
+  explicit RingBuffer() = default;
 
   void Add(const ItemType& Item) {
     Array[Count % SIZE] = Item;
     Count++;
   }
 
-  CRingBuffer<ItemType, SIZE>& operator+=(const ItemType& i) {
+  RingBuffer<ItemType, SIZE>& operator+=(const ItemType& i) {
     Add(i);
     return *this;
   }
