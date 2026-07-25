@@ -227,7 +227,7 @@ LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT __stdcall KeyboardHook(int code, WPARAM wParam, LPARAM lParam) {
-  if (disable_hooks || mumbleLink.textbox_has_focus) {
+  if (disable_hooks || mumble_link.GetTextboxHasFocus()) {
     return CallNextHookEx(nullptr, code, wParam, lParam);
   }
 
@@ -650,7 +650,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     auto sub = cmdLine.substr(mumblePos);
     auto cmds = SplitByWhitespace(sub);
     if (cmds.size() > 1) {
-      mumbleLink.mumble_path = cmds[1];
+      mumble_link.mumble_path = cmds[1];
     }
   }
 
@@ -752,7 +752,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   ImportPOIS();
 
-  mumbleLink.Update();
+  mumble_link.Update();
 
   if (!InitGUI(App.get())) {
     Log_Err("[GW2TacO] Missing file during init, exiting!");
@@ -821,7 +821,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     }
 
     for (int x = 0; x < (frameThrottling ? 32 : 1); x++) {
-      if (mumbleLink.Update()) {
+      if (mumble_link.Update()) {
         break;
       }
       if (frameThrottling) {
@@ -829,20 +829,20 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
     }
 
-    bool shortTick = (GetTime() - mumbleLink.last_frame_time) < 333;
+    bool shortTick = (GetTime() - mumble_link.GetLastFrameTime()) < 333;
 
     if (!hideOnLoadingScreens) {
       shortTick = true;
     }
 
     if (!FoundGW2Window) {
-      // if (mumbleLink.mumble_path != "MumbleLink")
+      // if (mumble_link.mumble_path != "MumbleLink")
       {
-        if (!mumbleLink.IsValid() && GetTime() > 60000) {
+        if (!mumble_link.IsValid() && GetTime() > 60000) {
           Log_Err(
               "[GW2TacO] Closing TacO because GW2 with mumble link '{:s}' was "
               "not found in under a minute",
-              mumbleLink.mumble_path);
+              mumble_link.mumble_path);
           App->SetDone(true);
         }
       }
@@ -855,7 +855,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         hideOnLoadingScreens = GetConfigValue("HideOnLoadingScreens");
         lastSlowEventTime = global_timer.GetTime();
         gw2WindowFromPid = nullptr;
-        EnumWindows(gw2WindowFromPIDFunction, mumbleLink.last_gw2_process_id);
+        EnumWindows(gw2WindowFromPIDFunction, mumble_link.last_gw2_process_id);
         gw2Window = gw2WindowFromPid;
 
         if (!gw2Window) {
@@ -866,12 +866,12 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         }
       }
 
-      if (!mumbleLink.IsValid() || !gw2Window) {
+      if (!mumble_link.IsValid() || !gw2Window) {
         Sleep(1000);
         continue;
       }
 
-      /* if (!frameThrottling || frameTriggered ||
+      /* if (!frameThrottling || frame_triggered ||
           lastRenderTime + 200 < currTime) */
       {
         if (gw2Window) {
@@ -984,7 +984,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         AutoSaveConfig();
         App->Display();
         // App->GetDevice()->WaitRetrace();
-        frameTriggered = false;
+        frame_triggered = false;
         lastRenderTime = currTime;
         hadRetrace = false;
       }

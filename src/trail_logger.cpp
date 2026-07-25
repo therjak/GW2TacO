@@ -39,7 +39,7 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-TrailSet& GetMapTrails() { return trails[mumbleLink.map_id]; }
+TrailSet& GetMapTrails() { return trails[mumble_link.GetMapID()]; }
 
 StreamWriterFile* TrailLog = nullptr;
 
@@ -57,11 +57,11 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
 
   draw_rect_ = GetClientRect();
 
-  cam_.SetLookAtLH(mumbleLink.cam_position,
-                   mumbleLink.cam_position + mumbleLink.cam_dir,
+  cam_.SetLookAtLH(mumble_link.GetCamPosition(),
+                   mumble_link.GetCamPosition() + mumble_link.GetCamDir(),
                    Vector3(0, 1, 0));
   persp_.SetPerspectiveFovLH(
-      mumbleLink.fov,
+      mumble_link.GetFov(),
       draw_rect_.Width() / static_cast<float>(draw_rect_.Height()), 0.01f,
       150.0f);
   asp_ = draw_rect_.Width() / static_cast<float>(draw_rect_.Height());
@@ -135,7 +135,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
       }
 
       if (edited_trail_) {
-        if (edited_trail_->map_ == mumbleLink.map_id) {
+        if (edited_trail_->map_ == mumble_link.GetMapID()) {
           data[0] = GetTime() / 1000.0f;
 
           App->GetDevice()->SetTexture(renderer::Sampler::kPs0,
@@ -154,7 +154,8 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
           const_buffer_->AddData(persp_data[1].data(), persp_size_x);
           const_buffer_->AddData(persp_data[2].data(), persp_size_x);
           const_buffer_->AddData(persp_data[3].data(), persp_size_x);
-          const_buffer_->AddData(&mumbleLink.char_position, 12);
+          const auto& char_pos = mumble_link.GetCharPosition();
+          const_buffer_->AddData(&char_pos, 12);
           const_buffer_->AddData(&one, 4);
           const_buffer_->AddData(data.data(), 16);
           // color
@@ -198,7 +199,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
 
     if (mapFade > 0 && showMinimapTrails > 0) {
       Matrix4x4 camera =
-          mumbleLink.mini_map.BuildTransformationMatrix(miniRect, false);
+          mumble_link.mini_map.BuildTransformationMatrix(miniRect, false);
       // camera *= Matrix4x4().Scaling( Vector3( 2.0f / clientRect.Width(),
       // -2.0f / clientRect.Height(), 0.0f ) ); camera *=
       // Matrix4x4().Translation( Vector3( -1.0f, -1.0f, 0.5 ) );
@@ -226,7 +227,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
 
         float trailWidth = trail.type_data_.mini_map_size_ * 0.5f;
         if (trail.type_data_.bits_.scale_with_zoom_) {
-          trailWidth /= mumbleLink.mini_map.map_scale;
+          trailWidth /= mumble_link.mini_map.map_scale;
         }
 
         renderer::Texture* texture = nullptr;
@@ -249,7 +250,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
             1.0f -
             std::max(
                 0.0f,
-                std::min(1.0f, (mumbleLink.mini_map.map_scale -
+                std::min(1.0f, (mumble_link.mini_map.map_scale -
                                 trail.type_data_.mini_map_fade_out_level_) /
                                    2.0f));
 
@@ -260,10 +261,10 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
       }
     }
 
-    if (mumbleLink.is_map_open && mapFade < 1.0 && showBigmapTrails > 0) {
+    if (mumble_link.GetIsMapOpen() && mapFade < 1.0 && showBigmapTrails > 0) {
       miniRect = GetClientRect();
       Matrix4x4 camera =
-          mumbleLink.big_map.BuildTransformationMatrix(miniRect, true);
+          mumble_link.big_map.BuildTransformationMatrix(miniRect, true);
 
       camera *= Matrix4x4::Scaling(Vector3(2.0f / clientRect.Width(),
                                            -2.0f / clientRect.Height(), 0.0f));
@@ -283,7 +284,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
 
         float trailWidth = trail.type_data_.mini_map_size_ * 0.5f;
         if (trail.type_data_.bits_.scale_with_zoom_) {
-          trailWidth /= mumbleLink.mini_map.map_scale;
+          trailWidth /= mumble_link.mini_map.map_scale;
         }
 
         renderer::Texture* texture = nullptr;
@@ -303,7 +304,7 @@ void GW2TrailDisplay::DrawProxy(gui::DrawAPI* API, bool miniMaprender) {
         }
 
         float alpha =
-            1.0f - std::clamp((mumbleLink.big_map.map_scale -
+            1.0f - std::clamp((mumble_link.big_map.map_scale -
                                trail.type_data_.mini_map_fade_out_level_) /
                                   2.0f,
                               0.0f, 1.0f);
@@ -335,7 +336,7 @@ void GW2TrailDisplay::OnDraw(gui::DrawAPI* API) {
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
 
-  if (!mumbleLink.IsValid()) return;
+  if (!mumble_link.IsValid()) return;
 
   DrawProxy(API, false);
 
@@ -707,8 +708,8 @@ void GW2TrailDisplay::ImportTrail() {
         edited_trail_->Import(file, true);
       }
 
-      lastMap = mumbleLink.map_id;
-      last_pos = mumbleLink.char_position;
+      lastMap = mumble_link.GetMapID();
+      last_pos = mumble_link.GetCharPosition();
     }
   }
 
@@ -878,7 +879,7 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
                             float width2d) {
   if (category_ && !category_->IsVisible()) return;
 
-  if (map_ != mumbleLink.map_id) return;
+  if (map_ != mumble_link.GetMapID()) return;
 
   App->GetDevice()->SetTexture(renderer::Sampler::kPs0, texture);
 
@@ -899,7 +900,8 @@ void GW2Trail::SetupAndDraw(renderer::ConstantBuffer* const_buffer_,
   const_buffer_->AddData(persp_data[1].data(), persp_size_x);
   const_buffer_->AddData(persp_data[2].data(), persp_size_x);
   const_buffer_->AddData(persp_data[3].data(), persp_size_x);
-  const_buffer_->AddData(&mumbleLink.char_position, 12);
+  const auto& char_pos = mumble_link.GetCharPosition();
+  const_buffer_->AddData(&char_pos, 12);
   const_buffer_->AddData(&one, 4);
   const_buffer_->AddData(data->data(), 16);
   // color

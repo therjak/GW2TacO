@@ -162,10 +162,10 @@ std::unordered_set<int32_t> APIKey::QueryAchievementBits(int id) const {
 
 APIKey* APIKeyManager::GetIdentifiedAPIKey() {
   std::scoped_lock l(key_mutex_);
-  if (!mumbleLink.IsValid()) {
+  if (!mumble_link.IsValid()) {
     return nullptr;
   }
-  if (mumbleLink.char_name.empty()) {
+  if (mumble_link.char_name.empty()) {
     return nullptr;
   }
   if (keys_.empty()) {
@@ -186,7 +186,7 @@ APIKey* APIKeyManager::GetIdentifiedAPIKey() {
     }
 
     auto& cn = key->key_data.char_names;
-    if (std::find(cn.begin(), cn.end(), mumbleLink.char_name) != cn.end()) {
+    if (std::find(cn.begin(), cn.end(), mumble_link.char_name) != cn.end()) {
       return key.get();
     }
   }
@@ -214,7 +214,7 @@ APIKeyManager::Status APIKeyManager::GetStatus() {
         return Status::Loading;
       }
     }
-    if (mumbleLink.char_name.empty()) {
+    if (mumble_link.char_name.empty()) {
       return Status::WaitingForMumbleCharacterName;
     }
     return Status::CouldNotIdentifyAccount;

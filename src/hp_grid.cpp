@@ -25,11 +25,11 @@ void GW2HPGrid::OnDraw(gui::DrawAPI* api) {
   Rect cl = GetClientRect();
 
   for (auto& grid : grids_) {
-    if (mumbleLink.map_id != grid.map_id) {
+    if (mumble_link.GetMapID() != grid.map_id) {
       continue;
     }
 
-    if (!grid.b_sphere.Contains(mumbleLink.char_position)) {
+    if (!grid.b_sphere.Contains(mumble_link.GetCharPosition())) {
       continue;
     }
 

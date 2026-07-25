@@ -22,28 +22,27 @@ using math::Vector4;
 
 void GW2RangeDisplay::DrawRangeCircle(gui::DrawAPI* api, float range,
                                       float alpha) {
-  if (!mumbleLink.IsValid()) return;
+  if (!mumble_link.IsValid()) return;
 
-  if (mumbleLink.is_pvp) return;
-  if (mumbleLink.is_map_open) return;
+  if (mumble_link.GetIsPvp()) return;
+  if (mumble_link.GetIsMapOpen()) return;
 
   Rect draw_rect = GetClientRect();
 
   Matrix4x4 cam;
-  cam.SetLookAtLH(mumbleLink.cam_position,
-                  mumbleLink.cam_position + mumbleLink.cam_dir,
+  cam.SetLookAtLH(mumble_link.GetCamPosition(),
+                  mumble_link.GetCamPosition() + mumble_link.GetCamDir(),
                   Vector3(0, 1, 0));
   Matrix4x4 persp;
   persp.SetPerspectiveFovLH(
-      mumbleLink.fov,
+      mumble_link.GetFov(),
       draw_rect.Width() / static_cast<float>(draw_rect.Height()), 0.01f,
       1000.0f);
 
   int32_t resolution = 60;
 
-  Vector4 char_pos = Vector4(mumbleLink.averaged_char_position.x,
-                             mumbleLink.averaged_char_position.y,
-                             mumbleLink.averaged_char_position.z, 1.0f);
+  const auto& acp = mumble_link.GetAveragedCharPosition();
+  Vector4 char_pos = Vector4(acp.x, acp.y, acp.z, 1.0f);
 
   float r_world = GameToWorldCoords(range);
 
@@ -55,14 +54,13 @@ void GW2RangeDisplay::DrawRangeCircle(gui::DrawAPI* api, float range,
   Vector4 screen_space_eye = (cam_space_eye * cam) * persp;
   screen_space_eye /= screen_space_eye.w;
 
-  auto pos =
-      (Vector3(mumbleLink.averaged_char_position) - mumbleLink.cam_position);
+  auto pos = (Vector3(acp) - mumble_link.GetCamPosition());
   pos.y = 0;
   bool zoomed_in = pos.Length() < 0.13;
 
   Vector4 cam_pos =
-      Vector4(mumbleLink.cam_position.x, mumbleLink.cam_position.y,
-              mumbleLink.cam_position.z, 1.0f);
+      Vector4(mumble_link.GetCamPosition().x, mumble_link.GetCamPosition().y,
+              mumble_link.GetCamPosition().z, 1.0f);
   Vector2 cam_dir =
       Vector2(cam_space_char.x - cam_pos.x, cam_space_char.z - cam_pos.z)
           .Normalized();
@@ -140,7 +138,7 @@ void GW2RangeDisplay::DrawRangeCircle(gui::DrawAPI* api, float range,
 }
 
 void GW2RangeDisplay::OnDraw(gui::DrawAPI* api) {
-  if (!mumbleLink.IsValid()) return;
+  if (!mumble_link.IsValid()) return;
 
   if (GetConfigValue("RangeCirclesVisible")) {
     float circ = GetConfigValue("RangeCircleTransparency") / 100.0f;

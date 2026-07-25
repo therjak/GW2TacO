@@ -271,7 +271,7 @@ void LoadWvwObjectives() {
 }
 
 void UpdateWvwStatus() {
-  if (wvw_map_ids.find(mumbleLink.map_id) == wvw_map_ids.end()) return;
+  if (wvw_map_ids.find(mumble_link.GetMapID()) == wvw_map_ids.end()) return;
 
   static std::future<void> wvw_update_task;
   static std::chrono::steady_clock::time_point last_update_time;

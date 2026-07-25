@@ -35,13 +35,13 @@ LocationalTimer::LocationalTimer() = default;
 LocationalTimer::~LocationalTimer() = default;
 
 void LocationalTimer::Update() {
-  if (mumbleLink.map_id != map_id_) {
+  if (mumble_link.GetMapID() != map_id_) {
     is_running_ = false;
     return;
   }
 
   if (!is_running_) {
-    if (enter_sphere_.Contains(mumbleLink.char_position)) {
+    if (enter_sphere_.Contains(mumble_link.GetCharPosition())) {
       is_running_ = true;
       start_time_ = GetTime();
     }
@@ -50,8 +50,9 @@ void LocationalTimer::Update() {
   if (is_running_) {
     if ((GetTime() - start_time_) / 1000.0f > timer_length_)
       is_running_ = false;
-    if (!exit_sphere_.Contains(mumbleLink.char_position)) is_running_ = false;
-    if ((reset_point_ - mumbleLink.char_position).Length() < 0.1) {
+    if (!exit_sphere_.Contains(mumble_link.GetCharPosition()))
+      is_running_ = false;
+    if ((reset_point_ - mumble_link.GetCharPosition()).Length() < 0.1) {
       is_running_ = false;
     }
   }
