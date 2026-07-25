@@ -435,7 +435,7 @@ bool GW2TacO::MessageProc(const gui::Message& message) {
 
         ctx->AddSeparator();
 
-        if (mumbleLink.is_pvp) {
+        if (mumble_link.GetIsPvp()) {
           ctx->AddItem(DICT("rangecirclesnotavailable"), 0);
         } else {
           ctx->AddItem(
@@ -1637,18 +1637,19 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
           "cW:{:d} cH:{:d} cR:{:f} "
           "pX::{:f} pY:{:f} "
           "mcX:{:f} mcY:{:f} mS:{:f}",
-          mumbleLink.map_id, mumbleLink.world_id, mumbleLink.map_instance,
-          mumbleLink.char_position.x, mumbleLink.char_position.y,
-          mumbleLink.char_position.z, mumbleLink.cam_dir.x,
-          mumbleLink.cam_dir.y, mumbleLink.cam_dir.z, mumbleLink.GetFrameRate(),
-          App->GetFrameRate(), static_cast<int>(mumbleLink.is_map_open),
-          static_cast<int>(mumbleLink.is_minimap_top_right),
-          static_cast<int>(mumbleLink.is_minimap_rotating),
-          (mumbleLink.mini_map.compass_width),
-          (mumbleLink.mini_map.compass_height),
-          mumbleLink.mini_map.compass_rotation, mumbleLink.mini_map.player_x,
-          mumbleLink.mini_map.player_y, mumbleLink.mini_map.map_center_x,
-          mumbleLink.mini_map.map_center_y, mumbleLink.mini_map.map_scale);
+          mumble_link.GetMapID(), mumble_link.GetWorldID(),
+          mumble_link.GetMapInstance(), mumble_link.GetCharPosition().x,
+          mumble_link.GetCharPosition().y, mumble_link.GetCharPosition().z,
+          mumble_link.GetCamDir().x, mumble_link.GetCamDir().y,
+          mumble_link.GetCamDir().z, mumble_link.GetFrameRate(),
+          App->GetFrameRate(), static_cast<int>(mumble_link.GetIsMapOpen()),
+          static_cast<int>(mumble_link.GetIsMinimapTopRight()),
+          static_cast<int>(mumble_link.GetIsMinimapRotating()),
+          (mumble_link.mini_map.compass_width),
+          (mumble_link.mini_map.compass_height),
+          mumble_link.mini_map.compass_rotation, mumble_link.mini_map.player_x,
+          mumble_link.mini_map.player_y, mumble_link.mini_map.map_center_x,
+          mumble_link.mini_map.map_center_y, mumble_link.mini_map.map_scale);
 
       if (GetConfigValue("CircleCalc_enabled")) {
         Vector3 minvals;
@@ -1658,7 +1659,7 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
         for (auto& poi : mPOIs) {
           auto& p = poi.second;
 
-          if (p.map_id == mumbleLink.map_id && !p.category) {
+          if (p.map_id == mumble_link.GetMapID() && !p.category) {
             if (!initialized) {
               minvals = maxvals = p.position;
               initialized = true;
@@ -1680,7 +1681,7 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
         for (auto& poi : mPOIs) {
           auto& p = poi.second;
 
-          if (p.map_id == mumbleLink.map_id && !p.category) {
+          if (p.map_id == mumble_link.GetMapID() && !p.category) {
             Vector3 d = p.position - center;
 
             maxdistance3d = std::max(d.Length(), maxdistance3d);
@@ -1691,7 +1692,7 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
 
         float playerdist =
             /*WorldToGameCoords*/ (
-                (center - mumbleLink.char_position).Length());
+                (center - mumble_link.GetCharPosition()).Length());
         maxdistance2d = /*WorldToGameCoords*/ (maxdistance2d);
         maxdistance3d = /*WorldToGameCoords*/ (maxdistance3d);
 
@@ -1701,7 +1702,7 @@ void GW2TacO::OnDraw(gui::DrawAPI* API) {
             "maxdist2d: {:.2f} "
             "maxdist3d: {:.2f} "
             "playerdist: {:.2f}",
-            mumbleLink.map_id, center.x, center.y, center.z, maxdistance2d,
+            mumble_link.GetMapID(), center.x, center.y, center.z, maxdistance2d,
             maxdistance3d, playerdist);
       }
     }

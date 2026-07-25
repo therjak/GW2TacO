@@ -32,19 +32,22 @@ using math::Vector4;
 void ChangeUIScale(int size);
 
 float GetUIScale() {
-  float scale = 1.0;
-  if (mumbleLink.ui_size == 0) scale = 0.9f;
-  if (mumbleLink.ui_size == 2) scale = 1.111f;
-  if (mumbleLink.ui_size == 3) scale = 1.224f;
-
-  return scale;
+  switch (mumble_link.GetUISize()) {
+    case 0:
+      return 0.9f;
+    case 2:
+      return 1.111f;
+    case 3:
+      return 1.224f;
+  }
+  return 1.0;
 }
 
 float GetWindowTooSmallScale();
 
 Rect GetMinimapRectangle() {
-  int w = mumbleLink.mini_map.compass_width;
-  int h = mumbleLink.mini_map.compass_height;
+  int w = mumble_link.mini_map.compass_width;
+  int h = mumble_link.mini_map.compass_height;
 
   Rect pos;
   Rect size = App->GetRoot()->GetClientRect();
@@ -53,14 +56,22 @@ Rect GetMinimapRectangle() {
   pos.x1 = static_cast<int>(size.Width() - w * scale);
   pos.x2 = size.Width();
 
-  if (mumbleLink.is_minimap_top_right) {
+  if (mumble_link.GetIsMinimapTopRight()) {
     pos.y1 = 1;
     pos.y2 = static_cast<int>(h * scale + 1);
   } else {
     int delta = 37;
-    if (mumbleLink.ui_size == 0) delta = 33;
-    if (mumbleLink.ui_size == 2) delta = 41;
-    if (mumbleLink.ui_size == 3) delta = 45;
+    switch (mumble_link.GetUISize()) {
+      case 0:
+        delta = 33;
+        break;
+      case 2:
+        delta = 41;
+        break;
+      case 3:
+        delta = 45;
+        break;
+    }
 
     pos.y1 = static_cast<int>(size.Height() - h * scale - delta * scale);
     pos.y2 = static_cast<int>(size.Height() - delta * scale);
@@ -69,7 +80,7 @@ Rect GetMinimapRectangle() {
   return pos;
 }
 
-bool CMumbleLink::Update() {
+bool MumbleLink::Update() {
   bool just_connected = false;
 
   if (!lm_) {
@@ -105,35 +116,35 @@ bool CMumbleLink::Update() {
 
     global_timer.Update();
     int32_t frametime = GetTime();
-    frame_times->Add(frametime - last_frame_time);
-    last_frame_time = frametime;
-    frameTriggered = true;
+    frame_times_->Add(frametime - last_frame_time_);
+    last_frame_time_ = frametime;
+    frame_triggered = true;
   }
 
   float inter = 1.0;  // +( measurement - last_tick_time ) / last_tick_length;
 
   interpolation_ = inter;
 
-  char_position = math::Lerp(Vector3(prev_data_.f_avatar_position),
-                             Vector3(last_data_.f_avatar_position), inter);
-  char_eye = math::Lerp(Vector3(prev_data_.f_avatar_top),
-                        Vector3(last_data_.f_avatar_top), 1);
-  cam_position = math::Lerp(Vector3(prev_data_.f_camera_position),
-                            Vector3(last_data_.f_camera_position), 1);
-  cam_up = math::Lerp(Vector3(prev_data_.f_camera_top),
-                      Vector3(last_data_.f_camera_top), 1);
-  cam_dir = math::Lerp(Vector3(prev_data_.f_camera_front),
-                       Vector3(last_data_.f_camera_front), inter);
+  char_position_ = math::Lerp(Vector3(prev_data_.f_avatar_position),
+                              Vector3(last_data_.f_avatar_position), inter);
+  char_eye_ = math::Lerp(Vector3(prev_data_.f_avatar_top),
+                         Vector3(last_data_.f_avatar_top), 1);
+  cam_position_ = math::Lerp(Vector3(prev_data_.f_camera_position),
+                             Vector3(last_data_.f_camera_position), 1);
+  cam_up_ = math::Lerp(Vector3(prev_data_.f_camera_top),
+                       Vector3(last_data_.f_camera_top), 1);
+  cam_dir_ = math::Lerp(Vector3(prev_data_.f_camera_front),
+                        Vector3(last_data_.f_camera_front), inter);
 
-  char_pos_changed = Vector3(prev_data_.f_avatar_position) !=
-                     Vector3(last_data_.f_avatar_position);
-  char_eye_changed =
+  char_pos_changed_ = Vector3(prev_data_.f_avatar_position) !=
+                      Vector3(last_data_.f_avatar_position);
+  char_eye_changed_ =
       Vector3(prev_data_.f_avatar_top) != Vector3(last_data_.f_avatar_top);
-  cam_pos_changed = Vector3(prev_data_.f_camera_position) !=
-                    Vector3(last_data_.f_camera_position);
-  cam_dir_changed =
+  cam_pos_changed_ = Vector3(prev_data_.f_camera_position) !=
+                     Vector3(last_data_.f_camera_position);
+  cam_dir_changed_ =
       Vector3(prev_data_.f_camera_front) != Vector3(last_data_.f_camera_front);
-  cam_up_changed =
+  cam_up_changed_ =
       Vector3(prev_data_.f_camera_top) != Vector3(last_data_.f_camera_top);
 
   if ((Vector3(last_data_.f_avatar_position) -
@@ -142,77 +153,77 @@ bool CMumbleLink::Update() {
     FindClosestRouteMarkers(true);
   }
 
-  int32_t oldmap_id = map_id;
-  map_id = -1;
+  int32_t oldmap_id = map_id_;
+  map_id_ = -1;
 
   std::wstring ident(lm_->identity, 255);
   auto id = ident.find(L"\"map_id\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"map_id\":%d", &map_id);
-    if (oldmap_id != map_id) FindClosestRouteMarkers(true);
+    std::swscanf(ident.substr(id).c_str(), L"\"map_id\":%d", &map_id_);
+    if (oldmap_id != map_id_) FindClosestRouteMarkers(true);
   } else {
     id = ident.find(L"\"map_id\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"map_id\": %d", &map_id);
-      if (oldmap_id != map_id) FindClosestRouteMarkers(true);
+      std::swscanf(ident.substr(id).c_str(), L"\"map_id\": %d", &map_id_);
+      if (oldmap_id != map_id_) FindClosestRouteMarkers(true);
     }
   }
 
-  GlobalDoTrailLogging(map_id, Vector3(last_data_.f_avatar_position));
+  GlobalDoTrailLogging(map_id_, Vector3(last_data_.f_avatar_position));
 
-  int32_t old_ui_size = ui_size;
+  int32_t old_ui_size = ui_size_;
 
   id = ident.find(L"\"uisz\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"uisz\":%d", &ui_size);
-    if (old_ui_size != ui_size) {
-      ChangeUIScale(ui_size);
+    std::swscanf(ident.substr(id).c_str(), L"\"uisz\":%d", &ui_size_);
+    if (old_ui_size != ui_size_) {
+      ChangeUIScale(ui_size_);
     }
   } else {
     id = ident.find(L"\"uisz\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"uisz\": %d", &ui_size);
-      if (old_ui_size != ui_size) {
-        ChangeUIScale(ui_size);
+      std::swscanf(ident.substr(id).c_str(), L"\"uisz\": %d", &ui_size_);
+      if (old_ui_size != ui_size_) {
+        ChangeUIScale(ui_size_);
       }
     }
   }
 
   if (just_connected) {
-    ChangeUIScale(ui_size);
+    ChangeUIScale(ui_size_);
   }
 
   id = ident.find(L"\"world_id\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"world_id\":%d", &world_id);
+    std::swscanf(ident.substr(id).c_str(), L"\"world_id\":%d", &world_id_);
   } else {
     id = ident.find(L"\"world_id\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"world_id\": %d", &world_id);
+      std::swscanf(ident.substr(id).c_str(), L"\"world_id\": %d", &world_id_);
     }
   }
 
   auto* ctx = reinterpret_cast<MumbleContext*>(last_data_.context);
 
-  map_type = ctx->map_type;
-  map_instance = ctx->shard_id;
+  map_type_ = ctx->map_type;
+  map_instance_ = ctx->shard_id;
 
-  if (is_map_open != (ctx->ui_state & 0x01)) {
-    last_map_change_time = global_timer.GetTime();
+  if (is_map_open_ != (ctx->ui_state & 0x01)) {
+    last_map_change_time_ = global_timer.GetTime();
   }
 
-  is_map_open = (ctx->ui_state & 0x01);
-  is_minimap_top_right = (ctx->ui_state & (0x01 << 1)) != 0;
-  is_minimap_rotating = (ctx->ui_state & (0x01 << 2)) != 0;
+  is_map_open_ = (ctx->ui_state & 0x01);
+  is_minimap_top_right_ = (ctx->ui_state & (0x01 << 1)) != 0;
+  is_minimap_rotating_ = (ctx->ui_state & (0x01 << 2)) != 0;
 
-  game_has_focus = (ctx->ui_state & (0x01 << 3)) != 0;
-  is_pvp = (ctx->ui_state & (0x01 << 4)) != 0;
-  textbox_has_focus = (ctx->ui_state & (0x01 << 5)) != 0;
-  is_in_combat = (ctx->ui_state & (0x01 << 6)) != 0;
+  game_has_focus_ = (ctx->ui_state & (0x01 << 3)) != 0;
+  is_pvp_ = (ctx->ui_state & (0x01 << 4)) != 0;
+  textbox_has_focus_ = (ctx->ui_state & (0x01 << 5)) != 0;
+  is_in_combat_ = (ctx->ui_state & (0x01 << 6)) != 0;
 
   float scale = GetUIScale();
 
-  if (!is_map_open) {
+  if (!is_map_open_) {
     mini_map.compass_width = static_cast<int>(ctx->compass_width * scale);
     mini_map.compass_height = static_cast<int>(ctx->compass_height * scale);
     mini_map.compass_rotation = ctx->compass_rotation;
@@ -239,10 +250,10 @@ bool CMumbleLink::Update() {
     int end = ident.substr(id + 8).find(L'\"');
     if (end != ident.npos) {
       char_name = wstring2string(ident.substr(id + 8, end));
-      char_id_hash = CalculateHash(char_name);
+      char_id_hash_ = CalculateHash(char_name);
     } else {
       char_name = "";
-      char_id_hash = 0;
+      char_id_hash_ = 0;
     }
   } else {
     id = ident.find(L"\"name\": ");
@@ -250,61 +261,61 @@ bool CMumbleLink::Update() {
       int end = ident.substr(id + 9).find(L'\"');
       if (end != ident.npos) {
         char_name = wstring2string(ident.substr(id + 9, end));
-        char_id_hash = CalculateHash(char_name);
+        char_id_hash_ = CalculateHash(char_name);
       } else {
         char_name = "";
-        char_id_hash = 0;
+        char_id_hash_ = 0;
       }
     } else {
       char_name = "";
-      char_id_hash = 0;
+      char_id_hash_ = 0;
     }
   }
 
-  fov = 0;
+  fov_ = 0;
 
   id = ident.find(L"\"fov\":");
   if (id != ident.npos) {
-    std::swscanf(ident.substr(id).c_str(), L"\"fov\":%f", &fov);
+    std::swscanf(ident.substr(id).c_str(), L"\"fov\":%f", &fov_);
   } else {
     id = ident.find(L"\"fov\": ");
     if (id != ident.npos) {
-      std::swscanf(ident.substr(id).c_str(), L"\"fov\": %f", &fov);
+      std::swscanf(ident.substr(id).c_str(), L"\"fov\": %f", &fov_);
     }
   }
 
   Matrix4x4 cam;
-  cam.SetLookAtLH(cam_position, cam_position + cam_dir, Vector3(0, 1, 0));
+  cam.SetLookAtLH(cam_position_, cam_position_ + cam_dir_, Vector3(0, 1, 0));
 
   Matrix4x4 cami = cam.Inverted();
 
   for (int x = 0; x < kAvgCamCounter - 1; x++) {
     cam_char_dist_[x] = cam_char_dist_[x + 1];
   }
-  cam_char_dist_[kAvgCamCounter - 1] = char_position * cam;
+  cam_char_dist_[kAvgCamCounter - 1] = char_position_ * cam;
 
   Vector4 avg_cam_char_dist(0, 0, 0, 0);
 
   for (const auto& x : cam_char_dist_) avg_cam_char_dist += x;
 
   avg_cam_char_dist /= static_cast<float>(kAvgCamCounter);
-  averaged_char_position = avg_cam_char_dist * cami;
-  averaged_char_position /= averaged_char_position.w;
+  averaged_char_position_ = avg_cam_char_dist * cami;
+  averaged_char_position_ /= averaged_char_position_.w;
 
   if (!GetConfigValue("SmoothCharacterPos")) {
-    averaged_char_position =
-        Vector4(char_position.x, char_position.y, char_position.z, 1.0f);
+    averaged_char_position_ =
+        Vector4(char_position_.x, char_position_.y, char_position_.z, 1.0f);
   }
 
   return true;
 }
 
-float CMumbleLink::GetFrameRate() {
+float MumbleLink::GetFrameRate() {
   int32_t frame_time_acc = 0;
   int32_t frame_count = 0;
   for (int32_t x = 0; x < 60; x++) {
-    if (frame_times->NumItems() < x) break;
-    frame_time_acc += (*frame_times)[frame_times->NumItems() - 1 - x];
+    if (frame_times_->NumItems() < x) break;
+    frame_time_acc += (*frame_times_)[frame_times_->NumItems() - 1 - x];
     frame_count++;
   }
 
@@ -313,14 +324,14 @@ float CMumbleLink::GetFrameRate() {
   return 1000.0f / (frame_time_acc / static_cast<float>(frame_count));
 }
 
-CMumbleLink::CMumbleLink(std::string_view mumble_path)
-    : frame_times(std::make_unique<RingBuffer<int32_t, 60>>()),
-      last_frame_time(GetTime()),
+MumbleLink::MumbleLink(std::string_view mumble_path)
+    : frame_times_(std::make_unique<RingBuffer<int32_t, 60>>()),
+      last_frame_time_(GetTime()),
       mumble_path(mumble_path) {}
 
-CMumbleLink::~CMumbleLink() = default;
+MumbleLink::~MumbleLink() = default;
 
-bool CMumbleLink::IsValid() {
+bool MumbleLink::IsValid() {
   return lm_ != nullptr && last_gw2_process_id != 0;
 }
 
@@ -329,8 +340,9 @@ Matrix4x4 CompassData::BuildTransformationMatrix(const Rect& mini_rect,
   Matrix4x4 mini_map_trafo(1 / 0.0254f, 0, 0, 0, 0, 0, 0, 0, 0, 1 / 0.0254f, 0,
                            0, 0, 0, 0, 1);
 
-  Vector2 map_offset = Vector2(WorldToGameCoords(mumbleLink.char_position.x),
-                               WorldToGameCoords(mumbleLink.char_position.z));
+  Vector2 map_offset =
+      Vector2(WorldToGameCoords(mumble_link.GetCharPosition().x),
+              WorldToGameCoords(mumble_link.GetCharPosition().z));
 
   float rotation = ignore_rotation ? 0 : compass_rotation;
 

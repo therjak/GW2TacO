@@ -7,8 +7,11 @@ module;
 
 #include "src/base/color.h"
 #include "src/base/logger.h"
-#include "src/core2/core2.h"
+#include "src/core2/core2_config.h"
+#include "src/core2/dx11_device.h"
 #include "src/core2/enums.h"
+#include "src/core2/resource.h"
+#include "src/core2/texture.h"
 
 module whiteboard;
 

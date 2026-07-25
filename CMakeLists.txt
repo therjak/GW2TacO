@@ -113,7 +113,6 @@ set(PROJECT_NAME GW2TacO)
 ################################################################################
 set(Header_Files
     "src/core2/constant_buffer.h"
-    "src/core2/core2.h"
     "src/core2/core2_config.h"
     "src/core2/device.h"
     "src/core2/dss_texture_loader.h"
@@ -136,7 +135,6 @@ set(Header_Files
     "src/core2/vertex_format.h"
     "src/core2/window_handler.h"
     "src/gw2_tactical.h"
-    "src/resource.h"
     "src/util/png_decompressor.h"
 )
 source_group("Header Files" FILES ${Header_Files})
@@ -405,6 +403,11 @@ add_library(taco_core2 STATIC)
 target_sources(taco_core2
     PRIVATE
         ${Core2_Source_Files}
+            PUBLIC
+        FILE_SET modules TYPE CXX_MODULES
+        FILES
+            src/core2/mouse_cursor.ixx
+            src/core2/renderer.ixx
 )
 target_include_directories(taco_core2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(taco_core2 PRIVATE taco_base taco_util)

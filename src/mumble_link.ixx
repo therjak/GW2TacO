@@ -65,63 +65,92 @@ export struct LinkedMem {
 
 export constexpr int kAvgCamCounter = 6;
 
-export class CMumbleLink {
+export class MumbleLink {
  public:
-  CMumbleLink(std::string_view mumble_path);
-  virtual ~CMumbleLink();
+  MumbleLink(std::string_view mumble_path);
+  virtual ~MumbleLink();
 
   bool Update();
   bool IsValid();
   float GetFrameRate();
 
-  math::Vector3 char_position;
-  math::Vector3 char_eye;
-  math::Vector3 cam_position;
-  math::Vector3 cam_dir;
-  math::Vector3 cam_up;
-  float fov = 0;
-  int32_t map_id = 0;
-  int32_t world_id = 0;
-  int32_t map_type = 0;
-  int32_t map_instance = 0;
-  int32_t char_id_hash = 0;
+  const math::Vector3& GetCharPosition() const { return char_position_; }
+  const math::Vector3& GetCharEye() const { return char_eye_; }
+  const math::Vector3& GetCamPosition() const { return cam_position_; }
+  const math::Vector3& GetCamDir() const { return cam_dir_; }
+  const math::Vector3& GetCamUp() const { return cam_up_; }
+  const math::Vector4& GetAveragedCharPosition() const {
+    return averaged_char_position_;
+  }
 
-  int32_t last_map_change_time = 0;
-  bool is_map_open = false;  // bit 1: IsMapOpen, bit2: IsCompassTopRight, bit3:
-                             // DoesCompassHaveRotationEnabled
-  bool is_minimap_top_right = false;
-  bool is_minimap_rotating = false;
-  bool game_has_focus = false;
-  bool is_pvp = false;
-  bool textbox_has_focus = false;
-  bool is_in_combat = false;
+  int32_t GetUISize() const { return ui_size_; }
+  float GetFov() const { return fov_; }
+  int32_t GetMapID() const { return map_id_; }
+  int32_t GetWorldID() const { return world_id_; }
+  int32_t GetMapType() const { return map_type_; }
+  int32_t GetMapInstance() const { return map_instance_; }
+  int32_t GetCharIDHash() const { return char_id_hash_; }
+
+  int32_t GetLastMapChangeTime() const { return last_map_change_time_; }
+  bool GetIsMapOpen() const { return is_map_open_; }
+  bool GetIsMinimapTopRight() const { return is_minimap_top_right_; }
+  bool GetIsMinimapRotating() const { return is_minimap_rotating_; }
+  bool GetGameHasFocus() const { return game_has_focus_; }
+  bool GetIsPvp() const { return is_pvp_; }
+  bool GetTextboxHasFocus() const { return textbox_has_focus_; }
+  bool GetIsInCombat() const { return is_in_combat_; }
+
+  int32_t GetLastFrameTime() const { return last_frame_time_; }
 
   CompassData mini_map;
   CompassData big_map;
 
-  int32_t ui_size = 1;
-
   std::string char_name;
-
-  math::Vector4 averaged_char_position;
-
-  std::unique_ptr<RingBuffer<int32_t, 60>> frame_times;
-
-  int32_t last_frame_time = 0;
-
-  uint64_t last_tick_time = 0;
-  uint64_t last_tick_length = 0;
-
-  bool char_pos_changed = false;
-  bool char_eye_changed = false;
-  bool cam_pos_changed = false;
-  bool cam_dir_changed = false;
-  bool cam_up_changed = false;
 
   std::string mumble_path;
   uint32_t last_gw2_process_id = 0;
 
  private:
+  std::unique_ptr<RingBuffer<int32_t, 60>> frame_times_;
+  int32_t last_frame_time_ = 0;
+  uint64_t last_tick_time_ = 0;
+  uint64_t last_tick_length_ = 0;
+
+  bool char_pos_changed_ = false;
+  bool char_eye_changed_ = false;
+  bool cam_pos_changed_ = false;
+  bool cam_dir_changed_ = false;
+  bool cam_up_changed_ = false;
+
+  int32_t ui_size_ = 1;
+
+  math::Vector3 char_position_;
+  math::Vector3 char_eye_;
+  math::Vector3 cam_position_;
+  math::Vector3 cam_dir_;
+  math::Vector3 cam_up_;
+
+  math::Vector4 averaged_char_position_;
+
+  float fov_ = 0;
+  int32_t map_id_ = 0;
+  int32_t world_id_ = 0;
+  int32_t map_type_ = 0;
+  int32_t map_instance_ = 0;
+  int32_t char_id_hash_ = 0;
+
+  int32_t last_map_change_time_ = 0;
+  // bit1: IsMapOpen,
+  // bit2: IsCompassTopRight,
+  // bit3: DoesCompassHaveRotationEnabled
+  bool is_map_open_ = false;
+  bool is_minimap_top_right_ = false;
+  bool is_minimap_rotating_ = false;
+  bool game_has_focus_ = false;
+  bool is_pvp_ = false;
+  bool textbox_has_focus_ = false;
+  bool is_in_combat_ = false;
+
   LinkedMem last_data_;
   LinkedMem prev_data_;
 
@@ -132,6 +161,6 @@ export class CMumbleLink {
   math::Vector4 cam_char_dist_[kAvgCamCounter];
 };
 
-export CMumbleLink mumbleLink("MumbleLink");
+export MumbleLink mumble_link("MumbleLink");
 export math::Rect GetMinimapRectangle();
-export bool frameTriggered = false;
+export bool frame_triggered = false;

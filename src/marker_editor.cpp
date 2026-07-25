@@ -43,18 +43,18 @@ void GW2MarkerEditor::OnDraw(gui::DrawAPI* api) {
 
   if (!GetConfigValue("TacticalLayerVisible")) return;
 
-  if (!mumbleLink.IsValid()) return;
+  if (!mumble_link.IsValid()) return;
 
-  if (mumbleLink.map_id == -1) return;
+  if (mumble_link.GetMapID() == -1) return;
 
   const auto& m_pois = GetMapPOIs();
   for (auto& poi : m_pois) {
     const auto& cpoi = poi.second;
 
-    if (cpoi.map_id != mumbleLink.map_id) continue;
+    if (cpoi.map_id != mumble_link.GetMapID()) continue;
     if (cpoi.External) continue;
 
-    Vector3 v = cpoi.position - Vector3(mumbleLink.char_position);
+    Vector3 v = cpoi.position - Vector3(mumble_link.GetCharPosition());
     if (v.Length() < cpoi.type_data_.trigger_range_) {
       if (auto_hide) {
         if (hidden_) {

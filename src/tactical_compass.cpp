@@ -26,18 +26,17 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::DrawAPI* api) {
   Rect draw_rect = GetClientRect();
 
   Matrix4x4 cam;
-  cam.SetLookAtLH(mumbleLink.cam_position,
-                  mumbleLink.cam_position + mumbleLink.cam_dir,
+  cam.SetLookAtLH(mumble_link.GetCamPosition(),
+                  mumble_link.GetCamPosition() + mumble_link.GetCamDir(),
                   Vector3(0, 1, 0));
   Matrix4x4 persp;
   persp.SetPerspectiveFovLH(
-      mumbleLink.fov,
+      mumble_link.GetFov(),
       draw_rect.Width() / static_cast<float>(draw_rect.Height()), 0.01f,
       1000.0f);
 
-  Vector4 char_pos = Vector4(mumbleLink.averaged_char_position.x,
-                             mumbleLink.averaged_char_position.y,
-                             mumbleLink.averaged_char_position.z, 1.0f);
+  const auto& acp = mumble_link.GetAveragedCharPosition();
+  Vector4 char_pos = Vector4(acp.x, acp.y, acp.z, 1.0f);
 
   float r_world = GameToWorldCoords(40);
 
@@ -49,14 +48,13 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::DrawAPI* api) {
   Vector4 screen_space_eye = (cam_space_eye * cam) * persp;
   screen_space_eye /= screen_space_eye.w;
 
-  auto pos =
-      (Vector3(mumbleLink.averaged_char_position) - mumbleLink.cam_position);
+  auto pos = (Vector3(acp) - mumble_link.GetCamPosition());
   pos.y = 0;
   bool zoomed_in = pos.Length() < 0.13;
 
   Vector4 cam_pos =
-      Vector4(mumbleLink.cam_position.x, mumbleLink.cam_position.y,
-              mumbleLink.cam_position.z, 1.0f);
+      Vector4(mumble_link.GetCamPosition().x, mumble_link.GetCamPosition().y,
+              mumble_link.GetCamPosition().z, 1.0f);
   Vector2 cam_dir =
       Vector2(cam_space_char.x - cam_pos.x, cam_space_char.z - cam_pos.z)
           .Normalized();
@@ -109,7 +107,7 @@ void GW2TacticalCompass::DrawTacticalCompass(gui::DrawAPI* api) {
 }
 
 void GW2TacticalCompass::OnDraw(gui::DrawAPI* api) {
-  if (!mumbleLink.IsValid()) return;
+  if (!mumble_link.IsValid()) return;
 
   if (GetConfigValue("TacticalCompassVisible")) DrawTacticalCompass(api);
 }
