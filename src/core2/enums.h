@@ -11,6 +11,7 @@ enum class DeviceApi : uint8_t {
   kDx11,
   kOpenGl,
   kCore1Wrapper,
+  kVulkan,
 };
 
 enum class Format : uint8_t {
