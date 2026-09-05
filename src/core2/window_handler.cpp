@@ -11,6 +11,7 @@
 #include "src/base/logger.h"
 #include "src/base/timer.h"
 #include "src/core2/dx11_device.h"
+#include "src/core2/vk_device.h"
 
 import math;
 
@@ -38,7 +39,11 @@ WindowParameters::WindowParameters(HINSTANCE h_instance, bool full_screen,
       resize_disabled_(noresize) {}
 
 std::unique_ptr<Device> WindowParameters::CreateDevice() const {
+#ifdef USE_VULKAN_DEVICE
+  return std::make_unique<VulkanDevice>();
+#else
   return std::make_unique<DX11Device>();
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////
