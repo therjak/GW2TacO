@@ -69,6 +69,8 @@ bool Device::ApplyRequestedRenderState() {
       current_vertex_buffer_offset_ != requested_vertex_buffer_offset_) {
     if (!requested_vertex_buffer_) {
       if (!SetNoVertexBuffer()) return false;
+      current_vertex_buffer_ = nullptr;
+      current_vertex_buffer_offset_ = 0;
       requested_vertex_buffer_ = nullptr;
       requested_vertex_buffer_offset_ = 0;
     } else {
@@ -76,6 +78,8 @@ bool Device::ApplyRequestedRenderState() {
                              requested_vertex_buffer_offset_)) {
         return false;
       }
+      current_vertex_buffer_ = requested_vertex_buffer_;
+      current_vertex_buffer_offset_ = requested_vertex_buffer_offset_;
     }
   }
 

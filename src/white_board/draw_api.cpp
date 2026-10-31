@@ -448,6 +448,21 @@ bool DrawAPI::Initialize(Application* Application, renderer::Device* Dev,
       "float4 psmain(VSOUT x) : SV_TARGET0 { return "
       "x.Color*GuiTexture.Sample(Sampler,x.UV); }";
 
+  LPCSTR vk_shader =
+      "[[vk::combinedImageSampler]] [[vk::binding(0, 0)]] Texture2D GuiTexture;"
+      "[[vk::combinedImageSampler]] [[vk::binding(0, 0)]] SamplerState Sampler;"
+      "struct ResData { float4 resolution; };"
+      "[[vk::push_constant]] ResData resdata;"
+      "struct VSIN { float4 Position : POSITIONT; float2 UV : TEXCOORD0; "
+      "float4 Color : COLOR0; };"
+      "struct VSOUT { float4 Position : SV_POSITION; float2 UV : TEXCOORD0; "
+      "float4 Color : COLOR0; };"
+      "VSOUT vsmain(VSIN x) { VSOUT k; "
+      "k.Position=float4(x.Position.x/resdata.resolution.x*2-1,x.Position.y/"
+      "resdata.resolution.y*2-1,0,1); k.UV=x.UV; k.Color=x.Color; return k; }"
+      "float4 psmain(VSOUT x) : SV_TARGET0 { return "
+      "x.Color*GuiTexture.Sample(Sampler,x.UV); }";
+
   unsigned char raw_ui_vxshader[] = {
       68,  88,  66,  67,  24,  203, 140, 68,  113, 109, 242, 251, 155, 3,   14,
       72,  212, 85,  154, 162, 1,   0,   0,   0,   176, 3,   0,   0,   5,   0,
@@ -566,24 +581,36 @@ bool DrawAPI::Initialize(Application* Application, renderer::Device* Dev,
 
   constexpr int raw_ui_pxshader_size = 672;
 
-  vx_shader_ = device_->CreateVertexShaderFromBlob(raw_ui_vxshader,
-                                                   raw_ui_vxshader_size);
+  if (device_->GetAPIType() == renderer::DeviceApi::kVulkan) {
+    vx_shader_ = device_->CreateVertexShader(
+        vk_shader, static_cast<int32_t>(strlen(vk_shader)), "vsmain", "vs_6_0");
+  } else {
+    vx_shader_ = device_->CreateVertexShaderFromBlob(raw_ui_vxshader,
+                                                     raw_ui_vxshader_size);
+  }
   if (!vx_shader_) {
     Log_Warn(
         "[gui] Couldn't compile GUI VertexShader - this won't affect DX9 "
         "functionality");
-    if (device_->GetAPIType() == renderer::DeviceApi::kDx11) {
+    if (device_->GetAPIType() == renderer::DeviceApi::kDx11 ||
+        device_->GetAPIType() == renderer::DeviceApi::kVulkan) {
       return false;
     }
   }
 
-  px_shader_ =
-      device_->CreatePixelShaderFromBlob(raw_ui_pxshader, raw_ui_pxshader_size);
+  if (device_->GetAPIType() == renderer::DeviceApi::kVulkan) {
+    px_shader_ = device_->CreatePixelShader(
+        vk_shader, static_cast<int32_t>(strlen(vk_shader)), "psmain", "ps_6_0");
+  } else {
+    px_shader_ =
+        device_->CreatePixelShaderFromBlob(raw_ui_pxshader, raw_ui_pxshader_size);
+  }
   if (!px_shader_) {
     Log_Warn(
         "[gui] Couldn't compile GUI PixelShader - this won't affect DX9 "
         "functionality");
-    if (device_->GetAPIType() == renderer::DeviceApi::kDx11) {
+    if (device_->GetAPIType() == renderer::DeviceApi::kDx11 ||
+        device_->GetAPIType() == renderer::DeviceApi::kVulkan) {
       return false;
     }
   }

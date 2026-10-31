@@ -29,6 +29,7 @@ class Shader : public Resource {
   }
 
   std::string& GetCode() { return code_; }
+  const std::string& GetEntryFunction() const { return entry_function_; }
 
   virtual bool CompileAndCreate(std::string* err) = 0;
   virtual bool CreateFromBlob(void* code, int32_t code_size) = 0;

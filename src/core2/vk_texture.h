@@ -28,6 +28,16 @@ class VkTexture2D : public Texture2D {
 
  private:
   bool SetToSampler(const Sampler sampler) override;
+
+  VkImage image_ = VK_NULL_HANDLE;
+  VmaAllocation image_allocation_ = VK_NULL_HANDLE;
+  VkImageView image_view_ = VK_NULL_HANDLE;
+
+  VkBuffer staging_buffer_ = VK_NULL_HANDLE;
+  VmaAllocation staging_allocation_ = VK_NULL_HANDLE;
+  
+  uint8_t* locked_data_ = nullptr;
+  int32_t locked_pitch_ = 0;
 };
 
 }  // namespace renderer

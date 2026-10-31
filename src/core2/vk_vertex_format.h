@@ -14,12 +14,26 @@ class VkVertexFormat : public VertexFormat {
 
   bool Create(const std::vector<VertexAttribute>& attributes,
               VertexShader* vertex_shader = nullptr) override;
-  int32_t GetSize() override;
+  int32_t GetSize() override { return total_size_; }
+
+  VkVertexInputBindingDescription GetBindingDescription() const { return binding_; }
+  std::vector<VkVertexInputAttributeDescription> GetAttributeDescriptions() const {
+    std::vector<VkVertexInputAttributeDescription> res;
+    for (const auto& a : attributes_) res.push_back(a.attr);
+    return res;
+  }
+  size_t GetHash() const;
 
  private:
   bool Apply() override;
 
-  int32_t size_ = 0;
+  struct VertexAttributeDesc {
+    VkVertexInputAttributeDescription attr;
+    uint32_t size;
+  };
+  std::vector<VertexAttributeDesc> attributes_;
+  VkVertexInputBindingDescription binding_{};
+  int32_t total_size_ = 0;
 };
 
 }  // namespace renderer
