@@ -718,6 +718,14 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   renderer::WindowParameters p(GetModuleHandle(nullptr), false, width, height,
                                "Guild Wars 2 Tactical Overlay",
                                LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON2)));
+  bool use_vulkan =
+      (cmdLine.find("-vulkan") != cmdLine.npos) ||
+      (HasConfigValue("UseVulkan") && GetConfigValue("UseVulkan"));
+  p.api_ =
+      use_vulkan ? renderer::DeviceApi::kVulkan : renderer::DeviceApi::kDx11;
+  Log_Nfo("[GW2TacO] Graphics API selected: {:s}",
+          use_vulkan ? "Vulkan" : "DirectX 11");
+
   p.override_window_style_ = WS_POPUP;
   p.override_window_style_ex_ =
       WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
@@ -736,6 +744,18 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         "Fail.", MB_ICONERROR);
     App.reset();
     return false;
+  }
+
+  MARGINS marg = {-1, -1, -1, -1};
+  DwmExtendFrameIntoClientArea(App->GetHandle(), &marg);
+  if (use_vulkan) {
+    HRGN region = CreateRectRgn(0, 0, -1, -1);
+    DWM_BLURBEHIND bb{};
+    bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+    bb.hRgnBlur = region;
+    bb.fEnable = TRUE;
+    DwmEnableBlurBehindWindow(App->GetHandle(), &bb);
+    DeleteObject(region);
   }
 
   if (!ChangeWindowMessageFilterEx(App->GetHandle(), WM_COPYDATA, MSGFLT_ALLOW,
@@ -775,7 +795,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   SetConfigValue("LogTrails", 0);
 
-  SetLayeredWindowAttributes(handle, 0, 255, LWA_ALPHA);
+  if (!use_vulkan) {
+    SetLayeredWindowAttributes(handle, 0, 255, LWA_ALPHA);
+  }
 
   ShowWindow(handle, nCmdShow);
 
@@ -928,6 +950,15 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
               App->HandleResize();
               MARGINS marg = {-1, -1, -1, -1};
               DwmExtendFrameIntoClientArea(handle, &marg);
+              if (use_vulkan) {
+                HRGN region = CreateRectRgn(0, 0, -1, -1);
+                DWM_BLURBEHIND bb{};
+                bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
+                bb.hRgnBlur = region;
+                bb.fEnable = TRUE;
+                DwmEnableBlurBehindWindow(handle, &bb);
+                DeleteObject(region);
+              }
             }
           }
 

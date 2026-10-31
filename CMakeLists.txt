@@ -20,7 +20,33 @@ FetchContent_Declare(
   URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
 )
 set(JSON_BuildTests OFF CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest json)
+FetchContent_Declare(
+  vulkan_headers
+  URL https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/tags/v1.3.296.tar.gz
+)
+FetchContent_Declare(
+  volk
+  GIT_REPOSITORY https://github.com/zeux/volk.git
+  GIT_TAG        master
+)
+set(VOLK_PULL_IN_VULKAN OFF CACHE BOOL "" FORCE)
+set(VULKAN_HEADERS_INSTALL OFF CACHE BOOL "" FORCE)
+FetchContent_Declare(
+  vulkanmemoryallocator
+  URL https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/refs/tags/v3.1.0.tar.gz
+)
+FetchContent_Declare(
+  dxc
+  URL https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2609/dxc_2026_09_29.zip
+)
+FetchContent_MakeAvailable(googletest json vulkan_headers volk vulkanmemoryallocator dxc)
+
+# Force volk to use the fetched headers
+target_include_directories(volk PRIVATE "${vulkan_headers_SOURCE_DIR}/include")
+target_include_directories(volk PUBLIC "${vulkan_headers_SOURCE_DIR}/include")
+if(WIN32)
+    target_compile_definitions(volk PUBLIC VK_USE_PLATFORM_WIN32_KHR)
+endif()
 
 ################################################################################
 # Set target arch type if empty. Visual studio solution generator provides it.
@@ -133,6 +159,7 @@ set(Header_Files
     "src/core2/texture.h"
     "src/core2/vertex_buffer.h"
     "src/core2/vertex_format.h"
+    "src/core2/vk_allocator.h"
     "src/core2/vk_constant_buffer.h"
     "src/core2/vk_device.h"
     "src/core2/vk_index_buffer.h"
@@ -178,6 +205,7 @@ set(Core2_Source_Files
     "src/core2/render_state.cpp"
     "src/core2/resource.cpp"
     "src/core2/shader.cpp"
+    "src/core2/vk_allocator.cpp"
     "src/core2/vk_constant_buffer.cpp"
     "src/core2/vk_device.cpp"
     "src/core2/vk_index_buffer.cpp"
@@ -426,7 +454,11 @@ target_sources(taco_core2
             src/core2/renderer.ixx
 )
 target_include_directories(taco_core2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(taco_core2 PRIVATE taco_base taco_util)
+target_link_libraries(taco_core2 PUBLIC volk Vulkan-Headers)
+target_link_libraries(taco_core2 PRIVATE taco_base taco_util dxcompiler)
+target_include_directories(taco_core2 PUBLIC "${vulkanmemoryallocator_SOURCE_DIR}/include")
+target_include_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/inc")
+target_link_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/lib/x64")
 use_props(taco_core2 "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 
 add_library(whiteboard STATIC)
@@ -654,7 +686,7 @@ install(
 # Tests
 ################################################################################
 
-add_executable(gw2_tactical_test src/web_test.cpp)
+add_executable(gw2_tactical_test src/web_test.cpp src/core2/vk_device_test.cpp)
 target_sources(gw2_tactical_test PRIVATE ${Source_Files})
 target_link_libraries(gw2_tactical_test PRIVATE gtest_main taco)
 use_props(gw2_tactical_test "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
@@ -665,6 +697,20 @@ target_compile_definitions(gw2_tactical_test PRIVATE
 
 include(GoogleTest)
 gtest_discover_tests(gw2_tactical_test)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${dxc_SOURCE_DIR}/bin/x64/dxcompiler.dll"
+    "${dxc_SOURCE_DIR}/bin/x64/dxil.dll"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+)
+
+add_custom_command(TARGET gw2_tactical_test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${dxc_SOURCE_DIR}/bin/x64/dxcompiler.dll"
+    "${dxc_SOURCE_DIR}/bin/x64/dxil.dll"
+    "$<TARGET_FILE_DIR:gw2_tactical_test>"
+)
 
 ################################################################################
 # CPACK

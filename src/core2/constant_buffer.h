@@ -15,6 +15,8 @@ class ConstantBuffer : public Resource {
   void AddData(const void* data, int32_t length);
   virtual void Upload();
   [[nodiscard]] virtual void* GetBufferPointer() const = 0;
+  [[nodiscard]] const void* GetData() const { return data_.get(); }
+  [[nodiscard]] int32_t GetDataLength() const { return data_length_; }
 
  protected:
   std::unique_ptr<uint8_t[]> data_;

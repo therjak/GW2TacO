@@ -42,6 +42,9 @@ std::unique_ptr<Device> WindowParameters::CreateDevice() const {
 #ifdef USE_VULKAN_DEVICE
   return std::make_unique<VulkanDevice>();
 #else
+  if (api_ == DeviceApi::kVulkan) {
+    return std::make_unique<VulkanDevice>();
+  }
   return std::make_unique<DX11Device>();
 #endif
 }
@@ -368,6 +371,8 @@ LRESULT WindowHandlerWin::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       }
       break;
     }
+    case WM_ERASEBKGND:
+      return 1;
     case WM_LBUTTONDOWN:
     case WM_RBUTTONDOWN:
     case WM_MBUTTONDOWN:

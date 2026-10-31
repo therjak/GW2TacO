@@ -7,6 +7,8 @@
 #include <string_view>
 #include <vector>
 
+#include "src/core2/enums.h"
+
 import math;
 import renderer;
 
@@ -35,6 +37,7 @@ class WindowParameters {
   HICON icon_ = nullptr;
   bool maximized_ = false;
   bool resize_disabled_ = false;
+  DeviceApi api_ = DeviceApi::kDx11;
 
   DWORD override_window_style_ = 0;
   DWORD override_window_style_ex_ = 0;
