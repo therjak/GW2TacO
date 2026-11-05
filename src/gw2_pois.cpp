@@ -727,13 +727,17 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
           use_vulkan ? "Vulkan" : "DirectX 11");
 
   p.override_window_style_ = WS_POPUP;
-  p.override_window_style_ex_ =
-      WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
-      WS_EX_TOOLWINDOW;  // | WS_EX_TOPMOST;// | WS_EX_TOOLWINDOW;
-  if (dComp) {
+  if (use_vulkan) {
+    p.override_window_style_ex_ =
+        WS_EX_TOPMOST | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW;
+  } else if (dComp) {
     p.override_window_style_ex_ = WS_EX_TOPMOST | WS_EX_TRANSPARENT |
                                   WS_EX_TOOLWINDOW | WS_EX_LAYERED |
                                   WS_EX_NOREDIRECTIONBITMAP;
+  } else {
+    p.override_window_style_ex_ =
+        WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
+        WS_EX_TOOLWINDOW;
   }
   if (!App->Initialize(p)) {
     MessageBox(
@@ -746,16 +750,21 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
     return false;
   }
 
-  MARGINS marg = {-1, -1, -1, -1};
-  DwmExtendFrameIntoClientArea(App->GetHandle(), &marg);
   if (use_vulkan) {
-    HRGN region = CreateRectRgn(0, 0, -1, -1);
+    HRGN region = CreateRectRgn(-1, -1, 0, 0);
     DWM_BLURBEHIND bb{};
     bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
     bb.hRgnBlur = region;
     bb.fEnable = TRUE;
-    DwmEnableBlurBehindWindow(App->GetHandle(), &bb);
+    HRESULT hr_bb = DwmEnableBlurBehindWindow(App->GetHandle(), &bb);
+    Log_Nfo("[GW2TacO] DwmEnableBlurBehindWindow hr: 0x{:x}",
+            static_cast<uint32_t>(hr_bb));
     DeleteObject(region);
+  } else {
+    MARGINS marg = {-1, -1, -1, -1};
+    HRESULT hr_dwm = DwmExtendFrameIntoClientArea(App->GetHandle(), &marg);
+    Log_Nfo("[GW2TacO] DwmExtendFrameIntoClientArea hr: 0x{:x}",
+            static_cast<uint32_t>(hr_dwm));
   }
 
   if (!ChangeWindowMessageFilterEx(App->GetHandle(), WM_COPYDATA, MSGFLT_ALLOW,
@@ -948,16 +957,17 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
             if (NeedsResize) {
               App->HandleResize();
-              MARGINS marg = {-1, -1, -1, -1};
-              DwmExtendFrameIntoClientArea(handle, &marg);
               if (use_vulkan) {
-                HRGN region = CreateRectRgn(0, 0, -1, -1);
+                HRGN region = CreateRectRgn(-1, -1, 0, 0);
                 DWM_BLURBEHIND bb{};
                 bb.dwFlags = DWM_BB_ENABLE | DWM_BB_BLURREGION;
                 bb.hRgnBlur = region;
                 bb.fEnable = TRUE;
                 DwmEnableBlurBehindWindow(handle, &bb);
                 DeleteObject(region);
+              } else {
+                MARGINS marg = {-1, -1, -1, -1};
+                DwmExtendFrameIntoClientArea(handle, &marg);
               }
             }
           }

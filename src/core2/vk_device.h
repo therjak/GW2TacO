@@ -191,8 +191,10 @@ class VulkanDevice : public Device {
   uint32_t current_image_index_ = 0;
   bool initialized_ = false;
 
-  Color clear_color_;
+  Color clear_color_ = Color(0, 0, 0, 0);
   float clear_depth_ = 1.0f;
+  bool scene_active_ = false;
+  math::Rect current_viewport_{};
   VkMemAllocator allocator_;
 
   VkDescriptorSetLayout descriptor_set_layout_ = VK_NULL_HANDLE;
@@ -215,6 +217,10 @@ class VulkanDevice : public Device {
     BlendFactor src_blend;
     BlendFactor dst_blend;
     BlendOp blend_op;
+    BlendFactor src_blend_alpha;
+    BlendFactor dst_blend_alpha;
+    BlendOp blend_op_alpha;
+    uint8_t write_mask;
     CullMode cull_mode;
     FillMode fill_mode;
     bool depth_enable;
@@ -227,7 +233,12 @@ class VulkanDevice : public Device {
              vertex_format_hash == other.vertex_format_hash &&
              blend_enable == other.blend_enable &&
              src_blend == other.src_blend && dst_blend == other.dst_blend &&
-             blend_op == other.blend_op && cull_mode == other.cull_mode &&
+             blend_op == other.blend_op &&
+             src_blend_alpha == other.src_blend_alpha &&
+             dst_blend_alpha == other.dst_blend_alpha &&
+             blend_op_alpha == other.blend_op_alpha &&
+             write_mask == other.write_mask &&
+             cull_mode == other.cull_mode &&
              fill_mode == other.fill_mode &&
              depth_enable == other.depth_enable &&
              depth_write == other.depth_write &&
@@ -246,6 +257,10 @@ class VulkanDevice : public Device {
       res = res * 31 + std::hash<int>()(static_cast<int>(k.src_blend));
       res = res * 31 + std::hash<int>()(static_cast<int>(k.dst_blend));
       res = res * 31 + std::hash<int>()(static_cast<int>(k.blend_op));
+      res = res * 31 + std::hash<int>()(static_cast<int>(k.src_blend_alpha));
+      res = res * 31 + std::hash<int>()(static_cast<int>(k.dst_blend_alpha));
+      res = res * 31 + std::hash<int>()(static_cast<int>(k.blend_op_alpha));
+      res = res * 31 + std::hash<uint8_t>()(k.write_mask);
       res = res * 31 + std::hash<int>()(static_cast<int>(k.cull_mode));
       res = res * 31 + std::hash<int>()(static_cast<int>(k.fill_mode));
       res = res * 31 + std::hash<bool>()(k.depth_enable);
