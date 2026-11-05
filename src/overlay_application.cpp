@@ -12,7 +12,9 @@ module taco.overlay_application;
 
 import whiteboard;
 
-OverlayApplication::OverlayApplication() = default;
+OverlayApplication::OverlayApplication() {
+  SetClearColor(Color(0, 0, 0, 0));
+}
 
 bool OverlayApplication::Initialize(
     const renderer::WindowParameters& window_params) {

@@ -252,6 +252,8 @@ bool Device::CreateDefaultRenderStates() {
   default_blend_state_->SetBlendEnable(0, true);
   default_blend_state_->SetSrcBlend(0, BlendFactor::kSrcAlpha);
   default_blend_state_->SetDestBlend(0, BlendFactor::kInvSrcAlpha);
+  default_blend_state_->SetSrcBlendAlpha(0, BlendFactor::kOne);
+  default_blend_state_->SetDestBlendAlpha(0, BlendFactor::kInvSrcAlpha);
   success |= default_blend_state_->Apply();
 
   default_depth_stencil_state_ = CreateDepthStencilState();
