@@ -1,6 +1,9 @@
 #include "src/core2/window_handler.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#include "src/core2/dx11_device.h"
+#endif
 
 #include <array>
 #include <cstdint>
@@ -10,7 +13,6 @@
 
 #include "src/base/logger.h"
 #include "src/base/timer.h"
-#include "src/core2/dx11_device.h"
 #include "src/core2/vk_device.h"
 
 import math;
@@ -39,7 +41,7 @@ WindowParameters::WindowParameters(HINSTANCE h_instance, bool full_screen,
       resize_disabled_(noresize) {}
 
 std::unique_ptr<Device> WindowParameters::CreateDevice() const {
-#ifdef USE_VULKAN_DEVICE
+#if defined(USE_VULKAN_DEVICE) || !defined(_WIN32)
   return std::make_unique<VulkanDevice>();
 #else
   if (api_ == DeviceApi::kVulkan) {
@@ -87,6 +89,7 @@ void WindowHandler::SetInactiveFrameLimiter(bool set) {
 //////////////////////////////////////////////////////////////////////////
 // windows windowhandler
 
+#ifdef _WIN32
 WindowHandlerWin::WindowHandlerWin() : WindowHandler() {
   window_placement_.length = sizeof(WINDOWPLACEMENT);
 }
@@ -422,5 +425,6 @@ void WindowHandlerWin::FinalizeMouseCursor() {
 void WindowHandlerWin::SetWindowTitle(std::string_view title) {
   SetWindowText(window_handle_, title.data());
 }
+#endif  // _WIN32
 
 }  // namespace renderer

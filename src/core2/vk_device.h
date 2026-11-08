@@ -10,7 +10,11 @@
 #include "src/base/color.h"
 #include "src/core2/device.h"
 
+#ifdef _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR 1
+#else
+#define VK_USE_PLATFORM_WAYLAND_KHR 1
+#endif
 #include "volk.h"
 #include "src/core2/vk_allocator.h"
 

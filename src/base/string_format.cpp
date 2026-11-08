@@ -1,6 +1,11 @@
 #include "src/base/string_format.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include <codecvt>
+#include <locale>
+#endif
 
 #include <algorithm>
 #include <array>
@@ -115,21 +120,54 @@ std::string B64Decode(std::string_view str64) {
 
 std::wstring string2wstring(std::string_view s) {
   if (s.empty()) return {};
+#ifdef _WIN32
   int wchars_num =
       MultiByteToWideChar(CP_UTF8, 0, s.data(), s.size(), nullptr, 0);
   std::wstring wstr(wchars_num, 0);
   MultiByteToWideChar(CP_UTF8, 0, s.data(), s.size(), wstr.data(), wstr.size());
   return wstr;
+#else
+  std::mbstate_t state = std::mbstate_t();
+  const char* src = s.data();
+  size_t len = s.size();
+  std::wstring result;
+  result.reserve(len);
+  const char* end = src + len;
+  while (src < end) {
+    wchar_t wc;
+    size_t res = std::mbrtowc(&wc, src, end - src, &state);
+    if (res == 0 || res == static_cast<size_t>(-1) || res == static_cast<size_t>(-2)) {
+      break;
+    }
+    result.push_back(wc);
+    src += res;
+  }
+  return result;
+#endif
 }
 
 std::string wstring2string(std::wstring_view s) {
   if (s.empty()) return {};
+#ifdef _WIN32
   int chars_num = WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), nullptr,
                                       0, nullptr, nullptr);
   std::string str(chars_num, 0);
   WideCharToMultiByte(CP_UTF8, 0, s.data(), s.size(), str.data(), chars_num,
                       nullptr, nullptr);
   return str;
+#else
+  std::mbstate_t state = std::mbstate_t();
+  std::string result;
+  result.reserve(s.size() * 4);
+  char buf[MB_CUR_MAX + 1];
+  for (wchar_t wc : s) {
+    size_t res = std::wcrtomb(buf, wc, &state);
+    if (res != static_cast<size_t>(-1)) {
+      result.append(buf, res);
+    }
+  }
+  return result;
+#endif
 }
 
 uint32_t CalculateHash(std::string_view s) {

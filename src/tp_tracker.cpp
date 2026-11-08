@@ -48,7 +48,7 @@ void SetGW2ItemData(GW2ItemData& data) {
 
 }  // namespace
 
-std::string FetchHTTPS(std::string_view url, std::string_view path);
+extern "C++" std::string FetchHTTPS(std::string_view url, std::string_view path);
 
 __inline std::string ToGold(int32_t value) {
   int32_t copper = value % 100;

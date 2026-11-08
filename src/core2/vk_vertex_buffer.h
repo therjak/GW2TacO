@@ -1,6 +1,10 @@
 #pragma once
 #include <cstdint>
+#ifdef _WIN32
 #define VK_USE_PLATFORM_WIN32_KHR 1
+#else
+#define VK_USE_PLATFORM_WAYLAND_KHR 1
+#endif
 #include "volk.h"
 #define VMA_STATIC_VULKAN_FUNCTIONS 0
 #define VMA_DYNAMIC_VULKAN_FUNCTIONS 1

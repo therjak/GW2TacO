@@ -11,7 +11,7 @@ module;
 #include "src/base/color.h"
 #include "src/base/ring_buffer.h"
 #include "src/core2/core2_config.h"
-#include "src/core2/dx11_device.h"
+#include "src/core2/device.h"
 #include "src/core2/resource.h"
 #include "src/core2/texture.h"
 
@@ -39,7 +39,7 @@ enum class MouseClickRepeatMode : uint8_t {
 typedef Widget*(__cdecl* FactoryCallback)(Widget* Root, const XMLNode& node,
                                           const math::Rect& Pos);
 
-class Application : public renderer::WindowHandlerWin {
+class Application : public renderer::WindowHandlerPlatform {
   friend class Widget;
 
  public:

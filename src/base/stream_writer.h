@@ -3,11 +3,12 @@
 #include <cstdint>
 #include <cstdio>
 #include <memory>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
 
-using uint8_view = std::basic_string_view<uint8_t>;
+using uint8_view = std::span<const uint8_t>;
 
 class StreamWriter {
  public:

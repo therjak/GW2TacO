@@ -17,8 +17,10 @@
 #include "src/core2/dx11_texture.h"
 #include "src/core2/dx11_vertex_buffer.h"
 #include "src/core2/dx11_vertex_format.h"
+#ifdef _WIN32
 #pragma comment(lib, "DXGI.lib")
 // #pragma comment(lib,"dcomp.lib")
+#endif
 
 import math;
 

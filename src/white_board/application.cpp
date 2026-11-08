@@ -40,11 +40,12 @@ import xml;
 
 using math::Point;
 using math::Rect;
+using renderer::WindowHandlerPlatform;
 
 namespace gui {
 
 Application::Application()
-    : WindowHandlerWin(),
+    : WindowHandlerPlatform(),
       draw_api_(std::make_unique<DrawAPI>()),
       frame_times_(std::make_unique<RingBuffer<int32_t, 60>>()),
       last_frame_time_(0),
@@ -181,7 +182,7 @@ Widget* Application::GetItemUnderMouse(const Point& Point, MessageType w) {
 }
 
 void Application::HandleResize() {
-  WindowHandlerWin::HandleResize();
+  WindowHandlerPlatform::HandleResize();
 
   if (root_) {
     root_->SetPosition(Rect(0, 0, x_res_, y_res_));
@@ -374,7 +375,7 @@ LRESULT Application::WindowProc(UINT uMsg, WPARAM wParam, LPARAM lParam) {
       break;
   }
 
-  return WindowHandlerWin::WindowProc(uMsg, wParam, lParam);
+  return WindowHandlerPlatform::WindowProc(uMsg, wParam, lParam);
 }
 
 bool Application::Initialize() {
@@ -395,7 +396,7 @@ bool Application::Initialize() {
 }
 
 bool Application::Initialize(const renderer::WindowParameters& WindowParams) {
-  if (!WindowHandlerWin::Initialize(WindowParams)) return false;
+  if (!WindowHandlerPlatform::Initialize(WindowParams)) return false;
   return Initialize();
 }
 
@@ -439,7 +440,7 @@ bool Application::HandleMessages() {
     }
   }
 
-  if (!WindowHandlerWin::HandleMessages()) return false;
+  if (!WindowHandlerPlatform::HandleMessages()) return false;
 
   // handle gui messages here
   {

@@ -224,7 +224,7 @@ Rect tpButtonRect;
 Rect tpHighlightRect;
 int scaleCountDownHack = 0;
 
-void ChangeUIScale(int size) {
+extern "C++" void ChangeUIScale(int size) {
   if (size < 0 || size > 3) {
     Log_Err(
         "Someone wants to set the UI size to {:d}! Are you multi-clienting "
@@ -1524,7 +1524,7 @@ void GW2TacO::OpenAboutWindow() {
   WebsiteButton->ApplyStyleDeclarations("font-family:ProFont;");
 }
 
-float GetWindowTooSmallScale() {
+extern "C++" float GetWindowTooSmallScale() {
   if (!App || !App->GetRoot()) return 1.0f;
 
   Rect rect = App->GetRoot()->GetClientRect();

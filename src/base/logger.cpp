@@ -1,8 +1,13 @@
 #include "src/base/logger.h"
 
+#ifdef _WIN32
 #include <windows.h>
 //
 #include <debugapi.h>
+#else
+#include "src/base/win_compat.h"
+#include <iostream>
+#endif
 
 #include <cstdint>
 #include <cstdio>
@@ -22,8 +27,12 @@ LoggerOutput::LoggerOutput() = default;
 
 void LoggerOutput_DebugOutput::Process(LOGVERBOSITY v,
                                        const std::string& String) {
+#ifdef _WIN32
   OutputDebugString(String.c_str());
   OutputDebugString("\n");
+#else
+  std::cerr << String << '\n';
+#endif
 }
 
 LoggerOutput_DebugOutput::~LoggerOutput_DebugOutput() = default;

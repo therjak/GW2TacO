@@ -1,5 +1,6 @@
 #include "src/base/socket.h"
 
+#ifdef _WIN32
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include <winsock2.h>
@@ -11,7 +12,9 @@ WSADATA wsaData;
 #include <memory>
 #include <string>
 #include <vector>
+#ifdef _WIN32
 #pragma comment(lib, "Ws2_32.lib")
+#endif
 
 CSocket::CSocket() : StreamReader(), StreamWriter() {
   Socket = INVALID_SOCKET;
@@ -189,3 +192,181 @@ std::string CSocket::ReadLine() {
 int32_t InitWinsock() { return WSAStartup(MAKEWORD(2, 2), &wsaData) == 0; }
 
 void DeinitWinsock() { WSACleanup(); }
+
+#else
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#include <chrono>
+#include <cstring>
+#include <memory>
+#include <string>
+#include <vector>
+
+#ifndef INVALID_SOCKET
+#define INVALID_SOCKET (-1)
+#endif
+#ifndef SOCKET_ERROR
+#define SOCKET_ERROR (-1)
+#endif
+
+static int64_t GetCurrentTickCount64() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(steady_clock::now().time_since_epoch()).count();
+}
+
+CSocket::CSocket() : StreamReader(), StreamWriter() {
+  Socket = INVALID_SOCKET;
+  LastActivity = GetCurrentTickCount64();
+}
+
+CSocket::~CSocket() {
+  if (Socket != INVALID_SOCKET) {
+    close(Socket);
+  }
+}
+
+int32_t CSocket::ReadStream(void* lpBuf, uint32_t nCount) {
+  if (Socket == INVALID_SOCKET) return 0;
+  ssize_t r = recv(Socket, lpBuf, nCount, 0);
+  if (r > 0) LastActivity = GetCurrentTickCount64();
+  return (r > 0) ? static_cast<int32_t>(r) : 0;
+}
+
+int32_t CSocket::WriteStream(std::string_view data) {
+  if (Socket == INVALID_SOCKET) return 0;
+  ssize_t res = send(Socket, data.data(), data.size(), 0);
+  if (res == SOCKET_ERROR) return 0;
+  return static_cast<int32_t>(res);
+}
+
+int32_t CSocket::Connect(std::string_view Server, const uint32_t Port) {
+  uint32_t addr = Resolve(Server);
+  if (addr == INADDR_NONE) return 0;
+
+  Socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if (Socket == INVALID_SOCKET) return 0;
+
+  struct sockaddr_in serverInfo;
+  std::memset(&serverInfo, 0, sizeof(serverInfo));
+  serverInfo.sin_family = AF_INET;
+  serverInfo.sin_addr.s_addr = addr;
+  serverInfo.sin_port = htons(Port);
+
+  if (connect(Socket, reinterpret_cast<struct sockaddr*>(&serverInfo),
+              sizeof(serverInfo)) == SOCKET_ERROR) {
+    close(Socket);
+    Socket = INVALID_SOCKET;
+    return 0;
+  }
+
+  LastActivity = GetCurrentTickCount64();
+  return 1;
+}
+
+int32_t CSocket::Close() {
+  if (Socket != INVALID_SOCKET) {
+    close(Socket);
+    Socket = INVALID_SOCKET;
+  }
+  return 1;
+}
+
+uint32_t CSocket::Resolve(std::string_view a) {
+  struct addrinfo hints;
+  struct addrinfo* res = nullptr;
+  std::memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+
+  std::string addr_str(a);
+  int status = getaddrinfo(addr_str.c_str(), nullptr, &hints, &res);
+  if (status != 0 || !res) {
+    return INADDR_NONE;
+  }
+
+  uint32_t ip = reinterpret_cast<struct sockaddr_in*>(res->ai_addr)->sin_addr.s_addr;
+  freeaddrinfo(res);
+  return ip;
+}
+
+int64_t CSocket::GetLength() const {
+  if (Socket == INVALID_SOCKET) return 0;
+  int bytes_available = 0;
+  if (ioctl(Socket, FIONREAD, &bytes_available) == SOCKET_ERROR) {
+    return 0;
+  }
+  return bytes_available;
+}
+
+int64_t CSocket::GetOffset() const { return 0; }
+
+int32_t CSocket::ReadFull(void* data, uint32_t size) {
+  if (Socket == INVALID_SOCKET) return 0;
+  uint32_t total = 0;
+  char* ptr = static_cast<char*>(data);
+  while (total < size) {
+    int32_t read = ReadStream(ptr + total, size - total);
+    if (read <= 0) break;
+    total += read;
+  }
+  return total;
+}
+
+bool CSocket::Peek(void* lpBuf, uint32_t nCount) {
+  if (Socket == INVALID_SOCKET) return false;
+  ssize_t r = recv(Socket, lpBuf, nCount, MSG_PEEK);
+  return r >= 0;
+}
+
+bool CSocket::IsConnected() {
+  if (Socket == INVALID_SOCKET) return false;
+  int error = 0;
+  socklen_t len = sizeof(error);
+  int retval = getsockopt(Socket, SOL_SOCKET, SO_ERROR, &error, &len);
+  if (retval || error) {
+    close(Socket);
+    Socket = INVALID_SOCKET;
+    return false;
+  }
+  int count = 0;
+  if (ioctl(Socket, FIONREAD, &count) == SOCKET_ERROR) {
+    return false;
+  }
+  return true;
+}
+
+const bool CSocket::operator==(const CSocket& b) { return Socket == b.Socket; }
+
+std::string CSocket::ReadLine() {
+  std::string result;
+  while (true) {
+    if (!IsConnected()) return result;
+    auto available_bytes = static_cast<int32_t>(GetLength());
+    if (available_bytes > 0) {
+      std::vector<char> data_buffer(available_bytes);
+      if (Peek(data_buffer.data(), available_bytes)) {
+        for (int32_t x = 0; x < available_bytes; x++) {
+          if (data_buffer[x] == '\n') {
+            ReadFull(data_buffer.data(), x + 1);
+            result.append(data_buffer.data(), x);
+            return result;
+          }
+        }
+      }
+      ReadFull(data_buffer.data(), available_bytes);
+      result.append(data_buffer.data(), available_bytes);
+    }
+    char c;
+    if (!Peek(&c, 1)) return result;
+  }
+}
+
+int32_t InitWinsock() { return 1; }
+void DeinitWinsock() {}
+#endif

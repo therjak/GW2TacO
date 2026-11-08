@@ -53,7 +53,7 @@ Size forbiddenIconSize;
 std::unordered_map<std::string, gui::AtlasHandle> MapIcons;
 int32_t useMetricDisplay = 0;
 
-float GetUIScale();
+extern "C++" float GetUIScale();
 
 namespace std {
 std::size_t hash<POIActivationDataKey>::operator()(
@@ -105,7 +105,7 @@ void FlushZipDict() {
   zipDict.clear();
 }
 
-mz_zip_archive* OpenZipFile(std::string_view zf) {
+extern "C++" mz_zip_archive* OpenZipFile(std::string_view zf) {
   std::string zipFile(zf);
   if (zipDict.find(zipFile) == zipDict.end()) {
     auto zip = std::make_unique<mz_zip_archive>();

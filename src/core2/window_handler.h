@@ -1,5 +1,10 @@
 #pragma once
+
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include "src/base/win_compat.h"
+#endif
 
 #include <array>
 #include <cstdint>
@@ -61,7 +66,7 @@ class WindowHandler {
   virtual bool DeviceOk() = 0;
   virtual void ToggleFullScreen() = 0;
 
-  virtual HWND GetHandle() = 0;
+  virtual HWND GetHandle() { return window_handle_; }
 
   virtual int32_t GetXRes();
   virtual int32_t GetYRes();
@@ -79,11 +84,15 @@ class WindowHandler {
   virtual void SetWindowTitle(std::string_view title) = 0;
   virtual void SetInactiveFrameLimiter(bool set);
 
+  virtual void* GetWaylandDisplay() { return nullptr; }
+  virtual void* GetWaylandSurface() { return nullptr; }
+
  protected:
   virtual void HandleResize() = 0;
   virtual void HandleAltEnter() = 0;
 
   bool done_ = false;
+  HWND window_handle_ = nullptr;
   std::unique_ptr<Device> device_;
   bool active_ = false;
   bool maximized_ = false;
@@ -104,8 +113,9 @@ class WindowHandler {
 };
 
 //////////////////////////////////////////////////////////////////////////
-// windows implementation
+// platform implementation
 
+#ifdef _WIN32
 class WindowHandlerWin : public WindowHandler {
  public:
   WindowHandlerWin();
@@ -143,5 +153,14 @@ class WindowHandlerWin : public WindowHandler {
 
   std::array<HCURSOR, 8> mouse_cursors_ = {0};
 };
+
+using WindowHandlerPlatform = WindowHandlerWin;
+#else
+class WindowHandlerWayland;
+using WindowHandlerPlatform = WindowHandlerWayland;
+}  // namespace renderer
+#include "src/core2/window_handler_wayland.h"
+namespace renderer {
+#endif
 
 }  // namespace renderer

@@ -1,6 +1,13 @@
 module;
 #include <windows.h>
 
+#ifndef _WIN32
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
 #include <algorithm>
 #include <cstring>
 #include <cwchar>
@@ -29,9 +36,9 @@ using math::Vector2;
 using math::Vector3;
 using math::Vector4;
 
-void ChangeUIScale(int size);
+extern "C++" void ChangeUIScale(int size);
 
-float GetUIScale() {
+extern "C++" float GetUIScale() {
   switch (mumble_link.GetUISize()) {
     case 0:
       return 0.9f;
@@ -43,7 +50,7 @@ float GetUIScale() {
   return 1.0;
 }
 
-float GetWindowTooSmallScale();
+extern "C++" float GetWindowTooSmallScale();
 
 Rect GetMinimapRectangle() {
   int w = mumble_link.mini_map.compass_width;
@@ -84,6 +91,7 @@ bool MumbleLink::Update() {
   bool just_connected = false;
 
   if (!lm_) {
+#ifdef _WIN32
     HANDLE h_map_object =
         CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0,
                            sizeof(LinkedMem), mumble_path.c_str());
@@ -100,6 +108,36 @@ bool MumbleLink::Update() {
       return false;
     }
     just_connected = true;
+#else
+    const char* shm_paths[] = {
+        "/qutim_mumblelink",
+        "/MumbleLink",
+        "/dev/shm/qutim_mumblelink",
+        "/dev/shm/MumbleLink",
+    };
+    int fd = -1;
+    for (const char* path : shm_paths) {
+      if (path[0] == '/' && path[1] != 'd') {
+        fd = shm_open(path, O_RDONLY, 0600);
+      } else {
+        fd = open(path, O_RDONLY);
+      }
+      if (fd >= 0) break;
+    }
+
+    if (fd < 0) {
+      return false;
+    }
+
+    lm_ = static_cast<LinkedMem*>(
+        mmap(nullptr, sizeof(LinkedMem), PROT_READ, MAP_SHARED, fd, 0));
+    close(fd);
+    if (lm_ == MAP_FAILED) {
+      lm_ = nullptr;
+      return false;
+    }
+    just_connected = true;
+#endif
   }
 
   if (!lm_) {

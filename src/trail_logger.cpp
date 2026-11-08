@@ -28,7 +28,9 @@ import taco.overlay_config;
 import time;
 import whiteboard;
 
+#ifdef _WIN32
 #pragma comment(lib, "Comdlg32.lib")
+#endif
 
 constexpr int32_t kTrailFileVersion = 0;
 
@@ -381,7 +383,7 @@ void GW2TrailDisplay::DoTrailLogging(int32_t map_id, Vector3 charPos) {
 
 void GW2TrailDisplay::ClearEditedTrail() { edited_trail_.reset(); }
 
-mz_zip_archive* OpenZipFile(std::string_view zipFile);
+extern "C++" mz_zip_archive* OpenZipFile(std::string_view zipFile);
 
 renderer::Texture2D* GW2TrailDisplay::GetTexture(
     const std::string_view& fname, const std::string_view& zipFile,
