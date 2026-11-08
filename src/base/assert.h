@@ -1,7 +1,16 @@
 #pragma once
 
 #ifdef _DEBUG
+#if defined(_MSC_VER)
 #include <intrin.h>
+#elif defined(__clang__)
+#define __debugbreak() __builtin_debugtrap()
+#elif defined(__GNUC__)
+#define __debugbreak() __builtin_trap()
+#else
+#include <cstdlib>
+#define __debugbreak() abort()
+#endif
 #endif
 
 #ifndef _DEBUG
