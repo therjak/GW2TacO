@@ -110,6 +110,9 @@ On Wayland compositors, launch the executable with the Vulkan backend enabled:
 ./x64/Debug/GW2TacO -vulkan
 ```
 
+If running steam under flatpak access to /dev/shm must be granted:
+flatpak override --user --filesystem=/dev/shm com.valvesoftware.Steam
+
 ---
 
 ## Building on Windows
