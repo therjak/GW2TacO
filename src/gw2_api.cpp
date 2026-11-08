@@ -22,7 +22,7 @@ import whiteboard;
 
 using math::Point;
 
-std::string FetchHTTPS(std::string_view url, std::string_view path);
+extern "C++" std::string FetchHTTPS(std::string_view url, std::string_view path);
 
 std::string FetchAPIData(std::string_view path, std::string_view apiKey) {
   bool hasquestionmark = false;

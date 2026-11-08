@@ -1,13 +1,18 @@
 #pragma once
 
+#ifdef _WIN32
 #include <BaseTsd.h>
+typedef UINT_PTR SOCKET;
+#else
+#include "src/base/win_compat.h"
+typedef int SOCKET;
+#endif
 
 #include <string>
 #include <string_view>
 
 #include "src/base/stream_reader.h"
 #include "src/base/stream_writer.h"
-typedef UINT_PTR SOCKET;
 
 class CSocket : public StreamReader, public StreamWriter {
  public:

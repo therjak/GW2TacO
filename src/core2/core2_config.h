@@ -15,8 +15,12 @@
 //////////////////////////////////////////////////////////////////////////
 // logic
 
+#ifdef _WIN32
 #define _WINSOCKAPI_
 #include <windows.h>
 //
 #include <d3d11.h>
 #pragma comment(lib, "d3d11.lib")
+#else
+#include "src/base/win_compat.h"
+#endif

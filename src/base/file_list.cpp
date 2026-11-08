@@ -1,6 +1,12 @@
 #include "src/base/file_list.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include "src/base/win_compat.h"
+#include <filesystem>
+#include <fnmatch.h>
+#endif
 
 #include <cstdio>
 #include <string>
@@ -21,6 +27,7 @@ FileList::FileList(std::string_view Mask, std::string_view Path /* ="" */,
 
 FileList::FileList() = default;
 
+#ifdef _WIN32
 void FileList::ExpandSearch(std::string_view Mask, std::string_view Path,
                             bool Recursive, bool getDirectories) {
   HANDLE hSearch = nullptr;
@@ -75,6 +82,51 @@ void FileList::ExpandSearch(std::string_view Mask, std::string_view Path,
     FindClose(hSearch);
   }
 }
+#else
+void FileList::ExpandSearch(std::string_view Mask, std::string_view Path,
+                            bool Recursive, bool getDirectories) {
+  namespace fs = std::filesystem;
+  std::string ValidPath(Path);
+  if (ValidPath.empty()) {
+    ValidPath = "./";
+  } else if (ValidPath.back() != '/' && ValidPath.back() != '\\') {
+    ValidPath += "/";
+  }
+
+  std::error_code ec;
+  if (!fs::exists(ValidPath, ec) || !fs::is_directory(ValidPath, ec)) {
+    return;
+  }
+
+  std::string mask_str(Mask);
+  // Match *.* as * (match all)
+  if (mask_str == "*.*") {
+    mask_str = "*";
+  }
+
+  for (const auto& entry : fs::directory_iterator(ValidPath, ec)) {
+    std::string filename = entry.path().filename().string();
+    if (filename == "." || filename == "..") continue;
+
+    bool is_dir = entry.is_directory(ec);
+    if (!is_dir) {
+      if (mask_str.empty() || mask_str == "*" ||
+          fnmatch(mask_str.c_str(), filename.c_str(), FNM_CASEFOLD) == 0) {
+        Files.emplace_back(ValidPath, filename);
+      }
+    } else {
+      if (getDirectories) {
+        FileListEntry e(ValidPath, filename);
+        e.isDirectory = true;
+        Files.emplace_back(e);
+      }
+      if (Recursive) {
+        ExpandSearch(Mask, ValidPath + filename + "/", Recursive, getDirectories);
+      }
+    }
+  }
+}
+#endif
 
 FileList::~FileList() = default;
 

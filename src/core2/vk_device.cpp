@@ -124,8 +124,13 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
   create_info.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   create_info.pApplicationInfo = &app_info;
 
+#ifdef _WIN32
   std::vector<const char*> extensions = {VK_KHR_SURFACE_EXTENSION_NAME,
                                          VK_KHR_WIN32_SURFACE_EXTENSION_NAME};
+#else
+  std::vector<const char*> extensions = {VK_KHR_SURFACE_EXTENSION_NAME,
+                                         VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME};
+#endif
 
   std::vector<const char*> layers;
 
@@ -167,6 +172,7 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
   }
 #endif
 
+#ifdef _WIN32
   VkWin32SurfaceCreateInfoKHR surface_info{};
   surface_info.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
   surface_info.hwnd = window_handle;
@@ -176,6 +182,19 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
     Log_Err("[vk] Failed to create window surface");
     return false;
   }
+#else
+  VkWaylandSurfaceCreateInfoKHR surface_info{};
+  surface_info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+  surface_info.display =
+      static_cast<wl_display*>(window_ ? window_->GetWaylandDisplay() : nullptr);
+  surface_info.surface =
+      static_cast<wl_surface*>(window_ ? window_->GetWaylandSurface() : nullptr);
+  if (vkCreateWaylandSurfaceKHR(instance_, &surface_info, nullptr, &surface_) !=
+      VK_SUCCESS) {
+    Log_Err("[vk] Failed to create Wayland window surface");
+    return false;
+  }
+#endif
 
   uint32_t device_count = 0;
   vkEnumeratePhysicalDevices(instance_, &device_count, nullptr);

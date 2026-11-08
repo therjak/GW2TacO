@@ -1,16 +1,13 @@
 #include "src/base/image_decompressor.h"
 
+#ifdef _WIN32
 #include <comdef.h>
 #include <olectl.h>
-
 #include <memory>
-
 #include "src/base/logger.h"
-
 #pragma comment(lib, "Gdi32.lib")
 
 constexpr int32_t kHiMetricInch = 2540;
-
 std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
                                            int32_t ImageDataSize,
                                            int32_t* XSize, int32_t* YSize) {
@@ -119,3 +116,31 @@ std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
 
   return Image;
 }
+
+#else
+#include <cstring>
+#include <memory>
+#include "src/base/logger.h"
+#include "src/util/stb_image.h"
+
+std::unique_ptr<uint8_t[]> DecompressImage(const uint8_t* ImageData,
+                                           int32_t ImageDataSize,
+                                           int32_t* XSize, int32_t* YSize) {
+  if (!ImageData || !ImageDataSize) return nullptr;
+  int x = 0;
+  int y = 0;
+  int channels = 0;
+  uint8_t* data =
+      stbi_load_from_memory(ImageData, ImageDataSize, &x, &y, &channels, 4);
+  if (!data) {
+    Log_Err("[base] DecompressImage failed: {:s}", stbi_failure_reason());
+    return nullptr;
+  }
+  *XSize = x;
+  *YSize = y;
+  auto image = std::make_unique<uint8_t[]>(x * y * 4);
+  std::memcpy(image.get(), data, x * y * 4);
+  stbi_image_free(data);
+  return image;
+}
+#endif

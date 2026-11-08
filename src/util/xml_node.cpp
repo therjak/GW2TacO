@@ -7,6 +7,7 @@ module;
 #include <string>
 #include <string_view>
 
+#include "src/base/win_compat.h"
 #include "src/util/RapidXML/rapidxml.hpp"
 
 module xml;

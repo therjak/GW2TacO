@@ -1,6 +1,10 @@
 #pragma once
 
+#ifdef _WIN32
 #include <guiddef.h>
+#else
+#include "src/base/win_compat.h"
+#endif
 
 #include <cstddef>
 #include <functional>

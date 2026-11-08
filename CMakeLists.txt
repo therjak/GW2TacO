@@ -1,11 +1,16 @@
 cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
-set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
+if(WIN32)
+    set(CMAKE_SYSTEM_VERSION 10.0 CACHE STRING "" FORCE)
+endif()
 project(GW2TacO LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_MSVC_RUNTIME_LIBRARY "$<$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>:MultiThreaded>$<$<NOT:$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>>:MultiThreaded$<$<CONFIG:Debug,Debug_MultiByte>:Debug>DLL>")
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "$<$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>:MultiThreaded>$<$<NOT:$<OR:$<CONFIG:Release>,$<CONFIG:Release_MultiByte>>>:MultiThreaded$<$<CONFIG:Debug,Debug_MultiByte>:Debug>DLL>")
     add_compile_options(/utf-8 /MP /W3)
+else()
+    add_compile_options(-Wno-multichar)
 endif()
 
 include(FetchContent)
@@ -35,10 +40,19 @@ FetchContent_Declare(
   vulkanmemoryallocator
   URL https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/refs/tags/v3.1.0.tar.gz
 )
-FetchContent_Declare(
-  dxc
-  URL https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2609/dxc_2026_09_29.zip
-)
+
+if(WIN32)
+  FetchContent_Declare(
+    dxc
+    URL https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2609/dxc_2026_09_29.zip
+  )
+else()
+  FetchContent_Declare(
+    dxc
+    URL https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.9.2609/linux_dxc_2026_09_28.x86_x64.tar.gz
+  )
+endif()
+
 FetchContent_MakeAvailable(googletest json vulkan_headers volk vulkanmemoryallocator dxc)
 
 # Force volk to use the fetched headers
@@ -46,6 +60,63 @@ target_include_directories(volk PRIVATE "${vulkan_headers_SOURCE_DIR}/include")
 target_include_directories(volk PUBLIC "${vulkan_headers_SOURCE_DIR}/include")
 if(WIN32)
     target_compile_definitions(volk PUBLIC VK_USE_PLATFORM_WIN32_KHR)
+else()
+    target_compile_definitions(volk PUBLIC VK_USE_PLATFORM_WAYLAND_KHR)
+
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-cursor)
+    pkg_check_modules(XKBCOMMON REQUIRED xkbcommon)
+    pkg_check_modules(CURL REQUIRED libcurl)
+
+    find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner REQUIRED)
+    pkg_get_variable(WAYLAND_PROTOCOLS_BASE wayland-protocols pkgdatadir)
+
+    set(XDG_SHELL_PROTOCOL_XML "${WAYLAND_PROTOCOLS_BASE}/stable/xdg-shell/xdg-shell.xml")
+    set(WLR_LAYER_SHELL_PROTOCOL_XML "${CMAKE_CURRENT_SOURCE_DIR}/third_party/protocols/wlr-layer-shell-unstable-v1.xml")
+
+    set(PROTO_GEN_DIR "${CMAKE_BINARY_DIR}/generated-protocols")
+    file(MAKE_DIRECTORY "${PROTO_GEN_DIR}")
+
+    set(XDG_SHELL_CLIENT_H "${PROTO_GEN_DIR}/xdg-shell-client-protocol.h")
+    set(XDG_SHELL_C "${PROTO_GEN_DIR}/xdg-shell-protocol.c")
+    set(WLR_LAYER_SHELL_CLIENT_H "${PROTO_GEN_DIR}/wlr-layer-shell-unstable-v1-client-protocol.h")
+    set(WLR_LAYER_SHELL_C "${PROTO_GEN_DIR}/wlr-layer-shell-unstable-v1-protocol.c")
+
+    add_custom_command(
+        OUTPUT "${XDG_SHELL_CLIENT_H}"
+        COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" client-header "${XDG_SHELL_PROTOCOL_XML}" "${XDG_SHELL_CLIENT_H}"
+        DEPENDS "${XDG_SHELL_PROTOCOL_XML}"
+        COMMENT "Generating xdg-shell client header"
+    )
+    add_custom_command(
+        OUTPUT "${XDG_SHELL_C}"
+        COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${XDG_SHELL_PROTOCOL_XML}" "${XDG_SHELL_C}"
+        DEPENDS "${XDG_SHELL_PROTOCOL_XML}"
+        COMMENT "Generating xdg-shell protocol code"
+    )
+    add_custom_command(
+        OUTPUT "${WLR_LAYER_SHELL_CLIENT_H}"
+        COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" client-header "${WLR_LAYER_SHELL_PROTOCOL_XML}" "${WLR_LAYER_SHELL_CLIENT_H}"
+        DEPENDS "${WLR_LAYER_SHELL_PROTOCOL_XML}"
+        COMMENT "Generating wlr-layer-shell client header"
+    )
+    add_custom_command(
+        OUTPUT "${WLR_LAYER_SHELL_C}"
+        COMMAND "${WAYLAND_SCANNER_EXECUTABLE}" private-code "${WLR_LAYER_SHELL_PROTOCOL_XML}" "${WLR_LAYER_SHELL_C}"
+        DEPENDS "${WLR_LAYER_SHELL_PROTOCOL_XML}"
+        COMMENT "Generating wlr-layer-shell protocol code"
+    )
+
+    add_library(wayland_protocols STATIC
+        "${XDG_SHELL_CLIENT_H}"
+        "${XDG_SHELL_C}"
+        "${WLR_LAYER_SHELL_CLIENT_H}"
+        "${WLR_LAYER_SHELL_C}"
+    )
+    target_include_directories(wayland_protocols PUBLIC "${PROTO_GEN_DIR}" ${WAYLAND_INCLUDE_DIRS} ${XKBCOMMON_INCLUDE_DIRS})
+    target_link_libraries(wayland_protocols PUBLIC ${WAYLAND_LIBRARIES} ${XKBCOMMON_LIBRARIES})
+
+    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/third_party/compat")
 endif()
 
 ################################################################################
@@ -189,9 +260,11 @@ set(Base_Source_Files
     "src/base/vector.cpp"
 )
 
+if(WIN32)
 set(Core2_Source_Files
     "src/core2/constant_buffer.cpp"
     "src/core2/device.cpp"
+    "src/core2/dxc_compiler.cpp"
     "src/core2/dss_texture_loader.cpp"
     "src/core2/dx11_constant_buffer.cpp"
     "src/core2/dx11_device.cpp"
@@ -216,6 +289,27 @@ set(Core2_Source_Files
     "src/core2/vk_vertex_format.cpp"
     "src/core2/window_handler.cpp"
 )
+else()
+set(Core2_Source_Files
+    "src/core2/constant_buffer.cpp"
+    "src/core2/device.cpp"
+    "src/core2/dxc_compiler.cpp"
+    "src/core2/render_state.cpp"
+    "src/core2/resource.cpp"
+    "src/core2/shader.cpp"
+    "src/core2/vk_allocator.cpp"
+    "src/core2/vk_constant_buffer.cpp"
+    "src/core2/vk_device.cpp"
+    "src/core2/vk_index_buffer.cpp"
+    "src/core2/vk_render_state.cpp"
+    "src/core2/vk_shader.cpp"
+    "src/core2/vk_texture.cpp"
+    "src/core2/vk_vertex_buffer.cpp"
+    "src/core2/vk_vertex_format.cpp"
+    "src/core2/window_handler.cpp"
+    "src/core2/window_handler_wayland.cpp"
+)
+endif()
 
 set(Util_Source_Files
     "src/util/png_decompressor.cpp"
@@ -289,6 +383,7 @@ set(Taco_Source_Files
     "src/ts3_connection.cpp"
     "src/ts3_control.cpp"
     "src/web.cpp"
+    "src/web_client.cpp"
     "src/wvw.cpp"
 )
 source_group("Source Files" FILES ${Taco_Source_Files})
@@ -455,10 +550,18 @@ target_sources(taco_core2
 )
 target_include_directories(taco_core2 PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(taco_core2 PUBLIC volk Vulkan-Headers)
+if(NOT WIN32)
+    target_link_libraries(taco_core2 PUBLIC wayland_protocols)
+endif()
 target_link_libraries(taco_core2 PRIVATE taco_base taco_util dxcompiler)
 target_include_directories(taco_core2 PUBLIC "${vulkanmemoryallocator_SOURCE_DIR}/include")
-target_include_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/inc")
-target_link_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/lib/x64")
+if(WIN32)
+    target_include_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/inc")
+    target_link_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/lib/x64")
+else()
+    target_include_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/include")
+    target_link_directories(taco_core2 PUBLIC "${dxc_SOURCE_DIR}/lib")
+endif()
 use_props(taco_core2 "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 
 add_library(whiteboard STATIC)
@@ -547,6 +650,9 @@ target_link_libraries(taco PUBLIC
     third_party
     nlohmann_json::nlohmann_json
 )
+if(UNIX)
+    target_link_libraries(taco PUBLIC ${CURL_LIBRARIES})
+endif()
 use_props(taco "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 
 ################################################################################
@@ -650,6 +756,8 @@ if(MSVC)
             /DEBUG;
             /SUBSYSTEM:WINDOWS
         )
+elseif(UNIX)
+    target_link_options(${PROJECT_NAME} PRIVATE -Wl,--no-dependent-libraries)
 endif()
 
 ################################################################################
@@ -687,8 +795,10 @@ install(
 ################################################################################
 
 add_executable(gw2_tactical_test src/web_test.cpp src/core2/vk_device_test.cpp)
-target_sources(gw2_tactical_test PRIVATE ${Source_Files})
 target_link_libraries(gw2_tactical_test PRIVATE gtest_main taco)
+if(UNIX)
+    target_link_options(gw2_tactical_test PRIVATE -Wl,--no-dependent-libraries)
+endif()
 use_props(gw2_tactical_test "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
 target_compile_definitions(gw2_tactical_test PRIVATE
     ${Common_Definitions}
@@ -698,19 +808,33 @@ target_compile_definitions(gw2_tactical_test PRIVATE
 include(GoogleTest)
 gtest_discover_tests(gw2_tactical_test)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${dxc_SOURCE_DIR}/bin/x64/dxcompiler.dll"
-    "${dxc_SOURCE_DIR}/bin/x64/dxil.dll"
-    "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-)
+if(WIN32)
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${dxc_SOURCE_DIR}/bin/x64/dxcompiler.dll"
+        "${dxc_SOURCE_DIR}/bin/x64/dxil.dll"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+    )
 
-add_custom_command(TARGET gw2_tactical_test POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${dxc_SOURCE_DIR}/bin/x64/dxcompiler.dll"
-    "${dxc_SOURCE_DIR}/bin/x64/dxil.dll"
-    "$<TARGET_FILE_DIR:gw2_tactical_test>"
-)
+    add_custom_command(TARGET gw2_tactical_test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${dxc_SOURCE_DIR}/bin/x64/dxcompiler.dll"
+        "${dxc_SOURCE_DIR}/bin/x64/dxil.dll"
+        "$<TARGET_FILE_DIR:gw2_tactical_test>"
+    )
+else()
+    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${dxc_SOURCE_DIR}/lib/libdxcompiler.so"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+    )
+
+    add_custom_command(TARGET gw2_tactical_test POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${dxc_SOURCE_DIR}/lib/libdxcompiler.so"
+        "$<TARGET_FILE_DIR:gw2_tactical_test>"
+    )
+endif()
 
 ################################################################################
 # CPACK

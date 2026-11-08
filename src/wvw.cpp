@@ -39,7 +39,7 @@ constexpr int kMinFlag = 0x000010;
 constexpr int kMsFlag = 0x000011;
 constexpr int kSecFlag = 0x000001;
 
-std::string FetchHTTPS(std::string_view url, std::string_view path);
+extern "C++" std::string FetchHTTPS(std::string_view url, std::string_view path);
 
 void ParseISO8601(const char* text, time_t& iso_time, char& flag) {
   const char* c = text;

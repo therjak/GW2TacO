@@ -19,6 +19,7 @@ import :draw_api;
 import :font;
 import :message_enum;
 import :skin;
+import renderer;
 
 export namespace gui {
 

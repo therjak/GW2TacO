@@ -10,6 +10,11 @@
 #include <tlhelp32.h>
 #include <winhttp.h>
 
+#ifndef _WIN32
+#include <curl/curl.h>
+#include <signal.h>
+#endif
+
 #include <memory>
 #include <mutex>
 #include <string>
@@ -27,7 +32,9 @@
 #include "src/resource.h"
 #include "src/util/miniz.h"
 
+#ifdef _WIN32
 #pragma comment(lib, "Urlmon.lib")
+#endif
 
 import math;
 import taco.app;
@@ -52,11 +59,13 @@ import taco.wvw;
 import time;
 import whiteboard;
 
+#ifdef _WIN32
 #pragma comment(lib, "Imm32.lib")
 #pragma comment(lib, "winhttp.lib")
 #pragma comment(lib, "Dwmapi.lib")
 #pragma comment(lib, "Advapi32.lib")
 #pragma comment(lib, "Shell32.lib")
+#endif
 
 using math::Rect;
 
@@ -153,6 +162,7 @@ void OpenWindows(gui::Application* App) {
 
 bool ShiftState = false;
 
+#ifdef _WIN32
 LRESULT __stdcall MyKeyboardProc(int ccode, WPARAM wParam, LPARAM lParam) {
   if (disable_hooks) {
     return CallNextHookEx(nullptr, ccode, wParam, lParam);
@@ -348,8 +358,12 @@ DWORD GetProcessIntegrityLevel(HANDLE hProcess) {
 
   return dwIntegrityLevel;
 }
+#else
+DWORD GetProcessIntegrityLevel(HANDLE /*hProcess*/) { return 0; }
+#endif
 
 bool IsProcessRunning(DWORD pid) {
+#ifdef _WIN32
   bool procRunning = false;
 
   HANDLE hProcessSnap = nullptr;
@@ -377,78 +391,19 @@ bool IsProcessRunning(DWORD pid) {
   }
 
   return procRunning;
+#else
+  if (pid == 0) {
+    return false;
+  }
+  return (kill(static_cast<pid_t>(pid), 0) == 0 || errno == EPERM);
+#endif
 }
 
-std::string FetchHTTPS(std::string_view url, std::string_view path) {
-  auto wurl = string2wstring(url);
-  auto wpath = string2wstring(path);
+#ifndef _WIN32
+#endif
 
-  Log_Nfo("[GW2TacO] Fetching URL: {:s}/{:s}", url, path);
-
-  DWORD dwSize = 0;
-  DWORD dwDownloaded = 0;
-
-  BOOL bResults = FALSE;
-  HINTERNET hSession = nullptr, hConnect = nullptr, hRequest = nullptr;
-
-  hSession =
-      WinHttpOpen(L"WinHTTPS Example/1.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
-                  WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
-
-  if (hSession) {
-    hConnect = WinHttpConnect(hSession, wurl.c_str(), INTERNET_DEFAULT_PORT, 0);
-  }
-
-  if (hConnect) {
-    hRequest =
-        WinHttpOpenRequest(hConnect, L"GET", wpath.c_str(), nullptr,
-                           WINHTTP_NO_REFERER, nullptr, WINHTTP_FLAG_SECURE);
-  }
-
-  if (hRequest) {
-    bResults = WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
-                                  WINHTTP_NO_REQUEST_DATA, 0, 0, 0);
-  }
-
-  if (bResults) {
-    bResults = WinHttpReceiveResponse(hRequest, nullptr);
-  }
-
-  if (!bResults) {
-    return "";
-  }
-
-  StreamWriterMemory data;
-
-  do {
-    dwSize = 0;
-    if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) {
-      return "";
-    }
-
-    auto pszOutBuffer = std::make_unique<char[]>(size_t(dwSize) + 1);
-
-    if (!WinHttpReadData(hRequest, (LPVOID)pszOutBuffer.get(), dwSize,
-                         &dwDownloaded)) {
-      return "";
-    }
-
-    data.Write(std::string_view(pszOutBuffer.get(), dwSize));
-  } while (dwSize > 0);
-
-  if (hRequest) {
-    WinHttpCloseHandle(hRequest);
-  }
-  if (hConnect) {
-    WinHttpCloseHandle(hConnect);
-  }
-  if (hSession) {
-    WinHttpCloseHandle(hSession);
-  }
-
-  return std::string(reinterpret_cast<const char*>(data.GetData()),
-                     data.GetLength());
-}
+extern "C++" std::string FetchHTTPS(std::string_view url,
+                                    std::string_view path);
 
 bool HooksInitialized = false;
 
@@ -457,6 +412,7 @@ volatile int lastCnt = 0;
 int lastMainLoopTime = 0;
 
 void GetFileName(CHAR pfname[MAX_PATH]) {
+#ifdef _WIN32
   DWORD dwOwnPID = GetProcessId(GetCurrentProcess());
 
   HANDLE hSnapShot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -469,9 +425,18 @@ void GetFileName(CHAR pfname[MAX_PATH]) {
     }
   }
   CloseHandle(hSnapShot);
+#else
+  ssize_t len = readlink("/proc/self/exe", pfname, MAX_PATH - 1);
+  if (len != -1) {
+    pfname[len] = '\0';
+  } else {
+    pfname[0] = '\0';
+  }
+#endif
 }
 
 BOOL AppIsAllreadyRunning() {
+#ifdef _WIN32
   CHAR pfname[MAX_PATH];
   memset(pfname, 0, MAX_PATH);
   GetFileName(pfname);
@@ -493,12 +458,16 @@ BOOL AppIsAllreadyRunning() {
   }
   CloseHandle(hSnapShot);
   return bRunning;
+#else
+  return FALSE;
+#endif
 }
 
 std::atomic<bool> keyboardHookActive = false;
 std::atomic<bool> mouseHookActive = false;
 
 bool SetupTacoProtocolHandling() {
+#ifdef _WIN32
   TCHAR szFileName[MAX_PATH + 1];
   GetModuleFileName(nullptr, szFileName, MAX_PATH + 1);
 
@@ -542,37 +511,12 @@ bool SetupTacoProtocolHandling() {
 
   RegCloseKey(key);
   return true;
-}
-
-bool DownloadFile(std::string_view url, StreamWriterMemory& mem) {
-  LPSTREAM stream = nullptr;
-
-  HRESULT hr = URLOpenBlockingStream(
-      nullptr, ("https://" + std::string(url)).c_str(), &stream, 0, nullptr);
-  if (FAILED(hr)) {
-    hr = URLOpenBlockingStream(nullptr, ("http://" + std::string(url)).c_str(),
-                               &stream, 0, nullptr);
-  }
-
-  if (FAILED(hr)) {
-    return false;
-  }
-
-  char buffer[4096];
-  do {
-    DWORD bytesRead = 0;
-    hr = stream->Read(buffer, sizeof(buffer), &bytesRead);
-    mem.Write(std::string_view(buffer, bytesRead));
-  } while (SUCCEEDED(hr) && hr != S_FALSE);
-
-  stream->Release();
-
-  if (FAILED(hr)) {
-    return false;
-  }
-
+#else
   return true;
+#endif
 }
+
+extern "C++" bool DownloadFile(std::string_view url, StreamWriterMemory& mem);
 
 void ImportMarkerPack(gui::Application* App, std::string_view zipFile);
 
@@ -721,6 +665,9 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
   bool use_vulkan =
       (cmdLine.find("-vulkan") != cmdLine.npos) ||
       (HasConfigValue("UseVulkan") && GetConfigValue("UseVulkan"));
+#ifndef _WIN32
+  use_vulkan = true;
+#endif
   p.api_ =
       use_vulkan ? renderer::DeviceApi::kVulkan : renderer::DeviceApi::kDx11;
   Log_Nfo("[GW2TacO] Graphics API selected: {:s}",
@@ -736,8 +683,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
                                   WS_EX_NOREDIRECTIONBITMAP;
   } else {
     p.override_window_style_ex_ =
-        WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT |
-        WS_EX_TOOLWINDOW;
+        WS_EX_COMPOSITED | WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOOLWINDOW;
   }
   if (!App->Initialize(p)) {
     MessageBox(
@@ -885,6 +831,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       if (currTime - lastSlowEventTime > 1000) {
         hideOnLoadingScreens = GetConfigValue("HideOnLoadingScreens");
         lastSlowEventTime = global_timer.GetTime();
+#ifdef _WIN32
         gw2WindowFromPid = nullptr;
         EnumWindows(gw2WindowFromPIDFunction, mumble_link.last_gw2_process_id);
         gw2Window = gw2WindowFromPid;
@@ -895,6 +842,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
         if (!gw2Window) {
           gw2Window = FindWindow("ArenaNet_Gr_Window_Class", nullptr);
         }
+#else
+        if (mumble_link.IsValid()) {
+          gw2Window = reinterpret_cast<HWND>(1);
+        }
+#endif
       }
 
       if (!mumble_link.IsValid() || !gw2Window) {
@@ -929,6 +881,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
           }
           FoundGW2Window = true;
 
+#ifdef _WIN32
           RECT GW2ClientRect;
           POINT p = {0, 0};
           GetClientRect(gw2Window, &GW2ClientRect);
@@ -971,6 +924,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
               }
             }
           }
+#else
+          if (pos.Width() != App->GetXRes() || pos.Height() != App->GetYRes()) {
+            pos = Rect(0, 0, App->GetXRes(), App->GetYRes());
+          }
+#endif
 
           auto foregroundWindow = GetForegroundWindow();
 
@@ -1012,10 +970,13 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
             }
 
             App->GetRoot()->Hide(
-                !shortTick ||
-                ((GW2ClientRect.right - GW2ClientRect.left == 1120) &&
-                 (GW2ClientRect.bottom - GW2ClientRect.top == 976) &&
-                 (p.x != 0 || p.y != 0)));
+                !shortTick
+#ifdef _WIN32
+                || ((GW2ClientRect.right - GW2ClientRect.left == 1120) &&
+                    (GW2ClientRect.bottom - GW2ClientRect.top == 976) &&
+                    (p.x != 0 || p.y != 0))
+#endif
+            );
           }
         } else {
           App->GetRoot()->Hide(!shortTick);
@@ -1031,6 +992,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
       }
 
       if (!HooksInitialized) {
+#ifdef _WIN32
         // enabling this blocks mouse input while the debugger is present
         // if (!IsDebuggerPresent()) {
         {
@@ -1067,6 +1029,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
               0,        // use default creation flags
               &hookThreadID);
         }
+#endif
         HooksInitialized = true;
       }
     } else {
@@ -1079,9 +1042,11 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   FlushZipDict();
 
+#ifdef _WIN32
   if (hookThreadID) {
     PostThreadMessage(hookThreadID, WM_QUIT, 0, 0);
   }
+#endif
 
   ShowWindow(handle, SW_HIDE);
 
@@ -1101,3 +1066,14 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
 
   return true;
 }
+
+#ifndef _WIN32
+int main(int argc, char* argv[]) {
+  std::string cmd;
+  for (int i = 0; i < argc; ++i) {
+    if (i > 0) cmd += " ";
+    cmd += argv[i];
+  }
+  return WinMain(nullptr, nullptr, cmd.data(), SW_SHOWNORMAL);
+}
+#endif
