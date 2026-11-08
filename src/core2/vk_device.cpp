@@ -1,3 +1,6 @@
+#include "src/core2/vk_device.h"
+
+#include <cstring>
 #include <iostream>
 #include <memory>
 #include <set>
@@ -8,7 +11,6 @@
 #include "src/base/logger.h"
 #include "src/core2/core2_config.h"
 #include "src/core2/vk_constant_buffer.h"
-#include "src/core2/vk_device.h"
 #include "src/core2/vk_index_buffer.h"
 #include "src/core2/vk_render_state.h"
 #include "src/core2/vk_shader.h"
@@ -133,10 +135,44 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
 #endif
 
   std::vector<const char*> layers;
-
 #ifdef ENABLE_CORE_DEBUG_MODE
-  extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-  layers.push_back("VK_LAYER_KHRONOS_validation");
+  uint32_t layer_count = 0;
+  vkEnumerateInstanceLayerProperties(&layer_count, nullptr);
+  std::vector<VkLayerProperties> available_layers(layer_count);
+  vkEnumerateInstanceLayerProperties(&layer_count, available_layers.data());
+
+  bool validation_layer_found = false;
+  for (const auto& layer_props : available_layers) {
+    if (strcmp("VK_LAYER_KHRONOS_validation", layer_props.layerName) == 0) {
+      validation_layer_found = true;
+      break;
+    }
+  }
+
+  uint32_t extension_count = 0;
+  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count, nullptr);
+  std::vector<VkExtensionProperties> available_extensions(extension_count);
+  vkEnumerateInstanceExtensionProperties(nullptr, &extension_count,
+                                         available_extensions.data());
+
+  bool debug_utils_found = false;
+  for (const auto& ext_props : available_extensions) {
+    if (strcmp(VK_EXT_DEBUG_UTILS_EXTENSION_NAME, ext_props.extensionName) ==
+        0) {
+      debug_utils_found = true;
+      break;
+    }
+  }
+
+  if (validation_layer_found) {
+    layers.push_back("VK_LAYER_KHRONOS_validation");
+  } else {
+    Log_Warn("[vk] Validation layer VK_LAYER_KHRONOS_validation not present");
+  }
+
+  if (debug_utils_found) {
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+  }
 
   create_info.enabledLayerCount = static_cast<uint32_t>(layers.size());
   create_info.ppEnabledLayerNames = layers.data();
@@ -147,28 +183,34 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
   create_info.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
   create_info.ppEnabledExtensionNames = extensions.data();
 
-  if (vkCreateInstance(&create_info, nullptr, &instance_) != VK_SUCCESS) {
-    Log_Err("[vk] Failed to create instance");
+  const VkResult instance_result =
+      vkCreateInstance(&create_info, nullptr, &instance_);
+  if (instance_result != VK_SUCCESS) {
+    Log_Err("[vk] Failed to create instance: {}",
+            static_cast<int>(instance_result));
     return false;
   }
 
   volkLoadInstance(instance_);
 
 #ifdef ENABLE_CORE_DEBUG_MODE
-  VkDebugUtilsMessengerCreateInfoEXT debug_info{};
-  debug_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  debug_info.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-                               VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-  debug_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                           VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  debug_info.pfnUserCallback = DebugCallback;
+  if (debug_utils_found) {
+    VkDebugUtilsMessengerCreateInfoEXT debug_info{};
+    debug_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    debug_info.messageSeverity =
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+        VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    debug_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    debug_info.pfnUserCallback = DebugCallback;
 
-  auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      instance_, "vkCreateDebugUtilsMessengerEXT");
-  if (func != nullptr) {
-    func(instance_, &debug_info, nullptr, &debug_messenger_);
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+        instance_, "vkCreateDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+      func(instance_, &debug_info, nullptr, &debug_messenger_);
+    }
   }
 #endif
 
@@ -185,10 +227,10 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
 #else
   VkWaylandSurfaceCreateInfoKHR surface_info{};
   surface_info.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-  surface_info.display =
-      static_cast<wl_display*>(window_ ? window_->GetWaylandDisplay() : nullptr);
-  surface_info.surface =
-      static_cast<wl_surface*>(window_ ? window_->GetWaylandSurface() : nullptr);
+  surface_info.display = static_cast<wl_display*>(
+      window_ ? window_->GetWaylandDisplay() : nullptr);
+  surface_info.surface = static_cast<wl_surface*>(
+      window_ ? window_->GetWaylandSurface() : nullptr);
   if (vkCreateWaylandSurfaceKHR(instance_, &surface_info, nullptr, &surface_) !=
       VK_SUCCESS) {
     Log_Err("[vk] Failed to create Wayland window surface");

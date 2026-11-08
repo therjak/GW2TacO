@@ -58,10 +58,10 @@ cmake -B build-debug -G Ninja \
 cmake --build build-debug -j$(nproc)
 ```
 
-The compiled binaries will be output to `build-debug/`:
-* Executable: `build-debug/GW2TacO`
-* Tests: `build-debug/gw2_tactical_test` and `build-debug/src/base/Base_Tests`
-* Shared libraries: `build-debug/libdxcompiler.so` (copied post-build)
+The compiled binaries will be output to `x64/Debug/`:
+* Executable: `x64/Debug/GW2TacO`
+* Tests: `x64/Debug/gw2_tactical_test` and `x64/Debug/Base_Tests`
+* Shared libraries: `x64/Debug/libdxcompiler.so` (copied post-build)
 
 ---
 
@@ -80,7 +80,7 @@ cmake -B build-release -G Ninja \
 cmake --build build-release -j$(nproc)
 ```
 
-The optimized binary will be placed at `build-release/GW2TacO`.
+The optimized binary will be placed at `x64/Release/GW2TacO`.
 
 ---
 
@@ -94,8 +94,8 @@ ctest --test-dir build-debug --output-on-failure
 
 Or execute individual test binaries directly:
 ```bash
-./build-debug/gw2_tactical_test
-./build-debug/src/base/Base_Tests
+./x64/Debug/gw2_tactical_test
+./x64/Debug/Base_Tests
 ```
 
 ---
@@ -105,7 +105,9 @@ Or execute individual test binaries directly:
 On Wayland compositors, launch the executable with the Vulkan backend enabled:
 
 ```bash
-./build-release/GW2TacO -vulkan
+./x64/Release/GW2TacO -vulkan
+# Or for the debug build:
+./x64/Debug/GW2TacO -vulkan
 ```
 
 ---
