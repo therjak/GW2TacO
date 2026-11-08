@@ -6,6 +6,9 @@ module;
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include <cstdlib>
+#include <filesystem>
 #endif
 
 #include <algorithm>
@@ -109,20 +112,57 @@ bool MumbleLink::Update() {
     }
     just_connected = true;
 #else
-    const char* shm_paths[] = {
-        "/qutim_mumblelink",
-        "/MumbleLink",
-        "/dev/shm/qutim_mumblelink",
-        "/dev/shm/MumbleLink",
-    };
-    int fd = -1;
-    for (const char* path : shm_paths) {
-      if (path[0] == '/' && path[1] != 'd') {
-        fd = shm_open(path, O_RDONLY, 0600);
-      } else {
-        fd = open(path, O_RDONLY);
+    std::vector<std::string> search_paths;
+
+    // Check environment variable overrides first
+    if (const char* env_path = std::getenv("GW2_MUMBLE_PATH")) {
+      search_paths.emplace_back(env_path);
+    }
+    if (const char* env_path = std::getenv("MUMBLE_LINK_PATH")) {
+      search_paths.emplace_back(env_path);
+    }
+
+    const std::string name =
+        mumble_path.empty() ? "MumbleLink" : std::string(mumble_path);
+    const std::string uid_str = std::to_string(getuid());
+
+    // Standard POSIX paths
+    search_paths.push_back("/dev/shm/" + name);
+    search_paths.push_back("/dev/shm/" + name + "." + uid_str);
+    search_paths.push_back("/" + name);
+    search_paths.push_back("/" + name + "." + uid_str);
+    search_paths.push_back("/dev/shm/qutim_mumblelink");
+    search_paths.push_back("/qutim_mumblelink");
+
+    // Flatpak-isolated /dev/shm paths
+    std::error_code ec;
+    if (std::filesystem::exists("/dev/shm", ec)) {
+      for (const auto& entry :
+           std::filesystem::directory_iterator("/dev/shm", ec)) {
+        if (entry.is_directory(ec)) {
+          const auto filename = entry.path().filename().string();
+          if (filename.rfind("flatpak-", 0) == 0) {
+            search_paths.push_back((entry.path() / name).string());
+            search_paths.push_back(
+                (entry.path() / (name + "." + uid_str)).string());
+            search_paths.push_back(
+                (entry.path() / "qutim_mumblelink").string());
+          }
+        }
       }
-      if (fd >= 0) break;
+    }
+
+    int fd = -1;
+    for (const auto& path : search_paths) {
+      if (path[0] == '/' && path.rfind("/dev/shm/", 0) != 0) {
+        fd = shm_open(path.c_str(), O_RDONLY, 0600);
+      } else {
+        fd = open(path.c_str(), O_RDONLY);
+      }
+      if (fd >= 0) {
+        Log_Nfo("[mumble] Connected to shared memory at: {}", path);
+        break;
+      }
     }
 
     if (fd < 0) {
@@ -194,7 +234,15 @@ bool MumbleLink::Update() {
   int32_t oldmap_id = map_id_;
   map_id_ = -1;
 
+#ifdef _WIN32
   std::wstring ident(lm_->identity, 255);
+#else
+  std::wstring ident;
+  ident.reserve(256);
+  for (size_t i = 0; i < 255 && lm_->identity[i] != 0; ++i) {
+    ident.push_back(static_cast<wchar_t>(lm_->identity[i]));
+  }
+#endif
   auto id = ident.find(L"\"map_id\":");
   if (id != ident.npos) {
     std::swscanf(ident.substr(id).c_str(), L"\"map_id\":%d", &map_id_);

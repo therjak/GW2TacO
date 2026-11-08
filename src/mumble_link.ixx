@@ -53,14 +53,26 @@ export struct LinkedMem {
   float f_avatar_position[3] = {0};
   float f_avatar_front[3] = {0};
   float f_avatar_top[3] = {0};
+#ifdef _WIN32
   wchar_t name[256] = {0};
+#else
+  char16_t name[256] = {0};
+#endif
   float f_camera_position[3] = {0};
   float f_camera_front[3] = {0};
   float f_camera_top[3] = {0};
+#ifdef _WIN32
   wchar_t identity[256] = {0};
+#else
+  char16_t identity[256] = {0};
+#endif
   uint32_t context_len = 0;
   unsigned char context[256] = {0};
+#ifdef _WIN32
   wchar_t description[2048] = {0};
+#else
+  char16_t description[2048] = {0};
+#endif
 };
 
 export constexpr int kAvgCamCounter = 6;
