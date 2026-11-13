@@ -836,6 +836,16 @@ else()
     )
 endif()
 
+find_program(GO_EXECUTABLE go)
+if(GO_EXECUTABLE)
+    add_custom_target(mumble_link_bridge
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/mumble_link_bridge/build.sh" "${CMAKE_BINARY_DIR}"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/tools/mumble_link_bridge"
+        BYPRODUCTS "${CMAKE_BINARY_DIR}/mumble_link_bridge.exe"
+        COMMENT "Building MumbleLink Bridge for Windows"
+    )
+endif()
+
 ################################################################################
 # CPACK
 ################################################################################
