@@ -11,3 +11,4 @@ syntax: glob
 /build/*
 .cache/*
 build_taco/*
+*.exe
