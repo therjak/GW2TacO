@@ -5,6 +5,8 @@
 package main
 
 import (
+	"context"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"os"
@@ -25,6 +27,10 @@ const (
 	offsetTick      = 4
 	offsetContext   = 1108
 	offsetProcessId = offsetContext + 80 // 1188
+
+	idleThreshold    = 500 * time.Millisecond
+	procCheckPeriod  = 1 * time.Second
+	maxSnapshotTries = 3
 )
 
 var (
@@ -66,6 +72,48 @@ func isProcessAlive(pid uint32) bool {
 	return exitCode == stillActive
 }
 
+// sleepContext waits for duration d or until ctx is cancelled.
+// It returns true if the timer elapsed, or false if ctx was cancelled.
+func sleepContext(ctx context.Context, d time.Duration) bool {
+	timer := time.NewTimer(d)
+	defer timer.Stop()
+	select {
+	case <-ctx.Done():
+		return false
+	case <-timer.C:
+		return true
+	}
+}
+
+// readUint32 reads a little-endian uint32 at the given byte offset.
+func readUint32(buf []byte, offset int) uint32 {
+	return binary.LittleEndian.Uint32(buf[offset : offset+4])
+}
+
+// writeDest writes a full MumbleLink frame to the mapped memory or fallback file.
+func writeDest(destBytes []byte, destFile *os.File, data []byte) error {
+	if destBytes != nil {
+		copy(destBytes, data)
+		return nil
+	}
+	_, err := destFile.WriteAt(data, 0)
+	return err
+}
+
+// readConsistentSnapshot copies srcBytes into dst, verifying ui_tick did not
+// change mid-copy so torn frames are not propagated.
+func readConsistentSnapshot(srcBytes []byte, dst *[mumbleSize]byte) (uint32, bool) {
+	for range maxSnapshotTries {
+		tickBefore := readUint32(srcBytes, offsetTick)
+		copy(dst[:], srcBytes)
+		tickAfter := readUint32(srcBytes, offsetTick)
+		if tickBefore == tickAfter {
+			return tickAfter, true
+		}
+	}
+	return 0, false
+}
+
 func main() {
 	defaultDest := os.Getenv("GW2_MUMBLE_PATH")
 	if defaultDest == "" {
@@ -83,6 +131,15 @@ func main() {
 	verboseFlag := flag.Bool("verbose", false, "Print verbose telemetry updates")
 	flag.Parse()
 
+	if *rateFlag <= 0 {
+		fmt.Printf("[MumbleLink Bridge] Error: -rate must be > 0 (got %d)\n", *rateFlag)
+		os.Exit(1)
+	}
+	if *idleRateFlag <= 0 {
+		fmt.Printf("[MumbleLink Bridge] Error: -idle-rate must be > 0 (got %d)\n", *idleRateFlag)
+		os.Exit(1)
+	}
+
 	targetPath := normalizePath(*destFlag)
 	if !*quietFlag {
 		fmt.Printf("[MumbleLink Bridge] Initializing...\n")
@@ -96,8 +153,8 @@ func main() {
 		fmt.Printf("[MumbleLink Bridge] Warning: Could not create directory %s: %v\n", dir, err)
 	}
 
-	// Open or create the target file
-	destFile, err := os.OpenFile(targetPath, os.O_RDWR|os.O_CREATE, 0666)
+	// Open or create the target file, truncating any stale data from previous runs
+	destFile, err := os.OpenFile(targetPath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		fmt.Printf("[MumbleLink Bridge] Error opening target file %s: %v\n", targetPath, err)
 		os.Exit(1)
@@ -131,23 +188,14 @@ func main() {
 		defer syscall.CloseHandle(hDestMap)
 	}
 
-	// Handle graceful shutdown on Ctrl+C / SIGINT
-	sigChan := make(chan os.Signal, 1)
-	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-sigChan
-		if !*quietFlag {
-			fmt.Printf("\n[MumbleLink Bridge] Shutting down cleanly...\n")
-		}
-		if destPtr != 0 {
-			_ = syscall.UnmapViewOfFile(destPtr)
-		}
-		if hDestMap != 0 {
-			_ = syscall.CloseHandle(hDestMap)
-		}
-		destFile.Close()
-		os.Exit(0)
-	}()
+	var zeroBuf [mumbleSize]byte
+	if err := writeDest(destBytes, destFile, zeroBuf[:]); err != nil && !*quietFlag {
+		fmt.Printf("[MumbleLink Bridge] Warning: Failed to clear %s: %v\n", targetPath, err)
+	}
+
+	// Handle graceful shutdown on Ctrl+C / SIGTERM without racing with active writes
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	rateDuration := time.Duration(*rateFlag) * time.Millisecond
 	idleDuration := time.Duration(*idleRateFlag) * time.Millisecond
@@ -157,19 +205,26 @@ func main() {
 		os.Exit(1)
 	}
 
-	for {
+	var snapshot [mumbleSize]byte
+
+	for ctx.Err() == nil {
 		if !*quietFlag {
 			fmt.Printf("[MumbleLink Bridge] Waiting for Guild Wars 2 (%s)...\n", *nameFlag)
 		}
 
 		var hSrc syscall.Handle
-		for {
+		for ctx.Err() == nil {
 			r1, _, _ := procOpenFileMappingW.Call(uintptr(fileMapRead), 0, uintptr(unsafe.Pointer(nameUtf16)))
 			if r1 != 0 {
 				hSrc = syscall.Handle(r1)
 				break
 			}
-			time.Sleep(1 * time.Second)
+			if !sleepContext(ctx, 1*time.Second) {
+				break
+			}
+		}
+		if ctx.Err() != nil {
+			break
 		}
 
 		srcPtr, _, errMap := procMapViewOfFile.Call(uintptr(hSrc), uintptr(fileMapRead), 0, 0, mumbleSize)
@@ -178,7 +233,9 @@ func main() {
 				fmt.Printf("[MumbleLink Bridge] Failed to map view of source memory: %v. Retrying in 1s...\n", errMap)
 			}
 			syscall.CloseHandle(hSrc)
-			time.Sleep(1 * time.Second)
+			if !sleepContext(ctx, 1*time.Second) {
+				break
+			}
 			continue
 		}
 
@@ -189,35 +246,43 @@ func main() {
 
 		var lastTick uint32
 		var lastPid uint32
-		idleCounter := 0
-		checkProcessCounter := 0
-		connected := true
+		var writeErrLogged bool
+		now := time.Now()
+		lastTickTime := now
+		lastProcCheck := now
 
-		for connected {
-			curTick := *(*uint32)(unsafe.Pointer(srcPtr + offsetTick))
+		for ctx.Err() == nil {
+			curTick := readUint32(srcBytes, offsetTick)
 
 			if curTick != lastTick {
-				if destBytes != nil {
-					copy(destBytes, srcBytes)
-				} else {
-					_, _ = destFile.WriteAt(srcBytes, 0)
-				}
+				snapTick, ok := readConsistentSnapshot(srcBytes, &snapshot)
+				if ok && snapTick != lastTick {
+					if err := writeDest(destBytes, destFile, snapshot[:]); err != nil {
+						if !writeErrLogged && !*quietFlag {
+							fmt.Printf("[MumbleLink Bridge] Warning: Write failed on %s: %v\n", targetPath, err)
+							writeErrLogged = true
+						}
+					} else {
+						writeErrLogged = false
+					}
 
-				if *verboseFlag && curTick%100 == 0 {
-					pid := *(*uint32)(unsafe.Pointer(srcPtr + offsetProcessId))
-					fmt.Printf("[MumbleLink Bridge] Tick: %d | PID: %d\n", curTick, pid)
-				}
+					if *verboseFlag && snapTick%100 == 0 {
+						pid := readUint32(snapshot[:], offsetProcessId)
+						fmt.Printf("[MumbleLink Bridge] Tick: %d | PID: %d\n", snapTick, pid)
+					}
 
-				lastTick = curTick
-				idleCounter = 0
-				time.Sleep(rateDuration)
+					lastTick = snapTick
+					lastTickTime = time.Now()
+				}
+				if !sleepContext(ctx, rateDuration) {
+					break
+				}
 			} else {
-				idleCounter++
-				if idleCounter > 60 { // ~500ms without tick change
-					checkProcessCounter++
-					if checkProcessCounter >= 10 { // check every ~1 second of idle
-						checkProcessCounter = 0
-						pid := *(*uint32)(unsafe.Pointer(srcPtr + offsetProcessId))
+				now = time.Now()
+				if now.Sub(lastTickTime) >= idleThreshold {
+					if now.Sub(lastProcCheck) >= procCheckPeriod {
+						lastProcCheck = now
+						pid := readUint32(srcBytes, offsetProcessId)
 						if pid != 0 {
 							lastPid = pid
 						}
@@ -225,19 +290,27 @@ func main() {
 							if !*quietFlag {
 								fmt.Printf("[MumbleLink Bridge] Guild Wars 2 process (PID %d) terminated.\n", lastPid)
 							}
-							connected = false
 							break
 						}
 					}
-					time.Sleep(idleDuration)
+					if !sleepContext(ctx, idleDuration) {
+						break
+					}
 				} else {
-					time.Sleep(rateDuration)
+					if !sleepContext(ctx, rateDuration) {
+						break
+					}
 				}
 			}
 		}
 
-		// Cleanup source mapping and prepare for reconnection
-		procUnmapViewOfFile.Call(srcPtr)
-		syscall.CloseHandle(hSrc)
+		// Cleanup source mapping and clear stale destination data before reconnecting
+		_, _, _ = procUnmapViewOfFile.Call(srcPtr)
+		_ = syscall.CloseHandle(hSrc)
+		_ = writeDest(destBytes, destFile, zeroBuf[:])
+	}
+
+	if !*quietFlag {
+		fmt.Printf("\n[MumbleLink Bridge] Shutting down cleanly...\n")
 	}
 }
