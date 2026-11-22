@@ -315,6 +315,32 @@ gui::Widget* GW2MapTimer::GetItemUnderMouse(const Point& point,
   return item;
 }
 
+void GW2MapTimer::CollectInputRects(const Rect& crop_rect,
+                                    std::vector<Rect>& out_rects,
+                                    bool include_self) {
+  if (IsHidden()) return;
+
+  Rect local_crop_rect = crop_rect | GetScreenRect();
+  if (local_crop_rect.Width() <= 0 || local_crop_rect.Height() <= 0) {
+    return;
+  }
+
+  if (IsScrollbarVisible()) {
+    Rect sr = GetScreenRect();
+    Rect b1, su, th, sd, b2;
+    GetVScrollbarRectangles(&b1, &su, &th, &sd, &b2);
+    b1.Move(sr.x1, sr.y1);
+    Rect scrollbar_rect(b1.x1, sr.y1, b1.x2, sr.y2);
+    Rect clipped = local_crop_rect | scrollbar_rect;
+    if (clipped.Width() > 0 && clipped.Height() > 0) {
+      out_rects.push_back(clipped);
+    }
+    return;
+  }
+
+  gui::Widget::CollectInputRects(crop_rect, out_rects, include_self);
+}
+
 void GW2MapTimer::SetLayout(const XMLNode& node) {
   std::unordered_map<std::string, std::vector<Map>> category_maps_dict;
   std::vector<std::string> categories_list;

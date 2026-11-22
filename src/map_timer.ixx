@@ -72,6 +72,9 @@ export class GW2MapTimer : public gui::GuiType<"maptimer", gui::Widget> {
   Widget* GetItemUnderMouse(const math::Point& point,
                             const math::Rect& crop_rect,
                             gui::MessageType type) override;
+  void CollectInputRects(const math::Rect& crop_rect,
+                         std::vector<math::Rect>& out_rects,
+                         bool include_self = true) override;
   void OnDraw(gui::DrawAPI* api) override;
   void SetLayout(const XMLNode& node);
   void UpdateScrollbarData(int ypos, const math::Rect& cl);

@@ -642,6 +642,32 @@ Widget* Widget::GetItemUnderMouse(const Point& Pos, const Rect& CropRect,
   return this;
 }
 
+void Widget::CollectInputRects(const Rect& crop_rect,
+                               std::vector<Rect>& out_rects,
+                               bool include_self) {
+  if (hidden_) return;
+
+  Rect local_crop_rect = crop_rect | screen_rect_;
+  if (local_crop_rect.Width() <= 0 || local_crop_rect.Height() <= 0) {
+    return;
+  }
+
+  if (include_self && !IsMouseTransparent(Point(0, 0), WBM_LEFTBUTTONDOWN) &&
+      GetType() != "clickthroughbutton") {
+    out_rects.push_back(local_crop_rect);
+    return;
+  }
+
+  Rect child_crop_rect = local_crop_rect | ClientToScreen(GetClientRect());
+  if (child_crop_rect.Width() <= 0 || child_crop_rect.Height() <= 0) {
+    return;
+  }
+
+  for (auto& child : children_) {
+    child->CollectInputRects(child_crop_rect, out_rects, true);
+  }
+}
+
 void Widget::SetChildAsTopmost(int32_t Index) {
   auto it = children_.begin() + Index;
   std::rotate(it, it + 1, children_.end());

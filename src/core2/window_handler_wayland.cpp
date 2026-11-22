@@ -230,6 +230,14 @@ bool WindowHandlerWayland::Initialize(const WindowParameters& window_params) {
   zwlr_layer_surface_v1_set_keyboard_interactivity(
       layer_surface_, ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_NONE);
 
+  // Start click-through (empty input region) until interactive UI widgets are
+  // laid out, so the overlay never blocks the game by default.
+  struct wl_region* empty_region = wl_compositor_create_region(compositor_);
+  wl_surface_set_input_region(surface_, empty_region);
+  wl_region_destroy(empty_region);
+  last_input_region_.clear();
+  input_region_initialized_ = true;
+
   // Commit surface to request initial configure event from compositor
   wl_surface_commit(surface_);
 
@@ -375,24 +383,27 @@ void WindowHandlerWayland::SetInputRegion(
     const std::vector<math::Rect>& rects) {
   if (!compositor_ || !surface_) return;
 
+  if (input_region_initialized_ && rects == last_input_region_) {
+    return;
+  }
+
   struct wl_region* region = wl_compositor_create_region(compositor_);
   for (const auto& r : rects) {
-    wl_region_add(region, r.x1, r.y1, r.x2 - r.x1, r.y2 - r.y1);
+    const int32_t w = r.x2 - r.x1;
+    const int32_t h = r.y2 - r.y1;
+    if (w > 0 && h > 0) {
+      wl_region_add(region, r.x1, r.y1, w, h);
+    }
   }
   wl_surface_set_input_region(surface_, region);
   wl_region_destroy(region);
   wl_surface_commit(surface_);
+
+  last_input_region_ = rects;
+  input_region_initialized_ = true;
 }
 
-void WindowHandlerWayland::ClearInputRegion() {
-  if (!compositor_ || !surface_) return;
-
-  // An empty region allows all pointer events to pass through to the game
-  struct wl_region* region = wl_compositor_create_region(compositor_);
-  wl_surface_set_input_region(surface_, region);
-  wl_region_destroy(region);
-  wl_surface_commit(surface_);
-}
+void WindowHandlerWayland::ClearInputRegion() { SetInputRegion({}); }
 
 void WindowHandlerWayland::FinalizeMouseCursor() { UpdateCursor(); }
 
