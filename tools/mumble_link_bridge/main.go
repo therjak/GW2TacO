@@ -19,16 +19,12 @@ import (
 )
 
 const (
-	fileMapRead                    = 0x0004
 	processQueryLimitedInformation = 0x1000
 	stillActive                    = 259
 )
 
 var (
 	kernel32               = syscall.NewLazyDLL("kernel32.dll")
-	procOpenFileMappingW   = kernel32.NewProc("OpenFileMappingW")
-	procMapViewOfFile      = kernel32.NewProc("MapViewOfFile")
-	procUnmapViewOfFile    = kernel32.NewProc("UnmapViewOfFile")
 	procOpenProcess        = kernel32.NewProc("OpenProcess")
 	procGetExitCodeProcess = kernel32.NewProc("GetExitCodeProcess")
 )
@@ -151,27 +147,34 @@ func main() {
 			fmt.Printf("[MumbleLink Bridge] Waiting for Guild Wars 2 (%s)...\n", *nameFlag)
 		}
 
-		var hSrc syscall.Handle
-		for ctx.Err() == nil {
-			r1, _, _ := procOpenFileMappingW.Call(uintptr(fileMapRead), 0, uintptr(unsafe.Pointer(nameUtf16)))
-			if r1 != 0 {
-				hSrc = syscall.Handle(r1)
-				break
+		// Guild Wars 2 opens (rather than creates) the named MumbleLink mapping,
+		// so the bridge must create it via CreateFileMappingW. If another process
+		// already created it, CreateFileMapping returns a handle to the existing
+		// mapping with ERROR_ALREADY_EXISTS, which is also valid.
+		hSrc, errCreate := syscall.CreateFileMapping(
+			syscall.InvalidHandle,
+			nil,
+			syscall.PAGE_READWRITE,
+			0,
+			mumbleSize,
+			nameUtf16,
+		)
+		if hSrc == 0 {
+			if !*quietFlag {
+				fmt.Printf("[MumbleLink Bridge] Failed to create/open source mapping %s: %v. Retrying in 1s...\n", *nameFlag, errCreate)
 			}
 			if !sleepContext(ctx, 1*time.Second) {
 				break
 			}
-		}
-		if ctx.Err() != nil {
-			break
+			continue
 		}
 
-		srcPtr, _, errMap := procMapViewOfFile.Call(uintptr(hSrc), uintptr(fileMapRead), 0, 0, mumbleSize)
-		if srcPtr == 0 {
+		srcPtr, errMap := syscall.MapViewOfFile(hSrc, syscall.FILE_MAP_READ, 0, 0, mumbleSize)
+		if errMap != nil || srcPtr == 0 {
 			if !*quietFlag {
 				fmt.Printf("[MumbleLink Bridge] Failed to map view of source memory: %v. Retrying in 1s...\n", errMap)
 			}
-			syscall.CloseHandle(hSrc)
+			_ = syscall.CloseHandle(hSrc)
 			if !sleepContext(ctx, 1*time.Second) {
 				break
 			}
@@ -244,7 +247,7 @@ func main() {
 		}
 
 		// Cleanup source mapping and clear stale destination data before reconnecting
-		_, _, _ = procUnmapViewOfFile.Call(srcPtr)
+		_ = syscall.UnmapViewOfFile(srcPtr)
 		_ = syscall.CloseHandle(hSrc)
 		_ = writeDest(destBytes, destFile, zeroBuf[:])
 	}
