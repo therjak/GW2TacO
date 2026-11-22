@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <string_view>
 #include <vector>
@@ -250,7 +251,23 @@ bool WindowHandlerWayland::Initialize(const WindowParameters& window_params) {
   }
 
   if (shm_) {
-    cursor_theme_ = wl_cursor_theme_load(nullptr, 24, shm_);
+    const char* env_theme = std::getenv("XCURSOR_THEME");
+    int cursor_size = 24;
+    if (const char* env_size = std::getenv("XCURSOR_SIZE")) {
+      const int parsed = std::atoi(env_size);
+      if (parsed > 0 && parsed <= 256) {
+        cursor_size = parsed;
+      }
+    }
+    if (env_theme && env_theme[0] != '\0') {
+      cursor_theme_ = wl_cursor_theme_load(env_theme, cursor_size, shm_);
+    }
+    if (!cursor_theme_) {
+      cursor_theme_ = wl_cursor_theme_load(nullptr, cursor_size, shm_);
+    }
+    if (!cursor_theme_) {
+      cursor_theme_ = wl_cursor_theme_load("Adwaita", cursor_size, shm_);
+    }
     cursor_surface_ = wl_compositor_create_surface(compositor_);
   }
 
@@ -408,7 +425,12 @@ void WindowHandlerWayland::ClearInputRegion() { SetInputRegion({}); }
 void WindowHandlerWayland::FinalizeMouseCursor() { UpdateCursor(); }
 
 void WindowHandlerWayland::UpdateCursor() {
-  if (!cursor_theme_ || !cursor_surface_ || !pointer_) return;
+  if (!pointer_has_focus_ || !cursor_theme_ || !cursor_surface_ || !pointer_) {
+    return;
+  }
+  if (cursor_applied_ && current_mouse_cursor_ == last_applied_cursor_) {
+    return;
+  }
 
   const char* cursor_name = "default";
   switch (current_mouse_cursor_) {
@@ -452,6 +474,8 @@ void WindowHandlerWayland::UpdateCursor() {
       wl_surface_attach(cursor_surface_, buffer, 0, 0);
       wl_surface_damage(cursor_surface_, 0, 0, image->width, image->height);
       wl_surface_commit(cursor_surface_);
+      last_applied_cursor_ = current_mouse_cursor_;
+      cursor_applied_ = true;
     }
   }
 }
@@ -541,6 +565,8 @@ void WindowHandlerWayland::PointerHandleEnter(void* data,
                                               wl_fixed_t sx, wl_fixed_t sy) {
   auto* self = static_cast<WindowHandlerWayland*>(data);
   self->pointer_serial_ = serial;
+  self->pointer_has_focus_ = true;
+  self->cursor_applied_ = false;
   const int32_t x = wl_fixed_to_int(sx);
   const int32_t y = wl_fixed_to_int(sy);
   g_cursor_pos.x = x;
@@ -552,10 +578,11 @@ void WindowHandlerWayland::PointerHandleEnter(void* data,
 
 void WindowHandlerWayland::PointerHandleLeave(void* data,
                                               wl_pointer* /*pointer*/,
-                                              uint32_t serial,
+                                              uint32_t /*serial*/,
                                               wl_surface* /*surface*/) {
   auto* self = static_cast<WindowHandlerWayland*>(data);
-  self->pointer_serial_ = serial;
+  self->pointer_has_focus_ = false;
+  self->cursor_applied_ = false;
 }
 
 void WindowHandlerWayland::PointerHandleMotion(void* data,

@@ -125,6 +125,9 @@ class WindowHandlerWayland : public WindowHandler {
   wl_cursor_theme* cursor_theme_ = nullptr;
   wl_surface* cursor_surface_ = nullptr;
   uint32_t pointer_serial_ = 0;
+  bool pointer_has_focus_ = false;
+  MouseCursor last_applied_cursor_ = MouseCursor::kArrow;
+  bool cursor_applied_ = false;
 
   // Keyboard mapping
   xkb_context* xkb_context_ = nullptr;
