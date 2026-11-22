@@ -377,6 +377,9 @@ class Widget : public CSS {
   virtual void SetChildAsBottommost(int32_t Index);
   virtual bool IsMouseTransparent(const math::Point& ClientSpacePoint,
                                   MessageType type);
+  virtual void CollectInputRects(const math::Rect& crop_rect,
+                                 std::vector<math::Rect>& out_rects,
+                                 bool include_self = true);
 
   Widget* SetCapture();
   [[nodiscard]] bool ReleaseCapture() const;

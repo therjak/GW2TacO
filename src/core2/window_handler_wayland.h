@@ -132,6 +132,8 @@ class WindowHandlerWayland : public WindowHandler {
   xkb_state* xkb_state_ = nullptr;
 
   bool configured_ = false;
+  bool input_region_initialized_ = false;
+  std::vector<math::Rect> last_input_region_;
 
   void UpdateCursor();
 };

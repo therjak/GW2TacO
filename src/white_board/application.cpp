@@ -499,6 +499,15 @@ void Application::Display(DrawAPI* API) {
 
   root_->DrawTree(API);
 
+#ifndef _WIN32
+  std::vector<Rect> input_rects;
+  if (root_ && !root_->IsHidden()) {
+    root_->CollectInputRects(root_->GetScreenRect(), input_rects,
+                             /*include_self=*/false);
+  }
+  SetInputRegion(input_rects);
+#endif
+
   draw_api_->RenderDisplayList();
   device_->EndScene();
   device_->Flip(vsync_);
