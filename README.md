@@ -113,6 +113,14 @@ On Wayland compositors, launch the executable with the Vulkan backend enabled:
 If running steam under flatpak access to /dev/shm must be granted:
 flatpak override --user --filesystem=/dev/shm com.valvesoftware.Steam
 
+The mumble_link_brigde (tools/mumble_link_bridge) needs to be build with build.sh.
+Afterwards launch_gw2.bat and mumble_link_bridge.exe should get copied into the Guild Wars 2 directory.
+
+The steam command should be
+```
+bash -c 'exec "${@/%Gw2-64.exe/launch_gw2.bat}"' -- %command%
+```
+
 ---
 
 ## Building on Windows
