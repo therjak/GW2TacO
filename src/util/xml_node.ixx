@@ -11,7 +11,7 @@ module;
 
 export module xml:node;
 
-export class XMLDocument;
+class XMLDocument;
 
 export class XMLNode {
  public:
