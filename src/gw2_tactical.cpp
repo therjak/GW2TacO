@@ -981,7 +981,7 @@ GW2TacticalDisplay::GW2TacticalDisplay() : GuiType() {}
 
 GW2TacticalDisplay::~GW2TacticalDisplay() {}
 
-gui::Widget* GW2TacticalDisplay::Factory(gui::Widget* Root, const XMLNode& node,
+gui::Widget* GW2TacticalDisplay::Factory(gui::Widget* Root, const xml::XMLNode& node,
                                          const Rect& Pos) {
   return GW2TacticalDisplay::Create(Root, Pos);
 }
@@ -1012,7 +1012,7 @@ bool FindSavedCategory(GW2TacticalCategory* t) {
   return false;
 }
 
-void ExportSavedCategories(XMLNode* n, GW2TacticalCategory* t) {
+void ExportSavedCategories(xml::XMLNode* n, GW2TacticalCategory* t) {
   if (!FindSavedCategory(t)) return;
   auto& nn = n->AddChild("MarkerCategory");
   nn.SetAttribute("name", t->name);
@@ -1022,8 +1022,8 @@ void ExportSavedCategories(XMLNode* n, GW2TacticalCategory* t) {
   for (const auto& c : t->children) ExportSavedCategories(&nn, c.get());
 }
 
-void ExportPOI(XMLNode* n, const POI& p) {
-  XMLNode* t = &n->AddChild("POI");
+void ExportPOI(xml::XMLNode* n, const POI& p) {
+  xml::XMLNode* t = &n->AddChild("POI");
   t->SetAttributeFromInteger("MapID", p.map_id);
   t->SetAttributeFromFloat("xpos", p.position.x);
   t->SetAttributeFromFloat("ypos", p.position.y);
@@ -1037,8 +1037,8 @@ void ExportPOI(XMLNode* n, const POI& p) {
   p.type_data_.Write(t);
 }
 
-void ExportTrail(XMLNode* n, const GW2Trail& p) {
-  XMLNode* t = &n->AddChild("Trail");
+void ExportTrail(xml::XMLNode* n, const GW2Trail& p) {
+  xml::XMLNode* t = &n->AddChild("Trail");
   if (!p.type_.empty()) t->SetAttribute("type", p.type_);
   t->SetAttribute("GUID",
                   B64Encode(std::string_view(
@@ -1047,15 +1047,15 @@ void ExportTrail(XMLNode* n, const GW2Trail& p) {
 }
 
 void ExportPOIS() {
-  XMLDocument d;
-  XMLNode root = d.GetDocumentNode();
-  XMLNode& overlayData = root.AddChild("OverlayData");
+  xml::XMLDocument d;
+  xml::XMLNode root = d.GetDocumentNode();
+  xml::XMLNode& overlayData = root.AddChild("OverlayData");
 
   for (const auto& c : category_root.children) {
     ExportSavedCategories(&overlayData, c.get());
   }
 
-  XMLNode* n = &overlayData.AddChild("POIs");
+  xml::XMLNode* n = &overlayData.AddChild("POIs");
 
   const auto& mPOIs = GetMapPOIs();
   for (auto& poi : mPOIs) {
@@ -1074,7 +1074,7 @@ void ExportPOIS() {
   for (const auto& r : Routes) {
     if (r.external) continue;
 
-    XMLNode* t = &n->AddChild("Route");
+    xml::XMLNode* t = &n->AddChild("Route");
     t->SetAttribute("Name", r.name);
     t->SetAttributeFromInteger("BackwardDirection",
                                static_cast<int32_t>(r.backwards));
@@ -1090,7 +1090,7 @@ void ExportPOIS() {
   d.SaveToFile("poidata.xml");
 }
 
-GUID LoadGUID(const XMLNode& n) {
+GUID LoadGUID(const xml::XMLNode& n) {
   auto guidb64 = n.GetAttributeAsString("GUID");
 
   auto data = B64Decode(guidb64);
@@ -1106,7 +1106,7 @@ GUID LoadGUID(const XMLNode& n) {
   return guid;
 }
 
-void RecursiveImportPOIType(const XMLNode& root, GW2TacticalCategory* Root,
+void RecursiveImportPOIType(const xml::XMLNode& root, GW2TacticalCategory* Root,
                             std::string_view currentCategory,
                             const MarkerTypeData& defaults, bool KeepSaveState,
                             std::string_view zipFile) {
@@ -1178,11 +1178,11 @@ void RecursiveImportPOIType(const XMLNode& root, GW2TacticalCategory* Root,
 }
 
 void ImportPOITypes() {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile("categorydata.xml")) return;
 
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
-  XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
   category_map.clear();
   category_root.children.clear();
@@ -1190,7 +1190,7 @@ void ImportPOITypes() {
   RecursiveImportPOIType(root, &category_root, "", defaults, false, "");
 }
 
-void ImportPOI(const XMLNode& t, POI* p, std::string_view zipFile) {
+void ImportPOI(const xml::XMLNode& t, POI* p, std::string_view zipFile) {
   if (t.HasAttribute("MapID")) t.GetAttributeAsInteger("MapID", &p->map_id);
   if (t.HasAttribute("xpos")) t.GetAttributeAsFloat("xpos", &p->position.x);
   if (t.HasAttribute("ypos")) t.GetAttributeAsFloat("ypos", &p->position.y);
@@ -1216,7 +1216,7 @@ void ImportPOI(const XMLNode& t, POI* p, std::string_view zipFile) {
   p->icon_file_ = p->type_data_.icon_file_;
 }
 
-bool ImportTrail(const XMLNode& t, GW2Trail* p, std::string_view zipFile) {
+bool ImportTrail(const xml::XMLNode& t, GW2Trail* p, std::string_view zipFile) {
   p->zip_file_ = zipFile;
 
   if (t.HasAttribute("type")) p->type_ = t.GetAttributeAsString("type");
@@ -1235,20 +1235,20 @@ bool ImportTrail(const XMLNode& t, GW2Trail* p, std::string_view zipFile) {
   return p->Import(p->type_data_.trail_data_, zipFile);
 }
 
-void ImportPOIDocument(const XMLDocument& d, bool External,
+void ImportPOIDocument(const xml::XMLDocument& d, bool External,
                        std::string_view zipFile) {
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
-  XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
   auto defaults = MarkerTypeData();
   RecursiveImportPOIType(root, &category_root, "", defaults, !External,
                          zipFile);
 
   if (root.GetChildCount("POIs")) {
-    XMLNode n = root.GetChild("POIs");
+    xml::XMLNode n = root.GetChild("POIs");
 
     if (n.GetChildCount("POI") > 0) {
-      XMLNode t = n.GetChild("POI", 0);
+      xml::XMLNode t = n.GetChild("POI", 0);
       do {
         POI p;
         ImportPOI(t, &p, zipFile);
@@ -1258,7 +1258,7 @@ void ImportPOIDocument(const XMLDocument& d, bool External,
     }
 
     for (int32_t x = 0; x < n.GetChildCount("Route"); x++) {
-      XMLNode rn = n.GetChild("Route", x);
+      xml::XMLNode rn = n.GetChild("Route", x);
       POIRoute r;
       if (rn.HasAttribute("Name")) r.name = rn.GetAttributeAsString("Name");
       int32_t b = false;
@@ -1279,7 +1279,7 @@ void ImportPOIDocument(const XMLDocument& d, bool External,
       }
 
       if (rn.GetChildCount("POI") > 0) {
-        XMLNode t = rn.GetChild("POI", 0);
+        xml::XMLNode t = rn.GetChild("POI", 0);
         do {
           POI p;
           ImportPOI(t, &p, zipFile);
@@ -1294,7 +1294,7 @@ void ImportPOIDocument(const XMLDocument& d, bool External,
     }
 
     if (n.GetChildCount("Trail") > 0) {
-      XMLNode t = n.GetChild("Trail", 0);
+      xml::XMLNode t = n.GetChild("Trail", 0);
       do {
         auto p = std::make_unique<GW2Trail>();
         if (ImportTrail(t, p.get(), zipFile)) {
@@ -1307,13 +1307,13 @@ void ImportPOIDocument(const XMLDocument& d, bool External,
 }
 
 void ImportPOIFile(std::string_view s, bool External) {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile(s.data())) return;
   ImportPOIDocument(d, External, "");
 }
 
 void ImportPOIString(std::string_view data, std::string_view zipFile) {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromString(data)) return;
   ImportPOIDocument(d, true, zipFile);
 }
@@ -1388,17 +1388,17 @@ void ImportPOIS() {
 }
 
 void ImportPOIActivationData() {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile("activationdata.xml")) return;
 
   if (!d.GetDocumentNode().GetChildCount("OverlayData")) return;
-  XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("OverlayData");
 
   if (root.GetChildCount("Activations")) {
-    XMLNode n = root.GetChild("Activations");
+    xml::XMLNode n = root.GetChild("Activations");
 
     for (int32_t x = 0; x < n.GetChildCount("POIActivation"); x++) {
-      XMLNode t = n.GetChild("POIActivation", x);
+      xml::XMLNode t = n.GetChild("POIActivation", x);
 
       if (!t.HasAttribute("GUID")) continue;
 
@@ -1433,11 +1433,11 @@ void ImportPOIActivationData() {
 }
 
 void ExportPOIActivationData() {
-  XMLDocument d;
-  XMLNode root = d.GetDocumentNode();
+  xml::XMLDocument d;
+  xml::XMLNode root = d.GetDocumentNode();
   auto& overlayData = root.AddChild("OverlayData");
 
-  XMLNode* n = &overlayData.AddChild("Activations");
+  xml::XMLNode* n = &overlayData.AddChild("Activations");
 
   for (auto& ad : ActivationData) {
     auto& dat = ad.second;
@@ -1450,7 +1450,7 @@ void ExportPOIActivationData() {
         }
       }
     }
-    XMLNode* t = &n->AddChild("POIActivation");
+    xml::XMLNode* t = &n->AddChild("POIActivation");
     t->SetAttributeFromInteger(
         "lut1", (reinterpret_cast<int32_t*>(&dat.lastUpdateTime))[0]);
     t->SetAttributeFromInteger(

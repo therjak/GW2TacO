@@ -36,7 +36,7 @@ enum class MouseClickRepeatMode : uint8_t {
   WB_MCR_MIDDLE = 3
 };
 
-typedef Widget*(__cdecl* FactoryCallback)(Widget* Root, const XMLNode& node,
+typedef Widget*(__cdecl* FactoryCallback)(Widget* Root, const xml::XMLNode& node,
                                           const math::Rect& Pos);
 
 class Application : public renderer::WindowHandlerPlatform {
@@ -144,7 +144,7 @@ class Application : public renderer::WindowHandlerPlatform {
 
  private:
   bool Initialize();
-  bool GenerateGUIFromXML(Widget* Root, XMLDocument* doc);
+  bool GenerateGUIFromXML(Widget* Root, xml::XMLDocument* doc);
   bool SendMessageToItem(const Message& Message, Widget* Target);
   void ProcessMessage(Message& message);
   Widget* GetItemUnderMouse(const math::Point& Point, MessageType w);
@@ -153,12 +153,12 @@ class Application : public renderer::WindowHandlerPlatform {
   virtual void CleanTrash();
   virtual void UpdateControlKeyStates();  // update ctrl alt shift states
   virtual int32_t GetKeyboardState();
-  bool ProcessGUIXML(Widget* Root, const XMLNode& node);
-  bool GenerateGUIFromXMLNode(Widget* Root, const XMLNode& node,
+  bool ProcessGUIXML(Widget* Root, const xml::XMLNode& node);
+  bool GenerateGUIFromXMLNode(Widget* Root, const xml::XMLNode& node,
                               math::Rect* Pos);
-  bool GenerateGUITemplateFromXML(Widget* Root, XMLDocument* doc,
+  bool GenerateGUITemplateFromXML(Widget* Root, xml::XMLDocument* doc,
                                   std::string_view TemplateID);
-  Widget* GenerateUIItem(Widget* Root, const XMLNode& node,
+  Widget* GenerateUIItem(Widget* Root, const xml::XMLNode& node,
                          const math::Rect& Pos);
 
   std::unique_ptr<RingBuffer<int32_t, 60>> frame_times_;
@@ -184,7 +184,7 @@ class Application : public renderer::WindowHandlerPlatform {
   std::string screen_shot_name_;
   MouseClickRepeatMode click_repeater_mode_;
   int64_t next_repeated_click_time_{};
-  std::unordered_map<std::string, std::unique_ptr<XMLDocument>>
+  std::unordered_map<std::string, std::unique_ptr<xml::XMLDocument>>
       layout_repository_;
   StyleManager style_manager_;
   std::unordered_map<std::string, FactoryCallback> factory_callbacks_;

@@ -159,7 +159,7 @@ void GW2RangeDisplay::OnDraw(gui::DrawAPI* api) {
 GW2RangeDisplay::GW2RangeDisplay() : GuiType() {}
 GW2RangeDisplay::~GW2RangeDisplay() = default;
 
-gui::Widget* GW2RangeDisplay::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* GW2RangeDisplay::Factory(gui::Widget* root, const xml::XMLNode& node,
                                       const Rect& pos) {
   return GW2RangeDisplay::Create(root, pos);
 }

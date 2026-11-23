@@ -25,7 +25,7 @@ export class LocationalTimer {
   virtual ~LocationalTimer();
 
   void Update();
-  void ImportData(const XMLNode& node);
+  void ImportData(const xml::XMLNode& node);
 
   int32_t map_id_ = 0;
   math::Sphere enter_sphere_ = math::Sphere(math::Vector3(0, 0, 0), 0);
@@ -53,7 +53,7 @@ export class TimerDisplay : public gui::GuiType<"TimerDisplay", gui::Widget> {
   }
   ~TimerDisplay() override;
 
-  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const xml::XMLNode& node,
                               const math::Rect& pos);
 
   void OnDraw(gui::DrawAPI* api) override;

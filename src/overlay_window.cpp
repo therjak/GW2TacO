@@ -21,7 +21,7 @@ OverlayWindow::OverlayWindow() : GuiType() {}
 
 OverlayWindow::~OverlayWindow() { SetWindowPosition(GetID(), GetPosition()); }
 
-gui::Widget* OverlayWindow::Factory(gui::Widget* Root, const XMLNode& node,
+gui::Widget* OverlayWindow::Factory(gui::Widget* Root, const xml::XMLNode& node,
                                     const Rect& Pos) {
   return OverlayWindow::Create(Root, Pos);
 }

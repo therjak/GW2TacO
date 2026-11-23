@@ -10,7 +10,7 @@ ClickThroughButton::ClickThroughButton(std::string_view txt /*=  ""  */)
     : GuiType(txt) {}
 ClickThroughButton::~ClickThroughButton() = default;
 
-gui::Widget* ClickThroughButton::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* ClickThroughButton::Factory(gui::Widget* root, const xml::XMLNode& node,
                                          const math::Rect& pos) {
   auto button = ClickThroughButton::Create(root, pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));

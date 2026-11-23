@@ -67,7 +67,7 @@ class TextBox : public GuiType<"textbox", Widget> {
   [[nodiscard]] std::string GetText() const { return text_; }
   void SetText(std::string_view val, bool EnableUndo = false);
 
-  static Widget* Factory(Widget* Root, const XMLNode& node,
+  static Widget* Factory(Widget* Root, const xml::XMLNode& node,
                          const math::Rect& Pos);
 
   virtual void SetSelection(int32_t start, int32_t end);

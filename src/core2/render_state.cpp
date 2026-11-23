@@ -94,7 +94,7 @@ void BlendState::SetAlphaToCoverage(bool enabled) {
   alpha_to_coverage_ = enabled;
 }
 
-bool BlendState::Import(XMLNode* node) {
+bool BlendState::Import(xml::XMLNode* node) {
   std::string value_str;
 
   if (node->HasAttribute("AlphaToCoverage")) {
@@ -105,7 +105,7 @@ bool BlendState::Import(XMLNode* node) {
   }
 
   for (int32_t x = 0; x < node->GetChildCount("RenderTarget"); x++) {
-    XMLNode child = node->GetChild("RenderTarget", x);
+    xml::XMLNode child = node->GetChild("RenderTarget", x);
     int32_t id = 0;
     child.GetAttributeAsInteger("Target", &id);
 
@@ -155,12 +155,12 @@ bool BlendState::Import(XMLNode* node) {
   return true;
 }
 
-void BlendState::Export(XMLNode* node) {
+void BlendState::Export(xml::XMLNode* node) {
   node->AddChild("AlphaToCoverage").SetInt(alpha_to_coverage_);
   node->AddChild("IndependentBlend").SetInt(independent_blend_);
 
   for (int32_t x = 0; x < 8; x++) {
-    XMLNode blend_node = node->AddChild("RenderTarget");
+    xml::XMLNode blend_node = node->AddChild("RenderTarget");
     blend_node.SetAttributeFromInteger("Target", x);
 
     blend_node.AddChild("BlendEnable")
@@ -219,7 +219,7 @@ void DepthStencilState::SetDepthEnable(bool enabled) {
   depth_enable_ = enabled;
 }
 
-bool DepthStencilState::Import(XMLNode* node) {
+bool DepthStencilState::Import(xml::XMLNode* node) {
   if (node->GetChildCount("DepthEnable")) {
     node->GetChild("DepthEnable").GetValue(&depth_enable_);
   }
@@ -235,7 +235,7 @@ bool DepthStencilState::Import(XMLNode* node) {
   return true;
 }
 
-void DepthStencilState::Export(XMLNode* node) {
+void DepthStencilState::Export(xml::XMLNode* node) {
   node->AddChild("DepthEnable").SetInt(depth_enable_);
   node->AddChild("ZWriteEnable").SetInt(z_write_enable_);
   node->AddChild("DepthFunc")
@@ -307,7 +307,7 @@ void RasterizerState::SetFillMode(FillMode mode) {
   fill_mode_ = mode;
 }
 
-bool RasterizerState::Import(XMLNode* node) {
+bool RasterizerState::Import(xml::XMLNode* node) {
   if (node->GetChildCount("FillMode")) {
     auto value_str = node->GetChild("FillMode").GetText();
     FindEnumByName(FillModeNames, value_str, fill_mode_);
@@ -347,7 +347,7 @@ bool RasterizerState::Import(XMLNode* node) {
   return true;
 }
 
-void RasterizerState::Export(XMLNode* node) {
+void RasterizerState::Export(xml::XMLNode* node) {
   node->AddChild("FillMode")
       .SetText(FindNameByEnum(FillModeNames, fill_mode_).data());
   node->AddChild("CullMode")
@@ -434,7 +434,7 @@ void SamplerState::SetFilter(Filter filter) {
   filter_ = filter;
 }
 
-bool SamplerState::Import(XMLNode* node) {
+bool SamplerState::Import(xml::XMLNode* node) {
   if (node->GetChildCount("Filter")) {
     auto value_str = node->GetChild("Filter").GetText();
     FindEnumByName(FilterNames, value_str, filter_);
@@ -475,7 +475,7 @@ bool SamplerState::Import(XMLNode* node) {
   return true;
 }
 
-void SamplerState::Export(XMLNode* node) {
+void SamplerState::Export(xml::XMLNode* node) {
   node->AddChild("Filter").SetText(FindNameByEnum(FilterNames, filter_));
   node->AddChild("AddressU")
       .SetText(FindNameByEnum(AddressModeNames, address_u_));

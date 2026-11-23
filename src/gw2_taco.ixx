@@ -62,7 +62,7 @@ export class GW2TacO : public gui::GuiType<"GW2TacO", gui::Widget> {
   }
   ~GW2TacO() override;
 
-  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const xml::XMLNode& node,
                               const math::Rect& pos);
 
   void OpenWindow(std::string_view s);

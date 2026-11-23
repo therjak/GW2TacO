@@ -45,7 +45,7 @@ GW2HPGrid::GW2HPGrid() : GuiType() { LoadGrids(); }
 
 GW2HPGrid::~GW2HPGrid() = default;
 
-gui::Widget* GW2HPGrid::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* GW2HPGrid::Factory(gui::Widget* root, const xml::XMLNode& node,
                                 const Rect& pos) {
   return GW2HPGrid::Create(root, pos);
 }
@@ -56,7 +56,7 @@ bool GW2HPGrid::IsMouseTransparent(const Point& client_space_point,
 }
 
 void GW2HPGrid::LoadGrids() {
-  auto d = std::make_unique<XMLDocument>();
+  auto d = std::make_unique<xml::XMLDocument>();
   if (!d->LoadFromFile("hpgrids.xml")) {
     return;
   }
@@ -64,10 +64,10 @@ void GW2HPGrid::LoadGrids() {
   if (!d->GetDocumentNode().GetChildCount("hpgrids")) {
     return;
   }
-  XMLNode root = d->GetDocumentNode().GetChild("hpgrids");
+  xml::XMLNode root = d->GetDocumentNode().GetChild("hpgrids");
 
   for (int32_t x = 0; x < root.GetChildCount("grid"); x++) {
-    XMLNode node = root.GetChild("grid", x);
+    xml::XMLNode node = root.GetChild("grid", x);
     GridData gd;
 
     if (node.HasAttribute("mapid")) {
@@ -88,7 +88,7 @@ void GW2HPGrid::LoadGrids() {
     }
 
     for (int32_t y = 0; y < node.GetChildCount("percentage"); y++) {
-      XMLNode perc = node.GetChild("percentage", y);
+      xml::XMLNode perc = node.GetChild("percentage", y);
       GridLine line;
       if (perc.HasAttribute("value")) {
         perc.GetAttributeAsFloat("value", &line.percentage);

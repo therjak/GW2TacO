@@ -1049,7 +1049,7 @@ bool TextBox::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-Widget* TextBox::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
+Widget* TextBox::Factory(Widget* Root, const xml::XMLNode& node, const Rect& Pos) {
   int32_t Flags = 0;
   if (node.HasAttribute("singleline")) {
     int32_t b = 0;

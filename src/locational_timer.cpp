@@ -17,11 +17,11 @@ using math::Point;
 using math::Rect;
 
 void ImportLocationalTimers() {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile("locationaltimers.xml")) return;
 
   if (!d.GetDocumentNode().GetChildCount("timers")) return;
-  XMLNode root = d.GetDocumentNode().GetChild("timers");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("timers");
 
   for (int32_t x = 0; x < root.GetChildCount("areatriggeredtimer"); x++) {
     LocationalTimer t;
@@ -58,7 +58,7 @@ void LocationalTimer::Update() {
   }
 }
 
-void LocationalTimer::ImportData(const XMLNode& node) {
+void LocationalTimer::ImportData(const xml::XMLNode& node) {
   if (node.HasAttribute("mapid")) node.GetAttributeAsInteger("mapid", &map_id_);
   if (node.HasAttribute("length")) {
     node.GetAttributeAsInteger("length", &timer_length_);
@@ -104,7 +104,7 @@ void LocationalTimer::ImportData(const XMLNode& node) {
   }
 
   for (int32_t x = 0; x < node.GetChildCount("timeevent"); x++) {
-    XMLNode te = node.GetChild("timeevent", x);
+    xml::XMLNode te = node.GetChild("timeevent", x);
     TimerEvent tmr;
     if (te.HasAttribute("text")) tmr.text = te.GetAttributeAsString("text");
     if (te.HasAttribute("timestamp")) {
@@ -169,7 +169,7 @@ TimerDisplay::TimerDisplay() : GuiType() {}
 
 TimerDisplay::~TimerDisplay() = default;
 
-gui::Widget* TimerDisplay::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* TimerDisplay::Factory(gui::Widget* root, const xml::XMLNode& node,
                                    const Rect& pos) {
   return TimerDisplay::Create(root, pos);
 }

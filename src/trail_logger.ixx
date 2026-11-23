@@ -90,7 +90,7 @@ export class GW2TrailDisplay : public gui::GuiType<"gw2Trails", gui::Widget> {
 
   bool Initialize(gui::Widget* Parent, const math::Rect& Position) override;
 
-  static gui::Widget* Factory(gui::Widget* Root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* Root, const xml::XMLNode& node,
                               const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,

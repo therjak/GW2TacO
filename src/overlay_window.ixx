@@ -23,7 +23,7 @@ export class OverlayWindow : public gui::GuiType<"OverlayWindow", gui::Window> {
     return r;
   }
 
-  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const xml::XMLNode& node,
                               const math::Rect& pos);
 
   bool MessageProc(const gui::Message& message) override;

@@ -357,7 +357,7 @@ bool Window::ApplyStyle(std::string_view prop, std::string_view value,
   return Handled;
 }
 
-Widget* Window::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
+Widget* Window::Factory(Widget* Root, const xml::XMLNode& node, const Rect& Pos) {
   auto window = Window::Create(Root, Pos);
   if (node.HasAttribute("title")) window->SetTitle(node.GetAttribute("title"));
   return window;

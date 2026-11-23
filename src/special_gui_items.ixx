@@ -26,6 +26,6 @@ export class ClickThroughButton
     return r;
   }
 
-  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const xml::XMLNode& node,
                               const math::Rect& pos);
 };

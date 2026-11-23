@@ -146,7 +146,7 @@ Ts3Control::Ts3Control() : GuiType() {}
 
 Ts3Control::~Ts3Control() = default;
 
-gui::Widget* Ts3Control::Factory(gui::Widget* Root, const XMLNode& node,
+gui::Widget* Ts3Control::Factory(gui::Widget* Root, const xml::XMLNode& node,
                                  const Rect& Pos) {
   return Ts3Control::Create(Root, Pos);
 }

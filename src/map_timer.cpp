@@ -341,15 +341,15 @@ void GW2MapTimer::CollectInputRects(const Rect& crop_rect,
   gui::Widget::CollectInputRects(crop_rect, out_rects, include_self);
 }
 
-void GW2MapTimer::SetLayout(const XMLNode& node) {
+void GW2MapTimer::SetLayout(const xml::XMLNode& node) {
   std::unordered_map<std::string, std::vector<Map>> category_maps_dict;
   std::vector<std::string> categories_list;
 
   // categories
-  const XMLNode& categories_node = node.GetChild("Categories");
+  const xml::XMLNode& categories_node = node.GetChild("Categories");
   if (categories_node.IsValid()) {
     for (int x = 0; x < categories_node.GetChildCount("Category"); ++x) {
-      const XMLNode& category_node = categories_node.GetChild("Category", x);
+      const xml::XMLNode& category_node = categories_node.GetChild("Category", x);
 
       Category category;
       if (category_node.HasAttribute("id")) {
@@ -372,10 +372,10 @@ void GW2MapTimer::SetLayout(const XMLNode& node) {
   }
 
   // maps
-  const XMLNode& maps_node = node.GetChild("Maps");
+  const xml::XMLNode& maps_node = node.GetChild("Maps");
   if (maps_node.IsValid()) {
     for (int x = 0; x < maps_node.GetChildCount("Map"); x++) {
-      const XMLNode& map_node = maps_node.GetChild("Map", x);
+      const xml::XMLNode& map_node = maps_node.GetChild("Map", x);
 
       Map map;
       if (map_node.HasAttribute("Name")) {
@@ -410,7 +410,7 @@ void GW2MapTimer::SetLayout(const XMLNode& node) {
 
       // events
       for (int y = 0; y < map_node.GetChildCount("Event"); y++) {
-        const XMLNode& event_node = map_node.GetChild("Event", y);
+        const xml::XMLNode& event_node = map_node.GetChild("Event", y);
         Event event;
         event.length = 0;
         event.start = start;
@@ -478,7 +478,7 @@ void GW2MapTimer::UpdateScrollbarData(int ypos, const Rect& cl) {
 }
 
 GW2MapTimer::GW2MapTimer() : GuiType() {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile("maptimer.xml")) {
     return;
   }
@@ -486,7 +486,7 @@ GW2MapTimer::GW2MapTimer() : GuiType() {
   if (!d.GetDocumentNode().GetChildCount("GW2MapTimer")) {
     return;
   }
-  XMLNode root = d.GetDocumentNode().GetChild("GW2MapTimer");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("GW2MapTimer");
   SetLayout(root);
 
   SetID("MapTimer");
@@ -495,7 +495,7 @@ GW2MapTimer::GW2MapTimer() : GuiType() {
 
 GW2MapTimer::~GW2MapTimer() {}
 
-gui::Widget* GW2MapTimer::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* GW2MapTimer::Factory(gui::Widget* root, const xml::XMLNode& node,
                                   const Rect& pos) {
   return GW2MapTimer::Create(root, pos);
 }

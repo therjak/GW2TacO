@@ -26,7 +26,7 @@ export class GW2HPGrid : public gui::GuiType<"hpgrid", gui::Widget> {
   }
   ~GW2HPGrid() override;
 
-  static gui::Widget* Factory(gui::Widget* root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* root, const xml::XMLNode& node,
                               const math::Rect& pos);
 
   bool IsMouseTransparent(const math::Point& client_space_point,

@@ -33,7 +33,7 @@ class Button : public GuiType<"button", Widget> {
   [[nodiscard]] std::string GetText() const;
   void SetText(std::string_view val);
 
-  static Widget* Factory(Widget* Root, const XMLNode& node,
+  static Widget* Factory(Widget* Root, const xml::XMLNode& node,
                          const math::Rect& Pos);
 
   math::Size GetContentSize() override;

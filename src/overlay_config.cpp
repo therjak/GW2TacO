@@ -26,7 +26,7 @@ bool configChanged = false;
 auto lastConfigChangeTime = global_timer.GetTime();
 
 void LoadConfig() {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile("TacOConfig.xml")) {
     SetConfigValue("EditMode", 0);
     SetConfigValue("InterfaceSize", 1);
@@ -39,7 +39,7 @@ void LoadConfig() {
   ConfigStrings.clear();
 
   if (!d.GetDocumentNode().GetChildCount("TacOConfig")) return;
-  XMLNode root = d.GetDocumentNode().GetChild("TacOConfig");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("TacOConfig");
 
   for (int32_t x = 0; x < root.GetChildCount(); x++) {
     auto item = root.GetChild(x);
@@ -58,8 +58,8 @@ void LoadConfig() {
 }
 
 void SaveConfig() {
-  XMLDocument doc;
-  XMLNode root = doc.GetDocumentNode();
+  xml::XMLDocument doc;
+  xml::XMLNode root = doc.GetDocumentNode();
   auto& tacoConfig = root.AddChild("TacOConfig");
   for (const auto& kdp : ConfigNums) {
     tacoConfig.AddChild(kdp.first).SetAttributeFromInteger("Data", kdp.second);
