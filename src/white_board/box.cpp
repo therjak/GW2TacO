@@ -449,7 +449,7 @@ void Box::SetSizing(BoxAxis axis, BoxSizing siz) {
   RearrangeChildren();
 }
 
-Widget* Box::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
+Widget* Box::Factory(Widget* Root, const xml::XMLNode& node, const Rect& Pos) {
   auto box = Box::Create(Root, Pos);
 
   if (node.HasAttribute("clickthrough")) {

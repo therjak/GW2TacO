@@ -622,7 +622,7 @@ bool GW2TrailDisplay::Initialize(gui::Widget* Parent,
 
 GW2TrailDisplay::~GW2TrailDisplay() { texture_cache_.clear(); }
 
-gui::Widget* GW2TrailDisplay::Factory(gui::Widget* Root, const XMLNode& node,
+gui::Widget* GW2TrailDisplay::Factory(gui::Widget* Root, const xml::XMLNode& node,
                                       const Rect& Pos) {
   return GW2TrailDisplay::Create(Root, Pos);
 }

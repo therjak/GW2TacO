@@ -118,7 +118,7 @@ class GW2TacticalDisplay : public gui::GuiType<"gw2tactical", gui::Widget> {
   }
   ~GW2TacticalDisplay() override;
 
-  static gui::Widget* Factory(gui::Widget* Root, const XMLNode& node,
+  static gui::Widget* Factory(gui::Widget* Root, const xml::XMLNode& node,
                               const math::Rect& Pos);
 
   bool IsMouseTransparent(const math::Point& ClientSpacePoint,

@@ -209,7 +209,7 @@ GW2TacO::GW2TacO() : GuiType() {
 
 GW2TacO::~GW2TacO() {}
 
-gui::Widget* GW2TacO::Factory(gui::Widget* Root, const XMLNode& node,
+gui::Widget* GW2TacO::Factory(gui::Widget* Root, const xml::XMLNode& node,
                               const Rect& Pos) {
   auto ret = GW2TacO::Create(Root, Pos);
   ret->SetFocus();

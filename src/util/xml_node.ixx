@@ -11,9 +11,11 @@ module;
 
 export module xml:node;
 
+export namespace xml {
+
 class XMLDocument;
 
-export class XMLNode {
+class XMLNode {
  public:
   XMLNode();
   XMLNode(const XMLNode& Original);
@@ -71,3 +73,5 @@ export class XMLNode {
   rapidxml::xml_node<char>* pNode;
   const XMLDocument* pDoc;
 };
+
+}  // namespace xml

@@ -186,7 +186,7 @@ DungeonProgress::DungeonProgress()
 
 DungeonProgress::~DungeonProgress() {}
 
-gui::Widget* DungeonProgress::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* DungeonProgress::Factory(gui::Widget* root, const xml::XMLNode& node,
                                       const Rect& pos) {
   return DungeonProgress::Create(root, pos);
 }

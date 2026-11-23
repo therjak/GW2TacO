@@ -51,7 +51,7 @@ Notepad::~Notepad() {
   nptext.Write(tb->GetText());
 }
 
-gui::Widget* Notepad::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* Notepad::Factory(gui::Widget* root, const xml::XMLNode& node,
                               const Rect& pos) {
   return Notepad::Create(root, pos);
 }

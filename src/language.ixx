@@ -32,7 +32,7 @@ export class Localization {
 
  private:
   void ImportFile(std::string_view file);
-  void ImportLanguage(XMLDocument& d);
+  void ImportLanguage(xml::XMLDocument& d);
 
   size_t active_language_idx_ = 0;
   std::vector<Language> languages_;

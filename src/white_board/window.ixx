@@ -69,7 +69,7 @@ class Window : public GuiType<"window", Widget> {
   void SetTitle(std::string_view val) { window_title_ = val; }
 
   uint32_t GetDragMode();
-  static Widget* Factory(Widget* Root, const XMLNode& node,
+  static Widget* Factory(Widget* Root, const xml::XMLNode& node,
                          const math::Rect& Pos);
 
   math::Rect GetElementPos(WindowElement Element);

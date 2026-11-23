@@ -634,13 +634,13 @@ void Application::AddToTrash(std::unique_ptr<Widget>&& item) {
 }
 
 bool Application::LoadXMLLayout(std::string_view XML) {
-  auto doc = std::make_unique<XMLDocument>();
+  auto doc = std::make_unique<xml::XMLDocument>();
   if (!doc->LoadFromString(XML)) {
     Log_Err("[gui] Error loading XML Layout: parsing failed");
     return false;
   }
 
-  XMLNode root = doc->GetDocumentNode();
+  xml::XMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) {
     Log_Err("[gui] Error loading XML Layout: 'guidescriptor' member missing");
@@ -654,7 +654,7 @@ bool Application::LoadXMLLayout(std::string_view XML) {
     return false;
   }
 
-  XMLNode gui = root.GetChild("gui");
+  xml::XMLNode gui = root.GetChild("gui");
   if (!gui.HasAttribute("id")) {
     Log_Err("[gui] Error loading XML Layout: 'id' member missing from 'gui'");
     return false;
@@ -753,14 +753,14 @@ Skin* Application::GetSkin() { return skin_.get(); }
 
 bool Application::LoadSkin(std::string_view XML,
                            std::vector<int>& enabledGlyphs) {
-  XMLDocument doc;
+  xml::XMLDocument doc;
   if (!doc.LoadFromString(XML)) return false;
   if (!doc.GetDocumentNode().GetChildCount("whiteboardskin")) return false;
 
-  XMLNode r = doc.GetDocumentNode().GetChild("whiteboardskin");
+  xml::XMLNode r = doc.GetDocumentNode().GetChild("whiteboardskin");
 
   for (int32_t x = 0; x < r.GetChildCount("image"); x++) {
-    XMLNode n = r.GetChild("image", x);
+    xml::XMLNode n = r.GetChild("image", x);
     auto img = n.GetAttributeAsString("image");
 
     auto data = B64Decode(img);
@@ -773,7 +773,7 @@ bool Application::LoadSkin(std::string_view XML,
       ClearZeroAlpha(Image.get(), XRes, YRes);
 
       for (int32_t y = 0; y < n.GetChildCount("element"); y++) {
-        XMLNode e = n.GetChild("element", y);
+        xml::XMLNode e = n.GetChild("element", y);
 
         Rect r2;
         e.GetAttributeAsInteger("x1", &r2.x1);
@@ -794,7 +794,7 @@ bool Application::LoadSkin(std::string_view XML,
   }
 
   for (int32_t x = 0; x < r.GetChildCount("mosaic"); x++) {
-    XMLNode m = r.GetChild("mosaic", x);
+    xml::XMLNode m = r.GetChild("mosaic", x);
 
     Rect r2;
     m.GetAttributeAsInteger("overshootx1", &r2.x1);
@@ -808,7 +808,7 @@ bool Application::LoadSkin(std::string_view XML,
   }
 
   for (int32_t x = 0; x < r.GetChildCount("font"); x++) {
-    XMLNode n = r.GetChild("font", x);
+    xml::XMLNode n = r.GetChild("font", x);
 
     auto Name = n.GetAttributeAsString("name");
 
@@ -858,8 +858,8 @@ bool Application::LoadSkinFromFile(std::string_view FileName,
   return b;
 }
 
-bool Application::GenerateGUIFromXML(Widget* Root, XMLDocument* doc) {
-  XMLNode root = doc->GetDocumentNode();
+bool Application::GenerateGUIFromXML(Widget* Root, xml::XMLDocument* doc) {
+  xml::XMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) return false;
 
@@ -867,21 +867,21 @@ bool Application::GenerateGUIFromXML(Widget* Root, XMLDocument* doc) {
 
   if (!root.GetChildCount("gui")) return false;
 
-  XMLNode gui = root.GetChild("gui");
+  xml::XMLNode gui = root.GetChild("gui");
 
   return ProcessGUIXML(Root, gui);
 }
 
-bool Application::GenerateGUITemplateFromXML(Widget* Root, XMLDocument* doc,
+bool Application::GenerateGUITemplateFromXML(Widget* Root, xml::XMLDocument* doc,
                                              std::string_view TemplateID) {
-  XMLNode root = doc->GetDocumentNode();
+  xml::XMLNode root = doc->GetDocumentNode();
 
   if (!root.GetChildCount("guidescriptor")) return false;
 
   root = root.GetChild("guidescriptor");
 
   for (int32_t x = 0; x < root.GetChildCount("guitemplate"); x++) {
-    XMLNode t = root.GetChild("guitemplate", x);
+    xml::XMLNode t = root.GetChild("guitemplate", x);
 
     if (t.HasAttribute("id")) {
       if (t.GetAttributeAsString("id") == TemplateID) {
@@ -900,7 +900,7 @@ bool Application::GenerateGUITemplateFromXML(Widget* Root, XMLDocument* doc,
   return false;
 }
 
-bool Application::ProcessGUIXML(Widget* Root, const XMLNode& node) {
+bool Application::ProcessGUIXML(Widget* Root, const xml::XMLNode& node) {
   Rect Pos(5, 5, 25, 25);
 
   bool b = true;
@@ -912,7 +912,7 @@ bool Application::ProcessGUIXML(Widget* Root, const XMLNode& node) {
   return b;
 }
 
-bool Application::GenerateGUIFromXMLNode(Widget* Root, const XMLNode& node,
+bool Application::GenerateGUIFromXMLNode(Widget* Root, const xml::XMLNode& node,
                                          Rect* Pos) {
   Widget* NewItem = GenerateUIItem(Root, node, *Pos);
   if (!NewItem) return false;
@@ -949,7 +949,7 @@ bool Application::GenerateGUIFromXMLNode(Widget* Root, const XMLNode& node,
   return ProcessGUIXML(NewItem, node);
 }
 
-Widget* Application::GenerateUIItem(Widget* Root, const XMLNode& node,
+Widget* Application::GenerateUIItem(Widget* Root, const xml::XMLNode& node,
                                     const Rect& Pos) {
   if (factory_callbacks_.find(node.GetNodeName()) != factory_callbacks_.end()) {
     return factory_callbacks_[node.GetNodeName()](Root, node, Pos);

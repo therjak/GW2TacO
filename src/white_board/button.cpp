@@ -140,7 +140,7 @@ std::string Button::GetText() const { return text_; }
 
 bool Button::IsPushed() { return pushed_; }
 
-Widget* Button::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
+Widget* Button::Factory(Widget* Root, const xml::XMLNode& node, const Rect& Pos) {
   auto button = Button::Create(Root, Pos);
   if (node.HasAttribute("text")) button->SetText(node.GetAttribute("text"));
   return button;

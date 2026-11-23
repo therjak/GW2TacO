@@ -17,6 +17,8 @@ import :document;
 using rapidxml::node_type;
 using rapidxml::xml_node;
 
+namespace xml {
+
 int32_t GetStringHash(const char* string) {
   if (!string) return 0;
 
@@ -308,3 +310,5 @@ bool XMLNode::GetValue(float* value) const {
   GetText(s, 20);
   return sscanf_s(s, "%g", value) == 1;
 }
+
+}  // namespace xml

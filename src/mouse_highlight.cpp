@@ -52,7 +52,7 @@ GW2MouseHighlight::GW2MouseHighlight() : GuiType() {}
 
 GW2MouseHighlight::~GW2MouseHighlight() = default;
 
-gui::Widget* GW2MouseHighlight::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* GW2MouseHighlight::Factory(gui::Widget* root, const xml::XMLNode& node,
                                         const Rect& pos) {
   return GW2MouseHighlight::Create(root, pos);
 }

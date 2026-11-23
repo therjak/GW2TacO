@@ -70,14 +70,14 @@ void DecodeUtf8(std::string_view Input, const UTF8CHARCALLBACK& callback) {
 }
 
 void Localization::ImportFile(std::string_view s) {
-  XMLDocument d;
+  xml::XMLDocument d;
   if (!d.LoadFromFile(s)) return;
   ImportLanguage(d);
 }
 
-void Localization::ImportLanguage(XMLDocument& d) {
+void Localization::ImportLanguage(xml::XMLDocument& d) {
   if (!d.GetDocumentNode().GetChildCount("TacOLanguageData")) return;
-  XMLNode root = d.GetDocumentNode().GetChild("TacOLanguageData");
+  xml::XMLNode root = d.GetDocumentNode().GetChild("TacOLanguageData");
 
   std::string language;
 

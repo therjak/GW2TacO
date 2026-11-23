@@ -33,7 +33,7 @@ bool GW2MarkerEditor::Initialize(gui::Widget* parent,
 
 GW2MarkerEditor::~GW2MarkerEditor() = default;
 
-gui::Widget* GW2MarkerEditor::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* GW2MarkerEditor::Factory(gui::Widget* root, const xml::XMLNode& node,
                                       const Rect& pos) {
   return GW2MarkerEditor::Create(root, pos);
 }

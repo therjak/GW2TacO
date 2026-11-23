@@ -44,7 +44,7 @@ class Box : public GuiType<"box", Widget> {
     return r;
   }
   ~Box() override;
-  static Widget* Factory(Widget* Root, const XMLNode& node,
+  static Widget* Factory(Widget* Root, const xml::XMLNode& node,
                          const math::Rect& Pos);
 
   virtual void SetArrangement(BoxArrangement a);

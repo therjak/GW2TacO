@@ -13,6 +13,8 @@ module xml;
 
 import :node;
 
+namespace xml {
+
 namespace {
 std::string ReadFile(std::string_view name) {
   std::FILE* fp = std::fopen(name.data(), "rb");
@@ -81,3 +83,5 @@ bool XMLDocument::SaveToFile(std::string_view sz) {
   std::fclose(fp);
   return true;
 }
+
+}  // namespace xml

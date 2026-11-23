@@ -48,7 +48,7 @@ bool Label::Initialize(Widget* Parent, const Rect& Position) {
   return true;
 }
 
-Widget* Label::Factory(Widget* Root, const XMLNode& node, const Rect& Pos) {
+Widget* Label::Factory(Widget* Root, const xml::XMLNode& node, const Rect& Pos) {
   auto label = Label::Create(Root, Pos);
   if (node.HasAttribute("text")) label->SetText(node.GetAttribute("text"));
   return label;

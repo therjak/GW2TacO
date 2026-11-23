@@ -188,7 +188,7 @@ RaidProgress::RaidProgress()
 
 RaidProgress::~RaidProgress() {}
 
-gui::Widget* RaidProgress::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* RaidProgress::Factory(gui::Widget* root, const xml::XMLNode& node,
                                    const Rect& pos) {
   return RaidProgress::Create(root, pos);
 }

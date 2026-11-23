@@ -115,7 +115,7 @@ void GW2TacticalCompass::OnDraw(gui::DrawAPI* api) {
 GW2TacticalCompass::GW2TacticalCompass() : GuiType() {}
 GW2TacticalCompass::~GW2TacticalCompass() = default;
 
-gui::Widget* GW2TacticalCompass::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* GW2TacticalCompass::Factory(gui::Widget* root, const xml::XMLNode& node,
                                          const Rect& pos) {
   return GW2TacticalCompass::Create(root, pos);
 }

@@ -55,8 +55,8 @@ class RenderStateBatch : public Resource {
  public:
   explicit RenderStateBatch(Device* device);
   ~RenderStateBatch() override;
-  virtual bool Import(XMLNode* n) = 0;
-  virtual void Export(XMLNode* n) = 0;
+  virtual bool Import(xml::XMLNode* n) = 0;
+  virtual void Export(xml::XMLNode* n) = 0;
 
  protected:
   bool dirty_ = false;
@@ -81,8 +81,8 @@ class BlendState : public RenderStateBatch {
   void SetBlendOpAlpha(int32_t render_target, BlendOp op);
   void SetRenderTargetWriteMask(int32_t render_target, uint8_t mask);
 
-  bool Import(XMLNode* n) override;
-  void Export(XMLNode* n) override;
+  bool Import(xml::XMLNode* n) override;
+  void Export(xml::XMLNode* n) override;
   virtual void* GetHandle() = 0;
 
  protected:
@@ -103,8 +103,8 @@ class DepthStencilState : public RenderStateBatch {
   void SetZWriteEnable(bool enable);
   void SetDepthFunc(ComparisonFunction func);
 
-  bool Import(XMLNode* n) override;
-  void Export(XMLNode* n) override;
+  bool Import(xml::XMLNode* n) override;
+  void Export(xml::XMLNode* n) override;
 
   virtual void* GetHandle() = 0;
 
@@ -133,8 +133,8 @@ class RasterizerState : public RenderStateBatch {
   void SetMultisampleEnable(bool enable);
   void SetAntialiasedLineEnable(bool enable);
 
-  bool Import(XMLNode* n) override;
-  void Export(XMLNode* n) override;
+  bool Import(xml::XMLNode* n) override;
+  void Export(xml::XMLNode* n) override;
   virtual void* GetHandle() = 0;
 
  protected:
@@ -172,8 +172,8 @@ class SamplerState : public RenderStateBatch {
 
   void SetBorderColor(float r, float g, float b, float a);
 
-  bool Import(XMLNode* n) override;
-  void Export(XMLNode* n) override;
+  bool Import(xml::XMLNode* n) override;
+  void Export(xml::XMLNode* n) override;
   virtual void* GetHandle() = 0;
 
  protected:

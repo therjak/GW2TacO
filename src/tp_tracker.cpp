@@ -330,7 +330,7 @@ TPTracker::TPTracker() : GuiType() {}
 
 TPTracker::~TPTracker() {}
 
-gui::Widget* TPTracker::Factory(gui::Widget* root, const XMLNode& node,
+gui::Widget* TPTracker::Factory(gui::Widget* root, const xml::XMLNode& node,
                                 const Rect& pos) {
   return TPTracker::Create(root, pos);
 }

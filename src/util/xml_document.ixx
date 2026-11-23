@@ -10,7 +10,9 @@ export module xml:document;
 
 import :node;
 
-export class XMLDocument {
+export namespace xml {
+
+class XMLDocument {
  public:
   XMLDocument();
   ~XMLDocument();
@@ -25,3 +27,5 @@ export class XMLDocument {
   std::unique_ptr<rapidxml::xml_document<>> doc;
   std::string memString;
 };
+
+}  // namespace xml
