@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${command:cmake.launchTargetPath}",
             "args": [
-                "-vulkan"
+                //"-vulkan"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
