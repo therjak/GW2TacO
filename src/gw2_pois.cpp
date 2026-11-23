@@ -7,7 +7,6 @@
 #include <TlHelp32.h>
 #include <Urlmon.h>  // URLOpenBlockingStreamW()
 #include <imm.h>
-#include <tlhelp32.h>
 #include <winhttp.h>
 
 #ifndef _WIN32
