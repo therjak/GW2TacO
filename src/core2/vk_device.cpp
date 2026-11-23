@@ -54,8 +54,17 @@ VulkanDevice::~VulkanDevice() {
   if (pipeline_layout_ != VK_NULL_HANDLE) {
     vkDestroyPipelineLayout(vk_device_, pipeline_layout_, nullptr);
   }
-  if (descriptor_pool_ != VK_NULL_HANDLE) {
-    vkDestroyDescriptorPool(vk_device_, descriptor_pool_, nullptr);
+  for (size_t i = 0; i < kMaxFramesInFlight; i++) {
+    if (descriptor_pools_[i] != VK_NULL_HANDLE) {
+      vkDestroyDescriptorPool(vk_device_, descriptor_pools_[i], nullptr);
+    }
+    if (frame_ubos_[i] != VK_NULL_HANDLE) {
+      vmaDestroyBuffer(allocator_.Get(), frame_ubos_[i],
+                       frame_ubo_allocations_[i]);
+      frame_ubos_[i] = VK_NULL_HANDLE;
+      frame_ubo_allocations_[i] = VK_NULL_HANDLE;
+      frame_ubo_mapped_[i] = nullptr;
+    }
   }
   if (descriptor_set_layout_ != VK_NULL_HANDLE) {
     vkDestroyDescriptorSetLayout(vk_device_, descriptor_set_layout_, nullptr);
@@ -312,7 +321,20 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
     queue_create_infos.push_back(queue_create_info);
   }
 
+  VkPhysicalDeviceFeatures supported_features{};
+  vkGetPhysicalDeviceFeatures(physical_device_, &supported_features);
+  VkPhysicalDeviceProperties device_props{};
+  vkGetPhysicalDeviceProperties(physical_device_, &device_props);
+  anisotropy_supported_ = supported_features.samplerAnisotropy == VK_TRUE;
+  max_sampler_anisotropy_ =
+      anisotropy_supported_ ? device_props.limits.maxSamplerAnisotropy : 1.0f;
+  min_ubo_alignment_ = std::max<VkDeviceSize>(
+      device_props.limits.minUniformBufferOffsetAlignment, 1);
+
   VkPhysicalDeviceFeatures device_features{};
+  if (anisotropy_supported_) {
+    device_features.samplerAnisotropy = VK_TRUE;
+  }
 
   VkDeviceCreateInfo device_create_info{};
   device_create_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -395,15 +417,23 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
     }
   }
 
-  // Descriptor Set Layout
-  std::array<VkDescriptorSetLayoutBinding, 32> bindings{};
-  for (uint32_t i = 0; i < 32; i++) {
+  // Descriptor Set Layout: bindings 0..31 = combined image samplers,
+  // binding 32 = uniform buffer (cbuffer).
+  std::array<VkDescriptorSetLayoutBinding, kMaxTextureSlots + 1> bindings{};
+  for (uint32_t i = 0; i < kMaxTextureSlots; i++) {
     bindings[i].binding = i;
     bindings[i].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     bindings[i].descriptorCount = 1;
     bindings[i].stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
     bindings[i].pImmutableSamplers = nullptr;
   }
+  bindings[kUniformBufferBinding].binding = kUniformBufferBinding;
+  bindings[kUniformBufferBinding].descriptorType =
+      VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  bindings[kUniformBufferBinding].descriptorCount = 1;
+  bindings[kUniformBufferBinding].stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
+  bindings[kUniformBufferBinding].pImmutableSamplers = nullptr;
+
   VkDescriptorSetLayoutCreateInfo layout_info{};
   layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
   layout_info.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -414,33 +444,49 @@ bool VulkanDevice::InitAPI(const HWND window_handle, const bool /*full_screen*/,
     return false;
   }
 
-  // Descriptor Pool
-  VkDescriptorPoolSize pool_size{};
-  pool_size.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-  pool_size.descriptorCount = 32 * kMaxFramesInFlight;
+  // Per-frame Descriptor Pools (reset each frame after fence wait)
+  std::array<VkDescriptorPoolSize, 2> pool_sizes{};
+  pool_sizes[0].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+  pool_sizes[0].descriptorCount =
+      kMaxTextureSlots * kMaxDescriptorSetsPerFrame;
+  pool_sizes[1].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+  pool_sizes[1].descriptorCount = kMaxDescriptorSetsPerFrame;
+
   VkDescriptorPoolCreateInfo pool_info_desc{};
   pool_info_desc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-  pool_info_desc.poolSizeCount = 1;
-  pool_info_desc.pPoolSizes = &pool_size;
-  pool_info_desc.maxSets = kMaxFramesInFlight;
-  if (vkCreateDescriptorPool(vk_device_, &pool_info_desc, nullptr,
-                             &descriptor_pool_) != VK_SUCCESS) {
-    Log_Err("[vk] Failed to create descriptor pool");
-    return false;
+  pool_info_desc.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
+  pool_info_desc.pPoolSizes = pool_sizes.data();
+  pool_info_desc.maxSets = kMaxDescriptorSetsPerFrame;
+  for (size_t i = 0; i < kMaxFramesInFlight; i++) {
+    if (vkCreateDescriptorPool(vk_device_, &pool_info_desc, nullptr,
+                               &descriptor_pools_[i]) != VK_SUCCESS) {
+      Log_Err("[vk] Failed to create descriptor pool");
+      return false;
+    }
   }
 
-  // Allocate Descriptor Sets
-  std::vector<VkDescriptorSetLayout> layouts(kMaxFramesInFlight,
-                                             descriptor_set_layout_);
-  VkDescriptorSetAllocateInfo alloc_info_desc{};
-  alloc_info_desc.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-  alloc_info_desc.descriptorPool = descriptor_pool_;
-  alloc_info_desc.descriptorSetCount = kMaxFramesInFlight;
-  alloc_info_desc.pSetLayouts = layouts.data();
-  if (vkAllocateDescriptorSets(vk_device_, &alloc_info_desc,
-                               descriptor_sets_.data()) != VK_SUCCESS) {
-    Log_Err("[vk] Failed to allocate descriptor sets");
-    return false;
+  // Per-frame Uniform Buffers for shader constants
+  for (size_t i = 0; i < kMaxFramesInFlight; i++) {
+    VkBufferCreateInfo ubo_info{};
+    ubo_info.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    ubo_info.size = kFrameUboSize;
+    ubo_info.usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+
+    VmaAllocationCreateInfo ubo_alloc_info{};
+    ubo_alloc_info.usage = VMA_MEMORY_USAGE_AUTO;
+    ubo_alloc_info.flags =
+        VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT |
+        VMA_ALLOCATION_CREATE_MAPPED_BIT;
+
+    VmaAllocationInfo alloc_result{};
+    if (vmaCreateBuffer(allocator_.Get(), &ubo_info, &ubo_alloc_info,
+                        &frame_ubos_[i], &frame_ubo_allocations_[i],
+                        &alloc_result) != VK_SUCCESS) {
+      Log_Err("[vk] Failed to create per-frame uniform buffer");
+      return false;
+    }
+    frame_ubo_mapped_[i] = alloc_result.pMappedData;
+    frame_ubo_offset_[i] = 0;
   }
 
   // Pipeline Layout
@@ -752,6 +798,12 @@ void VulkanDevice::CleanupSwapchain() {
 bool VulkanDevice::BeginScene() {
   vkWaitForFences(vk_device_, 1, &in_flight_fences_[current_frame_], VK_TRUE,
                   UINT64_MAX);
+
+  vkResetDescriptorPool(vk_device_, descriptor_pools_[current_frame_], 0);
+  current_descriptor_set_ = VK_NULL_HANDLE;
+  descriptors_dirty_ = true;
+  frame_ubo_offset_[current_frame_] = 0;
+  ubo_dirty_ = true;
 
   VkResult result =
       vkAcquireNextImageKHR(vk_device_, swapchain_, UINT64_MAX,
@@ -1123,10 +1175,15 @@ std::unique_ptr<ComputeShader> VulkanDevice::CreateComputeShader() {
 
 void VulkanDevice::SetShaderConstants(const ConstantBuffer* buffers) {
   if (buffers && buffers->GetData() && buffers->GetDataLength() > 0) {
-    size_t len = std::min(static_cast<size_t>(buffers->GetDataLength()),
-                          static_cast<size_t>(128));
-    push_constants_.resize(len);
-    std::memcpy(push_constants_.data(), buffers->GetData(), len);
+    const size_t full_len = static_cast<size_t>(buffers->GetDataLength());
+    const size_t push_len = std::min(full_len, static_cast<size_t>(128));
+    push_constants_.resize(push_len);
+    std::memcpy(push_constants_.data(), buffers->GetData(), push_len);
+
+    current_cb_data_.resize(full_len);
+    std::memcpy(current_cb_data_.data(), buffers->GetData(), full_len);
+    ubo_dirty_ = true;
+    descriptors_dirty_ = true;
   }
 }
 
@@ -1326,7 +1383,7 @@ bool VulkanDevice::CommitRenderStates() { return true; }
 
 void VulkanDevice::BindTexture(uint32_t slot, VkImageView view,
                                VkSampler sampler) {
-  if (slot >= 32) return;
+  if (slot >= kMaxTextureSlots) return;
   bool dirty = false;
   if (view != VK_NULL_HANDLE && bound_textures_[slot].view != view) {
     bound_textures_[slot].view = view;
@@ -1337,40 +1394,77 @@ void VulkanDevice::BindTexture(uint32_t slot, VkImageView view,
     dirty = true;
   }
   if (dirty) {
-    for (uint32_t f = 0; f < kMaxFramesInFlight; ++f) {
-      descriptor_dirty_[f][slot] = true;
-    }
+    descriptors_dirty_ = true;
   }
 }
 
 void VulkanDevice::FlushDescriptors() {
-  std::vector<VkDescriptorImageInfo> image_infos;
-  std::vector<VkWriteDescriptorSet> descriptor_writes;
-  image_infos.reserve(32);
-  descriptor_writes.reserve(32);
+  if (ubo_dirty_ || current_ubo_size_ == 0) {
+    const VkDeviceSize size =
+        std::max<VkDeviceSize>(current_cb_data_.size(), 16);
+    VkDeviceSize aligned_offset =
+        (frame_ubo_offset_[current_frame_] + min_ubo_alignment_ - 1) &
+        ~(min_ubo_alignment_ - 1);
+    if (aligned_offset + size > kFrameUboSize) {
+      Log_Warn("[vk] Per-frame UBO exhausted; wrapping to offset 0");
+      aligned_offset = 0;
+    }
+    if (frame_ubo_mapped_[current_frame_]) {
+      uint8_t* dst = static_cast<uint8_t*>(frame_ubo_mapped_[current_frame_]) +
+                     aligned_offset;
+      if (!current_cb_data_.empty()) {
+        std::memcpy(dst, current_cb_data_.data(), current_cb_data_.size());
+      } else {
+        std::memset(dst, 0, size);
+      }
+      vmaFlushAllocation(allocator_.Get(),
+                         frame_ubo_allocations_[current_frame_],
+                         aligned_offset, size);
+    }
+    current_ubo_offset_ = aligned_offset;
+    current_ubo_size_ = size;
+    frame_ubo_offset_[current_frame_] = aligned_offset + size;
+    ubo_dirty_ = false;
+    descriptors_dirty_ = true;
+  }
 
-  for (uint32_t i = 0; i < 32; i++) {
-    if (descriptor_dirty_[current_frame_][i]) {
-      VkDescriptorImageInfo image_info{};
-      image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-      image_info.imageView = bound_textures_[i].view;
-      image_info.sampler = bound_textures_[i].sampler;
+  if (descriptors_dirty_ || current_descriptor_set_ == VK_NULL_HANDLE) {
+    VkDescriptorSetAllocateInfo alloc_info{};
+    alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    alloc_info.descriptorPool = descriptor_pools_[current_frame_];
+    alloc_info.descriptorSetCount = 1;
+    alloc_info.pSetLayouts = &descriptor_set_layout_;
 
-      if (image_info.imageView != VK_NULL_HANDLE &&
-          image_info.sampler != VK_NULL_HANDLE) {
+    VkDescriptorSet new_set = VK_NULL_HANDLE;
+    if (vkAllocateDescriptorSets(vk_device_, &alloc_info, &new_set) !=
+        VK_SUCCESS) {
+      Log_Err("[vk] Failed to allocate per-draw descriptor set");
+      return;
+    }
+
+    std::vector<VkDescriptorImageInfo> image_infos;
+    std::vector<VkWriteDescriptorSet> descriptor_writes;
+    image_infos.reserve(kMaxTextureSlots);
+    descriptor_writes.reserve(kMaxTextureSlots + 1);
+
+    for (uint32_t i = 0; i < kMaxTextureSlots; i++) {
+      if (bound_textures_[i].view != VK_NULL_HANDLE &&
+          bound_textures_[i].sampler != VK_NULL_HANDLE) {
+        VkDescriptorImageInfo image_info{};
+        image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+        image_info.imageView = bound_textures_[i].view;
+        image_info.sampler = bound_textures_[i].sampler;
         image_infos.push_back(image_info);
       }
     }
-  }
 
-  uint32_t info_index = 0;
-  for (uint32_t i = 0; i < 32; i++) {
-    if (descriptor_dirty_[current_frame_][i]) {
+    uint32_t info_index = 0;
+    for (uint32_t i = 0; i < kMaxTextureSlots; i++) {
       if (bound_textures_[i].view != VK_NULL_HANDLE &&
           bound_textures_[i].sampler != VK_NULL_HANDLE) {
         VkWriteDescriptorSet descriptor_write{};
         descriptor_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptor_write.dstSet = descriptor_sets_[current_frame_];
+        descriptor_write.dstSet = new_set;
         descriptor_write.dstBinding = i;
         descriptor_write.dstArrayElement = 0;
         descriptor_write.descriptorType =
@@ -1379,18 +1473,33 @@ void VulkanDevice::FlushDescriptors() {
         descriptor_write.pImageInfo = &image_infos[info_index++];
         descriptor_writes.push_back(descriptor_write);
       }
-      descriptor_dirty_[current_frame_][i] = false;
     }
-  }
 
-  if (!descriptor_writes.empty()) {
+    VkDescriptorBufferInfo ubo_info{};
+    ubo_info.buffer = frame_ubos_[current_frame_];
+    ubo_info.offset = current_ubo_offset_;
+    ubo_info.range = current_ubo_size_;
+
+    VkWriteDescriptorSet ubo_write{};
+    ubo_write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    ubo_write.dstSet = new_set;
+    ubo_write.dstBinding = kUniformBufferBinding;
+    ubo_write.dstArrayElement = 0;
+    ubo_write.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    ubo_write.descriptorCount = 1;
+    ubo_write.pBufferInfo = &ubo_info;
+    descriptor_writes.push_back(ubo_write);
+
     vkUpdateDescriptorSets(vk_device_,
                            static_cast<uint32_t>(descriptor_writes.size()),
                            descriptor_writes.data(), 0, nullptr);
+    current_descriptor_set_ = new_set;
+    descriptors_dirty_ = false;
   }
+
   vkCmdBindDescriptorSets(GetCurrentCommandBuffer(),
                           VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline_layout_, 0,
-                          1, &descriptor_sets_[current_frame_], 0, nullptr);
+                          1, &current_descriptor_set_, 0, nullptr);
 
   if (!push_constants_.empty() && pipeline_layout_ != VK_NULL_HANDLE) {
     vkCmdPushConstants(

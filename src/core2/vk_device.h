@@ -145,6 +145,11 @@ class VulkanDevice : public Device {
   VmaAllocator GetAllocator() const { return allocator_.Get(); }
   VkDescriptorSetLayout GetDescriptorSetLayout() const { return descriptor_set_layout_; }
   VkPipelineLayout GetPipelineLayout() const { return pipeline_layout_; }
+  bool IsAnisotropySupported() const { return anisotropy_supported_; }
+  float GetMaxSamplerAnisotropy() const { return max_sampler_anisotropy_; }
+  void SetCurrentBlendState(VkBlendState* bs) { current_bs_ = bs; }
+  void SetCurrentRasterizerState(VkRasterizerState* rs) { current_rs_ = rs; }
+  void SetCurrentDepthStencilState(VkDepthStencilState* dss) { current_dss_ = dss; }
   void BindTexture(uint32_t slot, VkImageView view, VkSampler sampler);
   void FlushDescriptors();
 
@@ -201,16 +206,35 @@ class VulkanDevice : public Device {
   math::Rect current_viewport_{};
   VkMemAllocator allocator_;
 
+  static constexpr uint32_t kMaxTextureSlots = 32;
+  static constexpr uint32_t kUniformBufferBinding = 32;
+  static constexpr uint32_t kMaxDescriptorSetsPerFrame = 2048;
+  static constexpr VkDeviceSize kFrameUboSize = 1024 * 1024;
+
+  bool anisotropy_supported_ = false;
+  float max_sampler_anisotropy_ = 1.0f;
+  VkDeviceSize min_ubo_alignment_ = 256;
+
   VkDescriptorSetLayout descriptor_set_layout_ = VK_NULL_HANDLE;
-  VkDescriptorPool descriptor_pool_ = VK_NULL_HANDLE;
-  std::array<VkDescriptorSet, kMaxFramesInFlight> descriptor_sets_ = {};
+  std::array<VkDescriptorPool, kMaxFramesInFlight> descriptor_pools_ = {};
+  VkDescriptorSet current_descriptor_set_ = VK_NULL_HANDLE;
   VkPipelineLayout pipeline_layout_ = VK_NULL_HANDLE;
-  std::array<std::array<bool, 32>, kMaxFramesInFlight> descriptor_dirty_ = {};
+  bool descriptors_dirty_ = true;
+
+  std::array<VkBuffer, kMaxFramesInFlight> frame_ubos_ = {};
+  std::array<VmaAllocation, kMaxFramesInFlight> frame_ubo_allocations_ = {};
+  std::array<void*, kMaxFramesInFlight> frame_ubo_mapped_ = {};
+  std::array<VkDeviceSize, kMaxFramesInFlight> frame_ubo_offset_ = {};
+  VkDeviceSize current_ubo_offset_ = 0;
+  VkDeviceSize current_ubo_size_ = 0;
+  bool ubo_dirty_ = true;
+  std::vector<uint8_t> current_cb_data_;
+
   struct BoundTexture {
     VkImageView view = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
   };
-  std::array<BoundTexture, 32> bound_textures_ = {};
+  std::array<BoundTexture, kMaxTextureSlots> bound_textures_ = {};
 
   struct PipelineKey {
     VkShaderModule vs;

@@ -547,10 +547,64 @@ bool GW2TrailDisplay::Initialize(gui::Widget* Parent,
       "x.Color*GuiTexture.Sample(Sampler,x.UV + "
       "float2(0,data.x))*color*float4(1,1,1,a); }";
 
-  vx_shader_ = App->GetDevice()->CreateVertexShader(
-      code, static_cast<int32_t>(strlen(code)), "vsmain", "vs_4_0");
-  px_shader_ = App->GetDevice()->CreatePixelShader(
-      code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
+  LPCSTR vk_code =
+      "[[vk::combinedImageSampler]] [[vk::binding(0, 0)]] Texture2D GuiTexture;"
+      "[[vk::combinedImageSampler]] [[vk::binding(0, 0)]] SamplerState Sampler;"
+      "[[vk::binding(32, 0)]] cbuffer resdata"
+      "{"
+      "   float4x4 camera;"
+      "   float4x4 persp;"
+      "   float4   charpos;"
+      "   float4   data;"
+      "   float4   color;"
+      "   float2   nearFarFades;"
+      "   float    fadeOutBubble;"
+      "   float    width;"
+      "   float    uvScale;"
+      "   float    width2d;"
+      "};"
+      "float rayspheredepth(float3 o, float3 d)"
+      "{"
+      "  if (fadeOutBubble==0) return 1;"
+      "  float4 c = mul(camera,charpos + float4(0,1,0,0));"
+      "  c/=c.w;"
+      "  float r=2.00;"
+      "  float3 oc=o-c.xyz;"
+      "  float discriminant = dot(oc, d) * dot(oc, d) - ( dot( oc, oc ) - r * "
+      "r ); "
+      "  if (discriminant < 0) return 1;"
+      "  float t1 = -dot(d, oc) - sqrt(discriminant);"
+      "  float t2 = -dot(d, oc) + sqrt(discriminant);"
+      "  return saturate(1-abs(t2-t1)/r/2.0);"
+      "}"
+      "struct VSIN { float4 Position : POSITIONT; float2 UV : TEXCOORD0; "
+      "float4 Pos2 : TEXCOORD1; float4 Color : COLOR0; };"
+      "struct VSOUT { float4 Position : SV_POSITION; float2 UV : TEXCOORD0; "
+      "float4 Color : COLOR0; float4 p : TEXCOORD1; };"
+      "VSOUT vsmain(VSIN x) { VSOUT k; "
+      "k.p=k.Position=mul(camera,(x.Position-x.Pos2)*width+x.Pos2); "
+      "k.p/=k.p.w; float4 p2 = mul(camera,x.Pos2); p2/=p2.w; "
+      "k.Position=mul(persp,(k.Position-p2)*width2d+p2); "
+      "k.Position.y=-k.Position.y; "
+      "k.UV=float2(x.UV.x,x.UV.y*uvScale); k.Color=x.Color; k.p/=k.p.w; return "
+      "k; }"
+      "float4 psmain(VSOUT x) : SV_TARGET0 {  float farFade = "
+      "saturate(1.0-(x.p.z-nearFarFades.x)/(nearFarFades.y-nearFarFades.x)); "
+      "float a=rayspheredepth(0,normalize(x.p.xyz)); a*=farFade; return "
+      "x.Color*GuiTexture.Sample(Sampler,x.UV + "
+      "float2(0,data.x))*color*float4(1,1,1,a); }";
+
+  if (App->GetDevice()->GetAPIType() == renderer::DeviceApi::kVulkan) {
+    vx_shader_ = App->GetDevice()->CreateVertexShader(
+        vk_code, static_cast<int32_t>(strlen(vk_code)), "vsmain", "vs_6_0");
+    px_shader_ = App->GetDevice()->CreatePixelShader(
+        vk_code, static_cast<int32_t>(strlen(vk_code)), "psmain", "ps_6_0");
+  } else {
+    vx_shader_ = App->GetDevice()->CreateVertexShader(
+        code, static_cast<int32_t>(strlen(code)), "vsmain", "vs_4_0");
+    px_shader_ = App->GetDevice()->CreatePixelShader(
+        code, static_cast<int32_t>(strlen(code)), "psmain", "ps_4_0");
+  }
 
   std::vector<renderer::VertexAttribute> Att{
       renderer::VertexAttribute::kPositionT4,
@@ -835,7 +889,7 @@ void GW2Trail::Build(renderer::Device* d, int32_t map_id, const float* points,
 
   trail_mesh_ =
       dev_->CreateVertexBuffer(reinterpret_cast<uint8_t*>(vertices.get()),
-                               vertexCount * sizeof(GW2TrailVertex));
+                               pointCount * 2 * sizeof(GW2TrailVertex));
   length_ = pointCount * 2;
   idx_buf_ = dev_->CreateIndexBuffer((pointCount - 1) * 6, 4);
 

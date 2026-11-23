@@ -1,5 +1,7 @@
 #include "src/core2/vk_render_state.h"
 
+#include <algorithm>
+
 namespace renderer {
 
 //////////////////////////////////////////////////////////////////////////
@@ -62,7 +64,12 @@ bool VkBlendState::Update() {
 }
 
 bool VkBlendState::Apply() {
-  Update();
+  if (dirty_ || desc_vk_.sType == 0) {
+    Update();
+  }
+  if (device_) {
+    device_->SetCurrentBlendState(this);
+  }
   return true;
 }
 
@@ -98,7 +105,12 @@ bool VkDepthStencilState::Update() {
 }
 
 bool VkDepthStencilState::Apply() {
-  Update();
+  if (dirty_ || desc_vk_.sType == 0) {
+    Update();
+  }
+  if (device_) {
+    device_->SetCurrentDepthStencilState(this);
+  }
   return true;
 }
 
@@ -140,7 +152,12 @@ bool VkRasterizerState::Update() {
 }
 
 bool VkRasterizerState::Apply() {
-  Update();
+  if (dirty_ || desc_vk_.sType == 0) {
+    Update();
+  }
+  if (device_) {
+    device_->SetCurrentRasterizerState(this);
+  }
   return true;
 }
 
@@ -157,6 +174,10 @@ VkSamplerState::~VkSamplerState() {
 }
 
 bool VkSamplerState::Update() {
+  if (!dirty_ && sampler_ != VK_NULL_HANDLE) {
+    return true;
+  }
+
   VkSamplerCreateInfo sampler_info{};
   sampler_info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
   
@@ -177,8 +198,14 @@ bool VkSamplerState::Update() {
   sampler_info.addressModeU = map_address(address_u_);
   sampler_info.addressModeV = map_address(address_v_);
   sampler_info.addressModeW = map_address(address_w_);
-  sampler_info.anisotropyEnable = (max_anisotropy_ > 1) ? VK_TRUE : VK_FALSE;
-  sampler_info.maxAnisotropy = static_cast<float>(max_anisotropy_);
+  if (max_anisotropy_ > 1 && device_->IsAnisotropySupported()) {
+    sampler_info.anisotropyEnable = VK_TRUE;
+    sampler_info.maxAnisotropy = std::min(static_cast<float>(max_anisotropy_),
+                                          device_->GetMaxSamplerAnisotropy());
+  } else {
+    sampler_info.anisotropyEnable = VK_FALSE;
+    sampler_info.maxAnisotropy = 1.0f;
+  }
   sampler_info.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
   sampler_info.unnormalizedCoordinates = VK_FALSE;
   sampler_info.compareEnable = VK_FALSE;
@@ -189,6 +216,7 @@ bool VkSamplerState::Update() {
   sampler_info.maxLod = max_lod_;
   
   if (sampler_ != VK_NULL_HANDLE) {
+    vkDeviceWaitIdle(device_->GetVkDevice());
     vkDestroySampler(device_->GetVkDevice(), sampler_, nullptr);
     sampler_ = VK_NULL_HANDLE;
   }
@@ -200,7 +228,9 @@ bool VkSamplerState::Update() {
 }
 
 bool VkSamplerState::Apply(Sampler sampler) {
-  Update();
+  if (dirty_ || sampler_ == VK_NULL_HANDLE) {
+    if (!Update()) return false;
+  }
   uint32_t slot = 0;
   if (sampler >= Sampler::kPs0 && sampler <= Sampler::kPs15) {
       slot = static_cast<uint32_t>(sampler) - static_cast<uint32_t>(Sampler::kPs0);
